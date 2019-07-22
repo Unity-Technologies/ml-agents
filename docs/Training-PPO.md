@@ -22,8 +22,7 @@ If you are using curriculum training to pace the difficulty of the learning task
 presented to an agent, see [Training with Curriculum
 Learning](Training-Curriculum-Learning.md).
 
-For information about imitation learning, which uses a different training
-algorithm, see
+For information about imitation learning from demonstrations, see
 [Training with Imitation Learning](Training-Imitation-Learning.md).
 
 ## Best Practices when training with PPO
@@ -190,6 +189,73 @@ be a multiple of 4, and should scale with the amount of information you expect
 the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
+
+## (Optional) Pretraining Using Demonstrations
+
+In some cases, you might want to bootstrap the agent's policy using behavior recorded
+from a player. This can help guide the agent towards the reward. Pretraining adds 
+training operations that mimic a demonstration rather than attempting to maximize reward. 
+It is essentially equivalent to running [behavioral cloning](./Training-BehavioralCloning.md)
+in-line with PPO.
+
+To use pretraining, add a `pretraining` section to the trainer_config. For instance:
+
+```
+    pretraining:
+        demo_path: ./demos/ExpertPyramid.demo
+        strength: 0.5
+        steps: 10000
+```
+
+Below are the avaliable hyperparameters for pretraining.
+
+### Strength
+
+`strength` corresponds to the learning rate of the imitation relative to the learning
+rate of PPO, and roughly corresponds to how strongly we allow the behavioral cloning
+to influence the policy. 
+
+Typical Range: `0.1` - `0.5`
+
+### Demo Path
+
+`demo_path` is the path to your `.demo` file or directory of `.demo` files. 
+See the [imitation learning guide](Training-ImitationLearning.md) for more on `.demo` files.
+
+### Steps
+
+During pretraining, it is often desirable to stop using demonstrations after the agent has 
+"seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
+outside of the provided demonstrations. `steps` corresponds to the training steps over which
+pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set 
+the steps to 0 for constant imitation over the entire training run. 
+
+### (Optional) Batch Size
+
+`batch_size` is the number of demonstration experiences used for one iteration of a gradient
+descent update. If not specified, it will default to the `batch_size` defined for PPO.
+
+Typical Range (Continuous): `512` - `5120`
+
+Typical Range (Discrete): `32` - `512`
+
+### (Optional) Number of Epochs
+
+`num_epoch` is the number of passes through the experience buffer during
+gradient descent. If not specified, it will default to the number of epochs set for PPO.
+
+Typical Range: `3` - `10`
+
+### (Optional) Samples Per Update
+
+`samples_per_update` is the maximum number of samples
+to use during each imitation update. You may want to lower this if your demonstration
+dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 
+to train over all of the demonstrations at each update step.
+
+Default Value: `0` (all)
+
+Typical Range: Approximately equal to PPO's `buffer_size`
 
 ## Training Statistics
 

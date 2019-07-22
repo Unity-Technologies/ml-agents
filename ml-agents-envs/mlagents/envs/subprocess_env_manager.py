@@ -2,8 +2,9 @@ from typing import *
 import cloudpickle
 
 from mlagents.envs import UnityEnvironment
-from multiprocessing import Process, Pipe
+from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
+from queue import Empty as EmptyQueueException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
 from mlagents.envs.timers import (
@@ -39,6 +40,7 @@ class UnityEnvWorker:
         self.conn = conn
         self.previous_step: StepInfo = StepInfo(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
+        self.waiting = False
 
     def send(self, name: str, payload=None):
         try:
@@ -62,7 +64,9 @@ class UnityEnvWorker:
         self.process.join()
 
 
-def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
+def worker(
+    parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
+):
     env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
         pickled_env_factory
     )
@@ -76,6 +80,8 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
+                # When an environment is "global_done" it means automatic agent reset won't occur, so we need
+                # to perform an academy reset.
                 if env.global_done:
                     all_brain_info = env.reset()
                 else:
@@ -89,7 +95,6 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                         texts[brain_name] = action_info.text
                         values[brain_name] = action_info.value
                     all_brain_info = env.step(actions, memories, texts, values)
-
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -97,7 +102,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
                 step_response = StepResponse(
                     all_brain_info, _global_timer_stack.get_root()
                 )
-                _send_response("step", step_response)
+                step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)
@@ -115,6 +120,7 @@ def worker(parent_conn: Connection, pickled_env_factory: str, worker_id: int):
     except KeyboardInterrupt:
         print("UnityEnvironment worker: keyboard interrupt")
     finally:
+        step_queue.close()
         env.close()
 
 
@@ -124,15 +130,17 @@ class SubprocessEnvManager(EnvManager):
     ):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
+        self.step_queue: Queue = Queue()
         for worker_idx in range(n_env):
-            self.env_workers.append(self.create_worker(worker_idx, env_factory))
-
-    def get_last_steps(self):
-        return [ew.previous_step for ew in self.env_workers]
+            self.env_workers.append(
+                self.create_worker(worker_idx, self.step_queue, env_factory)
+            )
 
     @staticmethod
     def create_worker(
-        worker_id: int, env_factory: Callable[[int], BaseUnityEnvironment]
+        worker_id: int,
+        step_queue: Queue,
+        env_factory: Callable[[int], BaseUnityEnvironment],
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -140,57 +148,54 @@ class SubprocessEnvManager(EnvManager):
         # on Windows as of Python 3.6.
         pickled_env_factory = cloudpickle.dumps(env_factory)
         child_process = Process(
-            target=worker, args=(child_conn, pickled_env_factory, worker_id)
+            target=worker, args=(child_conn, step_queue, pickled_env_factory, worker_id)
         )
         child_process.start()
         return UnityEnvWorker(child_process, worker_id, parent_conn)
 
-    def step(self) -> List[StepInfo]:
+    def _queue_steps(self) -> None:
         for env_worker in self.env_workers:
-            all_action_info = self._take_step(env_worker.previous_step)
-            env_worker.previous_all_action_info = all_action_info
-            env_worker.send("step", all_action_info)
+            if not env_worker.waiting:
+                env_action_info = self._take_step(env_worker.previous_step)
+                env_worker.previous_all_action_info = env_action_info
+                env_worker.send("step", env_action_info)
+                env_worker.waiting = True
 
-        with hierarchical_timer("step_recv"):
-            step_responses: List[StepResponse] = [
-                self.env_workers[i].recv().payload for i in range(len(self.env_workers))
-            ]
-        steps = []
-        for i in range(len(step_responses)):
-            env_worker = self.env_workers[i]
-            step_info = StepInfo(
-                env_worker.previous_step.current_all_brain_info,
-                step_responses[i].all_brain_info,
-                env_worker.previous_all_action_info,
-            )
-            env_worker.previous_step = step_info
-            steps.append(step_info)
+    def step(self) -> List[StepInfo]:
+        # Queue steps for any workers which aren't in the "waiting" state.
+        self._queue_steps()
 
-        # Get timers from the workers, and add them to the "main" timers from this process
-        timer_nodes = [
-            step_response.timer_root
-            for step_response in step_responses
-            if step_response.timer_root
-        ]
-        if timer_nodes:
-            with hierarchical_timer("workers") as main_timer_node:
-                for worker_timer_node in timer_nodes:
-                    main_timer_node.merge(
-                        worker_timer_node, root_name="worker_root", is_parallel=True
-                    )
+        worker_steps: List[EnvironmentResponse] = []
+        step_workers: Set[int] = set()
+        # Poll the step queue for completed steps from environment workers until we retrieve
+        # 1 or more, which we will then return as StepInfos
+        while len(worker_steps) < 1:
+            try:
+                while True:
+                    step = self.step_queue.get_nowait()
+                    self.env_workers[step.worker_id].waiting = False
+                    if step.worker_id not in step_workers:
+                        worker_steps.append(step)
+                        step_workers.add(step.worker_id)
+            except EmptyQueueException:
+                pass
 
-        return steps
+        step_infos = self._postprocess_steps(worker_steps)
+        return step_infos
 
     def reset(
         self, config=None, train_mode=True, custom_reset_parameters=None
     ) -> List[StepInfo]:
-        self._broadcast_message("reset", (config, train_mode, custom_reset_parameters))
-        reset_results = [
-            self.env_workers[i].recv().payload for i in range(len(self.env_workers))
-        ]
-        for i in range(len(reset_results)):
-            env_worker = self.env_workers[i]
-            env_worker.previous_step = StepInfo(None, reset_results[i], None)
+        while any([ew.waiting for ew in self.env_workers]):
+            if not self.step_queue.empty():
+                step = self.step_queue.get_nowait()
+                self.env_workers[step.worker_id].waiting = False
+        # First enqueue reset commands for all workers so that they reset in parallel
+        for ew in self.env_workers:
+            ew.send("reset", (config, train_mode, custom_reset_parameters))
+        # Next (synchronously) collect the reset observations from each worker in sequence
+        for ew in self.env_workers:
+            ew.previous_step = StepInfo(None, ew.recv().payload, None)
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
@@ -203,13 +208,39 @@ class SubprocessEnvManager(EnvManager):
         self.env_workers[0].send("reset_parameters")
         return self.env_workers[0].recv().payload
 
-    def close(self):
+    def close(self) -> None:
+        self.step_queue.close()
+        self.step_queue.join_thread()
         for env_worker in self.env_workers:
             env_worker.close()
 
-    def _broadcast_message(self, name: str, payload=None):
-        for env_worker in self.env_workers:
-            env_worker.send(name, payload)
+    def _postprocess_steps(
+        self, env_steps: List[EnvironmentResponse]
+    ) -> List[StepInfo]:
+        step_infos = []
+        timer_nodes = []
+        for step in env_steps:
+            payload: StepResponse = step.payload
+            env_worker = self.env_workers[step.worker_id]
+            new_step = StepInfo(
+                env_worker.previous_step.current_all_brain_info,
+                payload.all_brain_info,
+                env_worker.previous_all_action_info,
+            )
+            step_infos.append(new_step)
+            env_worker.previous_step = new_step
+
+            if payload.timer_root:
+                timer_nodes.append(payload.timer_root)
+
+        if timer_nodes:
+            with hierarchical_timer("workers") as main_timer_node:
+                for worker_timer_node in timer_nodes:
+                    main_timer_node.merge(
+                        worker_timer_node, root_name="worker_root", is_parallel=True
+                    )
+
+        return step_infos
 
     @timed
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:

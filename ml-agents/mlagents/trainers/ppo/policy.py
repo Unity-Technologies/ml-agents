@@ -1,5 +1,7 @@
 import logging
 import numpy as np
+from typing import Any, Dict
+import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
@@ -8,6 +10,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -41,6 +44,7 @@ class PPOPolicy(TFPolicy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
+                vis_encode_type=trainer_params["vis_encode_type"],
             )
             self.model.create_ppo_optimizer()
 
@@ -49,6 +53,19 @@ class PPOPolicy(TFPolicy):
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
                 )
+
+            # Create pretrainer if needed
+            if "pretraining" in trainer_params:
+                BCModule.check_config(trainer_params["pretraining"])
+                self.bc_module = BCModule(
+                    self,
+                    policy_learning_rate=trainer_params["learning_rate"],
+                    default_batch_size=trainer_params["batch_size"],
+                    default_num_epoch=trainer_params["num_epoch"],
+                    **trainer_params["pretraining"],
+                )
+            else:
+                self.bc_module = None
 
         if load:
             self._load_graph()
@@ -176,15 +193,24 @@ class PPOPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
-    def get_value_estimates(self, brain_info, idx):
+    def get_value_estimates(
+        self, brain_info: BrainInfo, idx: int, done: bool
+    ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
+        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """
-        feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
+        if done:
+            return {k: 0.0 for k in self.model.value_heads.keys()}
+
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.model.batch_size: 1,
+            self.model.sequence_length: 1,
+        }
         for i in range(len(brain_info.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [
                 brain_info.visual_observations[i][idx]
@@ -200,7 +226,8 @@ class PPOPolicy(TFPolicy):
                 idx
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
-        return value_estimates
+
+        return {k: float(v) for k, v in value_estimates.items()}
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """

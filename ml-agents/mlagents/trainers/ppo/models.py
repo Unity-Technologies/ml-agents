@@ -22,6 +22,7 @@ class PPOModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
+        vis_encode_type="default",
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -36,8 +37,8 @@ class PPOModel(LearningModel):
         :param use_recurrent: Whether to use an LSTM layer in the network.
         :param num_layers Number of hidden layers between encoded input and policy & value layers
         :param m_size: Size of brain memory.
-        :param seed: Seed to use for initialization of model. 
-        :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used. 
+        :param seed: Seed to use for initialization of model.
+        :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
         :return: a sub-class of PPOAgent tailored to the environment.
         """
         LearningModel.__init__(
@@ -46,10 +47,10 @@ class PPOModel(LearningModel):
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
-            self.create_cc_actor_critic(h_size, num_layers)
+            self.create_cc_actor_critic(h_size, num_layers, vis_encode_type)
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
-            self.create_dc_actor_critic(h_size, num_layers)
+            self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
         self.create_losses(
             self.log_probs,
             self.old_log_probs,

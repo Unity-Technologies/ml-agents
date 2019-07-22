@@ -10,6 +10,7 @@ import os
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.demo_loader import make_demo_buffer
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
@@ -34,6 +35,7 @@ def dummy_config():
         sequence_length: 64
         summary_freq: 1000
         use_recurrent: false
+        vis_encode_type: default
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
@@ -46,8 +48,27 @@ def dummy_config():
 
 
 @pytest.fixture
+def gail_dummy_config():
+    return {
+        "gail": {
+            "strength": 0.1,
+            "gamma": 0.9,
+            "encoding_size": 128,
+            "demo_path": os.path.dirname(os.path.abspath(__file__)) + "/test.demo",
+        }
+    }
+
+
+@pytest.fixture
 def curiosity_dummy_config():
     return {"curiosity": {"strength": 0.1, "gamma": 0.9, "encoding_size": 128}}
+
+
+VECTOR_ACTION_SPACE = [2]
+VECTOR_OBS_SPACE = 8
+DISCRETE_ACTION_SPACE = [2]
+BUFFER_INIT_SAMPLES = 20
+NUM_AGENTS = 12
 
 
 def create_ppo_policy_mock(
@@ -57,26 +78,34 @@ def create_ppo_policy_mock(
     if not use_visual:
         mock_brain = mb.create_mock_brainparams(
             vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=[2],
-            vector_observation_space_size=8,
+            vector_action_space_size=DISCRETE_ACTION_SPACE
+            if use_discrete
+            else VECTOR_ACTION_SPACE,
+            vector_observation_space_size=VECTOR_OBS_SPACE,
         )
         mock_braininfo = mb.create_mock_braininfo(
-            num_agents=12,
-            num_vector_observations=8,
-            num_vector_acts=2,
+            num_agents=NUM_AGENTS,
+            num_vector_observations=VECTOR_OBS_SPACE,
+            num_vector_acts=sum(
+                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
+            ),
             discrete=use_discrete,
         )
     else:
         mock_brain = mb.create_mock_brainparams(
             vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=[2],
+            vector_action_space_size=DISCRETE_ACTION_SPACE
+            if use_discrete
+            else VECTOR_ACTION_SPACE,
             vector_observation_space_size=0,
             number_visual_observations=1,
         )
         mock_braininfo = mb.create_mock_braininfo(
-            num_agents=12,
+            num_agents=NUM_AGENTS,
             num_vis_observations=1,
-            num_vector_acts=2,
+            num_vector_acts=sum(
+                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
+            ),
             discrete=use_discrete,
         )
     mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
@@ -92,64 +121,106 @@ def create_ppo_policy_mock(
     return env, policy
 
 
+def reward_signal_eval(env, policy, reward_signal_name):
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    next_brain_info = env.step()[env.brain_names[0]]
+    # Test evaluate
+    rsig_result = policy.reward_signals[reward_signal_name].evaluate(
+        brain_info, next_brain_info
+    )
+    assert rsig_result.scaled_reward.shape == (NUM_AGENTS,)
+    assert rsig_result.unscaled_reward.shape == (NUM_AGENTS,)
+
+
+def reward_signal_update(env, policy, reward_signal_name):
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    out = policy.reward_signals[reward_signal_name].update(buffer.update_buffer, 2)
+    assert type(out) is dict
+
+
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_cc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
+def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, False, False
+    )
+    reward_signal_eval(env, policy, "gail")
+    reward_signal_update(env, policy, "gail")
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_dc(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, True, False
+    )
+    reward_signal_eval(env, policy, "gail")
+    reward_signal_update(env, policy, "gail")
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_visual(mock_env, dummy_config, gail_dummy_config):
+    gail_dummy_config["gail"]["demo_path"] = (
+        os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
+    )
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, False, True, True
+    )
+    reward_signal_eval(env, policy, "gail")
+    reward_signal_update(env, policy, "gail")
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_gail_rnn(mock_env, dummy_config, gail_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, gail_dummy_config, True, False, False
+    )
+    reward_signal_eval(env, policy, "gail")
+    reward_signal_update(env, policy, "gail")
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_curiosity_cc(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, False, False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
-        brain_info, next_brain_info
-    )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    reward_signal_eval(env, policy, "curiosity")
+    reward_signal_update(env, policy, "curiosity")
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_dc_evaluate(mock_env, dummy_config, curiosity_dummy_config):
+def test_curiosity_dc(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, True, False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
-        brain_info, next_brain_info
-    )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    reward_signal_eval(env, policy, "curiosity")
+    reward_signal_update(env, policy, "curiosity")
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_visual_evaluate(mock_env, dummy_config, curiosity_dummy_config):
+def test_curiosity_visual(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, False, False, True
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
-        brain_info, next_brain_info
-    )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    reward_signal_eval(env, policy, "curiosity")
+    reward_signal_update(env, policy, "curiosity")
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_rnn_evaluate(mock_env, dummy_config, curiosity_dummy_config):
+def test_curiosity_rnn(mock_env, dummy_config, curiosity_dummy_config):
     env, policy = create_ppo_policy_mock(
         mock_env, dummy_config, curiosity_dummy_config, True, False, False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
-    scaled_reward, unscaled_reward = policy.reward_signals["curiosity"].evaluate(
-        brain_info, next_brain_info
+    reward_signal_eval(env, policy, "curiosity")
+    reward_signal_update(env, policy, "curiosity")
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_extrinsic(mock_env, dummy_config, curiosity_dummy_config):
+    env, policy = create_ppo_policy_mock(
+        mock_env, dummy_config, curiosity_dummy_config, False, False, False
     )
-    assert scaled_reward.shape == (12,)
-    assert unscaled_reward.shape == (12,)
+    reward_signal_eval(env, policy, "extrinsic")
+    reward_signal_update(env, policy, "extrinsic")
 
 
 if __name__ == "__main__":
