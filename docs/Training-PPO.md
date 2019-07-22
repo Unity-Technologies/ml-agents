@@ -166,6 +166,16 @@ variables, this should be larger.
 
 Typical Range: `32` - `512`
 
+### (Optional) Visual Encoder Type
+
+`vis_encode_type` correspond to the encoder type for encoding visual observations.
+Valid options include:
+* `default` (default): a simple encoder consists of two CNN layer
+* `nature_cnn`: Mnih's CNN implementation (https://www.nature.com/articles/nature14236)
+* `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561)
+
+Options: `default`, `resnet`, `nature_cnn`
+
 ## (Optional) Recurrent Neural Network Hyperparameters
 
 The below hyperparameters are only used when `use_recurrent` is set to true.
