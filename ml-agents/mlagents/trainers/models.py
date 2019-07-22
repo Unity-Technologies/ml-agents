@@ -435,7 +435,11 @@ class LearningModel(object):
         )
 
     def create_observation_streams(
-        self, num_streams: int, h_size: int, num_layers: int, vis_encode_type: EncoderType=EncoderType.DEFAUL
+        self,
+        num_streams: int,
+        h_size: int,
+        num_layers: int,
+        vis_encode_type: EncoderType = EncoderType.DEFAUL,
     ) -> tf.Tensor:
         """
         Creates encoding stream for observations.
@@ -558,7 +562,9 @@ class LearningModel(object):
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
-    def create_cc_actor_critic(self, h_size: int, num_layers: int, vis_encode_type: EncoderType):
+    def create_cc_actor_critic(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ):
         """
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
@@ -645,7 +651,9 @@ class LearningModel(object):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_actor_critic(self, h_size: int, num_layers: int, vis_encode_type: EncoderType):
+    def create_dc_actor_critic(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ):
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
