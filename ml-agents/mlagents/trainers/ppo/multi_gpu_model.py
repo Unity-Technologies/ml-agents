@@ -18,7 +18,7 @@ class PPOMultiGPUModel:
         self.towers = []
         for device in devices:
             with tf.device(device):
-                with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE) as scope:
+                with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
                     self.towers.append(PPOModel(*args, **kwargs))
 
         self.value_loss = tf.reduce_mean(tf.stack([t.value_loss for t in self.towers]))
