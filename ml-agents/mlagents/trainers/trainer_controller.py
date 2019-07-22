@@ -14,7 +14,6 @@ from time import time
 from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
@@ -92,21 +91,19 @@ class TrainerController(object):
                 brain_names_to_measure_vals[brain_name] = measure_val
         return brain_names_to_measure_vals
 
-    def _save_model(self, steps=0):
+    def _save_model(self):
         """
         Saves current model to checkpoint folder.
-        :param steps: Current number of steps in training process.
-        :param saver: Tensorflow saver for session.
         """
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
         self.logger.info("Saved Model")
 
-    def _save_model_when_interrupted(self, steps=0):
+    def _save_model_when_interrupted(self):
         self.logger.info(
-            "Learning was interrupted. Please wait " "while the graph is generated."
+            "Learning was interrupted. Please wait while the graph is generated."
         )
-        self._save_model(steps)
+        self._save_model()
 
     def _write_training_metrics(self):
         """
@@ -287,14 +284,14 @@ class TrainerController(object):
                     global_step += 1
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
-                        self._save_model(steps=global_step)
+                        self._save_model()
                     self.write_to_tensorboard(global_step)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
-                self._save_model(steps=global_step)
+                self._save_model()
         except KeyboardInterrupt:
             if self.train_model:
-                self._save_model_when_interrupted(steps=global_step)
+                self._save_model_when_interrupted()
             pass
         env_manager.close()
         if self.train_model:
@@ -314,18 +311,15 @@ class TrainerController(object):
             lessons_incremented = self.meta_curriculum.increment_lessons(
                 self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
             )
-        else:
-            lessons_incremented = {}
-
-        # If any lessons were incremented or the environment is
-        # ready to be reset
-        if self.meta_curriculum and any(lessons_incremented.values()):
-            self._reset_env(env)
-            for brain_name, trainer in self.trainers.items():
-                trainer.end_episode()
-            for brain_name, changed in lessons_incremented.items():
-                if changed:
-                    self.trainers[brain_name].reward_buffer.clear()
+            # If any lessons were incremented or the environment is
+            # ready to be reset
+            if any(lessons_incremented.values()):
+                self._reset_env(env)
+                for brain_name, trainer in self.trainers.items():
+                    trainer.end_episode()
+                for brain_name, changed in lessons_incremented.items():
+                    if changed:
+                        self.trainers[brain_name].reward_buffer.clear()
 
         with hierarchical_timer("env_step"):
             time_start_step = time()
