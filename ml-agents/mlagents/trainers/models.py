@@ -284,7 +284,6 @@ class LearningModel(object):
         :param reuse: Whether to re-use the weights within the same scope.
         :return: List of hidden layer tensors.
         """
-        print("creating nature cnn")
         with tf.variable_scope(scope):
             conv1 = tf.layers.conv2d(
                 image_input,
@@ -340,7 +339,6 @@ class LearningModel(object):
         :param reuse: Whether to re-use the weights within the same scope.
         :return: List of hidden layer tensors.
         """
-        print("creating resnet")
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
         with tf.variable_scope(scope):
