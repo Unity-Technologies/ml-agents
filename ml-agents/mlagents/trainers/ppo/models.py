@@ -22,7 +22,7 @@ class PPOModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
-        vis_encode_type=EncoderType.DEFAUL,
+        vis_encode_type=EncoderType.DEFAULT,
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
