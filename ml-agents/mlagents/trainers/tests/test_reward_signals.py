@@ -116,7 +116,7 @@ def create_ppo_policy_mock(
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
-    policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
+    policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False, False)
     return env, policy
 
 

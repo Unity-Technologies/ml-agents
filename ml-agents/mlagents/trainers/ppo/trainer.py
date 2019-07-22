@@ -13,7 +13,6 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.action_info import ActionInfoOutputs
-from tensorflow.python.client import device_lib
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -74,9 +73,8 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.devices = get_devices(multi_gpu)
         self.policy = PPOPolicy(
-            seed, brain, trainer_parameters, self.is_training, load, self.devices
+            seed, brain, trainer_parameters, self.is_training, load, multi_gpu
         )
 
         stats = defaultdict(list)
@@ -473,13 +471,11 @@ class PPOTrainer(Trainer):
             for l in range(
                 len(self.training_buffer.update_buffer["actions"]) // n_sequences
             ):
-                mini_batches = []
-                n_sequences_per_device = n_sequences // len(self.devices)
-                for d in range(len(self.devices)):
-                    start = l * n_sequences + d * n_sequences_per_device
-                    end = start + n_sequences_per_device
-                    mini_batches.append(buffer.make_mini_batch(start, end))
-                run_out = self.policy.update(mini_batches, n_sequences)
+                start = l * n_sequences
+                end = (l + 1) * n_sequences
+                run_out = self.policy.update(
+                    buffer.make_mini_batch(start, end), n_sequences
+                )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
@@ -528,13 +524,3 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage
-
-
-def get_devices(multi_gpu):
-    local_device_protos = device_lib.list_local_devices()
-    devices = [x.name for x in local_device_protos if x.device_type == "GPU"]
-    if len(devices) < 1:
-        devices = ["/cpu:0"]
-    if not multi_gpu:
-        devices = devices[:1]
-    return devices
