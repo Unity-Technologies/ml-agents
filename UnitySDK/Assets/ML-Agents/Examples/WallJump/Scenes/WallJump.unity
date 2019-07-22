@@ -1212,13 +1212,13 @@ MonoBehaviour:
   resetParameters:
     resetParameters:
     - key: big_wall_min_height
-      value: 0.1
+      value: 8
     - key: small_wall_height
-      value: 1
+      value: 4
     - key: no_wall_height
       value: 0
     - key: big_wall_max_height
-      value: 2
+      value: 8
   agentRunSpeed: 1.5
   agentJumpHeight: 2.75
   goalScoredMaterial: {fileID: 2100000, guid: 54ab68247b13ffe42927e8859e0e57cc, type: 2}
