@@ -1,12 +1,13 @@
 # # Unity ML-Agents Toolkit
 import logging
+from typing import Dict, List, Deque
 import os
 import tensorflow as tf
 import numpy as np
 from collections import deque
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
-from mlagents.trainers import TrainerMetrics
+from mlagents.trainers import TrainerMetrics, Policy
 from mlagents.envs import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -37,24 +38,24 @@ class Trainer(object):
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
         :int run_id: The identifier of the current run
-        :int reward_buff_cap: 
+        :int reward_buff_cap:
         """
-        self.param_keys = []
+        self.param_keys: List[str] = []
         self.brain_name = brain.brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
         if not os.path.exists(self.summary_path):
             os.makedirs(self.summary_path)
-        self.cumulative_returns_since_policy_update = []
+        self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
-        self.stats = {}
+        self.stats: Dict[str, List] = {}
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
-        self.policy = None
+        self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
+        self.policy: Policy = None
 
     def check_param_keys(self):
         for k in self.param_keys:

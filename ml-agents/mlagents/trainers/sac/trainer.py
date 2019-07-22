@@ -4,6 +4,7 @@
 
 import logging
 from collections import deque, defaultdict
+from typing import List, Any
 
 import numpy as np
 import tensorflow as tf
@@ -12,6 +13,7 @@ from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.envs.action_info import ActionInfoOutputs
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -58,7 +60,6 @@ class SACTrainer(Trainer):
         ]
 
         self.check_param_keys()
-        self.check_demo_keys(trainer_parameters)
 
         self.step = 0
         self.train_interval = (
@@ -125,21 +126,6 @@ class SACTrainer(Trainer):
         """
         return self._reward_buffer
 
-    def check_demo_keys(self, trainer_parameters: dict):
-        """
-        Checks if the demonstration-aided parameters are set properly.
-        :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
-        """
-        if "demo_aided" in trainer_parameters:
-            if (
-                "demo_path" not in trainer_parameters["demo_aided"]
-                or "demo_strength" not in trainer_parameters["demo_aided"]
-                or "demo_steps" not in trainer_parameters["demo_aided"]
-            ):
-                raise UnityTrainerException(
-                    "demo_aided was specified but either demo_path, demo_strength, or demo_steps was not given."
-                )
-
     def increment_step_and_update_last_reward(self):
         """
         Increment the step count of the trainer and Updates the last reward
@@ -157,7 +143,7 @@ class SACTrainer(Trainer):
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = []
+        visual_observations: List[List[Any]] = []
         vector_observations = []
         text_observations = []
         memories = []
@@ -218,8 +204,8 @@ class SACTrainer(Trainer):
         self,
         curr_all_info: AllBrainInfo,
         next_all_info: AllBrainInfo,
-        take_action_outputs,
-    ):
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -304,7 +290,6 @@ class SACTrainer(Trainer):
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
                     # value is a dictionary from name of reward to value estimate of the value head
-                    value = stored_take_action_outputs["value"]
                     self.training_buffer[agent_id]["actions"].append(actions[idx])
                     self.training_buffer[agent_id]["prev_action"].append(
                         stored_info.previous_vector_actions[idx]
