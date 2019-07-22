@@ -564,7 +564,7 @@ class LearningModel(object):
 
     def create_cc_actor_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
-    ):
+    ) -> None:
         """
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
@@ -653,7 +653,7 @@ class LearningModel(object):
 
     def create_dc_actor_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
-    ):
+    ) -> None:
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
