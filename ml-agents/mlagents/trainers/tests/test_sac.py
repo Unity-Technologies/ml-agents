@@ -31,12 +31,11 @@ def dummy_config():
         sequence_length: 64
         summary_freq: 1000
         tau: 0.005
-        target_update_steps: 1
         train_interval: 1
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None
-        reward_signals: 
+        reward_signals:
             extrinsic:
                 strength: 1.0
                 gamma: 0.99
