@@ -217,7 +217,7 @@ class Buffer(dict):
             for key in self:
                 mini_batch[key] = np.array(self[key][start:end])
             return mini_batch
-        
+
         # SAC HAC
         def sample_mini_batch(self, batch_size):
             """
@@ -226,7 +226,9 @@ class Buffer(dict):
             """
             mini_batch_lists = {}
             mini_batch = Buffer.AgentBuffer()
-            idxes = [random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)]
+            idxes = [
+                random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)
+            ]
 
             for i in idxes:
                 for key in self:
@@ -237,7 +239,6 @@ class Buffer(dict):
             for key in mini_batch_lists:
                 mini_batch[key] = np.array(mini_batch_lists[key])
             return mini_batch
-
 
     def __init__(self):
         self.update_buffer = self.AgentBuffer()
@@ -261,7 +262,7 @@ class Buffer(dict):
         Resets the update buffer
         """
         self.update_buffer.reset_agent()
-    
+
     # SAC HAC
     def truncate_update_buffer(self, max_length):
         """ 
@@ -273,7 +274,9 @@ class Buffer(dict):
         current_length = len(self.update_buffer["actions"])
         if current_length > max_length:
             for _key in self.update_buffer.keys():
-                self.update_buffer[_key] = self.update_buffer[_key][current_length-max_length:]
+                self.update_buffer[_key] = self.update_buffer[_key][
+                    current_length - max_length :
+                ]
 
     def reset_local_buffers(self):
         """

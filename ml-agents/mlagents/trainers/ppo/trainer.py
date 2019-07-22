@@ -32,7 +32,9 @@ class PPOTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(brain, reward_buff_cap, trainer_parameters, training, run_id)
+        super(PPOTrainer, self).__init__(
+            brain, reward_buff_cap, trainer_parameters, training, run_id
+        )
         self.param_keys = [
             "batch_size",
             "beta",

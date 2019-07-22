@@ -32,8 +32,8 @@ class ExtrinsicRewardSignal(RewardSignal):
     def evaluate_batch(self, mini_batch):
         env_rews = mini_batch["environment_rewards"]
 
-        return self.strength*env_rews, env_rews
-        
+        return self.strength * env_rews, env_rews
+
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
     ) -> RewardSignalResult:

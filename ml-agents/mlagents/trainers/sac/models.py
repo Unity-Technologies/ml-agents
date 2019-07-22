@@ -925,4 +925,3 @@ class SACModel(LearningModel):
     def print_all_vars(self, variables):
         for _var in variables:
             print(_var)
-
