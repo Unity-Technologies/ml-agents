@@ -45,7 +45,7 @@ PushBlockLearning:
     time_horizon: 64
     num_layers: 2
 
-SmallWallJumpLearning: 
+SmallWallJumpLearning:
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -56,7 +56,7 @@ SmallWallJumpLearning:
     num_layers: 2
     normalize: false
 
-BigWallJumpLearning: 
+BigWallJumpLearning:
     max_steps: 1.0e6
     batch_size: 128
     buffer_size: 2048
@@ -104,14 +104,14 @@ PyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.99
         curiosity:
             strength: 0.02
             gamma: 0.99
             encoding_size: 256
-            
+
 VisualPyramidsLearning:
     time_horizon: 128
     batch_size: 64
@@ -122,7 +122,7 @@ VisualPyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.99
         curiosity:
@@ -148,7 +148,7 @@ VisualPyramidsLearning:
     max_steps: 5.0e5
     beta: 0.001
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.995
 
@@ -167,7 +167,7 @@ CrawlerStaticLearning:
     num_layers: 3
     hidden_units: 512
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.995
 
@@ -182,7 +182,7 @@ CrawlerDynamicLearning:
     num_layers: 3
     hidden_units: 512
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.995
 
@@ -197,7 +197,7 @@ WalkerLearning:
     num_layers: 3
     hidden_units: 512
     reward_signals:
-        extrinsic: 
+        extrinsic:
             strength: 1.0
             gamma: 0.995
 
@@ -207,9 +207,12 @@ ReacherLearning:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    gamma: 0.995
     max_steps: 1e6
     summary_freq: 3000
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 HallwayLearning:
     use_recurrent: true
@@ -232,7 +235,6 @@ VisualHallwayLearning:
     hidden_units: 128
     memory_size: 256
     beta: 1.0e-2
-    gamma: 0.99
     num_epoch: 3
     buffer_size: 1024
     batch_size: 64
@@ -247,7 +249,6 @@ VisualPushBlockLearning:
     hidden_units: 128
     memory_size: 256
     beta: 1.0e-2
-    gamma: 0.99
     num_epoch: 3
     buffer_size: 1024
     batch_size: 64
@@ -261,11 +262,14 @@ GridWorldLearning:
     num_layers: 1
     hidden_units: 256
     beta: 5.0e-3
-    gamma: 0.9
     buffer_size: 256
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 5
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.9
 
 BasicLearning:
     batch_size: 32
@@ -273,8 +277,11 @@ BasicLearning:
     num_layers: 1
     hidden_units: 20
     beta: 5.0e-3
-    gamma: 0.9
     buffer_size: 256
     max_steps: 5.0e5
     summary_freq: 2000
     time_horizon: 3
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.9
