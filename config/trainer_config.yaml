@@ -268,7 +268,7 @@ GridWorldLearning:
     reward_signals:
         extrinsic:
             strength: 1.0
-            gamma: 0.995
+            gamma: 0.9
 
 BasicLearning:
     batch_size: 32
