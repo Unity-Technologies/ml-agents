@@ -7,7 +7,8 @@ import numpy as np
 from collections import deque
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
-from mlagents.trainers import TrainerMetrics, Policy
+from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.tf_policy import Policy
 from mlagents.envs import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
