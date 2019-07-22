@@ -428,16 +428,13 @@ class LearningModel(object):
             output,
             tf.concat([normalized_probs[k] for k in range(len(action_size))], axis=1),
             tf.concat(
-                [
-                    tf.log(normalized_probs[k] + 1.0e-7)
-                    for k in range(len(action_size))
-                ],
+                [tf.log(normalized_probs[k] + 1.0e-7) for k in range(len(action_size))],
                 axis=1,
             ),
         )
 
     def create_observation_streams(
-        self, num_streams, h_size, num_layers, vis_encode_type="default"
+        self, num_streams, h_size, num_layers, stream_scopes, vis_encode_type="default"
     ):
         """
         Creates encoding stream for observations.

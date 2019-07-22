@@ -203,7 +203,7 @@ class TrainerController(object):
                         brain_name
                     ].min_lesson_length
                     if self.meta_curriculum
-                    else 0,
+                    else 1,
                     trainer_parameters_dict[brain_name],
                     self.train_model,
                     self.load_model,

@@ -1,14 +1,25 @@
 import unittest.mock as mock
 import pytest
+import tempfile
+import yaml
+import math
 
 import numpy as np
 import tensorflow as tf
-import yaml
 
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
+from mlagents.trainers.tests.test_environments.test_simple import (
+    Simple1DEnvironment,
+    SimpleEnvManager,
+)
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
+from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
+from mlagents.envs.communicator_objects import AgentInfoProto
+from mlagents.envs.simple_env_manager import SimpleEnvManager
 
 
 @pytest.fixture
@@ -16,25 +27,26 @@ def dummy_config():
     return yaml.load(
         """
         trainer: sac
-        batch_size: 256
+        batch_size: 32
         buffer_size: 10240
         buffer_init_steps: 0
-        hidden_units: 128
-        init_entcoef: 1.0
+        hidden_units: 32
+        init_entcoef: 0.1
         learning_rate: 3.0e-4
-        max_steps: 5.0e4
+        max_steps: 1024
         memory_size: 256
         normalize: false
-        num_epoch: 1
-        num_layers: 2
+        updates_per_train: 1
+        train_interval: 1
+        num_layers: 1
         time_horizon: 64
         sequence_length: 64
         summary_freq: 1000
         tau: 0.005
-        train_interval: 1
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None
+        vis_encode_type: default
         reward_signals:
             extrinsic:
                 strength: 1.0
@@ -240,6 +252,35 @@ def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
             }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
+
+
+def test_sac_simple_env(dummy_config):
+    # Create controller and begin training.
+    with tempfile.TemporaryDirectory() as dir:
+        run_id = "id"
+        save_freq = 99999
+        tc = TrainerController(
+            dir,
+            dir,
+            run_id,
+            save_freq,
+            meta_curriculum=None,
+            load=False,
+            train=True,
+            keep_checkpoints=1,
+            lesson=None,
+            training_seed=1337,
+            fast_simulation=True,
+        )
+
+        # Begin training
+        env = Simple1DEnvironment()
+        env_manager = SimpleEnvManager(env)
+        tc.start_learning(env_manager, {"default": dummy_config})
+
+        for _, mean_reward in tc._get_measure_vals().items():
+            assert not math.isnan(mean_reward)
+            assert mean_reward > 0.9
 
 
 if __name__ == "__main__":

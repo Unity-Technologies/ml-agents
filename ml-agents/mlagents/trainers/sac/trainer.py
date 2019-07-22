@@ -54,6 +54,7 @@ class SACTrainer(Trainer):
             "memory_size",
             "model_path",
             "reward_signals",
+            "vis_encode_type",
         ]
 
         self.check_param_keys()
@@ -126,7 +127,7 @@ class SACTrainer(Trainer):
 
     def check_demo_keys(self, trainer_parameters: dict):
         """
-        Checks if the demonstration-aided parameters are set properly. 
+        Checks if the demonstration-aided parameters are set properly.
         :param trainer_parameters: The hyperparameter dictionary passed to the trainer.
         """
         if "demo_aided" in trainer_parameters:
@@ -516,9 +517,9 @@ class SACTrainer(Trainer):
 
     def update_reward_signals(self) -> None:
         """
-        Iterate through the reward signals and update them. Unlike in PPO, 
+        Iterate through the reward signals and update them. Unlike in PPO,
         do it separate from the policy so that it can be done at a different
-        interval. 
+        interval.
         """
         buffer = self.training_buffer.update_buffer
         num_updates = self.reward_signal_updates_per_train

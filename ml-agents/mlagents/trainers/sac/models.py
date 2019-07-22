@@ -24,6 +24,7 @@ class SACNetwork(LearningModel):
         stream_names=None,
         seed=0,
         is_target=False,
+        vis_encode_type="default",
     ):
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
@@ -46,7 +47,11 @@ class SACNetwork(LearningModel):
                 self.value_memory_in = self.memory_in
             with tf.variable_scope("target_network"):
                 hidden_streams = self.create_observation_streams(
-                    1, self.h_size, 0, ["critic/value/"]
+                    1,
+                    self.h_size,
+                    0,
+                    ["critic/value/"],
+                    vis_encode_type=vis_encode_type,
                 )
             if brain.vector_action_space_type == "continuous":
                 self.create_cc_critic(
@@ -362,7 +367,7 @@ class SACNetwork(LearningModel):
 
             # self.entropy = self.all_log_probs
             # This is total entropy over all branches
-            self.entropy = -1*tf.reduce_sum(self.all_log_probs, axis=1)
+            self.entropy = -1 * tf.reduce_sum(self.all_log_probs, axis=1)
 
         self.policy_vars = self.get_vars(scope)
 
@@ -419,7 +424,7 @@ class SACNetwork(LearningModel):
         :param h_size: size of hidden layers for Q network
         :param scope: TF scope for Q network.
         :param reuse: Whether or not to reuse variables. Useful for creating Q of policy.
-        :param num_outputs: Number of outputs of each Q function. If discrete, equal to number of actions. 
+        :param num_outputs: Number of outputs of each Q function. If discrete, equal to number of actions.
         """
         with tf.variable_scope(scope + "/" + "q1_encoding", reuse=reuse):
             q1_hidden = self.create_vector_observation_encoder(
@@ -479,6 +484,7 @@ class SACModel(LearningModel):
         stream_names=None,
         tau=0.005,
         gammas=None,
+        vis_encode_type="default",
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -492,7 +498,7 @@ class SACModel(LearningModel):
         :param normalize: Whether to normalize vector observation input.
         :param use_recurrent: Whether to use an LSTM layer in the network.
         :param num_layers: Number of hidden layers between encoded input and policy & value layers
-        :param tau: Strength of soft-Q update. 
+        :param tau: Strength of soft-Q update.
         :param m_size: Size of brain memory.
         """
         self.tau = tau
@@ -520,6 +526,7 @@ class SACModel(LearningModel):
             seed=seed,
             stream_names=stream_names,
             is_target=False,
+            vis_encode_type=vis_encode_type,
         )
         self.target_network = SACNetwork(
             brain=brain,
@@ -531,6 +538,7 @@ class SACModel(LearningModel):
             seed=seed,
             stream_names=stream_names,
             is_target=True,
+            vis_encode_type=vis_encode_type,
         )
         self.create_inputs()
         self.create_losses(
@@ -569,8 +577,8 @@ class SACModel(LearningModel):
         return last_reward, new_reward, update_reward
 
     def create_inputs(self):
-        """ 
-        Assign the higher-level SACModel's inputs and outputs to those of its policy or 
+        """
+        Assign the higher-level SACModel's inputs and outputs to those of its policy or
         target network.
         """
         self.vector_in = self.policy_network.vector_in
@@ -756,7 +764,8 @@ class SACModel(LearningModel):
             self.entropy_loss = -tf.reduce_mean(
                 tf.to_float(self.mask)
                 * tf.reduce_mean(
-                    self.log_ent_coef * tf.squeeze(tf.stop_gradient(broken_ent_sums), axis=2),
+                    self.log_ent_coef
+                    * tf.squeeze(tf.stop_gradient(broken_ent_sums), axis=2),
                     axis=1,
                 )
             )

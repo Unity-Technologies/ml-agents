@@ -46,6 +46,7 @@ class SACPolicy(TFPolicy):
                 stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
                 gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
+                vis_encode_type=trainer_params["vis_encode_type"],
             )
             self.model.create_sac_optimizers()
 
