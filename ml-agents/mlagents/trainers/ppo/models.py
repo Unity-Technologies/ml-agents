@@ -2,7 +2,7 @@ import logging
 import numpy as np
 
 import tensorflow as tf
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import LearningModel, EncoderType
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -22,7 +22,7 @@ class PPOModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
-        vis_encode_type="default",
+        vis_encode_type=EncoderType.DEFAUL,
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
