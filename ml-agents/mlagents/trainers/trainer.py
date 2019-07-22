@@ -180,7 +180,9 @@ class Trainer(object):
         """
         self.trainer_metrics.write_training_metrics()
 
-    def write_summary(self, global_step, delta_train_start, lesson_num=0):
+    def write_summary(
+        self, global_step: int, delta_train_start: float, lesson_num: int = 0
+    ) -> None:
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
