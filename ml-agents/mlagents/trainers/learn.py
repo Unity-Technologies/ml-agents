@@ -90,7 +90,7 @@ def run_training(
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
-    sampler_manager, resampling_interval = create_sampler_manager(sampler_file_path, env.reset_parameters())
+    sampler_manager, resampling_interval = create_sampler_manager(sampler_file_path, env.reset_parameters)
 
     # Create controller and begin training.
     tc = TrainerController(
@@ -134,8 +134,7 @@ def create_sampler_manager(sampler_file_path, env_reset_params):
                 " Please specify it with the 'resampling-interval' key in the sampler config file."
             )
     sampler_manager = SamplerManager(sampler_config)
-    filtered_sampler_manager = filter_reset_parameter_samplers(env_reset_params, sampler_manager)
-    return filtered_sampler_manager, resample_interval
+    return sampler_manager, resample_interval
 
 def try_create_meta_curriculum(
     curriculum_folder: Optional[str], env: SubprocessEnvManager
@@ -157,11 +156,6 @@ def try_create_meta_curriculum(
                         "whose curriculum it defines."
                     )
         return meta_curriculum
-
-def filter_reset_parameter_samplers(env_reset_parameters, sampler_manager):
-    env_reset_params = set(env_reset_parameters.keys()).intersection(set(sampler_manager.keys()))
-    filtered_sampler_manager = { key:sampler_manager[key] for key in env_reset_params}
-    return filtered_sampler_manager
 
 def prepare_for_docker_run(docker_target_name, env_path):
     for f in glob.glob(
