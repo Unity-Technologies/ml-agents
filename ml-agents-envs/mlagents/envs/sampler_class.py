@@ -94,7 +94,7 @@ class SamplerFactory:
         sampler_cls = SamplerFactory.NAME_TO_CLASS[name]
         try:
             return sampler_cls(**params)
-        except:
+        except TypeError:
             raise SamplerException(
                 "The sampler class associated to the " + name + " key in the factory "
                 "was not provided the required arguments. Please ensure that the sampler "
