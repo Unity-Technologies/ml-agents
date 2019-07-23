@@ -156,8 +156,8 @@ CrawlerStaticLearning:
     max_steps: 1e6
     summary_freq: 3000
     init_entcoef: 1.0
-    num_layers: 2
-    hidden_units: 256
+    num_layers: 3
+    hidden_units: 512
 
 CrawlerDynamicLearning:
     normalize: true
@@ -167,6 +167,7 @@ CrawlerDynamicLearning:
     max_steps: 1e5
     summary_freq: 3000
     train_interval: 3
+    num_layers: 3
     hidden_units: 512
 
 WalkerLearning:
