@@ -20,7 +20,7 @@ class UniformSampler(Sampler):
 
     def __init__(
         self, min_value: Union[float, int], max_value: Union[float, int], **kwargs
-    ):
+    ) -> None:
         self.min_value = min_value
         self.max_value = max_value
 
@@ -31,12 +31,12 @@ class UniformSampler(Sampler):
 class MultiRangeUniformSampler(Sampler):
     """
     Draws a single sample uniformly from the intervals provided. The sampler
-    first picks an interval based on a weighted selection, with the weights 
+    first picks an interval based on a weighted selection, with the weights
     assigned to an interval based on its range. After picking the range,
     it proceeds to pick a value uniformly in that range.
     """
 
-    def __init__(self, intervals: List[Union[float, int]], **kwargs):
+    def __init__(self, intervals: List[Union[float, int]], **kwargs) -> None:
         self.intervals = intervals
         # Measure the length of the intervals
         interval_lengths = [abs(x[1] - x[0]) for x in self.intervals]
@@ -57,7 +57,9 @@ class GaussianSampler(Sampler):
     This sampler is characterized by the mean and the standard deviation.
     """
 
-    def __init__(self, mean: Union[float, int], st_dev: Union[float, int], **kwargs):
+    def __init__(
+        self, mean: Union[float, int], st_dev: Union[float, int], **kwargs
+    ) -> None:
         self.mean = mean
         self.st_dev = st_dev
 
@@ -78,7 +80,7 @@ class SamplerFactory:
     }
 
     @staticmethod
-    def register_sampler(name: str, sampler_cls: Sampler):
+    def register_sampler(name: str, sampler_cls: Sampler) -> None:
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
@@ -101,7 +103,7 @@ class SamplerFactory:
 
 
 class SamplerManager:
-    def __init__(self, reset_param_dict):
+    def __init__(self, reset_param_dict) -> None:
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers = OrderedDict()
