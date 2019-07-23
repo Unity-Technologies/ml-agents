@@ -12,9 +12,9 @@ ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
 
 class EncoderType(Enum):
-    RESNET = "resnet"
+    SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
-    DEFAULT = "default"
+    RESNET = "resnet"
 
 
 class LearningModel(object):
@@ -437,7 +437,7 @@ class LearningModel(object):
         num_streams: int,
         h_size: int,
         num_layers: int,
-        vis_encode_type: EncoderType = EncoderType.DEFAULT,
+        vis_encode_type: EncoderType = EncoderType.SIMPLE,
     ) -> tf.Tensor:
         """
         Creates encoding stream for observations.

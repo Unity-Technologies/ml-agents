@@ -46,7 +46,7 @@ class PPOPolicy(TFPolicy):
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
                 vis_encode_type=EncoderType(
-                    trainer_params.get("vis_encode_type", "default")
+                    trainer_params.get("vis_encode_type", "simple")
                 ),
             )
             self.model.create_ppo_optimizer()
