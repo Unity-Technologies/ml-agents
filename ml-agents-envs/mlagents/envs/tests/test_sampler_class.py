@@ -49,7 +49,7 @@ def test_sampler_config_1():
 
 
 def sampler_config_2():
-    return {"angle": {"sampler-type": "gaussian", "mean": 0, "var": 1}}
+    return {"angle": {"sampler-type": "gaussian", "mean": 0, "st_dev": 1}}
 
 
 def test_sampler_config_2():
@@ -62,7 +62,7 @@ def test_sampler_config_2():
 
     # Check angle gaussian sampler
     assert sampler.samplers["angle"].mean == config["angle"]["mean"]
-    assert sampler.samplers["angle"].var == config["angle"]["var"]
+    assert sampler.samplers["angle"].st_dev == config["angle"]["st_dev"]
 
 
 def test_empty_samplers():
