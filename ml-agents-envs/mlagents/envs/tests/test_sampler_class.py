@@ -58,8 +58,6 @@ def test_sampler_config_2():
     assert sampler.is_empty() is False
     assert isinstance(sampler.samplers["angle"], GaussianSampler)
 
-    cur_sample = sampler.sample_all()
-
     # Check angle gaussian sampler
     assert sampler.samplers["angle"].mean == config["angle"]["mean"]
     assert sampler.samplers["angle"].st_dev == config["angle"]["st_dev"]

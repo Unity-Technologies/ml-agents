@@ -15,7 +15,6 @@ from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers import Trainer
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
@@ -55,7 +54,7 @@ class TrainerController(object):
         :param keep_checkpoints: How many model checkpoints to keep.
         :param lesson: Start learning from this lesson.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
-        :param sampler_manager: SamplerManager object which stores information about samplers to use for the reset parameters.
+        :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
 

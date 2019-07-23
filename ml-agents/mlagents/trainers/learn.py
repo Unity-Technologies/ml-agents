@@ -277,7 +277,7 @@ def main():
     Options:
       --env=<file>                Name of the Unity executable [default: None].
       --curriculum=<directory>    Curriculum json directory for environment [default: None].
-      --sampler=<file>       Reset parameter yaml directory for sampling of environment reset parameters [default: None].
+      --sampler=<file>            Reset parameter yaml file for environment [default: None].
       --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
       --lesson=<n>                Start learning from this lesson [default: 0].
       --load                      Whether to load the model or randomly initialize [default: False].
@@ -291,7 +291,7 @@ def main():
       --num-envs=<n>              Number of parallel environments to use for training [default: 1]
       --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
       --no-graphics               Whether to run the environment in no-graphics mode [default: False].
-      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].       
+      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
     """
 
     options = docopt(_USAGE)
