@@ -564,11 +564,11 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                     )
 
-            outputs = self.communicator.exchange(
-                self._generate_step_input(
-                    vector_action, memory, text_action, value, custom_action
-                )
+            step_input = self._generate_step_input(
+                vector_action, memory, text_action, value, custom_action
             )
+            with hierarchical_timer("communicator.exchange"):
+                outputs = self.communicator.exchange(step_input)
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
