@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23740233018741012}
   - component: {fileID: 65156783716742152}
   - component: {fileID: 114713238261374398}
+  - component: {fileID: 54253834172029892}
   m_Layer: 0
   m_Name: BadBanana
   m_TagString: badBanana
@@ -84,6 +85,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1724820272436810}
   m_Mesh: {fileID: 4300000, guid: 45b1438113af8cd48953735140778276, type: 3}
+--- !u!54 &54253834172029892
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1724820272436810}
+  serializedVersion: 2
+  m_Mass: 5
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!65 &65156783716742152
 BoxCollider:
   m_ObjectHideFlags: 1
