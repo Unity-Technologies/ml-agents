@@ -361,7 +361,7 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
     env_mock.close.assert_called_once()
-    tc._save_model.assert_called_once_with(steps=6)
+    tc._save_model.assert_called_once()
 
 
 def test_start_learning_updates_meta_curriculum_lesson_number():
