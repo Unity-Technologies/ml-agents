@@ -141,13 +141,13 @@ public class HallwayAgent : Agent
         int goalPos = Random.Range(0, 2);
         if (goalPos == 0)
         {
-            orangeGoal.transform.position = new Vector3(7f, 0.5f, 9f) + area.transform.position;
-            redGoal.transform.position = new Vector3(-7f, 0.5f, 9f) + area.transform.position;
+            orangeGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            redGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
         else
         {
-            redGoal.transform.position = new Vector3(7f, 0.5f, 9f) + area.transform.position;
-            orangeGoal.transform.position = new Vector3(-7f, 0.5f, 9f) + area.transform.position;
+            redGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            orangeGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
     }
 }
