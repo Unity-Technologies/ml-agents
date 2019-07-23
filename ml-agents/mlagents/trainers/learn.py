@@ -261,7 +261,7 @@ def main():
 
         """
         )
-    except:
+    except Exception:
         print("\n\n\tUnity Technologies\n")
 
     _USAGE = """

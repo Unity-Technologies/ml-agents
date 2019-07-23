@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
-from collections import deque, defaultdict
+from collections import defaultdict
 from typing import List, Any
 
 import numpy as np
@@ -32,7 +32,7 @@ class PPOTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
         self.param_keys = [
             "batch_size",
             "beta",
@@ -53,6 +53,7 @@ class PPOTrainer(Trainer):
             "memory_size",
             "model_path",
             "reward_signals",
+            "vis_encode_type",
         ]
         self.check_param_keys()
 
@@ -78,8 +79,6 @@ class PPOTrainer(Trainer):
         self.stats = stats
 
         self.training_buffer = Buffer()
-
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
 
     def __str__(self):
@@ -111,16 +110,6 @@ class PPOTrainer(Trainer):
         :return: the step count of the trainer
         """
         return self.step
-
-    @property
-    def reward_buffer(self):
-        """
-        Returns the reward buffer. The reward buffer contains the cumulative
-        rewards of the most recent episodes completed by agents using this
-        trainer.
-        :return: the reward buffer.
-        """
-        return self._reward_buffer
 
     def increment_step(self, n_steps: int) -> None:
         """
@@ -449,7 +438,7 @@ class PPOTrainer(Trainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, forward_total, inverse_total = [], [], [], []
+        value_total, policy_total = [], []
         advantages = self.training_buffer.update_buffer["advantages"].get_batch()
         self.training_buffer.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)

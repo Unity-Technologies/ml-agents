@@ -195,9 +195,9 @@ def assert_bc_trainer_constructed(
 ):
     external_brains = {"testbrain": expected_brain_params}
 
-    def mock_constructor(self, brain, trainer_params, training, load, seed, run_id):
+    def mock_constructor(self, brain, trainer_parameters, training, load, seed, run_id):
         assert brain == expected_brain_params
-        assert trainer_params == expected_config
+        assert trainer_parameters == expected_config
         assert training == tc.train_model
         assert load == tc.load_model
         assert seed == tc.seed
@@ -210,7 +210,7 @@ def assert_bc_trainer_constructed(
 
 
 def assert_ppo_trainer_constructed(
-    input_config, tc, expected_brain_params, expected_config, expected_reward_buff_cap=0
+    input_config, tc, expected_brain_params, expected_config, expected_reward_buff_cap=1
 ):
     external_brains = {"testbrain": expected_brain_params}
 
@@ -378,7 +378,7 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
     env_mock.close.assert_called_once()
-    tc._save_model.assert_called_once_with(steps=6)
+    tc._save_model.assert_called_once()
 
 
 def test_start_learning_updates_meta_curriculum_lesson_number():

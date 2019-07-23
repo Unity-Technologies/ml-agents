@@ -44,6 +44,7 @@ class PPOPolicy(TFPolicy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
+                vis_encode_type=trainer_params["vis_encode_type"],
             )
             self.model.create_ppo_optimizer()
 
@@ -199,12 +200,10 @@ class PPOPolicy(TFPolicy):
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
         :param idx: Index in BrainInfo of agent.
-        :param done: Whether or not this is the last element of the episode, in which case we want the value estimate to be 0. 
+        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """
-        if done:
-            return {k: 0.0 for k in self.model.value_heads.keys()}
 
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.batch_size: 1,
@@ -226,7 +225,15 @@ class PPOPolicy(TFPolicy):
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
-        return {k: float(v) for k, v in value_estimates.items()}
+        value_estimates = {k: float(v) for k, v in value_estimates.items()}
+
+        # If we're done, reassign all of the value estimates that need terminal states.
+        if done:
+            for k in value_estimates:
+                if self.reward_signals[k].use_terminal_states:
+                    value_estimates[k] = 0.0
+
+        return value_estimates
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """

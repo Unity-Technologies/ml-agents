@@ -38,9 +38,9 @@ class Buffer(dict):
 
             def append(self, element, padding_value=0):
                 """
-                Adds an element to this list. Also lets you change the padding 
+                Adds an element to this list. Also lets you change the padding
                 type, so that it can be set on append (e.g. action_masks should
-                be padded with 1.) 
+                be padded with 1.)
                 :param element: The element to append to the list.
                 :param padding_value: The value used to pad when get_batch is called.
                 """
@@ -178,13 +178,13 @@ class Buffer(dict):
             """
             if len(key_list) < 2:
                 return True
-            l = None
+            length = None
             for key in key_list:
                 if key not in self.keys():
                     return False
-                if (l is not None) and (l != len(self[key])):
+                if (length is not None) and (length != len(self[key])):
                     return False
-                l = len(self[key])
+                length = len(self[key])
             return True
 
         def shuffle(self, key_list=None):
