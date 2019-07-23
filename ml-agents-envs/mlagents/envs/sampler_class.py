@@ -14,8 +14,10 @@ class Sampler(ABC):
 
 
 class UniformSampler(Sampler):
-    # kwargs acts as a sink for extra unneeded args
-    def __init__(self, min_value, max_value, **kwargs):
+    """
+    Uniformly draws a single sample in the range [min_value, max_value).
+    """
+    def __init__(self, min_value: Union[float, int], max_value: Union[float, int], **kwargs):
         self.min_value = min_value
         self.max_value = max_value
 
@@ -24,11 +26,16 @@ class UniformSampler(Sampler):
 
 
 class MultiRangeUniformSampler(Sampler):
-    def __init__(self, intervals, **kwargs):
+    """
+    Draws a single sample uniformly from the intervals provided. The sampler
+    first picks an interval based on a weighted selection, with the weights 
+    assigned to an interval based on its range. After picking the range,
+    it proceeds to pick a value uniformly in that range.
+    """
+    def __init__(self, intervals: List[Union[float, int]], **kwargs):
         self.intervals = intervals
         # Measure the length of the intervals
         interval_lengths = [abs(x[1] - x[0]) for x in self.intervals]
-        # Cumulative size of the intervals
         cum_interval_length = sum(interval_lengths)
         # Assign weights to an interval proportionate to the interval size
         self.interval_weights = [x / cum_interval_length for x in interval_lengths]
@@ -41,16 +48,23 @@ class MultiRangeUniformSampler(Sampler):
 
 
 class GaussianSampler(Sampler):
-    def __init__(self, mean, var, **kwargs):
+    """
+    Draw a single sample value from a normal (gaussian) distribution.
+    This sampler is characterized by the mean and the standard deviation.
+    """
+    def __init__(self, mean: Union[float, int], st_dev: Union[float, int], **kwargs):
         self.mean = mean
-        self.var = var
+        self.st_dev = st_dev
 
     def sample_parameter(self) -> float:
-        return np.random.normal(self.mean, self.var)
+        return np.random.normal(self.mean, self.st_dev)
 
 
-# To introduce new sampling methods, just need to 'register' them to this sampler factory
 class SamplerFactory:
+    """
+    Maintain a directory of all samplers available.
+    Add new samplers using the register_sampler method.
+    """
     NAME_TO_CLASS = {
         "uniform": UniformSampler,
         "gaussian": GaussianSampler,
@@ -58,11 +72,11 @@ class SamplerFactory:
     }
 
     @staticmethod
-    def register_sampler(name, sampler_cls):
+    def register_sampler(name: str, sampler_cls: Sampler):
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
-    def init_sampler_class(name, param_dict):
+    def init_sampler_class(name: str, params: Dict[str, Dict[str, Union[int, float]]]):
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
@@ -71,7 +85,7 @@ class SamplerFactory:
             )
         sampler_cls = SamplerFactory.NAME_TO_CLASS[name]
         try:
-            return sampler_cls(**param_dict)
+            return sampler_cls(**params)
         except:
             raise SamplerException(
                 "The sampler class associated to the " + name + " key in the factory "
@@ -81,7 +95,7 @@ class SamplerFactory:
 
 
 class SamplerManager:
-    def __init__(self, reset_param_dict):
+    def __init__(self, reset_param_dict: Dict[str, Dict[str, Union[str, int, float]]]):
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers = OrderedDict()
@@ -101,8 +115,7 @@ class SamplerManager:
 
     def is_empty(self) -> bool:
         """
-        If self.samplers is empty, then bool of it returns false, indicating that the
-        sampler manager isn't managing any samplers.
+        Check for if sampler_manager is empty.
         """
         return not bool(self.samplers)
 
