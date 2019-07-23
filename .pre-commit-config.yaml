@@ -37,3 +37,13 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
+# "Local" hooks, see https://pre-commit.com/#repository-local-hooks
+-   repo: local
+    hooks:
+    -   id: markdown-link-check
+        name: markdown-link-check
+        entry: markdown-link-check
+        language: node
+        language_version: 12.6.0
+        types: [markdown]
+        additional_dependencies: ['markdown-link-check@3.7.3']
