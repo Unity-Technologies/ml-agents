@@ -41,7 +41,7 @@ class TrainerController(object):
         training_seed: int,
         fast_simulation: bool,
         sampler_manager: SamplerManager,
-        lesson_duration: Optional[int],
+        resampling_interval: Optional[int],
     ):
         """
         :param model_path: Path to save the model.
@@ -55,7 +55,7 @@ class TrainerController(object):
         :param lesson: Start learning from this lesson.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object which stores information about samplers to use for the reset parameters.
-        :param lesson_duration: Specifies number of steps after which reset parameters are resampled.
+        :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
 
         self.model_path = model_path
@@ -76,7 +76,7 @@ class TrainerController(object):
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
-        self.lesson_duration = lesson_duration
+        self.resampling_interval = resampling_interval
 
     def _get_measure_vals(self):
         if self.meta_curriculum:
@@ -317,6 +317,8 @@ class TrainerController(object):
         self, env: BaseUnityEnvironment, lessons_incremented: Dict[str, bool]
     ) -> None:
         self._reset_env(env)
+        # Reward buffers reset takes place only for curriculum learning
+        # else no reset.
         for brain_name, trainer in self.trainers.items():
             trainer.end_episode()
         for brain_name, changed in lessons_incremented.items():
@@ -347,8 +349,8 @@ class TrainerController(object):
         generalization_reset = (
             not self.sampler_manager.is_empty()
             and (steps != 0)
-            and (self.lesson_duration)
-            and (steps % self.lesson_duration == 0)
+            and (self.resampling_interval)
+            and (steps % self.resampling_interval == 0)
         )
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)

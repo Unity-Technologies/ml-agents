@@ -80,24 +80,6 @@ def run_training(
             docker_target_name=docker_target_name
         )
 
-    sampler_config = None
-    lesson_length = None
-    if sampler_file_path is not None:
-        sampler_config = load_config(sampler_file_path)
-        if ("episode-length") in sampler_config:
-            lesson_length = sampler_config.pop("episode-length")
-            if lesson_length <= 0:
-                raise SamplerException(
-                    "Specified episode-length is negative or 0. Please provide"
-                    " a positive integer value for episode-length"
-                )
-        else:
-            raise SamplerException(
-                "Episode Length was not specified in the sampler file."
-                " Please specify it with the 'episode-length' key in the sampler config file."
-            )
-    sampler_manager = SamplerManager(sampler_config)
-
     trainer_config = load_config(trainer_config_path)
     env_factory = create_environment_factory(
         env_path,
@@ -108,6 +90,7 @@ def run_training(
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
+    sampler_manager, resampling_interval = create_sampler_manager(sampler_file_path, env.reset_parameters())
 
     # Create controller and begin training.
     tc = TrainerController(
@@ -123,7 +106,7 @@ def run_training(
         run_seed,
         fast_simulation,
         sampler_manager,
-        lesson_length,
+        resampling_interval,
     )
 
     # Signal that environment has been launched.
@@ -132,6 +115,27 @@ def run_training(
     # Begin training
     tc.start_learning(env, trainer_config)
 
+def create_sampler_manager(sampler_file_path, env_reset_params):
+    sampler_config = None
+    resample_interval = None
+    if sampler_file_path is not None:
+        sampler_config = load_config(sampler_file_path)
+        if ("resampling-interval") in sampler_config:
+            # Filter arguments that do not exist in the environment
+            resample_interval = sampler_config.pop("resampling-interval")
+            if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
+                raise SamplerException(
+                    "Specified resampling-interval is not valid. Please provide"
+                    " a positive integer value for resampling-interval"
+                )
+        else:
+            raise SamplerException(
+                "Resampling interval was not specified in the sampler file."
+                " Please specify it with the 'resampling-interval' key in the sampler config file."
+            )
+    sampler_manager = SamplerManager(sampler_config)
+    filtered_sampler_manager = filter_reset_parameter_samplers(env_reset_params, sampler_manager)
+    return filtered_sampler_manager, resample_interval
 
 def try_create_meta_curriculum(
     curriculum_folder: Optional[str], env: SubprocessEnvManager
@@ -154,6 +158,10 @@ def try_create_meta_curriculum(
                     )
         return meta_curriculum
 
+def filter_reset_parameter_samplers(env_reset_parameters, sampler_manager):
+    env_reset_params = set(env_reset_parameters.keys()).intersection(set(sampler_manager.keys()))
+    filtered_sampler_manager = { key:sampler_manager[key] for key in env_reset_params}
+    return filtered_sampler_manager
 
 def prepare_for_docker_run(docker_target_name, env_path):
     for f in glob.glob(
@@ -270,6 +278,7 @@ def main():
     Options:
       --env=<file>                Name of the Unity executable [default: None].
       --curriculum=<directory>    Curriculum json directory for environment [default: None].
+      --sampler=<file>       Reset parameter yaml directory for sampling of environment reset parameters [default: None].
       --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
       --lesson=<n>                Start learning from this lesson [default: 0].
       --load                      Whether to load the model or randomly initialize [default: False].
@@ -283,7 +292,6 @@ def main():
       --num-envs=<n>              Number of parallel environments to use for training [default: 1]
       --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
       --no-graphics               Whether to run the environment in no-graphics mode [default: False].
-      --sampler=<directory>       Reset parameter yaml directory for sampling of environment reset parameters [default: None].
       --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].       
     """
 
