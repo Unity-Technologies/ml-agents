@@ -17,6 +17,7 @@ class UniformSampler(Sampler):
     """
     Uniformly draws a single sample in the range [min_value, max_value).
     """
+
     def __init__(
         self, min_value: Union[float, int], max_value: Union[float, int], **kwargs
     ):
