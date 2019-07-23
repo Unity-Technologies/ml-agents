@@ -129,7 +129,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         pass
 
 
-def _check_environment_trains(env):
+def _check_environment_trains(env, use_recurrent, min_reward):
     config = """
         default:
             trainer: ppo
@@ -176,14 +176,30 @@ def _check_environment_trains(env):
         # Begin training
         env_manager = SimpleEnvManager(env)
         trainer_config = yaml.safe_load(config)
+        if use_recurrent:
+            trainer_config["default"]["use_recurrent"] = True
+            trainer_config["default"]["memory_size"] = 4
+            trainer_config["default"]["sequence_length"] = 4
+            trainer_config["default"]["hidden_units"] = 16
+
+            # trainer_config["default"]["learning_rate"] = 7.5e-3
+            trainer_config["default"]["max_steps"] = 3000
+
         tc.start_learning(env_manager, trainer_config)
 
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
-            assert mean_reward > 0.99
+            assert mean_reward > min_reward
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple(use_discrete):
+@pytest.mark.parametrize(
+    "use_discrete, use_recurrent, min_reward",
+    [
+        # (False, False),  # default
+        # (True, False),  # discrete actions
+        (False, True, 0.98)  # recurrent
+    ],
+)
+def test_simple(use_discrete, use_recurrent, min_reward):
     env = Simple1DEnvironment(use_discrete=use_discrete)
-    _check_environment_trains(env)
+    _check_environment_trains(env, use_recurrent, min_reward)
