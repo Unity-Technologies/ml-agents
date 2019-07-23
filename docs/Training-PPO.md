@@ -170,7 +170,7 @@ Typical Range: `32` - `512`
 
 `vis_encode_type` corresponds to the encoder type for encoding visual observations.
 Valid options include:
-* `default` (default): a simple encoder consists of two convolutional layers
+* `default` (default): a simple encoder which consists of two convolutional layers
 * `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236), 
 consisting of three convolutional layers
 * `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
