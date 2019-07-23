@@ -168,7 +168,7 @@ Typical Range: `32` - `512`
 
 ### (Optional) Visual Encoder Type
 
-`vis_encode_type` correspond to the encoder type for encoding visual observations.
+`vis_encode_type` corresponds to the encoder type for encoding visual observations.
 Valid options include:
 * `default` (default): a simple encoder consists of two convolutional layers
 * `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236), 
