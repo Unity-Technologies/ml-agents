@@ -34,7 +34,6 @@ class TrainerParameters:
     beta: float = 5.0e-3
     buffer_size: int = 10240
     epsilon: float = 0.2
-    gamma: float = .99  # TODO is this the current default?
     hidden_units: int = 128
     lambd: float = 0.95
     learning_rate: float = 3.0e-4
