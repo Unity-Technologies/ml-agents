@@ -17,7 +17,9 @@ class UniformSampler(Sampler):
     """
     Uniformly draws a single sample in the range [min_value, max_value).
     """
-    def __init__(self, min_value: Union[float, int], max_value: Union[float, int], **kwargs):
+    def __init__(
+        self, min_value: Union[float, int], max_value: Union[float, int], **kwargs
+    ):
         self.min_value = min_value
         self.max_value = max_value
 
@@ -32,6 +34,7 @@ class MultiRangeUniformSampler(Sampler):
     assigned to an interval based on its range. After picking the range,
     it proceeds to pick a value uniformly in that range.
     """
+
     def __init__(self, intervals: List[Union[float, int]], **kwargs):
         self.intervals = intervals
         # Measure the length of the intervals
@@ -52,6 +55,7 @@ class GaussianSampler(Sampler):
     Draw a single sample value from a normal (gaussian) distribution.
     This sampler is characterized by the mean and the standard deviation.
     """
+
     def __init__(self, mean: Union[float, int], st_dev: Union[float, int], **kwargs):
         self.mean = mean
         self.st_dev = st_dev
@@ -65,6 +69,7 @@ class SamplerFactory:
     Maintain a directory of all samplers available.
     Add new samplers using the register_sampler method.
     """
+
     NAME_TO_CLASS = {
         "uniform": UniformSampler,
         "gaussian": GaussianSampler,
@@ -76,7 +81,7 @@ class SamplerFactory:
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
-    def init_sampler_class(name: str, params: Dict[str, Dict[str, Union[int, float]]]):
+    def init_sampler_class(name: str, params):
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
@@ -95,7 +100,7 @@ class SamplerFactory:
 
 
 class SamplerManager:
-    def __init__(self, reset_param_dict: Dict[str, Dict[str, Union[str, int, float]]]):
+    def __init__(self, reset_param_dict):
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers = OrderedDict()

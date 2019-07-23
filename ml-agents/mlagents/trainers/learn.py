@@ -90,7 +90,9 @@ def run_training(
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
-    sampler_manager, resampling_interval = create_sampler_manager(sampler_file_path, env.reset_parameters)
+    sampler_manager, resampling_interval = create_sampler_manager(
+        sampler_file_path, env.reset_parameters
+    )
 
     # Create controller and begin training.
     tc = TrainerController(
@@ -115,6 +117,7 @@ def run_training(
     # Begin training
     tc.start_learning(env, trainer_config)
 
+
 def create_sampler_manager(sampler_file_path, env_reset_params):
     sampler_config = None
     resample_interval = None
@@ -136,6 +139,7 @@ def create_sampler_manager(sampler_file_path, env_reset_params):
     sampler_manager = SamplerManager(sampler_config)
     return sampler_manager, resample_interval
 
+
 def try_create_meta_curriculum(
     curriculum_folder: Optional[str], env: SubprocessEnvManager
 ) -> Optional[MetaCurriculum]:
@@ -156,6 +160,7 @@ def try_create_meta_curriculum(
                         "whose curriculum it defines."
                     )
         return meta_curriculum
+
 
 def prepare_for_docker_run(docker_target_name, env_path):
     for f in glob.glob(
