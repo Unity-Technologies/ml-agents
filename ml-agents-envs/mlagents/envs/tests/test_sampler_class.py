@@ -10,7 +10,7 @@ from mlagents.envs.sampler_class import (
 from mlagents.envs.exception import UnityException
 
 
-def basic_3Dball_sampler():
+def sampler_config_1():
     return {
         "mass": {"sampler-type": "uniform", "min_value": 5, "max_value": 10},
         "gravity": {
@@ -25,8 +25,8 @@ def check_value_in_intervals(val, intervals):
     return any(check_in_bounds)
 
 
-def test_3Dball_sampler():
-    config = basic_3Dball_sampler()
+def test_sampler_config_1():
+    config = sampler_config_1()
     sampler = SamplerManager(config)
 
     assert sampler.is_empty() is False
@@ -48,12 +48,12 @@ def test_3Dball_sampler():
     )
 
 
-def basic_tennis_sampler():
+def sampler_config_2():
     return {"angle": {"sampler-type": "gaussian", "mean": 0, "var": 1}}
 
 
-def test_tennis_sampler():
-    config = basic_tennis_sampler()
+def test_sampler_config_2():
+    config = sampler_config_2()
     sampler = SamplerManager(config)
     assert sampler.is_empty() is False
     assert isinstance(sampler.samplers["angle"], GaussianSampler)
