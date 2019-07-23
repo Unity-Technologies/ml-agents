@@ -220,7 +220,7 @@ Typical Range: `0.1` - `0.5`
 ### Demo Path
 
 `demo_path` is the path to your `.demo` file or directory of `.demo` files. 
-See the [imitation learning guide](Training-ImitationLearning.md) for more on `.demo` files.
+See the [imitation learning guide](Training-Imitation-Learning.md) for more on `.demo` files.
 
 ### Steps
 
