@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import *
 from mlagents.trainers import learn, TrainerController
-from mlagents.envs.sampler_class import SamplerManager
 
 
 @pytest.fixture
