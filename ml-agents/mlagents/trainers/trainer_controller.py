@@ -2,7 +2,6 @@
 # ## ML-Agent Learning
 """Launches trainers for each External Brains in a Unity Environment."""
 
-import os
 import json
 import logging
 from typing import *
@@ -16,46 +15,35 @@ from mlagents.envs.env_manager import EnvManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.session_config import SessionConfig
 
 
 class TrainerController(object):
     def __init__(
         self,
         trainers: Dict[str, Trainer],
-        summaries_dir: str,
-        run_id: str,
-        save_freq: int,
-        meta_curriculum: Optional[MetaCurriculum],
-        train: bool,
-        keep_checkpoints: int,
-        lesson: Optional[int],
+        sess_config: SessionConfig,
         training_seed: int,
-        fast_simulation: bool,
+        meta_curriculum: MetaCurriculum,
     ):
         """
-        :param model_path: Path to save the model.
-        :param summaries_dir: Folder to save training summaries.
-        :param run_id: The sub-directory name for model and summary statistics
-        :param save_freq: Frequency at which to save model
-        :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
-        :param load: Whether to load the model or randomly initialize.
-        :param train: Whether to train model, or only run inference.
-        :param keep_checkpoints: How many model checkpoints to keep.
-        :param lesson: Start learning from this lesson.
+        :param trainers: Trainers we're training in this session.
+        :param sess_config: Config options for the training session.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
+        :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
         """
         self.trainers = trainers
         self.meta_curriculum = meta_curriculum
-        self.summaries_dir = summaries_dir
+        self.summaries_dir = sess_config.summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
-        self.run_id = run_id
-        self.save_freq = save_freq
-        self.lesson = lesson
-        self.train_model = train
-        self.keep_checkpoints = keep_checkpoints
+        self.run_id = sess_config.sub_run_id
+        self.save_freq = sess_config.save_freq
+        self.lesson = sess_config.lesson
+        self.train_model = sess_config.train_model
+        self.keep_checkpoints = sess_config.keep_checkpoints
         self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.training_start_time = time()
-        self.fast_simulation = fast_simulation
+        self.fast_simulation = sess_config.fast_simulation
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
