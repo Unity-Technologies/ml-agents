@@ -36,7 +36,7 @@ needed.
 
 To setup the Sampler Manager, we setup a YAML file that specifies how we wish to 
 generate new samples. In this file, we specify the samplers and the 
-`resampling-duration` (number of training steps after which reset parameters are 
+`resampling-duration` (number of simulation steps after which reset parameters are 
 resampled). Below is an example of a sampler file for the 3D ball environment.
 
 ```yaml
@@ -100,13 +100,13 @@ class CustomSampler(Sampler):
         return np.random.choice(self.possible_vals)
 ```
 
-Now we need to specify this sampler in the sampler file. Lets say we wish to use this sampler for the reset parameter *mass*; the sampler file would specify the same for mass as the following.
+Now we need to specify this sampler in the sampler file. Lets say we wish to use this sampler for the reset parameter *mass*; the sampler file would specify the same for mass as the following (any order of the subarguments is valid).
 
 ```yaml
 mass:
     sampler-type: "custom-sampler"
-    argA: 1
-    argB: 2
+    argB: 1
+    argA: 2
     argC: 3
 ```
 
@@ -114,7 +114,7 @@ With the sampler file setup, we can proceed to train our agent as explained in t
 
 ### Training with Generalization Learning
 
-We first begin with setting up the sampler file. After the sampler file is defined and configured, we proceed by launching `mlagents-learn` and specify our configured sampler file with the `--sampler` flag. To demonstrate, if we wanted to train a 3D ball agent with generalization using the `generalization-test.yaml` sampling setup, we can run
+We first begin with setting up the sampler file. After the sampler file is defined and configured, we proceed by launching `mlagents-learn` and specify our configured sampler file with the `--sampler` flag. To demonstrate, if we wanted to train a 3D ball agent with generalization using the `config/generalization-test.yaml` sampling setup, we can run
 
 ```sh
 mlagents-learn config/trainer_config.yaml --sampler=config/generalize_test.yaml --run-id=3D-Ball-generalization --train
