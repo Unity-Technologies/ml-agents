@@ -1,4 +1,4 @@
-episode-length: 5000
+resampling-interval: 5000
 
 mass:
     sampler-type: "uniform"
