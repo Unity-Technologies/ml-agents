@@ -11,6 +11,7 @@ import numpy as np
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGPUPPOPolicy, get_devices
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.action_info import ActionInfoOutputs
 
@@ -74,9 +75,14 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.policy = PPOPolicy(
-            seed, brain, trainer_parameters, self.is_training, load, multi_gpu
-        )
+        if multi_gpu and len(get_devices()) > 1:
+            self.policy = MultiGPUPPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
+        else:
+            self.policy = PPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward

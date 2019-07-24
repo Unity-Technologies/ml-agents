@@ -6,7 +6,6 @@ import tensorflow as tf
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.ppo.multi_gpu_model import get_devices, PPOMultiGPUModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
@@ -17,7 +16,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load, multi_gpu):
+    def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
@@ -30,42 +29,23 @@ class PPOPolicy(TFPolicy):
 
         reward_signal_configs = trainer_params["reward_signals"]
 
-        self.devices = get_devices(multi_gpu)
         self.reward_signals = {}
         with self.graph.as_default():
-            if len(self.devices) > 1:
-                self.model = PPOMultiGPUModel(
-                    brain=brain,
-                    lr=float(trainer_params["learning_rate"]),
-                    h_size=int(trainer_params["hidden_units"]),
-                    epsilon=float(trainer_params["epsilon"]),
-                    beta=float(trainer_params["beta"]),
-                    max_step=float(trainer_params["max_steps"]),
-                    normalize=trainer_params["normalize"],
-                    use_recurrent=trainer_params["use_recurrent"],
-                    num_layers=int(trainer_params["num_layers"]),
-                    m_size=self.m_size,
-                    seed=seed,
-                    stream_names=list(reward_signal_configs.keys()),
-                    vis_encode_type=trainer_params["vis_encode_type"],
-                    devices=self.devices,
-                )
-            else:
-                self.model = PPOModel(
-                    brain=brain,
-                    lr=float(trainer_params["learning_rate"]),
-                    h_size=int(trainer_params["hidden_units"]),
-                    epsilon=float(trainer_params["epsilon"]),
-                    beta=float(trainer_params["beta"]),
-                    max_step=float(trainer_params["max_steps"]),
-                    normalize=trainer_params["normalize"],
-                    use_recurrent=trainer_params["use_recurrent"],
-                    num_layers=int(trainer_params["num_layers"]),
-                    m_size=self.m_size,
-                    seed=seed,
-                    stream_names=list(reward_signal_configs.keys()),
-                    vis_encode_type=trainer_params["vis_encode_type"],
-                )
+            self.model = PPOModel(
+                brain=brain,
+                lr=float(trainer_params["learning_rate"]),
+                h_size=int(trainer_params["hidden_units"]),
+                epsilon=float(trainer_params["epsilon"]),
+                beta=float(trainer_params["beta"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=trainer_params["normalize"],
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                stream_names=list(reward_signal_configs.keys()),
+                vis_encode_type=trainer_params["vis_encode_type"],
+            )
 
             # Create reward signals
             for reward_signal, config in reward_signal_configs.items():
@@ -152,75 +132,63 @@ class PPOPolicy(TFPolicy):
         return run_out
 
     @timed
-    def update(self, mini_batch, n_sequences):
+    def update(self, mini_batch, num_sequences):
         """
         Updates model using buffer.
-        :param n_sequences: Number of trajectories in batch.
+        :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        feed_dict = {}
-        towers = self.model.towers if len(self.devices) > 1 else [self.model]
+        feed_dict = {
+            self.model.batch_size: num_sequences,
+            self.model.sequence_length: self.sequence_length,
+            self.model.mask_input: mini_batch["masks"].flatten(),
+            self.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
+            self.model.all_old_log_probs: mini_batch["action_probs"].reshape(
+                [-1, sum(self.model.act_size)]
+            ),
+        }
+        for name in self.reward_signals:
+            feed_dict[self.model.returns_holders[name]] = mini_batch[
+                "{}_returns".format(name)
+            ].flatten()
+            feed_dict[self.model.old_values[name]] = mini_batch[
+                "{}_value_estimates".format(name)
+            ].flatten()
 
-        device_batch_size = n_sequences // len(self.devices)
-        device_batches = []
-        for i in range(len(self.devices)):
-            device_batches.append(
-                {k: v[i : i + device_batch_size] for k, v in mini_batch.items()}
+        if self.use_continuous_act:
+            feed_dict[self.model.output_pre] = mini_batch["actions_pre"].reshape(
+                [-1, self.model.act_size[0]]
             )
-
-        assert len(device_batches) == len(towers)
-        for batch, tower in zip(device_batches, towers):
-            feed_dict[tower.batch_size] = n_sequences
-            feed_dict[tower.sequence_length] = self.sequence_length
-            feed_dict[tower.mask_input] = batch["masks"].flatten()
-            feed_dict[tower.advantage] = batch["advantages"].reshape([-1, 1])
-            feed_dict[tower.all_old_log_probs] = batch["action_probs"].reshape(
-                [-1, sum(tower.act_size)]
+            feed_dict[self.model.epsilon] = mini_batch["random_normal_epsilon"].reshape(
+                [-1, self.model.act_size[0]]
             )
-
-            for name in self.reward_signals:
-                feed_dict[tower.returns_holders[name]] = batch[
-                    "{}_returns".format(name)
-                ].flatten()
-                feed_dict[tower.old_values[name]] = batch[
-                    "{}_value_estimates".format(name)
-                ].flatten()
-
-            if self.use_continuous_act:
-                feed_dict[tower.output_pre] = batch["actions_pre"].reshape(
-                    [-1, tower.act_size[0]]
-                )
-                feed_dict[tower.epsilon] = batch["random_normal_epsilon"].reshape(
-                    [-1, tower.act_size[0]]
-                )
-            else:
-                feed_dict[tower.action_holder] = batch["actions"].reshape(
-                    [-1, len(tower.act_size)]
-                )
-                if self.use_recurrent:
-                    feed_dict[tower.prev_action] = batch["prev_action"].reshape(
-                        [-1, len(tower.act_size)]
-                    )
-                feed_dict[tower.action_masks] = batch["action_mask"].reshape(
-                    [-1, sum(self.brain.vector_action_space_size)]
-                )
-            if self.use_vec_obs:
-                feed_dict[tower.vector_in] = batch["vector_obs"].reshape(
-                    [-1, self.vec_obs_size]
-                )
-            if tower.vis_obs_size > 0:
-                for i, _ in enumerate(tower.visual_in):
-                    _obs = batch["visual_obs%d" % i]
-                    if self.sequence_length > 1 and self.use_recurrent:
-                        (_batch, _seq, _w, _h, _c) = _obs.shape
-                        feed_dict[tower.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                    else:
-                        feed_dict[tower.visual_in[i]] = _obs
+        else:
+            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
+                [-1, len(self.model.act_size)]
+            )
             if self.use_recurrent:
-                mem_in = mini_batch["memory"][:, 0, :]
-                feed_dict[tower.memory_in] = mem_in
-
+                feed_dict[self.model.prev_action] = mini_batch["prev_action"].reshape(
+                    [-1, len(self.model.act_size)]
+                )
+            feed_dict[self.model.action_masks] = mini_batch["action_mask"].reshape(
+                [-1, sum(self.brain.vector_action_space_size)]
+            )
+        if self.use_vec_obs:
+            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
+                [-1, self.vec_obs_size]
+            )
+        if self.model.vis_obs_size > 0:
+            for i, _ in enumerate(self.model.visual_in):
+                _obs = mini_batch["visual_obs%d" % i]
+                if self.sequence_length > 1 and self.use_recurrent:
+                    (_batch, _seq, _w, _h, _c) = _obs.shape
+                    feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
+                else:
+                    feed_dict[self.model.visual_in[i]] = _obs
+        if self.use_recurrent:
+            mem_in = mini_batch["memory"][:, 0, :]
+            feed_dict[self.model.memory_in] = mem_in
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
