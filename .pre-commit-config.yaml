@@ -45,6 +45,7 @@ repos:
         entry: markdown-link-check
         language: node
         language_version: 12.6.0
+        exclude: localized
         types: [markdown]
         additional_dependencies: ['markdown-link-check@3.7.3']
-        #args: [--verbose]
+        args: [-c, markdown-link-check.config.json]
