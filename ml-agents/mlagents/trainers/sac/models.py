@@ -268,20 +268,19 @@ class SACNetwork(LearningModel):
 
             # Squash probabilities
             # Keep deterministic around in case we want to use it.
-            self.deterministic_output_pre = tf.tanh(mu)
-            self.output_pre = tf.tanh(policy_)
+            self.deterministic_output = tf.tanh(mu)
+            self.output = tf.tanh(policy_)
 
             # Squash correction
             all_probs -= tf.reduce_sum(
-                tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
+                tf.log(1 - self.output ** 2 + EPSILON), axis=1, keepdims=True
             )
             # all_probs = tf.Print(all_probs, [all_probs])
             self.all_log_probs = all_probs
 
-            self.output = tf.identity(self.output_pre, name="action")
-            self.selected_actions = tf.stop_gradient(self.output_pre)
+            self.selected_actions = tf.stop_gradient(self.output)
 
-            self.action_probs = tf.identity(all_probs, name="action_probs")
+            self.action_probs = all_probs
 
         # Get all policy vars
         self.policy_vars = self.get_vars(scope)
@@ -293,14 +292,22 @@ class SACNetwork(LearningModel):
         :param num_layers: TF scope to assign whatever is created in this block.
         """
         scope = self.join_scopes(scope, "policy")
+
+        # Create inputs outside of the scope
         hidden_policy = self.create_vector_observation_encoder(
             hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
         )
+        self.action_masks = tf.placeholder(
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
+        )
+
+        if self.use_recurrent:
+            self.prev_action = tf.placeholder(
+                shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
+            )
         with tf.variable_scope(scope):
-            if self.use_recurrent:  # Not sure if works
-                self.prev_action = tf.placeholder(
-                    shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
-                )
+            if self.use_recurrent:
+
                 prev_action_oh = tf.concat(
                     [
                         tf.one_hot(self.prev_action[:, i], self.act_size[i])
@@ -331,31 +338,14 @@ class SACNetwork(LearningModel):
             all_logits = tf.concat(
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
-
-            # self.all_log_probs = tf.Print(self.all_log_probs, [all_probs, self.all_log_probs])
-
-            self.action_masks = tf.placeholder(
-                shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
-            )
-
-            # gumbeldist = tf.contrib.distributions.RelaxedOneHotCategorical(0.05, probs=act_probs)
-
             output, normalized_probs, normalized_logprobs = self.create_discrete_action_masking_layer(
                 all_logits, self.action_masks, self.act_size
             )
 
             self.action_probs = normalized_probs
-            # normalized_logits = tf.Print(normalized_logits, [normalized_logits])
 
             # Really, this is entropy, but it has an analogous purpose to the log probs in the continuous case.
             self.all_log_probs = self.action_probs * normalized_logprobs
-            # output = tf.concat(
-            #     [
-            #         tf.multinomial(tf.log(act_probs[k]), 1)
-            #         for k in range(len(self.act_size))
-            #     ],
-            #     axis=1,
-            # )
             self.output = output
 
             self.output_oh = tf.concat(
@@ -366,11 +356,6 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
             self.selected_actions = tf.stop_gradient(self.output_oh)
-            # self.output_pre = gumbeldist.sample(tf.shape(act_probs)[0])[0]
-            # act_probs = tf.Print(act_probs, [act_probs, gumbeldist.sample(3)[0]])
-            # self.all_log_probs = normalized_logits
-            # self.all_log_probs = tf.reduce_sum(tf.log(act_probs+EPSILON), axis=1)
-            # self.normalized_logits = tf.identity(normalized_logits, name="action")
 
             # Create action input (discrete)
             self.action_holder = tf.placeholder(
@@ -611,7 +596,7 @@ class SACModel(LearningModel):
         if self.brain.vector_action_space_type == "discrete":
             self.action_masks = self.policy_network.action_masks
 
-        self.output = self.policy_network.output
+        self.output = tf.identity(self.policy_network.output, "action")
         self.value = tf.identity(self.policy_network.value, name="value_estimate")
         self.value_heads = self.policy_network.value_heads
         self.all_log_probs = self.policy_network.all_log_probs
