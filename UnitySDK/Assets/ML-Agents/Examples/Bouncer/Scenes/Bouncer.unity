@@ -873,8 +873,6 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     resetParameters:
-    - key: banana_speed
-      value: 0
     - key: banana_scale
       value: 150
   gravityMultiplier: 2

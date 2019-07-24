@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -10,8 +10,6 @@ public class BouncerAgent : Agent {
     public GameObject bodyObject;
     Rigidbody rb;
     Vector3 lookDir;
-    float bananaDegree;
-    float bananaSpeed;
     public float strength = 10f;
     float jumpCooldown;
     int numberJumps = 20;
@@ -25,7 +23,6 @@ public class BouncerAgent : Agent {
         lookDir = Vector3.zero;
 
         var academy = FindObjectOfType<Academy>() as Academy;
-        bananaDegree = 0;
         resetParams = academy.resetParameters;
 
         SetResetParameters();
@@ -56,15 +53,6 @@ public class BouncerAgent : Agent {
         lookDir = new Vector3(x, y, z);
     }
 
-    void UpdateBananaPosition()
-    {
-        var newX = banana.transform.localPosition.x;
-        var newY = 3f * Mathf.Cos(bananaDegree) + 4f;
-        var newZ = banana.transform.localPosition.z;
-
-        banana.transform.localPosition = new Vector3(newX, newY, newZ);
-    }
-
     public override void AgentReset()
     {
 
@@ -81,8 +69,6 @@ public class BouncerAgent : Agent {
         jumpLeft = numberJumps;
 
         SetResetParameters();
-
-        UpdateBananaPosition();
     }
 
     public override void AgentOnDone()
@@ -92,8 +78,6 @@ public class BouncerAgent : Agent {
 
     private void FixedUpdate()
     {
-        bananaDegree += bananaSpeed;
-
         if (Physics.Raycast(transform.position, new Vector3(0f,-1f,0f), 0.51f) && jumpCooldown <= 0f)
         {
             RequestDecision();
@@ -144,6 +128,5 @@ public class BouncerAgent : Agent {
     public void SetResetParameters()
     {
         SetBananaScale();
-        bananaSpeed = Random.Range(-1f, 1f) * resetParams["banana_speed"];
     }
 }
