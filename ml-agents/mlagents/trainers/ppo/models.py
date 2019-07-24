@@ -22,6 +22,7 @@ class PPOModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
+        vis_encode_type="default",
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -46,10 +47,10 @@ class PPOModel(LearningModel):
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
-            self.create_cc_actor_critic(h_size, num_layers)
+            self.create_cc_actor_critic(h_size, num_layers, vis_encode_type)
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
-            self.create_dc_actor_critic(h_size, num_layers)
+            self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
         self.create_losses(
             self.log_probs,
             self.old_log_probs,
