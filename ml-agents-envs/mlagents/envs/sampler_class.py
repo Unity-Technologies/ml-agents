@@ -106,7 +106,7 @@ class SamplerManager:
     def __init__(self, reset_param_dict: Dict[str, Any]) -> None:
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
-        self.samplers = OrderedDict()
+        self.samplers: Dict[str, Sampler] = {}
         for param_name, cur_param_dict in self.reset_param_dict.items():
             if "sampler-type" not in cur_param_dict:
                 raise SamplerException(
