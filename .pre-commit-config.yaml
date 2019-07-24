@@ -47,3 +47,4 @@ repos:
         language_version: 12.6.0
         types: [markdown]
         additional_dependencies: ['markdown-link-check@3.7.3']
+        #args: [--verbose]
