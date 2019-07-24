@@ -81,6 +81,8 @@ public class BouncerAgent : Agent {
         jumpLeft = numberJumps;
 
         SetResetParameters();
+
+        UpdateBananaPosition();
     }
 
     public override void AgentOnDone()
@@ -91,7 +93,6 @@ public class BouncerAgent : Agent {
     private void FixedUpdate()
     {
         bananaDegree += bananaSpeed;
-        UpdateBananaPosition();
 
         if (Physics.Raycast(transform.position, new Vector3(0f,-1f,0f), 0.51f) && jumpCooldown <= 0f)
         {
