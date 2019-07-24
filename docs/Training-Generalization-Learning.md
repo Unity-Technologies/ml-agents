@@ -1,4 +1,4 @@
-# Training Generalized Reinforcement Learning agents
+# Training Generalized Reinforcement Learning Agents
 
 Reinforcement learning has a rather unique setup as opposed to supervised and
 unsupervised learning. Agents here are trained and tested on the same exact 
@@ -6,11 +6,10 @@ environment, which is analogous to a model being trained and tested on an
 identical dataset in supervised learning! This setting results in overfitting; 
 the inability of the agent to generalize to slight tweaks or variations in the 
 environment. This is problematic in instances when environments are randomly 
-instantiated with varying properties. To make agents more robust, we train an 
-agent over multiple variations of the environment. The agent is trained with 
-the intent that it learns to maintain a minimum performance regardless of the 
-environment variant and that it generalizes to maintain this in unseen future 
-variants of the environment.
+instantiated with varying properties. To make agents robust, one approach is to
+train an agent over multiple variations of the environment. The agent is 
+trained in this approach with the intent that it learns to adapt its performance 
+to future unseen variations of the environment.
 
 Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
@@ -26,13 +25,15 @@ environment example displayed in the figure above, the reset parameters are `gra
 ## How-to
 
 For generalization training, we need to provide a way to modify the environment 
-by supplying a set of reset parameters. This provision can be either 
-deterministic or randomized. Each reset parameter is assigned a sampler. If a 
-sampler isn't provided for a reset parameter, the parameter maintains the 
-default value throughout the training, remaining unchanged. The samplers for all 
-the reset parameters are handled by a **Sampler Manager**, which is also 
-responsible for generating a new set of values for the reset parameters when 
-needed. 
+by supplying a set of reset parameters, and vary them over time. This provision
+can be done either deterministically or randomly. 
+
+This is done by assigning each reset parameter a sampler, which samples a reset
+parameter value (such as a uniform sampler). If a sampler isn't provided for a
+reset parameter, the parameter maintains the default value throughout the 
+training, remaining unchanged. The samplers for all the reset parameters are
+handled by a **Sampler Manager**, which also handles the generation of new 
+values for the reset parameters when needed. 
 
 To setup the Sampler Manager, we setup a YAML file that specifies how we wish to 
 generate new samples. In this file, we specify the samplers and the 
