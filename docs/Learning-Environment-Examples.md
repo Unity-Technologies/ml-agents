@@ -153,7 +153,23 @@ If you would like to contribute environments, please see our
     `VisualPushBlock` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None.
+* Reset Parameters: Four, corresponding to the following:
+    * block_scale: Scale of the block along the x and z dimensions
+        * Default: 2
+        * Recommended Minimum: 0.5
+        * Recommended Maximum:  4
+    * dynamic_friction: Coefficient of friction for the ground material acting on moving objects
+        * Default: 0
+        * Recommended Minimum: 0
+        * Recommended Maximum: 1
+    * static_friction: Coefficient of friction for the ground material acting on stationary objects
+        * Default: 0
+        * Recommended Minimum: 0
+        * Recommended Maximum: 1
+    * block_drag: Effect of air resistance on block
+        * Default: 0.5
+        * Recommended Minimum: 0
+        * Recommended Maximum: 2000
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.
 
@@ -197,7 +213,27 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Two, corresponding to goal size, and goal movement speed.
+* Reset Parameters: Five, corresponding to the following
+  * goal_size: radius of the goal zone
+    * Default: 5
+    * Recommended Minimum: 1
+    * Recommended Maximum: 10
+  * goal_speed: speed of the goal zone around the arm (in radians)
+    * Default: 1
+    * Recommended Minimum: 0.2
+    * Recommended Maximum: 4
+  * gravity
+    * Default: 9.81
+    * Recommended Minimum: 4
+    * Recommended Maximum: 20
+  * deviation: Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
+    * Default: 0
+    * Recommended Minimum: 0
+    * Recommended Maximum: 5
+  * deviation_freq: Frequency of the cosine deviation of the goal along the vertical dimension
+    * Default: 0
+    * Recommended Minimum: 0
+    * Recommended Maximum: 3
 * Benchmark Mean Reward: 30
 
 ## [Crawler](https://youtu.be/ftLliaeooYI)
@@ -374,7 +410,23 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
   * Visual Observations: None.
-* Reset Parameters: None.
+* Reset Parameters: Four, corresponding to the following
+    * gravity: Magnitude of gravity
+        * Default: 9.81
+        * Recommended Minimum:
+        * Recommended Maximum:
+    * hip_mass: Mass of the hip component of the walker
+        * Default: 15
+        * Recommended Minimum: 7
+        * Recommended Maximum: 28
+    * chest_mass: Mass of the chest component of the walker
+        * Default: 8
+        * Recommended Minimum: 3
+        * Recommended Maximum: 20
+    * spine_mass: Mass of the spine component of the walker
+        * Default: 10
+        * Recommended Minimum: 3
+        * Recommended Maximum: 20
 * Benchmark Mean Reward: 1000
 
 ## Pyramids
