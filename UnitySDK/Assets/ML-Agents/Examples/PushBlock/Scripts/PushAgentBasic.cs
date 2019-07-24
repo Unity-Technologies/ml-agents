@@ -44,6 +44,9 @@ public class PushAgentBasic : Agent
     Rigidbody agentRB;  //cached on initialization
     Material groundMaterial; //cached on Awake()
     RayPerception rayPer;
+    
+    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+    string[] detectableObjects = { "block", "goal", "wall" };
 
     /// <summary>
     /// We will be changing the ground material based on success/failue
@@ -79,8 +82,7 @@ public class PushAgentBasic : Agent
         if (useVectorObs)
         {
             var rayDistance = 12f;
-            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-            var detectableObjects = new[] { "block", "goal", "wall" };
+            
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
         }
