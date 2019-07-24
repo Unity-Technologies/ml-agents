@@ -80,7 +80,7 @@ class SamplerFactory:
     }
 
     @staticmethod
-    def register_sampler(name: str, sampler_cls: Sampler) -> None:
+    def register_sampler(name: str, sampler_cls: Type[Sampler]) -> None:
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
