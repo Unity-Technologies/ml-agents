@@ -12,13 +12,17 @@ public class ReacherAgent : Agent
     float goalDegree;
     private Rigidbody rbA;
     private Rigidbody rbB;
+    // speed of the goal zone around the arm (in radians)
     private float goalSpeed;
+    // radius of the goal zone
     private float goalSize;
+    // Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
     private float deviation;
+    // Frequency of the cosine deviation of the goal along the vertical dimension
     private float deviationFreq;
 
     /// <summary>
-    /// Collect the rigidbodies of the reacher in order to resue them for 
+    /// Collect the rigidbodies of the reacher in order to resue them for
     /// observations and actions.
     /// </summary>
     public override void InitializeAgent()
