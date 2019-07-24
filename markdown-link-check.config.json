@@ -1,0 +1,10 @@
+{
+    "ignorePatterns": [
+        {
+            "pattern": "^http://localhost"
+        },
+        {
+            "pattern": "^https://developer.nvidia.com/compute/machine-learning/cudnn/secure"
+        }
+    ]
+}
