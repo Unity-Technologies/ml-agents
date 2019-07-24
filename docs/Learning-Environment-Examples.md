@@ -282,10 +282,6 @@ If you would like to contribute environments, please see our
     the jump.
   * Visual Observations: None.
 * Reset Parameters: Two, corresponding to the following
-    * banana_speed: The speed of the vertical motion of the banana
-        * Default: 0
-        * Recommended Minimum: 0
-        * Recommended Maximum: 0.6
     * banana_scale: The scale of the banana in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
