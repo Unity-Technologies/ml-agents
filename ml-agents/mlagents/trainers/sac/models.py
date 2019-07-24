@@ -371,8 +371,6 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
 
-            action_idx = [0] + list(np.cumsum(self.act_size))
-
             # self.entropy = self.all_log_probs
             # This is total entropy over all branches
             self.entropy = -1 * tf.reduce_sum(self.all_log_probs, axis=1)
@@ -500,7 +498,8 @@ class SACModel(LearningModel):
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
         :param h_size: Size of hidden layers
-        :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster, set higher to explore more.
+        :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster,
+            set higher to explore more.
         :return: a sub-class of PPOAgent tailored to the environment.
         :param max_step: Total number of training steps.
         :param normalize: Whether to normalize vector observation input.
@@ -687,7 +686,6 @@ class SACModel(LearningModel):
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
-                # tf.expand_dims(self.policy_network.external_action_in[:,2] - self.policy_network.external_action_in[:,1], axis = -1)
                 + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
             )
 
@@ -721,7 +719,6 @@ class SACModel(LearningModel):
             else:
                 q1_stream = q1_streams[name]
                 q2_stream = q2_streams[name]
-            # q_backup = tf.Print(q_backup, [self.policy_network.external_action_in, _expanded_rewards, q1_streams[name]], message="Qbackup", summarize=10)
 
             _q1_loss = 0.5 * tf.reduce_mean(
                 tf.to_float(self.mask) * tf.squared_difference(q_backup, q1_stream)
@@ -756,9 +753,6 @@ class SACModel(LearningModel):
                 trainable=True,
             )
         self.ent_coef = tf.exp(self.log_ent_coef)
-        # self.ent_coef = tf.Variable(0.2, tf.float32)
-
-        # self.ent_coef = tf.Print(self.ent_coef, [self.ent_coef, self.policy_network.action_probs, tf.reduce_mean(tf.reduce_sum(self.policy_network.all_log_probs, axis=1, keep_dims=True))])
         if discrete:
             # We also have to do a different entropy and target_entropy per branch.
             broken_log_probs = self.apply_as_branches(self.policy_network.all_log_probs)
@@ -778,8 +772,9 @@ class SACModel(LearningModel):
                 )
             )
 
-            # Same with policy loss, we have to do the loss per branch and average them, so that larger branches don't get more weight.
-            # The equivalent KL divergence is also pi*log(pi) - Q
+            # Same with policy loss, we have to do the loss per branch and average them,
+            # so that larger branches don't get more weight.
+            # The equivalent KL divergence from Eq 10 of Haarnoja et al. is also pi*log(pi) - Q
             broken_q_term = self.apply_as_branches(
                 self.policy_network.action_probs * self.policy_network.q1_p
             )

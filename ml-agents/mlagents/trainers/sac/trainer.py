@@ -249,7 +249,7 @@ class SACTrainer(Trainer):
             if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
-                assert idx == next_idx
+
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
                         self.training_buffer[agent_id]["visual_obs%d" % i].append(
@@ -274,21 +274,13 @@ class SACTrainer(Trainer):
                             stored_info.memories[idx]
                         )
                     actions = stored_take_action_outputs["action"]
-                    if self.policy.use_continuous_act:
-                        pass
-                        # actions_pre = stored_take_action_outputs["pre_action"]
-                        # self.training_buffer[agent_id]["actions_pre"].append(
-                        #     actions_pre[idx]
-                        # )
-                        # epsilons = stored_take_action_outputs["random_normal_epsilon"]
-                        # self.training_buffer[agent_id]["random_normal_epsilon"].append(
-                        #     epsilons[idx]
-                        # )
-                    else:
+
+                    if not self.policy.use_continuous_act:
                         self.training_buffer[agent_id]["action_mask"].append(
                             stored_info.action_masks[idx], padding_value=1.0
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
+
                     # value is a dictionary from name of reward to value estimate of the value head
                     self.training_buffer[agent_id]["actions"].append(actions[idx])
                     self.training_buffer[agent_id]["prev_action"].append(
@@ -296,19 +288,11 @@ class SACTrainer(Trainer):
                     )
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
-                        next_info.local_done[idx]
+                        next_info.local_done[next_idx]
                     )
                     self.training_buffer[agent_id]["environment_rewards"].append(
                         np.array(next_info.rewards)[next_idx]
                     )
-                    # for name, reward in tmp_rewards_dict.items():
-                    #     # 0 because we use the scaled reward to train the agent
-                    #     self.training_buffer[agent_id][
-                    #         "{}_rewards".format(name)
-                    #     ].append(tmp_rewards_dict[name][0][next_idx])
-                    #     self.training_buffer[agent_id][
-                    #         "{}_value_estimates".format(name)
-                    #     ].append(value)
 
                     self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
 
