@@ -13,7 +13,7 @@ namespace MLAgents.InferenceBrain.Utils
         private readonly double m_mean;
         private readonly double m_stddev;
         private readonly System.Random m_random;
-        
+
         public RandomNormal(int seed, float mean = 0.0f, float stddev = 1.0f)
         {
             m_mean = mean;
@@ -24,7 +24,7 @@ namespace MLAgents.InferenceBrain.Utils
         // Each iteration produces two numbers. Hold one here for next call
         private bool m_hasSpare = false;
         private double m_spare = 0.0f;
-        
+
         /// <summary>
         /// Return the next random double number
         /// </summary>
@@ -51,7 +51,7 @@ namespace MLAgents.InferenceBrain.Utils
 
             return v * s * m_stddev + m_mean;
         }
-        
+
         /// <summary>
         /// Fill a pre-allocated Tensor with random numbers 
         /// </summary>
@@ -69,9 +69,9 @@ namespace MLAgents.InferenceBrain.Utils
             {
                 throw new ArgumentNullException();
             }
-            
+
             for (int i = 0; i < t.Data.length; i++)
-                t.Data[i] = (float) NextDouble();
+                t.Data[i] = (float)NextDouble();
         }
     }
 }
