@@ -144,7 +144,6 @@ def test_simple():
                 extrinsic:
                     strength: 1.0
                     gamma: 0.99
-            vis_encode_type: default
     """
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:

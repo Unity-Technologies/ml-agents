@@ -53,7 +53,6 @@ class PPOTrainer(Trainer):
             "memory_size",
             "model_path",
             "reward_signals",
-            "vis_encode_type",
         ]
         self.check_param_keys()
 
