@@ -7,6 +7,7 @@ import subprocess
 from typing import *
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.timers import timed, hierarchical_timer
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
@@ -352,6 +353,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
+    @timed
     def step(
         self,
         vector_action=None,
@@ -562,11 +564,11 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                     )
 
-            outputs = self.communicator.exchange(
-                self._generate_step_input(
-                    vector_action, memory, text_action, value, custom_action
-                )
+            step_input = self._generate_step_input(
+                vector_action, memory, text_action, value, custom_action
             )
+            with hierarchical_timer("communicator.exchange"):
+                outputs = self.communicator.exchange(step_input)
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
@@ -625,6 +627,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         return _data, global_done
 
+    @timed
     def _generate_step_input(
         self, vector_action, memory, text_action, value, custom_action
     ) -> UnityInput:

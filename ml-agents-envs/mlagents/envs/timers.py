@@ -40,13 +40,14 @@ class TimerNode:
     Represents the time spent in a block of code.
     """
 
-    __slots__ = ["children", "total", "count"]
+    __slots__ = ["children", "total", "count", "is_parallel"]
 
     def __init__(self):
         # Note that since dictionary keys are the node names, we don't explicitly store the name on the TimerNode.
         self.children: Dict[str, TimerNode] = {}
         self.total: float = 0.0
         self.count: int = 0
+        self.is_parallel = False
 
     def get_child(self, name: str) -> "TimerNode":
         """
@@ -65,6 +66,26 @@ class TimerNode:
         self.total += elapsed
         self.count += 1
 
+    def merge(self, other: "TimerNode", root_name: str = None, is_parallel=True):
+        """
+        Add the other node to this node, then do the same recursively on its children.
+        :param other: The other node to merge
+        :param root_name: Optional name of the root node being merged.
+        :param is_parallel: Whether or not the code block was executed in parallel.
+        :return:
+        """
+        if root_name:
+            node = self.get_child(root_name)
+        else:
+            node = self
+
+        node.total += other.total
+        node.count += other.count
+        node.is_parallel |= is_parallel
+        for other_child_name, other_child_node in other.children.items():
+            child = node.get_child(other_child_name)
+            child.merge(other_child_node, is_parallel=is_parallel)
+
 
 class TimerStack:
     """
@@ -75,6 +96,11 @@ class TimerStack:
     __slots__ = ["root", "stack", "start_time"]
 
     def __init__(self):
+        self.root = TimerNode()
+        self.stack = [self.root]
+        self.start_time = perf_counter()
+
+    def reset(self):
         self.root = TimerNode()
         self.stack = [self.root]
         self.start_time = perf_counter()
@@ -94,18 +120,31 @@ class TimerStack:
         """
         self.stack.pop()
 
+    def get_root(self) -> TimerNode:
+        """
+        Update the total time and count of the root name, and return it.
+        """
+        root = self.root
+        root.total = perf_counter() - self.start_time
+        root.count = 1
+        return root
+
     def get_timing_tree(self, node: TimerNode = None) -> Dict[str, Any]:
         """
         Recursively build a tree of timings, suitable for output/archiving.
         """
-
+        res: Dict[str, Any] = {}
         if node is None:
             # Special case the root - total is time since it was created, and count is 1
-            node = self.root
-            total_elapsed = perf_counter() - self.start_time
-            res = {"name": "root", "total": total_elapsed, "count": 1}
-        else:
-            res = {"total": node.total, "count": node.count}
+            node = self.get_root()
+            res["name"] = "root"
+
+        res["total"] = node.total
+        res["count"] = node.count
+
+        if node.is_parallel:
+            # Note when the block ran in parallel, so that it's less confusing that a timer is less that its children.
+            res["is_parallel"] = True
 
         child_total = 0.0
         child_list = []
@@ -142,7 +181,7 @@ def hierarchical_timer(name: str, timer_stack: TimerStack = None) -> Generator:
 
     try:
         # The wrapped code block will run here.
-        yield
+        yield timer_node
     finally:
         # This will trigger either when the context manager exits, or an exception is raised.
         # We'll accumulate the time, and the exception (if any) gets raised automatically.
@@ -179,3 +218,19 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
     """
     timer_stack = timer_stack or _global_timer_stack
     return timer_stack.get_timing_tree()
+
+
+def get_timer_root(timer_stack: TimerStack = None) -> TimerNode:
+    """
+    Get the root TimerNode of the timer_stack (or the global TimerStack if not specified)
+    """
+    timer_stack = timer_stack or _global_timer_stack
+    return timer_stack.get_root()
+
+
+def reset_timers(timer_stack: TimerStack = None) -> None:
+    """
+    Reset the timer_stack (or the global TimerStack if not specified)
+    """
+    timer_stack = timer_stack or _global_timer_stack
+    timer_stack.reset()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain.Utils
@@ -45,7 +45,7 @@ namespace MLAgents.InferenceBrain.Utils
                 s = u * u + v * v;
             } while (s >= 1.0 || s == 0.0);
 
-            s = Math.Sqrt(-2.0 * Math.Log(s) / 2);
+            s = Math.Sqrt(-2.0 * Math.Log(s) / s);
             m_spare = u * s;
             m_hasSpare = true;
 
@@ -53,7 +53,7 @@ namespace MLAgents.InferenceBrain.Utils
         }
 
         /// <summary>
-        /// Fill a pre-allocated Tensor with random numbers 
+        /// Fill a pre-allocated Tensor with random numbers
         /// </summary>
         /// <param name="t">The pre-allocated Tensor to fill</param>
         /// <exception cref="NotImplementedException">Throws when trying to fill a Tensor of type other than float</exception>
