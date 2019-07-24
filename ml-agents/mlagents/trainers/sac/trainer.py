@@ -5,6 +5,7 @@
 import logging
 from collections import deque, defaultdict
 from typing import List, Any
+import os
 
 import numpy as np
 import tensorflow as tf
@@ -77,6 +78,12 @@ class SACTrainer(Trainer):
             if "updates_per_train" in trainer_parameters["reward_signals"]
             else trainer_parameters["updates_per_train"]
         )
+
+        self.checkpoint_replay_buffer = (
+            trainer_parameters["save_replay_buffer"]
+            if "save_replay_buffer" in trainer_parameters
+            else False
+        )
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         stats = defaultdict(list)
@@ -91,6 +98,21 @@ class SACTrainer(Trainer):
         self.stats = stats
 
         self.training_buffer = Buffer()
+
+        # Load the replay buffer if load
+        if load and self.checkpoint_replay_buffer:
+            try:
+                self.load_replay_buffer()
+            except (AttributeError, FileNotFoundError):
+                LOGGER.warning(
+                    "Replay buffer was unable to load, starting from scratch."
+                )
+            LOGGER.debug(
+                "Loaded update buffer with {} sequences".format(
+                    len(self.training_buffer.update_buffer["actions"])
+                )
+            )
+
         self.episode_steps = {}
 
     @property
@@ -125,6 +147,31 @@ class SACTrainer(Trainer):
         :return: the reward buffer.
         """
         return self._reward_buffer
+
+    def save_model(self) -> None:
+        """
+        Saves the model. Overrides the default save_model since we want to save
+        the replay buffer as well.
+        """
+        self.policy.save_model(self.get_step)
+        if self.checkpoint_replay_buffer:
+            self.save_replay_buffer()
+
+    def save_replay_buffer(self) -> None:
+        """
+        Save the training buffer's update buffer to a pickle file.
+        """
+        filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
+        LOGGER.info("Saving Experience Replay Buffer to {}".format(filename))
+        self.training_buffer.update_buffer.save_to_file(filename)
+
+    def load_replay_buffer(self) -> Buffer:
+        """
+        Loads the last saved replay buffer from a file.
+        """
+        filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
+        LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
+        self.training_buffer.update_buffer.load_from_file(filename)
 
     def increment_step_and_update_last_reward(self):
         """
@@ -418,7 +465,7 @@ class SACTrainer(Trainer):
             LOGGER.debug("Updating reward signals at step {}".format(self.step))
             self.update_reward_signals()
 
-    def update_sac_policy(self):
+    def update_sac_policy(self) -> None:
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
@@ -427,7 +474,7 @@ class SACTrainer(Trainer):
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
-        self.cumulative_returns_since_policy_update = []
+        self.cumulative_returns_since_policy_update: List[float] = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )

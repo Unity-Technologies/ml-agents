@@ -1,6 +1,8 @@
 import numpy as np
 import random
 
+import h5py
+
 from mlagents.envs.exception import UnityException
 
 
@@ -221,7 +223,7 @@ class Buffer(dict):
         # SAC HAC
         def sample_mini_batch(self, batch_size):
             """
-            Creates a mini-batch from a random start and end. 
+            Creates a mini-batch from a random start and end.
             : param batch_size: number of elements to withdraw.
             """
             mini_batch_lists = {}
@@ -239,6 +241,26 @@ class Buffer(dict):
             for key in mini_batch_lists:
                 mini_batch[key] = np.array(mini_batch_lists[key])
             return mini_batch
+
+        def save_to_file(self, filename):
+            """
+            Saves the AgentBuffer as an hdf5 file.
+            """
+            with h5py.File(filename, "w") as write_file:
+                for key, data in self.items():
+                    write_file.create_dataset(
+                        key, data=data, dtype="f", compression="gzip"
+                    )
+
+        def load_from_file(self, filename):
+            """
+            Loads the AgentBuffer from an hdf5 file.
+            """
+            with h5py.File(filename, "r") as read_file:
+                for key in list(read_file.keys()):
+                    self[key] = Buffer.AgentBuffer.AgentBufferField()
+                    # extend() will convert the numpy array's first dimension into list
+                    self[key].extend(read_file[key][()])
 
     def __init__(self):
         self.update_buffer = self.AgentBuffer()
@@ -265,10 +287,10 @@ class Buffer(dict):
 
     # SAC HAC
     def truncate_update_buffer(self, max_length):
-        """ 
+        """
         Truncates the update buffer to a certain length.
 
-        The skew makes a bigger truncation each time, hopefully requiring less truncations overall. 
+        The skew makes a bigger truncation each time, hopefully requiring less truncations overall.
         VERY SLOWWWW. We compensate by cutting further than we need to, so that we're not truncating at each update.
         """
         current_length = len(self.update_buffer["actions"])
