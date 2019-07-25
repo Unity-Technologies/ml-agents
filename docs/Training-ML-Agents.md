@@ -211,6 +211,6 @@ Trainer Metrics are logged to a CSV stored in the `summaries` directory. The met
   * number of experiences used for training
   * mean return 
   
-This option is not available currently for Imitation Learning.
+This option is not available currently for Behavioral Cloning.
 
 [Profiling](Profiling.md) information is also saved in the `summaries` directory.
