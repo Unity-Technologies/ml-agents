@@ -21,6 +21,7 @@ class MultiGPUPPOPolicy(PPOPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         super().__init__(seed, brain, trainer_params, is_training, load)
 
+        reward_signal_configs = trainer_params["reward_signals"]
         self.devices = get_devices()
         self.towers = []
 
@@ -52,6 +53,25 @@ class MultiGPUPPOPolicy(PPOPolicy):
             self._load_graph()
         else:
             self._initialize_graph()
+
+        self.inference_dict = {
+            "action": self.model.output,
+            "log_probs": self.model.all_log_probs,
+            "value": self.model.value_heads,
+            "entropy": self.model.entropy,
+            "learning_rate": self.model.learning_rate,
+        }
+        if self.use_continuous_act:
+            self.inference_dict["pre_action"] = self.model.output_pre
+        if self.use_recurrent:
+            self.inference_dict["memory_out"] = self.model.memory_out
+        if (
+            is_training
+            and self.use_vec_obs
+            and trainer_params["normalize"]
+            and not load
+        ):
+            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.update_batch = self.average_gradients([t.grads for t in self.towers])
         self.update_dict = {"update_batch": self.update_batch}
