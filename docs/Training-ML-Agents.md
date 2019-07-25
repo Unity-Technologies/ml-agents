@@ -101,6 +101,9 @@ environment, you can set the following command line options when invoking
 * `--curriculum=<file>` – Specify a curriculum JSON file for defining the
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
+* `--sampler=<file>` - Specify a sampler YAML file for defining the
+  sampler for generalization training. See [Generalization
+  Training](Training-Generalization-Learning.md) for more information.
 * `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
@@ -194,6 +197,7 @@ are conducting, see:
 * [Training with PPO](Training-PPO.md)
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
+* [Training with Generalization](Training-Generalization-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 
 You can also compare the
