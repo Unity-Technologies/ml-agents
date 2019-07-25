@@ -41,7 +41,7 @@ generate new samples. In this file, we specify the samplers and the
 resampled). Below is an example of a sampler file for the 3D ball environment.
 
 ```yaml
-episode-length: 5000
+resampling-duration: 5000
 
 mass:
     sampler-type: "uniform"
