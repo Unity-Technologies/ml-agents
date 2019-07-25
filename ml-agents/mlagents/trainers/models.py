@@ -397,7 +397,8 @@ class LearningModel(object):
         :param all_logits: The concatenated unnormalized action probabilities for all branches
         :param action_masks: The mask for the logits. Must be of dimension [None x total_number_of_action]
         :param action_size: A list containing the number of possible actions for each branch
-        :return: The action output dimension [batch_size, num_branches], the concatenated normalized probs (after softmax)
+        :return: The action output dimension [batch_size, num_branches], the concatenated
+            normalized probs (after softmax)
         and the concatenated normalized log probs
         """
         action_idx = [0] + list(np.cumsum(action_size))
@@ -446,7 +447,8 @@ class LearningModel(object):
         :param num_streams: Number of streams to create.
         :param h_size: Size of hidden linear layers in stream.
         :param num_layers: Number of hidden linear layers in stream.
-        :param stream_scopes: List of strings (length == num_streams), which contains the scopes for each of the streams. None if all under the same TF scope.
+        :param stream_scopes: List of strings (length == num_streams), which contains
+            the scopes for each of the streams. None if all under the same TF scope.
         :return: List of encoded streams.
         """
         brain = self.brain

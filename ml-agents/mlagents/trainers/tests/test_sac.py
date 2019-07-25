@@ -19,7 +19,6 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
-from mlagents.envs.simple_env_manager import SimpleEnvManager
 
 
 @pytest.fixture
