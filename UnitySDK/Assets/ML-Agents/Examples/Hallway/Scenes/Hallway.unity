@@ -527,6 +527,11 @@ Prefab:
       propertyPath: m_Name
       value: HallwayArea (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 54723318197551596, guid: f3a451555dc514f46a69319857762eda,
+        type: 2}
+      propertyPath: m_Constraints
+      value: 126
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f3a451555dc514f46a69319857762eda, type: 2}
   m_IsPrefabParent: 0
