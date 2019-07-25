@@ -658,7 +658,15 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: dynamic_friction
+      value: 0
+    - key: static_friction
+      value: 0
+    - key: block_drag
+      value: 0.5
+    - key: block_scale
+      value: 2
   agentRunSpeed: 2
   agentRotationSpeed: 15
   spawnAreaMarginMultiplier: 0.5

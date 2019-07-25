@@ -12,6 +12,7 @@ from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.envs.subprocess_env_manager import StepInfo
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -161,6 +162,8 @@ def basic_trainer_controller():
         lesson=None,
         training_seed=99,
         fast_simulation=True,
+        sampler_manager=SamplerManager(None),
+        resampling_interval=None,
     )
 
 
@@ -168,7 +171,21 @@ def basic_trainer_controller():
 @patch("tensorflow.set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
-    TrainerController("", "", "1", 1, None, True, False, False, None, seed, True)
+    TrainerController(
+        "",
+        "",
+        "1",
+        1,
+        None,
+        True,
+        False,
+        False,
+        None,
+        seed,
+        True,
+        SamplerManager(None),
+        None,
+    )
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
 
