@@ -78,7 +78,39 @@ environment, then this specification will be ignored.
     key under the `multirange_uniform` sampler for the gravity reset parameter. 
     The key name should match the name of the corresponding argument in the sampler definition. (Look at defining a new sampler method)
 
+
 The sampler manager allocates a sampler for a reset parameter by using the *Sampler Factory*, which maintains a dictionary mapping of string keys to sampler objects. The available samplers to be used for reset parameter resampling is as available in the Sampler Factory.
+
+#### Possible Sampler Types
+
+The currently implemented samplers that can be used with the `sampler-type` arguments are:
+
+* `uniform` - Uniform sampler
+    *   Uniformly samples a single float value between defined endpoints. 
+        The sub-arguments for this sampler to specify the interval 
+        endpoints are as below. The sampling is done in the range of 
+        [`min_value`, `max_value`).
+
+    * **sub-arguments** - `min_value`, `max_value`
+
+* `gaussian` - Gaussian sampler 
+    *   Samples a single float value from the distribution characterized by
+        the mean and standard deviation. The sub-arguments to specify the 
+        gaussian distribution to use are as below.
+
+    * **sub-arguments** - `mean`, `st_dev`
+
+* `multirange_uniform` - Multirange Uniform sampler
+    *   Uniformly samples a single float value between the specified intervals. 
+        Samples by first performing a weight pick of an interval from the list 
+        of intervals (weighted based on interval width) and samples uniformly 
+        from the selected interval (half-closed interval, same as the uniform 
+        sampler). This sampler can take an arbitrary number of intervals in a 
+        list in the following format: 
+    [[`interval_1_min`, `interval_1_max`], [`interval_2_min`, `interval_2_max`], ...]
+    
+    * **sub-arguments** - `intervals`
+
 
 The implementation of the samplers can be found at `ml-agents-envs/mlagents/envs/sampler_class.py`.
 
