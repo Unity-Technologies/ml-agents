@@ -99,6 +99,7 @@ def worker(
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
+                # TODO get gauges from the workers and merge them in the main process too.
                 step_response = StepResponse(all_brain_info, get_timer_root())
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
