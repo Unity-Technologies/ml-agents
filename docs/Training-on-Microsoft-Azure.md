@@ -10,7 +10,7 @@ support.
 
 A pre-configured virtual machine image is available in the Azure Marketplace and
 is nearly completely ready for training.  You can start by deploying the
-[Data Science Virtual Machine for Linux (Ubuntu)](https://azuremarketplace.microsoft.com/marketplace/apps/microsoft-ads.linux-data-science-vm-ubuntu)
+[Data Science Virtual Machine for Linux (Ubuntu)](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoft-dsvm.linux-data-science-vm-ubuntu)
 into your Azure subscription.  Once your VM is deployed, SSH into it and run the
 following command to complete dependency installation:
 

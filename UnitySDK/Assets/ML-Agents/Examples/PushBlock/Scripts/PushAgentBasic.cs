@@ -44,6 +44,9 @@ public class PushAgentBasic : Agent
     Rigidbody agentRB;  //cached on initialization
     Material groundMaterial; //cached on Awake()
     RayPerception rayPer;
+    
+    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+    string[] detectableObjects = { "block", "goal", "wall" };
 
     /// <summary>
     /// We will be changing the ground material based on success/failue
@@ -72,6 +75,8 @@ public class PushAgentBasic : Agent
         groundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         groundMaterial = groundRenderer.material;
+
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -79,8 +84,7 @@ public class PushAgentBasic : Agent
         if (useVectorObs)
         {
             var rayDistance = 12f;
-            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-            var detectableObjects = new[] { "block", "goal", "wall" };
+            
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
         }
@@ -215,5 +219,34 @@ public class PushAgentBasic : Agent
         transform.position = GetRandomSpawnPos();
         agentRB.velocity = Vector3.zero;
         agentRB.angularVelocity = Vector3.zero;
+
+        SetResetParameters();
+    }
+
+    public void SetGroundMaterialFriction()
+    {
+        var resetParams = academy.resetParameters;
+
+        var groundCollider = ground.GetComponent<Collider>() as Collider;
+
+        groundCollider.material.dynamicFriction = resetParams["dynamic_friction"];
+        groundCollider.material.staticFriction = resetParams["static_friction"];
+    }
+
+    public void SetBlockProperties()
+    {
+        var resetParams = academy.resetParameters;
+
+        //Set the scale of the block
+        blockRB.transform.localScale = new Vector3(resetParams["block_scale"], 0.75f, resetParams["block_scale"]);
+
+        // Set the drag of the block
+        blockRB.drag = resetParams["block_drag"];
+    }
+
+    public void SetResetParameters()
+    {
+        SetGroundMaterialFriction();
+        SetBlockProperties();
     }
 }
