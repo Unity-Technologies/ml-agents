@@ -1,6 +1,6 @@
 # Profiling ML-Agents in Python
 
-ml-agents provides a lightweight profiling system, in order to identity hotspots in the training process and help spot
+ML-Agents provides a lightweight profiling system, in order to identity hotspots in the training process and help spot
 regressions from changes.
 
 Timers are hierarchical, meaning that the time tracked in a block of code can be further split into other blocks if
