@@ -30,12 +30,12 @@ def test_buffer():
     a = b[1]["vector_observation"].get_batch(
         batch_size=2, training_length=1, sequential=True
     )
-    assert_array(a, np.array([[171, 172, 173], [181, 182, 183]]))
+    assert_array(np.array(a), np.array([[171, 172, 173], [181, 182, 183]]))
     a = b[2]["vector_observation"].get_batch(
         batch_size=2, training_length=3, sequential=True
     )
     assert_array(
-        a,
+        np.array(a),
         np.array(
             [
                 [[231, 232, 233], [241, 242, 243], [251, 252, 253]],
@@ -47,7 +47,7 @@ def test_buffer():
         batch_size=2, training_length=3, sequential=False
     )
     assert_array(
-        a,
+        np.array(a),
         np.array(
             [
                 [[251, 252, 253], [261, 262, 263], [271, 272, 273]],
@@ -64,4 +64,4 @@ def test_buffer():
 
     c = b.update_buffer.make_mini_batch(start=0, end=1)
     assert c.keys() == b.update_buffer.keys()
-    assert c["action"].shape == (1, 2, 2)
+    assert np.array(c["action"]).shape == (1, 2, 2)
