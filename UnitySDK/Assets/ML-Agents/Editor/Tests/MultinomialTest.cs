@@ -161,25 +161,6 @@ namespace MLAgents.Tests
         }
         
         [Test]
-        public void TestDstWrongShape()
-        {
-            Multinomial m = new Multinomial(2018);
-            
-            TensorProxy src = new TensorProxy
-            {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(0,1)
-            };
-            TensorProxy dst = new TensorProxy
-            {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(0,2)
-            };
-
-            Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
-        }
-
-        [Test]
         public void TestUnequalBatchSize()
         {
             Multinomial m = new Multinomial(2018);
