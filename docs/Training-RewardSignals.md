@@ -156,7 +156,7 @@ Typical Range: `0.8` - `0.9`
 #### Demo Path
 
 `demo_path` is the path to your `.demo` file or directory of `.demo` files. See the [imitation learning guide]
-(Training-ImitationLearning.md).
+(Training-Imitation-Learning.md).
 
 #### Encoding Size
 
