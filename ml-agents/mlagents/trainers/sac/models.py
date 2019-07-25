@@ -269,18 +269,20 @@ class SACNetwork(LearningModel):
             # Squash probabilities
             # Keep deterministic around in case we want to use it.
             self.deterministic_output = tf.tanh(mu)
-            self.output = tf.tanh(policy_)
+            output = tf.tanh(policy_)
 
             # Squash correction
             all_probs -= tf.reduce_sum(
-                tf.log(1 - self.output ** 2 + EPSILON), axis=1, keepdims=True
+                tf.log(1 - output ** 2 + EPSILON), axis=1, keepdims=True
             )
-            # all_probs = tf.Print(all_probs, [all_probs])
-            self.all_log_probs = all_probs
 
-            self.selected_actions = tf.stop_gradient(self.output)
+            self.all_log_probs = all_probs
+            self.selected_actions = tf.stop_gradient(output)
 
             self.action_probs = all_probs
+
+        # Extract output for Barracuda
+        self.output = tf.identity(output, name="action")
 
         # Get all policy vars
         self.policy_vars = self.get_vars(scope)
@@ -344,7 +346,8 @@ class SACNetwork(LearningModel):
 
             self.action_probs = normalized_probs
 
-            # Really, this is entropy, but it has an analogous purpose to the log probs in the continuous case.
+            # Really, this is entropy, but it has an analogous purpose to the log probs in the
+            # continuous case.
             self.all_log_probs = self.action_probs * normalized_logprobs
             self.output = output
 
@@ -372,6 +375,9 @@ class SACNetwork(LearningModel):
             # self.entropy = self.all_log_probs
             # This is total entropy over all branches
             self.entropy = -1 * tf.reduce_sum(self.all_log_probs, axis=1)
+
+        # Extract the normalized logprobs for Barracuda
+        self.normalized_logprobs = tf.identity(normalized_logprobs, name="action")
 
         self.policy_vars = self.get_vars(scope)
 
@@ -596,7 +602,8 @@ class SACModel(LearningModel):
         if self.brain.vector_action_space_type == "discrete":
             self.action_masks = self.policy_network.action_masks
 
-        self.output = tf.identity(self.policy_network.output, "action")
+        self.output = self.policy_network.output
+
         self.value = tf.identity(self.policy_network.value, name="value_estimate")
         self.value_heads = self.policy_network.value_heads
         self.all_log_probs = self.policy_network.all_log_probs
@@ -744,6 +751,7 @@ class SACModel(LearningModel):
                 initializer=np.log(self.init_entcoef).astype(np.float32),
                 trainable=True,
             )
+
         self.ent_coef = tf.exp(self.log_ent_coef)
         if discrete:
             # We also have to do a different entropy and target_entropy per branch.
@@ -802,7 +810,7 @@ class SACModel(LearningModel):
                         )
                     )
                 )
-            # v_backup = tf.Print(v_backup,[v_backup,tf.reduce_mean(broken_ent_bonus, axis=0)])
+
         else:
             self.entropy_loss = -tf.reduce_mean(
                 self.log_ent_coef
@@ -824,8 +832,6 @@ class SACModel(LearningModel):
                 tf.to_float(self.mask) * batch_policy_loss
             )
 
-            # self.policy_loss = tf.reduce_mean(- self.policy_network.q1_p)
-            # self.policy_loss = tf.Print(self.policy_loss,[self.policy_network.q1_p])
             value_losses = []
             for name in stream_names:
                 v_backup = tf.stop_gradient(
