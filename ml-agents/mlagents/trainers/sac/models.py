@@ -151,7 +151,7 @@ class SACNetwork(LearningModel):
 
         if create_qs:
             hidden_q = tf.concat([hidden_value, self.external_action_in], axis=-1)
-            hidden_qp = tf.concat([hidden_value, self.output_pre], axis=-1)
+            hidden_qp = tf.concat([hidden_value, self.output], axis=-1)
             self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
                 self.stream_names,
                 hidden_q,
