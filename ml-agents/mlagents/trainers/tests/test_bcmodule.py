@@ -77,7 +77,7 @@ def create_ppo_policy_with_bc_mock(
     trainer_parameters["pretraining"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/" + demo_file
     )
-    policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False, False)
+    policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
     return env, policy
 
 
