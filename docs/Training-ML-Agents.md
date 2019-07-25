@@ -144,10 +144,7 @@ environment, you can set the following command line options when invoking
   training doesn't involve visual observations (reading from Pixels). See
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
-* `--debug` - Specify this option to run ML-Agents in debug mode and log Trainer
-  Metrics to a CSV stored in the `summaries` directory. The metrics  stored are:
-  brain name, time to update policy, time since start of training, time for last experience collection, number of experiences used for training, mean return. This
-  option is not available currently for Imitation Learning.
+* `--debug` - Specify this option to enable debug-level logging for some parts of the code.
 
 ### Training config file
 
@@ -204,3 +201,16 @@ You can also compare the
 to the corresponding sections of the `config/trainer_config.yaml` file for each
 example to see how the hyperparameters and other configuration variables have
 been changed from the defaults.
+
+### Output metrics
+Trainer Metrics are logged to a CSV stored in the `summaries` directory. The metrics stored are:
+  * brain name
+  * time to update policy
+  * time since start of training
+  * time for last experience collection
+  * number of experiences used for training
+  * mean return 
+  
+This option is not available currently for Behavioral Cloning.
+
+[Profiling](Profiling.md) information is also saved in the `summaries` directory.
