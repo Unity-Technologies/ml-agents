@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from mlagents.envs.timers import timed
+from mlagents.trainers.models import EncoderType
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
