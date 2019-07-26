@@ -70,12 +70,6 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
         if self.policy.use_vec_obs:
             feed_dict[self.model.next_vector_in] = next_info.vector_observations
-        if self.policy.use_recurrent:
-            if current_info.memories.shape[1] == 0:
-                current_info.memories = self.policy.make_empty_memory(
-                    len(current_info.agents)
-                )
-            feed_dict[self.policy.model.memory_in] = current_info.memories
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -145,9 +139,6 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"].reshape(
                 [-1, self.policy.model.act_size[0]]
             )
-            feed_dict[self.policy.model.epsilon] = mini_batch[
-                "random_normal_epsilon"
-            ].reshape([-1, self.policy.model.act_size[0]])
         else:
             feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
                 [-1, len(self.policy.model.act_size)]
@@ -185,9 +176,7 @@ class CuriosityRewardSignal(RewardSignal):
                     )
                 else:
                     feed_dict[self.model.next_visual_in[i]] = _obs
-        if self.policy.use_recurrent:
-            mem_in = mini_batch["memory"][:, 0, :]
-            feed_dict[self.policy.model.memory_in] = mem_in
+
         self.has_updated = True
         run_out = self.policy._execute_model(feed_dict, self.update_dict)
         return run_out
