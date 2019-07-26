@@ -22,6 +22,7 @@ from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 from mlagents.trainers.config import TrainerParameters
 
+
 def run_training(
     sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
 ) -> None:
@@ -81,6 +82,7 @@ def run_training(
     tp = {}
     for _name, _params in trainer_config.items():
         import copy
+
         try:
             _params = copy.deepcopy(_params)
             tp[_name] = TrainerParameters(**_params)
