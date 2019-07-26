@@ -19,12 +19,31 @@ logger = logging.getLogger("mlagents.trainers")
 
 class MultiGPUPPOPolicy(PPOPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
+        """
+        Policy for Proximal Policy Optimization Networks with multi-GPU training
+        :param seed: Random seed.
+        :param brain: Assigned Brain object.
+        :param trainer_params: Defined training parameters.
+        :param is_training: Whether the model should be trained.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
+        """
         super().__init__(seed, brain, trainer_params, is_training, load)
 
-        reward_signal_configs = trainer_params["reward_signals"]
+        self.update_batch = self.average_gradients([t.grads for t in self.towers])
+        self.update_dict = {"update_batch": self.update_batch}
+        self.update_dict.update({"value_loss_%d".format(i):self.towers[i].value_loss for i in range(len(self.towers))})
+        self.update_dict.update({"policy_loss_%d".format(i):self.towers[i].policy_loss for i in range(len(self.towers))})
+
+    def create_model(self, brain, trainer_params, reward_signal_configs, seed):
+        """
+        Create PPO model, one on each device
+        :param brain: Assigned Brain object.
+        :param trainer_params: Defined training parameters.
+        :param reward_signal_configs: Reward signal config
+        :param seed: Random seed.
+        """
         self.devices = get_devices()
         self.towers = []
-
         with self.graph.as_default():
             for device in self.devices:
                 with tf.device(device):
@@ -48,36 +67,6 @@ class MultiGPUPPOPolicy(PPOPolicy):
                         self.towers[-1].create_ppo_optimizer()
 
             self.model = self.towers[0]
-
-        if load:
-            self._load_graph()
-        else:
-            self._initialize_graph()
-
-        self.inference_dict = {
-            "action": self.model.output,
-            "log_probs": self.model.all_log_probs,
-            "value": self.model.value_heads,
-            "entropy": self.model.entropy,
-            "learning_rate": self.model.learning_rate,
-        }
-        if self.use_continuous_act:
-            self.inference_dict["pre_action"] = self.model.output_pre
-        if self.use_recurrent:
-            self.inference_dict["memory_out"] = self.model.memory_out
-        if (
-            is_training
-            and self.use_vec_obs
-            and trainer_params["normalize"]
-            and not load
-        ):
-            self.inference_dict["update_mean"] = self.model.update_normalization
-
-        self.update_batch = self.average_gradients([t.grads for t in self.towers])
-        self.update_dict = {"update_batch": self.update_batch}
-        self.update_dict.update({"value_loss_%d".format(i):self.towers[i].value_loss for i in range(len(self.towers))})
-        self.update_dict.update({"policy_loss_%d".format(i):self.towers[i].policy_loss for i in range(len(self.towers))})
-
 
     @timed
     def update(self, mini_batch, num_sequences):
@@ -108,6 +97,10 @@ class MultiGPUPPOPolicy(PPOPolicy):
         return run_out
 
     def average_gradients(self, tower_grads):
+        """
+        Average gradients from all towers
+        :param tower_grads: Gradients from all towers
+        """
         average_grads = []
         for grad_and_vars in zip(*tower_grads):
             grads = [g for g, _ in grad_and_vars if g is not None]
@@ -120,6 +113,9 @@ class MultiGPUPPOPolicy(PPOPolicy):
 
 
 def get_devices():
+    """
+    Get all available GPU devices
+    """
     local_device_protos = device_lib.list_local_devices()
     devices = [x.name for x in local_device_protos if x.device_type == "GPU"]
     return devices

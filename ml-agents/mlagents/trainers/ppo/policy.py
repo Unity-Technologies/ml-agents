@@ -31,22 +31,6 @@ class PPOPolicy(TFPolicy):
 
         self.reward_signals = {}
         with self.graph.as_default():
-            self.model = PPOModel(
-                brain=brain,
-                lr=float(trainer_params["learning_rate"]),
-                h_size=int(trainer_params["hidden_units"]),
-                epsilon=float(trainer_params["epsilon"]),
-                beta=float(trainer_params["beta"]),
-                max_step=float(trainer_params["max_steps"]),
-                normalize=trainer_params["normalize"],
-                use_recurrent=trainer_params["use_recurrent"],
-                num_layers=int(trainer_params["num_layers"]),
-                m_size=self.m_size,
-                seed=seed,
-                stream_names=list(reward_signal_configs.keys()),
-                vis_encode_type=trainer_params["vis_encode_type"],
-            )
-
             # Create reward signals
             for reward_signal, config in reward_signal_configs.items():
                 self.reward_signals[reward_signal] = create_reward_signal(
@@ -65,6 +49,8 @@ class PPOPolicy(TFPolicy):
                 )
             else:
                 self.bc_module = None
+
+        self.create_model(brain, trainer_params, reward_signal_configs, seed)
 
         if load:
             self._load_graph()
@@ -97,6 +83,31 @@ class PPOPolicy(TFPolicy):
             "policy_loss": self.total_policy_loss,
             "update_batch": self.model.update_batch,
         }
+
+    def create_model(self, brain, trainer_params, reward_signal_configs, seed):
+        """
+        Create PPO model
+        :param brain: Assigned Brain object.
+        :param trainer_params: Defined training parameters.
+        :param reward_signal_configs: Reward signal config
+        :param seed: Random seed.
+        """
+        with self.graph.as_default():
+            self.model = PPOModel(
+                brain=brain,
+                lr=float(trainer_params["learning_rate"]),
+                h_size=int(trainer_params["hidden_units"]),
+                epsilon=float(trainer_params["epsilon"]),
+                beta=float(trainer_params["beta"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=trainer_params["normalize"],
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                stream_names=list(reward_signal_configs.keys()),
+                vis_encode_type=trainer_params["vis_encode_type"],
+            )
 
     @timed
     def evaluate(self, brain_info):
