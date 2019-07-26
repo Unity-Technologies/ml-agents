@@ -52,7 +52,7 @@ class GAILRewardSignal(RewardSignal):
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
-    def evaluate_batch(self, mini_batch: Dict[str, Any]):
+    def evaluate_batch(self, mini_batch: Dict[str, Any]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.model.batch_size: len(mini_batch["actions"]),
             self.policy.model.sequence_length: self.policy.sequence_length,
@@ -79,13 +79,7 @@ class GAILRewardSignal(RewardSignal):
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
-        return scaled_reward, unscaled_reward
-        # if self.policy.use_recurrent:
-        #     if current_info.memories.shape[1] == 0:
-        #         current_info.memories = self.policy.make_empty_memory(
-        #             len(current_info.agents)
-        #         )
-        #     feed_dict[self.policy.model.memory_in] = current_info.memories
+        return RewardSignalResult(scaled_reward, unscaled_reward)
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
@@ -110,12 +104,6 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[
                 self.policy.model.action_holder
             ] = next_info.previous_vector_actions
-        if self.policy.use_recurrent:
-            if current_info.memories.shape[1] == 0:
-                current_info.memories = self.policy.make_empty_memory(
-                    len(current_info.agents)
-                )
-            feed_dict[self.policy.model.memory_in] = current_info.memories
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
