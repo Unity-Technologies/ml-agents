@@ -184,6 +184,6 @@ def _check_environment_trains(env):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple(use_discrete):
+def test_simple_rl(use_discrete):
     env = Simple1DEnvironment(use_discrete=use_discrete)
     _check_environment_trains(env)
