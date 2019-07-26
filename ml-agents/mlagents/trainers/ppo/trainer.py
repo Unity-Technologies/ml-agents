@@ -11,7 +11,7 @@ import numpy as np
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGPUPPOPolicy, get_devices
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.action_info import ActionInfoOutputs
 
@@ -76,7 +76,7 @@ class PPOTrainer(Trainer):
 
         self.step = 0
         if multi_gpu and len(get_devices()) > 1:
-            self.policy = MultiGPUPPOPolicy(
+            self.policy = MultiGpuPPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
             )
         else:

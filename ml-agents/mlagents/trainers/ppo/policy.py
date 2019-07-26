@@ -29,6 +29,8 @@ class PPOPolicy(TFPolicy):
 
         reward_signal_configs = trainer_params["reward_signals"]
 
+        self.create_model(brain, trainer_params, reward_signal_configs, seed)
+
         self.reward_signals = {}
         with self.graph.as_default():
             # Create reward signals
@@ -49,8 +51,6 @@ class PPOPolicy(TFPolicy):
                 )
             else:
                 self.bc_module = None
-
-        self.create_model(brain, trainer_params, reward_signal_configs, seed)
 
         if load:
             self._load_graph()
@@ -108,6 +108,7 @@ class PPOPolicy(TFPolicy):
                 stream_names=list(reward_signal_configs.keys()),
                 vis_encode_type=trainer_params["vis_encode_type"],
             )
+            self.model.create_ppo_optimizer()
 
     @timed
     def evaluate(self, brain_info):
@@ -150,11 +151,11 @@ class PPOPolicy(TFPolicy):
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
-        feed_dict = self.get_feed_dict(self.model, mini_batch, num_sequences)
+        feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
         run_out = self._execute_model(feed_dict, self.update_dict)
         return run_out
 
-    def get_feed_dict(self, model, mini_batch, num_sequences):
+    def construct_feed_dict(self, model, mini_batch, num_sequences):
         feed_dict = {
             model.batch_size: num_sequences,
             model.sequence_length: self.sequence_length,

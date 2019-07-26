@@ -61,7 +61,6 @@ class PPOModel(LearningModel):
             lr,
             max_step,
         )
-        self.create_ppo_optimizer()
 
     def create_losses(
         self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step

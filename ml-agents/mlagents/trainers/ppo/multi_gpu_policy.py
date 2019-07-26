@@ -17,7 +17,7 @@ TOWER_SCOPE_NAME = "tower"
 logger = logging.getLogger("mlagents.trainers")
 
 
-class MultiGPUPPOPolicy(PPOPolicy):
+class MultiGpuPPOPolicy(PPOPolicy):
     def __init__(self, seed, brain, trainer_params, is_training, load):
         """
         Policy for Proximal Policy Optimization Networks with multi-GPU training
@@ -31,8 +31,18 @@ class MultiGPUPPOPolicy(PPOPolicy):
 
         self.update_batch = self.average_gradients([t.grads for t in self.towers])
         self.update_dict = {"update_batch": self.update_batch}
-        self.update_dict.update({"value_loss_%d".format(i):self.towers[i].value_loss for i in range(len(self.towers))})
-        self.update_dict.update({"policy_loss_%d".format(i):self.towers[i].policy_loss for i in range(len(self.towers))})
+        self.update_dict.update(
+            {
+                "value_loss_%d".format(i): self.towers[i].value_loss
+                for i in range(len(self.towers))
+            }
+        )
+        self.update_dict.update(
+            {
+                "policy_loss_%d".format(i): self.towers[i].policy_loss
+                for i in range(len(self.towers))
+            }
+        )
 
     def create_model(self, brain, trainer_params, reward_signal_configs, seed):
         """
@@ -48,7 +58,8 @@ class MultiGPUPPOPolicy(PPOPolicy):
             for device in self.devices:
                 with tf.device(device):
                     with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
-                        self.towers.append(PPOModel(
+                        self.towers.append(
+                            PPOModel(
                                 brain=brain,
                                 lr=float(trainer_params["learning_rate"]),
                                 h_size=int(trainer_params["hidden_units"]),
@@ -65,7 +76,6 @@ class MultiGPUPPOPolicy(PPOPolicy):
                             )
                         )
                         self.towers[-1].create_ppo_optimizer()
-
             self.model = self.towers[0]
 
     @timed
@@ -87,12 +97,16 @@ class MultiGPUPPOPolicy(PPOPolicy):
 
         assert len(device_batches) == len(self.towers)
         for batch, tower in zip(device_batches, self.towers):
-            feed_dict.update(self.get_feed_dict(tower, batch, num_sequences))
+            feed_dict.update(self.construct_feed_dict(tower, batch, num_sequences))
 
         out = self._execute_model(feed_dict, self.update_dict)
         run_out = {}
-        run_out["value_loss"] = np.mean([out["value_loss_%d".format(i)] for i in range(len(self.towers))])
-        run_out["policy_loss"] = np.mean([out["policy_loss_%d".format(i)] for i in range(len(self.towers))])
+        run_out["value_loss"] = np.mean(
+            [out["value_loss_%d".format(i)] for i in range(len(self.towers))]
+        )
+        run_out["policy_loss"] = np.mean(
+            [out["policy_loss_%d".format(i)] for i in range(len(self.towers))]
+        )
         run_out["update_batch"] = out["update_batch"]
         return run_out
 
