@@ -1,7 +1,7 @@
 ﻿namespace MLAgents.InferenceBrain
 {
     /// <summary>
-    /// Contains the names of the input and output Tensor for the Inference Brain.
+    /// Contains the names of the input and output tensors for the Inference Brain.
     /// </summary>
     public static class TensorNames
     {

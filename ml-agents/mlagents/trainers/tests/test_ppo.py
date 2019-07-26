@@ -32,7 +32,6 @@ def dummy_config():
         sequence_length: 64
         summary_freq: 1000
         use_recurrent: false
-        vis_encode_type: default
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
@@ -94,6 +93,13 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     for key, val in run_out.items():
         assert type(key) is str
         assert val == 0.0
+
+    # Check if we ignore terminal states properly
+    policy.reward_signals["extrinsic"].use_terminal_states = False
+    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    for key, val in run_out.items():
+        assert type(key) is str
+        assert val != 0.0
 
     env.close()
 
@@ -328,7 +334,6 @@ def test_trainer_increment_step():
         "sequence_length": 64,
         "summary_freq": 3000,
         "use_recurrent": False,
-        "vis_encode_type": "default",
         "use_curiosity": False,
         "curiosity_strength": 0.01,
         "curiosity_enc_size": 128,

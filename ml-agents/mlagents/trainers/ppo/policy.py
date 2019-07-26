@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
+from mlagents.trainers.models import EncoderType
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -44,7 +45,9 @@ class PPOPolicy(TFPolicy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
-                vis_encode_type=trainer_params["vis_encode_type"],
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
             )
             self.model.create_ppo_optimizer()
 
@@ -204,8 +207,6 @@ class PPOPolicy(TFPolicy):
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """
-        if done:
-            return {k: 0.0 for k in self.model.value_heads.keys()}
 
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.batch_size: 1,
@@ -227,7 +228,15 @@ class PPOPolicy(TFPolicy):
             ].reshape([-1, len(self.model.act_size)])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
-        return {k: float(v) for k, v in value_estimates.items()}
+        value_estimates = {k: float(v) for k, v in value_estimates.items()}
+
+        # If we're done, reassign all of the value estimates that need terminal states.
+        if done:
+            for k in value_estimates:
+                if self.reward_signals[k].use_terminal_states:
+                    value_estimates[k] = 0.0
+
+        return value_estimates
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """
