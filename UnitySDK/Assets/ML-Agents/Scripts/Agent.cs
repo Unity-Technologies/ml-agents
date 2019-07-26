@@ -598,10 +598,10 @@ namespace MLAgents
                     brain.brainParameters.vectorObservationSize,
                     info.vectorObservation.Count));
             }
-
-            info.stackedVectorObservation.RemoveRange(
-                0, param.vectorObservationSize);
-            info.stackedVectorObservation.AddRange(info.vectorObservation);
+            
+            Utilities.ShiftLeft(info.stackedVectorObservation, param.vectorObservationSize);
+            Utilities.ReplaceRange(info.stackedVectorObservation, info.vectorObservation, 
+                                    info.stackedVectorObservation.Count - info.vectorObservation.Count);
 
             info.visualObservations.Clear();
             var visualObservationCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;

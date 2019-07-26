@@ -1,7 +1,9 @@
 ﻿#if ENABLE_TENSORFLOW
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Barracuda;
 
 namespace MLAgents.InferenceBrain
 {
@@ -48,8 +50,8 @@ namespace MLAgents.InferenceBrain
         /// <summary>
         /// Generates the Tensor inputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor IEnumerable with the expected Tensor inputs</returns>
-        public IReadOnlyList<Tensor> GetInputTensors()
+        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs</returns>
+        public IReadOnlyList<TensorProxy> GetInputTensors()
         {
             return _engine?.InputFeatures();
         }
@@ -57,48 +59,48 @@ namespace MLAgents.InferenceBrain
         /// <summary>
         /// Generates the Tensor outputs that are expected to be present in the Model. 
         /// </summary>
-        /// <returns>Tensor IEnumerable with the expected Tensor outputs</returns>
-        public IReadOnlyList<Tensor> GetOutputTensors()
+        /// <returns>TensorProxy IEnumerable with the expected Tensor outputs</returns>
+        public IReadOnlyList<TensorProxy> GetOutputTensors()
         {
-            var tensorList = new List<Tensor>();
+            var tensorList = new List<TensorProxy>();
             if (_brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                tensorList.Add(new Tensor()
+                tensorList.Add(new TensorProxy()
                 {
                     Name = TensorNames.ActionOutput,
                     Shape = new long[]
                     {
                         -1, _brainParameters.vectorActionSize[0]
                     },
-                    ValueType = Tensor.TensorType.FloatingPoint,
+                    ValueType = TensorProxy.TensorType.FloatingPoint,
                     Data = null
                 });
             }
             else
             {
                 tensorList.Add(
-                    new Tensor()
+                    new TensorProxy()
                     {
                         Name = TensorNames.ActionOutput,
                         Shape = new long[]
                         {
                             -1, _brainParameters.vectorActionSize.Sum()
                         },
-                        ValueType = Tensor.TensorType.FloatingPoint,
+                        ValueType = TensorProxy.TensorType.FloatingPoint,
                         Data = null
                     });
             }
             var memory = GetIntScalar(TensorNames.MemorySize);
             if (memory > 0)
             {
-                tensorList.Add(new Tensor()
+                tensorList.Add(new TensorProxy()
                 {
                     Name = TensorNames.RecurrentOutput,
                     Shape = new long[2]
                     {
                         -1, memory
                     },
-                    ValueType = Tensor.TensorType.FloatingPoint,
+                    ValueType = TensorProxy.TensorType.FloatingPoint,
                     Data = null
                 });
             }
@@ -114,25 +116,26 @@ namespace MLAgents.InferenceBrain
         /// <returns>The value of the scalar variable in the model. (-1 if not found)</returns>
         private int GetIntScalar(string name)
         {
-            var outputs = new Tensor[]
+            var outputs = new TensorProxy[]
             {
-                new Tensor()
+                new TensorProxy()
                 {
                     Name = name,
-                    ValueType = Tensor.TensorType.Integer,
+                    ValueType = TensorProxy.TensorType.Integer,
                     Shape = new long[] { },
-                    Data = new long[1]
+                    Data = new Tensor(1,1)
                 },
             };
             try
             {
-                _engine.ExecuteGraph(new Tensor[0], outputs);
+                _engine.ExecuteGraph(new TensorProxy[0], outputs);
             }
-            catch
+            catch (Exception ex)
             {
+                UnityEngine.Debug.LogError($"Failed to execute GetIntScalar()\n{ex}");
                 return -1;
             }
-            return (outputs[0].Data as int[])[0];
+            return (int)outputs[0].Data[0];
         }
 
         /// <summary>
@@ -319,7 +322,7 @@ namespace MLAgents.InferenceBrain
         private void CheckInputTensorShape()
         {
             var tensorTester =
-                new Dictionary<string, Func<Tensor, string>>()
+                new Dictionary<string, Func<TensorProxy, string>>()
                 {
                     {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
                     {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
@@ -361,7 +364,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensor"> The tensor that is expected by the model</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckVectorObsShape(Tensor tensor)
+        private string CheckVectorObsShape(TensorProxy tensor)
         {
             var vecObsSizeBp = _brainParameters.vectorObservationSize;
             var numStackedVector = _brainParameters.numStackedVectorObservations;
@@ -383,7 +386,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensor"> The tensor that is expected by the model</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckPreviousActionShape(Tensor tensor)
+        private string CheckPreviousActionShape(TensorProxy tensor)
         {
             var numberActionsBp = _brainParameters.vectorActionSize.Length;
             var numberActionsT = tensor.Shape[1];
@@ -405,7 +408,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="visObsIndex"> The index of the visual observation.</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckVisualObsShape(Tensor tensor, int visObsIndex)
+        private string CheckVisualObsShape(TensorProxy tensor, int visObsIndex)
         {
             var resolutionBp = _brainParameters.cameraResolutions[visObsIndex];
             var widthBp = resolutionBp.width;
@@ -418,7 +421,7 @@ namespace MLAgents.InferenceBrain
             {
                 return string.Format(
                     "The visual Observation {0} of the model does not match. " +
-                    "Received Tensor of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
+                    "Received TensorProxy of shape [?x{1}x{2}x{3}] but was expecting [?x{4}x{5}x{6}].",
                     visObsIndex, widthBp, heightBp, pixelBp, widthT, heightT, pixelT);
             }
             return null;
@@ -458,7 +461,7 @@ namespace MLAgents.InferenceBrain
                     "suggest Continuous Control.");
                 return;
             }
-            var tensorTester = new Dictionary<string, Func<Tensor, int, string>>();
+            var tensorTester = new Dictionary<string, Func<TensorProxy, int, string>>();
             if (_brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 tensorTester[TensorNames.ActionOutput] = CheckContinuousActionOutputShape;
@@ -491,7 +494,7 @@ namespace MLAgents.InferenceBrain
         /// by the model.</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckDiscreteActionOutputShape(Tensor tensor, int modelActionSize)
+        private string CheckDiscreteActionOutputShape(TensorProxy tensor, int modelActionSize)
         {
             var bpActionSize = _brainParameters.vectorActionSize.Sum();
             if  (modelActionSize != bpActionSize)
@@ -513,7 +516,7 @@ namespace MLAgents.InferenceBrain
         /// by the model.</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
-        private string CheckContinuousActionOutputShape(Tensor tensor, int modelActionSize)
+        private string CheckContinuousActionOutputShape(TensorProxy tensor, int modelActionSize)
         {
             var bpActionSize = _brainParameters.vectorActionSize[0];
             if  (modelActionSize != bpActionSize)
