@@ -7,8 +7,14 @@ from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, StepInfo
-from mlagents.envs.timers import timed
-from mlagents.envs import BrainParameters, ActionInfo
+from mlagents.envs.timers import (
+    TimerNode,
+    timed,
+    hierarchical_timer,
+    reset_timers,
+    get_timer_root,
+)
+from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
 
 
 class EnvironmentCommand(NamedTuple):
@@ -20,6 +26,11 @@ class EnvironmentResponse(NamedTuple):
     name: str
     worker_id: int
     payload: Any
+
+
+class StepResponse(NamedTuple):
+    all_brain_info: AllBrainInfo
+    timer_root: Optional[TimerNode]
 
 
 class UnityEnvWorker:
@@ -84,7 +95,14 @@ def worker(
                         texts[brain_name] = action_info.text
                         values[brain_name] = action_info.value
                     all_brain_info = env.step(actions, memories, texts, values)
-                step_queue.put(EnvironmentResponse("step", worker_id, all_brain_info))
+                # The timers in this process are independent from all the processes and the "main" process
+                # So after we send back the root timer, we can safely clear them.
+                # Note that we could randomly return timers a fraction of the time if we wanted to reduce
+                # the data transferred.
+                # TODO get gauges from the workers and merge them in the main process too.
+                step_response = StepResponse(all_brain_info, get_timer_root())
+                step_queue.put(EnvironmentResponse("step", worker_id, step_response))
+                reset_timers()
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)
             elif cmd.name == "reset_parameters":
@@ -192,22 +210,35 @@ class SubprocessEnvManager(EnvManager):
     def close(self) -> None:
         self.step_queue.close()
         self.step_queue.join_thread()
-        for env in self.env_workers:
-            env.close()
+        for env_worker in self.env_workers:
+            env_worker.close()
 
     def _postprocess_steps(
         self, env_steps: List[EnvironmentResponse]
     ) -> List[StepInfo]:
         step_infos = []
+        timer_nodes = []
         for step in env_steps:
+            payload: StepResponse = step.payload
             env_worker = self.env_workers[step.worker_id]
             new_step = StepInfo(
                 env_worker.previous_step.current_all_brain_info,
-                step.payload,
+                payload.all_brain_info,
                 env_worker.previous_all_action_info,
             )
             step_infos.append(new_step)
             env_worker.previous_step = new_step
+
+            if payload.timer_root:
+                timer_nodes.append(payload.timer_root)
+
+        if timer_nodes:
+            with hierarchical_timer("workers") as main_timer_node:
+                for worker_timer_node in timer_nodes:
+                    main_timer_node.merge(
+                        worker_timer_node, root_name="worker_root", is_parallel=True
+                    )
+
         return step_infos
 
     @timed

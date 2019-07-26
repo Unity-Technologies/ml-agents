@@ -12,9 +12,9 @@ ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
 
 class EncoderType(Enum):
-    RESNET = "resnet"
+    SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
-    DEFAUL = "default"
+    RESNET = "resnet"
 
 
 class LearningModel(object):
@@ -284,7 +284,6 @@ class LearningModel(object):
         :param reuse: Whether to re-use the weights within the same scope.
         :return: List of hidden layer tensors.
         """
-        print("creating nature cnn")
         with tf.variable_scope(scope):
             conv1 = tf.layers.conv2d(
                 image_input,
@@ -340,7 +339,6 @@ class LearningModel(object):
         :param reuse: Whether to re-use the weights within the same scope.
         :return: List of hidden layer tensors.
         """
-        print("creating resnet")
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
         with tf.variable_scope(scope):
@@ -435,8 +433,12 @@ class LearningModel(object):
         )
 
     def create_observation_streams(
-        self, num_streams, h_size, num_layers, vis_encode_type="default"
-    ):
+        self,
+        num_streams: int,
+        h_size: int,
+        num_layers: int,
+        vis_encode_type: EncoderType = EncoderType.SIMPLE,
+    ) -> tf.Tensor:
         """
         Creates encoding stream for observations.
         :param num_streams: Number of streams to create.
@@ -460,7 +462,6 @@ class LearningModel(object):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             if self.vis_obs_size > 0:
-                vis_encode_type = EncoderType(vis_encode_type)
                 if vis_encode_type == EncoderType.RESNET:
                     for j in range(brain.number_visual_observations):
                         encoded_visual = self.create_resnet_visual_observation_encoder(
@@ -559,7 +560,9 @@ class LearningModel(object):
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
-    def create_cc_actor_critic(self, h_size, num_layers, vis_encode_type):
+    def create_cc_actor_critic(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ) -> None:
         """
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
@@ -646,7 +649,9 @@ class LearningModel(object):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_actor_critic(self, h_size, num_layers, vis_encode_type):
+    def create_dc_actor_critic(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ) -> None:
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.

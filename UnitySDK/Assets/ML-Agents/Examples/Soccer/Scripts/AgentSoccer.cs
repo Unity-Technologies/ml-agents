@@ -6,26 +6,32 @@ public class AgentSoccer : Agent
 
     public enum Team
     {
-        Red,
+        Red, 
         Blue
     }
     public enum AgentRole
     {
-        Striker,
+        Striker, 
         Goalie
     }
-
+    
     public Team team;
     public AgentRole agentRole;
     float kickPower;
     int playerIndex;
     public SoccerFieldArea area;
-
+    
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerAcademy academy;
     Renderer agentRenderer;
     RayPerception rayPer;
+    
+    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+    string[] detectableObjectsRed = { "ball", "redGoal", "blueGoal",
+        "wall", "redAgent", "blueAgent" };
+    string[] detectableObjectsBlue = { "ball", "blueGoal", "redGoal",
+        "wall", "blueAgent", "redAgent" };
 
     public void ChooseRandomTeam()
     {
@@ -67,8 +73,8 @@ public class AgentSoccer : Agent
 
         var playerState = new PlayerState
         {
-            agentRB = agentRb,
-            startingPos = transform.position,
+            agentRB = agentRb, 
+            startingPos = transform.position, 
             agentScript = this,
         };
         area.playerStates.Add(playerState);
@@ -79,17 +85,14 @@ public class AgentSoccer : Agent
     public override void CollectObservations()
     {
         float rayDistance = 20f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
         string[] detectableObjects;
         if (team == Team.Red)
         {
-            detectableObjects = new[] { "ball", "redGoal", "blueGoal",
-                "wall", "redAgent", "blueAgent" };
+            detectableObjects = detectableObjectsRed;
         }
         else
         {
-            detectableObjects = new[] { "ball", "blueGoal", "redGoal",
-                "wall", "blueAgent", "redAgent" };
+            detectableObjects = detectableObjectsBlue;
         }
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));

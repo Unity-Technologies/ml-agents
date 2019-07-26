@@ -72,7 +72,9 @@ class MultiGpuPPOPolicy(PPOPolicy):
                                 m_size=self.m_size,
                                 seed=seed,
                                 stream_names=list(reward_signal_configs.keys()),
-                                vis_encode_type=trainer_params["vis_encode_type"],
+                                vis_encode_type=EncoderType(
+                                    trainer_params.get("vis_encode_type", "simple")
+                                ),
                             )
                         )
                         self.towers[-1].create_ppo_optimizer()

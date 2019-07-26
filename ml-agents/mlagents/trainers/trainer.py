@@ -3,8 +3,10 @@ import logging
 import os
 import tensorflow as tf
 import numpy as np
+from collections import deque
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
+from mlagents.envs.timers import set_gauge
 from mlagents.trainers import TrainerMetrics
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -21,7 +23,7 @@ class UnityTrainerException(UnityException):
 class Trainer(object):
     """This class is the base class for the mlagents.envs.trainers"""
 
-    def __init__(self, brain, trainer_parameters, training, run_id):
+    def __init__(self, brain, trainer_parameters, training, run_id, reward_buff_cap=1):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
@@ -44,6 +46,7 @@ class Trainer(object):
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self.policy = None
+        self._reward_buffer = deque(maxlen=reward_buff_cap)
 
     def __str__(self):
         return """{} Trainer""".format(self.__class__)
@@ -107,6 +110,16 @@ class Trainer(object):
         :return: the step count of the trainer
         """
         raise UnityTrainerException("The get_step property was not implemented.")
+
+    @property
+    def reward_buffer(self):
+        """
+        Returns the reward buffer. The reward buffer contains the cumulative
+        rewards of the most recent episodes completed by agents using this
+        trainer.
+        :return: the reward buffer.
+        """
+        return self._reward_buffer
 
     def increment_step(self, n_steps: int) -> None:
         """
@@ -216,6 +229,7 @@ class Trainer(object):
                         is_training,
                     )
                 )
+                set_gauge(f"{self.brain_name}.mean_reward", mean_reward)
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(

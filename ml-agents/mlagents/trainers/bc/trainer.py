@@ -126,6 +126,7 @@ class BCTrainer(Trainer):
                 self.stats["Environment/Episode Length"].append(
                     self.episode_steps.get(agent_id, 0)
                 )
+                self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 

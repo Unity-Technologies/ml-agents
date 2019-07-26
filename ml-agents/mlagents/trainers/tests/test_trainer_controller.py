@@ -12,6 +12,7 @@ from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.envs.subprocess_env_manager import StepInfo
 from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -162,6 +163,8 @@ def basic_trainer_controller():
         training_seed=99,
         fast_simulation=True,
         multi_gpu=False,
+        sampler_manager=SamplerManager(None),
+        resampling_interval=None,
     )
 
 
@@ -169,7 +172,22 @@ def basic_trainer_controller():
 @patch("tensorflow.set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
-    TrainerController("", "", "1", 1, None, True, False, False, None, seed, True, False)
+    TrainerController(
+        "",
+        "",
+        "1",
+        1,
+        None,
+        True,
+        False,
+        False,
+        None,
+        seed,
+        True,
+        False,
+        SamplerManager(None),
+        None,
+    )
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
 
@@ -371,7 +389,7 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
     env_mock.close.assert_called_once()
-    tc._save_model.assert_called_once_with(steps=6)
+    tc._save_model.assert_called_once()
 
 
 def test_start_learning_updates_meta_curriculum_lesson_number():
