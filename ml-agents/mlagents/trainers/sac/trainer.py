@@ -499,7 +499,7 @@ class SACTrainer(Trainer):
                 for name, signal in self.policy.reward_signals.items():
                     sampled_minibatch[
                         "{}_rewards".format(name)
-                    ] = signal.evaluate_batch(sampled_minibatch)[0]
+                    ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
                 # print(sampled_minibatch)
                 run_out = self.policy.update(
                     sampled_minibatch, n_sequences, update_target=True

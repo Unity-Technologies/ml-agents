@@ -52,7 +52,7 @@ class GAILRewardSignal(RewardSignal):
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
-    def evaluate_batch(self, mini_batch: Dict[str, Any]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.model.batch_size: len(mini_batch["actions"]),
             self.policy.model.sequence_length: self.policy.sequence_length,
