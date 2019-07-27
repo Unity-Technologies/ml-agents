@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 import numpy as np
+import tensorflow as tf
 from mlagents.envs.brain import BrainInfo
 
 from mlagents.trainers.buffer import Buffer
@@ -78,6 +79,47 @@ class CuriosityRewardSignal(RewardSignal):
         )
         return RewardSignalResult(scaled_reward, unscaled_reward)
 
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.policy.model.batch_size: len(mini_batch["actions"]),
+            self.policy.model.sequence_length: self.policy.sequence_length,
+        }
+        if self.policy.use_vec_obs:
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
+                [-1, self.policy.vec_obs_size]
+            )
+            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"].reshape(
+                [-1, self.policy.vec_obs_size]
+            )
+        if self.policy.model.vis_obs_size > 0:
+            for i, _ in enumerate(self.policy.model.visual_in):
+                _obs = mini_batch["visual_obs%d" % i]
+                _next_obs = mini_batch["next_visual_obs%d" % i]
+                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
+                    (_batch, _seq, _w, _h, _c) = _obs.shape
+                    feed_dict[self.policy.model.visual_in[i]] = _obs.reshape(
+                        [-1, _w, _h, _c]
+                    )
+                    (_batch, _seq, _w, _h, _c) = _next_obs.shape
+                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
+                        [-1, _w, _h, _c]
+                    )
+                else:
+                    feed_dict[self.policy.model.visual_in[i]] = _obs
+                    feed_dict[self.model.next_visual_in[i]] = _next_obs
+
+        if self.policy.use_continuous_act:
+            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
+        else:
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+        unscaled_reward = self.policy.sess.run(
+            self.model.intrinsic_reward, feed_dict=feed_dict
+        )
+        scaled_reward = np.clip(
+            unscaled_reward * float(self.has_updated) * self.strength, 0, 1
+        )
+        return RewardSignalResult(scaled_reward, unscaled_reward)
+
     @classmethod
     def check_config(
         cls, config_dict: Dict[str, Any], param_keys: List[str] = None
@@ -130,10 +172,6 @@ class CuriosityRewardSignal(RewardSignal):
             self.policy.model.batch_size: num_sequences,
             self.policy.model.sequence_length: self.policy.sequence_length,
             self.policy.model.mask_input: mini_batch["masks"].flatten(),
-            self.policy.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            self.policy.model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(self.policy.model.act_size)]
-            ),
         }
         if self.policy.use_continuous_act:
             feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"].reshape(
