@@ -83,7 +83,6 @@ class CuriosityRewardSignal(RewardSignal):
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.model.batch_size: len(mini_batch["actions"]),
             self.policy.model.sequence_length: self.policy.sequence_length,
-            self.policy.model.mask_input: mini_batch["masks"].flatten(),
         }
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
