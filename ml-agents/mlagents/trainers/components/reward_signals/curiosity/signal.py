@@ -143,13 +143,6 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
                 [-1, len(self.policy.model.act_size)]
             )
-            if self.policy.use_recurrent:
-                feed_dict[self.policy.model.prev_action] = mini_batch[
-                    "prev_action"
-                ].reshape([-1, len(self.policy.model.act_size)])
-            feed_dict[self.policy.model.action_masks] = mini_batch[
-                "action_mask"
-            ].reshape([-1, sum(self.policy.brain.vector_action_space_size)])
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
                 [-1, self.policy.vec_obs_size]
