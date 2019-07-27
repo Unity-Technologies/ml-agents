@@ -75,6 +75,15 @@ class GAILRewardSignal(RewardSignal):
                 else:
                     feed_dict[self.policy.model.visual_in[i]] = _obs
 
+        if self.policy.use_continuous_act:
+            feed_dict[self.policy.model.selected_actions] = mini_batch[
+                "actions"
+            ].reshape([-1, self.policy.model.act_size[0]])
+        else:
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
+                [-1, len(self.policy.model.act_size)]
+            )
+
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )

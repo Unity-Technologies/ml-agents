@@ -83,6 +83,7 @@ class CuriosityRewardSignal(RewardSignal):
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.model.batch_size: len(mini_batch["actions"]),
             self.policy.model.sequence_length: self.policy.sequence_length,
+            self.policy.model.mask_input: mini_batch["masks"].flatten(),
         }
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
@@ -109,9 +110,13 @@ class CuriosityRewardSignal(RewardSignal):
                     feed_dict[self.model.next_visual_in[i]] = _next_obs
 
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
+            feed_dict[self.policy.model.selected_actions] = mini_batch[
+                "actions"
+            ].reshape([-1, self.policy.model.act_size[0]])
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
+                [-1, len(self.policy.model.act_size)]
+            )
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -181,13 +186,6 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
                 [-1, len(self.policy.model.act_size)]
             )
-            if self.policy.use_recurrent:
-                feed_dict[self.policy.model.prev_action] = mini_batch[
-                    "prev_action"
-                ].reshape([-1, len(self.policy.model.act_size)])
-            feed_dict[self.policy.model.action_masks] = mini_batch[
-                "action_mask"
-            ].reshape([-1, sum(self.policy.brain.vector_action_space_size)])
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
                 [-1, self.policy.vec_obs_size]
