@@ -269,20 +269,22 @@ class SACNetwork(LearningModel):
             # Squash probabilities
             # Keep deterministic around in case we want to use it.
             self.deterministic_output = tf.tanh(mu)
-            output = tf.tanh(policy_)
+
+            # Note that this is just for symmetry with PPO.
+            self.output_pre = tf.tanh(policy_)
 
             # Squash correction
             all_probs -= tf.reduce_sum(
-                tf.log(1 - output ** 2 + EPSILON), axis=1, keepdims=True
+                tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
             )
 
             self.all_log_probs = all_probs
-            self.selected_actions = tf.stop_gradient(output)
+            self.selected_actions = tf.stop_gradient(self.output_pre)
 
             self.action_probs = all_probs
 
         # Extract output for Barracuda
-        self.output = tf.identity(output, name="action")
+        self.output = tf.identity(self.output_pre, name="action")
 
         # Get all policy vars
         self.policy_vars = self.get_vars(scope)
@@ -606,6 +608,7 @@ class SACModel(LearningModel):
             self.action_masks = self.policy_network.action_masks
 
         self.output = self.policy_network.output
+        self.output_pre = self.policy_network.output_pre
 
         self.value = tf.identity(self.policy_network.value, name="value_estimate")
         self.value_heads = self.policy_network.value_heads
