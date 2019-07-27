@@ -606,9 +606,10 @@ class SACModel(LearningModel):
         self.next_sequence_length = self.target_network.sequence_length
         if self.brain.vector_action_space_type == "discrete":
             self.action_masks = self.policy_network.action_masks
+        else:
+            self.output_pre = self.policy_network.output_pre
 
         self.output = self.policy_network.output
-        self.output_pre = self.policy_network.output_pre
 
         self.value = tf.identity(self.policy_network.value, name="value_estimate")
         self.value_heads = self.policy_network.value_heads

@@ -56,7 +56,7 @@ def dummy_config():
 
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
-def test_sac_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
+def test_sac_cc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -74,6 +74,29 @@ def test_sac_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     )
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
+    env.close()
+
+
+@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+def test_sac_dc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
+    tf.reset_default_graph()
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=True, visual_inputs=0
+    )
+    env = UnityEnvironment(" ")
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+
+    trainer_parameters = dummy_config
+    model_path = env.brain_names[0]
+    trainer_parameters["model_path"] = model_path
+    trainer_parameters["keep_checkpoints"] = 3
+    policy = SACPolicy(
+        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+    )
+    run_out = policy.evaluate(brain_info)
+    assert run_out["action"].shape == (3, 1)
     env.close()
 
 
