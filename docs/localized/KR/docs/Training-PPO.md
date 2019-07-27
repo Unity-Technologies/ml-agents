@@ -1,231 +1,145 @@
-# Training with Proximal Policy Optimization
+# Proximal Policy Optimization를 이용한 학습
 
-ML-Agents uses a reinforcement learning technique called
-[Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
-PPO uses a neural network to approximate the ideal function that maps an agent's
-observations to the best action an agent can take in a given state. The
-ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
-Python process (communicating with the running Unity application over a socket).
+ML-Agents는 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/) 라는 강화학습 기법을 사용합니다.
+PPO는 에이전트의 관측 (Observation)을 통해 에이전트가 주어진 상태에서 최선의 행동을 선택할 수 있도록 하는 이상적인 함수를 인공신경망을 이용하여 근사하는 기법입니다.  ML-agents의 PPO 알고리즘은 텐서플로우로 구현되었으며 별도의 파이썬 프로세스 (소켓 통신을 통해 실행중인 유니티 프로그램과 통신)에서 실행됩니다.  
 
-To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Training-RewardSignals.md)
-for the available reward signals and the corresponding hyperparameters.
+에이전트를 학습하기 위해서 사용자는 에이전트가 최대화하도록 시도하는 보상 시그널을 하나 혹은 그 이상 설정해야합니다.  사용 가능한 보상 시그널들과 관련된 하이퍼파라미터에 대해서는 [보상 시그널](Training-RewardSignals.md) 문서를 참고해주십시오. 
 
-See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
-training program, `learn.py`.
+`learn.py`를 이용하여 학습 프로그램을 실행하는 방법은 [ML-Agents 학습](Training-ML-Agents.md) 문서를 참고해주십시오.
 
-If you are using the recurrent neural network (RNN) to utilize memory, see
-[Using Recurrent Neural Networks](Feature-Memory.md) for RNN-specific training
-details.
+만약 에이전트에게 기억력을 부여하기 위해 순환 신경망 (Recurrent Neural Network, RNN)을 사용하는 경우, 순환 신경망에 대한 구체적인 학습 방법을 설명하는 [순환 신경망 사용하기](Feature-Memory.md) 문서를 참고해주십시오.
 
-If you are using curriculum training to pace the difficulty of the learning task
-presented to an agent, see [Training with Curriculum
-Learning](Training-Curriculum-Learning.md).
 
-For information about imitation learning, which uses a different training
-algorithm, see
-[Training with Imitation Learning](Training-Imitation-Learning.md).
+만약 에이전트에게 제시된 문제의 난이도를 점차적으로 증가시키며 학습하는 커리큘럼 학습 (Curriculum Learning)을 사용하는 경우 [커리큘럼 학습을 통한 에이전트 학습](Training-Curriculum-Learning.md) 문서를 참고해주십니오. 
 
-## Best Practices when training with PPO
+모방 학습 (Imitation Learning)에 대한 정보를 얻고 싶으시다면  [모방 학습을 통한 에이전트 학습](Training-Imitation-Learning.md) 문서를 참고해주십시오.
 
-Successfully training a Reinforcement Learning model often involves tuning the
-training hyperparameters. This guide contains some best practices for tuning the
-training process when the default parameters don't seem to be giving the level
-of performance you would like.
 
-## Hyperparameters
+
+## PPO 학습을 위한 하이퍼파라미터
+
+강화학습 모델을 성공적으로 학습하기 위해서는 학습과 관련된 하이퍼파라미터 튜닝이 필요합니다. 이 가이드는 기본적인 파라미터들을 이용하여 학습했을 때 사용자가 원하는 성능을 만족하지 못한 경우 파라미터 튜닝을 수행하는 방법에 대해 설명합니다. 
+
+## 하이퍼파라미터
 
 ### Reward Signals
 
-In reinforcement learning, the goal is to learn a Policy that maximizes reward.
-At a base level, the reward is given by the environment. However, we could imagine
-rewarding the agent for various different behaviors. For instance, we could reward
-the agent for exploring new states, rather than just when an explicit reward is given.
-Furthermore, we could mix reward signals to help the learning process.
+강화학습에서 목표는 보상을 최대로 하는 정책 (Policy)을 학습하는 것입니다. 기본적으로 보상은 환경으로부터 주어집니다. 그러나 우리는 다양한 다른 행동을 통해 에이전트에게 보상을 주는 것을 생각해볼 수 있습니다. 예를 들어 에이전트가 새로운 상태를 탐험했을 때 에이전트에게 보상을 줄 수 있습니다. 이런 보상 시그널을 추가하여 학습 과정에 도움을 줄 수도 있습니다. 
 
-`reward_signals` provides a section to define [reward signals.](Training-RewardSignals.md)
-ML-Agents provides two reward signals by default, the Extrinsic (environment) reward, and the
-Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
-environments. 
+`reward_signals`는 [보상 시그널](Training-RewardSignals.md)을 정의합니다. ML-Agents는 기본적으로 두개의 보상 시그널을 제공합니다. 하나는 외부 (환경) 보상이며 다른 하나는 호기심 (Curiosity) 보상입니다. 이 호기심 보상은 외부 보상이 희소성을 가지는 환경 (Sparse Extrinsic Reward Environment)에서 더 다양한 탐험을 수행할 수 있도록 도와줍니다.  
 
 ### Lambda
 
-`lambd` corresponds to the `lambda` parameter used when calculating the
-Generalized Advantage Estimate ([GAE](https://arxiv.org/abs/1506.02438)). This
-can be thought of as how much the agent relies on its current value estimate
-when calculating an updated value estimate. Low values correspond to relying
-more on the current value estimate (which can be high bias), and high values
-correspond to relying more on the actual rewards received in the environment
-(which can be high variance). The parameter provides a trade-off between the
-two, and the right value can lead to a more stable training process.
+`lambd` 는 `람다(lambda)` 파라미터를 의미하며 일반화된 이득 추정 (Generalized Advantage Estimate, [GAE]((https://arxiv.org/abs/1506.02438))) 계산에 사용됩니다. 이는 업데이트된 가치를 예측할 때 현재 예측된 가치에 얼마나 의존할지 결정하는 값입니다. 이 값이 낮으면 현재 예측된 가치에 더 의존하는 것을 의미하며 (높은 편향 (bias) 발생 가능), 값이 높으면 환경을 통해 얻은 실제 보상에 더 의존하는 것을 의미합니다 (높은 분산 (variance) 발생 가능). 즉 이 파라미터를 어떻게 선택하냐에 따라 두 특성간에 트레이드오프 (trade-off)가 존재합니다. 또한 이 파라미터를 적절하게 선택하면 더 안정적인 학습이 가능합니다. 
 
-Typical Range: `0.9` - `0.95`
+일반적인 범위: `0.9` - `0.95`
 
 ### Buffer Size
 
-`buffer_size` corresponds to how many experiences (agent observations, actions
-and rewards obtained) should be collected before we do any learning or updating
-of the model. **This should be a multiple of `batch_size`**. Typically a larger
-`buffer_size` corresponds to more stable training updates.
+`buffer_size` 는 모델 학습을 시작하기 전 얼마나 많은 경험들(관측, 행동, 보상 등)을 저장할지 결정합니다.  **이 값은 `batch_size`의 배수로 설정되어야 합니다.** 일반적으로 큰 `buffer_size`는 더 안정적인 학습을 가능하게 합니다. 
 
-Typical Range: `2048` - `409600`
+일반적인 범위: `2048` - `409600`
 
 ### Batch Size
 
-`batch_size` is the number of experiences used for one iteration of a gradient
-descent update. **This should always be a fraction of the `buffer_size`**. If
-you are using a continuous action space, this value should be large (in the
-order of 1000s). If you are using a discrete action space, this value should be
-smaller (in order of 10s).
+`batch_size` 는 한번의 경사하강(Gradient Descent) 업데이트를 수행할 때 사용할 경험들의 수를 의미합니다. **이 값은 항상 `buffer_size`의 약수로 설정되어야 합니다.** 만약 연속적인 행동 공간 (Continuous Action Space) 환경을 사용하는 경우 이 값은 크게 설정되어야 합니다 (1000의 단위). 만약 이산적인 행동 공간 (Discrete Action Space) 환경을 사용하는 경우 이 값은 더 작게 설정되어야 합니다. (10의 단위). 
 
-Typical Range (Continuous): `512` - `5120`
+일반적인 범위 (연속적인 행동): `512` - `5120`
 
-Typical Range (Discrete): `32` - `512`
+일반적인 범위 (이산적인 행동): `32` - `512`
 
 ### Number of Epochs
 
-`num_epoch` is the number of passes through the experience buffer during
-gradient descent. The larger the `batch_size`, the larger it is acceptable to
-make this. Decreasing this will ensure more stable updates, at the cost of
-slower learning.
+`num_epoch` 는 경사 하강 (Gradient Descent) 학습 동안 경험 버퍼 (Experience Buffer) 데이터에 대해 학습을 몇번 수행할 지 결정합니다. `batch_size`가 클수록 이 값도 커져야합니다. 이 값을 줄이면 더 안정적인 업데이트가 보장되지만 학습 속도가 느려집니다. 
 
-Typical Range: `3` - `10`
+일반적인 범위: `3` - `10`
 
 ### Learning Rate
 
-`learning_rate` corresponds to the strength of each gradient descent update
-step. This should typically be decreased if training is unstable, and the reward
-does not consistently increase.
+`learning_rate` 는 경사 하강 (Gradient Descent) 학습의 정도를 결정합니다. 학습이 불안정하고 에이전트가 얻는 보상이 증가하지 않는 경우 일반적으로 학습률을 감소시킵니다. 
 
-Typical Range: `1e-5` - `1e-3`
+일반적인 범위: `1e-5` - `1e-3`
 
 ### Time Horizon
 
-`time_horizon` corresponds to how many steps of experience to collect per-agent
-before adding it to the experience buffer. When this limit is reached before the
-end of an episode, a value estimate is used to predict the overall expected
-reward from the agent's current state. As such, this parameter trades off
-between a less biased, but higher variance estimate (long time horizon) and more
-biased, but less varied estimate (short time horizon). In cases where there are
-frequent rewards within an episode, or episodes are prohibitively large, a
-smaller number can be more ideal. This number should be large enough to capture
-all the important behavior within a sequence of an agent's actions.
+`time_horizon` 은 경험 버퍼 (Experience Buffer)에 저장하기 전 에이전트당 수집할 경험의 스텝 수를 의미합니다. 에피소드가 끝나기 전에 이 한도에 도달하면 가치 평가를 통해 에이전트의 현재 상태로부터 기대되는 전체 보상을 예측합니다. 따라서 이 값의 설정에 따라 덜 편향되지만 분산이 커질수도 있고 (긴 time horizon), 더 편향 (bias)되지만 분산 (variance)이 작아질 수도 있습니다 (짧은 time horizon). 한 에피소드 동안 보상이 빈번하게 발생하는 경우나 에피소드가 엄청나게 긴 경우에는 time horizon 값은 작게 설정하는 것이 이상적입니다. 이 값은 에이전트가 취하는 일련의 행동 내에서 중요한 행동을 모두 포착할 수 있을 만큼 큰 값을 가져야 합니다. 
 
-Typical Range: `32` - `2048`
+일반적인 범위: `32` - `2048`
 
 ### Max Steps
 
-`max_steps` corresponds to how many steps of the simulation (multiplied by
-frame-skip) are run during the training process. This value should be increased
-for more complex problems.
+`max_steps` 은 학습 과정 동안 얼마나 많은 시뮬레이션 스텝 (프레임 스킵을 곱한만큼) 을 실행할지 결정합니다. 이 값은 복잡한 문제일수록 크게 설정해야합니다. 
 
-Typical Range: `5e5` - `1e7`
+일반적인 범위: `5e5` - `1e7`
 
 ### Beta
 
-`beta` corresponds to the strength of the entropy regularization, which makes
-the policy "more random." This ensures that agents properly explore the action
-space during training. Increasing this will ensure more random actions are
-taken. This should be adjusted such that the entropy (measurable from
-TensorBoard) slowly decreases alongside increases in reward. If entropy drops
-too quickly, increase `beta`. If entropy drops too slowly, decrease `beta`.
+`beta` 는 엔트로피 정규화 (Entropy Regulazation)의 정도를 결정하며 이를 통해 정책을 더 랜덤하게 만들 수 있습니다. 이 값을 통해 에이전트는 학습 동안 액션 공간을 적절하게 탐험할 수 있습니다. 이 값을 증가시키면 에이전트가 더 많이 랜덤 행동을 취하게 됩니다. 엔트로피 (텐서보드를 통해 측정 가능)는 보상이 증가함에 따라 서서히 크기를 감소시켜야합니다. 만약 엔트로피가 너무 빠르게 떨어지면 `beta`를 증가시켜야합니다. 만약 엔트로피가 너무 느리게 떨어지면 `beta`를 감소시켜야 합니다. 
 
-Typical Range: `1e-4` - `1e-2`
+일반적인 범위: 1e-4 - 1e-2
 
 ### Epsilon
 
-`epsilon` corresponds to the acceptable threshold of divergence between the old
-and new policies during gradient descent updating. Setting this value small will
-result in more stable updates, but will also slow the training process.
+`epsilon` 은 경사 하강 업데이트 동안 사용하는 이전 정책과 새로운 정책 사이의 비율을 일정 범위의 크기로 제한하는 값입니다. 이 값이 작게 설정되면 더 안정적인 학습이 가능하지만 학습이 느리게 진행될 것입니다. 
 
-Typical Range: `0.1` - `0.3`
+일반적인 범위: `0.1` - `0.3`
 
 ### Normalize
 
-`normalize` corresponds to whether normalization is applied to the vector
-observation inputs. This normalization is based on the running average and
-variance of the vector observation. Normalization can be helpful in cases with
-complex continuous control problems, but may be harmful with simpler discrete
-control problems.
+`normalize`는 벡터 관측 (Vector Observation) 입력을 정규화 (Normalization)할지 결정합니다. 이 정규화는 벡터 관측의 이동 평균 및 분산을 기반으로 수행합니다. 정규화는 복잡하고 연속적인 제어 문제에서 도움이 될 수 있지만 단순하고 이산적인 제어 문제에서는 정규화를 사용하는 것이 좋지 않을 수 있습니다.
 
 ### Number of Layers
 
-`num_layers` corresponds to how many hidden layers are present after the
-observation input, or after the CNN encoding of the visual observation. For
-simple problems, fewer layers are likely to train faster and more efficiently.
-More layers may be necessary for more complex control problems.
+`num_layers` 는 관측 입력 후 혹은 시각적 관측 (Visual Observation)의 CNN 인코딩 이후 몇개의 은닉층 (Hidden Layer)을 사용할지 결정합니다. 간단한 문제에서는 적은 수의 층을 사용하여 빠르고 효율적으로 학습해야합니다. 복잡한 제어 문제에서는 많은 층을 사용할 필요가 있습니다. 
 
-Typical range: `1` - `3`
+일반적인 범위: `1` - `3`
 
 ### Hidden Units
 
-`hidden_units` correspond to how many units are in each fully connected layer of
-the neural network. For simple problems where the correct action is a
-straightforward combination of the observation inputs, this should be small. For
-problems where the action is a very complex interaction between the observation
-variables, this should be larger.
+`hidden_units` 은 인공신경망의 각 완전연결층 (Fully Connected Layer)에 몇개의 유닛을 사용할지 결정합니다. 최적의 행동이 관측 입력의 간단한 조합으로 결정되는 단순한 문제에 대해서는 이 값을 작게 설정합니다. 최적의 행동이 관측 입력의 복잡한 관계에 의해 결정되는 어려운 문제에 대해서는 이 값을 크게 설정합니다. 
 
-Typical Range: `32` - `512`
+일반적인 범위: `32` - `512`
 
-## (Optional) Recurrent Neural Network Hyperparameters
+## (선택적) 순환신경망의 하이퍼파라미터
 
-The below hyperparameters are only used when `use_recurrent` is set to true.
+아래의 하이퍼파라미터들은  `use_recurrent` 이 참(True)으로 결정된 경우에만 사용합니다. 
 
 ### Sequence Length
 
-`sequence_length` corresponds to the length of the sequences of experience
-passed through the network during training. This should be long enough to
-capture whatever information your agent might need to remember over time. For
-example, if your agent needs to remember the velocity of objects, then this can
-be a small value. If your agent needs to remember a piece of information given
-only once at the beginning of an episode, then this should be a larger value.
+`sequence_length` 는 학습 동안 네트워크를 통과하는 연속적인 경험들의 길이를 의미합니다. 에이전트가 긴 시간에 대해 기억해야하는 정보가 있다면 이 값을 충분히 길게 설정해야합니다. 예를 들어 에이전트가 물체의 속도를 기억해야하는 경우 이 값은 작게 설정해도 괜찮습니다. 만약 에이전트가 에피소드 초반에 한번 주어진 정보를 계속 기억해야한다면 이 값을 크게 설정해야 합니다. 
 
-Typical Range: `4` - `128`
+일반적인 범위: `4` - `128`
 
 ### Memory Size
 
-`memory_size` corresponds to the size of the array of floating point numbers
-used to store the hidden state of the recurrent neural network. This value must
-be a multiple of 4, and should scale with the amount of information you expect
-the agent will need to remember in order to successfully complete the task.
+`memory_size` 는 순환신경망의 은닉 상태(hidden state)를 저장하는데 사용되는 배열의 크기를 의미합니다. 이 값은 반드시 4의 배수로 설정되어야 하며 에이전트가 임무를 성공적으로 완수하기 위해서 기억해야하는 정보의 양에 따라 크기를 조절해야합니다.   
 
-Typical Range: `64` - `512`
+일반적인 범위: `64` - `512`
 
 ## Training Statistics
 
-To view training statistics, use TensorBoard. For information on launching and
-using TensorBoard, see
-[here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
+학습의 상태를 확인하려면 텐서보드 (TensorBoard)를 사용해야합니다. 텐서보드를 실행하고 사용하는 것에 대한 정보를 알고싶으신 경우 이 [문서](./Getting-Started-with-Balance-Ball.md#observing-training-progress)를 참고해주십시오.
 
 ### Cumulative Reward
 
-The general trend in reward should consistently increase over time. Small ups
-and downs are to be expected. Depending on the complexity of the task, a
-significant increase in reward may not present itself until millions of steps
-into the training process.
+보상은 일반적으로 지속적으로 증가하는 경향을 가져야합니다. 작은 기복이 발생할수는 있습니다. 문제의 복잡도에 따라 수백만 스텝의 학습이 진행되어도 보상이 증가하지 않을수도 있습니다. 
 
 ### Entropy
 
-This corresponds to how random the decisions of a Brain are. This should
-consistently decrease during training. If it decreases too soon or not at all,
-`beta` should be adjusted (when using discrete action space).
+이 값은 브레인이 결정이 얼마나 무작위인지 나타냅니다. 이 값은 학습이 진행되는 동안 지속적으로 감소해야합니다. 만약 이 값이 너무 빠르게 감소하거나 아예 감소하지 않는 경우 `beta`의 크기를 조절해야합니다. (이산적인 행동 공간을 사용하는 경우)
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule.
+이 값은 시간이 지남에 따라 선형적으로 감소합니다. 
 
 ### Policy Loss
 
-These values will oscillate during training. Generally they should be less than
-1.0.
+이 값들은 학습이 진행되는 동안 진동합니다. 일반적으로 이 값들은 1보다 작아야합니다. 
 
 ### Value Estimate
 
-These values should increase as the cumulative reward increases. They correspond
-to how much future reward the agent predicts itself receiving at any given
-point.
+이 값들은 누적 보상이 증가함에 따라 커져야합니다. 이 값들은 주어진 시점에서 에이전트가 스스로 받을 것이라 예측하는 미래의 보상이 얼마나 될것인지를 나타냅니다. 
 
 ### Value Loss
 
-These values will increase as the reward increases, and then should decrease
-once reward becomes stable.
+이 값들은 보상이 증가하면 증가하고 보상이 안정되면 감소합니다.
