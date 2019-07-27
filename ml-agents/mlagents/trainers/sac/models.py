@@ -351,19 +351,23 @@ class SACNetwork(LearningModel):
             self.all_log_probs = self.action_probs * normalized_logprobs
             self.output = output
 
-            self.output_oh = tf.concat(
-                [
-                    tf.one_hot(self.output[:, i], self.act_size[i])
-                    for i in range(len(self.act_size))
-                ],
-                axis=1,
-            )
-            self.selected_actions = tf.stop_gradient(self.output_oh)
-
             # Create action input (discrete)
             self.action_holder = tf.placeholder(
                 shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
             )
+
+            self.output_oh = tf.concat(
+                [
+                    tf.one_hot(self.action_holder[:, i], self.act_size[i])
+                    for i in range(len(self.act_size))
+                ],
+                axis=1,
+            )
+
+            # For Curiosity and GAIL to retrieve selected actions. We don't
+            # need the mask at this point because it's already stored in the buffer.
+            self.selected_actions = tf.stop_gradient(self.output_oh)
+
             self.external_action_in = tf.concat(
                 [
                     tf.one_hot(self.action_holder[:, i], self.act_size[i])
@@ -372,7 +376,6 @@ class SACNetwork(LearningModel):
                 axis=1,
             )
 
-            # self.entropy = self.all_log_probs
             # This is total entropy over all branches
             self.entropy = -1 * tf.reduce_sum(self.all_log_probs, axis=1)
 
