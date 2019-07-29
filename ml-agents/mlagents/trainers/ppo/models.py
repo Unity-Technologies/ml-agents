@@ -27,7 +27,7 @@ class PPOModel(LearningModel):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
-        :param brain: BrainInfo used to generate specific network graph.
+        :param brain: BrainParameters used to generate specific network graph.
         :param lr: Learning rate.
         :param h_size: Size of hidden layers
         :param epsilon: Value for policy-divergence threshold.

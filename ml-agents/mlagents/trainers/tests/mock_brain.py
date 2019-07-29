@@ -79,11 +79,11 @@ def create_mock_agentinfos(
 def setup_mock_unityenvironment(mock_env, mock_brain, mock_agentinfos):
     """
     Takes a mock UnityEnvironment and adds the appropriate properties, defined by the mock
-    BrainParameters and BrainInfo.
+    BrainParameters and AgentInfos.
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
     :Mock mock_brain: A mock Brain object that specifies the params of this environment.
-    :Mock mock_braininfo: A mock BrainInfo object that will be returned at each step and reset.
+    :Mock mock_agentinfos: Mock AgentInfo objects that will be returned at each step and reset.
     """
     mock_env.return_value.academy_name = "MockAcademy"
     mock_env.return_value.brains = {"MockBrain": mock_brain}

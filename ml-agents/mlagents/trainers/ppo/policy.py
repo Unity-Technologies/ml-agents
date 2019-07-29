@@ -104,7 +104,7 @@ class PPOPolicy(TFPolicy):
     def evaluate(self, agent_infos: List[AgentInfo]) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo object containing inputs.
+        :param agent_infos: AgentInfos containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
@@ -199,7 +199,7 @@ class PPOPolicy(TFPolicy):
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
-        :param agent_info: BrainInfo to be used for bootstrapping.
+        :param agent_info: AgentInfo to be used for bootstrapping.
         :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
@@ -238,7 +238,7 @@ class PPOPolicy(TFPolicy):
     def get_action(self, agent_infos: List[AgentInfo]) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BrainInfo from environment.
+        :param agent_infos: A list of AgentInfos from the environment.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """

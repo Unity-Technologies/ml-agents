@@ -65,7 +65,7 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[AgentInfo]
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).
-    :return: BrainParameter and list of BrainInfos containing demonstration data.
+    :return: BrainParameters and list of AgentInfos containing demonstration data.
     """
 
     # First 32 bytes of file dedicated to meta-data.

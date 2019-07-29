@@ -4,7 +4,6 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-from mlagents.envs.brain import AgentInfo
 from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
@@ -41,8 +40,7 @@ class RewardSignal(abc.ABC):
     def evaluate(self, agent_steps: List[AgentStep]) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
-        :param current_info: The current BrainInfo.
-        :param next_info: The BrainInfo from the next timestep.
+        :param agent_steps: The AgentSteps for which to calculate the reward signal value.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return RewardSignalResult(

@@ -130,9 +130,7 @@ class Trainer(object):
     def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo.
-        :param next_info: Next AllBrainInfo.
-        :param take_action_outputs: The outputs of the take action method.
+        :param agent_step: the AgentStep to add
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
@@ -140,8 +138,7 @@ class Trainer(object):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
-        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
+        :param agent_step: the AgentStep to process
         """
         raise UnityTrainerException(
             "The process_experiences method was not implemented."

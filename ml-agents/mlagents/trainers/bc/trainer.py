@@ -75,9 +75,7 @@ class BCTrainer(Trainer):
     def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param take_action_outputs: The outputs of the take action method.
+        :param agent_step: the AgentStep to add.
         """
 
         # Used to collect information about student performance.
@@ -100,8 +98,7 @@ class BCTrainer(Trainer):
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Current AllBrainInfo
-        :param next_info: Next AllBrainInfo
+        :param agent_step: the AgentStep to process.
         """
         info_student = agent_step.current_agent_info
         if info_student.local_done:

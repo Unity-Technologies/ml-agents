@@ -101,7 +101,7 @@ class LearningModel(object):
     def create_visual_input(camera_parameters: Dict[str, Any], name: str) -> tf.Tensor:
         """
         Creates image input op.
-        :param camera_parameters: Parameters for visual observation from BrainInfo.
+        :param camera_parameters: Parameters for visual observation from AgentInfo.
         :param name: Desired name of input op.
         :return: input op.
         """

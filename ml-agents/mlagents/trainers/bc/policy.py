@@ -1,8 +1,11 @@
 import logging
 
 import numpy as np
+from typing import List, Dict, Any
+
 from mlagents.trainers.bc.models import BehavioralCloningModel
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.envs.brain import AgentInfo
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -46,10 +49,10 @@ class BCPolicy(TFPolicy):
         self.evaluate_rate = 1.0
         self.update_rate = 0.5
 
-    def evaluate(self, brain_info):
+    def evaluate(self, agent_infos: List[AgentInfo]) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo input to network.
+        :param agent_infos: AgentInfo input to network.
         :return: Results of evaluation.
         """
         feed_dict = {
@@ -57,11 +60,12 @@ class BCPolicy(TFPolicy):
             self.model.sequence_length: 1,
         }
 
-        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, agent_infos)
         if self.use_recurrent:
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = brain_info.memories
+            memories = AgentInfo.combine_memories(agent_infos)
+            if memories.shape[1] == 0:
+                memories = self.make_empty_memory(len(agent_infos))
+            feed_dict[self.model.memory_in] = memories
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
