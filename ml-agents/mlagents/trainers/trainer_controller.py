@@ -19,7 +19,6 @@ from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -202,23 +201,6 @@ class TrainerController(object):
                     load=self.load_model,
                     seed=self.seed,
                     run_id=self.run_id,
-                )
-                self.trainer_metrics[brain_name] = self.trainers[
-                    brain_name
-                ].trainer_metrics
-            elif trainer_parameters_dict[brain_name]["trainer"] == "sac":
-                self.trainers[brain_name] = SACTrainer(
-                    external_brains[brain_name],
-                    self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].min_lesson_length
-                    if self.meta_curriculum
-                    else 1,
-                    trainer_parameters_dict[brain_name],
-                    self.train_model,
-                    self.load_model,
-                    self.seed,
-                    self.run_id,
                 )
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name

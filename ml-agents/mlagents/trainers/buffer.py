@@ -282,13 +282,14 @@ class Buffer(dict):
         """
         self.update_buffer.reset_agent()
 
-    # SAC HAC
     def truncate_update_buffer(self, max_length):
         """
         Truncates the update buffer to a certain length.
 
         The skew makes a bigger truncation each time, hopefully requiring less truncations overall.
-        VERY SLOWWWW. We compensate by cutting further than we need to, so that we're not truncating at each update.
+        This can be slow for large buffers. We compensate by cutting further than we need to, so that
+        we're not truncating at each update.
+        param: max_length: The length at which to truncate the buffer.
         """
         current_length = len(self.update_buffer["actions"])
         if current_length > max_length:
