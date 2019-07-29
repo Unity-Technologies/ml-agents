@@ -59,9 +59,9 @@ class MultiGpuPPOPolicy(PPOPolicy):
         self.devices = get_devices()
         self.towers = []
         with self.graph.as_default():
-            for device in self.devices:
-                with tf.device(device):
-                    with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
+            with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
+                for device in self.devices:
+                    with tf.device(device):
                         self.towers.append(
                             PPOModel(
                                 brain=brain,

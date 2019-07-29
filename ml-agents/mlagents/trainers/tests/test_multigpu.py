@@ -42,37 +42,49 @@ def dummy_config():
         """
     )
 
+
 @mock.patch("mlagents.trainers.ppo.multi_gpu_policy.get_devices")
 def test_create_model(mock_get_devices, dummy_config):
     tf.reset_default_graph()
-    mock_get_devices.return_value = ['/device:GPU:0', '/device:GPU:1', '/device:GPU:2', '/device:GPU:3']
-    
+    mock_get_devices.return_value = [
+        "/device:GPU:0",
+        "/device:GPU:1",
+        "/device:GPU:2",
+        "/device:GPU:3",
+    ]
+
     trainer_parameters = dummy_config
     trainer_parameters["model_path"] = ""
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
 
-    policy = MultiGpuPPOPolicy(
-        0, brain, trainer_parameters, False, False
-    )
-    assert(len(policy.towers) == len(mock_get_devices.return_value))
+    policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
+    assert len(policy.towers) == len(mock_get_devices.return_value)
+
 
 @mock.patch("mlagents.trainers.ppo.multi_gpu_policy.get_devices")
 def test_average_gradients(mock_get_devices, dummy_config):
     tf.reset_default_graph()
-    mock_get_devices.return_value = ['/device:GPU:0', '/device:GPU:1', '/device:GPU:2', '/device:GPU:3']
+    mock_get_devices.return_value = [
+        "/device:GPU:0",
+        "/device:GPU:1",
+        "/device:GPU:2",
+        "/device:GPU:3",
+    ]
 
     trainer_parameters = dummy_config
     trainer_parameters["model_path"] = ""
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
     with tf.Session() as sess:
-        policy = MultiGpuPPOPolicy(
-            0, brain, trainer_parameters, False, False
-        )
+        policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
         var = tf.Variable(0)
-        tower_grads = [[(tf.constant(0.1), var)], [(tf.constant(0.2), var)], 
-            [(tf.constant(0.3), var)], [(tf.constant(0.4), var)]]
+        tower_grads = [
+            [(tf.constant(0.1), var)],
+            [(tf.constant(0.2), var)],
+            [(tf.constant(0.3), var)],
+            [(tf.constant(0.4), var)],
+        ]
         avg_grads = policy.average_gradients(tower_grads)
 
         init = tf.global_variables_initializer()
@@ -80,23 +92,29 @@ def test_average_gradients(mock_get_devices, dummy_config):
         run_out = sess.run(avg_grads)
     assert run_out == [(0.25, 0)]
 
+
 @mock.patch("mlagents.trainers.tf_policy.TFPolicy._execute_model")
 @mock.patch("mlagents.trainers.ppo.policy.PPOPolicy.construct_feed_dict")
 @mock.patch("mlagents.trainers.ppo.multi_gpu_policy.get_devices")
-def test_update(mock_get_devices, mock_construct_feed_dict, mock_execute_model, dummy_config):
+def test_update(
+    mock_get_devices, mock_construct_feed_dict, mock_execute_model, dummy_config
+):
     tf.reset_default_graph()
-    mock_get_devices.return_value = ['/device:GPU:0', '/device:GPU:1']
+    mock_get_devices.return_value = ["/device:GPU:0", "/device:GPU:1"]
     mock_construct_feed_dict.return_value = {}
-    mock_execute_model.return_value = {"value_loss_0": 0.1, "value_loss_1": 0.3, 
-        "policy_loss_0": 0.5, "policy_loss_1": 0.7, "update_batch": None}
+    mock_execute_model.return_value = {
+        "value_loss_0": 0.1,
+        "value_loss_1": 0.3,
+        "policy_loss_0": 0.5,
+        "policy_loss_1": 0.7,
+        "update_batch": None,
+    }
 
     trainer_parameters = dummy_config
     trainer_parameters["model_path"] = ""
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
-    policy = MultiGpuPPOPolicy(
-        0, brain, trainer_parameters, False, False
-    )
+    policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
     mock_mini_batch = mock.Mock()
     mock_mini_batch.items.return_value = [("action", [1, 2]), ("value", [3, 4])]
     run_out = policy.update(mock_mini_batch, 1)
