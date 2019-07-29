@@ -242,8 +242,8 @@ class SACNetwork(LearningModel):
                 hidden_policy,
                 self.act_size[0],
                 activation=None,
-                name="mu"
-                # kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
+                name="mu",
+                kernel_initializer=LearningModel.scaled_init(0.01),
             )
 
             # Policy-dependent log_sigma_sq
@@ -251,8 +251,8 @@ class SACNetwork(LearningModel):
                 hidden_policy,
                 self.act_size[0],
                 activation=None,
-                name="log_std"
-                # kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
+                name="log_std",
+                kernel_initializer=LearningModel.scaled_init(0.01),
             )
 
             self.log_sigma_sq = tf.clip_by_value(log_sigma_sq, LOG_STD_MIN, LOG_STD_MAX)
