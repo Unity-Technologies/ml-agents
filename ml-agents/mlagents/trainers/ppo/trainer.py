@@ -120,10 +120,11 @@ class PPOTrainer(Trainer):
     def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param take_action_outputs: The outputs of the Policy's get_action method.
+        :param agent_step: Agent step to be added to the training buffer.
         """
+        if agent_step.current_agent_info.brain_name != self.brain_name:
+            return
+
         self.trainer_metrics.start_experience_collection_timer()
         take_action_outputs = agent_step.action_info.outputs
         if agent_step.action_info is not None:

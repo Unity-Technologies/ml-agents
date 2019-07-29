@@ -12,8 +12,7 @@ import tensorflow as tf
 from time import time
 
 from mlagents.envs import BrainParameters
-from mlagents.envs.env_manager import StepInfo
-from mlagents.envs.env_manager import EnvManager
+from mlagents.envs.env_manager import EnvManager, AgentStep
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
@@ -212,7 +211,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: EnvManager) -> List[StepInfo]:
+    def _reset_env(self, env: EnvManager) -> List[AgentStep]:
         """Resets the environment.
 
         Returns:

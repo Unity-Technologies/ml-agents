@@ -5,8 +5,6 @@
 import logging
 import numpy as np
 
-from mlagents.envs.brain import AgentInfo
-from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.bc.trainer import BCTrainer
 
@@ -66,91 +64,67 @@ class OnlineBCTrainer(BCTrainer):
     def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param take_action_outputs: The outputs of the take action method.
+        :param agent_step: Agent step to be added to the training buffer.
         """
+        if agent_step.current_agent_info.brain_name != self.brain_to_imitate:
+            return
 
         # Used to collect teacher experience into training buffer
-        info_teacher = curr_info[self.brain_to_imitate]
-        next_info_teacher = next_info[self.brain_to_imitate]
-        for agent_id in info_teacher.agents:
-            self.demonstration_buffer[agent_id].last_brain_info = info_teacher
+        info_teacher = agent_step.previous_agent_info
+        next_info_teacher = agent_step.current_agent_info
+        agent_id = info_teacher.id
 
-        for agent_id in next_info_teacher.agents:
-            stored_info_teacher = self.demonstration_buffer[agent_id].last_brain_info
-            if stored_info_teacher is None:
-                continue
-            else:
-                idx = stored_info_teacher.agents.index(agent_id)
-                next_idx = next_info_teacher.agents.index(agent_id)
-                if stored_info_teacher.text_observations[idx] != "":
-                    info_teacher_record, info_teacher_reset = (
-                        stored_info_teacher.text_observations[idx].lower().split(",")
+        if info_teacher.text_observations != "":
+            info_teacher_record, info_teacher_reset = info_teacher.text_observation.lower().split(
+                ","
+            )
+            next_info_teacher_record, next_info_teacher_reset = next_info_teacher.text_observation.lower().split(
+                ","
+            )
+            if next_info_teacher_reset == "true":
+                self.demonstration_buffer.reset_update_buffer()
+        else:
+            info_teacher_record, next_info_teacher_record = "true", "true"
+        if info_teacher_record == "true" and next_info_teacher_record == "true":
+            if not info_teacher.local_done:
+                for i in range(self.policy.vis_obs_size):
+                    self.demonstration_buffer[agent_id]["visual_obs%d" % i].append(
+                        info_teacher.visual_observations[i]
                     )
-                    next_info_teacher_record, next_info_teacher_reset = (
-                        next_info_teacher.text_observations[idx].lower().split(",")
+                if self.policy.use_vec_obs:
+                    self.demonstration_buffer[agent_id]["vector_obs"].append(
+                        info_teacher.vector_observations
                     )
-                    if next_info_teacher_reset == "true":
-                        self.demonstration_buffer.reset_update_buffer()
-                else:
-                    info_teacher_record, next_info_teacher_record = "true", "true"
-                if info_teacher_record == "true" and next_info_teacher_record == "true":
-                    if not stored_info_teacher.local_done[idx]:
-                        for i in range(self.policy.vis_obs_size):
-                            self.demonstration_buffer[agent_id][
-                                "visual_obs%d" % i
-                            ].append(stored_info_teacher.visual_observations[i][idx])
-                        if self.policy.use_vec_obs:
-                            self.demonstration_buffer[agent_id]["vector_obs"].append(
-                                stored_info_teacher.vector_observations[idx]
-                            )
-                        if self.policy.use_recurrent:
-                            if stored_info_teacher.memories.shape[1] == 0:
-                                stored_info_teacher.memories = np.zeros(
-                                    (
-                                        len(stored_info_teacher.agents),
-                                        self.policy.m_size,
-                                    )
-                                )
-                            self.demonstration_buffer[agent_id]["memory"].append(
-                                stored_info_teacher.memories[idx]
-                            )
-                        self.demonstration_buffer[agent_id]["actions"].append(
-                            next_info_teacher.previous_vector_actions[next_idx]
-                        )
+                if self.policy.use_recurrent:
+                    if info_teacher.memories.shape[1] == 0:
+                        info_teacher.memories = np.zeros((1, self.policy.m_size))
+                    self.demonstration_buffer[agent_id]["memory"].append(
+                        info_teacher.memories
+                    )
+                self.demonstration_buffer[agent_id]["actions"].append(
+                    next_info_teacher.previous_vector_actions
+                )
 
-        super(OnlineBCTrainer, self).add_experiences(
-            curr_info, next_info, take_action_outputs
-        )
+        super(OnlineBCTrainer, self).add_experiences(agent_step)
 
-    def process_experiences(
-        self, current_info: AllBrainInfo, next_info: AllBrainInfo
-    ) -> None:
+    def process_experiences(self, agent_step: AgentStep) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Current AllBrainInfo
-        :param next_info: Next AllBrainInfo
+        :param agent_step: Agent step to be processed.
         """
-        info_teacher = next_info[self.brain_to_imitate]
-        for l in range(len(info_teacher.agents)):
-            teacher_action_list = len(
-                self.demonstration_buffer[info_teacher.agents[l]]["actions"]
-            )
-            horizon_reached = (
-                teacher_action_list > self.trainer_parameters["time_horizon"]
-            )
-            teacher_filled = (
-                len(self.demonstration_buffer[info_teacher.agents[l]]["actions"]) > 0
-            )
-            if (info_teacher.local_done[l] or horizon_reached) and teacher_filled:
-                agent_id = info_teacher.agents[l]
-                self.demonstration_buffer.append_update_buffer(
-                    agent_id,
-                    batch_size=None,
-                    training_length=self.policy.sequence_length,
-                )
-                self.demonstration_buffer[agent_id].reset_agent()
 
-        super(OnlineBCTrainer, self).process_experiences(current_info, next_info)
+        if agent_step.current_agent_info.brain_name != self.brain_to_imitate:
+            return
+        info_teacher = agent_step.current_agent_info
+        teacher_action_list = len(self.demonstration_buffer[info_teacher.id]["actions"])
+        horizon_reached = teacher_action_list > self.trainer_parameters["time_horizon"]
+        teacher_filled = len(self.demonstration_buffer[info_teacher.id]["actions"]) > 0
+        if (info_teacher.local_done or horizon_reached) and teacher_filled:
+            agent_id = info_teacher.id
+            self.demonstration_buffer.append_update_buffer(
+                agent_id, batch_size=None, training_length=self.policy.sequence_length
+            )
+            self.demonstration_buffer[agent_id].reset_agent()
+
+        super(OnlineBCTrainer, self).process_experiences(agent_step)

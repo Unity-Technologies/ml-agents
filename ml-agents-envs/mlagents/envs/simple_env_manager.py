@@ -1,8 +1,7 @@
 from typing import Any, Dict, List
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.env_manager import EnvManager, StepInfo, AgentStep
-from mlagents.envs.brain import AgentInfo
+from mlagents.envs.env_manager import EnvManager, AgentStep
 from mlagents.envs.timers import timed
 from mlagents.envs import ActionInfo, BrainParameters
 

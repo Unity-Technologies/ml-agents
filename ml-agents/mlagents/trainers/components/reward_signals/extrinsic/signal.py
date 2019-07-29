@@ -1,8 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo, AgentInfo
-from mlagents.envs.env_manager import AgentStep
 
+from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
