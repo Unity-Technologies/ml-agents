@@ -33,7 +33,7 @@ class PPOTrainer(Trainer):
         :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(
-            brain, reward_buff_cap, trainer_parameters, training, run_id
+            brain, trainer_parameters, training, run_id, reward_buff_cap
         )
         self.param_keys = [
             "batch_size",
