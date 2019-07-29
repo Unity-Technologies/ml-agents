@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="mlagents",
-    version="0.8.2",
+    version="0.9.0",
     description="Unity Machine Learning Agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -29,7 +29,7 @@ setup(
     ),
     zip_safe=False,
     install_requires=[
-        "mlagents_envs==0.8.2",
+        "mlagents_envs==0.9.0",
         "tensorflow>=1.7,<1.8",
         "Pillow>=4.2.1",
         "matplotlib",
