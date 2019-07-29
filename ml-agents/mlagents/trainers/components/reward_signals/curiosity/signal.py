@@ -93,39 +93,11 @@ class CuriosityRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
-        """
-        Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
-        gradient descent.
-        :param update_buffer: Update buffer from which to pull data from.
-        :param num_sequences: Number of sequences in the update buffer.
-        :return: Dict of stats that should be reported to Tensorboard.
-        """
-        forward_total: List[float] = []
-        inverse_total: List[float] = []
-        for _ in range(self.num_epoch):
-            update_buffer.shuffle()
-            buffer = update_buffer
-            for l in range(len(update_buffer["actions"]) // num_sequences):
-                start = l * num_sequences
-                end = (l + 1) * num_sequences
-                run_out_curio = self._update_batch(
-                    buffer.make_mini_batch(start, end), num_sequences
-                )
-                inverse_total.append(run_out_curio["inverse_loss"])
-                forward_total.append(run_out_curio["forward_loss"])
-
-        update_stats = {
-            "Losses/Curiosity Forward Loss": np.mean(forward_total),
-            "Losses/Curiosity Inverse Loss": np.mean(inverse_total),
-        }
-        return update_stats
-
-    def _update_batch(
+    def update_batch(
         self, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[str, float]:
         """
-        Updates model using buffer.
+        Updates model using mini_batch.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
         :return: Output from update process.
