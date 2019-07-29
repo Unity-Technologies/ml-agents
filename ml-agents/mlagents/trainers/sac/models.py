@@ -229,9 +229,12 @@ class SACNetwork(LearningModel):
                 "encoder",
                 False,
             )
-            if self.use_recurrent:  # Not sure if works
+            if self.use_recurrent:
                 hidden_policy, memory_out = self.create_recurrent_encoder(
-                    hidden_policy, self.policy_memory_in, self.sequence_length
+                    hidden_policy,
+                    self.policy_memory_in,
+                    self.sequence_length,
+                    name="lstm_policy",
                 )
                 self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
 
@@ -332,7 +335,10 @@ class SACNetwork(LearningModel):
                 )
                 hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
                 hidden_policy, memory_out = self.create_recurrent_encoder(
-                    hidden_policy, self.policy_memory_in, self.sequence_length
+                    hidden_policy,
+                    self.policy_memory_in,
+                    self.sequence_length,
+                    name="lstm_policy",
                 )
                 self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
 
@@ -416,9 +422,12 @@ class SACNetwork(LearningModel):
             value_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "encoder", False
             )
-            if self.use_recurrent:  # Not sure if works
+            if self.use_recurrent:
                 value_hidden, memory_out = self.create_recurrent_encoder(
-                    value_hidden, self.value_memory_in, self.sequence_length
+                    value_hidden,
+                    self.value_memory_in,
+                    self.sequence_length,
+                    name="lstm_value",
                 )
                 self.value_memory_out = tf.identity(memory_out, name="recurrent_out")
             for name in stream_names:
@@ -455,9 +464,9 @@ class SACNetwork(LearningModel):
             q1_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q1_encoder", reuse
             )
-            if self.use_recurrent:  # Not sure if works
+            if self.use_recurrent:
                 q1_hidden, memory_out = self.create_recurrent_encoder(
-                    q1_hidden, self.q1_memory_in, self.sequence_length
+                    q1_hidden, self.q1_memory_in, self.sequence_length, name="lstm_q1"
                 )
                 self.q1_memory_out = tf.identity(memory_out, name="recurrent_out")
 
@@ -471,9 +480,9 @@ class SACNetwork(LearningModel):
             q2_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q2_encoder", reuse
             )
-            if self.use_recurrent:  # Not sure if works
+            if self.use_recurrent:
                 q2_hidden, memory_out = self.create_recurrent_encoder(
-                    q2_hidden, self.q2_memory_in, self.sequence_length
+                    q2_hidden, self.q2_memory_in, self.sequence_length, name="lstm_q2"
                 )
                 self.q2_memory_out = tf.identity(memory_out, name="recurrent_out")
 
