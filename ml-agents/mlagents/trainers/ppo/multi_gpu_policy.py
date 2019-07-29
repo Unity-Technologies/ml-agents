@@ -37,13 +37,13 @@ class MultiGpuPPOPolicy(PPOPolicy):
         self.update_dict = {"update_batch": self.update_batch}
         self.update_dict.update(
             {
-                "value_loss_%d".format(i): self.towers[i].value_loss
+                "value_loss_" + str(i): self.towers[i].value_loss
                 for i in range(len(self.towers))
             }
         )
         self.update_dict.update(
             {
-                "policy_loss_%d".format(i): self.towers[i].policy_loss
+                "policy_loss_" + str(i): self.towers[i].policy_loss
                 for i in range(len(self.towers))
             }
         )
