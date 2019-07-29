@@ -219,11 +219,16 @@ class SACNetwork(LearningModel):
         self.external_action_in = self.action_holder
 
         scope = self.join_scopes(scope, "policy")
-        hidden_policy = self.create_vector_observation_encoder(
-            hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
-        )
-        # hidden_policy = tf.Print(hidden_policy,[hidden_policy], name="HiddenPoicy" )
+
         with tf.variable_scope(scope):
+            hidden_policy = self.create_vector_observation_encoder(
+                hidden_policy,
+                self.h_size,
+                self.activ_fn,
+                self.num_layers,
+                "encoder",
+                False,
+            )
             if self.use_recurrent:  # Not sure if works
                 hidden_policy, memory_out = self.create_recurrent_encoder(
                     hidden_policy, self.policy_memory_in, self.sequence_length
@@ -298,9 +303,7 @@ class SACNetwork(LearningModel):
         scope = self.join_scopes(scope, "policy")
 
         # Create inputs outside of the scope
-        hidden_policy = self.create_vector_observation_encoder(
-            hidden_policy, self.h_size, self.activ_fn, self.num_layers, scope, False
-        )
+
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
@@ -310,6 +313,14 @@ class SACNetwork(LearningModel):
                 shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
             )
         with tf.variable_scope(scope):
+            hidden_policy = self.create_vector_observation_encoder(
+                hidden_policy,
+                self.h_size,
+                self.activ_fn,
+                self.num_layers,
+                "encoder",
+                False,
+            )
             if self.use_recurrent:
 
                 prev_action_oh = tf.concat(
@@ -338,7 +349,6 @@ class SACNetwork(LearningModel):
                         ),
                     )
                 )
-
             all_logits = tf.concat(
                 [branch for branch in policy_branches], axis=1, name="action_probs"
             )
@@ -401,11 +411,11 @@ class SACNetwork(LearningModel):
         :param scope: TF scope for value network.
         """
 
-        value_hidden = self.create_vector_observation_encoder(
-            hidden_input, h_size, self.activ_fn, num_layers, scope, False
-        )
         self.value_heads = {}
         with tf.variable_scope(scope):
+            value_hidden = self.create_vector_observation_encoder(
+                hidden_input, h_size, self.activ_fn, num_layers, "encoder", False
+            )
             if self.use_recurrent:  # Not sure if works
                 value_hidden, memory_out = self.create_recurrent_encoder(
                     value_hidden, self.value_memory_in, self.sequence_length
@@ -455,6 +465,8 @@ class SACNetwork(LearningModel):
             for name in stream_names:
                 _q1 = tf.layers.dense(q1_hidden, num_outputs, name="{}_q1".format(name))
                 q1_heads[name] = _q1
+
+            q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
         with tf.variable_scope(self.join_scopes(scope, "q2_encoding"), reuse=reuse):
             q2_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q2_encoder", reuse
@@ -469,10 +481,8 @@ class SACNetwork(LearningModel):
             for name in stream_names:
                 _q2 = tf.layers.dense(q2_hidden, num_outputs, name="{}_q2".format(name))
                 q2_heads[name] = _q2
-        q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
-        q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)
-        # q1 = next(iter(q1_heads.values()))
-        # q2 = next(iter(q2_heads.values()))
+
+            q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)
 
         return q1_heads, q2_heads, q1, q2
 
