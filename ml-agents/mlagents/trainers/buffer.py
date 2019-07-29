@@ -1,6 +1,7 @@
-import numpy as np
 import random
+from collections import defaultdict
 
+import numpy as np
 import h5py
 
 from mlagents.envs.exception import UnityException
@@ -220,13 +221,12 @@ class Buffer(dict):
                 mini_batch[key] = np.array(self[key][start:end])
             return mini_batch
 
-        # SAC HAC
         def sample_mini_batch(self, batch_size):
             """
             Creates a mini-batch from a random start and end.
             : param batch_size: number of elements to withdraw.
             """
-            mini_batch_lists = {}
+            mini_batch_lists = defaultdict(list)
             mini_batch = Buffer.AgentBuffer()
             idxes = [
                 random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)
@@ -234,29 +234,26 @@ class Buffer(dict):
 
             for i in idxes:
                 for key in self:
-                    if key in mini_batch_lists:
-                        mini_batch_lists[key].append(self[key][i])
-                    else:
-                        mini_batch_lists[key] = [self[key][i]]
+                    mini_batch_lists[key].append(self[key][i])
             for key in mini_batch_lists:
                 mini_batch[key] = np.array(mini_batch_lists[key])
             return mini_batch
 
-        def save_to_file(self, filename):
+        def save_to_file(self, file_object):
             """
-            Saves the AgentBuffer as an hdf5 file.
+            Saves the AgentBuffer to a file-like object.
             """
-            with h5py.File(filename, "w") as write_file:
+            with h5py.File(file_object) as write_file:
                 for key, data in self.items():
                     write_file.create_dataset(
                         key, data=data, dtype="f", compression="gzip"
                     )
 
-        def load_from_file(self, filename):
+        def load_from_file(self, file_object):
             """
-            Loads the AgentBuffer from an hdf5 file.
+            Loads the AgentBuffer from a file-like object.
             """
-            with h5py.File(filename, "r") as read_file:
+            with h5py.File(file_object) as read_file:
                 for key in list(read_file.keys()):
                     self[key] = Buffer.AgentBuffer.AgentBufferField()
                     # extend() will convert the numpy array's first dimension into list

@@ -163,7 +163,8 @@ class SACTrainer(Trainer):
         """
         filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
         LOGGER.info("Saving Experience Replay Buffer to {}".format(filename))
-        self.training_buffer.update_buffer.save_to_file(filename)
+        with open(filename, "wb") as file_object:
+            self.training_buffer.update_buffer.save_to_file(file_object)
 
     def load_replay_buffer(self) -> Buffer:
         """
@@ -171,7 +172,8 @@ class SACTrainer(Trainer):
         """
         filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
         LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
-        self.training_buffer.update_buffer.load_from_file(filename)
+        with open(filename, "wb") as file_object:
+            self.training_buffer.update_buffer.load_from_file(file_object)
 
     def increment_step_and_update_last_reward(self):
         """
