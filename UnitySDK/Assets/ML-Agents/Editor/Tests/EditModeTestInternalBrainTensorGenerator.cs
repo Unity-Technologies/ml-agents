@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
 using MLAgents.InferenceBrain;
@@ -43,111 +44,121 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorGenerator(bp, 0);
+            var alloc = new TensorCachingAllocator();
+            var tensorGenerator = new TensorGenerator(bp, 0, alloc);
             Assert.IsNotNull(tensorGenerator);
+            alloc.Dispose();
         }
 
         [Test]
         public void GenerateBatchSize()
         {
-            var inputTensor = new Tensor();
+            var inputTensor = new TensorProxy();
+            var alloc = new TensorCachingAllocator();
             var batchSize = 4;
-            var generator = new BatchSizeGenerator();
+            var generator = new BatchSizeGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
-            Assert.IsNotNull(inputTensor.Data as int[]);
-            Assert.AreEqual((inputTensor.Data as int[])[0], batchSize);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0], batchSize);
+            alloc.Dispose();
         }
         
         [Test]
         public void GenerateSequenceLength()
         {
-            var inputTensor = new Tensor();
+            var inputTensor = new TensorProxy();
+            var alloc = new TensorCachingAllocator();
             var batchSize = 4;
-            var generator = new SequenceLengthGenerator();
+            var generator = new SequenceLengthGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
-            Assert.IsNotNull(inputTensor.Data as int[]);
-            Assert.AreEqual((inputTensor.Data as int[])[0], 1);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0], 1);
+            alloc.Dispose();
         }
         
         [Test]
         public void GenerateVectorObservation()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 3}
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
-            
-            var generator = new VectorObservationGenerator();
+            var alloc = new TensorCachingAllocator();
+            var generator = new VectorObservationGenerator(alloc);
             generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.Data as float[,]);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 1);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 2], 3);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 0], 4);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 2], 6);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0, 0], 1);
+            Assert.AreEqual(inputTensor.Data[0, 2], 3);
+            Assert.AreEqual(inputTensor.Data[1, 0], 4);
+            Assert.AreEqual(inputTensor.Data[1, 2], 6);
+            alloc.Dispose();
         }
         
         [Test]
         public void GenerateRecurrentInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5}
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
-            
-            var generator = new RecurrentInputGenerator();
+            var alloc = new TensorCachingAllocator();
+            var generator = new RecurrentInputGenerator(alloc);
             generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.Data as float[,]);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 0);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 4], 0);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 0], 1);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 4], 0);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0, 0], 0);
+            Assert.AreEqual(inputTensor.Data[0, 4], 0);
+            Assert.AreEqual(inputTensor.Data[1, 0], 1);
+            Assert.AreEqual(inputTensor.Data[1, 4], 0);
+            alloc.Dispose();
         }
         
         [Test]
         public void GeneratePreviousActionInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 2},
-                ValueType = Tensor.TensorType.Integer
+                ValueType = TensorProxy.TensorType.Integer
                 
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
-
-            var generator = new PreviousActionInputGenerator();
+            var alloc = new TensorCachingAllocator();
+            var generator = new PreviousActionInputGenerator(alloc);
 
             generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.Data as int[,]);
-            Assert.AreEqual((inputTensor.Data as int[,])[0, 0], 1);
-            Assert.AreEqual((inputTensor.Data as int[,])[0, 1], 2);
-            Assert.AreEqual((inputTensor.Data as int[,])[1, 0], 3);
-            Assert.AreEqual((inputTensor.Data as int[,])[1, 1], 4);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0, 0], 1);
+            Assert.AreEqual(inputTensor.Data[0, 1], 2);
+            Assert.AreEqual(inputTensor.Data[1, 0], 3);
+            Assert.AreEqual(inputTensor.Data[1, 1], 4);
+            alloc.Dispose();
         }
         
         [Test]
         public void GenerateActionMaskInput()
         {
-            var inputTensor = new Tensor()
+            var inputTensor = new TensorProxy()
             {
                 Shape = new long[] {2, 5},
-                ValueType = Tensor.TensorType.FloatingPoint
+                ValueType = TensorProxy.TensorType.FloatingPoint
                 
             };
             var batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
-  
-            var generator = new ActionMaskInputGenerator();
+            var alloc = new TensorCachingAllocator();
+            var generator = new ActionMaskInputGenerator(alloc);
             generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.Data as float[,]);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 0], 1);
-            Assert.AreEqual((inputTensor.Data as float[,])[0, 4], 1);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 0], 0);
-            Assert.AreEqual((inputTensor.Data as float[,])[1, 4], 1);
+            Assert.IsNotNull(inputTensor.Data);
+            Assert.AreEqual(inputTensor.Data[0, 0], 1);
+            Assert.AreEqual(inputTensor.Data[0, 4], 1);
+            Assert.AreEqual(inputTensor.Data[1, 0], 0);
+            Assert.AreEqual(inputTensor.Data[1, 4], 1);
+            alloc.Dispose();
         }
     }
 }

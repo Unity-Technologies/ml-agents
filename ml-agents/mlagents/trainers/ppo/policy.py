@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
+from mlagents.trainers.models import EncoderType
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -44,7 +45,9 @@ class PPOPolicy(TFPolicy):
                 m_size=self.m_size,
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
-                vis_encode_type=trainer_params["vis_encode_type"],
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
             )
             self.model.create_ppo_optimizer()
 

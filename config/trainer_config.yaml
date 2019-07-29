@@ -17,7 +17,7 @@ default:
     summary_freq: 1000
     tau: 0.005
     use_recurrent: false
-    vis_encode_type: default
+    vis_encode_type: simple
     reward_signals:
         extrinsic:
             strength: 1.0

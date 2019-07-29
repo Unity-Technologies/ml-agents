@@ -185,8 +185,8 @@ range of training and inference scenarios:
 - **Learning** - where decisions are made using an embedded
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
-  determine the action for each Agent. You can train a **Learning Brain** 
-  by dragging it into the Academy's `Broadcast Hub` with the `Control` 
+  determine the action for each Agent. You can train a **Learning Brain**
+  by dragging it into the Academy's `Broadcast Hub` with the `Control`
   checkbox checked.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
@@ -224,7 +224,7 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the only Brain used is a **Learning Brain**. More 
+In this mode, the only Brain used is a **Learning Brain**. More
 specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
 Communicator (this is the behavior with an External Brain). The Python API
@@ -244,7 +244,7 @@ time.
 To summarize: our built-in implementations are based on TensorFlow, thus, during
 training the Python API uses the observations it receives to learn a TensorFlow
 model. This model is then embedded within the Learning Brain during inference to
-generate the optimal actions for all Agents linked to that Brain. 
+generate the optimal actions for all Agents linked to that Brain.
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
@@ -255,7 +255,7 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 In the previous mode, the Learning Brain was used for training to generate
 a TensorFlow model that the Learning Brain can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for
-training. In this case, the Brain type would be set to Learning and be linked 
+training. In this case, the Brain type would be set to Learning and be linked
 to the BroadcastHub (with checked `Control` checkbox)
 and the behaviors of all the Agents in the scene will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
@@ -319,8 +319,11 @@ imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
-The [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial
-covers this training mode with the **Banana Collector** sample environment.
+ML-Agents provides ways to both learn directly from demonstrations as well as
+use demonstrations to help speed up reward-based training, and two algorithms to do
+so (Generative Adversarial Imitation Learning and Behavioral Cloning). The
+[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial
+covers these features in more depth.
 
 ## Flexible Training Scenarios
 
@@ -408,7 +411,7 @@ training process.
 - **Broadcasting** - As discussed earlier, a Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
-  for training and later inference. Broadcasting is a feature which can be 
+  for training and later inference. Broadcasting is a feature which can be
   enabled all types of Brains (Player, Learning, Heuristic) where the Agent
   observations and actions are also sent to the Python API (despite the fact
   that the Agent is **not** controlled by the Python API). This feature is
@@ -418,6 +421,14 @@ training process.
   particularly when debugging agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
+
+- **Training with Environment Parameter Sampling** - To train agents to be robust
+  to changes in its environment (i.e., generalization), the agent should be exposed
+  to a variety of environment variations. Similarly to Curriculum Learning, which
+  allows environments to get more difficult as the agent learns, we also provide
+  a way to randomly resample aspects of the environment during training. See
+  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
+  to learn more about this feature.
 
 - **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
   installing Python or TensorFlow directly, we provide a

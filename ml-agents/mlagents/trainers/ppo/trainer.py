@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
-from collections import deque, defaultdict
+from collections import defaultdict
 from typing import List, Any
 
 import numpy as np
@@ -55,7 +55,6 @@ class PPOTrainer(Trainer):
             "memory_size",
             "model_path",
             "reward_signals",
-            "vis_encode_type",
         ]
         self.check_param_keys()
 

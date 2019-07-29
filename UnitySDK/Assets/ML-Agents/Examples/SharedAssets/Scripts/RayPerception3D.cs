@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -12,6 +13,7 @@ namespace MLAgents
     {
         Vector3 endPosition;
         RaycastHit hit;
+        private float[] subList;
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
@@ -35,7 +37,12 @@ namespace MLAgents
             float[] rayAngles, string[] detectableObjects,
             float startOffset, float endOffset)
         {
+            if (subList == null || subList.Length != detectableObjects.Length + 2)
+                subList = new float[detectableObjects.Length + 2];
+            
             perceptionBuffer.Clear();
+            perceptionBuffer.Capacity = subList.Length * rayAngles.Length;
+            
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
             foreach (float angle in rayAngles)
@@ -49,7 +56,8 @@ namespace MLAgents
                         endPosition, Color.black, 0.01f, true);
                 }
 
-                float[] subList = new float[detectableObjects.Length + 2];
+                Array.Clear(subList, 0, subList.Length);
+                
                 if (Physics.SphereCast(transform.position +
                                        new Vector3(0f, startOffset, 0f), 0.5f,
                     endPosition, out hit, rayDistance))
@@ -69,7 +77,7 @@ namespace MLAgents
                     subList[detectableObjects.Length] = 1f;
                 }
 
-                perceptionBuffer.AddRange(subList);
+                Utilities.AddRangeNoAlloc(perceptionBuffer, subList);
             }
 
             return perceptionBuffer;

@@ -9,6 +9,7 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
 from mlagents.envs.simple_env_manager import SimpleEnvManager
+from mlagents.envs.sampler_class import SamplerManager
 
 
 BRAIN_NAME = __name__
@@ -144,7 +145,6 @@ def test_simple():
                 extrinsic:
                     strength: 1.0
                     gamma: 0.99
-            vis_encode_type: default
     """
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
@@ -162,6 +162,8 @@ def test_simple():
             lesson=None,
             training_seed=1337,
             fast_simulation=True,
+            sampler_manager=SamplerManager(None),
+            resampling_interval=None,
         )
 
         # Begin training

@@ -28,10 +28,10 @@ class Trainer(object):
     def __init__(
         self,
         brain: BrainParameters,
-        reward_buff_cap: int,
         trainer_parameters: dict,
         training: bool,
         run_id: int,
+        reward_buff_cap: int = 1,
     ):
         """
         Responsible for collecting experiences and training a neural network model.
