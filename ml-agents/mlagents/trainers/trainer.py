@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, List, Deque
+from typing import Dict, List, Deque, Any
 import os
 import tensorflow as tf
 import numpy as np
@@ -66,7 +66,7 @@ class Trainer(object):
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
 
-    def dict_to_str(self, param_dict, num_tabs):
+    def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
         Takes a parameter dictionary and converts it to a human-readable string.
         Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
@@ -74,7 +74,7 @@ class Trainer(object):
         return: A string version of this dictionary.
         """
         if not isinstance(param_dict, dict):
-            return param_dict
+            return str(param_dict)
         else:
             append_newline = "\n" if num_tabs > 0 else ""
             return append_newline + "\n".join(
@@ -88,7 +88,7 @@ class Trainer(object):
                 ]
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
             self.__class__.__name__,
             self.brain_name,
@@ -96,14 +96,14 @@ class Trainer(object):
         )
 
     @property
-    def parameters(self):
+    def parameters(self) -> Dict[str, Any]:
         """
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
 
     @property
-    def get_max_steps(self):
+    def get_max_steps(self) -> float:
         """
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
@@ -111,7 +111,7 @@ class Trainer(object):
         return float(self.trainer_parameters["max_steps"])
 
     @property
-    def get_step(self):
+    def get_step(self) -> int:
         """
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
@@ -119,7 +119,7 @@ class Trainer(object):
         return self.step
 
     @property
-    def reward_buffer(self):
+    def reward_buffer(self) -> Deque[float]:
         """
         Returns the reward buffer. The reward buffer contains the cumulative
         rewards of the most recent episodes completed by agents using this
@@ -135,13 +135,6 @@ class Trainer(object):
         :param n_steps: number of steps to increment the step count by
         """
         self.step = self.policy.increment_step(n_steps)
-
-    @property
-    def graph_scope(self):
-        """
-        Returns the graph scope of the trainer.
-        """
-        raise UnityTrainerException("The graph_scope property was not implemented.")
 
     def add_experiences(
         self,
@@ -190,19 +183,19 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def save_model(self):
+    def save_model(self) -> None:
         """
         Saves the model
         """
         self.policy.save_model(self.get_step)
 
-    def export_model(self):
+    def export_model(self) -> None:
         """
         Exports the model
         """
         self.policy.export_model()
 
-    def write_training_metrics(self):
+    def write_training_metrics(self) -> None:
         """
         Write training metrics to a CSV  file
         :return:
@@ -261,7 +254,7 @@ class Trainer(object):
             self.summary_writer.add_summary(summary, step)
             self.summary_writer.flush()
 
-    def write_tensorboard_text(self, key, input_dict):
+    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
         """
         Saves text to Tensorboard.
         Note: Only works on tensorflow r1.2 or above.
