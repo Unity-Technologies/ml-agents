@@ -64,7 +64,7 @@ class RewardSignal(abc.ABC):
         """
         return {}
 
-    def _update_batch(
+    def update_batch(
         self, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[str, float]:
         """

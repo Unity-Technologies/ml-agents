@@ -461,7 +461,7 @@ class PPOTrainer(Trainer):
                 for _, reward_signal in self.policy.reward_signals.items():
                     update_dict.update(reward_signal.update_dict)
                     feed_dict.update(
-                        reward_signal._update_batch(mini_batch, n_sequences)
+                        reward_signal.update_batch(mini_batch, n_sequences)
                     )
                     stats_needed.update(reward_signal.stats_name_to_update_name)
 

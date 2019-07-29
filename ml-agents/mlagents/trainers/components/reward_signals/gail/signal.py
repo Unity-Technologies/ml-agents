@@ -51,6 +51,20 @@ class GAILRewardSignal(RewardSignal):
         )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
+        self.update_dict: Dict[str, tf.Tensor] = {
+            "gail_loss": self.model.loss,
+            "update_batch": self.model.update_batch,
+            "policy_estimate": self.model.policy_estimate,
+            "expert_estimate": self.model.expert_estimate,
+        }
+        if self.model.use_vail:
+            self.update_dict["kl_loss"] = self.model.kl_loss
+            self.update_dict["z_log_sigma_sq"] = self.model.z_log_sigma_sq
+            self.update_dict["z_mean_expert"] = self.model.z_mean_expert
+            self.update_dict["z_mean_policy"] = self.model.z_mean_policy
+            self.update_dict["beta_update"] = self.model.update_beta
+
+        self.stats_name_to_update_name = {"Losses/GAIL Loss": "gail_loss"}
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
@@ -92,94 +106,8 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer: Buffer, n_sequences: int) -> Dict[str, float]:
-        """
-        Updates model using buffer.
-        :param update_buffer: The policy buffer containing the trajectories for the current policy.
-        :param n_sequences: The number of sequences from demo and policy used in each mini batch.
-        :return: The loss of the update.
-        """
-        batch_losses = []
-        # Divide by 2 since we have two buffers, so we have roughly the same batch size
-        n_sequences = max(n_sequences // 2, 1)
-        possible_demo_batches = (
-            len(self.demonstration_buffer.update_buffer["actions"]) // n_sequences
-        )
-        possible_policy_batches = len(update_buffer["actions"]) // n_sequences
-        possible_batches = min(possible_policy_batches, possible_demo_batches)
-
-        max_batches = self.samples_per_update // n_sequences
-
-        kl_loss = []
-        policy_estimate = []
-        expert_estimate = []
-        z_log_sigma_sq = []
-        z_mean_expert = []
-        z_mean_policy = []
-
-        n_epoch = self.num_epoch
-        for _epoch in range(n_epoch):
-            self.demonstration_buffer.update_buffer.shuffle()
-            update_buffer.shuffle()
-            if max_batches == 0:
-                num_batches = possible_batches
-            else:
-                num_batches = min(possible_batches, max_batches)
-            for i in range(num_batches):
-                demo_update_buffer = self.demonstration_buffer.update_buffer
-                policy_update_buffer = update_buffer
-                start = i * n_sequences
-                end = (i + 1) * n_sequences
-                mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
-                mini_batch_policy = policy_update_buffer.make_mini_batch(start, end)
-                run_out = self._update_batch(mini_batch_demo, mini_batch_policy)
-                loss = run_out["gail_loss"]
-
-                policy_estimate.append(run_out["policy_estimate"])
-                expert_estimate.append(run_out["expert_estimate"])
-                if self.model.use_vail:
-                    kl_loss.append(run_out["kl_loss"])
-                    z_log_sigma_sq.append(run_out["z_log_sigma_sq"])
-                    z_mean_policy.append(run_out["z_mean_policy"])
-                    z_mean_expert.append(run_out["z_mean_expert"])
-
-                batch_losses.append(loss)
-        self.has_updated = True
-
-        print_list = ["n_epoch", "beta", "policy_estimate", "expert_estimate"]
-        print_vals = [
-            n_epoch,
-            self.policy.sess.run(self.model.beta),
-            np.mean(policy_estimate),
-            np.mean(expert_estimate),
-        ]
-        if self.model.use_vail:
-            print_list += [
-                "kl_loss",
-                "z_mean_expert",
-                "z_mean_policy",
-                "z_log_sigma_sq",
-            ]
-            print_vals += [
-                np.mean(kl_loss),
-                np.mean(z_mean_expert),
-                np.mean(z_mean_policy),
-                np.mean(z_log_sigma_sq),
-            ]
-        LOGGER.debug(
-            "GAIL Debug:\n\t\t"
-            + "\n\t\t".join(
-                "{0}: {1}".format(_name, _val)
-                for _name, _val in zip(print_list, print_vals)
-            )
-        )
-        update_stats = {"Losses/GAIL Loss": np.mean(batch_losses)}
-        return update_stats
-
-    def _update_batch(
-        self,
-        mini_batch_demo: Dict[str, np.ndarray],
-        mini_batch_policy: Dict[str, np.ndarray],
+    def update_batch(
+        self, mini_batch_policy: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[str, float]:
         """
         Helper method for update.
@@ -187,6 +115,20 @@ class GAILRewardSignal(RewardSignal):
         :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
         :return: Output from update process.
         """
+
+        num_sequences = min(
+            num_sequences, len(self.demonstration_buffer.update_buffer["actions"])
+        )
+        # If num_sequences is less, we need to shorten the input batch.
+        for key, element in mini_batch_policy.items():
+
+            mini_batch_policy[key] = element[:num_sequences]
+        # Get demo buffer
+        self.demonstration_buffer.update_buffer.shuffle()  # TODO: Replace with SAC sample method
+        mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
+            0, len(mini_batch_policy["actions"])
+        )
+
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.done_expert: mini_batch_demo["done"].reshape([-1, 1]),
             self.model.done_policy: mini_batch_policy["done"].reshape([-1, 1]),
@@ -237,29 +179,4 @@ class GAILRewardSignal(RewardSignal):
                 [-1, self.policy.vec_obs_size]
             )
 
-        out_dict = {
-            "gail_loss": self.model.loss,
-            "update_batch": self.model.update_batch,
-            "policy_estimate": self.model.policy_estimate,
-            "expert_estimate": self.model.expert_estimate,
-        }
-        if self.model.use_vail:
-            out_dict["kl_loss"] = self.model.kl_loss
-            out_dict["z_log_sigma_sq"] = self.model.z_log_sigma_sq
-            out_dict["z_mean_expert"] = self.model.z_mean_expert
-            out_dict["z_mean_policy"] = self.model.z_mean_policy
-
-        run_out = self.policy.sess.run(out_dict, feed_dict=feed_dict)
-        if self.model.use_vail:
-            self.update_beta(run_out["kl_loss"])
-        return run_out
-
-    def update_beta(self, kl_div: float) -> None:
-        """
-        Updates the Beta parameter with the latest kl_divergence value.
-        The larger Beta, the stronger the importance of the kl divergence in the loss function.
-        :param kl_div: The KL divergence
-        """
-        self.policy.sess.run(
-            self.model.update_beta, feed_dict={self.model.kl_div_input: kl_div}
-        )
+        return feed_dict
