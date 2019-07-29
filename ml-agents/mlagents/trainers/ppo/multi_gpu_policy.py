@@ -30,7 +30,10 @@ class MultiGpuPPOPolicy(PPOPolicy):
         """
         super().__init__(seed, brain, trainer_params, is_training, load)
 
-        self.update_batch = self.average_gradients([t.grads for t in self.towers])
+        with self.graph.as_default():
+            avg_grads = self.average_gradients([t.grads for t in self.towers])
+            self.update_batch = self.model.optimizer.apply_gradients(avg_grads)
+
         self.update_dict = {"update_batch": self.update_batch}
         self.update_dict.update(
             {
@@ -47,7 +50,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
 
     def create_model(self, brain, trainer_params, reward_signal_configs, seed):
         """
-        Create PPO model, one on each device
+        Create PPO models, one on each device
         :param brain: Assigned Brain object.
         :param trainer_params: Defined training parameters.
         :param reward_signal_configs: Reward signal config
@@ -95,20 +98,19 @@ class MultiGpuPPOPolicy(PPOPolicy):
         device_batches = []
         for i in range(len(self.devices)):
             device_batches.append(
-                {k: v[i : i + device_batch_size] for k, v in mini_batch.items()}
+                {k: v[i : i + device_batch_size] for (k, v) in mini_batch.items()}
             )
 
-        assert len(device_batches) == len(self.towers)
         for batch, tower in zip(device_batches, self.towers):
             feed_dict.update(self.construct_feed_dict(tower, batch, num_sequences))
 
         out = self._execute_model(feed_dict, self.update_dict)
         run_out = {}
         run_out["value_loss"] = np.mean(
-            [out["value_loss_%d".format(i)] for i in range(len(self.towers))]
+            [out["value_loss_" + str(i)] for i in range(len(self.towers))]
         )
         run_out["policy_loss"] = np.mean(
-            [out["policy_loss_%d".format(i)] for i in range(len(self.towers))]
+            [out["policy_loss_" + str(i)] for i in range(len(self.towers))]
         )
         run_out["update_batch"] = out["update_batch"]
         return run_out
