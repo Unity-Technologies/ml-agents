@@ -35,9 +35,11 @@ class RewardSignal(abc.ABC):
         # Terminate discounted reward computation at Done. Can disable to mitigate positive bias in rewards with
         # no natural end, e.g. GAIL or Curiosity
         self.use_terminal_states = True
+        self.update_dict: Dict[str, tf.Tensor] = {}
         self.gamma = gamma
         self.policy = policy
         self.strength = strength
+        self.stats_name_to_update_name: Dict[str, str] = {}
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
@@ -59,6 +61,14 @@ class RewardSignal(abc.ABC):
         :param update_buffer: An AgentBuffer that contains the live data from which to update.
         :param n_sequences: The number of sequences in the training buffer.
         :return: A dict of {"Stat Name": stat} to be added to Tensorboard
+        """
+        return {}
+
+    def _update_batch(
+        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
+    ) -> Dict[str, float]:
+        """
+        This method does nothing, as there is nothing to update.
         """
         return {}
 

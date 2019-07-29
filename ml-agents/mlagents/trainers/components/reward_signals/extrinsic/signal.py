@@ -41,9 +41,3 @@ class ExtrinsicRewardSignal(RewardSignal):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)
-
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
-        """
-        This method does nothing, as there is nothing to update.
-        """
-        return {}

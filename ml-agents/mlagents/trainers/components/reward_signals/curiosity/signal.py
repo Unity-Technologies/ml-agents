@@ -39,6 +39,10 @@ class CuriosityRewardSignal(RewardSignal):
             "inverse_loss": self.model.inverse_loss,
             "update": self.model.update_batch,
         }
+        self.stats_name_to_update_name = {
+            "Losses/Curiosity Forward Loss": "forward_loss",
+            "Losses/Curiosity Inverse Loss": "inverse_loss",
+        }
         self.has_updated = False
 
     def evaluate(
@@ -171,5 +175,5 @@ class CuriosityRewardSignal(RewardSignal):
                     feed_dict[self.model.next_visual_in[i]] = _obs
 
         self.has_updated = True
-        run_out = self.policy._execute_model(feed_dict, self.update_dict)
-        return run_out
+        # run_out = self.policy._execute_model(feed_dict, self.update_dict)
+        return feed_dict

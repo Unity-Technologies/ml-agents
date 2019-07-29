@@ -101,6 +101,10 @@ class PPOPolicy(TFPolicy):
             "policy_loss": self.total_policy_loss,
             "update_batch": self.model.update_batch,
         }
+        self.stats_name_to_update_name = {
+            "Losses/Value Loss": "value_loss",
+            "Losses/Policy Loss": "policy_loss",
+        }
 
     @timed
     def evaluate(self, brain_info):
@@ -193,8 +197,8 @@ class PPOPolicy(TFPolicy):
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
-        run_out = self._execute_model(feed_dict, self.update_dict)
-        return run_out
+        # run_out = self._execute_model(feed_dict, self.update_dict)
+        return feed_dict
 
     def get_value_estimates(
         self, brain_info: BrainInfo, idx: int, done: bool
