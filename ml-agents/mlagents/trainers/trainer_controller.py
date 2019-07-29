@@ -323,29 +323,21 @@ class TrainerController(object):
 
         with hierarchical_timer("env_step"):
             time_start_step = time()
-            new_step_infos = env.step()
+            new_agent_steps = env.step()
             delta_time_step = time() - time_start_step
 
-        for step_info in new_step_infos:
+        for agent_step in new_agent_steps:
             for brain_name, trainer in self.trainers.items():
-                if brain_name in self.trainer_metrics:
-                    self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-                trainer.add_experiences(
-                    step_info.previous_all_brain_info,
-                    step_info.current_all_brain_info,
-                    step_info.brain_name_to_action_info[brain_name].outputs,
-                )
-                trainer.process_experiences(
-                    step_info.previous_all_brain_info, step_info.current_all_brain_info
-                )
+                trainer.add_experiences(agent_step)
+                trainer.process_experiences(agent_step)
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                trainer.increment_step(len(new_step_infos))
+                trainer.increment_step(len(new_agent_steps))
                 if trainer.is_ready_update():
                     # Perform gradient descent with experience buffer
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
                     env.set_policy(brain_name, trainer.policy)
-        return len(new_step_infos)
+        return len(new_agent_steps)

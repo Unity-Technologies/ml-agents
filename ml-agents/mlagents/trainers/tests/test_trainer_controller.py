@@ -10,7 +10,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
-from mlagents.envs.subprocess_env_manager import StepInfo
+from mlagents.envs.env_manager import AgentStep
 from mlagents.envs.exception import UnityEnvironmentException
 
 
@@ -400,25 +400,19 @@ def trainer_controller_with_take_step_mocks():
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
-    old_step_info = StepInfo(Mock(), Mock(), MagicMock())
-    new_step_info = StepInfo(Mock(), Mock(), MagicMock())
+    old_step = AgentStep(Mock(), Mock(), MagicMock())
+    new_step = AgentStep(Mock(), Mock(), MagicMock())
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
-    env_mock.step.return_value = [new_step_info]
-    env_mock.reset.return_value = [old_step_info]
+    env_mock.step.return_value = [new_step]
+    env_mock.reset.return_value = [old_step]
     env_mock.global_done = False
 
     tc.advance(env_mock)
     env_mock.reset.assert_not_called()
     env_mock.step.assert_called_once()
-    trainer_mock.add_experiences.assert_called_once_with(
-        new_step_info.previous_all_brain_info,
-        new_step_info.current_all_brain_info,
-        new_step_info.brain_name_to_action_info["testbrain"].outputs,
-    )
-    trainer_mock.process_experiences.assert_called_once_with(
-        new_step_info.previous_all_brain_info, new_step_info.current_all_brain_info
-    )
+    trainer_mock.add_experiences.assert_called_once_with(new_step)
+    trainer_mock.process_experiences.assert_called_once_with(new_step)
     trainer_mock.update_policy.assert_called_once()
     trainer_mock.increment_step.assert_called_once()

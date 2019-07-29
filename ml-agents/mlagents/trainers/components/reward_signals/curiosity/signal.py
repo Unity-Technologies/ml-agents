@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.env_manager import AgentStep
+from mlagents.envs.brain import AgentInfo
 
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
@@ -41,41 +42,44 @@ class CuriosityRewardSignal(RewardSignal):
         }
         self.has_updated = False
 
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
+    def evaluate(self, agent_steps: List[AgentStep]) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
-        :param current_info: The current BrainInfo.
-        :param next_info: The BrainInfo from the next timestep.
+        :param current_info: The current AgentInfo.
+        :param next_info: The AgentInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        if len(current_info.agents) == 0:
-            return []
-
-        feed_dict = {
-            self.policy.model.batch_size: len(next_info.vector_observations),
+        current_infos = []
+        next_infos = []
+        for agent_step in agent_steps:
+            current_infos.append(agent_step.previous_agent_info)
+            next_infos.append(agent_step.current_agent_info)
+        feed_dict: Dict = {
+            self.policy.model.batch_size: len(agent_steps),
             self.policy.model.sequence_length: 1,
         }
-        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
+        feed_dict = self.policy.fill_eval_dict(feed_dict, current_infos)
         if self.policy.use_continuous_act:
-            feed_dict[
-                self.policy.model.selected_actions
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.selected_actions] = list(
+                map(lambda ni: ni.previous_vector_actions, next_infos)
+            )
         else:
-            feed_dict[
-                self.policy.model.action_holder
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.action_holder] = list(
+                map(lambda ni: ni.previous_vector_actions, next_infos)
+            )
         for i in range(self.policy.model.vis_obs_size):
-            feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
+            feed_dict[self.model.next_visual_in[i]] = list(
+                map(lambda ni: ni.visual_observations[i], next_infos)
+            )
         if self.policy.use_vec_obs:
-            feed_dict[self.model.next_vector_in] = next_info.vector_observations
+            feed_dict[self.model.next_vector_in] = list(
+                map(lambda ni: ni.vector_observations, next_infos)
+            )
         if self.policy.use_recurrent:
-            if current_info.memories.shape[1] == 0:
-                current_info.memories = self.policy.make_empty_memory(
-                    len(current_info.agents)
-                )
-            feed_dict[self.policy.model.memory_in] = current_info.memories
+            memories = AgentInfo.combine_memories(current_infos)
+            if memories.shape[1] == 0:
+                memories = self.policy.make_empty_memory(len(agent_steps))
+            feed_dict[self.policy.model.memory_in] = memories
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )

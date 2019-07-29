@@ -1,12 +1,12 @@
 import yaml
 import math
 import tempfile
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
+from mlagents.envs.brain import AgentInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 
@@ -52,7 +52,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         memory: Dict[str, Any] = None,
         text_action: Dict[str, Any] = None,
         value: Dict[str, Any] = None,
-    ) -> AllBrainInfo:
+    ) -> List[AgentInfo]:
         assert vector_action is not None
 
         delta = vector_action[BRAIN_NAME][0][0]
@@ -75,11 +75,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         if done:
             self._reset_agent()
 
-        return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(
-                0, [agent_info], self._brains[BRAIN_NAME]
-            )
-        }
+        return [AgentInfo.from_agent_proto(0, agent_info, self._brains[BRAIN_NAME])]
 
     def _reset_agent(self):
         self.position = 0.0
@@ -90,7 +86,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         config: Dict[str, float] = None,
         train_mode: bool = True,
         custom_reset_parameters: Any = None,
-    ) -> AllBrainInfo:  # type: ignore
+    ) -> List[AgentInfo]:  # type: ignore
         self._reset_agent()
 
         agent_info = AgentInfoProto(
@@ -98,11 +94,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             done=False,
             max_step_reached=False,
         )
-        return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(
-                0, [agent_info], self._brains[BRAIN_NAME]
-            )
-        }
+        return [AgentInfo.from_agent_proto(0, agent_info, self._brains[BRAIN_NAME])]
 
     @property
     def global_done(self):

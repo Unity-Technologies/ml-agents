@@ -11,7 +11,9 @@ from mlagents.envs.subprocess_env_manager import (
     worker,
     StepResponse,
 )
+from mlagents.envs.env_manager import AgentStep
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.brain import AgentInfo
 
 
 def mock_env_factory(worker_id: int):
@@ -21,6 +23,7 @@ def mock_env_factory(worker_id: int):
 class MockEnvWorker:
     def __init__(self, worker_id, resp=None):
         self.worker_id = worker_id
+        self.previous_agent_steps = {}
         self.process = None
         self.conn = None
         self.send = Mock()
@@ -67,7 +70,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         self.assertEqual(mock_parent_connection.recv.call_count, 2)
 
         expected_step_response = StepResponse(
-            all_brain_info="reset_data", timer_root=mock.ANY
+            all_agent_info="reset_data", timer_root=mock.ANY
         )
 
         # worker returns the data from the reset
@@ -76,8 +79,9 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
 
     def test_reset_passes_reset_params(self):
+        agent_info = AgentInfo("TestBrain", None, None, None, None, None, "agent-1")
         SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
-            worker_id, EnvironmentResponse("reset", worker_id, worker_id)
+            worker_id, EnvironmentResponse("reset", worker_id, [agent_info])
         )
         manager = SubprocessEnvManager(mock_env_factory, 1)
         params = {"test": "params"}
@@ -85,10 +89,12 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         manager.env_workers[0].send.assert_called_with("reset", (params, False, None))
 
     def test_reset_collects_results_from_all_envs(self):
+        agent_info = AgentInfo("TestBrain", None, None, None, None, None, "agent-1")
         SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
-            worker_id, EnvironmentResponse("reset", worker_id, worker_id)
+            worker_id, EnvironmentResponse("reset", worker_id, [agent_info])
         )
-        manager = SubprocessEnvManager(mock_env_factory, 4)
+        n_env = 4
+        manager = SubprocessEnvManager(mock_env_factory, n_env=n_env)
 
         params = {"test": "params"}
         res = manager.reset(params)
@@ -97,9 +103,12 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(
-                manager.env_workers[i].previous_step.current_all_brain_info, i
+                manager.env_workers[i]
+                .previous_agent_steps["agent-1"]
+                .current_agent_info,
+                agent_info,
             )
-        assert res == list(map(lambda ew: ew.previous_step, manager.env_workers))
+        assert res == [AgentStep(None, agent_info, None)] * n_env
 
     def test_step_takes_steps_for_all_non_waiting_envs(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
@@ -107,32 +116,48 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         manager = SubprocessEnvManager(mock_env_factory, 3)
         manager.step_queue = Mock()
+        agent_infos = [
+            AgentInfo("TestBrain", None, None, None, None, None, "agent-1"),
+            AgentInfo("TestBrain", None, None, None, None, None, "agent-2"),
+        ]
         manager.step_queue.get_nowait.side_effect = [
-            EnvironmentResponse("step", 0, StepResponse(0, None)),
-            EnvironmentResponse("step", 1, StepResponse(1, None)),
+            EnvironmentResponse("step", 0, StepResponse(agent_infos, None)),
+            EnvironmentResponse("step", 1, StepResponse(agent_infos, None)),
             EmptyQueue(),
         ]
         step_mock = Mock()
         last_steps = [Mock(), Mock(), Mock()]
-        manager.env_workers[0].previous_step = last_steps[0]
-        manager.env_workers[1].previous_step = last_steps[1]
-        manager.env_workers[2].previous_step = last_steps[2]
+        manager.env_workers[0].previous_agent_steps["agent-1"] = last_steps[0]
+        manager.env_workers[0].previous_agent_steps["agent-2"] = last_steps[0]
+        manager.env_workers[1].previous_agent_steps["agent-1"] = last_steps[1]
+        manager.env_workers[1].previous_agent_steps["agent-2"] = last_steps[1]
+        # manager.env_workers[2].previous_agent_steps['agent-1'] = last_steps[2]
         manager.env_workers[2].waiting = True
         manager._take_step = Mock(return_value=step_mock)
-        res = manager.step()
+        manager.step()
         for i, env in enumerate(manager.env_workers):
             if i < 2:
                 env.send.assert_called_with("step", step_mock)
                 manager.step_queue.get_nowait.assert_called()
                 # Check that the "last steps" are set to the value returned for each step
                 self.assertEqual(
-                    manager.env_workers[i].previous_step.current_all_brain_info, i
+                    manager.env_workers[i]
+                    .previous_agent_steps["agent-1"]
+                    .current_agent_info,
+                    agent_infos[0],
                 )
                 self.assertEqual(
-                    manager.env_workers[i].previous_step.previous_all_brain_info,
-                    last_steps[i].current_all_brain_info,
+                    manager.env_workers[i]
+                    .previous_agent_steps["agent-1"]
+                    .previous_agent_info,
+                    last_steps[i].current_agent_info,
                 )
-        assert res == [
-            manager.env_workers[0].previous_step,
-            manager.env_workers[1].previous_step,
-        ]
+                self.assertEqual(
+                    manager.env_workers[i]
+                    .previous_agent_steps["agent-2"]
+                    .current_agent_info,
+                    agent_infos[1],
+                )
+        assert list(manager.env_workers[0].previous_agent_steps.values()) + list(
+            manager.env_workers[1].previous_agent_steps.values()
+        )

@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.brain import BrainInfo, AgentInfo
+from mlagents.envs.env_manager import AgentStep
 
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
@@ -29,16 +30,17 @@ class ExtrinsicRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma"]
         super().check_config(config_dict, param_keys)
 
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
+    def evaluate(self, agent_steps: List[AgentStep]) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        unscaled_reward = np.array(next_info.rewards)
+
+        unscaled_reward = np.array(
+            [agent_step.current_agent_info.reward for agent_step in agent_steps]
+        )
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)
 

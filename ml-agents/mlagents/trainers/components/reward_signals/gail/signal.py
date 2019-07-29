@@ -3,7 +3,8 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.brain import AgentInfo
+from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
@@ -52,35 +53,38 @@ class GAILRewardSignal(RewardSignal):
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
-        if len(current_info.agents) == 0:
+    def evaluate(self, agent_steps: List[AgentStep]) -> RewardSignalResult:
+        current_infos = []
+        next_infos = []
+        for agent_step in agent_steps:
+            current_infos.append(agent_step.previous_agent_info)
+            next_infos.append(agent_step.current_agent_info)
+        if len(agent_steps) == 0:
             return []
 
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.model.batch_size: len(next_info.vector_observations),
+            self.policy.model.batch_size: len(agent_steps),
             self.policy.model.sequence_length: 1,
         }
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [0]
 
-        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
-        feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
+        feed_dict = self.policy.fill_eval_dict(feed_dict, current_infos)
+        next_local_dones = np.array(list(map(lambda ni: ni.local_done, next_infos)))
+        feed_dict[self.model.done_policy] = np.reshape(next_local_dones, [-1, 1])
         if self.policy.use_continuous_act:
-            feed_dict[
-                self.policy.model.selected_actions
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.selected_actions] = list(
+                map(lambda ni: ni.previous_vector_actions, next_infos)
+            )
         else:
-            feed_dict[
-                self.policy.model.action_holder
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.action_holder] = list(
+                map(lambda ni: ni.previous_vector_actions, next_infos)
+            )
         if self.policy.use_recurrent:
-            if current_info.memories.shape[1] == 0:
-                current_info.memories = self.policy.make_empty_memory(
-                    len(current_info.agents)
-                )
-            feed_dict[self.policy.model.memory_in] = current_info.memories
+            memories = AgentInfo.combine_memories(current_infos)
+            if memories.shape[1] == 0:
+                memories = self.policy.make_empty_memory(len(agent_steps))
+            feed_dict[self.policy.model.memory_in] = memories
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )

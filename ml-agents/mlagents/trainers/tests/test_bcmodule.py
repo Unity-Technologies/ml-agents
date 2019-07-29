@@ -65,8 +65,10 @@ def create_mock_banana_brain():
 def create_ppo_policy_with_bc_mock(
     mock_env, mock_brain, dummy_config, use_rnn, demo_file
 ):
-    mock_braininfo = mb.create_mock_braininfo(num_agents=12, num_vector_observations=8)
-    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mock_agentinfos = mb.create_mock_agentinfos(
+        num_agents=12, num_vector_observations=8
+    )
+    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_agentinfos)
     env = mock_env()
 
     trainer_parameters = dummy_config

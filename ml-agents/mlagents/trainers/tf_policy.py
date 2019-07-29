@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import numpy as np
 import tensorflow as tf
@@ -8,7 +8,7 @@ from mlagents.trainers import UnityException
 from mlagents.envs import Policy, ActionInfo
 from tensorflow.python.tools import freeze_graph
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.envs import BrainInfo
+from mlagents.envs.brain import AgentInfo
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -97,25 +97,26 @@ class TFPolicy(Policy):
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
-    def evaluate(self, brain_info: BrainInfo) -> Dict[str, Any]:
+    def evaluate(self, agent_infos: List[AgentInfo]) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo input to network.
+        :param agent_infos: AgentInfos for input to network.
         :return: Output from policy based on self.inference_dict.
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
 
-    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
+    def get_action(self, agent_infos: List[AgentInfo]) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BrainInfo from environment.
+        :param agent_infos: list of AgentInfos from environment.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
-        if len(brain_info.agents) == 0:
+        if len(agent_infos) == 0:
             return ActionInfo([], [], [], None, None)
 
-        run_out = self.evaluate(brain_info)
+        run_out = self.evaluate(agent_infos)
+
         return ActionInfo(
             action=run_out.get("action"),
             memory=run_out.get("memory_out"),
@@ -144,13 +145,19 @@ class TFPolicy(Policy):
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
 
-    def fill_eval_dict(self, feed_dict, brain_info):
-        for i, _ in enumerate(brain_info.visual_observations):
-            feed_dict[self.model.visual_in[i]] = brain_info.visual_observations[i]
+    def fill_eval_dict(self, feed_dict: Dict, agent_infos: List[AgentInfo]) -> Dict:
+        for i, _ in enumerate(agent_infos[0].visual_observations):
+            obs = [x.visual_observations[i] for x in agent_infos]
+            feed_dict[self.model.visual_in[i]] = obs
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = brain_info.vector_observations
+            feed_dict[self.model.vector_in] = np.array(
+                [x.vector_observations for x in agent_infos]
+            )
         if not self.use_continuous_act:
-            feed_dict[self.model.action_masks] = brain_info.action_masks
+            mask_actions = np.concatenate(
+                list(map(lambda ai: [ai.action_mask], agent_infos)), axis=0
+            )
+            feed_dict[self.model.action_masks] = mask_actions
         return feed_dict
 
     def make_empty_memory(self, num_agents):

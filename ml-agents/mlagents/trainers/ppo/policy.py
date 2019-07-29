@@ -1,10 +1,11 @@
 import logging
 import numpy as np
-from typing import Any, Dict
+from typing import Any, Dict, List
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo
+from mlagents.envs.brain import AgentInfo
+from mlagents.envs.action_info import ActionInfo
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -100,33 +101,33 @@ class PPOPolicy(TFPolicy):
         }
 
     @timed
-    def evaluate(self, brain_info):
+    def evaluate(self, agent_infos: List[AgentInfo]) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
-            self.model.batch_size: len(brain_info.vector_observations),
+            self.model.batch_size: len(agent_infos),
             self.model.sequence_length: 1,
         }
         epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
-                feed_dict[
-                    self.model.prev_action
-                ] = brain_info.previous_vector_actions.reshape(
+                prev_vector_actions = np.array(
+                    map(lambda ai: ai.previous_vector_actions, agent_infos)
+                )
+                feed_dict[self.model.prev_action] = prev_vector_actions.reshape(
                     [-1, len(self.model.act_size)]
                 )
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = brain_info.memories
+            memories = AgentInfo.combine_memories(agent_infos)
+            if memories.shape[1] == 0:
+                memories = self.make_empty_memory(len(agent_infos))
+            feed_dict[self.model.memory_in] = memories
         if self.use_continuous_act:
-            epsilon = np.random.normal(
-                size=(len(brain_info.vector_observations), self.model.act_size[0])
-            )
+            epsilon = np.random.normal(size=(len(agent_infos), self.model.act_size[0]))
             feed_dict[self.model.epsilon] = epsilon
-        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, agent_infos)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         if self.use_continuous_act:
             run_out["random_normal_epsilon"] = epsilon
@@ -194,12 +195,11 @@ class PPOPolicy(TFPolicy):
         return run_out
 
     def get_value_estimates(
-        self, brain_info: BrainInfo, idx: int, done: bool
+        self, agent_info: AgentInfo, done: bool
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
-        :param brain_info: BrainInfo to be used for bootstrapping.
-        :param idx: Index in BrainInfo of agent.
+        :param agent_info: BrainInfo to be used for bootstrapping.
         :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
@@ -209,20 +209,20 @@ class PPOPolicy(TFPolicy):
             self.model.batch_size: 1,
             self.model.sequence_length: 1,
         }
-        for i in range(len(brain_info.visual_observations)):
-            feed_dict[self.model.visual_in[i]] = [
-                brain_info.visual_observations[i][idx]
-            ]
+        for i in range(len(agent_info.visual_observations)):
+            feed_dict[self.model.visual_in[i]] = [agent_info.visual_observations[i]]
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
+            feed_dict[self.model.vector_in] = [agent_info.vector_observations]
         if self.use_recurrent:
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
+            if agent_info.memories.shape[1] == 0:
+                agent_info.memories = self.make_empty_memory(1)
+            feed_dict[self.model.memory_in] = [agent_info.memories]
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[
-                idx
-            ].reshape([-1, len(self.model.act_size)])
+            feed_dict[
+                self.model.prev_action
+            ] = agent_info.previous_vector_actions.reshape(
+                [-1, len(self.model.act_size)]
+            )
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
@@ -235,17 +235,17 @@ class PPOPolicy(TFPolicy):
 
         return value_estimates
 
-    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
+    def get_action(self, agent_infos: List[AgentInfo]) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
         :param brain_info: A dictionary of brain names and BrainInfo from environment.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
-        if len(brain_info.agents) == 0:
+        if len(agent_infos) == 0:
             return ActionInfo([], [], [], None, None)
 
-        run_out = self.evaluate(brain_info)
+        run_out = self.evaluate(agent_infos)
         mean_values = np.mean(
             np.array(list(run_out.get("value").values())), axis=0
         ).flatten()

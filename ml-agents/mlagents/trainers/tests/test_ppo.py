@@ -52,8 +52,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    agent_steps = env.reset()
 
     trainer_parameters = dummy_config
     model_path = env.brain_names[0]
@@ -62,7 +61,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     policy = PPOPolicy(
         0, env.brains[env.brain_names[0]], trainer_parameters, False, False
     )
-    run_out = policy.evaluate(brain_info)
+    run_out = policy.evaluate(agent_steps)
     assert run_out["action"].shape == (3, 2)
     env.close()
 
@@ -75,8 +74,8 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    agent_steps = env.reset()
+    agent_step = agent_steps[0]
 
     trainer_parameters = dummy_config
     model_path = env.brain_names[0]
@@ -85,19 +84,19 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     policy = PPOPolicy(
         0, env.brains[env.brain_names[0]], trainer_parameters, False, False
     )
-    run_out = policy.get_value_estimates(brain_info, 0, done=False)
+    run_out = policy.get_value_estimates(agent_step, done=False)
     for key, val in run_out.items():
         assert type(key) is str
         assert type(val) is float
 
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(agent_step, done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val == 0.0
 
     # Check if we ignore terminal states properly
     policy.reward_signals["extrinsic"].use_terminal_states = False
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(agent_step, done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val != 0.0

@@ -4,9 +4,8 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-import tensorflow as tf
-
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.brain import AgentInfo
+from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import Buffer
@@ -39,9 +38,7 @@ class RewardSignal(abc.ABC):
         self.policy = policy
         self.strength = strength
 
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
+    def evaluate(self, agent_steps: List[AgentStep]) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
@@ -49,8 +46,7 @@ class RewardSignal(abc.ABC):
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return RewardSignalResult(
-            self.strength * np.zeros(len(current_info.agents)),
-            np.zeros(len(current_info.agents)),
+            self.strength * np.zeros(len(agent_steps)), np.zeros(len(agent_steps))
         )
 
     def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:

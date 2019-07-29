@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, NamedTuple, Optional
-from mlagents.envs import AllBrainInfo, BrainParameters, Policy, ActionInfo
+from mlagents.envs import BrainParameters, Policy, ActionInfo
+from mlagents.envs.brain import AgentInfo
 
 
-class StepInfo(NamedTuple):
-    previous_all_brain_info: Optional[AllBrainInfo]
-    current_all_brain_info: AllBrainInfo
-    brain_name_to_action_info: Optional[Dict[str, ActionInfo]]
+class AgentStep(NamedTuple):
+    previous_agent_info: Optional[AgentInfo]
+    current_agent_info: AgentInfo
+    action_info: Optional[ActionInfo]
 
 
 class EnvManager(ABC):
@@ -17,11 +18,11 @@ class EnvManager(ABC):
         self.policies[brain_name] = policy
 
     @abstractmethod
-    def step(self) -> List[StepInfo]:
+    def step(self) -> List[AgentStep]:
         pass
 
     @abstractmethod
-    def reset(self, config=None, train_mode=True) -> List[StepInfo]:
+    def reset(self, config=None, train_mode=True) -> List[AgentStep]:
         pass
 
     @property

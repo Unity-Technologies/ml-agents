@@ -5,8 +5,9 @@
 import logging
 import numpy as np
 
-from mlagents.envs import AllBrainInfo
-from mlagents.trainers import ActionInfoOutputs
+from mlagents.envs.brain import AgentInfo
+from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.bc.trainer import BCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -18,7 +19,7 @@ class OnlineBCTrainer(BCTrainer):
     def __init__(self, brain, trainer_parameters, training, load, seed, run_id):
         """
         Responsible for collecting experiences and training PPO model.
-        :param  trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
@@ -62,12 +63,7 @@ class OnlineBCTrainer(BCTrainer):
             ),
         )
 
-    def add_experiences(
-        self,
-        curr_info: AllBrainInfo,
-        next_info: AllBrainInfo,
-        take_action_outputs: ActionInfoOutputs,
-    ) -> None:
+    def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).

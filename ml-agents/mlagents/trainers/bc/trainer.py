@@ -5,10 +5,8 @@
 import logging
 
 import numpy as np
-import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo
-from mlagents.trainers import ActionInfoOutputs
+from mlagents.envs.env_manager import AgentStep
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer
@@ -67,19 +65,14 @@ class BCTrainer(Trainer):
         """
         return self.policy.get_current_step()
 
-    def increment_step(self):
+    def increment_step(self, n_steps=1):
         """
         Increment the step count of the trainer
         """
-        self.policy.increment_step()
+        self.policy.increment_step(n_steps)
         return
 
-    def add_experiences(
-        self,
-        curr_info: AllBrainInfo,
-        next_info: AllBrainInfo,
-        take_action_outputs: ActionInfoOutputs,
-    ) -> None:
+    def add_experiences(self, agent_step: AgentStep) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
@@ -88,47 +81,40 @@ class BCTrainer(Trainer):
         """
 
         # Used to collect information about student performance.
-        info_student = curr_info[self.brain_name]
-        next_info_student = next_info[self.brain_name]
-        for agent_id in info_student.agents:
-            self.evaluation_buffer[agent_id].last_brain_info = info_student
+        info_student = agent_step.previous_agent_info
+        next_info_student = agent_step.current_agent_info
 
-        for agent_id in next_info_student.agents:
-            stored_info_student = self.evaluation_buffer[agent_id].last_brain_info
-            if stored_info_student is None:
-                continue
-            else:
-                next_idx = next_info_student.agents.index(agent_id)
-                if agent_id not in self.cumulative_rewards:
-                    self.cumulative_rewards[agent_id] = 0
-                self.cumulative_rewards[agent_id] += next_info_student.rewards[next_idx]
-                if not next_info_student.local_done[next_idx]:
-                    if agent_id not in self.episode_steps:
-                        self.episode_steps[agent_id] = 0
-                    self.episode_steps[agent_id] += 1
+        if info_student is None:
+            return
+        else:
+            agent_id = info_student.id
+            if agent_id not in self.cumulative_rewards:
+                self.cumulative_rewards[agent_id] = 0
+            self.cumulative_rewards[agent_id] += next_info_student.reward
+            if not next_info_student.local_done:
+                if agent_id not in self.episode_steps:
+                    self.episode_steps[agent_id] = 0
+                self.episode_steps[agent_id] += 1
 
-    def process_experiences(
-        self, current_info: AllBrainInfo, next_info: AllBrainInfo
-    ) -> None:
+    def process_experiences(self, agent_step: AgentStep) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
         :param current_info: Current AllBrainInfo
         :param next_info: Next AllBrainInfo
         """
-        info_student = next_info[self.brain_name]
-        for l in range(len(info_student.agents)):
-            if info_student.local_done[l]:
-                agent_id = info_student.agents[l]
-                self.stats["Environment/Cumulative Reward"].append(
-                    self.cumulative_rewards.get(agent_id, 0)
-                )
-                self.stats["Environment/Episode Length"].append(
-                    self.episode_steps.get(agent_id, 0)
-                )
-                self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
-                self.cumulative_rewards[agent_id] = 0
-                self.episode_steps[agent_id] = 0
+        info_student = agent_step.current_agent_info
+        if info_student.local_done:
+            agent_id = info_student.id
+            self.stats["Environment/Cumulative Reward"].append(
+                self.cumulative_rewards.get(agent_id, 0)
+            )
+            self.stats["Environment/Episode Length"].append(
+                self.episode_steps.get(agent_id, 0)
+            )
+            self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
+            self.cumulative_rewards[agent_id] = 0
+            self.episode_steps[agent_id] = 0
 
     def end_episode(self):
         """

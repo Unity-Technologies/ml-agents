@@ -36,10 +36,10 @@ def create_reward_signal(
     if not rcls:
         raise UnityTrainerException("Unknown reward signal type {0}".format(name))
     rcls.check_config(config_entry)
-    try:
-        class_inst = rcls(policy, **config_entry)
-    except TypeError:
-        raise UnityTrainerException(
-            "Unknown parameters given for reward signal {0}".format(name)
-        )
+    # try:
+    class_inst = rcls(policy, **config_entry)
+    # except TypeError:
+    #     raise UnityTrainerException(
+    #         "Unknown parameters given for reward signal {0}".format(name)
+    #     )
     return class_inst

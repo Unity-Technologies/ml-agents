@@ -2,17 +2,11 @@ import unittest.mock as mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 
-import numpy as np
-import tensorflow as tf
 import yaml
 import os
 
-from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.demo_loader import make_demo_buffer
-from mlagents.envs import UnityEnvironment
-from mlagents.envs.mock_communicator import MockCommunicator
+from mlagents.envs.env_manager import AgentStep
 
 
 @pytest.fixture
@@ -83,7 +77,7 @@ def create_ppo_policy_mock(
             else VECTOR_ACTION_SPACE,
             vector_observation_space_size=VECTOR_OBS_SPACE,
         )
-        mock_braininfo = mb.create_mock_braininfo(
+        mock_agentinfos = mb.create_mock_agentinfos(
             num_agents=NUM_AGENTS,
             num_vector_observations=VECTOR_OBS_SPACE,
             num_vector_acts=sum(
@@ -100,7 +94,7 @@ def create_ppo_policy_mock(
             vector_observation_space_size=0,
             number_visual_observations=1,
         )
-        mock_braininfo = mb.create_mock_braininfo(
+        mock_agentinfos = mb.create_mock_agentinfos(
             num_agents=NUM_AGENTS,
             num_vis_observations=1,
             num_vector_acts=sum(
@@ -108,7 +102,7 @@ def create_ppo_policy_mock(
             ),
             discrete=use_discrete,
         )
-    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_agentinfos)
     env = mock_env()
 
     trainer_parameters = dummy_config
@@ -122,13 +116,16 @@ def create_ppo_policy_mock(
 
 
 def reward_signal_eval(env, policy, reward_signal_name):
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
+    reset_agent_infos = env.reset()
+    step_agent_infos = env.step()
+    print(reset_agent_infos)
+    print(step_agent_infos)
+    steps = [
+        AgentStep(reset_agent_infos[i], step_agent_infos[i], None)
+        for i in range(len(reset_agent_infos))
+    ]
     # Test evaluate
-    rsig_result = policy.reward_signals[reward_signal_name].evaluate(
-        brain_info, next_brain_info
-    )
+    rsig_result = policy.reward_signals[reward_signal_name].evaluate(steps)
     assert rsig_result.scaled_reward.shape == (NUM_AGENTS,)
     assert rsig_result.unscaled_reward.shape == (NUM_AGENTS,)
 

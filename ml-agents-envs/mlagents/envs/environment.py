@@ -8,7 +8,7 @@ from typing import *
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
-from .brain import AllBrainInfo, BrainInfo, BrainParameters
+from .brain import AgentInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
     UnityActionException,
@@ -311,10 +311,10 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def reset(
         self, config=None, train_mode=True, custom_reset_parameters=None
-    ) -> AllBrainInfo:
+    ) -> List[AgentInfo]:
         """
         Sends a signal to reset the unity environment.
-        :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
+        :return: List[AgentInfo]: The initial reset state of the environment for each agent.
         """
         if config is None:
             config = self._resetParameters
@@ -345,11 +345,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
-            s = self._get_state(rl_output)
-            self._global_done = s[1]
-            for _b in self._external_brain_names:
-                self._n_agents[_b] = len(s[0][_b].agents)
-            return s[0]
+            all_agent_infos, global_done = self._get_state(rl_output)
+            self._global_done = global_done
+            return all_agent_infos
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
@@ -361,7 +359,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         text_action=None,
         value=None,
         custom_action=None,
-    ) -> AllBrainInfo:
+    ) -> List[AgentInfo]:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
         and returns observation, state, and reward information to the agent.
@@ -370,7 +368,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         :param memory: Vector corresponding to memory used for recurrent policies.
         :param text_action: Text action to send to environment for.
         :param custom_action: Optional instance of a CustomAction protobuf message.
-        :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
+        :return: List[AgentInfo]: The new state of the environment for each agent.
         """
         vector_action = {} if vector_action is None else vector_action
         memory = {} if memory is None else memory
@@ -572,11 +570,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             if outputs is None:
                 raise KeyboardInterrupt
             rl_output = outputs.rl_output
-            state = self._get_state(rl_output)
-            self._global_done = state[1]
-            for _b in self._external_brain_names:
-                self._n_agents[_b] = len(state[0][_b].agents)
-            return state[0]
+            all_agent_info, global_done = self._get_state(rl_output)
+            self._global_done = global_done
+            return all_agent_info
 
     def close(self):
         """
@@ -613,19 +609,23 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityRLOutput) -> Tuple[AllBrainInfo, bool]:
+    def _get_state(self, output: UnityRLOutput) -> Tuple[List[AgentInfo], bool]:
         """
         Collects experience information from all external brains in environment at current step.
-        :return: a dictionary of BrainInfo objects.
+        :return: A tuple where the first entry is a list of the AgentInfo states for all agents and the second entry
+                 is a boolean flag for whether the environment is "globally done" (academy reset).
         """
-        _data = {}
+        agent_infos = []
         global_done = output.global_done
         for brain_name in output.agentInfos:
-            agent_info_list = output.agentInfos[brain_name].value
-            _data[brain_name] = BrainInfo.from_agent_proto(
-                self.worker_id, agent_info_list, self.brains[brain_name]
-            )
-        return _data, global_done
+            brain_params = self.brains[brain_name]
+            self._n_agents[brain_name] = len(output.agentInfos[brain_name].value)
+            for agent_info_proto in output.agentInfos[brain_name].value:
+                agent_info = AgentInfo.from_agent_proto(
+                    self.worker_id, agent_info_proto, brain_params
+                )
+                agent_infos.append(agent_info)
+        return agent_infos, global_done
 
     @timed
     def _generate_step_input(
