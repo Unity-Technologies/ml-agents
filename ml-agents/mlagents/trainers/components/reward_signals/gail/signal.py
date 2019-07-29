@@ -178,5 +178,5 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"].reshape(
                 [-1, self.policy.vec_obs_size]
             )
-
+        self.has_updated = True
         return feed_dict
