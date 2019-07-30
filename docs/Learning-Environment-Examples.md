@@ -32,7 +32,7 @@ If you would like to contribute environments, please see our
   * Vector Observation space: One variable corresponding to current state.
   * Vector Action space: (Discrete) Two possible actions (Move left, move
     right).
-  * Visual Observations: None.
+  * Visual Observations: None
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.94
 
@@ -56,7 +56,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: Three, corresponding to the following:
+* Reset Parameters: Three
     * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
@@ -117,7 +117,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
   * Visual Observations: None.
-* Reset Parameters: Three, corresponding to the following:
+* Reset Parameters: Three
     * angle: Angle of the racket from the vertical (Y) axis.
       * Default: 55
       * Recommended Minimum: 35 
@@ -153,7 +153,7 @@ If you would like to contribute environments, please see our
     `VisualPushBlock` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Four, corresponding to the following:
+* Reset Parameters: Four
     * block_scale: Scale of the block along the x and z dimensions
         * Default: 2
         * Recommended Minimum: 0.5
@@ -195,7 +195,7 @@ If you would like to contribute environments, please see our
     * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
   * Visual Observations: None.
-* Reset Parameters: Four, corresponding to the height of the possible walls.
+* Reset Parameters: Four.
 * Benchmark Mean Reward (Big & Small Wall Brain): 0.8
 
 ## [Reacher](https://youtu.be/2N9EoF6pQyE)
@@ -213,7 +213,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Five, corresponding to the following
+* Reset Parameters: Five
   * goal_size: radius of the goal zone
     * Default: 5
     * Recommended Minimum: 1
@@ -254,7 +254,7 @@ If you would like to contribute environments, please see our
     angular acceleration of the body.
   * Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
-  * Visual Observations: None.
+  * Visual Observations: None
 * Reset Parameters: None
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
@@ -284,7 +284,7 @@ If you would like to contribute environments, please see our
     `VisualBanana` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Two, corresponding to the following
+* Reset Parameters: Two
   * laser_length: Length of the laser used by the agent
     * Default: 1
     * Recommended Minimum: 0.2
@@ -318,7 +318,7 @@ If you would like to contribute environments, please see our
     `VisualHallway` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None.
+* Reset Parameters: None
 * Benchmark Mean Reward: 0.7
   * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
 * Optional Imitation Learning scene: `HallwayIL`.
@@ -340,8 +340,8 @@ If you would like to contribute environments, please see our
     banana.
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
-  * Visual Observations: None.
-* Reset Parameters: Two, corresponding to the following
+  * Visual Observations: None
+* Reset Parameters: Two
     * banana_scale: The scale of the banana in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
@@ -375,8 +375,8 @@ If you would like to contribute environments, please see our
     * Striker: 6 actions corresponding to forward, backward, sideways movement,
       as well as rotation.
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
-  * Visual Observations: None.
-* Reset Parameters: Two, corresponding to the following:
+  * Visual Observations: None
+* Reset Parameters: Two
   * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
     * Default: 7.5
     * Recommended minimum: 4
@@ -409,8 +409,8 @@ If you would like to contribute environments, please see our
     velocity, and angular velocities of each limb, along with goal direction.
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
-  * Visual Observations: None.
-* Reset Parameters: Four, corresponding to the following
+  * Visual Observations: None
+* Reset Parameters: Four
     * gravity: Magnitude of gravity
         * Default: 9.81
         * Recommended Minimum:
@@ -450,6 +450,6 @@ If you would like to contribute environments, please see our
     `VisualPyramids` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None.
+* Reset Parameters: None
 * Optional Imitation Learning scene: `PyramidsIL`.
 * Benchmark Mean Reward: 1.75
