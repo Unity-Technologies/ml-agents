@@ -12,16 +12,18 @@ should be trained over multiple variations of the enviornment. Using this approa
 for training, the agent will be better suited to adapt (with higher performance)
 to future unseen variations of the enviornment
 
+_Variations of the 3D Ball environment._
+
 Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
 ![](images/3dball_small.png)  |  ![](images/3dball_big.png)
 
-_Variations of the 3D Ball environment._
+## Generalization Using Reset Parameters
 
-To vary environments, we first decide what parameters to vary in an
-environment. We call these parameters `Reset Parameters`. In the 3D ball 
-environment example displayed in the figure above, the reset parameters are 
-`gravity`, `ball_mass` and `ball_scale`.
+To enable variations in the environments, we implemented `Reset Parameters`. We
+also specify a range of default values for each `Reset Parameter` and sample
+these parameters during training. In the 3D ball environment example displayed
+in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
 ## How-to
