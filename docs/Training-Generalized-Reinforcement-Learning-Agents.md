@@ -1,15 +1,16 @@
 # Training Generalized Reinforcement Learning Agents
 
-Reinforcement learning has a rather unique setup as opposed to supervised and
-unsupervised learning. Agents here are trained and tested on the same exact 
-environment, which is analogous to a model being trained and tested on an 
-identical dataset in supervised learning! This setting results in overfitting; 
-the inability of the agent to generalize to slight tweaks or variations in the 
-environment. This is problematic in instances when environments are randomly 
-instantiated with varying properties. To make agents robust, one approach is to
-train an agent over multiple variations of the environment. The agent is 
-trained in this approach with the intent that it learns to adapt its performance 
-to future unseen variations of the environment.
+One of the challenges of training and testing agents on the same
+environment is that the agents tend to overfit. The result is that the
+agents are unable to generalize to any tweaks or variations in the enviornment.
+This is analgous to a model being trained and tested on an identical dataset
+in supervised learning. This becomes problematic in cases where environments
+are randomly instantiated with varying objects or properties. 
+
+To make agents robust and generalizable to different environments, the agent
+should be trained over multiple variations of the enviornment. Using this approach
+for training, the agent will be better suited to adapt (with higher performance)
+to future unseen variations of the enviornment
 
 Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
