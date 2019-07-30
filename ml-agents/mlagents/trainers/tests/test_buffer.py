@@ -38,8 +38,8 @@ def test_buffer():
         np.array(a),
         np.array(
             [
-                [[231, 232, 233], [241, 242, 243], [251, 252, 253]],
-                [[261, 262, 263], [271, 272, 273], [281, 282, 283]],
+                [231, 232, 233], [241, 242, 243], [251, 252, 253],
+                [261, 262, 263], [271, 272, 273], [281, 282, 283],
             ]
         ),
     )
@@ -50,8 +50,8 @@ def test_buffer():
         np.array(a),
         np.array(
             [
-                [[251, 252, 253], [261, 262, 263], [271, 272, 273]],
-                [[261, 262, 263], [271, 272, 273], [281, 282, 283]],
+                [251, 252, 253], [261, 262, 263], [271, 272, 273],
+                [261, 262, 263], [271, 272, 273], [281, 282, 283],
             ]
         ),
     )
@@ -59,9 +59,9 @@ def test_buffer():
     assert len(b[4]) == 0
     b.append_update_buffer(3, batch_size=None, training_length=2)
     b.append_update_buffer(2, batch_size=None, training_length=2)
-    assert len(b.update_buffer["action"]) == 10
-    assert np.array(b.update_buffer["action"]).shape == (10, 2, 2)
+    assert len(b.update_buffer["action"]) == 20
+    assert np.array(b.update_buffer["action"]).shape == (20, 2)
 
     c = b.update_buffer.make_mini_batch(start=0, end=1)
     assert c.keys() == b.update_buffer.keys()
-    assert np.array(c["action"]).shape == (1, 2, 2)
+    assert np.array(c["action"]).shape == (1, 2)
