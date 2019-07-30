@@ -87,9 +87,9 @@ The Sampler Manager allocates a sampler for each `Reset Parameter` by using the 
 which maintains a dictionary mapping of string keys to sampler objects. The available samplers
 to be used for each `Reset Parameter` is available in the Sampler Factory.
 
-### Possible Sampler Types
+### Included Sampler Types
 
-The currently implemented samplers that can be used with the `sampler-type` arguments are:
+Below is a list of included `sampler-type` as part of the toolkit.
 
 * `uniform` - Uniform sampler
     *   Uniformly samples a single float value between defined endpoints. 
@@ -116,7 +116,6 @@ The currently implemented samplers that can be used with the `sampler-type` argu
     [[`interval_1_min`, `interval_1_max`], [`interval_2_min`, `interval_2_max`], ...]
     
     * **sub-arguments** - `intervals`
-
 
 The implementation of the samplers can be found at `ml-agents-envs/mlagents/envs/sampler_class.py`.
 
