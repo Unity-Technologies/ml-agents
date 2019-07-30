@@ -155,12 +155,16 @@ mass:
     argC: 3
 ```
 
-### Training with Generalization Learning
+### Training with Generalization Using Reset Parameters
 
-We first begin with setting up the sampler file. After the sampler file is defined and configured, we proceed by launching `mlagents-learn` and specify our configured sampler file with the `--sampler` flag. To demonstrate, if we wanted to train a 3D ball agent with generalization using the `config/3dball_generalize.yaml` sampling setup, we can run
+After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
+our configured sampler file with the `--sampler` flag. For example, if we wanted to train the
+3D ball agent with generalization using `Reset Parameters` with `config/3dball_generalize.yaml`
+sampling setup, we would run
 
 ```sh
-mlagents-learn config/trainer_config.yaml --sampler=config/3dball_generalize.yaml --run-id=3D-Ball-generalization --train
+mlagents-learn config/trainer_config.yaml --sampler=config/3dball_generalize.yaml 
+--run-id=3D-Ball-generalization --train
 ```
 
 We can observe progress and metrics via Tensorboard.
