@@ -20,10 +20,8 @@ class GAILRewardSignal(RewardSignal):
         strength: float,
         gamma: float,
         demo_path: str,
-        num_epoch: int = 3,
         encoding_size: int = 64,
         learning_rate: float = 3e-4,
-        samples_per_update: int = 0,
         use_actions: bool = False,
         use_vail: bool = False,
     ):
@@ -36,14 +34,11 @@ class GAILRewardSignal(RewardSignal):
         :param demo_path: The path to the demonstration file
         :param encoding_size: The size of the the hidden layers of the discriminator
         :param learning_rate: The Learning Rate used during GAIL updates.
-        :param samples_per_update: The maximum number of samples to update during GAIL updates.
         :param use_actions: Whether or not to use the actions for the discriminator.
         :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
         See https://arxiv.org/abs/1810.00821.
         """
         super().__init__(policy, strength, gamma)
-        self.num_epoch = num_epoch
-        self.samples_per_update = samples_per_update
         self.use_terminal_states = False
 
         self.model = GAILModel(

@@ -18,7 +18,6 @@ class CuriosityRewardSignal(RewardSignal):
         gamma: float,
         encoding_size: int = 128,
         learning_rate: float = 3e-4,
-        num_epoch: int = 3,
     ):
         """
         Creates the Curiosity reward generator
@@ -28,13 +27,11 @@ class CuriosityRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward.
         :param encoding_size: The size of the hidden encoding layer for the ICM
         :param learning_rate: The learning rate for the ICM.
-        :param num_epoch: The number of epochs to train over the training buffer for the ICM.
         """
         super().__init__(policy, strength, gamma)
         self.model = CuriosityModel(
             policy.model, encoding_size=encoding_size, learning_rate=learning_rate
         )
-        self.num_epoch = num_epoch
         self.use_terminal_states = False
         self.update_dict = {
             "curiosity_forward_loss": self.model.forward_loss,
