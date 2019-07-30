@@ -53,9 +53,9 @@ class GAILRewardSignal(RewardSignal):
         self.has_updated = False
         self.update_dict: Dict[str, tf.Tensor] = {
             "gail_loss": self.model.loss,
-            "update_batch": self.model.update_batch,
-            "policy_estimate": self.model.policy_estimate,
-            "expert_estimate": self.model.expert_estimate,
+            "gail_update_batch": self.model.update_batch,
+            "gail_policy_estimate": self.model.policy_estimate,
+            "gail_expert_estimate": self.model.expert_estimate,
         }
         if self.model.use_vail:
             self.update_dict["kl_loss"] = self.model.kl_loss

@@ -35,13 +35,13 @@ class CuriosityRewardSignal(RewardSignal):
         self.num_epoch = num_epoch
         self.use_terminal_states = False
         self.update_dict = {
-            "forward_loss": self.model.forward_loss,
-            "inverse_loss": self.model.inverse_loss,
-            "update": self.model.update_batch,
+            "curiosity_forward_loss": self.model.forward_loss,
+            "curiosity_inverse_loss": self.model.inverse_loss,
+            "curiosity_update": self.model.update_batch,
         }
         self.stats_name_to_update_name = {
-            "Losses/Curiosity Forward Loss": "forward_loss",
-            "Losses/Curiosity Inverse Loss": "inverse_loss",
+            "Losses/Curiosity Forward Loss": "curiosity_forward_loss",
+            "Losses/Curiosity Inverse Loss": "curiosity_inverse_loss",
         }
         self.has_updated = False
 

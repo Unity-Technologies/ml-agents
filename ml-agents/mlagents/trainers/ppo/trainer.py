@@ -466,7 +466,6 @@ class PPOTrainer(Trainer):
                     stats_needed.update(reward_signal.stats_name_to_update_name)
 
                 update_vals = self.policy._execute_model(feed_dict, update_dict)
-
                 for stat_name, update_name in stats_needed.items():
                     single_update_stats[stat_name].append(update_vals[update_name])
 
