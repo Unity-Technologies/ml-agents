@@ -134,7 +134,7 @@ def reward_signal_eval(env, policy, reward_signal_name):
 
 def reward_signal_update(env, policy, reward_signal_name):
     buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
-    feed_dict = policy.reward_signals[reward_signal_name].update_batch(
+    feed_dict = policy.reward_signals[reward_signal_name].prepare_update(
         buffer.update_buffer.make_mini_batch(0, 10), 2
     )
     out = policy._execute_model(

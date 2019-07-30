@@ -65,12 +65,12 @@ class BCPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def update(self, mini_batch, num_sequences):
+    def prepare_update(self, mini_batch, num_sequences):
         """
-        Performs update on model.
+        Get feed_dict for update of model.
         :param mini_batch: Batch of experiences.
         :param num_sequences: Number of sequences to process.
-        :return: Results of update.
+        :return: Feed_dict for update.
         """
 
         feed_dict = {
@@ -102,5 +102,5 @@ class BCPolicy(TFPolicy):
             feed_dict[self.model.visual_in[i]] = visual_obs
         if self.use_recurrent:
             feed_dict[self.model.memory_in] = np.zeros([num_sequences, self.m_size])
-        run_out = self._execute_model(feed_dict, self.update_dict)
-        return run_out
+
+        return feed_dict

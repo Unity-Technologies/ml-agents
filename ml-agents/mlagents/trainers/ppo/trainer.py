@@ -456,12 +456,12 @@ class PPOTrainer(Trainer):
 
                 feed_dict = {}
                 update_dict = self.policy.update_dict
-                feed_dict.update(self.policy.update(mini_batch, n_sequences))
+                feed_dict.update(self.policy.prepare_update(mini_batch, n_sequences))
                 stats_needed = self.policy.stats_name_to_update_name
                 for _, reward_signal in self.policy.reward_signals.items():
                     update_dict.update(reward_signal.update_dict)
                     feed_dict.update(
-                        reward_signal.update_batch(mini_batch, n_sequences)
+                        reward_signal.prepare_update(mini_batch, n_sequences)
                     )
                     stats_needed.update(reward_signal.stats_name_to_update_name)
 

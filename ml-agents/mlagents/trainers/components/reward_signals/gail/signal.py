@@ -106,14 +106,14 @@ class GAILRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "demo_path"]
         super().check_config(config_dict, param_keys)
 
-    def update_batch(
+    def prepare_update(
         self, mini_batch_policy: Dict[str, np.ndarray], num_sequences: int
-    ) -> Dict[str, float]:
+    ) -> Dict[tf.Tensor, Any]:
         """
-        Helper method for update.
+        Prepare inputs for update. .
         :param mini_batch_demo: A mini batch of expert trajectories
         :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
-        :return: Output from update process.
+        :return: Feed_dict for update process.
         """
 
         num_sequences = min(

@@ -140,12 +140,12 @@ class PPOPolicy(TFPolicy):
         return run_out
 
     @timed
-    def update(self, mini_batch, num_sequences):
+    def prepare_update(self, mini_batch, num_sequences):
         """
-        Updates model using buffer.
+        Prepares for update of model using buffer.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
-        :return: Output from update process.
+        :return: Feed_dict for update.
         """
         feed_dict = {
             self.model.batch_size: num_sequences,

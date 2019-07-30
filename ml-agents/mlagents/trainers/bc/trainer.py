@@ -165,7 +165,8 @@ class BCTrainer(Trainer):
             start = i * self.n_sequences
             end = (i + 1) * self.n_sequences
             mini_batch = update_buffer.make_mini_batch(start, end)
-            run_out = self.policy.update(mini_batch, self.n_sequences)
+            feed_dict = self.policy.prepare_update(mini_batch, self.n_sequences)
+            run_out = self.policy._execute_model(feed_dict, self.policy.update_dict)
             loss = run_out["policy_loss"]
             batch_losses.append(loss)
         if len(batch_losses) > 0:

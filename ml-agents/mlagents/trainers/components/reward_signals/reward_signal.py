@@ -55,20 +55,15 @@ class RewardSignal(abc.ABC):
             np.zeros(len(current_info.agents)),
         )
 
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
+    def prepare_update(
+        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
+    ) -> Dict[tf.Tensor, Any]:
         """
-        If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
+        If the reward signal has an internal model (e.g. GAIL or Curiosity), get the feed_dict
+        needed to update the buffer..
         :param update_buffer: An AgentBuffer that contains the live data from which to update.
         :param n_sequences: The number of sequences in the training buffer.
-        :return: A dict of {"Stat Name": stat} to be added to Tensorboard
-        """
-        return {}
-
-    def update_batch(
-        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
-    ) -> Dict[str, float]:
-        """
-        This method does nothing, as there is nothing to update.
+        :return: A dict that corresponds to the feed_dict needed for the update.
         """
         return {}
 

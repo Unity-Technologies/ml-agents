@@ -2,6 +2,8 @@ from typing import Any, Dict, List
 import numpy as np
 from mlagents.envs.brain import BrainInfo
 
+import tensorflow as tf
+
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
@@ -93,14 +95,14 @@ class CuriosityRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update_batch(
+    def prepare_update(
         self, mini_batch: Dict[str, np.ndarray], num_sequences: int
-    ) -> Dict[str, float]:
+    ) -> Dict[tf.Tensor, Any]:
         """
-        Updates model using mini_batch.
+        Prepare for update and get feed_dict.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
-        :return: Output from update process.
+        :return: Feed_dict needed for update.
         """
         feed_dict = {
             self.policy.model.batch_size: num_sequences,
