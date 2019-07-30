@@ -36,7 +36,7 @@ The ML-Agents toolkit provides several ways to learn from demonstrations.
   [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations)
   on the PPO trainer, in addition to using a small GAIL reward signal.
 * To train an agent to exactly mimic demonstrations, you can use the
-  [Behavioral Cloning](Training-BehavioralCloning.md) trainer. Behavioral Cloning can be
+  [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be
   used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
   on more complex environments without a large number of demonstrations.
 
