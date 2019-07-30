@@ -408,11 +408,11 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Training with Environment Parameter Sampling** - To train agents to be adapt
+- **Training with Reset Parameter Sampling** - To train agents to be adapt
   to changes in its environment (i.e., generalization), the agent should be exposed
-  to a variations of the environment. Similar to Curriculum Learning,
+  to several variations of the environment. Similar to Curriculum Learning,
   where environments become more difficult as the agent learns, the toolkit provides
-  a way to randomly sample aspects of the environment during training. See
+  a way to randomly sample Reset Parameters of the environment during training. See
   [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
   to learn more about this feature.
   
