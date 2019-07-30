@@ -36,8 +36,10 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var tensorGenerator = new TensorApplier(bp, 0, new TensorCachingAllocator());
+            var alloc = new TensorCachingAllocator();
+            var tensorGenerator = new TensorApplier(bp, 0, alloc);
             Assert.IsNotNull(tensorGenerator);
+            alloc.Dispose();
         }
 
         [Test]
@@ -76,8 +78,8 @@ namespace MLAgents.Tests
                                                                 4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
-            
-            var applier = new DiscreteActionOutputApplier(new int[]{2, 3}, 0, new TensorCachingAllocator());
+            var alloc = new TensorCachingAllocator();
+            var applier = new DiscreteActionOutputApplier(new int[]{2, 3}, 0, alloc);
             applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
             var agent = agents[0] as TestAgent;
@@ -88,6 +90,7 @@ namespace MLAgents.Tests
             action = agent.GetAction();
             Assert.AreEqual(action.vectorActions[0], 1);
             Assert.AreEqual(action.vectorActions[1], 2);
+            alloc.Dispose();
         }
         
         [Test]

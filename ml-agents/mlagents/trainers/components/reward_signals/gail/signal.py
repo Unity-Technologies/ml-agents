@@ -75,12 +75,6 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[
                 self.policy.model.action_holder
             ] = next_info.previous_vector_actions
-        if self.policy.use_recurrent:
-            if current_info.memories.shape[1] == 0:
-                current_info.memories = self.policy.make_empty_memory(
-                    len(current_info.agents)
-                )
-            feed_dict[self.policy.model.memory_in] = current_info.memories
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )

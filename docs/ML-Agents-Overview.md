@@ -320,7 +320,8 @@ actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
 ML-Agents provides ways to both learn directly from demonstrations as well as
-use demonstrations to help speed up reward-based training. The
+use demonstrations to help speed up reward-based training, and two algorithms to do
+so (Generative Adversarial Imitation Learning and Behavioral Cloning). The
 [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial
 covers these features in more depth.
 
@@ -420,6 +421,14 @@ training process.
   particularly when debugging agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
+
+- **Training with Environment Parameter Sampling** - To train agents to be robust
+  to changes in its environment (i.e., generalization), the agent should be exposed
+  to a variety of environment variations. Similarly to Curriculum Learning, which
+  allows environments to get more difficult as the agent learns, we also provide
+  a way to randomly resample aspects of the environment during training. See
+  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
+  to learn more about this feature.
 
 - **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
   installing Python or TensorFlow directly, we provide a
