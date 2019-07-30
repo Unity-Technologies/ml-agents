@@ -44,8 +44,9 @@ its entry entirely from `reward_signals`. At least one reward signal should be l
 at all times.
 
 ## Reward Signal Types
+As part of the toolkit, we provide three reward signal types as part of hyperparameters - Extrinsic, Curiosity, and GAIL.
 
-### The Extrinsic Reward Signal
+### Extrinsic Reward Signal
 
 The `extrinsic` reward signal is simply the reward given by the
 [environment](Learning-Environment-Design.md). Remove it to force the agent
@@ -68,9 +69,9 @@ cases when rewards are more immediate, it can be smaller.
 
 Typical Range: `0.8` - `0.995`
 
-### The Curiosity Reward Signal
+### Curiosity Reward Signal
 
-The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is an implementation 
+The `curiosity` reward signal enables the Intrinsic Curiosity Module. This is an implementation 
 of the approach described in "Curiosity-driven Exploration by Self-supervised Prediction" 
 by Pathak, et al. It trains two networks:
 * an inverse model, which takes the current and next obersvation of the agent, encodes them, and
@@ -120,12 +121,12 @@ Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`  
 
-### The GAIL Reward Signal
+### GAIL Reward Signal
 
 GAIL, or [Generative Adversarial Imitation Learning](https://arxiv.org/abs/1606.03476), is an 
 imitation learning algorithm that uses an adversarial approach, in a similar vein to GANs 
 (Generative Adversarial Networks). In this framework, a second neural network, the
-discriminator, is taught to distinguish whether an observation/action is from a demonstration, or 
+discriminator, is taught to distinguish whether an observation/action is from a demonstration or 
 produced by the agent. This discriminator can the examine a new observation/action and provide it a 
 reward based on how close it believes this new observation/action is to the provided demonstrations. 
 
@@ -136,9 +137,9 @@ discriminator keeps getting stricter and stricter and the agent must try harder 
 
 This approach, when compared to [Behavioral Cloning](Training-BehavioralCloning.md), requires 
 far fewer demonstrations to be provided. After all, we are still learning a policy that happens
-to be similar to the demonstration, not directly copying the behavior of the demonstrations. It
-is also especially effective when combined with an Extrinsic signal, but can also be used 
-independently to purely learn from demonstration. 
+to be similar to the demonstrations, not directly copying the behavior of the demonstrations. It
+is especially effective when combined with an Extrinsic signal. However, the GAIL reward signal can 
+also be used independently to purely learn from demonstrations. 
 
 Using GAIL requires recorded demonstrations from your Unity environment. See the 
 [imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.
