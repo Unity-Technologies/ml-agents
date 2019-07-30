@@ -116,3 +116,8 @@ docker kill --signal=SIGINT <container-name>
 ```
 
 `<container-name>` 은 `docker run` 명령어에 지정된 컨테이너 이름입니다. 지정하지 않으면 무작위로 생성되며`docker container ls`를 통해 확인할 수 있습니다.
+
+
+## 한글 번역
+
+해당 문서의 한글 번역은 [장현준 (Hyeonjun Jang)]([https://github.com/janghyeonjun](https://github.com/janghyeonjun))에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 totok682@naver.com 으로 연락주시면 감사드리겠습니다.

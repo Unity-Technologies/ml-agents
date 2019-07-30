@@ -97,3 +97,8 @@ pip3 install -e ./
 
 ML-Agents와 관련된 문제가 발생하면 저희의 [FAQ](FAQ.md)와 [제약 사항](Limitations.md) 페이지를 참고해 주십시오.
 만약 문제에 대한 아무것도 찾을 수 없다면 OS, Pythons 버전 및 정확한 오류 메세지와 함께 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues)을 해주십시오.
+
+
+## 한글 번역
+
+해당 문서의 한글 번역은 [장현준 (Hyeonjun Jang)]([https://github.com/janghyeonjun](https://github.com/janghyeonjun))에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 totok682@naver.com 으로 연락주시면 감사드리겠습니다.
