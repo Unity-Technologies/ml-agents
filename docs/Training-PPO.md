@@ -42,10 +42,10 @@ rewarding the agent for various different behaviors. For instance, we could rewa
 the agent for exploring new states, rather than just when an explicit reward is given.
 Furthermore, we could mix reward signals to help the learning process.
 
-`reward_signals` provides a section to define [reward signals.](Training-RewardSignals.md)
-ML-Agents provides two reward signals by default, the Extrinsic (environment) reward, and the
+The hyperparameter `reward_signals` allows you to define [reward signals.](Training-RewardSignals.md)
+The ML-Agents toolkit provides two reward signals by default, the Extrinsic (environment) reward and the
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
-environments. 
+environments. Please see [Reward Signals](Training-RewardSignals.md) for additional details..
 
 ### Lambda
 
