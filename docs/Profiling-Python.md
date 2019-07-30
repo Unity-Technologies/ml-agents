@@ -1,4 +1,4 @@
-# Profiling ML-Agents in Python
+# Profiling in Python
 
 ML-Agents provides a lightweight profiling system, in order to identity hotspots in the training process and help spot
 regressions from changes.
