@@ -217,5 +217,5 @@ stored in the `summaries` directory. The metrics stored are:
   
 This option is not available currently for Behavioral Cloning.
 
-Additionally, we have included basic [Python Profiling](Profiling.md) as part of the toolkit.
+Additionally, we have included basic [Profiling in Python](Profiling-Python.md) as part of the toolkit.
 This information is also saved in the `summaries` directory.
