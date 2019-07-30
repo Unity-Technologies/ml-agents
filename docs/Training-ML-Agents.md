@@ -91,7 +91,7 @@ While this example used the default training hyperparameters, you can edit the
 [training_config.yaml file](#training-config-file) with a text editor to set
 different values.
 
-### Command line training options
+### Command Line Training Options
 
 In addition to passing the path of the Unity executable containing your training
 environment, you can set the following command line options when invoking
@@ -149,7 +149,7 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 
-### Training config file
+### Training Config File
 
 The training config files `config/trainer_config.yaml`,
 `config/online_bc_config.yaml` and `config/offline_bc_config.yaml` specifies the
@@ -205,8 +205,9 @@ to the corresponding sections of the `config/trainer_config.yaml` file for each
 example to see how the hyperparameters and other configuration variables have
 been changed from the defaults.
 
-### Output metrics
-Trainer Metrics are logged to a CSV stored in the `summaries` directory. The metrics stored are:
+### Debugging and Profiling
+If you enable the `--debug` flag in the command line, the trainer metrics are logged to a CSV file 
+stored in the `summaries` directory. The metrics stored are:
   * brain name
   * time to update policy
   * time since start of training
@@ -216,4 +217,5 @@ Trainer Metrics are logged to a CSV stored in the `summaries` directory. The met
   
 This option is not available currently for Behavioral Cloning.
 
-[Profiling](Profiling.md) information is also saved in the `summaries` directory.
+Additionally, we have included basic [Python Profiling](Profiling.md) as part of the toolkit.
+This information is also saved in the `summaries` directory.
