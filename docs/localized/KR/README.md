@@ -74,3 +74,13 @@ ML-Agents toolkit은 오픈소스 프로젝트이며 컨트리뷰션을 환영�
 만약 Unity 또는 the ML-Agents Toolkit을 사용하여 연구를 수행할 경우 다음 논문을 참고 자료로 인용하여 주시길 바랍니다:
 
 Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D. (2018). Unity: A General Platform for Intelligent Agents. *arXiv preprint arXiv:1809.02627.* https://github.com/Unity-Technologies/ml-agents.
+
+
+
+## 한글 번역
+
+유니티 ML-Agents 관련 문서의 한글 번역은 [장현준(Hyeonjun Jang)][https://github.com/JangHyeonJun],  [민규식 (Kyushik Min)]([https://github.com/Kyushik](https://github.com/Kyushik))에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 각 문서의 번역을 진행한 사람의 이메일을 통해 연락주시면 감사드리겠습니다.
+
+장현준: totok682@naver.com
+
+민규식:  kyushikmin@gmail.com

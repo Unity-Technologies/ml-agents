@@ -143,3 +143,9 @@ PPO는 에이전트의 관측 (Observation)을 통해 에이전트가 주어진 
 ### Value Loss
 
 이 값들은 보상이 증가하면 증가하고 보상이 안정되면 감소합니다.
+
+
+
+## 한글 번역
+
+해당 문서의 한글 번역은 [민규식 (Kyushik Min)]([https://github.com/Kyushik](https://github.com/Kyushik))에 의해 진행되었습니다. 내용상 오류나 오탈자가 있는 경우 kyushikmin@gmail.com 으로 연락주시면 감사드리겠습니다.
