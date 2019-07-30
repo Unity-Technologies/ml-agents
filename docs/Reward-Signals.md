@@ -101,7 +101,7 @@ Typical Range: `0.001` - `0.1`
 
 Typical Range: `0.8` - `0.995`
 
-#### Encoding Size
+#### (Optional) Encoding Size
 
 `encoding_size` corresponds to the size of the encoding used by the intrinsic curiosity model.
 This value should be small enough to encourage the ICM to compress the original
@@ -112,7 +112,7 @@ Default Value: `64`
 
 Typical Range: `64` - `256`
 
-#### Learning Rate
+#### (Optional) Learning Rate
 
 `learning_rate` is the learning rate used to update the intrinsic curiosity module.
 This should typically be decreased if training is unstable, and the curiosity loss is unstable.
@@ -120,6 +120,15 @@ This should typically be decreased if training is unstable, and the curiosity lo
 Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`
+
+#### (Optional) Num Epochs
+
+`num_epoch` The number of passes to make through the experience buffer when performing gradient
+descent optimization for the ICM. This typically should be set to the same as used for PPO.
+
+Default Value: `3`
+
+Typical Range: `3` - `10`
 
 ### GAIL Reward Signal
 
@@ -164,7 +173,7 @@ Typical Range: `0.8` - `0.9`
 `demo_path` is the path to your `.demo` file or directory of `.demo` files. See the [imitation learning guide]
 (Training-Imitation-Learning.md).
 
-#### Encoding Size
+#### (Optional) Encoding Size
 
 `encoding_size` corresponds to the size of the hidden layer used by the discriminator.
 This value should be small enough to encourage the discriminator to compress the original
@@ -176,7 +185,7 @@ Default Value: `64`
 
 Typical Range: `64` - `256`
 
-#### Learning Rate
+#### (Optional) Learning Rate
 
 `learning_rate` is the learning rate used to update the discriminator.
 This should typically be decreased if training is unstable, and the GAIL loss is unstable.
@@ -185,7 +194,7 @@ Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`
 
-#### Use Actions
+#### (Optional) Use Actions
 
 `use_actions` determines whether the discriminator should discriminate based on both
 observations and actions, or just observations. Set to `True` if you want the agent to
@@ -193,6 +202,16 @@ mimic the actions from the demonstrations, and `False` if you'd rather have the 
 visit the same states as in the demonstrations but with possibly different actions.
 Setting to `False` is more likely to be stable, especially with imperfect demonstrations,
 but may learn slower.
+
+Default Value: `false`
+
+#### (Optional) Variational Discriminator Bottleneck
+
+`use_vail` enables a [variational bottleneck](https://arxiv.org/abs/1810.00821) within the
+GAIL discriminator. This forces the discriminator to learn a more general representation
+and reduces its tendency to be "too good" at discriminating, making learning more stable.
+However, it does increase training time. Enable this if you notice your imitation learning is
+unstable, or unable to learn the task at hand.
 
 Default Value: `false`
 
@@ -206,12 +225,12 @@ Default Value: `0`
 
 Typical Range: Approximately equal to [`buffer_size`](Training-PPO.md)
 
-#### (Optional) Variational Discriminator Bottleneck
+#### (Optional) Num Epochs
 
-`use_vail` enables a [variational bottleneck](https://arxiv.org/abs/1810.00821) within the
-GAIL discriminator. This forces the discriminator to learn a more general representation
-and reduces its tendency to be "too good" at discriminating, making learning more stable.
-However, it does increase training time. Enable this if you notice your imitation learning is
-unstable, or unable to learn the task at hand.
+`num_epoch` The number of passes to make through the experience buffer when performing gradient
+descent optimization for the discriminator. To avoid overfitting, this typically should be set to
+the same as or less than used for PPO.
 
-Default Value: `false`
+Default Value: `3`
+
+Typical Range: `1` - `10`
