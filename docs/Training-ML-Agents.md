@@ -196,8 +196,8 @@ are conducting, see:
 * [Training with PPO](Training-PPO.md)
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-* [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
+* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md)
