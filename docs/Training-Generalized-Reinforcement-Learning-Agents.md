@@ -12,7 +12,7 @@ should be trained over multiple variations of the enviornment. Using this approa
 for training, the agent will be better suited to adapt (with higher performance)
 to future unseen variations of the enviornment
 
-_Variations of the 3D Ball environment._
+_Example of variations of the 3D Ball environment._
 
 Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
@@ -21,18 +21,19 @@ Ball scale of 0.5          |  Ball scale of 4
 ## Introducing Generalization Using Reset Parameters
 
 To enable variations in the environments, we implemented `Reset Parameters`. We
-also specify a range of values for each `Reset Parameter` and sample
-these parameters during training. In the 3D ball environment example displayed
+also included different sampling methods and the ability to create new kinds of
+sampling methods for each `Reset Parameter`. In the 3D ball environment example displayed
 in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
 ## How to Enable Generalization Using Reset Parameters
 
-We need to provide a way to modify the environment by supplying a set of `Reset Parameters`,
+We first need to provide a way to modify the environment by supplying a set of `Reset Parameters`
 and vary them over time. This provision can be done either deterministically or randomly. 
 
-This is done by assigning each reset parameter a sampler, which samples a reset
-parameter value (such as a uniform sampler). If a sampler isn't provided for a
+This is done by assigning each `Reset Parameter` a `sampler-type`(such as a uniform sampler), 
+which determines how to sample a `Reset
+Parameter`. If a `sampler-type` isn't provided for a
 `Reset Parameter`, the parameter maintains the default value throughout the 
 training procedure, remaining unchanged. The samplers for all the `Reset Parameters` 
 are handled by a **Sampler Manager**, which also handles the generation of new 
@@ -68,23 +69,23 @@ Below is the explanation of the fields in the above example.
 train under a particular environment configuration before resetting the 
 environment with a new sample of `Reset Parameters`.
 
-* `parameter_name` - Name of the `Reset Parameter`. This should match the name 
+* `Reset Parameter` - Name of the `Reset Parameter` like `mass`, `gravity` and `scale`. This should match the name 
 specified in the academy of the intended environment for which the agent is 
 being trained. If a parameter specified in the file doesn't exist in the 
-environment, then this parameter will be ignored.
+environment, then this parameter will be ignored.  Within each `Reset Parameter`
 
     * `sampler-type` - Specify the sampler type to use for the `Reset Parameter`. 
     This is a string that should exist in the `Sampler Factory` (explained 
     below).
 
-    * `sub-arguments` - Specify the sub-arguments depending on the `sampler-type`. 
+    * `sampler-type-sub-arguments` - Specify the sub-arguments depending on the `sampler-type`. 
     In the example above, this would correspond to the `intervals` 
-    under the `sampler-type` `multirange_uniform` for the `Reset Parameter` called gravity`. 
+    under the `sampler-type` `"multirange_uniform"` for the `Reset Parameter` called gravity`. 
     The key name should match the name of the corresponding argument in the sampler definition. 
     (See below)
 
-The Sampler Manager allocates a sampler for each `Reset Parameter` by using the *Sampler Factory*,
-which maintains a dictionary mapping of string keys to sampler objects. The available samplers
+The Sampler Manager allocates a sampler type for each `Reset Parameter` by using the *Sampler Factory*,
+which maintains a dictionary mapping of string keys to sampler objects. The available sampler types
 to be used for each `Reset Parameter` is available in the Sampler Factory.
 
 ### Included Sampler Types
@@ -106,7 +107,7 @@ Below is a list of included `sampler-type` as part of the toolkit.
 
     * **sub-arguments** - `mean`, `st_dev`
 
-* `multirange_uniform` - Multirange Uniform sampler
+* `multirange_uniform` - Multirange uniform sampler
     *   Uniformly samples a single float value between the specified intervals. 
         Samples by first performing a weight pick of an interval from the list 
         of intervals (weighted based on interval width) and samples uniformly 
