@@ -21,27 +21,26 @@ Ball scale of 0.5          |  Ball scale of 4
 ## Introducing Generalization Using Reset Parameters
 
 To enable variations in the environments, we implemented `Reset Parameters`. We
-also specify a range of default values for each `Reset Parameter` and sample
+also specify a range of values for each `Reset Parameter` and sample
 these parameters during training. In the 3D ball environment example displayed
 in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
 ## How to Enable Generalization Using Reset Parameters
 
-For generalization training, we need to provide a way to modify the environment 
-by supplying a set of reset parameters, and vary them over time. This provision
-can be done either deterministically or randomly. 
+We need to provide a way to modify the environment by supplying a set of `Reset Parameters`,
+and vary them over time. This provision can be done either deterministically or randomly. 
 
 This is done by assigning each reset parameter a sampler, which samples a reset
 parameter value (such as a uniform sampler). If a sampler isn't provided for a
-reset parameter, the parameter maintains the default value throughout the 
-training procedure, remaining unchanged. The samplers for all the reset parameters 
+`Reset Parameter`, the parameter maintains the default value throughout the 
+training procedure, remaining unchanged. The samplers for all the `Reset Parameters` 
 are handled by a **Sampler Manager**, which also handles the generation of new 
 values for the reset parameters when needed. 
 
-To setup the Sampler Manager, we setup a YAML file that specifies how we wish to 
-generate new samples. In this file, we specify the samplers and the 
-`resampling-interval` (number of simulation steps after which reset parameters are 
+To setup the Sampler Manager, we create a YAML file that specifies how we wish to 
+generate new samples for each `Reset Parameters`. In this file, we specify the samplers and the 
+`resampling-interval` (the number of simulation steps after which reset parameters are 
 resampled). Below is an example of a sampler file for the 3D ball environment.
 
 ```yaml
@@ -63,26 +62,27 @@ scale:
 
 ```
 
-* `resampling-interval` (int) - Specifies the number of steps for agent to 
-train under a particular environment configuration before resetting the 
-environment with a new sample of reset parameters.
+Below is the explanation of the fields in the above example.
 
-* `parameter_name` - Name of the reset parameter. This should match the name 
+* `resampling-interval` - Specifies the number of steps for the agent to 
+train under a particular environment configuration before resetting the 
+environment with a new sample of `Reset Parameters`.
+
+* `parameter_name` - Name of the `Reset Parameter`. This should match the name 
 specified in the academy of the intended environment for which the agent is 
 being trained. If a parameter specified in the file doesn't exist in the 
-environment, then this specification will be ignored.
+environment, then this parameter will be ignored.
 
-    * `sampler-type` - Specify the sampler type to use for the reset parameter. 
+    * `sampler-type` - Specify the sampler type to use for the `Reset Parameter`. 
     This is a string that should exist in the `Sampler Factory` (explained 
     below).
 
-    * `sub-arguments` - Specify the characteristic parameters for the sampler. 
-    In the example sampler file above, this would correspond to the `intervals` 
-    key under the `multirange_uniform` sampler for the gravity reset parameter. 
-    The key name should match the name of the corresponding argument in the sampler definition. (Look at defining a new sampler method)
+    * `sub-arguments` - Specify the sub-arguments depending on the `sampler-type`. 
+    In the example above, this would correspond to the `intervals` 
+    under the `sampler-type` `multirange_uniform` for the `Reset Parameter` called gravity`. 
+    The key name should match the name of the corresponding argument in the sampler definition. (See below)
 
-
-The sampler manager allocates a sampler for a reset parameter by using the *Sampler Factory*, which maintains a dictionary mapping of string keys to sampler objects. The available samplers to be used for reset parameter resampling is as available in the Sampler Factory.
+The sampler manager allocates a sampler for a `Reset Parameter` by using the *Sampler Factory*, which maintains a dictionary mapping of string keys to sampler objects. The available samplers to be used for `Reset Parameter` resampling is as available in the Sampler Factory.
 
 #### Possible Sampler Types
 
@@ -125,7 +125,7 @@ This can be done by subscribing to the *register_sampler* method of the SamplerF
 
 `SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
 
-Once the Sampler Factory reflects the new register, the custom sampler can be used for resampling reset parameter. For demonstration, lets say our sampler was implemented as below, and we register the `CustomSampler` class with the string `custom-sampler` in the Sampler Factory.
+Once the Sampler Factory reflects the new register, the custom sampler can be used for resampling `Reset Parameter`. For demonstration, lets say our sampler was implemented as below, and we register the `CustomSampler` class with the string `custom-sampler` in the Sampler Factory.
 
 ```python
 class CustomSampler(Sampler):
@@ -137,7 +137,7 @@ class CustomSampler(Sampler):
         return np.random.choice(self.possible_vals)
 ```
 
-Now we need to specify this sampler in the sampler file. Lets say we wish to use this sampler for the reset parameter *mass*; the sampler file would specify the same for mass as the following (any order of the subarguments is valid).
+Now we need to specify this sampler in the sampler file. Lets say we wish to use this sampler for the `Reset Parameter` *mass*; the sampler file would specify the same for mass as the following (any order of the subarguments is valid).
 
 ```yaml
 mass:
