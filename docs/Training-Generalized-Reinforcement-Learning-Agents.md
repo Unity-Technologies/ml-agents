@@ -80,9 +80,12 @@ environment, then this parameter will be ignored.
     * `sub-arguments` - Specify the sub-arguments depending on the `sampler-type`. 
     In the example above, this would correspond to the `intervals` 
     under the `sampler-type` `multirange_uniform` for the `Reset Parameter` called gravity`. 
-    The key name should match the name of the corresponding argument in the sampler definition. (See below)
+    The key name should match the name of the corresponding argument in the sampler definition. 
+    (See below)
 
-The sampler manager allocates a sampler for a `Reset Parameter` by using the *Sampler Factory*, which maintains a dictionary mapping of string keys to sampler objects. The available samplers to be used for `Reset Parameter` resampling is as available in the Sampler Factory.
+The Sampler Manager allocates a sampler for each `Reset Parameter` by using the *Sampler Factory*,
+which maintains a dictionary mapping of string keys to sampler objects. The available samplers
+to be used for each `Reset Parameter` is available in the Sampler Factory.
 
 #### Possible Sampler Types
 
