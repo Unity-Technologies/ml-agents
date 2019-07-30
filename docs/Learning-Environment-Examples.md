@@ -116,7 +116,7 @@ If you would like to contribute environments, please see our
     of ball and racket.
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
-  * Visual Observations: None.
+  * Visual Observations: None
 * Reset Parameters: Three
     * angle: Angle of the racket from the vertical (Y) axis.
       * Default: 55
