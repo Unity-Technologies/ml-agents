@@ -18,7 +18,8 @@ it is easier to show the agent how to achieve the reward. In these cases,
 imitation learning combined with reinforcement learning can dramatically 
 reduce the time the agent takes to solve the environment.
 For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids),
-using 6 episodes of demonstrations (recorded from a human player) can reduce training steps by more than 4 times. See PreTraining + GAIL + Curiosity + RL below.
+using 6 episodes of demonstrations can reduce training steps by more than 4 times.
+See PreTraining + GAIL + Curiosity + RL below.
 
 <p align="center">
   <img src="images/mlagents-ImitationAndRL.png"
