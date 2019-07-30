@@ -319,11 +319,11 @@ imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
-ML-Agents provides ways to both learn directly from demonstrations as well as
-use demonstrations to help speed up reward-based training, and two algorithms to do
-so (Generative Adversarial Imitation Learning and Behavioral Cloning). The
-[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial
-covers these features in more depth.
+The toolkit provides a way for agents to learn directly from demonstrations using
+the Behavioral Cloning algorithm. The toolkit also enables use of demonstrations
+to help speed up reward-based (RL) training using the Generative Adversarial
+Imitation Learning (GAIL) algorithm. The [Training with Imitation Learning](Training-Imitation-Learning.md)
+tutorial covers these features in more depth.
 
 ## Flexible Training Scenarios
 
