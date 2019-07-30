@@ -8,7 +8,7 @@ ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
 Python process (communicating with the running Unity application over a socket).
 
 To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Training-RewardSignals.md)
+the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
 for the available reward signals and the corresponding hyperparameters.
 
 See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
