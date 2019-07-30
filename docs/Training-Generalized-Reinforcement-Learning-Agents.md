@@ -18,7 +18,7 @@ Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
 ![](images/3dball_small.png)  |  ![](images/3dball_big.png)
 
-## Generalization Using Reset Parameters
+## Introducing Generalization Using Reset Parameters
 
 To enable variations in the environments, we implemented `Reset Parameters`. We
 also specify a range of default values for each `Reset Parameter` and sample
@@ -26,7 +26,7 @@ these parameters during training. In the 3D ball environment example displayed
 in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
-## How-to
+## How to Enable Generalization Using Reset Parameters
 
 For generalization training, we need to provide a way to modify the environment 
 by supplying a set of reset parameters, and vary them over time. This provision
