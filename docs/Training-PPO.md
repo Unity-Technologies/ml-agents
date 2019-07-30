@@ -25,7 +25,7 @@ Learning](Training-Curriculum-Learning.md).
 For information about imitation learning from demonstrations, see
 [Training with Imitation Learning](Training-Imitation-Learning.md).
 
-## Best Practices when training with PPO
+## Best Practices Training with PPO
 
 Successfully training a Reinforcement Learning model often involves tuning the
 training hyperparameters. This guide contains some best practices for tuning the
