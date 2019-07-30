@@ -60,7 +60,7 @@ It is possible to record demonstrations of agent behavior from the Unity Editor,
 and save them as assets. These demonstrations contain information on the
 observations, actions, and rewards for a given agent during the recording session.
 They can be managed from the Editor, as well as used for training with Offline
-Behavioral Cloning (see below).
+Behavioral Cloning and GAIL.
 
 In order to record demonstrations from an agent, add the `Demonstration Recorder`
 component to a GameObject in the scene which contains an `Agent` component.
