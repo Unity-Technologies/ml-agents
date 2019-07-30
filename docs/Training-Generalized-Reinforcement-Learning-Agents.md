@@ -87,7 +87,7 @@ The Sampler Manager allocates a sampler for each `Reset Parameter` by using the 
 which maintains a dictionary mapping of string keys to sampler objects. The available samplers
 to be used for each `Reset Parameter` is available in the Sampler Factory.
 
-#### Possible Sampler Types
+### Possible Sampler Types
 
 The currently implemented samplers that can be used with the `sampler-type` arguments are:
 
