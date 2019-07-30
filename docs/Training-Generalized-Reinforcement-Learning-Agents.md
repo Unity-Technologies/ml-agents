@@ -119,15 +119,20 @@ Below is a list of included `sampler-type` as part of the toolkit.
 
 The implementation of the samplers can be found at `ml-agents-envs/mlagents/envs/sampler_class.py`.
 
-### Defining a new sampler method
+### Defining a New Sampler Type
 
-Custom sampling techniques must inherit from the *Sampler* base class (included in the `sampler_class` file) and preserve the interface. Once the class for the required method is specified, it must be registered in the Sampler Factory. 
+If you want to define your own sampler type, you must first inherit the *Sampler*
+base class (included in the `sampler_class` file) and preserve the interface.
+Once the class for the required method is specified, it must be registered in the Sampler Factory. 
 
-This can be done by subscribing to the *register_sampler* method of the SamplerFactory. The command is as follows:
+This can be done by subscribing to the *register_sampler* method of the SamplerFactory. The command
+is as follows:
 
 `SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
 
-Once the Sampler Factory reflects the new register, the custom sampler can be used for resampling `Reset Parameter`. For demonstration, lets say our sampler was implemented as below, and we register the `CustomSampler` class with the string `custom-sampler` in the Sampler Factory.
+Once the Sampler Factory reflects the new register, the new sampler type can be used for sample any
+`Reset Parameter`. For example, lets say a new sampler type was implemented as below and we register
+the `CustomSampler` class with the string `custom-sampler` in the Sampler Factory.
 
 ```python
 class CustomSampler(Sampler):
@@ -139,7 +144,8 @@ class CustomSampler(Sampler):
         return np.random.choice(self.possible_vals)
 ```
 
-Now we need to specify this sampler in the sampler file. Lets say we wish to use this sampler for the `Reset Parameter` *mass*; the sampler file would specify the same for mass as the following (any order of the subarguments is valid).
+Now we need to specify the new sampler type in the sampler YAML file. For example, we use this new
+sampler type for the `Reset Parameter` *mass*.
 
 ```yaml
 mass:
@@ -148,8 +154,6 @@ mass:
     argA: 2
     argC: 3
 ```
-
-With the sampler file setup, we can proceed to train our agent as explained in the next section.
 
 ### Training with Generalization Learning
 
