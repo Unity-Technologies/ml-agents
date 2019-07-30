@@ -408,11 +408,11 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Training with Environment Parameter Sampling** - To train agents to be robust
+- **Training with Environment Parameter Sampling** - To train agents to be adapt
   to changes in its environment (i.e., generalization), the agent should be exposed
-  to a variety of environment variations. Similarly to Curriculum Learning, which
-  allows environments to get more difficult as the agent learns, we also provide
-  a way to randomly resample aspects of the environment during training. See
+  to a variations of the environment. Similar to Curriculum Learning,
+  where environments become more difficult as the agent learns, the toolkit provides
+  a way to randomly sample aspects of the environment during training. See
   [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
   to learn more about this feature.
   
