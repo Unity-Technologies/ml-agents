@@ -62,10 +62,12 @@ class Buffer(dict):
                 self[:] = []
                 self[:] = list(np.array(data))
 
-            def get_batch(self, training_length=1, sequential=True):
+            def get_batch(self, batch_size=None, training_length=1, sequential=True):
                 """
                 Retrieve the last batch_size elements of length training_length
                 from the list of np.array
+                :param batch_size: The number of elements to retrieve. If None:
+                All elements will be retrieved.
                 :param training_length: The length of the sequence to be retrieved. If
                 None: only takes one element.
                 :param sequential: If true and training_length is not None: the elements
@@ -76,12 +78,41 @@ class Buffer(dict):
                 if sequential:
                     # The sequences will not have overlapping elements (this involves padding)
                     leftover = len(self) % training_length
-                    padding = np.array(self[-1]) * self.padding_value
-                    return np.array([padding] * (training_length - leftover) + self)
+                    # leftover is the number of elements in the first sequence (this sequence might need 0 padding)
+                    if batch_size is None:
+                        # retrieve the maximum number of elements
+                        batch_size = len(self) // training_length + 1 * (
+                            leftover != 0
+                        )
+                    # The maximum number of sequences taken from a list of length len(self) without overlapping
+                    # with padding is equal to batch_size
+                    if batch_size > (
+                        len(self) // training_length + 1 * (leftover != 0)
+                    ):
+                        raise BufferException(
+                            "The batch size and training length requested for get_batch where"
+                            " too large given the current number of data points."
+                        )
+                    if batch_size * training_length > len(self):
+                        padding = np.array(self[-1]) * self.padding_value
+                        return np.array([padding] * (training_length - leftover) + self)
+                    else:
+                        return np.array(self[len(self) - batch_size * training_length:])
                 else:
+                    # The sequences will have overlapping elements
+                    if batch_size is None:
+                        # retrieve the maximum number of elements
+                        batch_size = len(self) - training_length + 1
+                    # The number of sequences of length training_length taken from a list of len(self) elements
+                    # with overlapping is equal to batch_size
+                    if (len(self) - training_length + 1) < batch_size:
+                        raise BufferException(
+                            "The batch size and training length requested for get_batch where"
+                            " too large given the current number of data points."
+                        )
                     tmp_list = []
-                    for end in range(training_length, len(self)):
-                        tmp_list += [np.array(self[end - training_length : end])]
+                    for end in range(len(self) - batch_size + 1, len(self) + 1):
+                        tmp_list += self[end - training_length : end]
                     return np.array(tmp_list)
 
             def reset_field(self):
