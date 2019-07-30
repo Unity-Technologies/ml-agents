@@ -197,7 +197,6 @@ class PPOPolicy(TFPolicy):
         if self.use_recurrent:
             mem_in = mini_batch["memory"][:, 0, :]
             feed_dict[self.model.memory_in] = mem_in
-        # run_out = self._execute_model(feed_dict, self.update_dict)
         return feed_dict
 
     def get_value_estimates(

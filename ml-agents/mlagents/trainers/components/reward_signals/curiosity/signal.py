@@ -149,5 +149,4 @@ class CuriosityRewardSignal(RewardSignal):
                     feed_dict[self.model.next_visual_in[i]] = _obs
 
         self.has_updated = True
-        # run_out = self.policy._execute_model(feed_dict, self.update_dict)
         return feed_dict
