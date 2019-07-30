@@ -1,7 +1,7 @@
 # Profiling in Python
 
-ML-Agents provides a lightweight profiling system, in order to identity hotspots in the training process and help spot
-regressions from changes.
+As part of the ML-Agents tookit, we provide a lightweight profiling system,
+in order to identity hotspots in the training process and help spot regressions from changes.
 
 Timers are hierarchical, meaning that the time tracked in a block of code can be further split into other blocks if
 desired. This also means that a function that is called from multiple places in the code will appear in multiple
@@ -23,7 +23,6 @@ class TrainerController:
 ```
 
 You can also used the `hierarchical_timer` context manager.
-
 
 ``` python
 with hierarchical_timer("communicator.exchange"):
