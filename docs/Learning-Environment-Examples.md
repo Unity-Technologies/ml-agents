@@ -194,8 +194,8 @@ If you would like to contribute environments, please see our
     * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
-  * Visual Observations: None.
-* Reset Parameters: Four.
+  * Visual Observations: None
+* Reset Parameters: Four
 * Benchmark Mean Reward (Big & Small Wall Brain): 0.8
 
 ## [Reacher](https://youtu.be/2N9EoF6pQyE)
