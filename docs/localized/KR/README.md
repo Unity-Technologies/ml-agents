@@ -1,6 +1,6 @@
 ﻿<img src="docs/images/unity-wide.png" align="middle" width="3000"/>
 
-# Unity ML-Agents Toolkit (Beta)
+# Unity ML-Agents Toolkit (Beta) v0.9
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](docs/Readme.md)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
