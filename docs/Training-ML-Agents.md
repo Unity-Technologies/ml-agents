@@ -97,57 +97,57 @@ In addition to passing the path of the Unity executable containing your training
 environment, you can set the following command line options when invoking
 `mlagents-learn`:
 
-* `--env=<env>` - Specify an executable environment to train.
-* `--curriculum=<file>` – Specify a curriculum JSON file for defining the
+* `--env=<env>`: Specify an executable environment to train.
+* `--curriculum=<file>`: Specify a curriculum JSON file for defining the
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
-* `--sampler=<file>` - Specify a sampler YAML file for defining the
+* `--sampler=<file>`: Specify a sampler YAML file for defining the
   sampler for generalization training. See [Generalization
   Training](Training-Generalization-Learning.md) for more information.
-* `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to
+* `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
   the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
-* `--lesson=<n>` – Specify which lesson to start with when performing curriculum
+* `--lesson=<n>`: Specify which lesson to start with when performing curriculum
   training. Defaults to 0.
-* `--load` – If set, the training code loads an already trained model to
+* `--load`: If set, the training code loads an already trained model to
   initialize the neural network before training. The learning code looks for the
   model in `models/<run-id>/` (which is also where it saves models at the end of
   training). When not set (the default), the neural network weights are randomly
   initialized and an existing model is not loaded.
-* `--num-runs=<n>` - Sets the number of concurrent training sessions to perform.
+* `--num-runs=<n>`: Sets the number of concurrent training sessions to perform.
   Default is set to 1. Set to higher values when benchmarking performance and
   multiple training sessions is desired. Training sessions are independent, and
   do not improve learning performance.
-* `--run-id=<path>` – Specifies an identifier for each training run. This
+* `--run-id=<path>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
   summary statistics are saved as well as the saved model itself. The default id
   is "ppo". If you use TensorBoard to view the training statistics, always set a
   unique run-id for each training run. (The statistics for all runs with the
   same id are combined as if they were produced by a the same session.)
-* `--save-freq=<n>` Specifies how often (in  steps) to save the model during
+* `--save-freq=<n>`: Specifies how often (in  steps) to save the model during
   training. Defaults to 50000.
-* `--seed=<n>` – Specifies a number to use as a seed for the random number
+* `--seed=<n>`: Specifies a number to use as a seed for the random number
   generator used by the training code.
-* `--slow` – Specify this option to run the Unity environment at normal, game
+* `--slow`: Specify this option to run the Unity environment at normal, game
   speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
   specified in the Academy's **Inference Configuration**. By default, training
   runs using the speeds specified in your Academy's **Training Configuration**.
   See
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
-* `--train` – Specifies whether to train model or only run in inference mode.
+* `--train`: Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--num-envs=<n>` - Specifies the number of concurrent Unity environment instances to collect
+* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to collect
   experiences from when training. Defaults to 1.
-* `--base-port` - Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
-* `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum,
+* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
+* `--docker-target-name=<dt>`: The Docker Volume on which to store curriculum,
   executable and model files. See [Using Docker](Using-Docker.md).
-* `--no-graphics` - Specify this option to run the Unity executable in
+* `--no-graphics`: Specify this option to run the Unity executable in
   `-batchmode` and doesn't initialize the graphics driver. Use this only if your
   training doesn't involve visual observations (reading from Pixels). See
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
-* `--debug` - Specify this option to enable debug-level logging for some parts of the code.
+* `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 
 ### Training config file
 
