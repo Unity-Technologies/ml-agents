@@ -5,15 +5,15 @@
 ### Important Changes
 * We have changed the way reward signals (including Curiosity) are defined in the
 `trainer_config.yaml`.
-* When using multiple environments, every "step" as recorded in TensorBoard and
-printed in the command line now corresponds to a single step of a single environment.
+* When using multiple environments, every "step" is recorded in TensorBoard.
+* The steps in the command line console corresponds to a single step of a single environment.
 Previously, each step corresponded to one step for all environments (i.e., `num_envs` steps).
 
 #### Steps to Migrate
 * If you were overriding any of these following parameters in your config file, remove them
 from the top-level config and follow the steps below:
-  * `gamma` - Define a new `extrinsic` reward signal and set it's `gamma` to your new gamma.
-  * `use_curiosity`, `curiosity_strength`, `curiosity_enc_size` - Define a `curiosity` reward signal
+  * `gamma`: Define a new `extrinsic` reward signal and set it's `gamma` to your new gamma.
+  * `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a `curiosity` reward signal
   and set its `strength` to `curiosity_strength`, and `encoding_size` to `curiosity_enc_size`. Give it
   the same `gamma` as your `extrinsic` signal to mimic previous behavior.
 See [Reward Signals](Training-RewardSignals.md) for more information on defining reward signals.
