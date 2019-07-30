@@ -408,6 +408,14 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
+- **Training with Environment Parameter Sampling** - To train agents to be robust
+  to changes in its environment (i.e., generalization), the agent should be exposed
+  to a variety of environment variations. Similarly to Curriculum Learning, which
+  allows environments to get more difficult as the agent learns, we also provide
+  a way to randomly resample aspects of the environment during training. See
+  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
+  to learn more about this feature.
+  
 - **Broadcasting** - As discussed earlier, a Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
@@ -421,14 +429,6 @@ training process.
   particularly when debugging agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-- **Training with Environment Parameter Sampling** - To train agents to be robust
-  to changes in its environment (i.e., generalization), the agent should be exposed
-  to a variety of environment variations. Similarly to Curriculum Learning, which
-  allows environments to get more difficult as the agent learns, we also provide
-  a way to randomly resample aspects of the environment during training. See
-  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
-  to learn more about this feature.
 
 - **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
   installing Python or TensorFlow directly, we provide a
