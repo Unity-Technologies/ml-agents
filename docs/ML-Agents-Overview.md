@@ -413,7 +413,7 @@ training process.
   to several variations of the environment. Similar to Curriculum Learning,
   where environments become more difficult as the agent learns, the toolkit provides
   a way to randomly sample Reset Parameters of the environment during training. See
-  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
+  [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
   to learn more about this feature.
   
 - **Broadcasting** - As discussed earlier, a Learning Brain sends the
