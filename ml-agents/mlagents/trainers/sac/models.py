@@ -40,13 +40,11 @@ class SACNetwork(LearningModel):
         self.share_ac_cnn = False
         self.activ_fn = self.swish
 
-        if self.use_recurrent:
-            self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-
         if is_target:
             if self.use_recurrent:
+                self.memory_in = tf.placeholder(
+                    shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                )
                 self.value_memory_in = self.memory_in
             with tf.variable_scope(TARGET_SCOPE):
                 hidden_streams = self.create_observation_streams(
@@ -64,6 +62,30 @@ class SACNetwork(LearningModel):
                 mem_outs = [self.value_memory_out]
         else:
             if self.use_recurrent:
+                # Create the Policy input separate from the rest
+                # This is so in inference we only have to run the Policy network.
+                # Barracuda will grab the recurrent_in and recurrent_out named tensors.
+                self.inference_memory_in = tf.placeholder(
+                    shape=[None, self.m_size // 4],
+                    dtype=tf.float32,
+                    name="recurrent_in",
+                )
+                # We assume m_size is divisible by 4
+                # Create the non-Policy inputs
+                three_fourths_m_size = self.m_size * 3 // 4
+                self.other_memory_in = tf.placeholder(
+                    shape=[None, three_fourths_m_size],
+                    dtype=tf.float32,
+                    name="other_recurrent_in",
+                )
+
+                # Concat and use this as the "placeholder"
+                # for training
+                self.memory_in = tf.concat(
+                    [self.other_memory_in, self.inference_memory_in], axis=1
+                )
+
+                # Re-break-up for each network
                 num_mems = 4
                 mem_ins = []
                 for i in range(num_mems):
@@ -119,7 +141,7 @@ class SACNetwork(LearningModel):
                     self.policy_memory_out,
                 ]
         if self.use_recurrent:
-            self.memory_out = tf.concat(mem_outs, axis=1, name="recurrent_out")
+            self.memory_out = tf.concat(mem_outs, axis=1)
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -236,7 +258,7 @@ class SACNetwork(LearningModel):
                     self.sequence_length,
                     name="lstm_policy",
                 )
-                self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.policy_memory_out = memory_out
 
             mu = tf.layers.dense(
                 hidden_policy,
@@ -306,7 +328,6 @@ class SACNetwork(LearningModel):
         scope = self.join_scopes(scope, "policy")
 
         # Create inputs outside of the scope
-
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
@@ -315,6 +336,7 @@ class SACNetwork(LearningModel):
             self.prev_action = tf.placeholder(
                 shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
             )
+
         with tf.variable_scope(scope):
             hidden_policy = self.create_vector_observation_encoder(
                 hidden_policy,
@@ -325,7 +347,6 @@ class SACNetwork(LearningModel):
                 False,
             )
             if self.use_recurrent:
-
                 prev_action_oh = tf.concat(
                     [
                         tf.one_hot(self.prev_action[:, i], self.act_size[i])
@@ -334,13 +355,14 @@ class SACNetwork(LearningModel):
                     axis=1,
                 )
                 hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
+
                 hidden_policy, memory_out = self.create_recurrent_encoder(
                     hidden_policy,
                     self.policy_memory_in,
                     self.sequence_length,
                     name="lstm_policy",
                 )
-                self.policy_memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.policy_memory_out = memory_out
 
             policy_branches = []
             for size in self.act_size:
@@ -400,7 +422,10 @@ class SACNetwork(LearningModel):
         # Extract the normalized logprobs for Barracuda
         self.normalized_logprobs = tf.identity(normalized_logprobs, name="action")
 
+        # We kept the LSTMs at a different scope than the rest, so add them if they exist.
         self.policy_vars = self.get_vars(scope)
+        if self.use_recurrent:
+            self.policy_vars += self.get_vars("lstm")
 
     def create_sac_value_head(
         self, stream_names, hidden_input, num_layers, h_size, scope
@@ -429,7 +454,7 @@ class SACNetwork(LearningModel):
                     self.sequence_length,
                     name="lstm_value",
                 )
-                self.value_memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.value_memory_out = memory_out
             for name in stream_names:
                 self.value_heads[name] = tf.layers.dense(
                     value_hidden, 1, reuse=False, name="{}_value".format(name)
@@ -468,7 +493,7 @@ class SACNetwork(LearningModel):
                 q1_hidden, memory_out = self.create_recurrent_encoder(
                     q1_hidden, self.q1_memory_in, self.sequence_length, name="lstm_q1"
                 )
-                self.q1_memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.q1_memory_out = memory_out
 
             q1_heads = {}
             for name in stream_names:
@@ -484,7 +509,7 @@ class SACNetwork(LearningModel):
                 q2_hidden, memory_out = self.create_recurrent_encoder(
                     q2_hidden, self.q2_memory_in, self.sequence_length, name="lstm_q2"
                 )
-                self.q2_memory_out = tf.identity(memory_out, name="recurrent_out")
+                self.q2_memory_out = memory_out
 
             q2_heads = {}
             for name in stream_names:
@@ -629,8 +654,10 @@ class SACModel(LearningModel):
             self.output_pre = self.policy_network.output_pre
 
         self.output = self.policy_network.output
-
-        self.value = tf.identity(self.policy_network.value, name="value_estimate")
+        # Don't use value estimate during inference. TODO: Check why PPO uses value_estimate in inference.
+        self.value = tf.identity(
+            self.policy_network.value, name="value_estimate_unused"
+        )
         self.value_heads = self.policy_network.value_heads
         self.all_log_probs = self.policy_network.all_log_probs
         self.dones_holder = tf.placeholder(
@@ -639,9 +666,13 @@ class SACModel(LearningModel):
 
         if self.use_recurrent:
             self.memory_in = self.policy_network.memory_in
-            self.memory_out = tf.identity(
-                self.policy_network.memory_out, name="recurrent_out"
+            self.memory_out = self.policy_network.memory_out
+
+            # For Barracuda
+            self.inference_memory_out = tf.identity(
+                self.policy_network.policy_memory_out, name="recurrent_out"
             )
+
             if self.brain.vector_action_space_type == "discrete":
                 self.prev_action = self.policy_network.prev_action
             self.next_memory_in = self.target_network.memory_in
