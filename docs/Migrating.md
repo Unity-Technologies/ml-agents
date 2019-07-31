@@ -16,7 +16,7 @@ from the top-level config and follow the steps below:
   * `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a `curiosity` reward signal
   and set its `strength` to `curiosity_strength`, and `encoding_size` to `curiosity_enc_size`. Give it
   the same `gamma` as your `extrinsic` signal to mimic previous behavior.
-See [Reward Signals](Training-RewardSignals.md) for more information on defining reward signals.
+See [Reward Signals](Reward-Signals.md) for more information on defining reward signals.
 * TensorBoards generated when running multiple environments in v0.8 are not comparable to those generated in
 v0.9 in terms of step count. Multiply your v0.8 step count by `num_envs` for an approximate comparison.
 You may need to change `max_steps` in your config as appropriate as well.

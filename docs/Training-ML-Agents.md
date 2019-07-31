@@ -103,7 +103,7 @@ environment, you can set the following command line options when invoking
   Training](Training-Curriculum-Learning.md) for more information.
 * `--sampler=<file>`: Specify a sampler YAML file for defining the
   sampler for generalization training. See [Generalization
-  Training](Training-Generalization-Learning.md) for more information.
+  Training](Training-Generalized-Reinforcement-Learning-Agents.md) for more information.
 * `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
@@ -180,7 +180,7 @@ environments are included in the provided config file.
 | num_epoch            | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
 | num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, BC                  |
 | pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                                                                                            | PPO                      |
-| reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Training-RewardSignals.md) for configuration options.                                                                                            | PPO                      |
+| reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                                                                            | PPO                      |
 | sequence_length      | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC                  |
 | summary_freq         | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, BC                  |
 | time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, (online)BC          |
@@ -206,15 +206,15 @@ example to see how the hyperparameters and other configuration variables have
 been changed from the defaults.
 
 ### Debugging and Profiling
-If you enable the `--debug` flag in the command line, the trainer metrics are logged to a CSV file 
+If you enable the `--debug` flag in the command line, the trainer metrics are logged to a CSV file
 stored in the `summaries` directory. The metrics stored are:
   * brain name
   * time to update policy
   * time since start of training
   * time for last experience collection
   * number of experiences used for training
-  * mean return 
-  
+  * mean return
+
 This option is not available currently for Behavioral Cloning.
 
 Additionally, we have included basic [Profiling in Python](Profiling-Python.md) as part of the toolkit.

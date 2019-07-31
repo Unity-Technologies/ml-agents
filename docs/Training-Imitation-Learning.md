@@ -1,4 +1,4 @@
-# Imitation Learning
+# Training with Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
@@ -12,10 +12,10 @@ from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFY
 
 Imitation learning can also be used to help reinforcement learning. Especially in
 environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
-the reward and thus not learn from it. Curiosity (which is available in the toolkit) 
+the reward and thus not learn from it. Curiosity (which is available in the toolkit)
 helps the agent explore, but in some cases
 it is easier to show the agent how to achieve the reward. In these cases,
-imitation learning combined with reinforcement learning can dramatically 
+imitation learning combined with reinforcement learning can dramatically
 reduce the time the agent takes to solve the environment.
 For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids),
 using 6 episodes of demonstrations can reduce training steps by more than 4 times.
@@ -30,7 +30,7 @@ See PreTraining + GAIL + Curiosity + RL below.
 The ML-Agents toolkit provides several ways to learn from demonstrations.
 
 * To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
-  [GAIL reward signal](Training-RewardSignals.md#the-gail-reward-signal). GAIL can be
+  [GAIL reward signal](Reward-Signals.md#the-gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
 * To help bootstrap reinforcement learning, you can enable

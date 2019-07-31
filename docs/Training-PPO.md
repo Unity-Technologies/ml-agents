@@ -44,7 +44,7 @@ Furthermore, we could mix reward signals to help the learning process.
 
 Using `reward_signals` allows you to define [reward signals.](Reward-Signals.md)
 The ML-Agents toolkit provides three reward signals by default, the Extrinsic (environment)
-reward signal, the Curiosity reward signal, which can be used to encourage exploration in 
+reward signal, the Curiosity reward signal, which can be used to encourage exploration in
 sparse extrinsic reward environments, and the GAIL reward signal. Please see [Reward Signals](Reward-Signals.md)
 for additional details.
 
@@ -172,10 +172,10 @@ Typical Range: `32` - `512`
 `vis_encode_type` corresponds to the encoder type for encoding visual observations.
 Valid options include:
 * `simple` (default): a simple encoder which consists of two convolutional layers
-* `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236), 
+* `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236),
 consisting of three convolutional layers
 * `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
-consisting of three stacked layers, each with two risidual blocks, making a 
+consisting of three stacked layers, each with two risidual blocks, making a
 much larger network than the other two.
 
 Options: `simple`, `nature_cnn`, `resnet`
@@ -207,9 +207,9 @@ Typical Range: `64` - `512`
 ## (Optional) Pretraining Using Demonstrations
 
 In some cases, you might want to bootstrap the agent's policy using behavior recorded
-from a player. This can help guide the agent towards the reward. Pretraining adds 
-training operations that mimic a demonstration rather than attempting to maximize reward. 
-It is essentially equivalent to running [behavioral cloning](./Training-BehavioralCloning.md)
+from a player. This can help guide the agent towards the reward. Pretraining adds
+training operations that mimic a demonstration rather than attempting to maximize reward.
+It is essentially equivalent to running [behavioral cloning](Training-Behavioral-Cloning.md)
 in-line with PPO.
 
 To use pretraining, add a `pretraining` section to the trainer_config. For instance:
@@ -227,22 +227,22 @@ Below are the avaliable hyperparameters for pretraining.
 
 `strength` corresponds to the learning rate of the imitation relative to the learning
 rate of PPO, and roughly corresponds to how strongly we allow the behavioral cloning
-to influence the policy. 
+to influence the policy.
 
 Typical Range: `0.1` - `0.5`
 
 ### Demo Path
 
-`demo_path` is the path to your `.demo` file or directory of `.demo` files. 
+`demo_path` is the path to your `.demo` file or directory of `.demo` files.
 See the [imitation learning guide](Training-Imitation-Learning.md) for more on `.demo` files.
 
 ### Steps
 
-During pretraining, it is often desirable to stop using demonstrations after the agent has 
+During pretraining, it is often desirable to stop using demonstrations after the agent has
 "seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
 outside of the provided demonstrations. `steps` corresponds to the training steps over which
-pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set 
-the steps to 0 for constant imitation over the entire training run. 
+pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set
+the steps to 0 for constant imitation over the entire training run.
 
 ### (Optional) Batch Size
 
@@ -264,7 +264,7 @@ Typical Range: `3` - `10`
 
 `samples_per_update` is the maximum number of samples
 to use during each imitation update. You may want to lower this if your demonstration
-dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 
+dataset is very large to avoid overfitting the policy on demonstrations. Set to 0
 to train over all of the demonstrations at each update step.
 
 Default Value: `0` (all)
