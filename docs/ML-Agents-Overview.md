@@ -319,8 +319,8 @@ imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
-The toolkit provides a way to learn directly from demonstrations but also use these
-demonstrations to help speed up reward-based training (RL).  We include two algorithms called
+The toolkit provides a way to learn directly from demonstrations, as well as use them
+to help speed up reward-based training (RL).  We include two algorithms called
 Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
 [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
 features in more depth.
@@ -415,7 +415,7 @@ training process.
   a way to randomly sample Reset Parameters of the environment during training. See
   [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
   to learn more about this feature.
-  
+
 - **Broadcasting** - As discussed earlier, a Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
