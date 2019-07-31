@@ -47,6 +47,8 @@ public class CrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    private Transform workingTransform;
+
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
@@ -62,6 +64,8 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
+
+        workingTransform = new GameObject().transform;
     }
 
     /// <summary>
@@ -89,8 +93,9 @@ public class CrawlerAgent : Agent
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
-        AddVectorObs(rb.velocity);
-        AddVectorObs(rb.angularVelocity);
+
+        AddVectorObs(workingTransform.InverseTransformVector(rb.velocity));
+        AddVectorObs(workingTransform.InverseTransformDirection(rb.angularVelocity));
 
         if (bp.rb.transform != body)
         {
@@ -107,12 +112,18 @@ public class CrawlerAgent : Agent
     {
         jdController.GetCurrentJointForces();
         // Normalize dir vector to help generalize
-        AddVectorObs(dirToTarget.normalized);
 
+        workingTransform.rotation = Quaternion.LookRotation(dirToTarget);
         // Forward & up to help with orientation
-        AddVectorObs(body.transform.position.y);
-        AddVectorObs(body.forward);
-        AddVectorObs(body.up);
+        RaycastHit hit;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        {
+            AddVectorObs(hit.distance);
+        }
+        else
+            AddVectorObs(10.0f); 
+        AddVectorObs(workingTransform.InverseTransformVector(body.forward));
+        AddVectorObs(workingTransform.InverseTransformVector(body.up));
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
@@ -257,6 +268,7 @@ public class CrawlerAgent : Agent
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
+        transform.Rotate(Vector3.up,Random.Range(0.0f, 360.0f));
 
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
