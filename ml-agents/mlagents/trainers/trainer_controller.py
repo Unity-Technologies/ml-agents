@@ -14,7 +14,10 @@ from time import time
 from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.exception import (
+    UnityEnvironmentException,
+    UnityCommunicationException,
+)
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
@@ -302,7 +305,7 @@ class TrainerController(object):
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, UnityCommunicationException):
             if self.train_model:
                 self._save_model_when_interrupted()
             pass
