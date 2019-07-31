@@ -81,9 +81,7 @@ class Buffer(dict):
                     # leftover is the number of elements in the first sequence (this sequence might need 0 padding)
                     if batch_size is None:
                         # retrieve the maximum number of elements
-                        batch_size = len(self) // training_length + 1 * (
-                            leftover != 0
-                        )
+                        batch_size = len(self) // training_length + 1 * (leftover != 0)
                     # The maximum number of sequences taken from a list of length len(self) without overlapping
                     # with padding is equal to batch_size
                     if batch_size > (
@@ -95,9 +93,13 @@ class Buffer(dict):
                         )
                     if batch_size * training_length > len(self):
                         padding = np.array(self[-1]) * self.padding_value
-                        return np.array([padding] * (training_length - leftover) + self)
+                        return np.array(
+                            [padding] * (training_length - leftover) + self[:]
+                        )
                     else:
-                        return np.array(self[len(self) - batch_size * training_length:])
+                        return np.array(
+                            self[len(self) - batch_size * training_length :]
+                        )
                 else:
                     # The sequences will have overlapping elements
                     if batch_size is None:
@@ -180,7 +182,7 @@ class Buffer(dict):
             for key in key_list:
                 tmp = []
                 for i in s:
-                    tmp += self[key][i:i+sequence_length]
+                    tmp += self[key][i * sequence_length : (i + 1) * sequence_length]
                 self[key][:] = tmp
 
         def make_mini_batch(self, start, end):
@@ -246,7 +248,9 @@ class Buffer(dict):
             )
         for field_key in key_list:
             self.update_buffer[field_key].extend(
-                self[agent_id][field_key].get_batch(training_length=training_length)
+                self[agent_id][field_key].get_batch(
+                    batch_size=batch_size, training_length=training_length
+                )
             )
 
     def append_all_agent_batch_to_update_buffer(
