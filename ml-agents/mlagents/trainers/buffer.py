@@ -165,7 +165,7 @@ class Buffer(dict):
                 length = len(self[key])
             return True
 
-        def shuffle(self, key_list=None, sequence_length=1):
+        def shuffle(self, sequence_length, key_list=None):
             """
             Shuffles the fields in key_list in a consistent way: The reordering will
             be the same across fields.
