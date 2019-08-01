@@ -1,4 +1,4 @@
-# Imitation Learning
+# Training with Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
@@ -12,29 +12,32 @@ from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFY
 
 Imitation learning can also be used to help reinforcement learning. Especially in
 environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
-the reward and thus not learn from it. Curiosity helps the agent explore, but in some cases
-it is easier to just show the agent how to achieve the reward. In these cases,
-imitation learning can dramatically reduce the time it takes to solve the environment.
+the reward and thus not learn from it. Curiosity (which is available in the toolkit)
+helps the agent explore, but in some cases
+it is easier to show the agent how to achieve the reward. In these cases,
+imitation learning combined with reinforcement learning can dramatically
+reduce the time the agent takes to solve the environment.
 For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids),
-just 6 episodes of demonstrations can reduce training steps by more than 4 times.
+using 6 episodes of demonstrations can reduce training steps by more than 4 times.
+See PreTraining + GAIL + Curiosity + RL below.
 
 <p align="center">
   <img src="images/mlagents-ImitationAndRL.png"
        alt="Using Demonstrations with Reinforcement Learning"
-       width="350" border="0" />
+       width="700" border="0" />
 </p>
 
-ML-Agents provides several ways to learn from demonstrations.
+The ML-Agents toolkit provides several ways to learn from demonstrations.
 
 * To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
-  [GAIL reward signal](Training-RewardSignals.md#the-gail-reward-signal). GAIL can be
+  [GAIL reward signal](Reward-Signals.md#the-gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
 * To help bootstrap reinforcement learning, you can enable
   [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations)
   on the PPO trainer, in addition to using a small GAIL reward signal.
 * To train an agent to exactly mimic demonstrations, you can use the
-  [Behavioral Cloning](Training-BehavioralCloning.md) trainer. Behavioral Cloning can be
+  [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be
   used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
   on more complex environments without a large number of demonstrations.
 
@@ -58,7 +61,7 @@ It is possible to record demonstrations of agent behavior from the Unity Editor,
 and save them as assets. These demonstrations contain information on the
 observations, actions, and rewards for a given agent during the recording session.
 They can be managed from the Editor, as well as used for training with Offline
-Behavioral Cloning (see below).
+Behavioral Cloning and GAIL.
 
 In order to record demonstrations from an agent, add the `Demonstration Recorder`
 component to a GameObject in the scene which contains an `Agent` component.
