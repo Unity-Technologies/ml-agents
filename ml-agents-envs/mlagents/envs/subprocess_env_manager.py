@@ -121,7 +121,6 @@ def worker(
         step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:
         step_queue.close()
-        step_queue.join_thread()
         env.close()
 
 
