@@ -309,11 +309,11 @@ class TrainerController(object):
             if self.train_model:
                 self._save_model_when_interrupted()
             pass
-        env_manager.close()
         if self.train_model:
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
+        env_manager.close()
 
     def end_trainer_episodes(
         self, env: BaseUnityEnvironment, lessons_incremented: Dict[str, bool]
