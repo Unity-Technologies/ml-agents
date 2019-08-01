@@ -63,7 +63,7 @@ If you installed this correctly, you should be able to run
 `mlagents-learn --help`, after which you will see the Unity logo and the command line
 parameters you can use with `mlagents-learn`. 
 
-By installing the `mlagents` package, its dependencies listed in the [setup.py file](../ml-agents/setup.py) are also installed.
+By installing the `mlagents` package, the dependencies listed in the [setup.py file](../ml-agents/setup.py) are also installed.
 Some of the primary dependencies include:
 
 - [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)

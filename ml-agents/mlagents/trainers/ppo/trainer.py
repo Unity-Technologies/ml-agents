@@ -11,6 +11,7 @@ import numpy as np
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.action_info import ActionInfoOutputs
 
@@ -21,7 +22,15 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
+        multi_gpu,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -65,7 +74,14 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
+        if multi_gpu and len(get_devices()) > 1:
+            self.policy = MultiGpuPPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
+        else:
+            self.policy = PPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward

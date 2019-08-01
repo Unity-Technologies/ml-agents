@@ -319,11 +319,11 @@ imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
-ML-Agents provides ways to both learn directly from demonstrations as well as
-use demonstrations to help speed up reward-based training, and two algorithms to do
-so (Generative Adversarial Imitation Learning and Behavioral Cloning). The
-[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial
-covers these features in more depth.
+The toolkit provides a way to learn directly from demonstrations, as well as use them
+to help speed up reward-based training (RL).  We include two algorithms called
+Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
+[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
+features in more depth.
 
 ## Flexible Training Scenarios
 
@@ -408,6 +408,14 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
+- **Training with Reset Parameter Sampling** - To train agents to be adapt
+  to changes in its environment (i.e., generalization), the agent should be exposed
+  to several variations of the environment. Similar to Curriculum Learning,
+  where environments become more difficult as the agent learns, the toolkit provides
+  a way to randomly sample Reset Parameters of the environment during training. See
+  [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+  to learn more about this feature.
+
 - **Broadcasting** - As discussed earlier, a Learning Brain sends the
   observations for all its Agents to the Python API when dragged into the
   Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
@@ -421,14 +429,6 @@ training process.
   particularly when debugging agent behaviors. You can learn more about using
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-- **Training with Environment Parameter Sampling** - To train agents to be robust
-  to changes in its environment (i.e., generalization), the agent should be exposed
-  to a variety of environment variations. Similarly to Curriculum Learning, which
-  allows environments to get more difficult as the agent learns, we also provide
-  a way to randomly resample aspects of the environment during training. See
-  [Training with Environment Parameter Sampling](Training-Generalization-Learning.md)
-  to learn more about this feature.
 
 - **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
   installing Python or TensorFlow directly, we provide a

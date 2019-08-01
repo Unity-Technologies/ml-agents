@@ -32,6 +32,7 @@ class GAILRewardSignal(RewardSignal):
         reward multiplied by the strength parameter
         :param gamma: The time discounting factor used for this reward.
         :param demo_path: The path to the demonstration file
+        :param num_epoch: The number of epochs to train over the training buffer for the discriminator.
         :param encoding_size: The size of the the hidden layers of the discriminator
         :param learning_rate: The Learning Rate used during GAIL updates.
         :param use_actions: Whether or not to use the actions for the discriminator.

@@ -18,9 +18,9 @@ The `curiosity` reward signal helps your agent explore when extrinsic rewards ar
 ## Enabling Reward Signals
 
 Reward signals, like other hyperparameters, are defined in the trainer config `.yaml` file. An
-example is provided in `config/trainer_config.yaml`. To enable a reward signal, add it to the
+example is provided in `config/trainer_config.yaml` and `config/gail_config.yaml`. To enable a reward signal, add it to the
 `reward_signals:` section under the brain name. For instance, to enable the extrinsic signal
-in addition to a small curiosity reward, you would define your `reward_signals` as follows:
+in addition to a small curiosity reward and a GAIL reward signal, you would define your `reward_signals` as follows:
 
 ```yaml
 reward_signals:
@@ -28,9 +28,14 @@ reward_signals:
         strength: 1.0
         gamma: 0.99
     curiosity:
+        strength: 0.02
+        gamma: 0.99
+        encoding_size: 256
+    gail:
         strength: 0.01
         gamma: 0.99
         encoding_size: 128
+        demo_path: demos/ExpertPyramid.demo
 ```
 
 Each reward signal should define at least two parameters, `strength` and `gamma`, in addition
@@ -39,8 +44,9 @@ its entry entirely from `reward_signals`. At least one reward signal should be l
 at all times.
 
 ## Reward Signal Types
+As part of the toolkit, we provide three reward signal types as part of hyperparameters - Extrinsic, Curiosity, and GAIL.
 
-### The Extrinsic Reward Signal
+### Extrinsic Reward Signal
 
 The `extrinsic` reward signal is simply the reward given by the
 [environment](Learning-Environment-Design.md). Remove it to force the agent
@@ -63,7 +69,7 @@ cases when rewards are more immediate, it can be smaller.
 
 Typical Range: `0.8` - `0.995`
 
-### The Curiosity Reward Signal
+### Curiosity Reward Signal
 
 The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is an implementation
 of the approach described in "Curiosity-driven Exploration by Self-supervised Prediction"
@@ -95,7 +101,7 @@ Typical Range: `0.001` - `0.1`
 
 Typical Range: `0.8` - `0.995`
 
-#### Encoding Size
+#### (Optional) Encoding Size
 
 `encoding_size` corresponds to the size of the encoding used by the intrinsic curiosity model.
 This value should be small enough to encourage the ICM to compress the original
@@ -106,7 +112,7 @@ Default Value: `64`
 
 Typical Range: `64` - `256`
 
-#### Learning Rate
+#### (Optional) Learning Rate
 
 `learning_rate` is the learning rate used to update the intrinsic curiosity module.
 This should typically be decreased if training is unstable, and the curiosity loss is unstable.
@@ -115,12 +121,12 @@ Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`
 
-### The GAIL Reward Signal
+### GAIL Reward Signal
 
 GAIL, or [Generative Adversarial Imitation Learning](https://arxiv.org/abs/1606.03476), is an
 imitation learning algorithm that uses an adversarial approach, in a similar vein to GANs
 (Generative Adversarial Networks). In this framework, a second neural network, the
-discriminator, is taught to distinguish whether an observation/action is from a demonstration, or
+discriminator, is taught to distinguish whether an observation/action is from a demonstration or
 produced by the agent. This discriminator can the examine a new observation/action and provide it a
 reward based on how close it believes this new observation/action is to the provided demonstrations.
 
@@ -129,11 +135,11 @@ discriminator is trained to better distinguish between demonstrations and agent 
 In this way, while the agent gets better and better at mimicing the demonstrations, the
 discriminator keeps getting stricter and stricter and the agent must try harder to "fool" it.
 
-This approach, when compared to [Behavioral Cloning](Training-BehavioralCloning.md), requires
+This approach, when compared to [Behavioral Cloning](Training-Behavioral-Cloning.md), requires
 far fewer demonstrations to be provided. After all, we are still learning a policy that happens
-to be similar to the demonstration, not directly copying the behavior of the demonstrations. It
-is also especially effective when combined with an Extrinsic signal, but can also be used
-independently to purely learn from demonstration.
+to be similar to the demonstrations, not directly copying the behavior of the demonstrations. It
+is especially effective when combined with an Extrinsic signal. However, the GAIL reward signal can
+also be used independently to purely learn from demonstrations.
 
 Using GAIL requires recorded demonstrations from your Unity environment. See the
 [imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.
@@ -158,7 +164,7 @@ Typical Range: `0.8` - `0.9`
 `demo_path` is the path to your `.demo` file or directory of `.demo` files. See the [imitation learning guide]
 (Training-Imitation-Learning.md).
 
-#### Encoding Size
+#### (Optional) Encoding Size
 
 `encoding_size` corresponds to the size of the hidden layer used by the discriminator.
 This value should be small enough to encourage the discriminator to compress the original
@@ -170,7 +176,7 @@ Default Value: `64`
 
 Typical Range: `64` - `256`
 
-#### Learning Rate
+#### (Optional) Learning Rate
 
 `learning_rate` is the learning rate used to update the discriminator.
 This should typically be decreased if training is unstable, and the GAIL loss is unstable.
@@ -179,7 +185,7 @@ Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`
 
-#### Use Actions
+#### (Optional) Use Actions
 
 `use_actions` determines whether the discriminator should discriminate based on both
 observations and actions, or just observations. Set to `True` if you want the agent to

@@ -21,6 +21,7 @@ def basic_options():
         "--no-graphics": False,
         "<trainer-config-path>": "basic_path",
         "--debug": False,
+        "--multi-gpu": False,
         "--sampler": None,
     }
 
@@ -55,6 +56,7 @@ def test_run_training(
                 0,
                 0,
                 True,
+                False,
                 sampler_manager_mock.return_value,
                 None,
             )

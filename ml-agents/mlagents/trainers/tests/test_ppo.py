@@ -344,7 +344,7 @@ def test_trainer_increment_step():
     }
     brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
 
-    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0")
+    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
     policy_mock = mock.Mock()
     step_count = 10
     policy_mock.increment_step = mock.Mock(return_value=step_count)

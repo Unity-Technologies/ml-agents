@@ -162,6 +162,7 @@ def basic_trainer_controller():
         lesson=None,
         training_seed=99,
         fast_simulation=True,
+        multi_gpu=False,
         sampler_manager=SamplerManager(None),
         resampling_interval=None,
     )
@@ -183,6 +184,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         None,
         seed,
         True,
+        False,
         SamplerManager(None),
         None,
     )
@@ -215,7 +217,15 @@ def assert_ppo_trainer_constructed(
     external_brains = {"testbrain": expected_brain_params}
 
     def mock_constructor(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
+        multi_gpu,
     ):
         self.trainer_metrics = TrainerMetrics("", "")
         assert brain == expected_brain_params
@@ -225,6 +235,7 @@ def assert_ppo_trainer_constructed(
         assert load == tc.load_model
         assert seed == tc.seed
         assert run_id == tc.run_id
+        assert multi_gpu == tc.multi_gpu
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         tc.initialize_trainers(input_config, external_brains)
