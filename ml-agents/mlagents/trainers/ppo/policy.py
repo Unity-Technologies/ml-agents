@@ -140,6 +140,31 @@ class PPOPolicy(TFPolicy):
         return run_out
 
     @timed
+    def update(self, mini_batch, num_sequences):
+        """
+        Performs update on model.
+        :param mini_batch: Batch of experiences.
+        :param num_sequences: Number of sequences to process.
+        :return: Results of update.
+        """
+        feed_dict = {}
+        update_dict = {}
+        stats_needed = {}
+        update_stats = {}
+        update_dict.update(self.update_dict)
+        feed_dict.update(self.prepare_update(mini_batch, num_sequences))
+        stats_needed.update(self.stats_name_to_update_name)
+
+        for _, reward_signal in self.reward_signals.items():
+            update_dict.update(reward_signal.update_dict)
+            feed_dict.update(reward_signal.prepare_update(mini_batch, num_sequences))
+            stats_needed.update(reward_signal.stats_name_to_update_name)
+            update_vals = self._execute_model(feed_dict, update_dict)
+
+            for stat_name, update_name in stats_needed.items():
+                update_stats[stat_name] = update_vals[update_name]
+        return update_stats
+
     def prepare_update(self, mini_batch, num_sequences):
         """
         Prepares for update of model using buffer.

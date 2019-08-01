@@ -443,7 +443,7 @@ class PPOTrainer(Trainer):
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.trainer_parameters["num_epoch"]
-        single_update_stats = defaultdict(list)
+        batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
             self.training_buffer.update_buffer.shuffle()
             buffer = self.training_buffer.update_buffer
@@ -453,23 +453,11 @@ class PPOTrainer(Trainer):
                 start = l * n_sequences
                 end = (l + 1) * n_sequences
                 mini_batch = buffer.make_mini_batch(start, end)
+                update_stats = self.policy.update(mini_batch, n_sequences)
+                for stat_name, value in update_stats.items():
+                    batch_update_stats[stat_name].append(value)
 
-                feed_dict = {}
-                update_dict = self.policy.update_dict
-                feed_dict.update(self.policy.prepare_update(mini_batch, n_sequences))
-                stats_needed = self.policy.stats_name_to_update_name
-                for _, reward_signal in self.policy.reward_signals.items():
-                    update_dict.update(reward_signal.update_dict)
-                    feed_dict.update(
-                        reward_signal.prepare_update(mini_batch, n_sequences)
-                    )
-                    stats_needed.update(reward_signal.stats_name_to_update_name)
-
-                update_vals = self.policy._execute_model(feed_dict, update_dict)
-                for stat_name, update_name in stats_needed.items():
-                    single_update_stats[stat_name].append(update_vals[update_name])
-
-        for stat, stat_list in single_update_stats.items():
+        for stat, stat_list in batch_update_stats.items():
             self.stats[stat].append(np.mean(stat_list))
 
         if self.policy.bc_module:
