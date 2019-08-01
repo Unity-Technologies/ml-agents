@@ -171,6 +171,7 @@ def _check_environment_trains(env):
             lesson=None,
             training_seed=1337,
             fast_simulation=True,
+            multi_gpu=False,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
         )

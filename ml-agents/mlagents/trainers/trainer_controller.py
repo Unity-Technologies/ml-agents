@@ -43,6 +43,7 @@ class TrainerController(object):
         lesson: Optional[int],
         training_seed: int,
         fast_simulation: bool,
+        multi_gpu: bool,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
     ):
@@ -76,6 +77,7 @@ class TrainerController(object):
         self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
+        self.multi_gpu = multi_gpu
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
@@ -204,6 +206,7 @@ class TrainerController(object):
                     load=self.load_model,
                     seed=self.seed,
                     run_id=self.run_id,
+                    multi_gpu=self.multi_gpu,
                 )
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name
