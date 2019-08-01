@@ -1,6 +1,5 @@
 from typing import *
 import cloudpickle
-import signal
 
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.exception import UnityCommunicationException
@@ -66,15 +65,6 @@ class UnityEnvWorker:
         self.process.join()
 
 
-def _handle_sigint_with_keyboardinterrupt():
-    """ Ensures SIGINT raised on Windows doesn't prevent us from cleaning up adequately. """
-
-    def signal_handler(signal, frame):
-        raise KeyboardInterrupt
-
-    signal.signal(signal.SIGINT, signal_handler)
-
-
 def worker(
     parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
 ):
@@ -82,7 +72,6 @@ def worker(
         pickled_env_factory
     )
     env = env_factory(worker_id)
-    _handle_sigint_with_keyboardinterrupt()
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -140,7 +129,6 @@ class SubprocessEnvManager(EnvManager):
         self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
     ):
         super().__init__()
-        _handle_sigint_with_keyboardinterrupt()
         self.env_workers: List[UnityEnvWorker] = []
         self.step_queue: Queue = Queue()
         for worker_idx in range(n_env):
