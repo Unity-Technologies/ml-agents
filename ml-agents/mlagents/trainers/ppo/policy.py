@@ -56,6 +56,8 @@ class PPOPolicy(TFPolicy):
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
                 )
+                # Add reward signal update to update_dict
+                self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
             # Create pretrainer if needed
             if "pretraining" in trainer_params:
@@ -148,21 +150,18 @@ class PPOPolicy(TFPolicy):
         :return: Results of update.
         """
         feed_dict = {}
-        update_dict = {}
         stats_needed = {}
         update_stats = {}
-        update_dict.update(self.update_dict)
         feed_dict.update(self.prepare_update(mini_batch, num_sequences))
         stats_needed.update(self.stats_name_to_update_name)
-
+        # Collect feed dicts for all reward signals.
         for _, reward_signal in self.reward_signals.items():
-            update_dict.update(reward_signal.update_dict)
             feed_dict.update(reward_signal.prepare_update(mini_batch, num_sequences))
             stats_needed.update(reward_signal.stats_name_to_update_name)
-            update_vals = self._execute_model(feed_dict, update_dict)
 
-            for stat_name, update_name in stats_needed.items():
-                update_stats[stat_name] = update_vals[update_name]
+        update_vals = self._execute_model(feed_dict, self.update_dict)
+        for stat_name, update_name in stats_needed.items():
+            update_stats[stat_name] = update_vals[update_name]
         return update_stats
 
     def prepare_update(self, mini_batch, num_sequences):
