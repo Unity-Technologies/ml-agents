@@ -7,9 +7,11 @@ import subprocess
 from typing import *
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.timers import timed, hierarchical_timer
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
+    UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
 )
@@ -48,6 +50,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 30,
+        args: list = [],
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -61,12 +64,13 @@ class UnityEnvironment(BaseUnityEnvironment):
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
+        :list args: Addition Unity command line arguments
         """
 
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-8"
+        self._version_ = "API-9"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
@@ -74,6 +78,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             None
         )  # The process that is started. If None, no process was started
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
+        self.worker_id = worker_id
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -84,7 +89,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics)
+            self.executable_launcher(file_name, docker_training, no_graphics, args)
         else:
             logger.info(
                 "Start training by pressing the Play button in the Unity Editor."
@@ -106,13 +111,13 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
                 "of ML-Agents.".format(self._version_, self._unity_version)
             )
-        self._n_agents = {}
-        self._global_done = None
+        self._n_agents: Dict[str, int] = {}
+        self._global_done: Optional[bool] = None
         self._academy_name = aca_params.name
         self._log_path = aca_params.log_path
-        self._brains = {}
-        self._brain_names = []
-        self._external_brain_names = []
+        self._brains: Dict[str, BrainParameters] = {}
+        self._brain_names: List[str] = []
+        self._external_brain_names: List[str] = []
         for brain_param in aca_params.brain_parameters:
             self._brain_names += [brain_param.brain_name]
             self._brains[brain_param.brain_name] = BrainParameters.from_proto(
@@ -179,7 +184,7 @@ class UnityEnvironment(BaseUnityEnvironment):
     def reset_parameters(self):
         return self._resetParameters
 
-    def executable_launcher(self, file_name, docker_training, no_graphics):
+    def executable_launcher(self, file_name, docker_training, no_graphics, args):
         cwd = os.getcwd()
         file_name = (
             file_name.strip()
@@ -249,10 +254,11 @@ class UnityEnvironment(BaseUnityEnvironment):
                             "--port",
                             str(self.port),
                         ]
+                        + args
                     )
                 else:
                     self.proc1 = subprocess.Popen(
-                        [launch_string, "--port", str(self.port)]
+                        [launch_string, "--port", str(self.port)] + args
                     )
             else:
                 """
@@ -338,7 +344,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 self._generate_reset_input(train_mode, config, custom_reset_parameters)
             )
             if outputs is None:
-                raise KeyboardInterrupt
+                raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             self._global_done = s[1]
@@ -348,6 +354,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
+    @timed
     def step(
         self,
         vector_action=None,
@@ -373,7 +380,18 @@ class UnityEnvironment(BaseUnityEnvironment):
         custom_action = {} if custom_action is None else custom_action
 
         # Check that environment is loaded, and episode is currently running.
-        if self._loaded and not self._global_done and self._global_done is not None:
+        if not self._loaded:
+            raise UnityEnvironmentException("No Unity environment is loaded.")
+        elif self._global_done:
+            raise UnityActionException(
+                "The episode is completed. Reset the environment with 'reset()'"
+            )
+        elif self.global_done is None:
+            raise UnityActionException(
+                "You cannot conduct step without first calling reset. "
+                "Reset the environment with 'reset()'"
+            )
+        else:
             if isinstance(vector_action, self.SINGLE_BRAIN_ACTION_TYPES):
                 if self._num_external_brains == 1:
                     vector_action = {self._external_brain_names[0]: vector_action}
@@ -547,30 +565,19 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                     )
 
-            outputs = self.communicator.exchange(
-                self._generate_step_input(
-                    vector_action, memory, text_action, value, custom_action
-                )
+            step_input = self._generate_step_input(
+                vector_action, memory, text_action, value, custom_action
             )
+            with hierarchical_timer("communicator.exchange"):
+                outputs = self.communicator.exchange(step_input)
             if outputs is None:
-                raise KeyboardInterrupt
+                raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
             self._global_done = state[1]
             for _b in self._external_brain_names:
                 self._n_agents[_b] = len(state[0][_b].agents)
             return state[0]
-        elif not self._loaded:
-            raise UnityEnvironmentException("No Unity environment is loaded.")
-        elif self._global_done:
-            raise UnityActionException(
-                "The episode is completed. Reset the environment with 'reset()'"
-            )
-        elif self.global_done is None:
-            raise UnityActionException(
-                "You cannot conduct step without first calling reset. "
-                "Reset the environment with 'reset()'"
-            )
 
     def close(self):
         """
@@ -607,7 +614,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityRLOutput) -> (AllBrainInfo, bool):
+    def _get_state(self, output: UnityRLOutput) -> Tuple[AllBrainInfo, bool]:
         """
         Collects experience information from all external brains in environment at current step.
         :return: a dictionary of BrainInfo objects.
@@ -617,13 +624,14 @@ class UnityEnvironment(BaseUnityEnvironment):
         for brain_name in output.agentInfos:
             agent_info_list = output.agentInfos[brain_name].value
             _data[brain_name] = BrainInfo.from_agent_proto(
-                agent_info_list, self.brains[brain_name]
+                self.worker_id, agent_info_list, self.brains[brain_name]
             )
         return _data, global_done
 
+    @timed
     def _generate_step_input(
         self, vector_action, memory, text_action, value, custom_action
-    ) -> UnityRLInput:
+    ) -> UnityInput:
         rl_in = UnityRLInput()
         for b in vector_action:
             n_agents = self._n_agents[b]
@@ -647,7 +655,7 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def _generate_reset_input(
         self, training, config, custom_reset_parameters
-    ) -> UnityRLInput:
+    ) -> UnityInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
@@ -668,7 +676,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self.communicator.initialize(inputs).rl_initialization_output
 
     @staticmethod
-    def wrap_unity_input(rl_input: UnityRLInput) -> UnityOutput:
+    def wrap_unity_input(rl_input: UnityRLInput) -> UnityInput:
         result = UnityInput()
         result.rl_input.CopyFrom(rl_input)
         return result

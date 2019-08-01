@@ -1,18 +1,18 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described (https://arxiv.org/abs/1707.06347).
+# Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 import logging
-from collections import deque
+from collections import defaultdict
+from typing import List, Any
 
 import numpy as np
-import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.trainer import Trainer
-
+from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.envs.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -26,18 +26,18 @@ class PPOTrainer(Trainer):
         """
         Responsible for collecting experiences and training PPO model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param reward_buff_cap: Max reward history to track in the reward buffer
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super(PPOTrainer, self).__init__(brain, trainer_parameters, training, run_id)
+        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
         self.param_keys = [
             "batch_size",
             "beta",
             "buffer_size",
             "epsilon",
-            "gamma",
             "hidden_units",
             "lambd",
             "learning_rate",
@@ -51,47 +51,40 @@ class PPOTrainer(Trainer):
             "use_recurrent",
             "summary_path",
             "memory_size",
-            "use_curiosity",
-            "curiosity_strength",
-            "curiosity_enc_size",
             "model_path",
+            "reward_signals",
         ]
-
         self.check_param_keys()
-        self.use_curiosity = bool(trainer_parameters["use_curiosity"])
+
+        # Make sure we have at least one reward_signal
+        if not self.trainer_parameters["reward_signals"]:
+            raise UnityTrainerException(
+                "No reward signals were defined. At least one must be used with {}.".format(
+                    self.__class__.__name__
+                )
+            )
+
         self.step = 0
         self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
-        stats = {
-            "Environment/Cumulative Reward": [],
-            "Environment/Episode Length": [],
-            "Policy/Value Estimate": [],
-            "Policy/Entropy": [],
-            "Losses/Value Loss": [],
-            "Losses/Policy Loss": [],
-            "Policy/Learning Rate": [],
-        }
-        if self.use_curiosity:
-            stats["Losses/Forward Loss"] = []
-            stats["Losses/Inverse Loss"] = []
-            stats["Policy/Curiosity Reward"] = []
-            self.intrinsic_rewards = {}
+        stats = defaultdict(list)
+        # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
+        # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
+        # of what reward signals are actually present.
+        self.collected_rewards = {"environment": {}}
+        for _reward_signal in self.policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = {}
+
         self.stats = stats
 
         self.training_buffer = Buffer()
-        self.cumulative_rewards = {}
-        self._reward_buffer = deque(maxlen=reward_buff_cap)
         self.episode_steps = {}
 
     def __str__(self):
-        return """Hyperparameters for the PPO Trainer of brain {0}: \n{1}""".format(
+        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
+            self.__class__.__name__,
             self.brain_name,
-            "\n".join(
-                [
-                    "\t{0}:\t{1}".format(x, self.trainer_parameters[x])
-                    for x in self.param_keys
-                ]
-            ),
+            self.dict_to_str(self.trainer_parameters, 0),
         )
 
     @property
@@ -117,34 +110,24 @@ class PPOTrainer(Trainer):
         """
         return self.step
 
-    @property
-    def reward_buffer(self):
+    def increment_step(self, n_steps: int) -> None:
         """
-        Returns the reward buffer. The reward buffer contains the cumulative
-        rewards of the most recent episodes completed by agents using this
-        trainer.
-        :return: the reward buffer.
-        """
-        return self._reward_buffer
+        Increment the step count of the trainer
 
-    def increment_step_and_update_last_reward(self):
+        :param n_steps: number of steps to increment the step count by
         """
-        Increment the step count of the trainer and Updates the last reward
-        """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
-            self.policy.update_reward(mean_reward)
-        self.policy.increment_step()
-        self.step = self.policy.get_current_step()
+        self.step = self.policy.increment_step(n_steps)
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
-        Constructs a BrainInfo which contains the most recent previous experiences for all agents info
+        Constructs a BrainInfo which contains the most recent previous experiences for all agents
         which correspond to the agents in a provided next_info.
         :BrainInfo next_info: A t+1 BrainInfo.
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
-        visual_observations = [[]]
+        visual_observations: List[List[Any]] = [
+            []
+        ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
         memories = []
@@ -205,8 +188,8 @@ class PPOTrainer(Trainer):
         self,
         curr_all_info: AllBrainInfo,
         next_all_info: AllBrainInfo,
-        take_action_outputs,
-    ):
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
         """
         Adds experiences to each agent's experience history.
         :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
@@ -215,13 +198,14 @@ class PPOTrainer(Trainer):
         """
         self.trainer_metrics.start_experience_collection_timer()
         if take_action_outputs:
-            self.stats["Policy/Value Estimate"].append(
-                take_action_outputs["value"].mean()
-            )
             self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
             self.stats["Policy/Learning Rate"].append(
                 take_action_outputs["learning_rate"]
             )
+            for name, signal in self.policy.reward_signals.items():
+                self.stats[signal.value_name].append(
+                    np.mean(take_action_outputs["value"][name])
+                )
 
         curr_info = curr_all_info[self.brain_name]
         next_info = next_all_info[self.brain_name]
@@ -237,7 +221,9 @@ class PPOTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        intrinsic_rewards = self.policy.get_intrinsic_rewards(curr_to_use, next_info)
+        tmp_rewards_dict = {}
+        for name, signal in self.policy.reward_signals.items():
+            tmp_rewards_dict[name] = signal.evaluate(curr_to_use, next_info)
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -285,45 +271,55 @@ class PPOTrainer(Trainer):
                             stored_info.action_masks[idx], padding_value=1
                         )
                     a_dist = stored_take_action_outputs["log_probs"]
+                    # value is a dictionary from name of reward to value estimate of the value head
                     value = stored_take_action_outputs["value"]
                     self.training_buffer[agent_id]["actions"].append(actions[idx])
                     self.training_buffer[agent_id]["prev_action"].append(
                         stored_info.previous_vector_actions[idx]
                     )
                     self.training_buffer[agent_id]["masks"].append(1.0)
-                    if self.use_curiosity:
-                        self.training_buffer[agent_id]["rewards"].append(
-                            next_info.rewards[next_idx] + intrinsic_rewards[next_idx]
-                        )
-                    else:
-                        self.training_buffer[agent_id]["rewards"].append(
-                            next_info.rewards[next_idx]
-                        )
-                    self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
-                    self.training_buffer[agent_id]["value_estimates"].append(
-                        value[idx][0]
+                    self.training_buffer[agent_id]["done"].append(
+                        next_info.local_done[next_idx]
                     )
-                    if agent_id not in self.cumulative_rewards:
-                        self.cumulative_rewards[agent_id] = 0
-                    self.cumulative_rewards[agent_id] += next_info.rewards[next_idx]
-                    if self.use_curiosity:
-                        if agent_id not in self.intrinsic_rewards:
-                            self.intrinsic_rewards[agent_id] = 0
-                        self.intrinsic_rewards[agent_id] += intrinsic_rewards[next_idx]
+
+                    for name, reward_result in tmp_rewards_dict.items():
+                        # 0 because we use the scaled reward to train the agent
+                        self.training_buffer[agent_id][
+                            "{}_rewards".format(name)
+                        ].append(reward_result.scaled_reward[next_idx])
+                        self.training_buffer[agent_id][
+                            "{}_value_estimates".format(name)
+                        ].append(value[name][idx][0])
+
+                    self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
+
+                    for name, rewards in self.collected_rewards.items():
+                        if agent_id not in rewards:
+                            rewards[agent_id] = 0
+                        if name == "environment":
+                            # Report the reward from the environment
+                            rewards[agent_id] += np.array(next_info.rewards)[next_idx]
+                        else:
+                            # Report the reward signals
+                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[
+                                next_idx
+                            ]
+
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
-    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+    def process_experiences(
+        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+    ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-        self.trainer_metrics.start_experience_collection_timer()
         info = new_info[self.brain_name]
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
@@ -332,34 +328,51 @@ class PPOTrainer(Trainer):
                 or len(agent_actions) > self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
                 agent_id = info.agents[l]
-                if info.local_done[l] and not info.max_reached[l]:
-                    value_next = 0.0
+                if info.max_reached[l]:
+                    bootstrapping_info = self.training_buffer[agent_id].last_brain_info
+                    idx = bootstrapping_info.agents.index(agent_id)
                 else:
-                    if info.max_reached[l]:
-                        bootstrapping_info = self.training_buffer[
-                            agent_id
-                        ].last_brain_info
-                        idx = bootstrapping_info.agents.index(agent_id)
-                    else:
-                        bootstrapping_info = info
-                        idx = l
-                    value_next = self.policy.get_value_estimate(bootstrapping_info, idx)
+                    bootstrapping_info = info
+                    idx = l
+                value_next = self.policy.get_value_estimates(
+                    bootstrapping_info,
+                    idx,
+                    info.local_done[l] and not info.max_reached[l],
+                )
 
-                self.training_buffer[agent_id]["advantages"].set(
-                    get_gae(
-                        rewards=self.training_buffer[agent_id]["rewards"].get_batch(),
-                        value_estimates=self.training_buffer[agent_id][
-                            "value_estimates"
-                        ].get_batch(),
-                        value_next=value_next,
-                        gamma=self.trainer_parameters["gamma"],
+                tmp_advantages = []
+                tmp_returns = []
+                for name in self.policy.reward_signals:
+                    bootstrap_value = value_next[name]
+
+                    local_rewards = self.training_buffer[agent_id][
+                        "{}_rewards".format(name)
+                    ].get_batch()
+                    local_value_estimates = self.training_buffer[agent_id][
+                        "{}_value_estimates".format(name)
+                    ].get_batch()
+                    local_advantage = get_gae(
+                        rewards=local_rewards,
+                        value_estimates=local_value_estimates,
+                        value_next=bootstrap_value,
+                        gamma=self.policy.reward_signals[name].gamma,
                         lambd=self.trainer_parameters["lambd"],
                     )
-                )
-                self.training_buffer[agent_id]["discounted_returns"].set(
-                    self.training_buffer[agent_id]["advantages"].get_batch()
-                    + self.training_buffer[agent_id]["value_estimates"].get_batch()
-                )
+                    local_return = local_advantage + local_value_estimates
+                    # This is later use as target for the different value estimates
+                    self.training_buffer[agent_id]["{}_returns".format(name)].set(
+                        local_return
+                    )
+                    self.training_buffer[agent_id]["{}_advantage".format(name)].set(
+                        local_advantage
+                    )
+                    tmp_advantages.append(local_advantage)
+                    tmp_returns.append(local_return)
+
+                global_advantages = list(np.mean(np.array(tmp_advantages), axis=0))
+                global_returns = list(np.mean(np.array(tmp_returns), axis=0))
+                self.training_buffer[agent_id]["advantages"].set(global_advantages)
+                self.training_buffer[agent_id]["discounted_returns"].set(global_returns)
 
                 self.training_buffer.append_update_buffer(
                     agent_id,
@@ -369,26 +382,25 @@ class PPOTrainer(Trainer):
 
                 self.training_buffer[agent_id].reset_agent()
                 if info.local_done[l]:
-                    self.cumulative_returns_since_policy_update.append(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Cumulative Reward"].append(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
-                    self.reward_buffer.appendleft(
-                        self.cumulative_rewards.get(agent_id, 0)
-                    )
                     self.stats["Environment/Episode Length"].append(
                         self.episode_steps.get(agent_id, 0)
                     )
-                    self.cumulative_rewards[agent_id] = 0
                     self.episode_steps[agent_id] = 0
-                    if self.use_curiosity:
-                        self.stats["Policy/Curiosity Reward"].append(
-                            self.intrinsic_rewards.get(agent_id, 0)
-                        )
-                        self.intrinsic_rewards[agent_id] = 0
-        self.trainer_metrics.end_experience_collection_timer()
+                    for name, rewards in self.collected_rewards.items():
+                        if name == "environment":
+                            self.cumulative_returns_since_policy_update.append(
+                                rewards.get(agent_id, 0)
+                            )
+                            self.stats["Environment/Cumulative Reward"].append(
+                                rewards.get(agent_id, 0)
+                            )
+                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                            rewards[agent_id] = 0
+                        else:
+                            self.stats[
+                                self.policy.reward_signals[name].stat_name
+                            ].append(rewards.get(agent_id, 0))
+                            rewards[agent_id] = 0
 
     def end_episode(self):
         """
@@ -396,13 +408,11 @@ class PPOTrainer(Trainer):
         Get only called when the academy resets.
         """
         self.training_buffer.reset_local_buffers()
-        for agent_id in self.cumulative_rewards:
-            self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
-        if self.use_curiosity:
-            for agent_id in self.intrinsic_rewards:
-                self.intrinsic_rewards[agent_id] = 0
+        for rewards in self.collected_rewards.values():
+            for agent_id in rewards:
+                rewards[agent_id] = 0
 
     def is_ready_update(self):
         """
@@ -417,6 +427,7 @@ class PPOTrainer(Trainer):
     def update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
+        The reward signal generators must be updated in this method at their own pace.
         """
         self.trainer_metrics.start_policy_update_timer(
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
@@ -426,7 +437,7 @@ class PPOTrainer(Trainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, forward_total, inverse_total = [], [], [], []
+        value_total, policy_total = [], []
         advantages = self.training_buffer.update_buffer["advantages"].get_batch()
         self.training_buffer.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
@@ -445,14 +456,18 @@ class PPOTrainer(Trainer):
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))
-                if self.use_curiosity:
-                    inverse_total.append(run_out["inverse_loss"])
-                    forward_total.append(run_out["forward_loss"])
         self.stats["Losses/Value Loss"].append(np.mean(value_total))
         self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        if self.use_curiosity:
-            self.stats["Losses/Forward Loss"].append(np.mean(forward_total))
-            self.stats["Losses/Inverse Loss"].append(np.mean(inverse_total))
+        for _, reward_signal in self.policy.reward_signals.items():
+            update_stats = reward_signal.update(
+                self.training_buffer.update_buffer, n_sequences
+            )
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
+        if self.policy.bc_module:
+            update_stats = self.policy.bc_module.update()
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
         self.training_buffer.reset_update_buffer()
         self.trainer_metrics.end_policy_update()
 
@@ -483,7 +498,7 @@ def get_gae(rewards, value_estimates, value_next=0.0, gamma=0.99, lambd=0.95):
     :param lambd: GAE weighing factor.
     :return: list of advantage estimates for time-steps t to T.
     """
-    value_estimates = np.asarray(value_estimates.tolist() + [value_next])
+    value_estimates = np.append(value_estimates, value_next)
     delta_t = rewards + gamma * value_estimates[1:] - value_estimates[:-1]
     advantage = discount_rewards(r=delta_t, gamma=gamma * lambd)
     return advantage

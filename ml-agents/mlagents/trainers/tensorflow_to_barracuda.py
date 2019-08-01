@@ -52,7 +52,9 @@ known_classes = {
         id=1,
         rank=2,
         out_shapes=lambda shapes: [
-            [shapes[0][0], 1, 1, shapes[0][1]],  # W
+            [shapes[0][0], 1, 1, shapes[0][1]]
+            if len(shapes[0]) > 1
+            else [1, 1, 1, 1],  # W
             [1, 1, 1, shapes[-1][-1]],  # B
         ],
         patch_data=lambda data: [data[0], data[1]],
@@ -324,9 +326,14 @@ known_patterns = {
             "ConcatV2",
             "Identity",
         ]
-    ): "BasicLSTM",
-    repr([re.compile("^lstm/"), "Reshape", "ConcatV2", "Identity"]): "BasicLSTM",
-    repr(["Reshape", re.compile("^lstm_[a-z]*/"), "Reshape", "ConcatV2"]): "BasicLSTM",
+    ): "BasicLSTMReshapeOut",
+    repr(
+        [re.compile("^lstm/"), "Reshape", "ConcatV2", "Identity"]
+    ): "BasicLSTMReshapeOut",
+    repr(
+        ["Reshape", re.compile("^lstm_[a-z]*/"), "Reshape", "ConcatV2"]
+    ): "BasicLSTMReshapeOut",
+    repr(["Reshape", re.compile("^lstm_[a-z]*/"), "ConcatV2"]): "BasicLSTMConcatOut",
     repr(["Sigmoid", "Mul"]): "Swish",
     repr(["Mul", "Abs", "Mul", "Add"]): "LeakyRelu",
     repr(
@@ -376,7 +383,8 @@ transform_patterns = {
         op="Flatten",
         input=[
             inputs[-1]
-        ],  # take only the last input, assume all other arguments are trivial (like sequence_length==1 always in ML-agents LSTM nets)
+        ],  # take only the last input, assume all other arguments are trivial (like sequence_length==1
+        # always in ML-agents LSTM nets)
     ),
     "Reshape": lambda nodes, inputs, tensors, context: Struct(
         op="Reshape",
@@ -522,7 +530,8 @@ transform_patterns = {
         input=[i for i in inputs]
         + [t.name for t in tensors][1:][
             -2:
-        ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes' (which differs from other Conv layers)
+        ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes'
+        # (which differs from other Conv layers)
         # [-2:] - take only last 2 tensors, this allows to process large patterns with the same code
         padding=get_attr(by_op(nodes, "Conv2DBackpropInput"), "padding"),
         strides=get_attr(by_op(nodes, "Conv2DBackpropInput"), "strides"),
@@ -544,14 +553,18 @@ transform_patterns = {
     "SquaredDifference": lambda nodes, inputs, tensors, _: sqr_diff(
         nodes[-1].name, inputs[0], inputs[1]
     ),
-    "BasicLSTM": lambda nodes, inputs, tensors, context: basic_lstm(
+    "BasicLSTMReshapeOut": lambda nodes, inputs, tensors, context: basic_lstm(
         nodes, inputs, tensors, context, find_type="Reshape"
+    ),
+    "BasicLSTMConcatOut": lambda nodes, inputs, tensors, context: basic_lstm(
+        nodes, inputs, tensors, context, find_type="ConcatV2"
     ),
     "Swish": lambda nodes, inputs, tensors, _: Struct(op="Swish", input=inputs),
     "LeakyRelu": lambda nodes, inputs, tensors, _: Struct(op="LeakyRelu", input=inputs),
     # TODO:'Round'
     # TODO:'Rsqrt'
 }
+
 
 # Debug
 def debug(s):
@@ -783,7 +796,8 @@ def strided_slice(
     end = end.astype(np.int32).tolist()
     strides = strides.astype(np.int32).tolist()
 
-    # StridedSlice range and mask descriptions: https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/strided-slice
+    # StridedSlice range and mask descriptions:
+    #   https://www.tensorflow.org/api_docs/cc/class/tensorflow/ops/strided-slice
     # TODO: I don't think elipsis and newaxis would work together well with current implementation
 
     assert len(begin) == len(end)
@@ -1071,7 +1085,7 @@ def process_layer(layer, context, args):
     else:
         activation = "Linear"
 
-    if not class_name in known_classes:
+    if class_name not in known_classes:
         if class_name in requires_runtime_flag:
             print("SKIP:", class_name, "layer is used only for training")
         else:
@@ -1091,7 +1105,6 @@ def process_layer(layer, context, args):
     auto_pad = get_attr(layer, "padding")  # layer.attr['padding'].s.decode("utf-8")
     pads = get_attr(layer, "pads")
     strides = get_attr(layer, "strides")  # layer.attr['strides'].list.i
-    dilations = get_attr(layer, "dilations")  # layer.attr['dilations'].list.i
     pool_size = get_attr(layer, "ksize")  # layer.attr['ksize'].list.i
     shape = get_attr(layer, "shape")
     starts = get_attr(layer, "starts")
@@ -1105,11 +1118,11 @@ def process_layer(layer, context, args):
     alpha = get_attr(layer, "alpha", default=1)
     beta = get_attr(layer, "beta")
 
-    if activation and not activation in known_activations:
+    if activation and activation not in known_activations:
         print("IGNORED: unknown activation", activation)
-    if auto_pad and not auto_pad in known_paddings:
+    if auto_pad and auto_pad not in known_paddings:
         print("IGNORED: unknown padding", auto_pad)
-    if data_frmt and not data_frmt in supported_data_formats:
+    if data_frmt and data_frmt not in supported_data_formats:
         print("UNSUPPORTED: data format", data_frmt)
 
     o_l.activation = known_activations.get(activation) or 0
@@ -1198,7 +1211,7 @@ def process_layer(layer, context, args):
                 -1 not in input_ranks
             )  # for rank() lambda all input ranks have to be known (not -1)
             rank = rank(input_ranks)
-    if rank == None:
+    if rank is None:
 
         def all_elements_equal(arr):  # http://stackoverflow.com/q/3844948/
             return arr.count(arr[0]) == len(arr)
@@ -1335,7 +1348,8 @@ def process_model(model, args):
                 # filter only inputs that are coming from nodes that are outside this pattern
                 # preserve the order
                 pattern_nodes = [n.name for n in pattern_nodes] + tensor_names
-                # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if nodes_by_name[i] not in pattern_nodes])
+                # inputs_from_outside_pattern = remove_duplicates_from_list([i for i in inputs_to_op_nodes if
+                #   nodes_by_name[i] not in pattern_nodes])
                 inputs_from_outside_pattern = remove_duplicates_from_list(
                     [i for i in inputs_to_op_nodes if i not in pattern_nodes]
                 )
@@ -1496,7 +1510,8 @@ def convert(
     Converts a TensorFlow model into a Barracuda model.
     :param source_file: The TensorFlow Model
     :param target_file: The name of the file the converted model will be saved to
-    :param trim_unused_by_output: The regexp to match output nodes to remain in the model. All other uconnected nodes will be removed.
+    :param trim_unused_by_output: The regexp to match output nodes to remain in the model.
+        All other unconnected nodes will be removed.
     :param verbose: If True, will display debug messages
     :param compress_f16: If true, the float values will be converted to f16
     :return:
@@ -1554,7 +1569,6 @@ def convert(
     o_model.layers = cleanup_layers(o_model.layers)
 
     all_inputs = {i for l in o_model.layers for i in l.inputs}
-    embedded_tensors = {t.name for l in o_model.layers for t in l.tensors}
 
     # Trim
     if trim_unused_by_output:

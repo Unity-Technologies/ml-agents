@@ -26,7 +26,7 @@ namespace MLAgents.InferenceBrain.Utils
         /// <exception cref="NotImplementedException">Multinomial doesn't support integer tensors</exception>
         /// <exception cref="ArgumentException">Issue with tensor shape or type</exception>
         /// <exception cref="ArgumentNullException">At least one of the tensors is not allocated</exception>
-        public void Eval(Tensor src, Tensor dst)
+        public void Eval(TensorProxy src, TensorProxy dst)
         {
             if (src.DataType != typeof(float))
             {
@@ -43,44 +43,33 @@ namespace MLAgents.InferenceBrain.Utils
                 throw new ArgumentNullException();
             }
 
-            float[,] input_data = src.Data as float[,];
-            if (input_data == null)
-            {
-                throw new ArgumentException("Input data is not of the correct shape! Required batch x logits");
-            }
 
-            float[,] output_data = dst.Data as float[,];
-            if (output_data == null)
-            {
-                throw new ArgumentException("Output data is not of the correct shape! Required batch x samples");
-            }
-
-            if (input_data.GetLength(0) != output_data.GetLength(0))
+            if (src.Data.batch != dst.Data.batch)
             {
                 throw new ArgumentException("Batch size for input and output data is different!");
             }
 
-            float[] cdf = new float[input_data.GetLength(1)];
+            float[] cdf = new float[src.Data.channels];
 
-            for (int batch = 0; batch < input_data.GetLength(0); ++batch)
+            for (int batch = 0; batch < src.Data.batch; ++batch)
             {
                 // Find the class maximum
                 float maxProb = float.NegativeInfinity;
-                for (int cls = 0; cls < input_data.GetLength(1); ++cls)
+                for (int cls = 0; cls < src.Data.channels; ++cls)
                 {
-                    maxProb = Mathf.Max(input_data[batch, cls], maxProb);
+                    maxProb = Mathf.Max(src.Data[batch, cls], maxProb);
                 }
                 
                 // Sum the log probabilities and compute CDF
                 float sumProb = 0.0f;
-                for (int cls = 0; cls < input_data.GetLength(1); ++cls)
+                for (int cls = 0; cls < src.Data.channels; ++cls)
                 {
-                    sumProb += Mathf.Exp(input_data[batch, cls] - maxProb);
+                    sumProb += Mathf.Exp(src.Data[batch, cls] - maxProb);
                     cdf[cls] = sumProb;
                 }
                 
                 // Generate the samples
-                for (int sample = 0; sample < output_data.GetLength(1); ++sample)
+                for (int sample = 0; sample < dst.Data.channels; ++sample)
                 {
                     float p = (float)m_random.NextDouble() * sumProb;
                     int cls = 0;
@@ -89,7 +78,7 @@ namespace MLAgents.InferenceBrain.Utils
                         ++cls;
                     }
 
-                    output_data[batch, sample] = cls;
+                    dst.Data[batch, sample] = cls;
                 }
 
             }

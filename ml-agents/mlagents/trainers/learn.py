@@ -9,19 +9,22 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Optional, Callable
+from typing import Any, Callable, Dict, Optional
 
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.envs import UnityEnvironment
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.sampler_class import SamplerManager
+from mlagents.envs.exception import UnityEnvironmentException, SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_environment import SubprocessUnityEnvironment
+from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 
-def run_training(sub_id: int, run_seed: int, run_options, process_queue):
+def run_training(
+    sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
+) -> None:
     """
     Launches training session.
     :param process_queue: Queue used to send signal back to main.
@@ -52,6 +55,10 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     fast_simulation = not bool(run_options["--slow"])
     no_graphics = run_options["--no-graphics"]
     trainer_config_path = run_options["<trainer-config-path>"]
+    sampler_file_path = (
+        run_options["--sampler"] if run_options["--sampler"] != "None" else None
+    )
+
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
         model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)
@@ -81,8 +88,11 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         run_seed,
         base_port + (sub_id * num_envs),
     )
-    env = SubprocessUnityEnvironment(env_factory, num_envs)
+    env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
+    sampler_manager, resampling_interval = create_sampler_manager(
+        sampler_file_path, env.reset_parameters
+    )
 
     # Create controller and begin training.
     tc = TrainerController(
@@ -95,9 +105,10 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
         train_model,
         keep_checkpoints,
         lesson,
-        env.external_brains,
         run_seed,
         fast_simulation,
+        sampler_manager,
+        resampling_interval,
     )
 
     # Signal that environment has been launched.
@@ -107,8 +118,30 @@ def run_training(sub_id: int, run_seed: int, run_options, process_queue):
     tc.start_learning(env, trainer_config)
 
 
+def create_sampler_manager(sampler_file_path, env_reset_params):
+    sampler_config = None
+    resample_interval = None
+    if sampler_file_path is not None:
+        sampler_config = load_config(sampler_file_path)
+        if ("resampling-interval") in sampler_config:
+            # Filter arguments that do not exist in the environment
+            resample_interval = sampler_config.pop("resampling-interval")
+            if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
+                raise SamplerException(
+                    "Specified resampling-interval is not valid. Please provide"
+                    " a positive integer value for resampling-interval"
+                )
+        else:
+            raise SamplerException(
+                "Resampling interval was not specified in the sampler file."
+                " Please specify it with the 'resampling-interval' key in the sampler config file."
+            )
+    sampler_manager = SamplerManager(sampler_config)
+    return sampler_manager, resample_interval
+
+
 def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: BaseUnityEnvironment
+    curriculum_folder: Optional[str], env: SubprocessEnvManager
 ) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None
@@ -151,7 +184,7 @@ def prepare_for_docker_run(docker_target_name, env_path):
     return env_path
 
 
-def load_config(trainer_config_path):
+def load_config(trainer_config_path: str) -> Dict[str, Any]:
     try:
         with open(trainer_config_path) as data_file:
             trainer_config = yaml.safe_load(data_file)
@@ -233,7 +266,7 @@ def main():
 
         """
         )
-    except:
+    except Exception:
         print("\n\n\tUnity Technologies\n")
 
     _USAGE = """
@@ -242,22 +275,23 @@ def main():
       mlagents-learn --help
 
     Options:
-      --env=<file>               Name of the Unity executable [default: None].
-      --curriculum=<directory>   Curriculum json directory for environment [default: None].
-      --keep-checkpoints=<n>     How many model checkpoints to keep [default: 5].
-      --lesson=<n>               Start learning from this lesson [default: 0].
-      --load                     Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>            The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>             Number of concurrent training sessions [default: 1].
-      --save-freq=<n>            Frequency at which to save model [default: 50000].
-      --seed=<n>                 Random seed used for training [default: -1].
-      --slow                     Whether to run the game at training speed [default: False].
-      --train                    Whether to train model, or only run inference [default: False].
-      --base-port=<n>            Base port for environment communication [default: 5005].
-      --num-envs=<n>             Number of parallel environments to use for training [default: 1]
-      --docker-target-name=<dt>  Docker volume to store training-specific files [default: None].
-      --no-graphics              Whether to run the environment in no-graphics mode [default: False].
-      --debug                    Whether to run ML-Agents in debug mode with detailed logging [default: False].
+      --env=<file>                Name of the Unity executable [default: None].
+      --curriculum=<directory>    Curriculum json directory for environment [default: None].
+      --sampler=<file>            Reset parameter yaml file for environment [default: None].
+      --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
+      --lesson=<n>                Start learning from this lesson [default: 0].
+      --load                      Whether to load the model or randomly initialize [default: False].
+      --run-id=<path>             The directory name for model and summary statistics [default: ppo].
+      --num-runs=<n>              Number of concurrent training sessions [default: 1].
+      --save-freq=<n>             Frequency at which to save model [default: 50000].
+      --seed=<n>                  Random seed used for training [default: -1].
+      --slow                      Whether to run the game at training speed [default: False].
+      --train                     Whether to train model, or only run inference [default: False].
+      --base-port=<n>             Base port for environment communication [default: 5005].
+      --num-envs=<n>              Number of parallel environments to use for training [default: 1]
+      --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
+      --no-graphics               Whether to run the environment in no-graphics mode [default: False].
+      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
     """
 
     options = docopt(_USAGE)

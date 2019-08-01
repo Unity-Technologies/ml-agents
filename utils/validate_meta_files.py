@@ -33,7 +33,9 @@ def main():
                 num_matched += 1
 
     if unmatched:
-        raise Exception(f"Mismatch between expected files and their .meta files: {sorted(unmatched)}")
+        raise Exception(
+            f"Mismatch between expected files and their .meta files: {sorted(unmatched)}"
+        )
 
     print(f"Found {num_matched} correctly matched files")
 
