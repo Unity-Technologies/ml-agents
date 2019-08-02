@@ -204,9 +204,6 @@ class SACPolicy(TFPolicy):
             feed_dict[self.model.next_memory_in] = next_mem_in[:, : self.m_size // 4]
         feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()
         run_out = self._execute_model(feed_dict, self.update_dict)
-        # for key in feed_dict.keys():
-        #     print(np.isnan(feed_dict[key]).any())
-        #     print(key)
         if update_target:
             self.sess.run(self.model.target_update_op)
         return run_out
@@ -258,20 +255,4 @@ class SACPolicy(TFPolicy):
             text=None,
             value=mean_values,
             outputs=run_out,
-        )
-
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        return self.sess.run(self.model.last_reward)
-
-    def update_reward(self, new_reward):
-        """
-        Updates reward value for policy.
-        :param new_reward: New reward to save.
-        """
-        self.sess.run(
-            self.model.update_reward, feed_dict={self.model.new_reward: new_reward}
         )

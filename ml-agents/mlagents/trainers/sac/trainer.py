@@ -175,16 +175,6 @@ class SACTrainer(Trainer):
         with open(filename, "wb") as file_object:
             self.training_buffer.update_buffer.load_from_file(file_object)
 
-    def increment_step_and_update_last_reward(self):
-        """
-        Increment the step count of the trainer and Updates the last reward
-        """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
-            self.policy.update_reward(mean_reward)
-        self.policy.increment_step()
-        self.step = self.policy.get_current_step()
-
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
         Constructs a BrainInfo which contains the most recent previous experiences for all agents
