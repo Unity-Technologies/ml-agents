@@ -67,12 +67,13 @@ class BCTrainer(Trainer):
         """
         return self.policy.get_current_step()
 
-    def increment_step(self):
+    def increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
+
+        :param n_steps: number of steps to increment the step count by
         """
-        self.policy.increment_step()
-        return
+        self.step = self.policy.increment_step(n_steps)
 
     def add_experiences(
         self,
