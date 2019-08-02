@@ -13,7 +13,7 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.trainer import RLTrainer, UnityTrainerException
-from mlagents.trainers.reward_signals import RewardSignalResult
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.envs.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
