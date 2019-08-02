@@ -19,6 +19,14 @@ class UnityEnvironmentException(UnityException):
     pass
 
 
+class UnityCommunicationException(UnityException):
+    """
+    Related to errors with the communicator.
+    """
+
+    pass
+
+
 class UnityActionException(UnityException):
     """
     Related to errors with sending actions.

@@ -139,5 +139,6 @@ class PPOModel(LearningModel):
         )
 
     def create_ppo_optimizer(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-        self.update_batch = optimizer.minimize(self.loss)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        self.grads = self.optimizer.compute_gradients(self.loss)
+        self.update_batch = self.optimizer.minimize(self.loss)

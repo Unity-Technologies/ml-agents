@@ -52,7 +52,9 @@ known_classes = {
         id=1,
         rank=2,
         out_shapes=lambda shapes: [
-            [shapes[0][0], 1, 1, shapes[0][1]],  # W
+            [shapes[0][0], 1, 1, shapes[0][1]]
+            if len(shapes[0]) > 1
+            else [1, 1, 1, 1],  # W
             [1, 1, 1, shapes[-1][-1]],  # B
         ],
         patch_data=lambda data: [data[0], data[1]],
@@ -324,9 +326,14 @@ known_patterns = {
             "ConcatV2",
             "Identity",
         ]
-    ): "BasicLSTM",
-    repr([re.compile("^lstm/"), "Reshape", "ConcatV2", "Identity"]): "BasicLSTM",
-    repr(["Reshape", re.compile("^lstm_[a-z]*/"), "Reshape", "ConcatV2"]): "BasicLSTM",
+    ): "BasicLSTMReshapeOut",
+    repr(
+        [re.compile("^lstm/"), "Reshape", "ConcatV2", "Identity"]
+    ): "BasicLSTMReshapeOut",
+    repr(
+        ["Reshape", re.compile("^lstm_[a-z]*/"), "Reshape", "ConcatV2"]
+    ): "BasicLSTMReshapeOut",
+    repr(["Reshape", re.compile("^lstm_[a-z]*/"), "ConcatV2"]): "BasicLSTMConcatOut",
     repr(["Sigmoid", "Mul"]): "Swish",
     repr(["Mul", "Abs", "Mul", "Add"]): "LeakyRelu",
     repr(
@@ -546,8 +553,11 @@ transform_patterns = {
     "SquaredDifference": lambda nodes, inputs, tensors, _: sqr_diff(
         nodes[-1].name, inputs[0], inputs[1]
     ),
-    "BasicLSTM": lambda nodes, inputs, tensors, context: basic_lstm(
+    "BasicLSTMReshapeOut": lambda nodes, inputs, tensors, context: basic_lstm(
         nodes, inputs, tensors, context, find_type="Reshape"
+    ),
+    "BasicLSTMConcatOut": lambda nodes, inputs, tensors, context: basic_lstm(
+        nodes, inputs, tensors, context, find_type="ConcatV2"
     ),
     "Swish": lambda nodes, inputs, tensors, _: Struct(op="Swish", input=inputs),
     "LeakyRelu": lambda nodes, inputs, tensors, _: Struct(op="LeakyRelu", input=inputs),
