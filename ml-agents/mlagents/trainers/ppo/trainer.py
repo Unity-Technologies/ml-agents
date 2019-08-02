@@ -459,12 +459,12 @@ class PPOTrainer(Trainer):
         )
         num_epoch = self.trainer_parameters["num_epoch"]
         for _ in range(num_epoch):
-            self.training_buffer.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            self.training_buffer.update_buffer.shuffle(
+                sequence_length=self.policy.sequence_length
+            )
             buffer = self.training_buffer.update_buffer
             for l in range(
-                0,
-                len(self.training_buffer.update_buffer["actions"]),
-                batch_size
+                0, len(self.training_buffer.update_buffer["actions"]), batch_size
             ):
                 run_out = self.policy.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences

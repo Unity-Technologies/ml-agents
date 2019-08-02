@@ -164,7 +164,7 @@ class PPOPolicy(TFPolicy):
             self.model.sequence_length: self.sequence_length,
             self.model.mask_input: mini_batch["masks"],
             self.model.advantage: mini_batch["advantages"],
-            self.model.all_old_log_probs: mini_batch["action_probs"]
+            self.model.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
             feed_dict[model.returns_holders[name]] = mini_batch[
@@ -189,11 +189,12 @@ class PPOPolicy(TFPolicy):
             for i, _ in enumerate(self.model.visual_in):
                 feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
         if self.use_recurrent:
-            mem_in = [mini_batch["memory"][i] for i in range(0, \
-                len(mini_batch["memory"]), self.sequence_length)]
+            mem_in = [
+                mini_batch["memory"][i]
+                for i in range(0, len(mini_batch["memory"]), self.sequence_length)
+            ]
             feed_dict[model.memory_in] = mem_in
         return feed_dict
-
 
     def get_value_estimates(
         self, brain_info: BrainInfo, idx: int, done: bool
@@ -222,7 +223,9 @@ class PPOPolicy(TFPolicy):
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = [brain_info.previous_vector_actions[idx]]
+            feed_dict[self.model.prev_action] = [
+                brain_info.previous_vector_actions[idx]
+            ]
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
