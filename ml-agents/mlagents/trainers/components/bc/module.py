@@ -138,10 +138,6 @@ class BCModule:
                 )
             )
         if self.policy.model.brain.vector_observation_space_size > 0:
-            apparent_obs_size = (
-                self.policy.model.brain.vector_observation_space_size
-                * self.policy.model.brain.num_stacked_vector_observations
-            )
             feed_dict[self.policy.model.vector_in] = mini_batch_demo["vector_obs"]
         for i, _ in enumerate(self.policy.model.visual_in):
             feed_dict[self.policy.model.visual_in[i]] = mini_batch_demo[
