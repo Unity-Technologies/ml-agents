@@ -115,7 +115,6 @@ class SACPolicy(TFPolicy):
             self.model.batch_size: len(brain_info.vector_observations),
             self.model.sequence_length: 1,
         }
-        # epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[
@@ -126,10 +125,6 @@ class SACPolicy(TFPolicy):
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = brain_info.memories
-        # if self.use_continuous_act:
-        #     epsilon = np.random.normal(
-        #         size=(len(brain_info.vector_observations), self.model.act_size[0])
-        #     )
 
         feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
@@ -207,32 +202,6 @@ class SACPolicy(TFPolicy):
         if update_target:
             self.sess.run(self.model.target_update_op)
         return run_out
-
-    def get_value_estimates(self, brain_info, idx):
-        """
-        Generates value estimates for bootstrapping.
-        :param brain_info: BrainInfo to be used for bootstrapping.
-        :param idx: Index in BrainInfo of agent.
-        :return: The value estimate dictionary with key being the name of the reward signal and the value the
-        corresponding value estimate.
-        """
-        feed_dict = {self.model.batch_size: 1, self.model.sequence_length: 1}
-        for i in range(len(brain_info.visual_observations)):
-            feed_dict[self.model.visual_in[i]] = [
-                brain_info.visual_observations[i][idx]
-            ]
-        if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
-        if self.use_recurrent:
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
-        if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[
-                idx
-            ].reshape([-1, len(self.model.act_size)])
-        value_estimate = self.sess.run(self.model.value, feed_dict)
-        return value_estimate
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
         """

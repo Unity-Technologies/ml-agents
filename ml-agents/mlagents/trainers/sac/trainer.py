@@ -370,29 +370,6 @@ class SACTrainer(Trainer):
                 or len(agent_actions) >= self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
                 agent_id = info.agents[l]
-                # value_next = self.policy.get_value_estimates(bootstrapping_info, idx)
-                # if info.local_done[l] and not info.max_reached[l]:
-                #     value_next = 0.0
-                # tmp_advantages = []
-                # tmp_returns = []
-                # for idx, name in enumerate(self.policy.reward_signals.keys()):
-                #     bootstrap_value = value_next
-
-                #     local_rewards = self.training_buffer[agent_id][
-                #             '{}_rewards'.format(name)].get_batch()
-                #     local_value_estimates = self.training_buffer[agent_id][
-                #             '{}_value_estimates'.format(name)].get_batch()
-                # local_return = get_discounted_returns(
-                #     rewards=local_rewards,
-                #     gamma=self.gamma_parameters[name],
-                #     lambd=self.trainer_parameters['lambd'])
-                # # This is later use as target for the different value estimates
-                # self.training_buffer[agent_id]['{}_returns'.format(name)].set(local_return)
-                # # self.training_buffer[agent_id]['{}_advantage'.format(name)].set(local_advantage)
-                # tmp_returns.append(local_return)
-
-                # global_returns = list(np.mean(np.array(tmp_returns), axis=0))
-                # self.training_buffer[agent_id]['discounted_returns'].set(global_returns)
 
                 self.training_buffer.append_update_buffer(
                     agent_id,
