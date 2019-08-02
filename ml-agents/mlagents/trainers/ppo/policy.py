@@ -163,7 +163,9 @@ class PPOPolicy(TFPolicy):
         feed_dict = {}
         stats_needed = {}
         update_stats = {}
-        feed_dict.update(self.prepare_update(mini_batch, num_sequences))
+        feed_dict.update(
+            self.construct_feed_dict(self.model, mini_batch, num_sequences)
+        )
         stats_needed.update(self.stats_name_to_update_name)
         # Collect feed dicts for all reward signals.
         for _, reward_signal in self.reward_signals.items():
@@ -174,17 +176,6 @@ class PPOPolicy(TFPolicy):
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
         return update_stats
-
-    def prepare_update(self, mini_batch, num_sequences):
-        """
-        Prepares for update of model using buffer.
-        :param num_sequences: Number of trajectories in batch.
-        :param mini_batch: Experience batch.
-        :return: Feed_dict for update.
-        """
-        feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
-        run_out = self._execute_model(feed_dict, self.update_dict)
-        return run_out
 
     def construct_feed_dict(self, model, mini_batch, num_sequences):
         feed_dict = {
