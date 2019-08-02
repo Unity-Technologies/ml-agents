@@ -7,6 +7,7 @@ import numpy as np
 from collections import deque
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
+from mlagents.envs.timers import set_gauge
 from mlagents.trainers import TrainerMetrics
 from mlagents.trainers.tf_policy import Policy
 from mlagents.envs import BrainParameters
@@ -238,6 +239,7 @@ class Trainer(object):
                         is_training,
                     )
                 )
+                set_gauge(f"{self.brain_name}.mean_reward", mean_reward)
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(

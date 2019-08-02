@@ -2,6 +2,7 @@ from typing import *
 import cloudpickle
 
 from mlagents.envs import UnityEnvironment
+from mlagents.envs.exception import UnityCommunicationException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
@@ -47,14 +48,14 @@ class UnityEnvWorker:
             cmd = EnvironmentCommand(name, payload)
             self.conn.send(cmd)
         except (BrokenPipeError, EOFError):
-            raise KeyboardInterrupt
+            raise UnityCommunicationException("UnityEnvironment worker: send failed.")
 
     def recv(self) -> EnvironmentResponse:
         try:
             response: EnvironmentResponse = self.conn.recv()
             return response
         except (BrokenPipeError, EOFError):
-            raise KeyboardInterrupt
+            raise UnityCommunicationException("UnityEnvironment worker: recv failed.")
 
     def close(self):
         try:
@@ -99,6 +100,7 @@ def worker(
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
+                # TODO get gauges from the workers and merge them in the main process too.
                 step_response = StepResponse(all_brain_info, get_timer_root())
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
@@ -115,8 +117,9 @@ def worker(
                 _send_response("global_done", env.global_done)
             elif cmd.name == "close":
                 break
-    except KeyboardInterrupt:
-        print("UnityEnvironment worker: keyboard interrupt")
+    except (KeyboardInterrupt, UnityCommunicationException):
+        print("UnityEnvironment worker: environment stopping.")
+        step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:
         step_queue.close()
         env.close()
@@ -171,6 +174,10 @@ class SubprocessEnvManager(EnvManager):
             try:
                 while True:
                     step = self.step_queue.get_nowait()
+                    if step.name == "env_close":
+                        raise UnityCommunicationException(
+                            "At least one of the environments has closed."
+                        )
                     self.env_workers[step.worker_id].waiting = False
                     if step.worker_id not in step_workers:
                         worker_steps.append(step)

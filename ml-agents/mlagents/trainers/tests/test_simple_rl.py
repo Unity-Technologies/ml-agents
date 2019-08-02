@@ -1,6 +1,8 @@
-import yaml
 import math
+import random
 import tempfile
+import pytest
+import yaml
 from typing import Any, Dict
 
 
@@ -31,21 +33,25 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     it reaches -1. The position is incremented by the action amount (clamped to [-step_size, step_size]).
     """
 
-    def __init__(self):
+    def __init__(self, use_discrete):
+        super().__init__()
+        self.discrete = use_discrete
         self._brains: Dict[str, BrainParameters] = {}
         self._brains[BRAIN_NAME] = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
             num_stacked_vector_observations=1,
             camera_resolutions=[],
-            vector_action_space_size=[1],
+            vector_action_space_size=[2] if use_discrete else [1],
             vector_action_descriptions=["moveDirection"],
-            vector_action_space_type=1,  # "continuous"
+            vector_action_space_type=0 if use_discrete else 1,
         )
 
         # state
         self.position = 0.0
         self.step_count = 0
+        self.random = random.Random(str(self._brains))
+        self.goal = random.choice([-1, 1])
 
     def step(
         self,
@@ -56,21 +62,23 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     ) -> AllBrainInfo:
         assert vector_action is not None
 
-        delta = vector_action[BRAIN_NAME][0][0]
+        if self.discrete:
+            act = vector_action[BRAIN_NAME][0][0]
+            delta = 1 if act else -1
+        else:
+            delta = vector_action[BRAIN_NAME][0][0]
         delta = clamp(delta, -STEP_SIZE, STEP_SIZE)
         self.position += delta
         self.position = clamp(self.position, -1, 1)
         self.step_count += 1
         done = self.position >= 1.0 or self.position <= -1.0
         if done:
-            reward = SUCCESS_REWARD * self.position
+            reward = SUCCESS_REWARD * self.position * self.goal
         else:
             reward = -TIME_PENALTY
 
         agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.position] * OBS_SIZE,
-            reward=reward,
-            done=done,
+            stacked_vector_observation=[self.goal] * OBS_SIZE, reward=reward, done=done
         )
 
         if done:
@@ -85,6 +93,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     def _reset_agent(self):
         self.position = 0.0
         self.step_count = 0
+        self.goal = random.choice([-1, 1])
 
     def reset(
         self,
@@ -95,7 +104,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         self._reset_agent()
 
         agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.position] * OBS_SIZE,
+            stacked_vector_observation=[self.goal] * OBS_SIZE,
             done=False,
             max_step_reached=False,
         )
@@ -121,7 +130,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         pass
 
 
-def test_simple():
+def _check_environment_trains(env):
     config = """
         default:
             trainer: ppo
@@ -162,12 +171,12 @@ def test_simple():
             lesson=None,
             training_seed=1337,
             fast_simulation=True,
+            multi_gpu=False,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
         )
 
         # Begin training
-        env = Simple1DEnvironment()
         env_manager = SimpleEnvManager(env)
         trainer_config = yaml.safe_load(config)
         tc.start_learning(env_manager, trainer_config)
@@ -175,3 +184,9 @@ def test_simple():
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
             assert mean_reward > 0.99
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_rl(use_discrete):
+    env = Simple1DEnvironment(use_discrete=use_discrete)
+    _check_environment_trains(env)

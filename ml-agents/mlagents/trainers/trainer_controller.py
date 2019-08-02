@@ -14,7 +14,10 @@ from time import time
 from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.envs.exception import (
+    UnityEnvironmentException,
+    UnityCommunicationException,
+)
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
@@ -40,6 +43,7 @@ class TrainerController(object):
         lesson: Optional[int],
         training_seed: int,
         fast_simulation: bool,
+        multi_gpu: bool,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
     ):
@@ -73,6 +77,7 @@ class TrainerController(object):
         self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
+        self.multi_gpu = multi_gpu
         np.random.seed(self.seed)
         tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
@@ -201,6 +206,7 @@ class TrainerController(object):
                     load=self.load_model,
                     seed=self.seed,
                     run_id=self.run_id,
+                    multi_gpu=self.multi_gpu,
                 )
                 self.trainer_metrics[brain_name] = self.trainers[
                     brain_name
@@ -302,15 +308,15 @@ class TrainerController(object):
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, UnityCommunicationException):
             if self.train_model:
                 self._save_model_when_interrupted()
             pass
-        env_manager.close()
         if self.train_model:
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
+        env_manager.close()
 
     def end_trainer_episodes(
         self, env: BaseUnityEnvironment, lessons_incremented: Dict[str, bool]
