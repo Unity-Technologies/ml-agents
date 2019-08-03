@@ -19,6 +19,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
+from mlagents.envs.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -293,6 +294,8 @@ def test_sac_simple_env(dummy_config):
             lesson=None,
             training_seed=1337,
             fast_simulation=True,
+            sampler_manager=SamplerManager(None),
+            resampling_interval=None,
         )
 
         # Begin training
