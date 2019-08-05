@@ -68,11 +68,6 @@ class SACTrainer(Trainer):
             if "train_interval" in trainer_parameters
             else 1
         )
-        self.reward_signal_train_interval = (
-            trainer_parameters["reward_signals"]["train_interval"]
-            if "train_interval" in trainer_parameters["reward_signals"]
-            else 1
-        )
         self.reward_signal_updates_per_train = (
             trainer_parameters["reward_signals"]["updates_per_train"]
             if "updates_per_train" in trainer_parameters["reward_signals"]
@@ -430,7 +425,6 @@ class SACTrainer(Trainer):
         if self.step % self.train_interval == 0:
             LOGGER.debug("Updating SAC policy at step {}".format(self.step))
             self.update_sac_policy()
-        if self.step % self.reward_signal_train_interval == 0:
             LOGGER.debug("Updating reward signals at step {}".format(self.step))
             self.update_reward_signals()
 
