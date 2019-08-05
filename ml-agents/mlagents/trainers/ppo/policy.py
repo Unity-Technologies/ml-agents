@@ -39,8 +39,6 @@ class PPOPolicy(TFPolicy):
                 self.reward_signals[reward_signal] = create_reward_signal(
                     self, reward_signal, config
                 )
-                # Add reward signal update to update_dict
-                self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
             # Create pretrainer if needed
             if "pretraining" in trainer_params:
@@ -86,6 +84,11 @@ class PPOPolicy(TFPolicy):
             "policy_loss": self.total_policy_loss,
             "update_batch": self.model.update_batch,
         }
+
+        for _, reward_signal in self.reward_signals.items():
+            # Add reward signal update to update_dict
+            self.update_dict.update(reward_signal.update_dict)
+
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
