@@ -129,12 +129,12 @@ class TFPolicy(Policy):
             outputs=run_out,
         )
 
-    def prepare_update(self, mini_batch, num_sequences):
+    def update(self, mini_batch, num_sequences):
         """
-        Prepares for update of the policy.
+        Performs update of the policy.
         :param num_sequences: Number of experience trajectories in batch.
         :param mini_batch: Batch of experiences.
-        :return: feed_dict for update.
+        :return: Results of update.
         """
         raise UnityPolicyException("The update function was not implemented.")
 
