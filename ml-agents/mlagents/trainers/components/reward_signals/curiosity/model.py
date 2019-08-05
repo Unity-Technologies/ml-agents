@@ -19,6 +19,7 @@ class CuriosityModel(object):
         self.encoding_size = encoding_size
         self.policy_model = policy_model
         self.next_visual_in: List[tf.Tensor] = []
+        self.visual_in: List[tf.Tensor] = []
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
         self.create_inverse_model(encoded_state, encoded_next_state)
         self.create_forward_model(encoded_state, encoded_next_state)
@@ -35,10 +36,16 @@ class CuriosityModel(object):
         encoded_next_state_list = []
 
         if self.policy_model.vis_obs_size > 0:
-            self.next_visual_in = []
             visual_encoders = []
             next_visual_encoders = []
             for i in range(self.policy_model.vis_obs_size):
+                # Create input ops for next (t+1) visual observations.
+                visual_input = LearningModel.create_visual_input(
+                    self.policy_model.brain.camera_resolutions[i],
+                    name="curiosity_visual_observation_" + str(i),
+                )
+                self.visual_in.append(visual_input)
+
                 # Create input ops for next (t+1) visual observations.
                 next_visual_input = LearningModel.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
@@ -49,7 +56,7 @@ class CuriosityModel(object):
                 # Create the encoder ops for current and next visual input.
                 # Note that these encoders are siamese.
                 encoded_visual = self.policy_model.create_visual_observation_encoder(
-                    self.policy_model.visual_in[i],
+                    self.visual_in[i],
                     self.encoding_size,
                     LearningModel.swish,
                     1,
@@ -83,8 +90,14 @@ class CuriosityModel(object):
                 name="next_vector_observation",
             )
 
+            self.vector_in = tf.placeholder(
+                shape=[None, self.policy_model.vec_obs_size],
+                dtype=tf.float32,
+                name="curiosity_vector_observation",
+            )
+
             encoded_vector_obs = self.policy_model.create_vector_observation_encoder(
-                self.policy_model.vector_in,
+                self.vector_in,
                 self.encoding_size,
                 LearningModel.swish,
                 2,
@@ -117,18 +130,44 @@ class CuriosityModel(object):
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=LearningModel.swish)
+
+        # Input for masks
+        self.mask_input = tf.placeholder(
+            shape=[None], dtype=tf.float32, name="curiosity_masks"
+        )
+        self.mask = tf.cast(self.mask_input, tf.int32)
         if self.policy_model.brain.vector_action_space_type == "continuous":
+            self.selected_actions = tf.placeholder(
+                shape=[None, self.policy_model.act_size[0]],
+                dtype=tf.float32,
+                name="curiosity_selected_actions",
+            )
+
             pred_action = tf.layers.dense(
                 hidden, self.policy_model.act_size[0], activation=None
             )
             squared_difference = tf.reduce_sum(
-                tf.squared_difference(pred_action, self.policy_model.selected_actions),
-                axis=1,
+                tf.squared_difference(pred_action, self.selected_actions), axis=1
             )
             self.inverse_loss = tf.reduce_mean(
-                tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1]
+                tf.dynamic_partition(squared_difference, self.mask, 2)[1]
             )
         else:
+            self.action_holder = tf.placeholder(
+                shape=[None, len(self.policy_model.act_size)],
+                dtype=tf.int32,
+                name="curiosity_action_holder",
+            )
+
+            action_oh = tf.concat(
+                [
+                    tf.one_hot(self.action_holder[:, i], self.policy_model.act_size[i])
+                    for i in range(len(self.policy_model.act_size))
+                ],
+                axis=1,
+            )
+
+            self.selected_actions = tf.stop_gradient(action_oh)
             pred_action = tf.concat(
                 [
                     tf.layers.dense(
@@ -139,11 +178,10 @@ class CuriosityModel(object):
                 axis=1,
             )
             cross_entropy = tf.reduce_sum(
-                -tf.log(pred_action + 1e-10) * self.policy_model.selected_actions,
-                axis=1,
+                -tf.log(pred_action + 1e-10) * self.selected_actions, axis=1
             )
             self.inverse_loss = tf.reduce_mean(
-                tf.dynamic_partition(cross_entropy, self.policy_model.mask, 2)[1]
+                tf.dynamic_partition(cross_entropy, self.mask, 2)[1]
             )
 
     def create_forward_model(
@@ -155,9 +193,7 @@ class CuriosityModel(object):
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
-        combined_input = tf.concat(
-            [encoded_state, self.policy_model.selected_actions], axis=1
-        )
+        combined_input = tf.concat([encoded_state, self.selected_actions], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=LearningModel.swish)
         pred_next_state = tf.layers.dense(
             hidden,
@@ -172,7 +208,7 @@ class CuriosityModel(object):
         )
         self.intrinsic_reward = squared_difference
         self.forward_loss = tf.reduce_mean(
-            tf.dynamic_partition(squared_difference, self.policy_model.mask, 2)[1]
+            tf.dynamic_partition(squared_difference, self.mask, 2)[1]
         )
 
     def create_loss(self, learning_rate: float) -> None:
