@@ -76,8 +76,8 @@ class PPOPolicy(TFPolicy):
             and not load
         ):
             self.inference_dict["update_mean"] = self.model.update_normalization
-
-        self.total_policy_loss = self.model.policy_loss
+        # Use absolute value for cleaner reporting
+        self.total_policy_loss = self.model.abs_policy_loss
 
         self.update_dict = {
             "value_loss": self.model.value_loss,
