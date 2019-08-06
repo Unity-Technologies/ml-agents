@@ -67,19 +67,24 @@ class GAILRewardSignal(RewardSignal):
     ) -> RewardSignalResult:
         if len(current_info.agents) == 0:
             return []
-        feed_dict: Dict[tf.Tensor, Any] = {}
+
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.policy.model.batch_size: len(next_info.vector_observations),
+            self.policy.model.sequence_length: 1,
+        }
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [0]
-        for i, _ in enumerate(current_info.visual_observations):
-            feed_dict[self.model.visual_in[i]] = current_info.visual_observations[i]
-        if self.policy.use_vec_obs:
-            feed_dict[self.model.vector_in] = current_info.vector_observations
 
+        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
         feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
         if self.policy.use_continuous_act:
-            feed_dict[self.model.action_in_policy] = next_info.previous_vector_actions
+            feed_dict[
+                self.policy.model.selected_actions
+            ] = next_info.previous_vector_actions
         else:
-            feed_dict[self.model.action_in_policy] = next_info.previous_vector_actions
+            feed_dict[
+                self.policy.model.action_holder
+            ] = next_info.previous_vector_actions
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -129,14 +134,14 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.model.use_noise] = [1]
 
         if self.policy.use_continuous_act:
-            feed_dict[self.model.action_in_policy] = mini_batch_policy[
+            feed_dict[self.policy.model.selected_actions] = mini_batch_policy[
                 "actions"
             ].reshape([-1, self.policy.model.act_size[0]])
             feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
                 [-1, self.policy.model.act_size[0]]
             )
         else:
-            feed_dict[self.model.action_in_policy] = mini_batch_policy[
+            feed_dict[self.policy.model.action_holder] = mini_batch_policy[
                 "actions"
             ].reshape([-1, len(self.policy.model.act_size)])
             feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
@@ -144,15 +149,15 @@ class GAILRewardSignal(RewardSignal):
             )
 
         if self.policy.use_vis_obs > 0:
-            for i in range(len(self.model.visual_in)):
+            for i in range(len(self.policy.model.visual_in)):
                 policy_obs = mini_batch_policy["visual_obs%d" % i]
                 if self.policy.sequence_length > 1 and self.policy.use_recurrent:
                     (_batch, _seq, _w, _h, _c) = policy_obs.shape
-                    feed_dict[self.model.visual_in[i]] = policy_obs.reshape(
+                    feed_dict[self.policy.model.visual_in[i]] = policy_obs.reshape(
                         [-1, _w, _h, _c]
                     )
                 else:
-                    feed_dict[self.model.visual_in[i]] = policy_obs
+                    feed_dict[self.policy.model.visual_in[i]] = policy_obs
 
                 demo_obs = mini_batch_demo["visual_obs%d" % i]
                 if self.policy.sequence_length > 1 and self.policy.use_recurrent:
@@ -163,9 +168,9 @@ class GAILRewardSignal(RewardSignal):
                 else:
                     feed_dict[self.model.expert_visual_in[i]] = demo_obs
         if self.policy.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch_policy["vector_obs"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
+            feed_dict[self.policy.model.vector_in] = mini_batch_policy[
+                "vector_obs"
+            ].reshape([-1, self.policy.vec_obs_size])
             feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"].reshape(
                 [-1, self.policy.vec_obs_size]
             )
