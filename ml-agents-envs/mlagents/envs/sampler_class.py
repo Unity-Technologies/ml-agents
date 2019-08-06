@@ -19,13 +19,14 @@ class UniformSampler(Sampler):
     """
 
     def __init__(
-        self, min_value: Union[int, float], max_value: Union[int, float], **kwargs
+        self, min_value: Union[int, float], max_value: Union[int, float], seed: Optional[int], **kwargs
     ) -> None:
         self.min_value = min_value
         self.max_value = max_value
+        self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
-        return np.random.uniform(self.min_value, self.max_value)
+        return self.random_state.uniform(self.min_value, self.max_value)
 
 
 class MultiRangeUniformSampler(Sampler):
@@ -36,19 +37,20 @@ class MultiRangeUniformSampler(Sampler):
     it proceeds to pick a value uniformly in that range.
     """
 
-    def __init__(self, intervals: List[List[Union[int, float]]], **kwargs) -> None:
+    def __init__(self, intervals: List[List[Union[int, float]]], seed: Optional[int] = None, **kwargs) -> None:
         self.intervals = intervals
         # Measure the length of the intervals
         interval_lengths = [abs(x[1] - x[0]) for x in self.intervals]
         cum_interval_length = sum(interval_lengths)
         # Assign weights to an interval proportionate to the interval size
         self.interval_weights = [x / cum_interval_length for x in interval_lengths]
+        self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
         cur_min, cur_max = self.intervals[
-            np.random.choice(len(self.intervals), p=self.interval_weights)
+            self.random_state.choice(len(self.intervals), p=self.interval_weights)
         ]
-        return np.random.uniform(cur_min, cur_max)
+        return self.random_state.uniform(cur_min, cur_max)
 
 
 class GaussianSampler(Sampler):
@@ -58,13 +60,14 @@ class GaussianSampler(Sampler):
     """
 
     def __init__(
-        self, mean: Union[float, int], st_dev: Union[float, int], **kwargs
+        self, mean: Union[float, int], st_dev: Union[float, int], seed=Optional[int], **kwargs
     ) -> None:
         self.mean = mean
         self.st_dev = st_dev
+        self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
-        return np.random.normal(self.mean, self.st_dev)
+        return self.random_state.normal(self.mean, self.st_dev)
 
 
 class SamplerFactory:
@@ -84,7 +87,7 @@ class SamplerFactory:
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
-    def init_sampler_class(name: str, params: Dict[str, Any]):
+    def init_sampler_class(name: str, params: Dict[str, Any], seed):
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
@@ -92,6 +95,7 @@ class SamplerFactory:
                 " associated to your sampler in the SamplerFactory."
             )
         sampler_cls = SamplerFactory.NAME_TO_CLASS[name]
+        params["seed"] = seed
         try:
             return sampler_cls(**params)
         except TypeError:
@@ -103,7 +107,7 @@ class SamplerFactory:
 
 
 class SamplerManager:
-    def __init__(self, reset_param_dict: Dict[str, Any]) -> None:
+    def __init__(self, reset_param_dict: Dict[str, Any], seed=Optional[int]) -> None:
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers: Dict[str, Sampler] = {}
@@ -116,7 +120,7 @@ class SamplerManager:
                 )
             sampler_name = cur_param_dict.pop("sampler-type")
             param_sampler = SamplerFactory.init_sampler_class(
-                sampler_name, cur_param_dict
+                sampler_name, cur_param_dict, seed
             )
 
             self.samplers[param_name] = param_sampler
