@@ -105,7 +105,7 @@ class SamplerFactory:
     @staticmethod
     def init_sampler_class(
         name: str, params: Dict[str, Any], seed: Optional[int] = None
-    ) -> None:
+    ) -> Sampler:
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
