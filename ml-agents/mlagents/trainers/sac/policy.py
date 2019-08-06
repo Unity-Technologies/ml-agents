@@ -55,18 +55,18 @@ class SACPolicy(TFPolicy):
                 if type(rsignal) is dict:
                     self.reward_signals[key] = create_reward_signal(self, key, rsignal)
 
-            # BC trainer is not a reward signal
-            # if "demo_aided" in trainer_params:
-            #     self.bc_trainer = BCTrainer(
-            #         self,
-            #         float(
-            #             trainer_params["demo_aided"]["demo_strength"]
-            #             * trainer_params["learning_rate"]
-            #         ),
-            #         trainer_params["demo_aided"]["demo_path"],
-            #         trainer_params["demo_aided"]["demo_steps"],
-            #         trainer_params["batch_size"],
-            #     )
+            # Create pretrainer if needed
+            if "pretraining" in trainer_params:
+                BCModule.check_config(trainer_params["pretraining"])
+                self.bc_module = BCModule(
+                    self,
+                    policy_learning_rate=trainer_params["learning_rate"],
+                    default_batch_size=trainer_params["batch_size"],
+                    default_num_epoch=1,
+                    **trainer_params["pretraining"],
+                )
+            else:
+                self.bc_module = None
 
         if load:
             self._load_graph()

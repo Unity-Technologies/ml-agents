@@ -488,9 +488,10 @@ class SACTrainer(Trainer):
         self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
         self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
 
-        # if self.use_bc:
-        #     _bc_loss = self.policy.bc_trainer.update(self.training_buffer)
-        #     self.stats["Losses/BC Loss"].append(_bc_loss)
+        if self.policy.bc_module:
+            update_stats = self.policy.bc_module.update()
+            for stat, val in update_stats.items():
+                self.stats[stat].append(val)
 
         self.trainer_metrics.end_policy_update()
 
