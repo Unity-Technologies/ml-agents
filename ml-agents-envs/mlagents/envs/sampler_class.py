@@ -23,6 +23,7 @@ class UniformSampler(Sampler):
     ) -> None:
         self.min_value = min_value
         self.max_value = max_value
+        # Draw from random state to allow for consistent reset parameter draw for a seed
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
@@ -44,6 +45,7 @@ class MultiRangeUniformSampler(Sampler):
         cum_interval_length = sum(interval_lengths)
         # Assign weights to an interval proportionate to the interval size
         self.interval_weights = [x / cum_interval_length for x in interval_lengths]
+        # Draw from random state to allow for consistent reset parameter draw for a seed
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
@@ -64,6 +66,7 @@ class GaussianSampler(Sampler):
     ) -> None:
         self.mean = mean
         self.st_dev = st_dev
+        # Draw from random state to allow for consistent reset parameter draw for a seed
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
