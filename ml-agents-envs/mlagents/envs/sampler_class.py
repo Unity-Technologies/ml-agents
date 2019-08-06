@@ -22,7 +22,7 @@ class UniformSampler(Sampler):
         self,
         min_value: Union[int, float],
         max_value: Union[int, float],
-        seed:Optional[int]=None,
+        seed: Optional[int] = None,
         **kwargs
     ) -> None:
         self.min_value = min_value
@@ -45,7 +45,7 @@ class MultiRangeUniformSampler(Sampler):
     def __init__(
         self,
         intervals: List[List[Union[int, float]]],
-        seed:Optional[int]=None,
+        seed: Optional[int] = None,
         **kwargs
     ) -> None:
         self.intervals = intervals
@@ -74,7 +74,7 @@ class GaussianSampler(Sampler):
         self,
         mean: Union[float, int],
         st_dev: Union[float, int],
-        seed:Optional[int]=None,
+        seed: Optional[int] = None,
         **kwargs
     ) -> None:
         self.mean = mean
@@ -104,7 +104,7 @@ class SamplerFactory:
 
     @staticmethod
     def init_sampler_class(
-        name: str, params: Dict[str, Any], seed:Optional[int]=None
+        name: str, params: Dict[str, Any], seed: Optional[int] = None
     ) -> None:
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
@@ -126,7 +126,7 @@ class SamplerFactory:
 
 class SamplerManager:
     def __init__(
-        self, reset_param_dict: Dict[str, Any], seed:Optional[int]=None
+        self, reset_param_dict: Dict[str, Any], seed: Optional[int] = None
     ) -> None:
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
