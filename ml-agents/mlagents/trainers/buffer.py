@@ -286,7 +286,6 @@ class Buffer(dict):
         """
         Truncates the update buffer to a certain length.
 
-        The skew makes a bigger truncation each time, hopefully requiring less truncations overall.
         This can be slow for large buffers. We compensate by cutting further than we need to, so that
         we're not truncating at each update.
         param: max_length: The length at which to truncate the buffer.
