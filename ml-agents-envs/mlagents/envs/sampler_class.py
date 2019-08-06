@@ -19,7 +19,11 @@ class UniformSampler(Sampler):
     """
 
     def __init__(
-        self, min_value: Union[int, float], max_value: Union[int, float], seed:Optional[int]=None, **kwargs
+        self,
+        min_value: Union[int, float],
+        max_value: Union[int, float],
+        seed:Optional[int]=None,
+        **kwargs
     ) -> None:
         self.min_value = min_value
         self.max_value = max_value
@@ -38,7 +42,12 @@ class MultiRangeUniformSampler(Sampler):
     it proceeds to pick a value uniformly in that range.
     """
 
-    def __init__(self, intervals: List[List[Union[int, float]]], seed:Optional[int]=None, **kwargs) -> None:
+    def __init__(
+        self,
+        intervals: List[List[Union[int, float]]],
+        seed:Optional[int]=None,
+        **kwargs
+    ) -> None:
         self.intervals = intervals
         # Measure the length of the intervals
         interval_lengths = [abs(x[1] - x[0]) for x in self.intervals]
@@ -62,7 +71,11 @@ class GaussianSampler(Sampler):
     """
 
     def __init__(
-        self, mean: Union[float, int], st_dev: Union[float, int], seed:Optional[int]=None, **kwargs
+        self,
+        mean: Union[float, int],
+        st_dev: Union[float, int],
+        seed:Optional[int]=None,
+        **kwargs
     ) -> None:
         self.mean = mean
         self.st_dev = st_dev
@@ -90,7 +103,9 @@ class SamplerFactory:
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
-    def init_sampler_class(name: str, params: Dict[str, Any], seed:Optional[int]=None):
+    def init_sampler_class(
+        name: str, params: Dict[str, Any], seed:Optional[int]=None
+    ) -> None:
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
@@ -110,7 +125,9 @@ class SamplerFactory:
 
 
 class SamplerManager:
-    def __init__(self, reset_param_dict: Dict[str, Any], seed:Optional[int]=None) -> None:
+    def __init__(
+        self, reset_param_dict: Dict[str, Any], seed:Optional[int]=None
+    ) -> None:
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers: Dict[str, Sampler] = {}
