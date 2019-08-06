@@ -63,14 +63,28 @@ class GAILModel(object):
 
         if self.policy_model.brain.vector_action_space_type == "continuous":
             action_length = self.policy_model.act_size[0]
+            self.action_in_policy = tf.placeholder(
+                shape=[None, action_length], dtype=tf.float32
+            )
             self.action_in_expert = tf.placeholder(
                 shape=[None, action_length], dtype=tf.float32
             )
             self.expert_action = tf.identity(self.action_in_expert)
+            self.policy_action = tf.identity(self.action_in_policy)
         else:
             action_length = len(self.policy_model.act_size)
+            self.action_in_policy = tf.placeholder(
+                shape=[None, action_length], dtype=tf.int32
+            )
             self.action_in_expert = tf.placeholder(
                 shape=[None, action_length], dtype=tf.int32
+            )
+            self.policy_action = tf.concat(
+                [
+                    tf.one_hot(self.action_in_policy[:, i], act_size)
+                    for i, act_size in enumerate(self.policy_model.act_size)
+                ],
+                axis=1,
             )
             self.expert_action = tf.concat(
                 [
@@ -84,6 +98,9 @@ class GAILModel(object):
         encoded_expert_list = []
 
         if self.policy_model.vec_obs_size > 0:
+            self.vector_in = tf.placeholder(
+                shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32
+            )
             self.obs_in_expert = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size], dtype=tf.float32
             )
@@ -92,26 +109,33 @@ class GAILModel(object):
                     self.policy_model.normalize_vector_obs(self.obs_in_expert)
                 )
                 encoded_policy_list.append(
-                    self.policy_model.normalize_vector_obs(self.policy_model.vector_in)
+                    self.policy_model.normalize_vector_obs(self.vector_in)
                 )
             else:
                 encoded_expert_list.append(self.obs_in_expert)
-                encoded_policy_list.append(self.policy_model.vector_in)
+                encoded_policy_list.append(self.vector_in)
 
         if self.policy_model.vis_obs_size > 0:
             self.expert_visual_in: List[tf.Tensor] = []
+            self.visual_in: List[tf.Tensor] = []
             visual_policy_encoders = []
             visual_expert_encoders = []
             for i in range(self.policy_model.vis_obs_size):
-                # Create input ops for next (t+1) visual observations.
+                # Create input ops for visual observations.
                 visual_input = self.policy_model.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
-                    name="visual_observation_" + str(i),
+                    name="gail_visual_observation_" + str(i),
                 )
-                self.expert_visual_in.append(visual_input)
+                self.visual_in.append(visual_input)
+                # Create input ops for next (t+1) visual observations.
+                ex_visual_input = self.policy_model.create_visual_input(
+                    self.policy_model.brain.camera_resolutions[i],
+                    name="expert_visual_observation_" + str(i),
+                )
+                self.expert_visual_in.append(ex_visual_input)
 
                 encoded_policy_visual = self.policy_model.create_visual_observation_encoder(
-                    self.policy_model.visual_in[i],
+                    self.visual_in[i],
                     self.encoding_size,
                     LearningModel.swish,
                     1,
@@ -217,10 +241,7 @@ class GAILModel(object):
             self.encoded_expert, self.expert_action, self.done_expert, reuse=False
         )
         self.policy_estimate, self.z_mean_policy, _ = self.create_encoder(
-            self.encoded_policy,
-            self.policy_model.selected_actions,
-            self.done_policy,
-            reuse=True,
+            self.encoded_policy, self.policy_action, self.done_policy, reuse=True
         )
         self.discriminator_score = tf.reshape(
             self.policy_estimate, [-1], name="GAIL_reward"
@@ -233,11 +254,7 @@ class GAILModel(object):
         for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
         expert = [self.encoded_expert, self.expert_action, self.done_expert]
-        policy = [
-            self.encoded_policy,
-            self.policy_model.selected_actions,
-            self.done_policy,
-        ]
+        policy = [self.encoded_policy, self.policy_action, self.done_policy]
         interp = []
         for _expert_in, _policy_in in zip(expert, policy):
             alpha = tf.random_uniform(tf.shape(_expert_in))

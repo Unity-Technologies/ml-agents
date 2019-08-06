@@ -57,7 +57,6 @@ class CuriosityRewardSignal(RewardSignal):
             return []
 
         feed_dict = {}
-
         for i, _ in enumerate(current_info.visual_observations):
             feed_dict[self.model.visual_in[i]] = current_info.visual_observations[i]
         if self.policy.use_vec_obs:
