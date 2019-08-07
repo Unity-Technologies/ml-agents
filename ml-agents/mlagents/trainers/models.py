@@ -10,6 +10,8 @@ logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
+EPSILON = 1e-7
+
 
 class EncoderType(Enum):
     SIMPLE = "simple"
@@ -409,7 +411,7 @@ class LearningModel(object):
             for i in range(len(action_size))
         ]
         raw_probs = [
-            tf.multiply(tf.nn.softmax(branches_logits[k]) + 1.0e-7, branch_masks[k])
+            tf.multiply(tf.nn.softmax(branches_logits[k]) + EPSILON, branch_masks[k])
             for k in range(len(action_size))
         ]
         normalized_probs = [
@@ -418,7 +420,7 @@ class LearningModel(object):
         ]
         output = tf.concat(
             [
-                tf.multinomial(tf.log(normalized_probs[k] + 1.0e-7), 1)
+                tf.multinomial(tf.log(normalized_probs[k] + EPSILON), 1)
                 for k in range(len(action_size))
             ],
             axis=1,
@@ -427,7 +429,10 @@ class LearningModel(object):
             output,
             tf.concat([normalized_probs[k] for k in range(len(action_size))], axis=1),
             tf.concat(
-                [tf.log(normalized_probs[k] + 1.0e-7) for k in range(len(action_size))],
+                [
+                    tf.log(normalized_probs[k] + EPSILON)
+                    for k in range(len(action_size))
+                ],
                 axis=1,
             ),
         )
@@ -438,7 +443,7 @@ class LearningModel(object):
         h_size: int,
         num_layers: int,
         vis_encode_type: EncoderType = EncoderType.SIMPLE,
-        stream_scopes: List[str] = [],
+        stream_scopes: List[str] = None,
     ) -> tf.Tensor:
         """
         Creates encoding stream for observations.
