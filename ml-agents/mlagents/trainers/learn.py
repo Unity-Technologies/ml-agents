@@ -118,7 +118,7 @@ def run_training(
     tc.start_learning(env, trainer_config)
 
 
-def create_sampler_manager(sampler_file_path, env_reset_params, run_seed = None):
+def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
     sampler_config = None
     resample_interval = None
     if sampler_file_path is not None:
