@@ -65,7 +65,7 @@ def curiosity_dummy_config():
 
 VECTOR_ACTION_SPACE = [2]
 VECTOR_OBS_SPACE = 8
-DISCRETE_ACTION_SPACE = [2]
+DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 20
 NUM_AGENTS = 12
 
@@ -89,6 +89,7 @@ def create_ppo_policy_mock(
                 DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
             ),
             discrete=use_discrete,
+            num_discrete_branches=len(DISCRETE_ACTION_SPACE),
         )
     else:
         mock_brain = mb.create_mock_brainparams(
@@ -106,6 +107,7 @@ def create_ppo_policy_mock(
                 DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
             ),
             discrete=use_discrete,
+            num_discrete_branches=len(DISCRETE_ACTION_SPACE),
         )
     mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
     env = mock_env()
@@ -153,16 +155,7 @@ def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_dc(mock_env, dummy_config, gail_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, gail_dummy_config, False, True, False
-    )
-    reward_signal_eval(env, policy, "gail")
-    reward_signal_update(env, policy, "gail")
-
-
-@mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_visual(mock_env, dummy_config, gail_dummy_config):
+def test_gail_dc_visual(mock_env, dummy_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
     )

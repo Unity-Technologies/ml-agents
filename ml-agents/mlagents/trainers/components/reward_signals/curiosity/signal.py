@@ -104,46 +104,26 @@ class CuriosityRewardSignal(RewardSignal):
         feed_dict = {
             self.policy.model.batch_size: num_sequences,
             self.policy.model.sequence_length: self.policy.sequence_length,
-            self.policy.model.mask_input: mini_batch["masks"].flatten(),
-            self.policy.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            self.policy.model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(self.policy.model.act_size)]
-            ),
+            self.policy.model.mask_input: mini_batch["masks"],
+            self.policy.model.advantage: mini_batch["advantages"],
+            self.policy.model.all_old_log_probs: mini_batch["action_probs"],
         }
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"].reshape(
-                [-1, self.policy.model.act_size[0]]
-            )
+            feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"].reshape(
-                [-1, len(self.policy.model.act_size)]
-            )
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
-            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
         if self.policy.model.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.model.visual_in):
-                _obs = mini_batch["visual_obs%d" % i]
-                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.policy.model.visual_in[i]] = _obs.reshape(
-                        [-1, _w, _h, _c]
-                    )
-                else:
-                    feed_dict[self.policy.model.visual_in[i]] = _obs
+                feed_dict[self.policy.model.visual_in[i]] = mini_batch[
+                    "visual_obs%d" % i
+                ]
             for i, _ in enumerate(self.policy.model.visual_in):
-                _obs = mini_batch["next_visual_obs%d" % i]
-                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
-                        [-1, _w, _h, _c]
-                    )
-                else:
-                    feed_dict[self.model.next_visual_in[i]] = _obs
+                feed_dict[self.model.next_visual_in[i]] = mini_batch[
+                    "next_visual_obs%d" % i
+                ]
 
         self.has_updated = True
         return feed_dict

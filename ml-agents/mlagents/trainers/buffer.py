@@ -75,69 +75,47 @@ class Buffer(dict):
                 sequential=True gives [[0,a],[b,c],[d,e]]. If sequential=False gives
                 [[a,b],[b,c],[c,d],[d,e]]
                 """
-                if training_length == 1:
-                    # When the training length is 1, the method returns a list of elements,
-                    # not a list of sequences of elements.
+                if sequential:
+                    # The sequences will not have overlapping elements (this involves padding)
+                    leftover = len(self) % training_length
+                    # leftover is the number of elements in the first sequence (this sequence might need 0 padding)
                     if batch_size is None:
-                        # If batch_size is None : All the elements of the AgentBufferField are returned.
-                        return np.array(self)
-                    else:
-                        # return the batch_size last elements
-                        if batch_size > len(self):
-                            raise BufferException("Batch size requested is too large")
-                        return np.array(self[-batch_size:])
-                else:
-                    # The training_length is not None, the method returns a list of SEQUENCES of elements
-                    if not sequential:
-                        # The sequences will have overlapping elements
-                        if batch_size is None:
-                            # retrieve the maximum number of elements
-                            batch_size = len(self) - training_length + 1
-                        # The number of sequences of length training_length taken from a list of len(self) elements
-                        # with overlapping is equal to batch_size
-                        if (len(self) - training_length + 1) < batch_size:
-                            raise BufferException(
-                                "The batch size and training length requested for get_batch where"
-                                " too large given the current number of data points."
-                            )
-                        tmp_list = []
-                        for end in range(len(self) - batch_size + 1, len(self) + 1):
-                            tmp_list += [np.array(self[end - training_length : end])]
-                        return np.array(tmp_list)
-                    if sequential:
-                        # The sequences will not have overlapping elements (this involves padding)
-                        leftover = len(self) % training_length
-                        # leftover is the number of elements in the first sequence (this sequence might need 0 padding)
-                        if batch_size is None:
-                            # retrieve the maximum number of elements
-                            batch_size = len(self) // training_length + 1 * (
-                                leftover != 0
-                            )
-                        # The maximum number of sequences taken from a list of length len(self) without overlapping
-                        # with padding is equal to batch_size
-                        if batch_size > (
-                            len(self) // training_length + 1 * (leftover != 0)
-                        ):
-                            raise BufferException(
-                                "The batch size and training length requested for get_batch where"
-                                " too large given the current number of data points."
-                            )
-                        tmp_list = []
+                        # retrieve the maximum number of elements
+                        batch_size = len(self) // training_length + 1 * (leftover != 0)
+                    # The maximum number of sequences taken from a list of length len(self) without overlapping
+                    # with padding is equal to batch_size
+                    if batch_size > (
+                        len(self) // training_length + 1 * (leftover != 0)
+                    ):
+                        raise BufferException(
+                            "The batch size and training length requested for get_batch where"
+                            " too large given the current number of data points."
+                        )
+                    if batch_size * training_length > len(self):
                         padding = np.array(self[-1]) * self.padding_value
-                        # The padding is made with zeros and its shape is given by the shape of the last element
-                        for end in range(
-                            len(self), len(self) % training_length, -training_length
-                        )[:batch_size]:
-                            tmp_list += [np.array(self[end - training_length : end])]
-                        if (leftover != 0) and (len(tmp_list) < batch_size):
-                            tmp_list += [
-                                np.array(
-                                    [padding] * (training_length - leftover)
-                                    + self[:leftover]
-                                )
-                            ]
-                        tmp_list.reverse()
-                        return np.array(tmp_list)
+                        return np.array(
+                            [padding] * (training_length - leftover) + self[:]
+                        )
+                    else:
+                        return np.array(
+                            self[len(self) - batch_size * training_length :]
+                        )
+                else:
+                    # The sequences will have overlapping elements
+                    if batch_size is None:
+                        # retrieve the maximum number of elements
+                        batch_size = len(self) - training_length + 1
+                    # The number of sequences of length training_length taken from a list of len(self) elements
+                    # with overlapping is equal to batch_size
+                    if (len(self) - training_length + 1) < batch_size:
+                        raise BufferException(
+                            "The batch size and training length requested for get_batch where"
+                            " too large given the current number of data points."
+                        )
+                    tmp_list = []
+                    for end in range(len(self) - batch_size + 1, len(self) + 1):
+                        tmp_list += self[end - training_length : end]
+                    return np.array(tmp_list)
 
             def reset_field(self):
                 """
@@ -187,9 +165,8 @@ class Buffer(dict):
                 length = len(self[key])
             return True
 
-        def shuffle(self, key_list=None):
+        def shuffle(self, sequence_length, key_list=None):
             """
-            Shuffles the fields in key_list in a consistent way: The reordering will
             Shuffles the fields in key_list in a consistent way: The reordering will
             be the same across fields.
             :param key_list: The fields that must be shuffled.
@@ -200,10 +177,13 @@ class Buffer(dict):
                 raise BufferException(
                     "Unable to shuffle if the fields are not of same length"
                 )
-            s = np.arange(len(self[key_list[0]]))
+            s = np.arange(len(self[key_list[0]]) // sequence_length)
             np.random.shuffle(s)
             for key in key_list:
-                self[key][:] = [self[key][i] for i in s]
+                tmp = []
+                for i in s:
+                    tmp += self[key][i * sequence_length : (i + 1) * sequence_length]
+                self[key][:] = tmp
 
         def make_mini_batch(self, start, end):
             """
@@ -214,7 +194,7 @@ class Buffer(dict):
             """
             mini_batch = {}
             for key in self:
-                mini_batch[key] = np.array(self[key][start:end])
+                mini_batch[key] = self[key][start:end]
             return mini_batch
 
     def __init__(self):

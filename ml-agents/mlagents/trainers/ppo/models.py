@@ -88,8 +88,9 @@ class PPOModel(LearningModel):
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value
         self.advantage = tf.placeholder(
-            shape=[None, 1], dtype=tf.float32, name="advantages"
+            shape=[None], dtype=tf.float32, name="advantages"
         )
+        advantage = tf.expand_dims(self.advantage, -1)
         self.learning_rate = tf.train.polynomial_decay(
             lr, self.global_step, max_step, 1e-10, power=1.0
         )
@@ -121,10 +122,10 @@ class PPOModel(LearningModel):
         self.value_loss = tf.reduce_mean(value_losses)
 
         r_theta = tf.exp(probs - old_probs)
-        p_opt_a = r_theta * self.advantage
+        p_opt_a = r_theta * advantage
         p_opt_b = (
             tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon)
-            * self.advantage
+            * advantage
         )
         self.policy_loss = -tf.reduce_mean(
             tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1]

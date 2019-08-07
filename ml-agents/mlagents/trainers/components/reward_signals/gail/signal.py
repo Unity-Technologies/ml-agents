@@ -126,47 +126,27 @@ class GAILRewardSignal(RewardSignal):
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.model.done_expert: mini_batch_demo["done"].reshape([-1, 1]),
-            self.model.done_policy: mini_batch_policy["done"].reshape([-1, 1]),
+            self.model.done_expert_holder: mini_batch_demo["done"],
+            self.model.done_policy_holder: mini_batch_policy["done"],
         }
 
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [1]
 
+        feed_dict[self.model.action_in_expert] = np.array(mini_batch_demo["actions"])
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.selected_actions] = mini_batch_policy[
-                "actions"
-            ].reshape([-1, self.policy.model.act_size[0]])
-            feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
-                [-1, self.policy.model.act_size[0]]
-            )
+            feed_dict[self.policy.model.selected_actions] = mini_batch_policy["actions"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch_policy[
-                "actions"
-            ].reshape([-1, len(self.policy.model.act_size)])
-            feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
-                [-1, len(self.policy.model.act_size)]
-            )
+            feed_dict[self.policy.model.action_holder] = mini_batch_policy["actions"]
 
         if self.policy.use_vis_obs > 0:
             for i in range(len(self.policy.model.visual_in)):
-                policy_obs = mini_batch_policy["visual_obs%d" % i]
-                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = policy_obs.shape
-                    feed_dict[self.policy.model.visual_in[i]] = policy_obs.reshape(
-                        [-1, _w, _h, _c]
-                    )
-                else:
-                    feed_dict[self.policy.model.visual_in[i]] = policy_obs
-
-                demo_obs = mini_batch_demo["visual_obs%d" % i]
-                if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = demo_obs.shape
-                    feed_dict[self.model.expert_visual_in[i]] = demo_obs.reshape(
-                        [-1, _w, _h, _c]
-                    )
-                else:
-                    feed_dict[self.model.expert_visual_in[i]] = demo_obs
+                feed_dict[self.policy.model.visual_in[i]] = mini_batch_policy[
+                    "visual_obs%d" % i
+                ]
+                feed_dict[self.model.expert_visual_in[i]] = mini_batch_demo[
+                    "visual_obs%d" % i
+                ]
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch_policy[
                 "vector_obs"

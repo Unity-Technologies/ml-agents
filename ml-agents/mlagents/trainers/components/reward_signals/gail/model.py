@@ -58,8 +58,10 @@ class GAILModel(object):
         """
         Creates the input layers for the discriminator
         """
-        self.done_expert = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-        self.done_policy = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+        self.done_expert_holder = tf.placeholder(shape=[None], dtype=tf.float32)
+        self.done_policy_holder = tf.placeholder(shape=[None], dtype=tf.float32)
+        self.done_expert = tf.expand_dims(self.done_expert_holder, -1)
+        self.done_policy = tf.expand_dims(self.done_policy_holder, -1)
 
         if self.policy_model.brain.vector_action_space_type == "continuous":
             action_length = self.policy_model.act_size[0]
