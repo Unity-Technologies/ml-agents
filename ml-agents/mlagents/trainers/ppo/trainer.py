@@ -436,9 +436,7 @@ class PPOTrainer(Trainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = len(self.training_buffer.update_buffer["actions"])
-        return size_of_buffer > max(
-            int(self.trainer_parameters["buffer_size"] / self.policy.sequence_length), 1
-        )
+        return size_of_buffer > self.trainer_parameters["buffer_size"]
 
     def update_policy(self):
         """
@@ -450,6 +448,7 @@ class PPOTrainer(Trainer):
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
         self.cumulative_returns_since_policy_update = []
+        batch_size = self.trainer_parameters["batch_size"]
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
@@ -460,15 +459,15 @@ class PPOTrainer(Trainer):
         )
         num_epoch = self.trainer_parameters["num_epoch"]
         for _ in range(num_epoch):
-            self.training_buffer.update_buffer.shuffle()
+            self.training_buffer.update_buffer.shuffle(
+                sequence_length=self.policy.sequence_length
+            )
             buffer = self.training_buffer.update_buffer
             for l in range(
-                len(self.training_buffer.update_buffer["actions"]) // n_sequences
+                0, len(self.training_buffer.update_buffer["actions"]), batch_size
             ):
-                start = l * n_sequences
-                end = (l + 1) * n_sequences
                 run_out = self.policy.update(
-                    buffer.make_mini_batch(start, end), n_sequences
+                    buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))

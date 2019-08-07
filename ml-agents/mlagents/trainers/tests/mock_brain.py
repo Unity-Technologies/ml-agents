@@ -39,6 +39,7 @@ def create_mock_braininfo(
     num_vis_observations=0,
     num_vector_acts=2,
     discrete=False,
+    num_discrete_branches=1,
 ):
     """
     Creates a mock BrainInfo with observations. Imitates constant
@@ -60,7 +61,7 @@ def create_mock_braininfo(
     )
     if discrete:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [1 * [0.5]]
+            num_agents * [num_discrete_branches * [0.5]]
         )
         mock_braininfo.return_value.action_masks = np.array(
             num_agents * [num_vector_acts * [1.0]]
