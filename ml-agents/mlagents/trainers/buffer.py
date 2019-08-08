@@ -201,22 +201,23 @@ class Buffer(dict):
                 mini_batch[key] = self[key][start:end]
             return mini_batch
 
-        def sample_mini_batch(self, batch_size):
+        def sample_mini_batch(self, batch_size, sequence_length=1):
             """
             Creates a mini-batch from a random start and end.
-            : param batch_size: number of elements to withdraw.
+            :param batch_size: number of elements to withdraw.
+            :param sequence_length: Length of sequences to sample.
+                Number of sequences to sample will be batch_size/sequence_length.
             """
-            mini_batch_lists = defaultdict(list)
+            num_seq_to_sample = batch_size // sequence_length
             mini_batch = Buffer.AgentBuffer()
-            idxes = [
-                random.randint(0, len(self["actions"]) - 1) for _ in range(batch_size)
+            buff_len = len(next(iter(self.values())))
+            start_idxes = [
+                random.randint(0, (buff_len - 1) // sequence_length) * sequence_length
+                for _ in range(num_seq_to_sample)
             ]
-
-            for i in idxes:
+            for i in start_idxes:
                 for key in self:
-                    mini_batch_lists[key].append(self[key][i])
-            for key in mini_batch_lists:
-                mini_batch[key] = np.array(mini_batch_lists[key])
+                    mini_batch[key].extend(self[key][i : i + sequence_length])
             return mini_batch
 
         def save_to_file(self, file_object):
@@ -262,15 +263,17 @@ class Buffer(dict):
         """
         self.update_buffer.reset_agent()
 
-    def truncate_update_buffer(self, max_length):
+    def truncate_update_buffer(self, max_length, sequence_length=1):
         """
         Truncates the update buffer to a certain length.
 
         This can be slow for large buffers. We compensate by cutting further than we need to, so that
-        we're not truncating at each update.
+        we're not truncating at each update. Note that we must truncate an integer number of sequence_lengths
         param: max_length: The length at which to truncate the buffer.
         """
-        current_length = len(self.update_buffer["actions"])
+        current_length = len(next(iter(self.update_buffer.values())))
+        # make max_length an integer number of sequence_lengths
+        max_length -= max_length % sequence_length
         if current_length > max_length:
             for _key in self.update_buffer.keys():
                 self.update_buffer[_key] = self.update_buffer[_key][
