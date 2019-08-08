@@ -23,18 +23,20 @@ def initialize_trainers(
     multi_gpu: bool = False,
 ) -> Dict[str, Trainer]:
     """
+    Initializes trainers given a provided trainer configuration and set of brains from the environment, as well as
+    some general training session options.
 
-    :param trainer_config:
-    :param external_brains:
-    :param summaries_dir:
-    :param run_id:
-    :param model_path: Path to save the model.
-    :param keep_checkpoints: How many model checkpoints to keep.
-    :param train_model:
-    :param load_model: Whether to load the model or randomly initialize.
-    :param seed:
-    :param meta_curriculum:
-    :param multi_gpu:
+    :param trainer_config: Original trainer configuration loaded from YAML
+    :param external_brains: BrainParameters provided by the Unity environment
+    :param summaries_dir: Directory to store trainer summary statistics
+    :param run_id: Run ID to associate with this training run
+    :param model_path: Path to save the model
+    :param keep_checkpoints: How many model checkpoints to keep
+    :param train_model: Whether to train the model (vs. run inference)
+    :param load_model: Whether to load the model or randomly initialize
+    :param seed: The random seed to use
+    :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
+    :param multi_gpu: Whether to use multi-GPU training
     :return:
     """
     trainers = {}
