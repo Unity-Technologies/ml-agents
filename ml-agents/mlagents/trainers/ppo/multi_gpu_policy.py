@@ -120,10 +120,8 @@ class MultiGpuPPOPolicy(PPOPolicy):
                             for k, v in reward_tower[reward_signal].update_dict.items():
                                 self.update_dict[k + "_" + str(device_id)] = v
                         self.reward_signal_towers.append(reward_tower)
-                print(self.update_dict.keys())
                 for _, reward_tower in self.reward_signal_towers[0].items():
                     for _, update_key in reward_tower.stats_name_to_update_name.items():
-                        print(update_key)
                         self.update_dict.update({update_key: tf.reduce_mean(
                             tf.stack([self.update_dict[update_key + "_" + str(i)] for i in range(len(self.towers))]), 0
                         )})
