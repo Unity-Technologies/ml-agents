@@ -7,6 +7,7 @@ from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -17,6 +18,7 @@ class GAILRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: TFPolicy,
+        policy_model: LearningModel,
         strength: float,
         gamma: float,
         demo_path: str,
@@ -39,7 +41,7 @@ class GAILRewardSignal(RewardSignal):
         :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
         See https://arxiv.org/abs/1810.00821.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, policy_model, strength, gamma)
         self.use_terminal_states = False
 
         self.model = GAILModel(
@@ -103,7 +105,7 @@ class GAILRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, mini_batch_policy: Dict[str, np.ndarray], num_sequences: int
+        self, policy_model:LearningModel, mini_batch_policy: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
@@ -120,7 +122,7 @@ class GAILRewardSignal(RewardSignal):
 
             mini_batch_policy[key] = element[:num_sequences]
         # Get demo buffer
-        self.demonstration_buffer.update_buffer.shuffle()  # TODO: Replace with SAC sample method
+        self.demonstration_buffer.update_buffer.shuffle(1)  # TODO: Replace with SAC sample method
         mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
             0, len(mini_batch_policy["actions"])
         )
@@ -135,24 +137,20 @@ class GAILRewardSignal(RewardSignal):
 
         feed_dict[self.model.action_in_expert] = np.array(mini_batch_demo["actions"])
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.selected_actions] = mini_batch_policy["actions"]
+            feed_dict[policy_model.selected_actions] = mini_batch_policy["actions"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch_policy["actions"]
+            feed_dict[policy_model.action_holder] = mini_batch_policy["actions"]
 
         if self.policy.use_vis_obs > 0:
-            for i in range(len(self.policy.model.visual_in)):
-                feed_dict[self.policy.model.visual_in[i]] = mini_batch_policy[
+            for i in range(len(policy_model.visual_in)):
+                feed_dict[policy_model.visual_in[i]] = mini_batch_policy[
                     "visual_obs%d" % i
                 ]
                 feed_dict[self.model.expert_visual_in[i]] = mini_batch_demo[
                     "visual_obs%d" % i
                 ]
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch_policy[
-                "vector_obs"
-            ].reshape([-1, self.policy.vec_obs_size])
-            feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
+            feed_dict[policy_model.vector_in] = mini_batch_policy["vector_obs"]
+            feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"]
         self.has_updated = True
         return feed_dict
