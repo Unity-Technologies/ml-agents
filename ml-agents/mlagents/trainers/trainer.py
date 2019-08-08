@@ -1,14 +1,15 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, List, Deque
+from typing import Dict, List, Deque, Any
 import os
 import tensorflow as tf
 import numpy as np
-from collections import deque
+from collections import deque, defaultdict
 
-from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs
+from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.tf_policy import Policy
 from mlagents.envs import BrainParameters
 
@@ -51,7 +52,7 @@ class Trainer(object):
             os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
-        self.stats: Dict[str, List] = {}
+        self.stats: Dict[str, List] = defaultdict(list)
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
@@ -67,7 +68,7 @@ class Trainer(object):
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
 
-    def dict_to_str(self, param_dict, num_tabs):
+    def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
         Takes a parameter dictionary and converts it to a human-readable string.
         Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
@@ -75,7 +76,7 @@ class Trainer(object):
         return: A string version of this dictionary.
         """
         if not isinstance(param_dict, dict):
-            return param_dict
+            return str(param_dict)
         else:
             append_newline = "\n" if num_tabs > 0 else ""
             return append_newline + "\n".join(
@@ -89,7 +90,7 @@ class Trainer(object):
                 ]
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
             self.__class__.__name__,
             self.brain_name,
@@ -97,14 +98,14 @@ class Trainer(object):
         )
 
     @property
-    def parameters(self):
+    def parameters(self) -> Dict[str, Any]:
         """
         Returns the trainer parameters of the trainer.
         """
         return self.trainer_parameters
 
     @property
-    def get_max_steps(self):
+    def get_max_steps(self) -> float:
         """
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
@@ -112,7 +113,7 @@ class Trainer(object):
         return float(self.trainer_parameters["max_steps"])
 
     @property
-    def get_step(self):
+    def get_step(self) -> int:
         """
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
@@ -120,7 +121,7 @@ class Trainer(object):
         return self.step
 
     @property
-    def reward_buffer(self):
+    def reward_buffer(self) -> Deque[float]:
         """
         Returns the reward buffer. The reward buffer contains the cumulative
         rewards of the most recent episodes completed by agents using this
@@ -137,73 +138,19 @@ class Trainer(object):
         """
         self.step = self.policy.increment_step(n_steps)
 
-    @property
-    def graph_scope(self):
-        """
-        Returns the graph scope of the trainer.
-        """
-        raise UnityTrainerException("The graph_scope property was not implemented.")
-
-    def add_experiences(
-        self,
-        curr_info: AllBrainInfo,
-        next_info: AllBrainInfo,
-        take_action_outputs: ActionInfoOutputs,
-    ) -> None:
-        """
-        Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo.
-        :param next_info: Next AllBrainInfo.
-        :param take_action_outputs: The outputs of the take action method.
-        """
-        raise UnityTrainerException("The add_experiences method was not implemented.")
-
-    def process_experiences(
-        self, current_info: AllBrainInfo, next_info: AllBrainInfo
-    ) -> None:
-        """
-        Checks agent histories for processing condition, and processes them as necessary.
-        Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
-        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
-        """
-        raise UnityTrainerException(
-            "The process_experiences method was not implemented."
-        )
-
-    def end_episode(self):
-        """
-        A signal that the Episode has ended. The buffer must be reset.
-        Get only called when the academy resets.
-        """
-        raise UnityTrainerException("The end_episode method was not implemented.")
-
-    def is_ready_update(self):
-        """
-        Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to wether or not update_model() can be run
-        """
-        raise UnityTrainerException("The is_ready_update method was not implemented.")
-
-    def update_policy(self):
-        """
-        Uses demonstration_buffer to update model.
-        """
-        raise UnityTrainerException("The update_model method was not implemented.")
-
-    def save_model(self):
+    def save_model(self) -> None:
         """
         Saves the model
         """
         self.policy.save_model(self.get_step)
 
-    def export_model(self):
+    def export_model(self) -> None:
         """
         Exports the model
         """
         self.policy.export_model()
 
-    def write_training_metrics(self):
+    def write_training_metrics(self) -> None:
         """
         Write training metrics to a CSV  file
         :return:
@@ -263,7 +210,7 @@ class Trainer(object):
             self.summary_writer.add_summary(summary, step)
             self.summary_writer.flush()
 
-    def write_tensorboard_text(self, key, input_dict):
+    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
         """
         Saves text to Tensorboard.
         Note: Only works on tensorflow r1.2 or above.
@@ -285,3 +232,52 @@ class Trainer(object):
                 "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
             )
             pass
+
+    def add_experiences(
+        self,
+        curr_all_info: AllBrainInfo,
+        next_all_info: AllBrainInfo,
+        take_action_outputs: ActionInfoOutputs,
+    ) -> None:
+        """
+        Adds experiences to each agent's experience history.
+        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param take_action_outputs: The outputs of the Policy's get_action method.
+        """
+        raise UnityTrainerException(
+            "The process_experiences method was not implemented."
+        )
+
+    def process_experiences(
+        self, current_info: AllBrainInfo, next_info: AllBrainInfo
+    ) -> None:
+        """
+        Checks agent histories for processing condition, and processes them as necessary.
+        Processing involves calculating value and advantage targets for model updating step.
+        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
+        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
+        """
+        raise UnityTrainerException(
+            "The process_experiences method was not implemented."
+        )
+
+    def end_episode(self):
+        """
+        A signal that the Episode has ended. The buffer must be reset.
+        Get only called when the academy resets.
+        """
+        raise UnityTrainerException("The end_episode method was not implemented.")
+
+    def is_ready_update(self):
+        """
+        Returns whether or not the trainer has enough elements to run update model
+        :return: A boolean corresponding to wether or not update_model() can be run
+        """
+        raise UnityTrainerException("The is_ready_update method was not implemented.")
+
+    def update_policy(self):
+        """
+        Uses demonstration_buffer to update model.
+        """
+        raise UnityTrainerException("The update_model method was not implemented.")

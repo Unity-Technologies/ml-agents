@@ -10,6 +10,8 @@ logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 
+EPSILON = 1e-7
+
 
 class EncoderType(Enum):
     SIMPLE = "simple"
@@ -409,7 +411,7 @@ class LearningModel(object):
             for i in range(len(action_size))
         ]
         raw_probs = [
-            tf.multiply(tf.nn.softmax(branches_logits[k]) + 1.0e-7, branch_masks[k])
+            tf.multiply(tf.nn.softmax(branches_logits[k]) + EPSILON, branch_masks[k])
             for k in range(len(action_size))
         ]
         normalized_probs = [
@@ -418,7 +420,7 @@ class LearningModel(object):
         ]
         output = tf.concat(
             [
-                tf.multinomial(tf.log(normalized_probs[k] + 1.0e-7), 1)
+                tf.multinomial(tf.log(normalized_probs[k] + EPSILON), 1)
                 for k in range(len(action_size))
             ],
             axis=1,
@@ -427,7 +429,10 @@ class LearningModel(object):
             output,
             tf.concat([normalized_probs[k] for k in range(len(action_size))], axis=1),
             tf.concat(
-                [tf.log(normalized_probs[k] + 1.0e-7) for k in range(len(action_size))],
+                [
+                    tf.log(normalized_probs[k] + EPSILON)
+                    for k in range(len(action_size))
+                ],
                 axis=1,
             ),
         )
@@ -438,7 +443,7 @@ class LearningModel(object):
         h_size: int,
         num_layers: int,
         vis_encode_type: EncoderType = EncoderType.SIMPLE,
-        stream_scopes: List[str] = [],
+        stream_scopes: List[str] = None,
     ) -> tf.Tensor:
         """
         Creates encoding stream for observations.
@@ -563,236 +568,3 @@ class LearningModel(object):
             value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
-
-    def create_cc_actor_critic(
-        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
-    ) -> None:
-        """
-        Creates Continuous control actor-critic model.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
-        """
-        hidden_streams = self.create_observation_streams(
-            2, h_size, num_layers, vis_encode_type
-        )
-
-        if self.use_recurrent:
-            self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-            _half_point = int(self.m_size / 2)
-            hidden_policy, memory_policy_out = self.create_recurrent_encoder(
-                hidden_streams[0],
-                self.memory_in[:, :_half_point],
-                self.sequence_length,
-                name="lstm_policy",
-            )
-
-            hidden_value, memory_value_out = self.create_recurrent_encoder(
-                hidden_streams[1],
-                self.memory_in[:, _half_point:],
-                self.sequence_length,
-                name="lstm_value",
-            )
-            self.memory_out = tf.concat(
-                [memory_policy_out, memory_value_out], axis=1, name="recurrent_out"
-            )
-        else:
-            hidden_policy = hidden_streams[0]
-            hidden_value = hidden_streams[1]
-
-        mu = tf.layers.dense(
-            hidden_policy,
-            self.act_size[0],
-            activation=None,
-            name="mu",
-            kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
-        )
-
-        self.log_sigma_sq = tf.get_variable(
-            "log_sigma_squared",
-            [self.act_size[0]],
-            dtype=tf.float32,
-            initializer=tf.zeros_initializer(),
-        )
-
-        sigma_sq = tf.exp(self.log_sigma_sq)
-
-        self.epsilon = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
-        )
-        # Clip and scale output to ensure actions are always within [-1, 1] range.
-        self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
-        output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
-        self.output = tf.identity(output_post, name="action")
-        self.selected_actions = tf.stop_gradient(output_post)
-
-        # Compute probability of model output.
-        all_probs = (
-            -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
-            - 0.5 * tf.log(2.0 * np.pi)
-            - 0.5 * self.log_sigma_sq
-        )
-
-        self.all_log_probs = tf.identity(all_probs, name="action_probs")
-
-        self.entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + self.log_sigma_sq
-        )
-
-        self.create_value_heads(self.stream_names, hidden_value)
-
-        self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
-        )
-
-        # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = tf.reduce_sum(
-            (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
-        self.old_log_probs = tf.reduce_sum(
-            (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
-        )
-
-    def create_dc_actor_critic(
-        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
-    ) -> None:
-        """
-        Creates Discrete control actor-critic model.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
-        """
-        hidden_streams = self.create_observation_streams(
-            1, h_size, num_layers, vis_encode_type
-        )
-        hidden = hidden_streams[0]
-
-        if self.use_recurrent:
-            self.prev_action = tf.placeholder(
-                shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
-            )
-            prev_action_oh = tf.concat(
-                [
-                    tf.one_hot(self.prev_action[:, i], self.act_size[i])
-                    for i in range(len(self.act_size))
-                ],
-                axis=1,
-            )
-            hidden = tf.concat([hidden, prev_action_oh], axis=1)
-
-            self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-            hidden, memory_out = self.create_recurrent_encoder(
-                hidden, self.memory_in, self.sequence_length
-            )
-            self.memory_out = tf.identity(memory_out, name="recurrent_out")
-
-        policy_branches = []
-        for i, size in enumerate(self.act_size):
-            policy_branches.append(
-                tf.layers.dense(
-                    hidden,
-                    size,
-                    activation=None,
-                    use_bias=False,
-                    name="policy_branch_" + str(i),
-                    kernel_initializer=c_layers.variance_scaling_initializer(
-                        factor=0.01
-                    ),
-                )
-            )
-
-        self.all_log_probs = tf.concat(
-            [branch for branch in policy_branches], axis=1, name="action_probs"
-        )
-
-        self.action_masks = tf.placeholder(
-            shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
-        )
-        output, _, normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.act_size
-        )
-
-        self.output = tf.identity(output)
-        self.normalized_logits = tf.identity(normalized_logits, name="action")
-
-        self.create_value_heads(self.stream_names, hidden)
-
-        self.action_holder = tf.placeholder(
-            shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
-        )
-        self.action_oh = tf.concat(
-            [
-                tf.one_hot(self.action_holder[:, i], self.act_size[i])
-                for i in range(len(self.act_size))
-            ],
-            axis=1,
-        )
-        self.selected_actions = tf.stop_gradient(self.action_oh)
-
-        self.all_old_log_probs = tf.placeholder(
-            shape=[None, sum(self.act_size)], dtype=tf.float32, name="old_probabilities"
-        )
-        _, _, old_normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.action_masks, self.act_size
-        )
-
-        action_idx = [0] + list(np.cumsum(self.act_size))
-
-        self.entropy = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=tf.nn.softmax(
-                                self.all_log_probs[:, action_idx[i] : action_idx[i + 1]]
-                            ),
-                            logits=self.all_log_probs[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-        )
-
-        self.log_probs = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
-                            logits=normalized_logits[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-            keepdims=True,
-        )
-        self.old_log_probs = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
-                            logits=old_normalized_logits[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-            keepdims=True,
-        )
