@@ -4,7 +4,7 @@
 
 import logging
 from collections import defaultdict
-from typing import List, Any
+from typing import List, Any, Dict
 
 import numpy as np
 
@@ -12,13 +12,15 @@ from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
-from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.envs.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOTrainer(Trainer):
+class PPOTrainer(RLTrainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
@@ -41,7 +43,9 @@ class PPOTrainer(Trainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
-        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
+        super(PPOTrainer, self).__init__(
+            brain, trainer_parameters, training, run_id, reward_buff_cap
+        )
         self.param_keys = [
             "batch_size",
             "beta",
@@ -65,15 +69,6 @@ class PPOTrainer(Trainer):
         ]
         self.check_param_keys()
 
-        # Make sure we have at least one reward_signal
-        if not self.trainer_parameters["reward_signals"]:
-            raise UnityTrainerException(
-                "No reward signals were defined. At least one must be used with {}.".format(
-                    self.__class__.__name__
-                )
-            )
-
-        self.step = 0
         if multi_gpu and len(get_devices()) > 1:
             self.policy = MultiGpuPPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
@@ -83,11 +78,6 @@ class PPOTrainer(Trainer):
                 seed, brain, trainer_parameters, self.is_training, load
             )
 
-        stats = defaultdict(list)
-        # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
-        # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
-        # of what reward signals are actually present.
-        self.collected_rewards = {"environment": {}}
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
@@ -416,6 +406,45 @@ class PPOTrainer(Trainer):
                                 self.policy.reward_signals[name].stat_name
                             ].append(rewards.get(agent_id, 0))
                             rewards[agent_id] = 0
+
+    def add_policy_outputs(
+        self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int
+    ) -> None:
+        """
+        Takes the output of the last action and store it into the training buffer.
+        """
+        actions = take_action_outputs["action"]
+        if self.policy.use_continuous_act:
+            actions_pre = take_action_outputs["pre_action"]
+            self.training_buffer[agent_id]["actions_pre"].append(actions_pre[agent_idx])
+            epsilons = take_action_outputs["random_normal_epsilon"]
+            self.training_buffer[agent_id]["random_normal_epsilon"].append(
+                epsilons[agent_idx]
+            )
+        a_dist = take_action_outputs["log_probs"]
+        # value is a dictionary from name of reward to value estimate of the value head
+        self.training_buffer[agent_id]["actions"].append(actions[agent_idx])
+        self.training_buffer[agent_id]["action_probs"].append(a_dist[agent_idx])
+
+    def add_rewards_outputs(
+        self,
+        value: Dict[str, Any],
+        rewards_dict: Dict[str, RewardSignalResult],
+        agent_id: str,
+        agent_idx: int,
+        agent_next_idx: int,
+    ) -> None:
+        """
+        Takes the value output of the last action and store it into the training buffer.
+        """
+        for name, reward_result in rewards_dict.items():
+            # 0 because we use the scaled reward to train the agent
+            self.training_buffer[agent_id]["{}_rewards".format(name)].append(
+                reward_result.scaled_reward[agent_idx]
+            )
+            self.training_buffer[agent_id]["{}_value_estimates".format(name)].append(
+                value[name][agent_next_idx][0]
+            )
 
     def end_episode(self):
         """
