@@ -191,11 +191,13 @@ class RLTrainer(Trainer):
                     self.training_buffer[agent_id]["prev_action"].append(
                         stored_info.previous_vector_actions[idx]
                     )
-                    values = take_action_outputs["value_heads"]
+
+                    values = stored_take_action_outputs["value_heads"]
                     # Add the value outputs if needed
                     self.add_rewards_outputs(
                         values, tmp_rewards_dict, agent_id, idx, next_idx
                     )
+
                     for name, rewards in self.collected_rewards.items():
                         if agent_id not in rewards:
                             rewards[agent_id] = 0
