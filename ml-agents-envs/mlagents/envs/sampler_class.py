@@ -25,12 +25,20 @@ class UniformSampler(Sampler):
         seed: Optional[int] = None,
         **kwargs
     ) -> None:
+        """            
+        :param min_value: minimum value of the range to be sampled uniformly from
+        :param max_value: maximum value of the range to be sampled uniformly from
+        :param seed: Random seed used for making draws from the uniform sampler
+        """
         self.min_value = min_value
         self.max_value = max_value
         # Draw from random state to allow for consistent reset parameter draw for a seed
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
+        """
+        Draws and returns a sample from the specified interval
+        """
         return self.random_state.uniform(self.min_value, self.max_value)
 
 
@@ -48,6 +56,10 @@ class MultiRangeUniformSampler(Sampler):
         seed: Optional[int] = None,
         **kwargs
     ) -> None:
+        """
+        :param intervals: List of intervals to draw uniform samples from
+        :param seed: Random seed used for making uniform draws from the specified intervals
+        """
         self.intervals = intervals
         # Measure the length of the intervals
         interval_lengths = [abs(x[1] - x[0]) for x in self.intervals]
@@ -58,6 +70,9 @@ class MultiRangeUniformSampler(Sampler):
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
+        """
+        Selects an interval to pick and then draws a uniform sample from the picked interval
+        """
         cur_min, cur_max = self.intervals[
             self.random_state.choice(len(self.intervals), p=self.interval_weights)
         ]
@@ -77,12 +92,20 @@ class GaussianSampler(Sampler):
         seed: Optional[int] = None,
         **kwargs
     ) -> None:
+        """
+        :param mean: Specifies the mean of the gaussian distribution to draw from
+        :param st_dev: Specifies the standard devation of the gaussian distribution to draw from
+        :param seed: Random seed used for making gaussian draws from the sample
+        """
         self.mean = mean
         self.st_dev = st_dev
         # Draw from random state to allow for consistent reset parameter draw for a seed
         self.random_state = np.random.RandomState(seed)
 
     def sample_parameter(self) -> float:
+        """
+        Returns a draw from the specified Gaussian distribution
+        """
         return self.random_state.normal(self.mean, self.st_dev)
 
 
@@ -100,12 +123,23 @@ class SamplerFactory:
 
     @staticmethod
     def register_sampler(name: str, sampler_cls: Type[Sampler]) -> None:
+        """
+        Registers the sampe in the Sampler Factory to be used later
+        :param name: String name to set as key for the sampler_cls in the factory
+        :param sampler_cls: Sampler object to associate to the name in the factory
+        """
         SamplerFactory.NAME_TO_CLASS[name] = sampler_cls
 
     @staticmethod
     def init_sampler_class(
         name: str, params: Dict[str, Any], seed: Optional[int] = None
     ) -> Sampler:
+        """
+        Initializes the sampler class associated with the name with the params
+        :param name: Name of the sampler in the factory to initialize
+        :param params: Parameters associated to the sampler attached to the name
+        :param seed: Random seed to be used to set deterministic random draws for the sampler
+        """
         if name not in SamplerFactory.NAME_TO_CLASS:
             raise SamplerException(
                 name + " sampler is not registered in the SamplerFactory."
@@ -128,6 +162,10 @@ class SamplerManager:
     def __init__(
         self, reset_param_dict: Dict[str, Any], seed: Optional[int] = None
     ) -> None:
+        """
+        :param reset_param_dict: Arguments needed for initializing the samplers
+        :param seed: Random seed to be used for drawing samples from the samplers
+        """
         self.reset_param_dict = reset_param_dict if reset_param_dict else {}
         assert isinstance(self.reset_param_dict, dict)
         self.samplers: Dict[str, Sampler] = {}
@@ -152,6 +190,10 @@ class SamplerManager:
         return not bool(self.samplers)
 
     def sample_all(self) -> Dict[str, float]:
+        """
+        Loop over all samplers and draw a sample from each one for generating
+        next set of reset parameter values.
+        """
         res = {}
         for param_name, param_sampler in list(self.samplers.items()):
             res[param_name] = param_sampler.sample_parameter()
