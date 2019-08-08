@@ -20,7 +20,13 @@ RewardSignalResult = namedtuple(
 
 
 class RewardSignal(abc.ABC):
-    def __init__(self, policy: TFPolicy, policy_model: LearningModel, strength: float, gamma: float):
+    def __init__(
+        self,
+        policy: TFPolicy,
+        policy_model: LearningModel,
+        strength: float,
+        gamma: float,
+    ):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
@@ -58,7 +64,10 @@ class RewardSignal(abc.ABC):
         )
 
     def prepare_update(
-        self, policy_model: LearningModel, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self,
+        policy_model: LearningModel,
+        mini_batch: Dict[str, np.ndarray],
+        num_sequences: int,
     ) -> Dict[tf.Tensor, Any]:
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), get the feed_dict

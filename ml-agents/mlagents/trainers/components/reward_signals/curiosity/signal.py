@@ -95,7 +95,10 @@ class CuriosityRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, policy_model:LearningModel, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self,
+        policy_model: LearningModel,
+        mini_batch: Dict[str, np.ndarray],
+        num_sequences: int,
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare for update and get feed_dict.
@@ -119,9 +122,7 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
         if policy_model.vis_obs_size > 0:
             for i, _ in enumerate(policy_model.visual_in):
-                feed_dict[policy_model.visual_in[i]] = mini_batch[
-                    "visual_obs%d" % i
-                ]
+                feed_dict[policy_model.visual_in[i]] = mini_batch["visual_obs%d" % i]
             for i, _ in enumerate(policy_model.visual_in):
                 feed_dict[self.model.next_visual_in[i]] = mini_batch[
                     "next_visual_obs%d" % i

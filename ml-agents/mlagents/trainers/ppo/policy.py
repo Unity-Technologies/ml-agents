@@ -36,7 +36,9 @@ class PPOPolicy(TFPolicy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.create_model(brain, trainer_params, reward_signal_configs, is_training, load, seed)
+        self.create_model(
+            brain, trainer_params, reward_signal_configs, is_training, load, seed
+        )
         self.create_reward_signals(reward_signal_configs)
 
         with self.graph.as_default():
@@ -58,7 +60,9 @@ class PPOPolicy(TFPolicy):
         else:
             self._initialize_graph()
 
-    def create_model(self, brain, trainer_params, reward_signal_configs, is_training, load, seed):
+    def create_model(
+        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
+    ):
         """
         Create PPO model
         :param brain: Assigned Brain object.
@@ -86,13 +90,15 @@ class PPOPolicy(TFPolicy):
             )
             self.model.create_ppo_optimizer()
 
-        self.inference_dict.update({
-            "action": self.model.output,
-            "log_probs": self.model.all_log_probs,
-            "value": self.model.value_heads,
-            "entropy": self.model.entropy,
-            "learning_rate": self.model.learning_rate,
-        })
+        self.inference_dict.update(
+            {
+                "action": self.model.output,
+                "log_probs": self.model.all_log_probs,
+                "value": self.model.value_heads,
+                "entropy": self.model.entropy,
+                "learning_rate": self.model.learning_rate,
+            }
+        )
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
@@ -106,11 +112,13 @@ class PPOPolicy(TFPolicy):
             self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.total_policy_loss = self.model.abs_policy_loss
-        self.update_dict.update({
-            "value_loss": self.model.value_loss,
-            "policy_loss": self.total_policy_loss,
-            "update_batch": self.model.update_batch,
-        })
+        self.update_dict.update(
+            {
+                "value_loss": self.model.value_loss,
+                "policy_loss": self.total_policy_loss,
+                "update_batch": self.model.update_batch,
+            }
+        )
 
     def create_reward_signals(self, reward_signal_configs):
         """
@@ -172,7 +180,9 @@ class PPOPolicy(TFPolicy):
         update_stats = {}
         # Collect feed dicts for all reward signals.
         for _, reward_signal in self.reward_signals.items():
-            feed_dict.update(reward_signal.prepare_update(self.model, mini_batch, num_sequences))
+            feed_dict.update(
+                reward_signal.prepare_update(self.model, mini_batch, num_sequences)
+            )
             stats_needed.update(reward_signal.stats_name_to_update_name)
 
         update_vals = self._execute_model(feed_dict, self.update_dict)

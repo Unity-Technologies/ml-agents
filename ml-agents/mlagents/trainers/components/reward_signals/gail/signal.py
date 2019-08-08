@@ -105,7 +105,10 @@ class GAILRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, policy_model:LearningModel, mini_batch_policy: Dict[str, np.ndarray], num_sequences: int
+        self,
+        policy_model: LearningModel,
+        mini_batch_policy: Dict[str, np.ndarray],
+        num_sequences: int,
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
@@ -122,7 +125,9 @@ class GAILRewardSignal(RewardSignal):
 
             mini_batch_policy[key] = element[:num_sequences]
         # Get demo buffer
-        self.demonstration_buffer.update_buffer.shuffle(self.policy.sequence_length)  # TODO: Replace with SAC sample method
+        self.demonstration_buffer.update_buffer.shuffle(
+            self.policy.sequence_length
+        )  # TODO: Replace with SAC sample method
         mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
             0, len(mini_batch_policy["actions"])
         )

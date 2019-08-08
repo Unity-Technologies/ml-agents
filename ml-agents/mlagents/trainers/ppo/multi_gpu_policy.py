@@ -30,7 +30,9 @@ class MultiGpuPPOPolicy(PPOPolicy):
         """
         super().__init__(seed, brain, trainer_params, is_training, load)
 
-    def create_model(self, brain, trainer_params, reward_signal_configs, is_training, load, seed):
+    def create_model(
+        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
+    ):
         """
         Create PPO models, one on each device
         :param brain: Assigned Brain object.
@@ -76,13 +78,15 @@ class MultiGpuPPOPolicy(PPOPolicy):
                 tf.stack([model.policy_loss for model in self.towers]), 0
             )
 
-        self.inference_dict.update({
-            "action": self.model.output,
-            "log_probs": self.model.all_log_probs,
-            "value": self.model.value_heads,
-            "entropy": self.model.entropy,
-            "learning_rate": self.model.learning_rate,
-        })
+        self.inference_dict.update(
+            {
+                "action": self.model.output,
+                "log_probs": self.model.all_log_probs,
+                "value": self.model.value_heads,
+                "entropy": self.model.entropy,
+                "learning_rate": self.model.learning_rate,
+            }
+        )
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
@@ -96,11 +100,13 @@ class MultiGpuPPOPolicy(PPOPolicy):
             self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.total_policy_loss = self.model.abs_policy_loss
-        self.update_dict.update({
-            "value_loss": avg_value_loss,
-            "policy_loss": avg_policy_loss,
-            "update_batch": update_batch,
-        })
+        self.update_dict.update(
+            {
+                "value_loss": avg_value_loss,
+                "policy_loss": avg_policy_loss,
+                "update_batch": update_batch,
+            }
+        )
 
     def create_reward_signals(self, reward_signal_configs):
         """
@@ -122,9 +128,19 @@ class MultiGpuPPOPolicy(PPOPolicy):
                         self.reward_signal_towers.append(reward_tower)
                 for _, reward_tower in self.reward_signal_towers[0].items():
                     for _, update_key in reward_tower.stats_name_to_update_name.items():
-                        self.update_dict.update({update_key: tf.reduce_mean(
-                            tf.stack([self.update_dict[update_key + "_" + str(i)] for i in range(len(self.towers))]), 0
-                        )})
+                        self.update_dict.update(
+                            {
+                                update_key: tf.reduce_mean(
+                                    tf.stack(
+                                        [
+                                            self.update_dict[update_key + "_" + str(i)]
+                                            for i in range(len(self.towers))
+                                        ]
+                                    ),
+                                    0,
+                                )
+                            }
+                        )
 
             self.reward_signals = self.reward_signal_towers[0]
 
@@ -146,11 +162,15 @@ class MultiGpuPPOPolicy(PPOPolicy):
                 {k: v[i : i + device_batch_size] for (k, v) in mini_batch.items()}
             )
 
-        for batch, tower, reward_tower in zip(device_batches, self.towers, self.reward_signal_towers):
+        for batch, tower, reward_tower in zip(
+            device_batches, self.towers, self.reward_signal_towers
+        ):
             feed_dict.update(self.construct_feed_dict(tower, batch, num_sequences))
             stats_needed.update(self.stats_name_to_update_name)
             for _, reward_signal in reward_tower.items():
-                feed_dict.update(reward_signal.prepare_update(tower, batch, num_sequences))
+                feed_dict.update(
+                    reward_signal.prepare_update(tower, batch, num_sequences)
+                )
                 stats_needed.update(reward_signal.stats_name_to_update_name)
 
         update_vals = self._execute_model(feed_dict, self.update_dict)

@@ -24,7 +24,10 @@ NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {
 
 
 def create_reward_signal(
-    policy: TFPolicy, policy_model: LearningModel, name: str, config_entry: Dict[str, Any]
+    policy: TFPolicy,
+    policy_model: LearningModel,
+    name: str,
+    config_entry: Dict[str, Any],
 ) -> RewardSignal:
     """
     Creates a reward signal class based on the name and config entry provided as a dict.
