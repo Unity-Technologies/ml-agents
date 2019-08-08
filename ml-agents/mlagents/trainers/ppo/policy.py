@@ -161,54 +161,39 @@ class PPOPolicy(TFPolicy):
 
     def construct_feed_dict(self, model, mini_batch, num_sequences):
         feed_dict = {
-            model.batch_size: num_sequences,
-            model.sequence_length: self.sequence_length,
-            model.mask_input: mini_batch["masks"].flatten(),
-            model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(model.act_size)]
-            ),
+            self.model.batch_size: num_sequences,
+            self.model.sequence_length: self.sequence_length,
+            self.model.mask_input: mini_batch["masks"],
+            self.model.advantage: mini_batch["advantages"],
+            self.model.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
             feed_dict[model.returns_holders[name]] = mini_batch[
                 "{}_returns".format(name)
-            ].flatten()
+            ]
             feed_dict[model.old_values[name]] = mini_batch[
                 "{}_value_estimates".format(name)
-            ].flatten()
+            ]
 
         if self.use_continuous_act:
-            feed_dict[model.output_pre] = mini_batch["actions_pre"].reshape(
-                [-1, model.act_size[0]]
-            )
-            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"].reshape(
-                [-1, model.act_size[0]]
-            )
+
+            feed_dict[model.output_pre] = mini_batch["actions_pre"]
+            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
         else:
-            feed_dict[model.action_holder] = mini_batch["actions"].reshape(
-                [-1, len(model.act_size)]
-            )
+            feed_dict[model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:
-                feed_dict[model.prev_action] = mini_batch["prev_action"].reshape(
-                    [-1, len(model.act_size)]
-                )
-            feed_dict[model.action_masks] = mini_batch["action_mask"].reshape(
-                [-1, sum(self.brain.vector_action_space_size)]
-            )
+                feed_dict[model.prev_action] = mini_batch["prev_action"]
+            feed_dict[model.action_masks] = mini_batch["action_mask"]
         if self.use_vec_obs:
-            feed_dict[model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.vec_obs_size]
-            )
-        if model.vis_obs_size > 0:
-            for i, _ in enumerate(model.visual_in):
-                _obs = mini_batch["visual_obs%d" % i]
-                if self.sequence_length > 1 and self.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                else:
-                    feed_dict[model.visual_in[i]] = _obs
+            feed_dict[model.vector_in] = mini_batch["vector_obs"]
+        if self.model.vis_obs_size > 0:
+            for i, _ in enumerate(self.model.visual_in):
+                feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
         if self.use_recurrent:
-            mem_in = mini_batch["memory"][:, 0, :]
+            mem_in = [
+                mini_batch["memory"][i]
+                for i in range(0, len(mini_batch["memory"]), self.sequence_length)
+            ]
             feed_dict[model.memory_in] = mem_in
         return feed_dict
 
@@ -239,9 +224,9 @@ class PPOPolicy(TFPolicy):
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[
-                idx
-            ].reshape([-1, len(self.model.act_size)])
+            feed_dict[self.model.prev_action] = [
+                brain_info.previous_vector_actions[idx]
+            ]
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
