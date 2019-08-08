@@ -467,10 +467,9 @@ class PPOTrainer(Trainer):
             for l in range(
                 0, len(self.training_buffer.update_buffer["actions"]), batch_size
             ):
-                start = l * n_sequences
-                end = (l + 1) * n_sequences
-                mini_batch = buffer.make_mini_batch(start, end)
-                update_stats = self.policy.update(mini_batch, n_sequences)
+                update_stats = self.policy.update(
+                    buffer.make_mini_batch(l, l + batch_size), n_sequences
+                )
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 

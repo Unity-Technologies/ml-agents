@@ -8,12 +8,14 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 
 
 class CuriosityRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: TFPolicy,
+        policy_model: LearningModel,
         strength: float,
         gamma: float,
         encoding_size: int = 128,
@@ -28,9 +30,9 @@ class CuriosityRewardSignal(RewardSignal):
         :param encoding_size: The size of the hidden encoding layer for the ICM
         :param learning_rate: The learning rate for the ICM.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, policy_model, strength, gamma)
         self.model = CuriosityModel(
-            policy.model, encoding_size=encoding_size, learning_rate=learning_rate
+            policy_model, encoding_size=encoding_size, learning_rate=learning_rate
         )
         self.use_terminal_states = False
         self.update_dict = {
@@ -93,7 +95,7 @@ class CuriosityRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self, policy_model:LearningModel, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare for update and get feed_dict.
@@ -102,25 +104,25 @@ class CuriosityRewardSignal(RewardSignal):
         :return: Feed_dict needed for update.
         """
         feed_dict = {
-            self.policy.model.batch_size: num_sequences,
-            self.policy.model.sequence_length: self.policy.sequence_length,
-            self.policy.model.mask_input: mini_batch["masks"],
-            self.policy.model.advantage: mini_batch["advantages"],
-            self.policy.model.all_old_log_probs: mini_batch["action_probs"],
+            policy_model.batch_size: num_sequences,
+            policy_model.sequence_length: self.policy.sequence_length,
+            policy_model.mask_input: mini_batch["masks"],
+            policy_model.advantage: mini_batch["advantages"],
+            policy_model.all_old_log_probs: mini_batch["action_probs"],
         }
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"]
+            feed_dict[policy_model.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+            feed_dict[policy_model.action_holder] = mini_batch["actions"]
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
-        if self.policy.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.policy.model.visual_in):
-                feed_dict[self.policy.model.visual_in[i]] = mini_batch[
+        if policy_model.vis_obs_size > 0:
+            for i, _ in enumerate(policy_model.visual_in):
+                feed_dict[policy_model.visual_in[i]] = mini_batch[
                     "visual_obs%d" % i
                 ]
-            for i, _ in enumerate(self.policy.model.visual_in):
+            for i, _ in enumerate(policy_model.visual_in):
                 feed_dict[self.model.next_visual_in[i]] = mini_batch[
                     "next_visual_obs%d" % i
                 ]
