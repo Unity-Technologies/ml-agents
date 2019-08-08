@@ -25,7 +25,7 @@ class UniformSampler(Sampler):
         seed: Optional[int] = None,
         **kwargs
     ) -> None:
-        """            
+        """
         :param min_value: minimum value of the range to be sampled uniformly from
         :param max_value: maximum value of the range to be sampled uniformly from
         :param seed: Random seed used for making draws from the uniform sampler
