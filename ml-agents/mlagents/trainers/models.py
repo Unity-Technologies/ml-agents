@@ -605,6 +605,7 @@ class LearningModel(object):
             hidden_policy,
             self.act_size[0],
             activation=None,
+            name="mu",
             kernel_initializer=c_layers.variance_scaling_initializer(factor=0.01),
         )
 
@@ -688,13 +689,14 @@ class LearningModel(object):
             self.memory_out = tf.identity(memory_out, name="recurrent_out")
 
         policy_branches = []
-        for size in self.act_size:
+        for i, size in enumerate(self.act_size):
             policy_branches.append(
                 tf.layers.dense(
                     hidden,
                     size,
                     activation=None,
                     use_bias=False,
+                    name="policy_branch_" + str(i),
                     kernel_initializer=c_layers.variance_scaling_initializer(
                         factor=0.01
                     ),

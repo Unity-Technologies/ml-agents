@@ -5,6 +5,7 @@ from mlagents.envs import timers
 
 @timers.timed
 def decorated_func(x: int = 0, y: float = 1.0) -> str:
+    timers.set_gauge("my_gauge", x + y)
     return f"{x} + {y} = {x + y}"
 
 
@@ -16,7 +17,7 @@ def test_timers() -> None:
         with timers.hierarchical_timer("top_level"):
             for i in range(3):
                 with timers.hierarchical_timer("multiple"):
-                    decorated_func()
+                    decorated_func(i, i)
 
             raised = False
             try:
@@ -92,5 +93,9 @@ def test_timers() -> None:
                     ],
                 }
             ],
+            "gauges": [
+                {"name": "my_gauge", "value": 4.0, "max": 4.0, "min": 0.0, "count": 3}
+            ],
         }
+
         assert timer_tree == expected_tree

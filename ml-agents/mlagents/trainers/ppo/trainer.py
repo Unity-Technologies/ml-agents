@@ -11,6 +11,7 @@ import numpy as np
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.action_info import ActionInfoOutputs
 
@@ -21,7 +22,15 @@ class PPOTrainer(Trainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
+        multi_gpu,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -67,7 +76,14 @@ class PPOTrainer(Trainer):
             )
 
         self.step = 0
-        self.policy = PPOPolicy(seed, brain, trainer_parameters, self.is_training, load)
+        if multi_gpu and len(get_devices()) > 1:
+            self.policy = MultiGpuPPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
+        else:
+            self.policy = PPOPolicy(
+                seed, brain, trainer_parameters, self.is_training, load
+            )
 
         stats = defaultdict(list)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
@@ -384,9 +400,7 @@ class PPOTrainer(Trainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = len(self.training_buffer.update_buffer["actions"])
-        return size_of_buffer > max(
-            int(self.trainer_parameters["buffer_size"] / self.policy.sequence_length), 1
-        )
+        return size_of_buffer > self.trainer_parameters["buffer_size"]
 
     def update_policy(self):
         """
@@ -398,6 +412,7 @@ class PPOTrainer(Trainer):
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
         self.cumulative_returns_since_policy_update = []
+        batch_size = self.trainer_parameters["batch_size"]
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
@@ -408,15 +423,15 @@ class PPOTrainer(Trainer):
         )
         num_epoch = self.trainer_parameters["num_epoch"]
         for _ in range(num_epoch):
-            self.training_buffer.update_buffer.shuffle()
+            self.training_buffer.update_buffer.shuffle(
+                sequence_length=self.policy.sequence_length
+            )
             buffer = self.training_buffer.update_buffer
             for l in range(
-                len(self.training_buffer.update_buffer["actions"]) // n_sequences
+                0, len(self.training_buffer.update_buffer["actions"]), batch_size
             ):
-                start = l * n_sequences
-                end = (l + 1) * n_sequences
                 run_out = self.policy.update(
-                    buffer.make_mini_batch(start, end), n_sequences
+                    buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
                 value_total.append(run_out["value_loss"])
                 policy_total.append(np.abs(run_out["policy_loss"]))

@@ -39,6 +39,7 @@ def create_mock_braininfo(
     num_vis_observations=0,
     num_vector_acts=2,
     discrete=False,
+    num_discrete_branches=1,
 ):
     """
     Creates a mock BrainInfo with observations. Imitates constant
@@ -60,7 +61,7 @@ def create_mock_braininfo(
     )
     if discrete:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [1 * [0.5]]
+            num_agents * [num_discrete_branches * [0.5]]
         )
         mock_braininfo.return_value.action_masks = np.array(
             num_agents * [num_vector_acts * [1.0]]
@@ -129,7 +130,12 @@ def create_buffer(brain_infos, brain_params, sequence_length):
         buffer[0]["prev_action"].append(current_brain_info.previous_vector_actions[0])
         buffer[0]["masks"].append(1.0)
         buffer[0]["advantages"].append(1.0)
-        buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
+        if brain_params.vector_action_space_type == "discrete":
+            buffer[0]["action_probs"].append(
+                np.ones(sum(brain_params.vector_action_space_size))
+            )
+        else:
+            buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
         buffer[0]["actions_pre"].append(np.ones(buffer[0]["actions"][0].shape))
         buffer[0]["random_normal_epsilon"].append(
             np.ones(buffer[0]["actions"][0].shape)

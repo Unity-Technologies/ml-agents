@@ -11,6 +11,7 @@ from mlagents.envs.timers import timed, hierarchical_timer
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
+    UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
 )
@@ -343,7 +344,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 self._generate_reset_input(train_mode, config, custom_reset_parameters)
             )
             if outputs is None:
-                raise KeyboardInterrupt
+                raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             self._global_done = s[1]
@@ -570,7 +571,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
-                raise KeyboardInterrupt
+                raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
             self._global_done = state[1]
