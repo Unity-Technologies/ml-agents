@@ -80,6 +80,10 @@ def test_buffer():
     assert np.array(c["action"]).shape == (1, 2)
 
 
+def fakerandint(values):
+    return 19
+
+
 def test_buffer_sample():
     b = construct_fake_buffer()
     b.append_update_buffer(3, batch_size=None, training_length=2)
@@ -90,10 +94,11 @@ def test_buffer_sample():
     assert np.array(mb["action"]).shape == (4, 2)
 
     # Test LSTM
-    mb = b.update_buffer.sample_mini_batch(batch_size=4, sequence_length=3)
+    # We need to check if we ever get a breaking start - this will maximize the probability
+    mb = b.update_buffer.sample_mini_batch(batch_size=20, sequence_length=19)
     assert mb.keys() == b.update_buffer.keys()
     # Should only return one sequence
-    assert np.array(mb["action"]).shape == (3, 2)
+    assert np.array(mb["action"]).shape == (19, 2)
 
 
 def test_buffer_truncate():
