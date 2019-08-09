@@ -29,11 +29,6 @@ class ExtrinsicRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma"]
         super().check_config(config_dict, param_keys)
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
-        env_rews = np.array(mini_batch["environment_rewards"])
-
-        return RewardSignalResult(self.strength * env_rews, env_rews)
-
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
     ) -> RewardSignalResult:
@@ -46,6 +41,10 @@ class ExtrinsicRewardSignal(RewardSignal):
         unscaled_reward = np.array(next_info.rewards)
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)
+
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+        env_rews = np.array(mini_batch["environment_rewards"])
+        return RewardSignalResult(self.strength * env_rews, env_rews)
 
     def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
         """
