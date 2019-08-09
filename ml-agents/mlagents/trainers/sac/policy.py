@@ -141,63 +141,44 @@ class SACPolicy(TFPolicy):
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
             self.model.next_sequence_length: self.sequence_length,
-            self.model.mask_input: mini_batch["masks"].flatten(),
+            self.model.mask_input: mini_batch["masks"],
         }
         for i, name in enumerate(self.reward_signals.keys()):
             feed_dict[self.model.rewards_holders[name]] = mini_batch[
                 "{}_rewards".format(name)
-            ].flatten()
+            ]
 
         if self.use_continuous_act:
-            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
-                [-1, self.model.act_size[0]]
-            )
+            feed_dict[self.model.action_holder] = mini_batch["actions"]
         else:
-            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
-                [-1, len(self.model.act_size)]
-            )
+            feed_dict[self.model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:
-                feed_dict[self.model.prev_action] = mini_batch["prev_action"].reshape(
-                    [-1, len(self.model.act_size)]
-                )
-            feed_dict[self.model.action_masks] = mini_batch["action_mask"].reshape(
-                [-1, sum(self.brain.vector_action_space_size)]
-            )
+                feed_dict[self.model.prev_action] = mini_batch["prev_action"]
+            feed_dict[self.model.action_masks] = mini_batch["action_mask"]
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.vec_obs_size]
-            )
-            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"].reshape(
-                [-1, self.vec_obs_size]
-            )
+            feed_dict[self.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
                 _obs = mini_batch["visual_obs%d" % i]
-                if self.sequence_length > 1 and self.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                else:
-                    feed_dict[self.model.visual_in[i]] = _obs
-
+                feed_dict[self.model.visual_in[i]] = _obs
             for i, _ in enumerate(self.model.next_visual_in):
                 _obs = mini_batch["next_visual_obs%d" % i]
-                if self.sequence_length > 1 and self.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.next_visual_in[i]] = _obs.reshape(
-                        [-1, _w, _h, _c]
-                    )
-                else:
-                    feed_dict[self.model.next_visual_in[i]] = _obs
+                feed_dict[self.model.next_visual_in[i]] = _obs
         if self.use_recurrent:
-            mem_in = mini_batch["memory"][:, 0, :]
-            next_mem_in = (
-                mini_batch["memory"][:, 1, :]
-                if self.sequence_length > 1
-                else mini_batch["memory"][:, 0, :]
-            )
+            mem_in = [
+                mini_batch["memory"][i]
+                for i in range(0, len(mini_batch["memory"]), self.sequence_length)
+            ]
+            # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
+            offset = 1 if self.sequence_length > 1 else 0
+            next_mem_in = [
+                mini_batch["memory"][i][: self.m_size // 4]
+                for i in range(offset, len(mini_batch["memory"]), self.sequence_length)
+            ]
             feed_dict[self.model.memory_in] = mem_in
-            feed_dict[self.model.next_memory_in] = next_mem_in[:, : self.m_size // 4]
-        feed_dict[self.model.dones_holder] = mini_batch["done"].flatten()
+            feed_dict[self.model.next_memory_in] = next_mem_in
+        feed_dict[self.model.dones_holder] = mini_batch["done"]
         run_out = self._execute_model(feed_dict, self.update_dict)
         if update_target:
             self.sess.run(self.model.target_update_op)

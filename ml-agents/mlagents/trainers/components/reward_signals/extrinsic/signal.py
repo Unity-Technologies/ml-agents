@@ -30,7 +30,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
-        env_rews = mini_batch["environment_rewards"]
+        env_rews = np.array(mini_batch["environment_rewards"])
 
         return RewardSignalResult(self.strength * env_rews, env_rews)
 

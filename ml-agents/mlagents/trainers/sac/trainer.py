@@ -13,14 +13,15 @@ import tensorflow as tf
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.envs.action_info import ActionInfoOutputs
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
 
-class SACTrainer(Trainer):
+class SACTrainer(RLTrainer):
     """The SACTrainer is an implementation of the SAC algorithm."""
 
     def __init__(
@@ -81,19 +82,6 @@ class SACTrainer(Trainer):
         )
         self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
-        stats = defaultdict(list)
-
-        # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
-        # used for reporting only
-        self.collected_rewards = {"environment": {}}
-        for key, config in trainer_parameters["reward_signals"].items():
-            if type(config) is dict:
-                self.collected_rewards[key] = {}
-
-        self.stats = stats
-
-        self.training_buffer = Buffer()
-
         # Load the replay buffer if load
         if load and self.checkpoint_replay_buffer:
             try:
@@ -109,39 +97,6 @@ class SACTrainer(Trainer):
             )
 
         self.episode_steps = {}
-
-    @property
-    def parameters(self):
-        """
-        Returns the trainer parameters of the trainer.
-        """
-        return self.trainer_parameters
-
-    @property
-    def get_max_steps(self):
-        """
-        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
-        :return: The maximum number of steps of the trainer
-        """
-        return float(self.trainer_parameters["max_steps"])
-
-    @property
-    def get_step(self):
-        """
-        Returns the number of steps the trainer has performed
-        :return: the step count of the trainer
-        """
-        return self.step
-
-    @property
-    def reward_buffer(self):
-        """
-        Returns the reward buffer. The reward buffer contains the cumulative
-        rewards of the most recent episodes completed by agents using this
-        trainer.
-        :return: the reward buffer.
-        """
-        return self._reward_buffer
 
     def save_model(self) -> None:
         """
@@ -169,70 +124,6 @@ class SACTrainer(Trainer):
         LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "wb") as file_object:
             self.training_buffer.update_buffer.load_from_file(file_object)
-
-    def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
-        """
-        Constructs a BrainInfo which contains the most recent previous experiences for all agents
-        which correspond to the agents in a provided next_info.
-        :BrainInfo next_info: A t+1 BrainInfo.
-        :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
-        """
-        visual_observations: List[List[Any]] = []
-        vector_observations = []
-        text_observations = []
-        memories = []
-        rewards = []
-        local_dones = []
-        max_reacheds = []
-        agents = []
-        prev_vector_actions = []
-        prev_text_actions = []
-        action_masks = []
-        for agent_id in next_info.agents:
-            agent_brain_info = self.training_buffer[agent_id].last_brain_info
-            if agent_brain_info is None:
-                agent_brain_info = next_info
-            agent_index = agent_brain_info.agents.index(agent_id)
-            for i in range(len(next_info.visual_observations)):
-                visual_observations[i].append(
-                    agent_brain_info.visual_observations[i][agent_index]
-                )
-            vector_observations.append(
-                agent_brain_info.vector_observations[agent_index]
-            )
-            text_observations.append(agent_brain_info.text_observations[agent_index])
-            if self.policy.use_recurrent:
-                if len(agent_brain_info.memories) > 0:
-                    memories.append(agent_brain_info.memories[agent_index])
-                else:
-                    memories.append(self.policy.make_empty_memory(1))
-            rewards.append(agent_brain_info.rewards[agent_index])
-            local_dones.append(agent_brain_info.local_done[agent_index])
-            max_reacheds.append(agent_brain_info.max_reached[agent_index])
-            agents.append(agent_brain_info.agents[agent_index])
-            prev_vector_actions.append(
-                agent_brain_info.previous_vector_actions[agent_index]
-            )
-            prev_text_actions.append(
-                agent_brain_info.previous_text_actions[agent_index]
-            )
-            action_masks.append(agent_brain_info.action_masks[agent_index])
-        if self.policy.use_recurrent:
-            memories = np.vstack(memories)
-        curr_info = BrainInfo(
-            visual_observations,
-            vector_observations,
-            text_observations,
-            memories,
-            rewards,
-            agents,
-            local_dones,
-            prev_vector_actions,
-            prev_text_actions,
-            max_reacheds,
-            action_masks,
-        )
-        return curr_info
 
     def add_experiences(
         self,
@@ -456,7 +347,8 @@ class SACTrainer(Trainer):
                 >= self.trainer_parameters["batch_size"]
             ):
                 sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"] // self.policy.sequence_length
+                    self.trainer_parameters["batch_size"],
+                    sequence_length=self.policy.sequence_length,
                 )
                 # Get rewards for each reward
                 for name, signal in self.policy.reward_signals.items():
@@ -508,7 +400,8 @@ class SACTrainer(Trainer):
         )
         for _ in range(num_updates):
             sampled_minibatch = buffer.sample_mini_batch(
-                self.trainer_parameters["batch_size"] // self.policy.sequence_length
+                self.trainer_parameters["batch_size"],
+                sequence_length=self.policy.sequence_length,
             )
             for _, _reward_signal in self.policy.reward_signals.items():
                 _stats = _reward_signal.update(sampled_minibatch, n_sequences)
