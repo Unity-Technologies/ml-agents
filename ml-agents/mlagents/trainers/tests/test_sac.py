@@ -286,7 +286,7 @@ def test_sac_simple_env(dummy_config):  # TODO: Move this to test_simple_rl
         env_manager = SimpleEnvManager(env)
 
         trainers = initialize_trainers(
-            trainer_config=dummy_config(),
+            trainer_config=dummy_config,
             external_brains=env_manager.external_brains,
             summaries_dir=dir,
             run_id=run_id,

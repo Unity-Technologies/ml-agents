@@ -1,6 +1,6 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, List, Deque, Any
+from typing import Dict, List, Deque, Any, Optional, NamedTuple
 import os
 import tensorflow as tf
 import numpy as np
@@ -10,9 +10,22 @@ from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, Brain
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.tf_policy import Policy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.components.reward_signals.reward_signal import RewardSignalResult
 from mlagents.envs import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
+
+RewardSignalResults = Dict[str, RewardSignalResult]
+
+
+class AllRewardsOutput(NamedTuple):
+    """
+    CLass stores outputs of reward signals on current BrainInfos.
+    Also stores the actual rewards and optionally the values.
+    """
+
+    reward_signals: RewardSignalResults
+    environment: np.ndarray
 
 
 class RLTrainer(Trainer):
@@ -141,12 +154,16 @@ class RLTrainer(Trainer):
         else:
             curr_to_use = curr_info
 
-        tmp_rewards_dict = {}
+        # Evaluate and store the reward signals
+        tmp_reward_signal_outs = {}
         for name, signal in self.policy.reward_signals.items():
-            tmp_rewards_dict[name] = signal.evaluate(curr_to_use, next_info)
-
+            tmp_reward_signal_outs[name] = signal.evaluate(curr_to_use, next_info)
         # Store the environment reward
-        tmp_rewards_dict["environment"] = next_info.rewards
+        tmp_environment = np.array(next_info.rewards)
+
+        rewards_out = AllRewardsOutput(
+            reward_signals=tmp_reward_signal_outs, environment=tmp_environment
+        )
 
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
@@ -199,7 +216,7 @@ class RLTrainer(Trainer):
 
                     # Add the value outputs if needed
                     self.add_rewards_outputs(
-                        values, tmp_rewards_dict, agent_id, idx, next_idx
+                        rewards_out, values, agent_id, idx, next_idx
                     )
 
                     for name, rewards in self.collected_rewards.items():
@@ -207,12 +224,12 @@ class RLTrainer(Trainer):
                             rewards[agent_id] = 0
                         if name == "environment":
                             # Report the reward from the environment
-                            rewards[agent_id] += np.array(next_info.rewards)[next_idx]
+                            rewards[agent_id] += rewards_out.environment[next_idx]
                         else:
                             # Report the reward signals
-                            rewards[agent_id] += tmp_rewards_dict[name].scaled_reward[
-                                next_idx
-                            ]
+                            rewards[agent_id] += rewards_out.reward_signals[
+                                name
+                            ].scaled_reward[next_idx]
                 if not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
@@ -236,8 +253,8 @@ class RLTrainer(Trainer):
 
     def add_rewards_outputs(
         self,
-        value: Dict[str, Any],
-        rewards_dict: Dict[str, float],
+        rewards_out: AllRewardsOutput,
+        values: Dict[str, np.ndarray],
         agent_id: str,
         agent_idx: int,
         agent_next_idx: int,

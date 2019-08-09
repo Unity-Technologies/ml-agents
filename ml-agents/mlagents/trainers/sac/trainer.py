@@ -15,7 +15,7 @@ from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 
@@ -137,8 +137,8 @@ class SACTrainer(RLTrainer):
 
     def add_rewards_outputs(
         self,
-        value: Dict[str, Any],
-        rewards_dict: Dict[str, RewardSignalResult],
+        rewards_out: AllRewardsOutput,
+        values: Dict[str, np.ndarray],
         agent_id: str,
         agent_idx: int,
         agent_next_idx: int,
@@ -147,7 +147,7 @@ class SACTrainer(RLTrainer):
         Takes the value output of the last action and store it into the training buffer.
         """
         self.training_buffer[agent_id]["environment_rewards"].append(
-            rewards_dict["environment"][agent_next_idx]
+            rewards_out.environment[agent_next_idx]
         )
 
     def process_experiences(
