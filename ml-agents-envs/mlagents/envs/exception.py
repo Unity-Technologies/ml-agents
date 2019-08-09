@@ -42,9 +42,9 @@ class SamplerException(UnityException):
 
     pass
 
-class SamplerException(UnityException):
+class LessonControllerError(UnityException):
     """
-    Related to errors with the sampler actions.
+    Any error related to the configuration of lesson controller
     """
 
     pass

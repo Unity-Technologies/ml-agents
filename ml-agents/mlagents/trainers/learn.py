@@ -17,6 +17,7 @@ from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
 from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs import UnityEnvironment
+from mlagents.envs.lesson_controller import LessonController
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import UnityEnvironmentException, SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
@@ -60,6 +61,9 @@ def run_training(
     sampler_file_path = (
         run_options["--sampler"] if run_options["--sampler"] != "None" else None
     )
+    lesson_config_path = (
+        run_options["--lesson-config"] if run_options["--lesson-config"] != "None" else None
+    )
 
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
@@ -82,14 +86,6 @@ def run_training(
             docker_target_name=docker_target_name
         )
 
-    sampler = None
-    lesson_config = None
-    if sampler_file_path is not None:
-        sampler = load_config(sampler_file_path)
-        lesson_config = LessonController(lesson_config_path)
-    sampler_manager = SamplerManager(sampler)
-
-
     trainer_config = load_config(trainer_config_path)
     env_factory = create_environment_factory(
         env_path,
@@ -100,8 +96,8 @@ def run_training(
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env, lesson)
-    sampler_manager, resampling_interval = create_sampler_manager(
-        sampler_file_path, env.reset_parameters
+    sampler_manager, lesson_config = create_sampler_manager(
+        sampler_file_path, env.reset_parameters, lesson_config_path
     )
 
     trainers = initialize_trainers(
@@ -130,7 +126,7 @@ def run_training(
         run_seed,
         fast_simulation,
         sampler_manager,
-        resampling_interval,
+        lesson_config,
     )
 
     # Signal that environment has been launched.
@@ -140,26 +136,27 @@ def run_training(
     tc.start_learning(env)
 
 
-def create_sampler_manager(sampler_file_path, env_reset_params):
+def create_sampler_manager(sampler_file_path, env_reset_params, lesson_config_path):
     sampler_config = None
     resample_interval = None
     if sampler_file_path is not None:
         sampler_config = load_config(sampler_file_path)
-        if "resampling-interval" in sampler_config:
-            # Filter arguments that do not exist in the environment
-            resample_interval = sampler_config.pop("resampling-interval")
-            if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
-                raise SamplerException(
-                    "Specified resampling-interval is not valid. Please provide"
-                    " a positive integer value for resampling-interval"
-                )
-        else:
-            raise SamplerException(
-                "Resampling interval was not specified in the sampler file."
-                " Please specify it with the 'resampling-interval' key in the sampler config file."
-            )
+        # if "resampling-interval" in sampler_config:
+        #     # Filter arguments that do not exist in the environment
+        #     resample_interval = sampler_config.pop("resampling-interval")
+        #     if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
+        #         raise SamplerException(
+        #             "Specified resampling-interval is not valid. Please provide"
+        #             " a positive integer value for resampling-interval"
+        #         )
+        # else:
+        #     raise SamplerException(
+        #         "Resampling interval was not specified in the sampler file."
+        #         " Please specify it with the 'resampling-interval' key in the sampler config file."
+        #     )
     sampler_manager = SamplerManager(sampler_config)
-    return sampler_manager, resample_interval
+    lesson_controller = LessonController(lesson_config_path)
+    return sampler_manager, lesson_controller
 
 
 def try_create_meta_curriculum(
@@ -302,6 +299,7 @@ def main():
       --env=<file>                Name of the Unity executable [default: None].
       --curriculum=<directory>    Curriculum json directory for environment [default: None].
       --sampler=<file>            Reset parameter yaml file for environment [default: None].
+      --lesson-config=<file>      Indicate how to change lessons for generalization training [default: None].
       --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
       --lesson=<n>                Start learning from this lesson [default: 0].
       --load                      Whether to load the model or randomly initialize [default: False].

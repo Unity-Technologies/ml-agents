@@ -18,6 +18,7 @@ from mlagents.envs.exception import (
     UnityCommunicationException,
 )
 from mlagents.envs.sampler_class import SamplerManager
+from mlagents.envs.lesson_controller import LessonController
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -37,7 +38,7 @@ class TrainerController(object):
         training_seed: int,
         fast_simulation: bool,
         sampler_manager: SamplerManager,
-        resampling_interval: Optional[int],
+        lesson_controller: LessonController,
     ):
         """
         :param trainers: Trainers for each brain to train.
@@ -49,7 +50,7 @@ class TrainerController(object):
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
-        :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
+        :param lesson_controller: Specifies a controller to indicate when to resample the reset parameters.
         """
         self.trainers = trainers
         self.model_path = model_path
@@ -63,13 +64,13 @@ class TrainerController(object):
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
         self.sampler_manager = sampler_manager
-        self.resampling_interval = resampling_interval
+        self.lesson_controller = lesson_controller
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
     def _get_measure_vals(self):
-        brain_names_to_measure_vals = {}
         if self.meta_curriculum:
+            brain_names_to_measure_vals = {}
             for (
                 brain_name,
                 curriculum,
@@ -83,11 +84,24 @@ class TrainerController(object):
                 elif curriculum.measure == "reward":
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
                     brain_names_to_measure_vals[brain_name] = measure_val
-        else:
+            return brain_names_to_measure_vals
+
+        elif ((self.sampler_manager is not None) and (self.lesson_controller is not None)):
+            brain_names_to_measure_vals = {}
             for brain_name, trainer in self.trainers.items():
-                measure_val = np.mean(trainer.reward_buffer)
-                brain_names_to_measure_vals[brain_name] = measure_val
-        return brain_names_to_measure_vals
+                if (self.lesson_controller.measure == "progress"):
+                    measure_val = (
+                        trainer.get_step
+                        / trainer.get_max_steps
+                    )
+                    brain_names_to_measure_vals[brain_name]  = measure_val
+                elif (self.lesson_controller.measure == "reward"):
+                    measure_val = np.mean(trainer.reward_buffer)
+                    brain_names_to_measure_vals[brain_name] = measure_val
+            return brain_names_to_measure_vals
+
+        else:
+            return None
 
     def _save_model(self):
         """
@@ -262,8 +276,7 @@ class TrainerController(object):
         generalization_reset = (
             not self.sampler_manager.is_empty()
             and (steps != 0)
-            and (self.resampling_interval)
-            and (steps % self.resampling_interval == 0)
+            and (any(lessons_incremented.values()))
         )
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)
