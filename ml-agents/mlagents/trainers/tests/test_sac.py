@@ -275,52 +275,5 @@ def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-def test_sac_simple_env(dummy_config):  # TODO: Move this to test_simple_rl
-    # Create controller and begin training.
-    with tempfile.TemporaryDirectory() as dir:
-        run_id = "id"
-        save_freq = 99999
-        seed = 1337
-
-        env = Simple1DEnvironment(use_discrete=True)
-        env_manager = SimpleEnvManager(env)
-
-        trainers = initialize_trainers(
-            trainer_config=dummy_config,
-            external_brains=env_manager.external_brains,
-            summaries_dir=dir,
-            run_id=run_id,
-            model_path=dir,
-            keep_checkpoints=1,
-            train_model=True,
-            load_model=False,
-            seed=seed,
-            meta_curriculum=None,
-            multi_gpu=False,
-        )
-
-        tc = TrainerController(
-            trainers=trainers,
-            summaries_dir=dir,
-            model_path=dir,
-            run_id=run_id,
-            meta_curriculum=None,
-            train=True,
-            training_seed=seed,
-            fast_simulation=True,
-            sampler_manager=SamplerManager(None),
-            resampling_interval=None,
-            save_freq=save_freq,
-        )
-
-        # Begin training
-
-        tc.start_learning(env_manager)
-
-        for _, mean_reward in tc._get_measure_vals().items():
-            assert not math.isnan(mean_reward)
-            assert mean_reward > 0.9
-
-
 if __name__ == "__main__":
     pytest.main()
