@@ -53,6 +53,23 @@ class GAILRewardSignal(RewardSignal):
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
 
+    def evaluate(
+        self, current_info: BrainInfo, next_info: BrainInfo
+    ) -> RewardSignalResult:
+        if len(current_info.agents) == 0:
+            return RewardSignalResult([], [])
+        mini_batch: Dict[str, np.array] = {}
+        # Construct the batch
+        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
+        for i, _ in enumerate(current_info.visual_observations):
+            mini_batch["visual_obs%d" % i] = current_info.visual_observations[i]
+        if self.policy.use_vec_obs:
+            mini_batch["vector_obs"] = current_info.vector_observations
+
+        result = self.evaluate_batch(mini_batch)
+        return result
+
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.model.batch_size: len(mini_batch["actions"]),
@@ -72,36 +89,7 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
         else:
             feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
-
-        unscaled_reward = self.policy.sess.run(
-            self.model.intrinsic_reward, feed_dict=feed_dict
-        )
-        scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
-        return RewardSignalResult(scaled_reward, unscaled_reward)
-
-    def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> RewardSignalResult:
-        if len(current_info.agents) == 0:
-            return []
-
-        feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.model.batch_size: len(next_info.vector_observations),
-            self.policy.model.sequence_length: 1,
-        }
-        if self.model.use_vail:
-            feed_dict[self.model.use_noise] = [0]
-
-        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
-        feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
-        if self.policy.use_continuous_act:
-            feed_dict[
-                self.policy.model.selected_actions
-            ] = next_info.previous_vector_actions
-        else:
-            feed_dict[
-                self.policy.model.action_holder
-            ] = next_info.previous_vector_actions
+        feed_dict[self.model.done_policy] = mini_batch["done"]
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
