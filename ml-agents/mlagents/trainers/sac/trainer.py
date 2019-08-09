@@ -4,18 +4,19 @@
 
 import logging
 from collections import deque, defaultdict
-from typing import List, Any
+from typing import List, Any, Dict
 import os
 
 import numpy as np
 import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -125,119 +126,29 @@ class SACTrainer(RLTrainer):
         with open(filename, "wb") as file_object:
             self.training_buffer.update_buffer.load_from_file(file_object)
 
-    def add_experiences(
-        self,
-        curr_all_info: AllBrainInfo,
-        next_all_info: AllBrainInfo,
-        take_action_outputs: ActionInfoOutputs,
+    def add_policy_outputs(
+        self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int
     ) -> None:
         """
-        Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param take_action_outputs: The outputs of the Policy's get_action method.
+        Takes the output of the last action and store it into the training buffer.
         """
-        self.trainer_metrics.start_experience_collection_timer()
-        if take_action_outputs:
-            self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
-            self.stats["Policy/Learning Rate"].append(
-                take_action_outputs["learning_rate"]
-            )
-            for name, signal in self.policy.reward_signals.items():
-                self.stats[signal.value_name].append(
-                    np.mean(take_action_outputs["value"][name])
-                )
+        actions = take_action_outputs["action"]
+        self.training_buffer[agent_id]["actions"].append(actions[agent_idx])
 
-        curr_info = curr_all_info[self.brain_name]
-        next_info = next_all_info[self.brain_name]
-
-        for agent_id in curr_info.agents:
-            self.training_buffer[agent_id].last_brain_info = curr_info
-            self.training_buffer[
-                agent_id
-            ].last_take_action_outputs = take_action_outputs
-
-        if curr_info.agents != next_info.agents:
-            curr_to_use = self.construct_curr_info(next_info)
-        else:
-            curr_to_use = curr_info
-
-        tmp_rewards_dict = {}
-        for name, signal in self.policy.reward_signals.items():
-            tmp_rewards_dict[name] = signal.evaluate(curr_to_use, next_info)
-
-        for agent_id in next_info.agents:
-            stored_info = self.training_buffer[agent_id].last_brain_info
-            stored_take_action_outputs = self.training_buffer[
-                agent_id
-            ].last_take_action_outputs
-            if stored_info is not None:
-                idx = stored_info.agents.index(agent_id)
-                next_idx = next_info.agents.index(agent_id)
-
-                if not stored_info.local_done[idx]:
-                    for i, _ in enumerate(stored_info.visual_observations):
-                        self.training_buffer[agent_id]["visual_obs%d" % i].append(
-                            stored_info.visual_observations[i][idx]
-                        )
-                        self.training_buffer[agent_id]["next_visual_obs%d" % i].append(
-                            next_info.visual_observations[i][next_idx]
-                        )
-                    if self.policy.use_vec_obs:
-                        self.training_buffer[agent_id]["vector_obs"].append(
-                            stored_info.vector_observations[idx]
-                        )
-                        self.training_buffer[agent_id]["next_vector_in"].append(
-                            next_info.vector_observations[next_idx]
-                        )
-                    if self.policy.use_recurrent:
-                        if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros(
-                                (len(stored_info.agents), self.policy.m_size)
-                            )
-                        self.training_buffer[agent_id]["memory"].append(
-                            stored_info.memories[idx]
-                        )
-                    actions = stored_take_action_outputs["action"]
-
-                    if not self.policy.use_continuous_act:
-                        self.training_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx], padding_value=1.0
-                        )
-                    a_dist = stored_take_action_outputs["log_probs"]
-
-                    # value is a dictionary from name of reward to value estimate of the value head
-                    self.training_buffer[agent_id]["actions"].append(actions[idx])
-                    self.training_buffer[agent_id]["prev_action"].append(
-                        stored_info.previous_vector_actions[idx]
-                    )
-                    self.training_buffer[agent_id]["masks"].append(1.0)
-                    self.training_buffer[agent_id]["done"].append(
-                        next_info.local_done[next_idx]
-                    )
-                    self.training_buffer[agent_id]["environment_rewards"].append(
-                        np.array(next_info.rewards)[next_idx]
-                    )
-
-                    self.training_buffer[agent_id]["action_probs"].append(a_dist[idx])
-
-                    for idx, (name, rewards) in enumerate(
-                        self.collected_rewards.items()
-                    ):
-                        if agent_id not in rewards:
-                            rewards[agent_id] = 0
-                        if name == "environment":
-                            # Report the reward from the environment
-                            rewards[agent_id] += np.array(next_info.rewards)[next_idx]
-                        else:
-                            # Report the reward signals
-                            rewards[agent_id] += tmp_rewards_dict[name][0][next_idx]
-
-                if not next_info.local_done[next_idx]:
-                    if agent_id not in self.episode_steps:
-                        self.episode_steps[agent_id] = 0
-                    self.episode_steps[agent_id] += 1
-        self.trainer_metrics.end_experience_collection_timer()
+    def add_rewards_outputs(
+        self,
+        value: Dict[str, Any],
+        rewards_dict: Dict[str, RewardSignalResult],
+        agent_id: str,
+        agent_idx: int,
+        agent_next_idx: int,
+    ) -> None:
+        """
+        Takes the value output of the last action and store it into the training buffer.
+        """
+        self.training_buffer[agent_id]["environment_rewards"].append(
+            rewards_dict["environment"][agent_next_idx]
+        )
 
     def process_experiences(
         self, current_info: AllBrainInfo, new_info: AllBrainInfo

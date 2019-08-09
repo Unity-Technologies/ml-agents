@@ -9,10 +9,8 @@ import tensorflow as tf
 
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.tests.test_environments.test_simple import (
-    Simple1DEnvironment,
-    SimpleEnvManager,
-)
+from mlagents.trainers.tests.test_simple_rl import Simple1DEnvironment, SimpleEnvManager
+from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.trainer_controller import TrainerController
@@ -277,31 +275,47 @@ def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-def test_sac_simple_env(dummy_config):
+def test_sac_simple_env(dummy_config):  # TODO: Move this to test_simple_rl
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
         save_freq = 99999
-        tc = TrainerController(
-            dir,
-            dir,
-            run_id,
-            save_freq,
-            meta_curriculum=None,
-            load=False,
-            train=True,
+        seed = 1337
+
+        env = Simple1DEnvironment(use_discrete=True)
+        env_manager = SimpleEnvManager(env)
+
+        trainers = initialize_trainers(
+            trainer_config=dummy_config(),
+            external_brains=env_manager.external_brains,
+            summaries_dir=dir,
+            run_id=run_id,
+            model_path=dir,
             keep_checkpoints=1,
-            lesson=None,
-            training_seed=1337,
+            train_model=True,
+            load_model=False,
+            seed=seed,
+            meta_curriculum=None,
+            multi_gpu=False,
+        )
+
+        tc = TrainerController(
+            trainers=trainers,
+            summaries_dir=dir,
+            model_path=dir,
+            run_id=run_id,
+            meta_curriculum=None,
+            train=True,
+            training_seed=seed,
             fast_simulation=True,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
+            save_freq=save_freq,
         )
 
         # Begin training
-        env = Simple1DEnvironment()
-        env_manager = SimpleEnvManager(env)
-        tc.start_learning(env_manager, {"default": dummy_config})
+
+        tc.start_learning(env_manager)
 
         for _, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)

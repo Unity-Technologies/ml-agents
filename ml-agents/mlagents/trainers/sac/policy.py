@@ -77,7 +77,8 @@ class SACPolicy(TFPolicy):
         self.inference_dict = {
             "action": self.model.output,
             "log_probs": self.model.all_log_probs,
-            "value": self.model.value_heads,
+            "value_heads": self.model.value_heads,
+            "value": self.model.value,
             "entropy": self.model.entropy,
             "learning_rate": self.model.learning_rate,
         }
@@ -183,26 +184,3 @@ class SACPolicy(TFPolicy):
         if update_target:
             self.sess.run(self.model.target_update_op)
         return run_out
-
-    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
-        """
-        Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: an ActionInfo containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        if len(brain_info.agents) == 0:
-            return ActionInfo([], [], [], None, None)
-
-        run_out = self.evaluate(brain_info)
-        mean_values = np.mean(
-            np.array(list(run_out.get("value").values())), axis=0
-        ).flatten()
-
-        return ActionInfo(
-            action=run_out.get("action"),
-            memory=run_out.get("memory_out"),
-            text=None,
-            value=mean_values,
-            outputs=run_out,
-        )

@@ -145,6 +145,9 @@ class RLTrainer(Trainer):
         for name, signal in self.policy.reward_signals.items():
             tmp_rewards_dict[name] = signal.evaluate(curr_to_use, next_info)
 
+        # Store the environment reward
+        tmp_rewards_dict["environment"] = next_info.rewards
+
         for agent_id in next_info.agents:
             stored_info = self.training_buffer[agent_id].last_brain_info
             stored_take_action_outputs = self.training_buffer[
@@ -193,6 +196,7 @@ class RLTrainer(Trainer):
                     )
 
                     values = stored_take_action_outputs["value_heads"]
+
                     # Add the value outputs if needed
                     self.add_rewards_outputs(
                         values, tmp_rewards_dict, agent_id, idx, next_idx
