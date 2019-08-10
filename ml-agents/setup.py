@@ -29,7 +29,7 @@ setup(
     ),
     zip_safe=False,
     install_requires=[
-        "mlagents_envs==0.9.0",
+        "mlagents_envs==0.9.0a",
         "tensorflow>=1.7,<1.8",
         "Pillow>=4.2.1",
         "matplotlib",
