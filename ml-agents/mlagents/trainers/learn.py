@@ -93,7 +93,7 @@ def run_training(
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env, lesson)
     sampler_manager, resampling_interval = create_sampler_manager(
-        sampler_file_path, env.reset_parameters
+        sampler_file_path, env.reset_parameters, run_seed
     )
 
     trainers = initialize_trainers(
@@ -132,7 +132,7 @@ def run_training(
     tc.start_learning(env)
 
 
-def create_sampler_manager(sampler_file_path, env_reset_params):
+def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
     sampler_config = None
     resample_interval = None
     if sampler_file_path is not None:
@@ -150,7 +150,7 @@ def create_sampler_manager(sampler_file_path, env_reset_params):
                 "Resampling interval was not specified in the sampler file."
                 " Please specify it with the 'resampling-interval' key in the sampler config file."
             )
-    sampler_manager = SamplerManager(sampler_config)
+    sampler_manager = SamplerManager(sampler_config, run_seed)
     return sampler_manager, resample_interval
 
 

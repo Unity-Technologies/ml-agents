@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name="mlagents_envs",
-    version="0.9.0",
+    version="0.9.1",
     description="Unity Machine Learning Agents Interface",
     url="https://github.com/Unity-Technologies/ml-agents",
     author="Unity Technologies",
