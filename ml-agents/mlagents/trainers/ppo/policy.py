@@ -30,27 +30,10 @@ class PPOPolicy(TFPolicy):
 
         reward_signal_configs = trainer_params["reward_signals"]
 
+        self.create_model(brain, trainer_params, reward_signal_configs, seed)
+
         self.reward_signals = {}
         with self.graph.as_default():
-            self.model = PPOModel(
-                brain,
-                lr=float(trainer_params["learning_rate"]),
-                h_size=int(trainer_params["hidden_units"]),
-                epsilon=float(trainer_params["epsilon"]),
-                beta=float(trainer_params["beta"]),
-                max_step=float(trainer_params["max_steps"]),
-                normalize=trainer_params["normalize"],
-                use_recurrent=trainer_params["use_recurrent"],
-                num_layers=int(trainer_params["num_layers"]),
-                m_size=self.m_size,
-                seed=seed,
-                stream_names=list(reward_signal_configs.keys()),
-                vis_encode_type=EncoderType(
-                    trainer_params.get("vis_encode_type", "simple")
-                ),
-            )
-            self.model.create_ppo_optimizer()
-
             # Create reward signals
             for reward_signal, config in reward_signal_configs.items():
                 self.reward_signals[reward_signal] = create_reward_signal(
@@ -78,7 +61,8 @@ class PPOPolicy(TFPolicy):
         self.inference_dict = {
             "action": self.model.output,
             "log_probs": self.model.all_log_probs,
-            "value": self.model.value_heads,
+            "value": self.model.value,
+            "value_heads": self.model.value_heads,
             "entropy": self.model.entropy,
             "learning_rate": self.model.learning_rate,
         }
@@ -101,6 +85,34 @@ class PPOPolicy(TFPolicy):
             "policy_loss": self.total_policy_loss,
             "update_batch": self.model.update_batch,
         }
+
+    def create_model(self, brain, trainer_params, reward_signal_configs, seed):
+        """
+        Create PPO model
+        :param brain: Assigned Brain object.
+        :param trainer_params: Defined training parameters.
+        :param reward_signal_configs: Reward signal config
+        :param seed: Random seed.
+        """
+        with self.graph.as_default():
+            self.model = PPOModel(
+                brain=brain,
+                lr=float(trainer_params["learning_rate"]),
+                h_size=int(trainer_params["hidden_units"]),
+                epsilon=float(trainer_params["epsilon"]),
+                beta=float(trainer_params["beta"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=trainer_params["normalize"],
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                stream_names=list(reward_signal_configs.keys()),
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
+            )
+            self.model.create_ppo_optimizer()
 
     @timed
     def evaluate(self, brain_info):
@@ -143,58 +155,47 @@ class PPOPolicy(TFPolicy):
         :param mini_batch: Experience batch.
         :return: Output from update process.
         """
+        feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
+        run_out = self._execute_model(feed_dict, self.update_dict)
+        return run_out
+
+    def construct_feed_dict(self, model, mini_batch, num_sequences):
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
-            self.model.mask_input: mini_batch["masks"].flatten(),
-            self.model.advantage: mini_batch["advantages"].reshape([-1, 1]),
-            self.model.all_old_log_probs: mini_batch["action_probs"].reshape(
-                [-1, sum(self.model.act_size)]
-            ),
+            self.model.mask_input: mini_batch["masks"],
+            self.model.advantage: mini_batch["advantages"],
+            self.model.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
-            feed_dict[self.model.returns_holders[name]] = mini_batch[
+            feed_dict[model.returns_holders[name]] = mini_batch[
                 "{}_returns".format(name)
-            ].flatten()
-            feed_dict[self.model.old_values[name]] = mini_batch[
+            ]
+            feed_dict[model.old_values[name]] = mini_batch[
                 "{}_value_estimates".format(name)
-            ].flatten()
+            ]
 
         if self.use_continuous_act:
-            feed_dict[self.model.output_pre] = mini_batch["actions_pre"].reshape(
-                [-1, self.model.act_size[0]]
-            )
-            feed_dict[self.model.epsilon] = mini_batch["random_normal_epsilon"].reshape(
-                [-1, self.model.act_size[0]]
-            )
+
+            feed_dict[model.output_pre] = mini_batch["actions_pre"]
+            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
         else:
-            feed_dict[self.model.action_holder] = mini_batch["actions"].reshape(
-                [-1, len(self.model.act_size)]
-            )
+            feed_dict[model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:
-                feed_dict[self.model.prev_action] = mini_batch["prev_action"].reshape(
-                    [-1, len(self.model.act_size)]
-                )
-            feed_dict[self.model.action_masks] = mini_batch["action_mask"].reshape(
-                [-1, sum(self.brain.vector_action_space_size)]
-            )
+                feed_dict[model.prev_action] = mini_batch["prev_action"]
+            feed_dict[model.action_masks] = mini_batch["action_mask"]
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.vec_obs_size]
-            )
+            feed_dict[model.vector_in] = mini_batch["vector_obs"]
         if self.model.vis_obs_size > 0:
             for i, _ in enumerate(self.model.visual_in):
-                _obs = mini_batch["visual_obs%d" % i]
-                if self.sequence_length > 1 and self.use_recurrent:
-                    (_batch, _seq, _w, _h, _c) = _obs.shape
-                    feed_dict[self.model.visual_in[i]] = _obs.reshape([-1, _w, _h, _c])
-                else:
-                    feed_dict[self.model.visual_in[i]] = _obs
+                feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
         if self.use_recurrent:
-            mem_in = mini_batch["memory"][:, 0, :]
-            feed_dict[self.model.memory_in] = mem_in
-        run_out = self._execute_model(feed_dict, self.update_dict)
-        return run_out
+            mem_in = [
+                mini_batch["memory"][i]
+                for i in range(0, len(mini_batch["memory"]), self.sequence_length)
+            ]
+            feed_dict[model.memory_in] = mem_in
+        return feed_dict
 
     def get_value_estimates(
         self, brain_info: BrainInfo, idx: int, done: bool
@@ -223,9 +224,9 @@ class PPOPolicy(TFPolicy):
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
             feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = brain_info.previous_vector_actions[
-                idx
-            ].reshape([-1, len(self.model.act_size)])
+            feed_dict[self.model.prev_action] = [
+                brain_info.previous_vector_actions[idx]
+            ]
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
@@ -237,26 +238,3 @@ class PPOPolicy(TFPolicy):
                     value_estimates[k] = 0.0
 
         return value_estimates
-
-    def get_action(self, brain_info: BrainInfo) -> ActionInfo:
-        """
-        Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BrainInfo from environment.
-        :return: an ActionInfo containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        if len(brain_info.agents) == 0:
-            return ActionInfo([], [], [], None, None)
-
-        run_out = self.evaluate(brain_info)
-        mean_values = np.mean(
-            np.array(list(run_out.get("value").values())), axis=0
-        ).flatten()
-
-        return ActionInfo(
-            action=run_out.get("action"),
-            memory=run_out.get("memory_out"),
-            text=None,
-            value=mean_values,
-            outputs=run_out,
-        )

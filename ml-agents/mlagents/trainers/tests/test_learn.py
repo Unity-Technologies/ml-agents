@@ -21,6 +21,7 @@ def basic_options():
         "--no-graphics": False,
         "<trainer-config-path>": "basic_path",
         "--debug": False,
+        "--multi-gpu": False,
         "--sampler": None,
     }
 
@@ -44,15 +45,13 @@ def test_run_training(
         with patch.object(TrainerController, "start_learning", MagicMock()):
             learn.run_training(0, 0, basic_options(), MagicMock())
             mock_init.assert_called_once_with(
+                {},
                 "./models/ppo-0",
                 "./summaries",
                 "ppo-0",
                 50000,
                 None,
                 False,
-                False,
-                5,
-                0,
                 0,
                 True,
                 sampler_manager_mock.return_value,
@@ -82,5 +81,5 @@ def test_docker_target_path(
         with patch.object(TrainerController, "start_learning", MagicMock()):
             learn.run_training(0, 0, options_with_docker_target, MagicMock())
             mock_init.assert_called_once()
-            assert mock_init.call_args[0][0] == "/dockertarget/models/ppo-0"
-            assert mock_init.call_args[0][1] == "/dockertarget/summaries"
+            assert mock_init.call_args[0][1] == "/dockertarget/models/ppo-0"
+            assert mock_init.call_args[0][2] == "/dockertarget/summaries"

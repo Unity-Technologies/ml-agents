@@ -57,7 +57,7 @@ class BehavioralCloningModel(LearningModel):
             self.action_masks = tf.placeholder(
                 shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
             )
-            self.sample_action_float, normalized_logits = self.create_discrete_action_masking_layer(
+            self.sample_action_float, _, normalized_logits = self.create_discrete_action_masking_layer(
                 tf.concat(policy_branches, axis=1), self.action_masks, self.act_size
             )
             tf.identity(normalized_logits, name="action")

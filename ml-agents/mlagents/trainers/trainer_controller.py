@@ -11,7 +11,6 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-from mlagents.envs import BrainParameters
 from mlagents.envs.env_manager import StepInfo
 from mlagents.envs.env_manager import EnvManager
 from mlagents.envs.exception import (
@@ -21,65 +20,51 @@ from mlagents.envs.exception import (
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers import Trainer, TrainerMetrics
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
-from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 
 class TrainerController(object):
     def __init__(
         self,
+        trainers: Dict[str, Trainer],
         model_path: str,
         summaries_dir: str,
         run_id: str,
         save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
-        load: bool,
         train: bool,
-        keep_checkpoints: int,
-        lesson: Optional[int],
         training_seed: int,
         fast_simulation: bool,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
     ):
         """
+        :param trainers: Trainers for each brain to train.
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
         :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
-        :param load: Whether to load the model or randomly initialize.
         :param train: Whether to train model, or only run inference.
-        :param keep_checkpoints: How many model checkpoints to keep.
-        :param lesson: Start learning from this lesson.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
-
+        self.trainers = trainers
         self.model_path = model_path
         self.summaries_dir = summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
         self.run_id = run_id
         self.save_freq = save_freq
-        self.lesson = lesson
-        self.load_model = load
         self.train_model = train
-        self.keep_checkpoints = keep_checkpoints
-        self.trainers: Dict[str, Trainer] = {}
         self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.meta_curriculum = meta_curriculum
-        self.seed = training_seed
         self.training_start_time = time()
         self.fast_simulation = fast_simulation
-        np.random.seed(self.seed)
-        tf.set_random_seed(self.seed)
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
+        np.random.seed(training_seed)
+        tf.set_random_seed(training_seed)
 
     def _get_measure_vals(self):
         brain_names_to_measure_vals = {}
@@ -143,78 +128,6 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].export_model()
 
-    def initialize_trainers(
-        self,
-        trainer_config: Dict[str, Any],
-        external_brains: Dict[str, BrainParameters],
-    ) -> None:
-        """
-        Initialization of the trainers
-        :param trainer_config: The configurations of the trainers
-        """
-        trainer_parameters_dict = {}
-        for brain_name in external_brains:
-            trainer_parameters = trainer_config["default"].copy()
-            trainer_parameters["summary_path"] = "{basedir}/{name}".format(
-                basedir=self.summaries_dir, name=str(self.run_id) + "_" + brain_name
-            )
-            trainer_parameters["model_path"] = "{basedir}/{name}".format(
-                basedir=self.model_path, name=brain_name
-            )
-            trainer_parameters["keep_checkpoints"] = self.keep_checkpoints
-            if brain_name in trainer_config:
-                _brain_key: Any = brain_name
-                while not isinstance(trainer_config[_brain_key], dict):
-                    _brain_key = trainer_config[_brain_key]
-                trainer_parameters.update(trainer_config[_brain_key])
-            trainer_parameters_dict[brain_name] = trainer_parameters.copy()
-        for brain_name in external_brains:
-            if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
-                self.trainers[brain_name] = OfflineBCTrainer(
-                    brain=external_brains[brain_name],
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-            elif trainer_parameters_dict[brain_name]["trainer"] == "online_bc":
-                self.trainers[brain_name] = OnlineBCTrainer(
-                    brain=external_brains[brain_name],
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-            elif trainer_parameters_dict[brain_name]["trainer"] == "ppo":
-                # Find lesson length based on the form of learning
-                if self.meta_curriculum:
-                    lesson_length = self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].min_lesson_length
-                else:
-                    lesson_length = 1
-
-                self.trainers[brain_name] = PPOTrainer(
-                    brain=external_brains[brain_name],
-                    reward_buff_cap=lesson_length,
-                    trainer_parameters=trainer_parameters_dict[brain_name],
-                    training=self.train_model,
-                    load=self.load_model,
-                    seed=self.seed,
-                    run_id=self.run_id,
-                )
-                self.trainer_metrics[brain_name] = self.trainers[
-                    brain_name
-                ].trainer_metrics
-            else:
-                raise UnityEnvironmentException(
-                    "The trainer config contains "
-                    "an unknown trainer type for "
-                    "brain {}".format(brain_name)
-                )
-
     @staticmethod
     def _create_model_path(model_path):
         try:
@@ -268,19 +181,11 @@ class TrainerController(object):
             else:
                 trainer.write_summary(global_step, delta_train_start)
 
-    def start_learning(
-        self, env_manager: EnvManager, trainer_config: Dict[str, Any]
-    ) -> None:
-        # TODO: Should be able to start learning at different lesson numbers
-        # for each curriculum.
-        if self.meta_curriculum is not None:
-            self.meta_curriculum.set_all_curriculums_to_lesson_num(self.lesson)
+    def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
 
         tf.reset_default_graph()
 
-        # Prevent a single session from taking all GPU memory.
-        self.initialize_trainers(trainer_config, env_manager.external_brains)
         for _, t in self.trainers.items():
             self.logger.info(t)
 
@@ -316,7 +221,7 @@ class TrainerController(object):
         env_manager.close()
 
     def end_trainer_episodes(
-        self, env: BaseUnityEnvironment, lessons_incremented: Dict[str, bool]
+        self, env: EnvManager, lessons_incremented: Dict[str, bool]
     ) -> None:
         self._reset_env(env)
         # Reward buffers reset takes place only for curriculum learning
@@ -327,7 +232,7 @@ class TrainerController(object):
             if changed:
                 self.trainers[brain_name].reward_buffer.clear()
 
-    def reset_env_if_ready(self, env: BaseUnityEnvironment, steps: int) -> None:
+    def reset_env_if_ready(self, env: EnvManager, steps: int) -> None:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -358,7 +263,7 @@ class TrainerController(object):
             self.end_trainer_episodes(env, lessons_incremented)
 
     @timed
-    def advance(self, env: SubprocessEnvManager) -> int:
+    def advance(self, env: EnvManager) -> int:
         with hierarchical_timer("env_step"):
             time_start_step = time()
             new_step_infos = env.step()
