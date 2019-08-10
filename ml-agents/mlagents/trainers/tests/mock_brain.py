@@ -139,3 +139,23 @@ def create_buffer(brain_infos, brain_params, sequence_length):
 
     buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
     return buffer
+
+
+def create_mock_3dball_brain():
+    mock_brain = create_mock_brainparams(
+        vector_action_space_type="continuous",
+        vector_action_space_size=[2],
+        vector_observation_space_size=8,
+    )
+    mock_brain.brain_name = "Ball3DBrain"
+    return mock_brain
+
+
+def create_mock_banana_brain():
+    mock_brain = create_mock_brainparams(
+        number_visual_observations=1,
+        vector_action_space_type="discrete",
+        vector_action_space_size=[3, 3, 3, 2],
+        vector_observation_space_size=0,
+    )
+    return mock_brain
