@@ -211,18 +211,6 @@ class PPOTrainer(RLTrainer):
                 values[name][agent_next_idx][0]
             )
 
-    def end_episode(self):
-        """
-        A signal that the Episode has ended. The buffer must be reset.
-        Get only called when the academy resets.
-        """
-        self.training_buffer.reset_local_buffers()
-        for agent_id in self.episode_steps:
-            self.episode_steps[agent_id] = 0
-        for rewards in self.collected_rewards.values():
-            for agent_id in rewards:
-                rewards[agent_id] = 0
-
     def is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model

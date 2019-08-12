@@ -79,3 +79,12 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs):
 
     # assert construct_curr_info worked properly
     assert len(brain_info.agents) == 1
+
+    # Test end episode
+    trainer.end_episode()
+    for agent_id in trainer.episode_steps:
+        assert trainer.episode_steps[agent_id] == 0
+        assert len(trainer.training_buffer[agent_id]["action"]) == 0
+    for rewards in trainer.collected_rewards.values():
+        for agent_id in rewards:
+            assert rewards[agent_id] == 0

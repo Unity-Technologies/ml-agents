@@ -236,6 +236,18 @@ class RLTrainer(Trainer):
                     self.episode_steps[agent_id] += 1
         self.trainer_metrics.end_experience_collection_timer()
 
+    def end_episode(self) -> None:
+        """
+        A signal that the Episode has ended. The buffer must be reset.
+        Get only called when the academy resets.
+        """
+        self.training_buffer.reset_local_buffers()
+        for agent_id in self.episode_steps:
+            self.episode_steps[agent_id] = 0
+        for rewards in self.collected_rewards.values():
+            for agent_id in rewards:
+                rewards[agent_id] = 0
+
     def add_policy_outputs(
         self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int
     ) -> None:
