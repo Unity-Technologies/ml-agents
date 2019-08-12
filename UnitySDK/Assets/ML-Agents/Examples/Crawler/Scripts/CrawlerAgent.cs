@@ -47,7 +47,8 @@ public class CrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
-    private Transform workingTransform;
+    Quaternion lookRotation;
+    Matrix4x4 targetDirMatrix;
 
     public override void InitializeAgent()
     {
@@ -64,9 +65,7 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
-
-        workingTransform = new GameObject().transform;
-    }
+   }
 
     /// <summary>
     /// We only need to change the joint settings based on decision freq.
@@ -94,8 +93,11 @@ public class CrawlerAgent : Agent
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        AddVectorObs(workingTransform.InverseTransformVector(rb.velocity));
-        AddVectorObs(workingTransform.InverseTransformDirection(rb.angularVelocity));
+        Vector3 velocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.velocity);
+        AddVectorObs(velocityRelativeToLookRotationToTarget);
+
+        Vector3 angularVelocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
 
         if (bp.rb.transform != body)
         {
@@ -113,7 +115,9 @@ public class CrawlerAgent : Agent
         jdController.GetCurrentJointForces();
         // Normalize dir vector to help generalize
 
-        workingTransform.rotation = Quaternion.LookRotation(dirToTarget);
+        lookRotation = Quaternion.LookRotation(dirToTarget);
+        targetDirMatrix = Matrix4x4.TRS(Vector3.zero, lookRotation, Vector3.one);
+
         // Forward & up to help with orientation
         RaycastHit hit;
         if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
@@ -121,9 +125,14 @@ public class CrawlerAgent : Agent
             AddVectorObs(hit.distance);
         }
         else
-            AddVectorObs(10.0f); 
-        AddVectorObs(workingTransform.InverseTransformVector(body.forward));
-        AddVectorObs(workingTransform.InverseTransformVector(body.up));
+            AddVectorObs(10.0f);
+
+        Vector3 bodyForwardRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.forward);
+        AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
+
+        Vector3 bodyUpRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.up);
+        AddVectorObs(bodyUpRelativeToLookRotationToTarget);
+
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
