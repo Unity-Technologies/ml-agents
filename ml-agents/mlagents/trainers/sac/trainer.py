@@ -123,8 +123,13 @@ class SACTrainer(RLTrainer):
         """
         filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
         LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
-        with open(filename, "wb") as file_object:
+        with open(filename, "rb+") as file_object:
             self.training_buffer.update_buffer.load_from_file(file_object)
+        LOGGER.info(
+            "Experience replay buffer has {} experiences.".format(
+                len(self.training_buffer.update_buffer["actions"])
+            )
+        )
 
     def add_policy_outputs(
         self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int

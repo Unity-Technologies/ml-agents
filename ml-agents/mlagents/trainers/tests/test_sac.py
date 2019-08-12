@@ -9,6 +9,7 @@ import tensorflow as tf
 
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
+from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.tests.test_simple_rl import Simple1DEnvironment, SimpleEnvManager
 from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs import UnityEnvironment
@@ -341,6 +342,32 @@ def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
             }
             sess.run(run_list, feed_dict=feed_dict)
             env.close()
+
+
+def test_sac_save_load_buffer(tmpdir):
+    env, mock_brain, _ = mb.setup_mock_env_and_brains(
+        mock.Mock(),
+        False,
+        False,
+        num_agents=NUM_AGENTS,
+        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+        discrete_action_space=DISCRETE_ACTION_SPACE,
+    )
+    trainer_params = dummy_config()
+    trainer_params["summary_path"] = str(tmpdir)
+    trainer_params["model_path"] = str(tmpdir)
+    trainer_params["save_replay_buffer"] = True
+    trainer = SACTrainer(mock_brain, 1, trainer_params, True, False, 0, 0)
+    trainer.training_buffer = mb.simulate_rollout(
+        env, trainer.policy, BUFFER_INIT_SAMPLES
+    )
+    buffer_len = len(trainer.training_buffer.update_buffer["actions"])
+    trainer.save_model()
+
+    # Wipe Trainer and try to load
+    trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
+    assert len(trainer2.training_buffer.update_buffer["actions"]) == buffer_len
 
 
 if __name__ == "__main__":
