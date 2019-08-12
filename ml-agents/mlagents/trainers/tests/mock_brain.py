@@ -107,7 +107,7 @@ def simulate_rollout(env, policy, buffer_init_samples):
     return buffer
 
 
-def create_buffer(brain_infos, brain_params, sequence_length):
+def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
     buffer = Buffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):
@@ -144,8 +144,10 @@ def create_buffer(brain_infos, brain_params, sequence_length):
         buffer[0]["random_normal_epsilon"].append(
             np.ones(buffer[0]["actions"][0].shape)
         )
-        buffer[0]["action_mask"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["memory"].append(np.ones(8))
+        buffer[0]["action_mask"].append(
+            np.ones(np.sum(brain_params.vector_action_space_size))
+        )
+        buffer[0]["memory"].append(np.ones(memory_size))
 
     buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
     return buffer

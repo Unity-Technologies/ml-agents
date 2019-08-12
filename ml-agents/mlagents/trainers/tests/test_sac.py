@@ -18,6 +18,7 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
 from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.tests import mock_brain as mb
 
 
 @pytest.fixture
@@ -32,13 +33,13 @@ def dummy_config():
         init_entcoef: 0.1
         learning_rate: 3.0e-4
         max_steps: 1024
-        memory_size: 256
+        memory_size: 8
         normalize: false
         updates_per_train: 1
         train_interval: 1
         num_layers: 1
         time_horizon: 64
-        sequence_length: 64
+        sequence_length: 16
         summary_freq: 1000
         tau: 0.005
         use_recurrent: false
@@ -53,49 +54,116 @@ def dummy_config():
     )
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
-def test_sac_cc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
-    tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0
+VECTOR_ACTION_SPACE = [2]
+VECTOR_OBS_SPACE = 8
+DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
+BUFFER_INIT_SAMPLES = 32
+NUM_AGENTS = 12
+
+
+def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_visual):
+    env, mock_brain, _ = mb.setup_mock_env_and_brains(
+        mock_env,
+        use_discrete,
+        use_visual,
+        num_agents=NUM_AGENTS,
+        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+        discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-    env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
 
     trainer_parameters = dummy_config
     model_path = env.brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = SACPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+    trainer_parameters["use_recurrent"] = use_rnn
+    policy = SACPolicy(0, mock_brain, trainer_parameters, False, False)
+    return env, policy
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_sac_cc_policy(mock_env, dummy_config):
+    # Test evaluate
+    tf.reset_default_graph()
+    env, policy = create_sac_policy_mock(
+        mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
     )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
     run_out = policy.evaluate(brain_info)
-    assert run_out["action"].shape == (3, 2)
+    assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
+
+    # Test update
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Mock out reward signal eval
+    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
+    policy.update(
+        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
+    )
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
-def test_sac_dc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_sac_dc_policy(mock_env, dummy_config):
+    # Test evaluate
     tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=True, visual_inputs=0
+    env, policy = create_sac_policy_mock(
+        mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=False
     )
-    env = UnityEnvironment(" ")
     brain_infos = env.reset()
     brain_info = brain_infos[env.brain_names[0]]
-
-    trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    policy = SACPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
-    )
     run_out = policy.evaluate(brain_info)
-    assert run_out["action"].shape == (3, 1)
+    assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
+
+    # Test update
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Mock out reward signal eval
+    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
+    policy.update(
+        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
+    )
+    env.close()
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_sac_visual_policy(mock_env, dummy_config):
+    # Test evaluate
+    tf.reset_default_graph()
+    env, policy = create_sac_policy_mock(
+        mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=True
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    run_out = policy.evaluate(brain_info)
+    assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
+
+    # Test update
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Mock out reward signal eval
+    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
+    run_out = policy.update(
+        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
+    )
+    assert type(run_out) is dict
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_sac_rnn_policy(mock_env, dummy_config):
+    # Test evaluate
+    tf.reset_default_graph()
+    env, policy = create_sac_policy_mock(
+        mock_env, dummy_config, use_rnn=True, use_discrete=True, use_visual=False
+    )
+    brain_infos = env.reset()
+    brain_info = brain_infos[env.brain_names[0]]
+    run_out = policy.evaluate(brain_info)
+    assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
+
+    # Test update
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Mock out reward signal eval
+    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
+    policy.update(buffer.update_buffer, num_sequences=2)
     env.close()
 
 
