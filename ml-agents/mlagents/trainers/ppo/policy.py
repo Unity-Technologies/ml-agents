@@ -94,7 +94,8 @@ class PPOPolicy(TFPolicy):
             {
                 "action": self.model.output,
                 "log_probs": self.model.all_log_probs,
-                "value": self.model.value_heads,
+                "value_heads": self.model.value_heads,
+                "value": self.model.value,
                 "entropy": self.model.entropy,
                 "learning_rate": self.model.learning_rate,
             }
