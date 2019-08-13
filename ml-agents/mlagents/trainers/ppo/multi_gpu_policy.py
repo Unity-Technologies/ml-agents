@@ -156,7 +156,13 @@ class MultiGpuPPOPolicy(PPOPolicy):
         device_batches = []
         for i in range(len(self.devices)):
             device_batches.append(
-                {k: v[i : i + device_batch_size] for (k, v) in mini_batch.items()}
+                {
+                    k: v[
+                        i * device_batch_size : i * device_batch_size
+                        + device_batch_size
+                    ]
+                    for (k, v) in mini_batch.items()
+                }
             )
 
         for batch, tower, reward_tower in zip(
