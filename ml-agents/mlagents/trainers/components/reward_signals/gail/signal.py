@@ -116,18 +116,16 @@ class GAILRewardSignal(RewardSignal):
         :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
         :return: Feed_dict for update process.
         """
-
-        num_sequences = min(
-            num_sequences, len(self.demonstration_buffer.update_buffer["actions"])
+        max_num_experiences = min(
+            len(mini_batch_policy["actions"]),
+            len(self.demonstration_buffer.update_buffer["actions"]),
         )
         # If num_sequences is less, we need to shorten the input batch.
         for key, element in mini_batch_policy.items():
-
-            mini_batch_policy[key] = element[:num_sequences]
+            mini_batch_policy[key] = element[:max_num_experiences]
         # Get demo buffer
-        self.demonstration_buffer.update_buffer.shuffle(
-            self.policy.sequence_length
-        )  # TODO: Replace with SAC sample method
+        self.demonstration_buffer.update_buffer.shuffle(1)
+        # TODO: Replace with SAC sample method
         mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
             0, len(mini_batch_policy["actions"])
         )

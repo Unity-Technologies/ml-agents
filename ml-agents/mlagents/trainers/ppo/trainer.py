@@ -443,8 +443,9 @@ class PPOTrainer(Trainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
+        buffer_length = len(self.training_buffer.update_buffer["actions"])
         self.trainer_metrics.start_policy_update_timer(
-            number_experiences=len(self.training_buffer.update_buffer["actions"]),
+            number_experiences=buffer_length,
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
         self.cumulative_returns_since_policy_update = []
@@ -464,9 +465,8 @@ class PPOTrainer(Trainer):
                 sequence_length=self.policy.sequence_length
             )
             buffer = self.training_buffer.update_buffer
-            for l in range(
-                0, len(self.training_buffer.update_buffer["actions"]), batch_size
-            ):
+            max_num_batch = buffer_length // batch_size
+            for l in range(0, max_num_batch * batch_size, batch_size):
                 update_stats = self.policy.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
