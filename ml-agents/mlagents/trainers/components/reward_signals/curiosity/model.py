@@ -42,7 +42,7 @@ class CuriosityModel(object):
                 # Create input ops for next (t+1) visual observations.
                 next_visual_input = LearningModel.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
-                    name="next_visual_observation_" + str(i),
+                    name="curiosity_next_visual_observation_" + str(i),
                 )
                 self.next_visual_in.append(next_visual_input)
 
@@ -53,7 +53,7 @@ class CuriosityModel(object):
                     self.encoding_size,
                     LearningModel.swish,
                     1,
-                    "stream_{}_visual_obs_encoder".format(i),
+                    "curiosity_stream_{}_visual_obs_encoder".format(i),
                     False,
                 )
 
@@ -62,7 +62,7 @@ class CuriosityModel(object):
                     self.encoding_size,
                     LearningModel.swish,
                     1,
-                    "stream_{}_visual_obs_encoder".format(i),
+                    "curiosity_stream_{}_visual_obs_encoder".format(i),
                     True,
                 )
                 visual_encoders.append(encoded_visual)
@@ -80,7 +80,7 @@ class CuriosityModel(object):
             self.next_vector_in = tf.placeholder(
                 shape=[None, self.policy_model.vec_obs_size],
                 dtype=tf.float32,
-                name="next_vector_observation",
+                name="curiosity_next_vector_observation",
             )
 
             encoded_vector_obs = self.policy_model.create_vector_observation_encoder(
@@ -88,7 +88,7 @@ class CuriosityModel(object):
                 self.encoding_size,
                 LearningModel.swish,
                 2,
-                "vector_obs_encoder",
+                "curiosity_vector_obs_encoder",
                 False,
             )
             encoded_next_vector_obs = self.policy_model.create_vector_observation_encoder(
@@ -96,7 +96,7 @@ class CuriosityModel(object):
                 self.encoding_size,
                 LearningModel.swish,
                 2,
-                "vector_obs_encoder",
+                "curiosity_vector_obs_encoder",
                 True,
             )
             encoded_state_list.append(encoded_vector_obs)

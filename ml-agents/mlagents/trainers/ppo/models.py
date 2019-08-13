@@ -359,6 +359,8 @@ class PPOModel(LearningModel):
         self.policy_loss = -tf.reduce_mean(
             tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1]
         )
+        # For cleaner stats reporting
+        self.abs_policy_loss = tf.abs(self.policy_loss)
 
         self.loss = (
             self.policy_loss

@@ -11,6 +11,7 @@ from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -23,7 +24,10 @@ NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {
 
 
 def create_reward_signal(
-    policy: TFPolicy, name: str, config_entry: Dict[str, Any]
+    policy: TFPolicy,
+    policy_model: LearningModel,
+    name: str,
+    config_entry: Dict[str, Any],
 ) -> RewardSignal:
     """
     Creates a reward signal class based on the name and config entry provided as a dict.
@@ -37,7 +41,7 @@ def create_reward_signal(
         raise UnityTrainerException("Unknown reward signal type {0}".format(name))
     rcls.check_config(config_entry)
     try:
-        class_inst = rcls(policy, **config_entry)
+        class_inst = rcls(policy, policy_model, **config_entry)
     except TypeError:
         raise UnityTrainerException(
             "Unknown parameters given for reward signal {0}".format(name)

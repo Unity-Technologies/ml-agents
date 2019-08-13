@@ -9,6 +9,7 @@ import tensorflow as tf
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 from mlagents.trainers.buffer import Buffer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -19,7 +20,13 @@ RewardSignalResult = namedtuple(
 
 
 class RewardSignal(abc.ABC):
-    def __init__(self, policy: TFPolicy, strength: float, gamma: float):
+    def __init__(
+        self,
+        policy: TFPolicy,
+        policy_model: LearningModel,
+        strength: float,
+        gamma: float,
+    ):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
@@ -35,9 +42,12 @@ class RewardSignal(abc.ABC):
         # Terminate discounted reward computation at Done. Can disable to mitigate positive bias in rewards with
         # no natural end, e.g. GAIL or Curiosity
         self.use_terminal_states = True
+        self.update_dict: Dict[str, tf.Tensor] = {}
         self.gamma = gamma
         self.policy = policy
+        self.policy_model = policy_model
         self.strength = strength
+        self.stats_name_to_update_name: Dict[str, str] = {}
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
@@ -68,12 +78,18 @@ class RewardSignal(abc.ABC):
             self.strength * np.zeros(mini_batch_len), np.zeros(mini_batch_len)
         )
 
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
+    def prepare_update(
+        self,
+        policy_model: LearningModel,
+        mini_batch: Dict[str, np.ndarray],
+        num_sequences: int,
+    ) -> Dict[tf.Tensor, Any]:
         """
-        If the reward signal has an internal model (e.g. GAIL or Curiosity), update that model.
+        If the reward signal has an internal model (e.g. GAIL or Curiosity), get the feed_dict
+        needed to update the buffer..
         :param update_buffer: An AgentBuffer that contains the live data from which to update.
         :param n_sequences: The number of sequences in the training buffer.
-        :return: A dict of {"Stat Name": stat} to be added to Tensorboard
+        :return: A dict that corresponds to the feed_dict needed for the update.
         """
         return {}
 

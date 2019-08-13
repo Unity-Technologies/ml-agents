@@ -218,15 +218,16 @@ class SACTrainer(RLTrainer):
         If reward_signal_train_interval is met, update the reward signals from the buffer.
         """
         if self.step % self.train_interval == 0:
-            LOGGER.debug("Updating SAC policy at step {}".format(self.step))
             self.update_sac_policy()
-            LOGGER.debug("Updating reward signals at step {}".format(self.step))
             self.update_reward_signals()
 
     def update_sac_policy(self) -> None:
         """
         Uses demonstration_buffer to update the policy.
-        The reward signal generators must be updated in this method at their own pace.
+        The reward signal generators are updated using different mini batches.
+        If we want to imitate http://arxiv.org/abs/1809.02925 and similar papers, where the policy is updated
+        N times, then the reward signals are updated N times, then reward_signal_updates_per_train
+        is greater than 1 and the reward signals are not updated in parallel.
         """
         self.trainer_metrics.start_policy_update_timer(
             number_experiences=len(self.training_buffer.update_buffer["actions"]),
@@ -236,15 +237,11 @@ class SACTrainer(RLTrainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total, entcoeff_total, q1loss_total, q2loss_total = (
-            [],
-            [],
-            [],
-            [],
-            [],
-        )
+
         num_updates = self.trainer_parameters["updates_per_train"]
+        batch_update_stats: Dict[str, list] = defaultdict(list)
         for _ in range(num_updates):
+            LOGGER.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.training_buffer.update_buffer
             if (
                 len(self.training_buffer.update_buffer["actions"])
@@ -255,19 +252,33 @@ class SACTrainer(RLTrainer):
                     sequence_length=self.policy.sequence_length,
                 )
                 # Get rewards for each reward
+                reward_signal_minibatches = {}
                 for name, signal in self.policy.reward_signals.items():
                     sampled_minibatch[
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
-                # print(sampled_minibatch)
-                run_out = self.policy.update(
-                    sampled_minibatch, n_sequences, update_target=True
+
+                    # In some cases we might want to update the reward signals separately
+                    if self.reward_signal_updates_per_train <= 1:
+                        # Get minibatches for reward signal update if needed
+                        if signal.update_dict:
+                            LOGGER.debug(
+                                "Updating {} at step {}".format(name, self.step)
+                            )
+                            reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                                self.trainer_parameters["batch_size"],
+                                sequence_length=self.policy.sequence_length,
+                            )
+
+                update_stats = self.policy.update(
+                    sampled_minibatch,
+                    n_sequences,
+                    update_target=True,
+                    reward_signal_minibatches=reward_signal_minibatches,
                 )
-                value_total.append(run_out["value_loss"])
-                policy_total.append(run_out["policy_loss"])
-                q1loss_total.append(run_out["q1_loss"])
-                q2loss_total.append(run_out["q2_loss"])
-                entcoeff_total.append(run_out["entropy_coef"])
+                for stat_name, value in update_stats.items():
+                    batch_update_stats[stat_name].append(value)
+
         # Truncate update buffer if neccessary. Truncate more than we need to to avoid truncating
         # a large buffer at each update.
         if (
@@ -278,11 +289,8 @@ class SACTrainer(RLTrainer):
                 int(self.trainer_parameters["buffer_size"] * 0.8)
             )
 
-        self.stats["Losses/Value Loss"].append(np.mean(value_total))
-        self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        self.stats["Losses/Q1 Loss"].append(np.mean(q1loss_total))
-        self.stats["Losses/Q2 Loss"].append(np.mean(q2loss_total))
-        self.stats["Policy/Entropy Coeff"].append(np.mean(entcoeff_total))
+        for stat, stat_list in batch_update_stats.items():
+            self.stats[stat].append(np.mean(stat_list))
 
         if self.policy.bc_module:
             update_stats = self.policy.bc_module.update()
@@ -296,18 +304,22 @@ class SACTrainer(RLTrainer):
         Iterate through the reward signals and update them. Unlike in PPO,
         do it separate from the policy so that it can be done at a different
         interval.
+        This function should only be used to simulate
+        http://arxiv.org/abs/1809.02925 and similar papers, where the policy is updated
+        N times, then the reward signals are updated N times. Normally, the reward signal
+        and policy are updated in parallel.
         """
         buffer = self.training_buffer.update_buffer
         num_updates = self.reward_signal_updates_per_train
-        n_sequences = max(
-            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
-        )
-        for _ in range(num_updates):
-            sampled_minibatch = buffer.sample_mini_batch(
-                self.trainer_parameters["batch_size"],
-                sequence_length=self.policy.sequence_length,
-            )
-            for _, _reward_signal in self.policy.reward_signals.items():
-                _stats = _reward_signal.update(sampled_minibatch, n_sequences)
-                for _stat, _val in _stats.items():
-                    self.stats[_stat].append(_val)
+        if num_updates > 1:
+            for _ in range(num_updates):
+                # Get minibatches for reward signal update if needed
+                reward_signal_minibatches = {}
+                for name, signal in self.policy.reward_signals.items():
+                    LOGGER.debug("Updating {} at step {}".format(name, self.step))
+                    # In some cases we might want to update the reward signals separately
+                    if signal.update_dict:
+                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                            self.trainer_parameters["batch_size"],
+                            sequence_length=self.policy.sequence_length,
+                        )

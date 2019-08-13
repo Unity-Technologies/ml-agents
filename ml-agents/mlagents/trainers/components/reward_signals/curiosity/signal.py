@@ -7,17 +7,18 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 
 
 class CuriosityRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: TFPolicy,
+        policy_model: LearningModel,
         strength: float,
         gamma: float,
         encoding_size: int = 128,
         learning_rate: float = 3e-4,
-        num_epoch: int = 3,
     ):
         """
         Creates the Curiosity reward generator
@@ -27,18 +28,20 @@ class CuriosityRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward.
         :param encoding_size: The size of the hidden encoding layer for the ICM
         :param learning_rate: The learning rate for the ICM.
-        :param num_epoch: The number of epochs to train over the training buffer for the ICM.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, policy_model, strength, gamma)
         self.model = CuriosityModel(
-            policy.model, encoding_size=encoding_size, learning_rate=learning_rate
+            policy_model, encoding_size=encoding_size, learning_rate=learning_rate
         )
-        self.num_epoch = num_epoch
         self.use_terminal_states = False
         self.update_dict = {
-            "forward_loss": self.model.forward_loss,
-            "inverse_loss": self.model.inverse_loss,
-            "update": self.model.update_batch,
+            "curiosity_forward_loss": self.model.forward_loss,
+            "curiosity_inverse_loss": self.model.inverse_loss,
+            "curiosity_update": self.model.update_batch,
+        }
+        self.stats_name_to_update_name = {
+            "Losses/Curiosity Forward Loss": "curiosity_forward_loss",
+            "Losses/Curiosity Inverse Loss": "curiosity_inverse_loss",
         }
         self.has_updated = False
 
@@ -73,12 +76,8 @@ class CuriosityRewardSignal(RewardSignal):
             self.policy.model.sequence_length: self.policy.sequence_length,
         }
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
-            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"].reshape(
-                [-1, self.policy.vec_obs_size]
-            )
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
         if self.policy.model.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.model.visual_in):
                 _obs = mini_batch["visual_obs%d" % i]
@@ -109,67 +108,37 @@ class CuriosityRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma", "encoding_size"]
         super().check_config(config_dict, param_keys)
 
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
+    def prepare_update(
+        self,
+        policy_model: LearningModel,
+        mini_batch: Dict[str, np.ndarray],
+        num_sequences: int,
+    ) -> Dict[tf.Tensor, Any]:
         """
-        Updates Curiosity model using training buffer. Divides training buffer into mini batches and performs
-        gradient descent.
-        :param update_buffer: Update buffer from which to pull data from.
-        :param num_sequences: Number of sequences in the update buffer.
-        :return: Dict of stats that should be reported to Tensorboard.
-        """
-        forward_total: List[float] = []
-        inverse_total: List[float] = []
-        for _ in range(self.num_epoch):
-            update_buffer.shuffle(sequence_length=self.policy.sequence_length)
-            buffer = update_buffer
-            for l in range(len(update_buffer["actions"]) // num_sequences):
-                start = l * num_sequences
-                end = (l + 1) * num_sequences
-                run_out_curio = self._update_batch(
-                    buffer.make_mini_batch(start, end), num_sequences
-                )
-                inverse_total.append(run_out_curio["inverse_loss"])
-                forward_total.append(run_out_curio["forward_loss"])
-
-        update_stats = {
-            "Losses/Curiosity Forward Loss": np.mean(forward_total),
-            "Losses/Curiosity Inverse Loss": np.mean(inverse_total),
-        }
-        return update_stats
-
-    def _update_batch(
-        self, mini_batch: Dict[str, np.ndarray], num_sequences: int
-    ) -> Dict[str, float]:
-        """
-        Updates model using buffer.
+        Prepare for update and get feed_dict.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
-        :return: Output from update process.
+        :return: Feed_dict needed for update.
         """
         feed_dict = {
-            self.policy.model.batch_size: num_sequences,
-            self.policy.model.sequence_length: self.policy.sequence_length,
-            self.policy.model.mask_input: mini_batch["masks"],
-            self.policy.model.advantage: mini_batch["advantages"],
-            self.policy.model.all_old_log_probs: mini_batch["action_probs"],
+            policy_model.batch_size: num_sequences,
+            policy_model.sequence_length: self.policy.sequence_length,
+            policy_model.mask_input: mini_batch["masks"],
         }
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.output_pre] = mini_batch["actions_pre"]
+            feed_dict[policy_model.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+            feed_dict[policy_model.action_holder] = mini_batch["actions"]
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
-        if self.policy.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.policy.model.visual_in):
-                feed_dict[self.policy.model.visual_in[i]] = mini_batch[
-                    "visual_obs%d" % i
-                ]
-            for i, _ in enumerate(self.policy.model.visual_in):
+        if policy_model.vis_obs_size > 0:
+            for i, _ in enumerate(policy_model.visual_in):
+                feed_dict[policy_model.visual_in[i]] = mini_batch["visual_obs%d" % i]
+            for i, _ in enumerate(policy_model.visual_in):
                 feed_dict[self.model.next_visual_in[i]] = mini_batch[
                     "next_visual_obs%d" % i
                 ]
 
         self.has_updated = True
-        run_out = self.policy._execute_model(feed_dict, self.update_dict)
-        return run_out
+        return feed_dict

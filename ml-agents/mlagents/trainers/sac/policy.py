@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import tensorflow as tf
 
+from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -30,31 +31,22 @@ class SACPolicy(TFPolicy):
             if type(rsignal) is dict:
                 reward_signal_configs[key] = rsignal
 
-        self.reward_signals = {}
+        self.inference_dict = {}
+        self.update_dict = {}
+        self.create_model(
+            brain, trainer_params, reward_signal_configs, is_training, load, seed
+        )
+        self.create_reward_signals(reward_signal_configs)
+
+        self.stats_name_to_update_name = {
+            "Losses/Value Loss": "value_loss",
+            "Losses/Policy Loss": "policy_loss",
+            "Losses/Q1 Loss": "q1_loss",
+            "Losses/Q2 Loss": "q2_loss",
+            "Policy/Entropy Coeff": "entropy_coef",
+        }
+
         with self.graph.as_default():
-            self.model = SACModel(
-                brain,
-                lr=float(trainer_params["learning_rate"]),
-                h_size=int(trainer_params["hidden_units"]),
-                init_entcoef=float(trainer_params["init_entcoef"]),
-                max_step=float(trainer_params["max_steps"]),
-                normalize=trainer_params["normalize"],
-                use_recurrent=trainer_params["use_recurrent"],
-                num_layers=int(trainer_params["num_layers"]),
-                m_size=self.m_size,
-                seed=seed,
-                stream_names=list(reward_signal_configs.keys()),
-                tau=float(trainer_params["tau"]),
-                gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
-                vis_encode_type=trainer_params["vis_encode_type"],
-            )
-            self.model.create_sac_optimizers()
-
-            # Initialize Components
-            for key, rsignal in reward_signal_configs.items():
-                if type(rsignal) is dict:
-                    self.reward_signals[key] = create_reward_signal(self, key, rsignal)
-
             # Create pretrainer if needed
             if "pretraining" in trainer_params:
                 BCModule.check_config(trainer_params["pretraining"])
@@ -74,14 +66,38 @@ class SACPolicy(TFPolicy):
             self._initialize_graph()
             self.sess.run(self.model.target_init_op)
 
-        self.inference_dict = {
-            "action": self.model.output,
-            "log_probs": self.model.all_log_probs,
-            "value_heads": self.model.value_heads,
-            "value": self.model.value,
-            "entropy": self.model.entropy,
-            "learning_rate": self.model.learning_rate,
-        }
+    def create_model(
+        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
+    ):
+        with self.graph.as_default():
+            self.model = SACModel(
+                brain,
+                lr=float(trainer_params["learning_rate"]),
+                h_size=int(trainer_params["hidden_units"]),
+                init_entcoef=float(trainer_params["init_entcoef"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=trainer_params["normalize"],
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                stream_names=list(reward_signal_configs.keys()),
+                tau=float(trainer_params["tau"]),
+                gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
+                vis_encode_type=trainer_params["vis_encode_type"],
+            )
+            self.model.create_sac_optimizers()
+
+        self.inference_dict.update(
+            {
+                "action": self.model.output,
+                "log_probs": self.model.all_log_probs,
+                "value_heads": self.model.value_heads,
+                "value": self.model.value,
+                "entropy": self.model.entropy,
+                "learning_rate": self.model.learning_rate,
+            }
+        )
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
@@ -94,17 +110,36 @@ class SACPolicy(TFPolicy):
         ):
             self.inference_dict["update_mean"] = self.model.update_normalization
 
-        self.update_dict = {
-            "value_loss": self.model.total_value_loss,
-            "policy_loss": self.model.policy_loss,
-            "q1_loss": self.model.q1_loss,
-            "q2_loss": self.model.q2_loss,
-            "entropy_coef": self.model.ent_coef,
-            "entropy": self.model.entropy,
-            "update_batch": self.model.update_batch_policy,
-            "update_value": self.model.update_batch_value,
-            "update_entropy": self.model.update_batch_entropy,
-        }
+        self.update_dict.update(
+            {
+                "value_loss": self.model.total_value_loss,
+                "policy_loss": self.model.policy_loss,
+                "q1_loss": self.model.q1_loss,
+                "q2_loss": self.model.q2_loss,
+                "entropy_coef": self.model.ent_coef,
+                "entropy": self.model.entropy,
+                "update_batch": self.model.update_batch_policy,
+                "update_value": self.model.update_batch_value,
+                "update_entropy": self.model.update_batch_entropy,
+            }
+        )
+
+    def create_reward_signals(self, reward_signal_configs):
+        """
+        Create reward signals
+        :param reward_signal_configs: Reward signal config.
+        """
+        self.reward_signals = {}
+        with self.graph.as_default():
+            # Create reward signals
+            for reward_signal, config in reward_signal_configs.items():
+                if type(config) is dict:
+                    self.reward_signals[reward_signal] = create_reward_signal(
+                        self, self.model, reward_signal, config
+                    )
+                    self.update_dict.update(
+                        self.reward_signals[reward_signal].update_dict
+                    )
 
     def evaluate(self, brain_info):
         """
@@ -131,41 +166,107 @@ class SACPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def update(self, mini_batch, num_sequences, update_target=True):
+    @timed
+    def update(
+        self,
+        mini_batch,
+        num_sequences,
+        update_target=True,
+        reward_signal_minibatches=None,
+    ):
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
         :param mini_batch: Experience batch.
+        :param update_target: Whether or not to update target value network
+        :param reward_signal_mini_batches: Minibatches to use for updating the reward signals,
+            indexed by name. If none, don't update the reward signals.
         :return: Output from update process.
         """
+        feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
+        stats_needed = self.stats_name_to_update_name
+        update_stats = {}
+        # Collect feed dicts for all reward signals.
+        if reward_signal_minibatches:
+            self.add_reward_signal_dicts(
+                feed_dict, stats_needed, reward_signal_minibatches, num_sequences
+            )
+        update_vals = self._execute_model(feed_dict, self.update_dict)
+        for stat_name, update_name in stats_needed.items():
+            update_stats[stat_name] = update_vals[update_name]
+        if update_target:
+            self.sess.run(self.model.target_update_op)
+        return update_stats
+
+    def update_reward_signals(self, reward_signal_minibatches, num_sequences):
+        """
+        Only update the reward signals.
+        :param reward_signal_mini_batches: Minibatches to use for updating the reward signals,
+            indexed by name. If none, don't update the reward signals.
+        """
+        # Collect feed dicts for all reward signals.
+        feed_dict = {}
+        update_dict = {}
+        update_stats = {}
+        stats_needed = {}
+        if reward_signal_minibatches:
+            self.add_reward_signal_dicts(
+                feed_dict, stats_needed, reward_signal_minibatches, num_sequences
+            )
+            for name in reward_signal_minibatches.keys():
+                update_dict.update(self.reward_signals[name].update_dict)
+        update_vals = self._execute_model(feed_dict, self.update_dict)
+        for stat_name, update_name in stats_needed.items():
+            update_stats[stat_name] = update_vals[update_name]
+        return update_stats
+
+    def add_reward_signal_dicts(
+        self, feed_dict, stats_needed, reward_signal_minibatches, num_sequences
+    ):
+        """
+        Adds the items needed for reward signal updates to the feed_dict and stats_needed dict.
+        :param feed_dict: Feed dict needed update
+        :param stats_needed: Stats needed to get from the update.
+        :param reward_signal_minibatches: Minibatches to use for updating the reward signals,
+            indexed by name.
+        """
+        for name, r_mini_batch in reward_signal_minibatches.items():
+            feed_dict.update(
+                self.reward_signals[name].prepare_update(
+                    self.model, r_mini_batch, num_sequences
+                )
+            )
+            stats_needed.update(self.reward_signals[name].stats_name_to_update_name)
+
+    def construct_feed_dict(self, model, mini_batch, num_sequences):
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
             self.model.next_sequence_length: self.sequence_length,
             self.model.mask_input: mini_batch["masks"],
         }
-        for i, name in enumerate(self.reward_signals.keys()):
-            feed_dict[self.model.rewards_holders[name]] = mini_batch[
+        for name in self.reward_signals:
+            feed_dict[model.rewards_holders[name]] = mini_batch[
                 "{}_rewards".format(name)
             ]
 
         if self.use_continuous_act:
-            feed_dict[self.model.action_holder] = mini_batch["actions"]
+            feed_dict[model.action_holder] = mini_batch["actions"]
         else:
-            feed_dict[self.model.action_holder] = mini_batch["actions"]
+            feed_dict[model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:
-                feed_dict[self.model.prev_action] = mini_batch["prev_action"]
-            feed_dict[self.model.action_masks] = mini_batch["action_mask"]
+                feed_dict[model.prev_action] = mini_batch["prev_action"]
+            feed_dict[model.action_masks] = mini_batch["action_mask"]
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"]
-            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
+            feed_dict[model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[model.next_vector_in] = mini_batch["next_vector_in"]
         if self.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.model.visual_in):
+            for i, _ in enumerate(model.visual_in):
                 _obs = mini_batch["visual_obs%d" % i]
-                feed_dict[self.model.visual_in[i]] = _obs
-            for i, _ in enumerate(self.model.next_visual_in):
+                feed_dict[model.visual_in[i]] = _obs
+            for i, _ in enumerate(model.next_visual_in):
                 _obs = mini_batch["next_visual_obs%d" % i]
-                feed_dict[self.model.next_visual_in[i]] = _obs
+                feed_dict[model.next_visual_in[i]] = _obs
         if self.use_recurrent:
             mem_in = [
                 mini_batch["memory"][i]
@@ -177,10 +278,7 @@ class SACPolicy(TFPolicy):
                 mini_batch["memory"][i][: self.m_size // 4]
                 for i in range(offset, len(mini_batch["memory"]), self.sequence_length)
             ]
-            feed_dict[self.model.memory_in] = mem_in
-            feed_dict[self.model.next_memory_in] = next_mem_in
-        feed_dict[self.model.dones_holder] = mini_batch["done"]
-        run_out = self._execute_model(feed_dict, self.update_dict)
-        if update_target:
-            self.sess.run(self.model.target_update_op)
-        return run_out
+            feed_dict[model.memory_in] = mem_in
+            feed_dict[model.next_memory_in] = next_mem_in
+        feed_dict[model.dones_holder] = mini_batch["done"]
+        return feed_dict

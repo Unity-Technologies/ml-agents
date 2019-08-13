@@ -5,10 +5,17 @@ from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.models import LearningModel
 
 
 class ExtrinsicRewardSignal(RewardSignal):
-    def __init__(self, policy: TFPolicy, strength: float, gamma: float):
+    def __init__(
+        self,
+        policy: TFPolicy,
+        policy_model: LearningModel,
+        strength: float,
+        gamma: float,
+    ):
         """
         The extrinsic reward generator. Returns the reward received by the environment
         :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to.
@@ -16,7 +23,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         :param gamma: The time discounting factor used for this reward.
         :return: An ExtrinsicRewardSignal object.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, policy_model, strength, gamma)
 
     @classmethod
     def check_config(
@@ -45,9 +52,3 @@ class ExtrinsicRewardSignal(RewardSignal):
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         env_rews = np.array(mini_batch["environment_rewards"])
         return RewardSignalResult(self.strength * env_rews, env_rews)
-
-    def update(self, update_buffer: Buffer, num_sequences: int) -> Dict[str, float]:
-        """
-        This method does nothing, as there is nothing to update.
-        """
-        return {}

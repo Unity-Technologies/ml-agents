@@ -37,28 +37,22 @@ class GAILModel(object):
         self.gradient_penalty_weight = gradient_penalty_weight
         self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
-        self.make_beta()
         self.make_inputs()
         self.create_network()
         self.create_loss(learning_rate)
+        if self.use_vail:
+            self.make_beta_update()
 
-    def make_beta(self) -> None:
+    def make_beta_update(self) -> None:
         """
         Creates the beta parameter and its updater for GAIL
         """
-        self.beta = tf.get_variable(
-            "gail_beta",
-            [],
-            trainable=False,
-            dtype=tf.float32,
-            initializer=tf.ones_initializer(),
-        )
-        self.kl_div_input = tf.placeholder(shape=[], dtype=tf.float32)
+
         new_beta = tf.maximum(
-            self.beta + self.alpha * (self.kl_div_input - self.mutual_information),
-            EPSILON,
+            self.beta + self.alpha * (self.kl_loss - self.mutual_information), EPSILON
         )
-        self.update_beta = tf.assign(self.beta, new_beta)
+        with tf.control_dependencies(self.update_batch):
+            self.update_beta = tf.assign(self.beta, new_beta)
 
     def make_inputs(self) -> None:
         """
@@ -114,7 +108,7 @@ class GAILModel(object):
                 # Create input ops for next (t+1) visual observations.
                 visual_input = self.policy_model.create_visual_input(
                     self.policy_model.brain.camera_resolutions[i],
-                    name="visual_observation_" + str(i),
+                    name="gail_visual_observation_" + str(i),
                 )
                 self.expert_visual_in.append(visual_input)
 
@@ -123,7 +117,7 @@ class GAILModel(object):
                     self.encoding_size,
                     LearningModel.swish,
                     1,
-                    "stream_{}_visual_obs_encoder".format(i),
+                    "gail_stream_{}_visual_obs_encoder".format(i),
                     False,
                 )
 
@@ -132,7 +126,7 @@ class GAILModel(object):
                     self.encoding_size,
                     LearningModel.swish,
                     1,
-                    "stream_{}_visual_obs_encoder".format(i),
+                    "gail_stream_{}_visual_obs_encoder".format(i),
                     True,
                 )
                 visual_policy_encoders.append(encoded_policy_visual)
@@ -165,7 +159,7 @@ class GAILModel(object):
                 concat_input,
                 self.h_size,
                 activation=LearningModel.swish,
-                name="d_hidden_1",
+                name="gail_d_hidden_1",
                 reuse=reuse,
             )
 
@@ -173,7 +167,7 @@ class GAILModel(object):
                 hidden_1,
                 self.h_size,
                 activation=LearningModel.swish,
-                name="d_hidden_2",
+                name="gail_d_hidden_2",
                 reuse=reuse,
             )
 
@@ -184,7 +178,7 @@ class GAILModel(object):
                     hidden_2,
                     self.z_size,
                     reuse=reuse,
-                    name="z_mean",
+                    name="gail_z_mean",
                     kernel_initializer=LearningModel.scaled_init(0.01),
                 )
 
@@ -200,7 +194,7 @@ class GAILModel(object):
                 estimate_input,
                 1,
                 activation=tf.nn.sigmoid,
-                name="d_estimate",
+                name="gail_d_estimate",
                 reuse=reuse,
             )
             return estimate, z_mean, concat_input
@@ -211,7 +205,7 @@ class GAILModel(object):
         """
         if self.use_vail:
             self.z_sigma = tf.get_variable(
-                "sigma_vail",
+                "gail_sigma_vail",
                 self.z_size,
                 dtype=tf.float32,
                 initializer=tf.ones_initializer(),
@@ -219,7 +213,7 @@ class GAILModel(object):
             self.z_sigma_sq = self.z_sigma * self.z_sigma
             self.z_log_sigma_sq = tf.log(self.z_sigma_sq + EPSILON)
             self.use_noise = tf.placeholder(
-                shape=[1], dtype=tf.float32, name="NoiseLevel"
+                shape=[1], dtype=tf.float32, name="gail_NoiseLevel"
             )
         self.expert_estimate, self.z_mean_expert, _ = self.create_encoder(
             self.encoded_expert, self.expert_action, self.done_expert, reuse=False
@@ -231,7 +225,7 @@ class GAILModel(object):
             reuse=True,
         )
         self.discriminator_score = tf.reshape(
-            self.policy_estimate, [-1], name="GAIL_reward"
+            self.policy_estimate, [-1], name="gail_reward"
         )
         self.intrinsic_reward = -tf.log(1.0 - self.discriminator_score + EPSILON)
 
@@ -270,6 +264,15 @@ class GAILModel(object):
         """
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
+
+        if self.use_vail:
+            self.beta = tf.get_variable(
+                "gail_beta",
+                [],
+                trainable=False,
+                dtype=tf.float32,
+                initializer=tf.ones_initializer(),
+            )
 
         self.discriminator_loss = -tf.reduce_mean(
             tf.log(self.expert_estimate + EPSILON)

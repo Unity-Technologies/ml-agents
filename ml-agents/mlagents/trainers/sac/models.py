@@ -9,7 +9,7 @@ LOG_STD_MAX = 2
 LOG_STD_MIN = -20
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
-logger = logging.getLogger("mlagents.trainers")
+LOGGER = logging.getLogger("mlagents.trainers")
 
 POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
@@ -935,15 +935,15 @@ class SACModel(LearningModel):
                 self.target_network.value_vars, self.policy_network.value_vars
             )
         ]
-        print("value_vars")
+        LOGGER.debug("value_vars")
         self.print_all_vars(self.policy_network.value_vars)
-        print("targvalue_vars")
+        LOGGER.debug("targvalue_vars")
         self.print_all_vars(self.target_network.value_vars)
-        print("critic_vars")
+        LOGGER.debug("critic_vars")
         self.print_all_vars(self.policy_network.critic_vars)
-        print("q_vars")
+        LOGGER.debug("q_vars")
         self.print_all_vars(self.policy_network.q_vars)
-        print("policy_vars")
+        LOGGER.debug("policy_vars")
         self.print_all_vars(self.policy_network.policy_vars)
 
         self.target_init_op = [
@@ -970,4 +970,4 @@ class SACModel(LearningModel):
 
     def print_all_vars(self, variables):
         for _var in variables:
-            print(_var)
+            LOGGER.debug(_var)

@@ -124,7 +124,7 @@ class BCTrainer(Trainer):
         """
         Updates the policy.
         """
-        self.demonstration_buffer.update_buffer.shuffle()
+        self.demonstration_buffer.update_buffer.shuffle(self.policy.sequence_length)
         batch_losses = []
         num_batches = min(
             len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,
