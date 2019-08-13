@@ -30,6 +30,7 @@ def create_mock_brainparams(
     camrez = {"blackAndWhite": False, "height": 84, "width": 84}
     mock_brain.return_value.camera_resolutions = [camrez] * number_visual_observations
     mock_brain.return_value.vector_action_space_size = vector_action_space_size
+    mock_brain.return_value.brain_name = "MockBrain"
     return mock_brain()
 
 
@@ -74,6 +75,9 @@ def create_mock_braininfo(
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
     mock_braininfo.return_value.text_observations = num_agents * [""]
+    mock_braininfo.return_value.previous_text_actions = num_agents * [""]
+    mock_braininfo.return_value.max_reached = num_agents * [100]
+    mock_braininfo.return_value.action_masks = num_agents * [num_vector_acts * [1.0]]
     mock_braininfo.return_value.agents = range(0, num_agents)
     return mock_braininfo()
 
@@ -145,3 +149,23 @@ def create_buffer(brain_infos, brain_params, sequence_length):
 
     buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
     return buffer
+
+
+def create_mock_3dball_brain():
+    mock_brain = create_mock_brainparams(
+        vector_action_space_type="continuous",
+        vector_action_space_size=[2],
+        vector_observation_space_size=8,
+    )
+    mock_brain.brain_name = "Ball3DBrain"
+    return mock_brain
+
+
+def create_mock_banana_brain():
+    mock_brain = create_mock_brainparams(
+        number_visual_observations=1,
+        vector_action_space_type="discrete",
+        vector_action_space_size=[3, 3, 3, 2],
+        vector_observation_space_size=0,
+    )
+    return mock_brain

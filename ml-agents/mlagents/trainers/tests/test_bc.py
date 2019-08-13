@@ -1,12 +1,15 @@
 import unittest.mock as mock
 import pytest
+import os
 
 import numpy as np
 import tensorflow as tf
 import yaml
 
 from mlagents.trainers.bc.models import BehavioralCloningModel
+import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.bc.policy import BCPolicy
+from mlagents.trainers.bc.offline_trainer import BCTrainer
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
@@ -21,8 +24,35 @@ def dummy_config():
             use_recurrent: false
             sequence_length: 32
             memory_size: 32
+            batches_per_epoch: 1
+            batch_size: 32
+            summary_freq: 2000
+            max_steps: 4000
             """
     )
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
+def test_bc_trainer(mock_env, dummy_config):
+    mock_brain = mb.create_mock_3dball_brain()
+    mock_braininfo = mb.create_mock_braininfo(num_agents=12, num_vector_observations=8)
+    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    env = mock_env()
+
+    trainer_parameters = dummy_config
+    trainer_parameters["summary_path"] = "tmp"
+    trainer_parameters["model_path"] = "tmp"
+    trainer_parameters["demo_path"] = (
+        os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
+    )
+    trainer = BCTrainer(
+        mock_brain, trainer_parameters, training=True, load=False, seed=0, run_id=0
+    )
+    trainer.demonstration_buffer = mb.simulate_rollout(env, trainer.policy, 100)
+    trainer.update_policy()
+    assert len(trainer.stats["Losses/Cloning Loss"]) > 0
+    trainer.increment_step(1)
+    assert trainer.step == 1
 
 
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")

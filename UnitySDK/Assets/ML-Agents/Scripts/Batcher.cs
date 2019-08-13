@@ -6,15 +6,15 @@ using Google.Protobuf;
 namespace MLAgents
 {
     /// <summary>
-    /// The batcher is an RL specific class that makes sure that the information each object in 
-    /// Unity (Academy and Brains) wants to send to External is appropriately batched together 
+    /// The batcher is an RL specific class that makes sure that the information each object in
+    /// Unity (Academy and Brains) wants to send to External is appropriately batched together
     /// and sent only when necessary.
-    /// 
+    ///
     /// The Batcher will only send a Message to the Communicator when either :
     ///     1 - The academy is done
     ///     2 - At least one brain has data to send
-    /// 
-    /// At each step, the batcher will keep track of the brains that queried the batcher for that 
+    ///
+    /// At each step, the batcher will keep track of the brains that queried the batcher for that
     /// step. The batcher can only send the batched data when all the Brains have queried the
     /// Batcher.
     /// </summary>
@@ -67,7 +67,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sends the academy parameters through the Communicator. 
+        /// Sends the academy parameters through the Communicator.
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
@@ -104,7 +104,7 @@ namespace MLAgents
         /// Registers the done flag of the academy to the next output to be sent
         /// to the communicator.
         /// </summary>
-        /// <param name="done">If set to <c>true</c> 
+        /// <param name="done">If set to <c>true</c>
         /// The academy done state will be sent to External at the next Exchange.</param>
         public void RegisterAcademyDoneFlag(bool done)
         {
@@ -164,7 +164,7 @@ namespace MLAgents
 
         /// <summary>
         /// Sends the brain info. If at least one brain has an agent in need of
-        /// a decision or if the academy is done, the data is sent via 
+        /// a decision or if the academy is done, the data is sent via
         /// Communicator. Else, a new step is realized. The data can only be
         /// sent once all the brains that subscribed to the batcher have tried
         /// to send information.
@@ -198,6 +198,9 @@ namespace MLAgents
                 {
                     CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
                     m_currentUnityRLOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
+                    // e.g. after recording them to demo and using them for inference.
+                    agentInfo[agent].ClearVisualObs();
                 }
 
                 m_hasData[brainKey] = true;

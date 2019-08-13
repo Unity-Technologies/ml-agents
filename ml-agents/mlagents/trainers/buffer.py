@@ -1,4 +1,8 @@
+import random
+from collections import defaultdict
+
 import numpy as np
+import h5py
 
 from mlagents.envs.exception import UnityException
 
@@ -197,6 +201,46 @@ class Buffer(dict):
                 mini_batch[key] = self[key][start:end]
             return mini_batch
 
+        def sample_mini_batch(self, batch_size, sequence_length=1):
+            """
+            Creates a mini-batch from a random start and end.
+            :param batch_size: number of elements to withdraw.
+            :param sequence_length: Length of sequences to sample.
+                Number of sequences to sample will be batch_size/sequence_length.
+            """
+            num_seq_to_sample = batch_size // sequence_length
+            mini_batch = Buffer.AgentBuffer()
+            buff_len = len(next(iter(self.values())))
+            num_sequences_in_buffer = buff_len // sequence_length
+            start_idxes = [
+                random.randint(0, num_sequences_in_buffer - 1) * sequence_length
+                for _ in range(num_seq_to_sample)
+            ]  # Sample random sequence starts
+            for i in start_idxes:
+                for key in self:
+                    mini_batch[key].extend(self[key][i : i + sequence_length])
+            return mini_batch
+
+        def save_to_file(self, file_object):
+            """
+            Saves the AgentBuffer to a file-like object.
+            """
+            with h5py.File(file_object) as write_file:
+                for key, data in self.items():
+                    write_file.create_dataset(
+                        key, data=data, dtype="f", compression="gzip"
+                    )
+
+        def load_from_file(self, file_object):
+            """
+            Loads the AgentBuffer from a file-like object.
+            """
+            with h5py.File(file_object) as read_file:
+                for key in list(read_file.keys()):
+                    self[key] = Buffer.AgentBuffer.AgentBufferField()
+                    # extend() will convert the numpy array's first dimension into list
+                    self[key].extend(read_file[key][()])
+
     def __init__(self):
         self.update_buffer = self.AgentBuffer()
         super(Buffer, self).__init__()
@@ -219,6 +263,23 @@ class Buffer(dict):
         Resets the update buffer
         """
         self.update_buffer.reset_agent()
+
+    def truncate_update_buffer(self, max_length, sequence_length=1):
+        """
+        Truncates the update buffer to a certain length.
+
+        This can be slow for large buffers. We compensate by cutting further than we need to, so that
+        we're not truncating at each update. Note that we must truncate an integer number of sequence_lengths
+        param: max_length: The length at which to truncate the buffer.
+        """
+        current_length = len(next(iter(self.update_buffer.values())))
+        # make max_length an integer number of sequence_lengths
+        max_length -= max_length % sequence_length
+        if current_length > max_length:
+            for _key in self.update_buffer.keys():
+                self.update_buffer[_key] = self.update_buffer[_key][
+                    current_length - max_length :
+                ]
 
     def reset_local_buffers(self):
         """

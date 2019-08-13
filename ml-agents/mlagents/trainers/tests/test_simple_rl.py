@@ -7,6 +7,7 @@ from typing import Any, Dict
 
 
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects import AgentInfoProto
@@ -159,28 +160,42 @@ def _check_environment_trains(env):
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
         save_freq = 99999
-        tc = TrainerController(
-            dir,
-            dir,
-            run_id,
-            save_freq,
-            meta_curriculum=None,
-            load=False,
-            train=True,
+        seed = 1337
+
+        trainer_config = yaml.safe_load(config)
+        env_manager = SimpleEnvManager(env)
+        trainers = initialize_trainers(
+            trainer_config=trainer_config,
+            external_brains=env_manager.external_brains,
+            summaries_dir=dir,
+            run_id=run_id,
+            model_path=dir,
             keep_checkpoints=1,
-            lesson=None,
-            training_seed=1337,
-            fast_simulation=True,
+            train_model=True,
+            load_model=False,
+            seed=seed,
+            meta_curriculum=None,
             multi_gpu=False,
+        )
+        print(trainers)
+
+        tc = TrainerController(
+            trainers=trainers,
+            summaries_dir=dir,
+            model_path=dir,
+            run_id=run_id,
+            meta_curriculum=None,
+            train=True,
+            training_seed=seed,
+            fast_simulation=True,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
+            save_freq=save_freq,
         )
 
         # Begin training
-        env_manager = SimpleEnvManager(env)
-        trainer_config = yaml.safe_load(config)
-        tc.start_learning(env_manager, trainer_config)
-
+        tc.start_learning(env_manager)
+        print(tc._get_measure_vals())
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
             assert mean_reward > 0.99
