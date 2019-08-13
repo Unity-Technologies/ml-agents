@@ -100,7 +100,9 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
         else:
             feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
-        # feed_dict[self.model.done_policy_holder] = mini_batch["done"]
+        feed_dict[self.model.done_policy_holder] = np.array(
+            mini_batch["done"]
+        ).flatten()
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
