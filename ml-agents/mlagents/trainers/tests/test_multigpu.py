@@ -103,10 +103,8 @@ def test_update(
     mock_get_devices.return_value = ["/device:GPU:0", "/device:GPU:1"]
     mock_construct_feed_dict.return_value = {}
     mock_execute_model.return_value = {
-        "value_loss_0": 0.1,
-        "value_loss_1": 0.3,
-        "policy_loss_0": 0.5,
-        "policy_loss_1": 0.7,
+        "value_loss": 0.1,
+        "policy_loss": 0.3,
         "update_batch": None,
     }
 
@@ -121,8 +119,8 @@ def test_update(
 
     assert mock_mini_batch.items.call_count == len(mock_get_devices.return_value)
     assert mock_construct_feed_dict.call_count == len(mock_get_devices.return_value)
-    assert run_out["value_loss"] == 0.2
-    assert run_out["policy_loss"] == 0.6
+    assert run_out["Losses/Value Loss"] == 0.1
+    assert run_out["Losses/Policy Loss"] == 0.3
 
 
 if __name__ == "__main__":

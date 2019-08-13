@@ -236,8 +236,9 @@ class PPOTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
+        buffer_length = len(self.training_buffer.update_buffer["actions"])
         self.trainer_metrics.start_policy_update_timer(
-            number_experiences=len(self.training_buffer.update_buffer["actions"]),
+            number_experiences=buffer_length,
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
         self.cumulative_returns_since_policy_update = []
@@ -245,33 +246,29 @@ class PPOTrainer(RLTrainer):
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
-        value_total, policy_total = [], []
+
         advantages = self.training_buffer.update_buffer["advantages"].get_batch()
         self.training_buffer.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
         num_epoch = self.trainer_parameters["num_epoch"]
+        batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
             self.training_buffer.update_buffer.shuffle(
                 sequence_length=self.policy.sequence_length
             )
             buffer = self.training_buffer.update_buffer
-            for l in range(
-                0, len(self.training_buffer.update_buffer["actions"]), batch_size
-            ):
-                run_out = self.policy.update(
+            max_num_batch = buffer_length // batch_size
+            for l in range(0, max_num_batch * batch_size, batch_size):
+                update_stats = self.policy.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
-                value_total.append(run_out["value_loss"])
-                policy_total.append(np.abs(run_out["policy_loss"]))
-        self.stats["Losses/Value Loss"].append(np.mean(value_total))
-        self.stats["Losses/Policy Loss"].append(np.mean(policy_total))
-        for _, reward_signal in self.policy.reward_signals.items():
-            update_stats = reward_signal.update(
-                self.training_buffer.update_buffer, n_sequences
-            )
-            for stat, val in update_stats.items():
-                self.stats[stat].append(val)
+                for stat_name, value in update_stats.items():
+                    batch_update_stats[stat_name].append(value)
+
+        for stat, stat_list in batch_update_stats.items():
+            self.stats[stat].append(np.mean(stat_list))
+
         if self.policy.bc_module:
             update_stats = self.policy.bc_module.update()
             for stat, val in update_stats.items():

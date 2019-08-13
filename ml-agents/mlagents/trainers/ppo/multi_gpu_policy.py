@@ -30,25 +30,9 @@ class MultiGpuPPOPolicy(PPOPolicy):
         """
         super().__init__(seed, brain, trainer_params, is_training, load)
 
-        with self.graph.as_default():
-            avg_grads = self.average_gradients([t.grads for t in self.towers])
-            self.update_batch = self.model.optimizer.apply_gradients(avg_grads)
-
-        self.update_dict = {"update_batch": self.update_batch}
-        self.update_dict.update(
-            {
-                "value_loss_" + str(i): self.towers[i].value_loss
-                for i in range(len(self.towers))
-            }
-        )
-        self.update_dict.update(
-            {
-                "policy_loss_" + str(i): self.towers[i].policy_loss
-                for i in range(len(self.towers))
-            }
-        )
-
-    def create_model(self, brain, trainer_params, reward_signal_configs, seed):
+    def create_model(
+        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
+    ):
         """
         Create PPO models, one on each device
         :param brain: Assigned Brain object.
@@ -84,6 +68,80 @@ class MultiGpuPPOPolicy(PPOPolicy):
                         self.towers[-1].create_ppo_optimizer()
             self.model = self.towers[0]
 
+            avg_grads = self.average_gradients([t.grads for t in self.towers])
+            update_batch = self.model.optimizer.apply_gradients(avg_grads)
+
+            avg_value_loss = tf.reduce_mean(
+                tf.stack([model.value_loss for model in self.towers]), 0
+            )
+            avg_policy_loss = tf.reduce_mean(
+                tf.stack([model.policy_loss for model in self.towers]), 0
+            )
+
+        self.inference_dict.update(
+            {
+                "action": self.model.output,
+                "log_probs": self.model.all_log_probs,
+                "value_heads": self.model.value_heads,
+                "value": self.model.value,
+                "entropy": self.model.entropy,
+                "learning_rate": self.model.learning_rate,
+            }
+        )
+        if self.use_continuous_act:
+            self.inference_dict["pre_action"] = self.model.output_pre
+        if self.use_recurrent:
+            self.inference_dict["memory_out"] = self.model.memory_out
+        if (
+            is_training
+            and self.use_vec_obs
+            and trainer_params["normalize"]
+            and not load
+        ):
+            self.inference_dict["update_mean"] = self.model.update_normalization
+
+        self.total_policy_loss = self.model.abs_policy_loss
+        self.update_dict.update(
+            {
+                "value_loss": avg_value_loss,
+                "policy_loss": avg_policy_loss,
+                "update_batch": update_batch,
+            }
+        )
+
+    def create_reward_signals(self, reward_signal_configs):
+        """
+        Create reward signals
+        :param reward_signal_configs: Reward signal config.
+        """
+        self.reward_signal_towers = []
+        with self.graph.as_default():
+            with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
+                for device_id, device in enumerate(self.devices):
+                    with tf.device(device):
+                        reward_tower = {}
+                        for reward_signal, config in reward_signal_configs.items():
+                            reward_tower[reward_signal] = create_reward_signal(
+                                self, self.towers[device_id], reward_signal, config
+                            )
+                            for k, v in reward_tower[reward_signal].update_dict.items():
+                                self.update_dict[k + "_" + str(device_id)] = v
+                        self.reward_signal_towers.append(reward_tower)
+                for _, reward_tower in self.reward_signal_towers[0].items():
+                    for _, update_key in reward_tower.stats_name_to_update_name.items():
+                        all_reward_signal_stats = tf.stack(
+                            [
+                                self.update_dict[update_key + "_" + str(i)]
+                                for i in range(len(self.towers))
+                            ]
+                        )
+                        mean_reward_signal_stats = tf.reduce_mean(
+                            all_reward_signal_stats, 0
+                        )
+                        self.update_dict.update({update_key: mean_reward_signal_stats})
+
+            self.reward_signals = self.reward_signal_towers[0]
+
     @timed
     def update(self, mini_batch, num_sequences):
         """
@@ -93,27 +151,37 @@ class MultiGpuPPOPolicy(PPOPolicy):
         :return: Output from update process.
         """
         feed_dict = {}
+        stats_needed = self.stats_name_to_update_name
 
         device_batch_size = num_sequences // len(self.devices)
         device_batches = []
         for i in range(len(self.devices)):
             device_batches.append(
-                {k: v[i : i + device_batch_size] for (k, v) in mini_batch.items()}
+                {
+                    k: v[
+                        i * device_batch_size : i * device_batch_size
+                        + device_batch_size
+                    ]
+                    for (k, v) in mini_batch.items()
+                }
             )
 
-        for batch, tower in zip(device_batches, self.towers):
+        for batch, tower, reward_tower in zip(
+            device_batches, self.towers, self.reward_signal_towers
+        ):
             feed_dict.update(self.construct_feed_dict(tower, batch, num_sequences))
+            stats_needed.update(self.stats_name_to_update_name)
+            for _, reward_signal in reward_tower.items():
+                feed_dict.update(
+                    reward_signal.prepare_update(tower, batch, num_sequences)
+                )
+                stats_needed.update(reward_signal.stats_name_to_update_name)
 
-        out = self._execute_model(feed_dict, self.update_dict)
-        run_out = {}
-        run_out["value_loss"] = np.mean(
-            [out["value_loss_" + str(i)] for i in range(len(self.towers))]
-        )
-        run_out["policy_loss"] = np.mean(
-            [out["policy_loss_" + str(i)] for i in range(len(self.towers))]
-        )
-        run_out["update_batch"] = out["update_batch"]
-        return run_out
+        update_vals = self._execute_model(feed_dict, self.update_dict)
+        update_stats = {}
+        for stat_name, update_name in stats_needed.items():
+            update_stats[stat_name] = update_vals[update_name]
+        return update_stats
 
     def average_gradients(self, tower_grads):
         """

@@ -71,7 +71,7 @@ Typical Range: `0.8` - `0.995`
 
 ### Curiosity Reward Signal
 
-The `curiosity` reward signal enables the Intrinsic Curiosity Module. This is an implementation
+The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is an implementation
 of the approach described in "Curiosity-driven Exploration by Self-supervised Prediction"
 by Pathak, et al. It trains two networks:
 * an inverse model, which takes the current and next obersvation of the agent, encodes them, and
@@ -120,15 +120,6 @@ This should typically be decreased if training is unstable, and the curiosity lo
 Default Value: `3e-4`
 
 Typical Range: `1e-5` - `1e-3`
-
-#### (Optional) Num Epochs
-
-`num_epoch` The number of passes to make through the experience buffer when performing gradient
-descent optimization for the ICM. This typically should be set to the same as used for PPO.
-
-Default Value: `3`
-
-Typical Range: `3` - `10`
 
 ### GAIL Reward Signal
 
@@ -214,23 +205,3 @@ However, it does increase training time. Enable this if you notice your imitatio
 unstable, or unable to learn the task at hand.
 
 Default Value: `false`
-
-#### (Optional) Samples Per Update
-
-`samples_per_update` is the maximum number of samples to use during each discriminator update. You may
-want to lower this if your buffer size is very large to avoid overfitting the discriminator on current data.
-If set to 0, we will use the minimum of buffer size and the number of demonstration samples.
-
-Default Value: `0`
-
-Typical Range: Approximately equal to [`buffer_size`](Training-PPO.md)
-
-#### (Optional) Num Epochs
-
-`num_epoch` The number of passes to make through the experience buffer when performing gradient
-descent optimization for the discriminator. To avoid overfitting, this typically should be set to
-the same as or less than used for PPO.
-
-Default Value: `3`
-
-Typical Range: `1` - `10`
