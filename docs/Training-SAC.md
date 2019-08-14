@@ -11,8 +11,12 @@ Q function learned.
 In contrast with PPO, SAC is _off-policy_, i.e. can learn from experiences collected
 at any time during the past. As experiences are collected, they are placed in an
 experience replay buffer, and randomly drawn during training. This makes SAC
-significantly more sample-efficient---often requiring 5-10 times less samples to learn
-the same task as PPO.
+significantly more sample-efficient, often requiring 5-10 times less samples to learn
+the same task as PPO. However, SAC tends to require more model updates. SAC is a
+good choice for heavier or slower environments (about 0.1 seconds per step or more).
+
+SAC is also a "maximum entropy" algorithm, and enables exploration in an intrinsic way.
+Read more about maximum entropy RL [here](https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/).
 
 To train an agent, you will need to provide the agent one or more reward signals which
 the agent should attempt to maximize. See [Reward Signals](Training-RewardSignals.md)
@@ -97,7 +101,7 @@ Typical Range (Continuous): `128` - `1024`
 
 Typical Range (Discrete): `32` - `512`
 
-### Init EntCoef
+### Initial Entropy Coefficient
 
 `init_entcoef` refers to the initial entropy coefficient set at the beginning of training. In
 SAC, the agent is incentivized to make its actions entropic to facilitate better exploration.
@@ -112,18 +116,18 @@ Typical Range (Discrete): `0.05` - `0.5`
 
 ### Train Interval
 
-`train_interval` is the number of steps taken between each agent update. In SAC, a single "update" corresponds
-to grabbing a batch of size `batch_size` from the experience replay buffer, and using this mini batch to
-update the models. Typically, we can update every timestep, but if your environment's steps are
-very small, there may not be any new interesting information between steps, and `train_interval` can be
-increased.
+`train_interval` is the number of steps taken between each agent training session. Typically,
+we can train after every step, but if your environment's steps are very small and very frequent,
+there may not be any new interesting information between steps, and `train_interval` can be increased.
 
 Typical Range: `1` - `5`
 
 ### Updates Per Train
 
 `updates_per_train` corresponds to the number of mini batches sampled and used for training during each
-update. Typically, this can be left at 1. However, to imitate the training procedure in certain papers (e.g.
+update. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
+replay buffer, and using this mini batch to update the models. Typically, this can be left at 1.
+However, to imitate the training procedure in certain papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
 we may want to update N times with different mini batches before grabbing additional samples.
 We can change `train_interval` and `updates_per_train` to N to accomplish this.
@@ -136,7 +140,7 @@ Typical Range: `1`
 In SAC, there are two neural networks: the target and the policy. The target network is
 used to bootstrap the policy's estimate of the future rewards at a given state, and is fixed
 while the policy is being updated. This target is then slowly updated according to `tau`.
-Typically, this value should be left at `0.005`. For very simple problems, increasing
+Typically, this value should be left at `0.005`. For simple problems, increasing
 `tau` to `0.01` might reduce the time it takes to learn, at the cost of stability.
 
 Typical Range: `0.005` - `0.01`
@@ -272,7 +276,7 @@ the steps to 0 for constant imitation over the entire training run.
 ### (Optional) Batch Size
 
 `batch_size` is the number of demonstration experiences used for one iteration of a gradient
-descent update. If not specified, it will default to the `batch_size` defined for PPO.
+descent update. If not specified, it will default to the `batch_size` defined for SAC.
 
 Typical Range (Continuous): `512` - `5120`
 
