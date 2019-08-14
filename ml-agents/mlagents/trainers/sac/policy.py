@@ -1,21 +1,30 @@
 import logging
+from typing import Dict, List, Any
 import numpy as np
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo
+from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal
 from mlagents.trainers.components.bc import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
 
 class SACPolicy(TFPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load):
+    def __init__(
+        self,
+        seed: int,
+        brain: BrainParameters,
+        trainer_params: Dict[str, Any],
+        is_training: bool,
+        load: bool,
+    ) -> None:
         """
         Policy for Proximal Policy Optimization Networks.
         :param seed: Random seed.
@@ -31,8 +40,8 @@ class SACPolicy(TFPolicy):
             if type(rsignal) is dict:
                 reward_signal_configs[key] = rsignal
 
-        self.inference_dict = {}
-        self.update_dict = {}
+        self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.update_dict: Dict[str, tf.Tensor] = {}
         self.create_model(
             brain, trainer_params, reward_signal_configs, is_training, load, seed
         )
@@ -67,8 +76,14 @@ class SACPolicy(TFPolicy):
             self.sess.run(self.model.target_init_op)
 
     def create_model(
-        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
-    ):
+        self,
+        brain: BrainParameters,
+        trainer_params: Dict[str, Any],
+        reward_signal_configs: Dict[str, Any],
+        is_training: bool,
+        load: bool,
+        seed: int,
+    ) -> None:
         with self.graph.as_default():
             self.model = SACModel(
                 brain,
@@ -124,12 +139,12 @@ class SACPolicy(TFPolicy):
             }
         )
 
-    def create_reward_signals(self, reward_signal_configs):
+    def create_reward_signals(self, reward_signal_configs: Dict[str, Any]) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
-        self.reward_signals = {}
+        self.reward_signals: Dict[str, RewardSignal] = {}
         with self.graph.as_default():
             # Create reward signals
             for reward_signal, config in reward_signal_configs.items():
@@ -141,7 +156,7 @@ class SACPolicy(TFPolicy):
                         self.reward_signals[reward_signal].update_dict
                     )
 
-    def evaluate(self, brain_info):
+    def evaluate(self, brain_info: BrainInfo) -> Dict[str, np.ndarray]:
         """
         Evaluates policy for the agent experiences provided.
         :param brain_info: BrainInfo object containing inputs.
@@ -169,11 +184,11 @@ class SACPolicy(TFPolicy):
     @timed
     def update(
         self,
-        mini_batch,
-        num_sequences,
-        update_target=True,
-        reward_signal_minibatches=None,
-    ):
+        mini_batch: Dict[str, Any],
+        num_sequences: int,
+        update_target: bool = True,
+        reward_signal_minibatches: Dict[str, Dict] = None,
+    ) -> Dict[str, float]:
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
@@ -198,17 +213,19 @@ class SACPolicy(TFPolicy):
             self.sess.run(self.model.target_update_op)
         return update_stats
 
-    def update_reward_signals(self, reward_signal_minibatches, num_sequences):
+    def update_reward_signals(
+        self, reward_signal_minibatches: Dict[str, Dict], num_sequences: int
+    ) -> Dict[str, float]:
         """
         Only update the reward signals.
         :param reward_signal_mini_batches: Minibatches to use for updating the reward signals,
             indexed by name. If none, don't update the reward signals.
         """
         # Collect feed dicts for all reward signals.
-        feed_dict = {}
-        update_dict = {}
-        update_stats = {}
-        stats_needed = {}
+        feed_dict: Dict[tf.Tensor, Any] = {}
+        update_dict: Dict[str, tf.Tensor] = {}
+        update_stats: Dict[str, float] = {}
+        stats_needed: Dict[str, str] = {}
         if reward_signal_minibatches:
             self.add_reward_signal_dicts(
                 feed_dict, stats_needed, reward_signal_minibatches, num_sequences
@@ -221,8 +238,12 @@ class SACPolicy(TFPolicy):
         return update_stats
 
     def add_reward_signal_dicts(
-        self, feed_dict, stats_needed, reward_signal_minibatches, num_sequences
-    ):
+        self,
+        feed_dict: Dict[tf.Tensor, Any],
+        stats_needed: Dict[str, str],
+        reward_signal_minibatches: Dict[str, Dict],
+        num_sequences: int,
+    ) -> None:
         """
         Adds the items needed for reward signal updates to the feed_dict and stats_needed dict.
         :param feed_dict: Feed dict needed update
@@ -238,7 +259,9 @@ class SACPolicy(TFPolicy):
             )
             stats_needed.update(self.reward_signals[name].stats_name_to_update_name)
 
-    def construct_feed_dict(self, model, mini_batch, num_sequences):
+    def construct_feed_dict(
+        self, model: SACModel, mini_batch: Dict[str, Any], num_sequences: int
+    ) -> Dict[tf.Tensor, Any]:
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,
