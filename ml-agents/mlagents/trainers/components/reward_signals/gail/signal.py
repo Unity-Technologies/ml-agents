@@ -139,11 +139,10 @@ class GAILRewardSignal(RewardSignal):
         # If num_sequences is less, we need to shorten the input batch.
         for key, element in mini_batch_policy.items():
             mini_batch_policy[key] = element[:max_num_experiences]
-        # Get demo buffer
-        self.demonstration_buffer.update_buffer.shuffle(1)
-        # TODO: Replace with SAC sample method
-        mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
-            0, len(mini_batch_policy["actions"])
+
+        # Get batch from demo buffer
+        mini_batch_demo = self.demonstration_buffer.update_buffer.sample_mini_batch(
+            len(mini_batch_policy["actions"]), 1
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {
