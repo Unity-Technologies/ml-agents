@@ -209,7 +209,7 @@ class SACPolicy(TFPolicy):
                 reward_signal_minibatches,
                 num_sequences,
             )
-        update_vals = self._execute_model(feed_dict, self.update_dict)
+        update_vals = self._execute_model(feed_dict, update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
         if update_target:
