@@ -26,7 +26,7 @@ developer communities.
 * Unity environment control from Python
 * 10+ sample Unity environments
 * Support for multiple environment configurations and training scenarios
-* Two deep relinforcement learning algorithms, Proximal Policy Optimization (PPO) and Soft Actor-Critic (SAC)
+* Two deep reinforcement learning algorithms, Proximal Policy Optimization (PPO) and Soft Actor-Critic (SAC)
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
 * Broadcasting of agent behavior for supervised learning

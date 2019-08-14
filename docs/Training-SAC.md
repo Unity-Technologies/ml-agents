@@ -1,6 +1,6 @@
 # Training with Soft-Actor Critic
 
-In addition to PPO, ML-Agents provides
+In addition to [Proximal Policy Optimization (PPO)](Training-PPO.md), ML-Agents provides
 [Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/) to perform
 reinforcement learning.
 SAC uses several neural networks. During training, it uses two neural networks to learn
