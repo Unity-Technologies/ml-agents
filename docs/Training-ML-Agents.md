@@ -151,10 +151,10 @@ environment, you can set the following command line options when invoking
 
 ### Training Config File
 
-The training config files `config/trainer_config.yaml`,
+The training config files `config/trainer_config.yaml`, `config/sac_trainer_config.yaml`,
 `config/online_bc_config.yaml` and `config/offline_bc_config.yaml` specifies the
 training method, the hyperparameters, and a few additional values to use during
-training with PPO, online and offline BC. These files are divided into sections.
+training with PPO, SAC, online and offline BC. These files are divided into sections.
 The **default** section defines the default values for all the available
 settings. You can also add new sections to override these defaults to train
 specific Brains. Name each of these override sections after the GameObject

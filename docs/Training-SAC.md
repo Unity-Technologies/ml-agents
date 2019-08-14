@@ -1,7 +1,8 @@
 # Training with Soft-Actor Critic
 
 In addition to PPO, ML-Agents provides
-[Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/).
+[Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/) to perform
+reinforcement learning.
 SAC uses several neural networks. During training, it uses two neural networks to learn
 the expected return of a given action when at a certain state. Then, a 3rd neural network
 learns the optimal policy that matches the probability of choosing an action to the
