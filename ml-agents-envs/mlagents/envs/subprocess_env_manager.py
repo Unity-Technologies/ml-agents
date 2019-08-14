@@ -251,7 +251,8 @@ class SubprocessEnvManager(EnvManager):
     def _take_step(self, last_step: StepInfo) -> Dict[str, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
         for brain_name, brain_info in last_step.current_all_brain_info.items():
-            all_action_info[brain_name] = self.policies[brain_name].get_action(
-                brain_info
-            )
+            if brain_name in self.policies:
+                all_action_info[brain_name] = self.policies[brain_name].get_action(
+                    brain_info
+                )
         return all_action_info
