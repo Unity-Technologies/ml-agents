@@ -224,6 +224,8 @@ class GAILModel(object):
             self.done_policy,
             reuse=True,
         )
+        self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
+        self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.discriminator_score = tf.reshape(
             self.policy_estimate, [-1], name="gail_reward"
         )

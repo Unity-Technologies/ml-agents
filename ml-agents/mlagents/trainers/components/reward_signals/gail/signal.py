@@ -52,8 +52,8 @@ class GAILRewardSignal(RewardSignal):
         self.update_dict: Dict[str, tf.Tensor] = {
             "gail_loss": self.model.loss,
             "gail_update_batch": self.model.update_batch,
-            "gail_policy_estimate": self.model.policy_estimate,
-            "gail_expert_estimate": self.model.expert_estimate,
+            "gail_policy_estimate": self.model.mean_policy_estimate,
+            "gail_expert_estimate": self.model.mean_expert_estimate,
         }
         if self.model.use_vail:
             self.update_dict["kl_loss"] = self.model.kl_loss
@@ -62,7 +62,11 @@ class GAILRewardSignal(RewardSignal):
             self.update_dict["z_mean_policy"] = self.model.z_mean_policy
             self.update_dict["beta_update"] = self.model.update_beta
 
-        self.stats_name_to_update_name = {"Losses/GAIL Loss": "gail_loss"}
+        self.stats_name_to_update_name = {
+            "Losses/GAIL Loss": "gail_loss",
+            "Policy/GAIL Policy Estimate": "gail_policy_estimate",
+            "Policy/GAIL Expert Estimate": "gail_expert_estimate",
+        }
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
