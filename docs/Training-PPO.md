@@ -10,7 +10,7 @@ Python process (communicating with the running Unity application over a socket).
 ML-Agents also provides an implementation of
 [Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/). SAC tends
 to be more _sample-efficient_, i.e. require fewer environment steps,
-than PPO, but may spend more time performing model updates This can produce a large
+than PPO, but may spend more time performing model updates. This can produce a large
 speedup on heavy or slow environments. Check out how to train with
 SAC [here](Training-SAC.md).
 
