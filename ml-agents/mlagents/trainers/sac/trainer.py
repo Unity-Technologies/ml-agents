@@ -12,6 +12,7 @@ import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.envs.timers import timed, hierarchical_timer
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.trainer import UnityTrainerException
@@ -215,14 +216,20 @@ class SACTrainer(RLTrainer):
             and self.step >= self.trainer_parameters["buffer_init_steps"]
         )
 
+    @timed
     def update_policy(self) -> None:
         """
         If train_interval is met, update the SAC policy given the current reward signals.
         If reward_signal_train_interval is met, update the reward signals from the buffer.
         """
         if self.step % self.train_interval == 0:
+            self.trainer_metrics.start_policy_update_timer(
+                number_experiences=len(self.training_buffer.update_buffer["actions"]),
+                mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
+            )
             self.update_sac_policy()
             self.update_reward_signals()
+            self.trainer_metrics.end_policy_update()
 
     def update_sac_policy(self) -> None:
         """
@@ -232,10 +239,7 @@ class SACTrainer(RLTrainer):
         N times, then the reward signals are updated N times, then reward_signal_updates_per_train
         is greater than 1 and the reward signals are not updated in parallel.
         """
-        self.trainer_metrics.start_policy_update_timer(
-            number_experiences=len(self.training_buffer.update_buffer["actions"]),
-            mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
-        )
+
         self.cumulative_returns_since_policy_update: List[float] = []
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
@@ -255,29 +259,13 @@ class SACTrainer(RLTrainer):
                     sequence_length=self.policy.sequence_length,
                 )
                 # Get rewards for each reward
-                reward_signal_minibatches = {}
                 for name, signal in self.policy.reward_signals.items():
                     sampled_minibatch[
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
 
-                    # In some cases we might want to update the reward signals separately
-                    if self.reward_signal_updates_per_train <= 1:
-                        # Get minibatches for reward signal update if needed
-                        if signal.update_dict:
-                            LOGGER.debug(
-                                "Updating {} at step {}".format(name, self.step)
-                            )
-                            reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                                self.trainer_parameters["batch_size"],
-                                sequence_length=self.policy.sequence_length,
-                            )
-
                 update_stats = self.policy.update(
-                    sampled_minibatch,
-                    n_sequences,
-                    update_target=True,
-                    reward_signal_minibatches=reward_signal_minibatches,
+                    sampled_minibatch, n_sequences, update_target=True
                 )
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
@@ -300,8 +288,6 @@ class SACTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self.stats[stat].append(val)
 
-        self.trainer_metrics.end_policy_update()
-
     def update_reward_signals(self) -> None:
         """
         Iterate through the reward signals and update them. Unlike in PPO,
@@ -314,29 +300,25 @@ class SACTrainer(RLTrainer):
         """
         buffer = self.training_buffer.update_buffer
         num_updates = self.reward_signal_updates_per_train
-        if num_updates > 1:
-            n_sequences = max(
-                int(
-                    self.trainer_parameters["batch_size"] / self.policy.sequence_length
-                ),
-                1,
-            )
-            batch_update_stats: Dict[str, list] = defaultdict(list)
-            for _ in range(num_updates):
-                # Get minibatches for reward signal update if needed
-                reward_signal_minibatches = {}
-                for name, signal in self.policy.reward_signals.items():
-                    LOGGER.debug("Updating {} at step {}".format(name, self.step))
-                    # In some cases we might want to update the reward signals separately
-                    if signal.update_dict:
-                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                            self.trainer_parameters["batch_size"],
-                            sequence_length=self.policy.sequence_length,
-                        )
-                        update_stats = self.policy.update_reward_signals(
-                            reward_signal_minibatches, n_sequences
-                        )
+        n_sequences = max(
+            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+        )
+        batch_update_stats: Dict[str, list] = defaultdict(list)
+        for _ in range(num_updates):
+            # Get minibatches for reward signal update if needed
+            reward_signal_minibatches = {}
+            for name, signal in self.policy.reward_signals.items():
+                LOGGER.debug("Updating {} at step {}".format(name, self.step))
+                # Some signals don't need a minibatch to be sampled - so we don't!
+                if signal.update_dict:
+                    reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                        self.trainer_parameters["batch_size"],
+                        sequence_length=self.policy.sequence_length,
+                    )
+                    update_stats = self.policy.update_reward_signals(
+                        reward_signal_minibatches, n_sequences
+                    )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
-            for stat, stat_list in batch_update_stats.items():
-                self.stats[stat].append(np.mean(stat_list))
+        for stat, stat_list in batch_update_stats.items():
+            self.stats[stat].append(np.mean(stat_list))

@@ -180,11 +180,7 @@ class SACPolicy(TFPolicy):
 
     @timed
     def update(
-        self,
-        mini_batch: Dict[str, Any],
-        num_sequences: int,
-        update_target: bool = True,
-        reward_signal_minibatches: Dict[str, Dict] = None,
+        self, mini_batch: Dict[str, Any], num_sequences: int, update_target: bool = True
     ) -> Dict[str, float]:
         """
         Updates model using buffer.
@@ -198,18 +194,7 @@ class SACPolicy(TFPolicy):
         feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats: Dict[str, float] = {}
-        update_dict: Dict[str, tf.Tensor] = {}
-        update_dict.update(self.update_dict)
-        # Collect feed dicts for all reward signals.
-        if reward_signal_minibatches:
-            self.add_reward_signal_dicts(
-                feed_dict,
-                update_dict,
-                stats_needed,
-                reward_signal_minibatches,
-                num_sequences,
-            )
-        update_vals = self._execute_model(feed_dict, update_dict)
+        update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
         if update_target:
