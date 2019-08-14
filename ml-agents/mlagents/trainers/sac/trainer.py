@@ -315,6 +315,13 @@ class SACTrainer(RLTrainer):
         buffer = self.training_buffer.update_buffer
         num_updates = self.reward_signal_updates_per_train
         if num_updates > 1:
+            n_sequences = max(
+                int(
+                    self.trainer_parameters["batch_size"] / self.policy.sequence_length
+                ),
+                1,
+            )
+            batch_update_stats: Dict[str, list] = defaultdict(list)
             for _ in range(num_updates):
                 # Get minibatches for reward signal update if needed
                 reward_signal_minibatches = {}
@@ -326,3 +333,10 @@ class SACTrainer(RLTrainer):
                             self.trainer_parameters["batch_size"],
                             sequence_length=self.policy.sequence_length,
                         )
+                        update_stats = self.policy.update_reward_signals(
+                            reward_signal_minibatches, n_sequences
+                        )
+                    for stat_name, value in update_stats.items():
+                        batch_update_stats[stat_name].append(value)
+            for stat, stat_list in batch_update_stats.items():
+                self.stats[stat].append(np.mean(stat_list))
