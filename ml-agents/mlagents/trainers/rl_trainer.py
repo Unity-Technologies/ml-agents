@@ -20,8 +20,8 @@ RewardSignalResults = Dict[str, RewardSignalResult]
 
 class AllRewardsOutput(NamedTuple):
     """
-    CLass stores outputs of reward signals on current BrainInfos.
-    Also stores the actual rewards and optionally the values.
+    This class stores all of the outputs of the reward signals,
+    as well as the raw reward from the environment.
     """
 
     reward_signals: RewardSignalResults
