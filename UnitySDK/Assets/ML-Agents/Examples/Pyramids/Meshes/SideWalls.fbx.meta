@@ -12,6 +12,8 @@ ModelImporter:
     100012: SideWall7
     100014: SideWall8
     100016: //RootNode
+    100018: Floor
+    100020: OuterWalls
     400000: SideWall1
     400002: SideWall2
     400004: SideWall3
@@ -21,7 +23,10 @@ ModelImporter:
     400012: SideWall7
     400014: SideWall8
     400016: //RootNode
+    400018: Floor
+    400020: OuterWalls
     2100000: rep_White
+    2100002: rep_Floor
     2300000: SideWall1
     2300002: SideWall2
     2300004: SideWall3
@@ -30,6 +35,8 @@ ModelImporter:
     2300010: SideWall6
     2300012: SideWall7
     2300014: SideWall8
+    2300016: Floor
+    2300018: OuterWalls
     3300000: SideWall1
     3300002: SideWall2
     3300004: SideWall3
@@ -38,6 +45,8 @@ ModelImporter:
     3300010: SideWall6
     3300012: SideWall7
     3300014: SideWall8
+    3300016: Floor
+    3300018: OuterWalls
     4300000: SideWall8
     4300002: SideWall1
     4300004: SideWall2
@@ -46,7 +55,14 @@ ModelImporter:
     4300010: SideWall5
     4300012: SideWall6
     4300014: SideWall7
+    4300016: OuterWalls
+    4300018: Floor
   externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rep_Floor
+    second: {fileID: 2100000, guid: 525b55295d811d948bac721726c23b6e, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
