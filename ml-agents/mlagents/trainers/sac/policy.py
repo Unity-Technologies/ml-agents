@@ -152,9 +152,6 @@ class SACPolicy(TFPolicy):
                     self.reward_signals[reward_signal] = create_reward_signal(
                         self, self.model, reward_signal, config
                     )
-                    self.update_dict.update(
-                        self.reward_signals[reward_signal].update_dict
-                    )
 
     def evaluate(self, brain_info: BrainInfo) -> Dict[str, np.ndarray]:
         """
@@ -200,11 +197,17 @@ class SACPolicy(TFPolicy):
         """
         feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
-        update_stats = {}
+        update_stats: Dict[str, float] = {}
+        update_dict: Dict[str, tf.Tensor] = {}
+        update_dict.update(self.update_dict)
         # Collect feed dicts for all reward signals.
         if reward_signal_minibatches:
             self.add_reward_signal_dicts(
-                feed_dict, stats_needed, reward_signal_minibatches, num_sequences
+                feed_dict,
+                update_dict,
+                stats_needed,
+                reward_signal_minibatches,
+                num_sequences,
             )
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
@@ -228,10 +231,12 @@ class SACPolicy(TFPolicy):
         stats_needed: Dict[str, str] = {}
         if reward_signal_minibatches:
             self.add_reward_signal_dicts(
-                feed_dict, stats_needed, reward_signal_minibatches, num_sequences
+                feed_dict,
+                update_dict,
+                stats_needed,
+                reward_signal_minibatches,
+                num_sequences,
             )
-            for name in reward_signal_minibatches.keys():
-                update_dict.update(self.reward_signals[name].update_dict)
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
@@ -240,6 +245,7 @@ class SACPolicy(TFPolicy):
     def add_reward_signal_dicts(
         self,
         feed_dict: Dict[tf.Tensor, Any],
+        update_dict: Dict[str, tf.Tensor],
         stats_needed: Dict[str, str],
         reward_signal_minibatches: Dict[str, Dict],
         num_sequences: int,
@@ -247,6 +253,7 @@ class SACPolicy(TFPolicy):
         """
         Adds the items needed for reward signal updates to the feed_dict and stats_needed dict.
         :param feed_dict: Feed dict needed update
+        :param update_dit: Update dict that needs update
         :param stats_needed: Stats needed to get from the update.
         :param reward_signal_minibatches: Minibatches to use for updating the reward signals,
             indexed by name.
@@ -257,6 +264,7 @@ class SACPolicy(TFPolicy):
                     self.model, r_mini_batch, num_sequences
                 )
             )
+            update_dict.update(self.reward_signals[name].update_dict)
             stats_needed.update(self.reward_signals[name].stats_name_to_update_name)
 
     def construct_feed_dict(
