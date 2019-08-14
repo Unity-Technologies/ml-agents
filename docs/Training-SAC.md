@@ -53,6 +53,18 @@ ML-Agents provides two reward signals by default, the Extrinsic (environment) re
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
 environments.
 
+#### Updates Per Train (Optional, separate from SAC's Updates Per Train)
+
+`updates_per_train` corresponds to the number of mini batches sampled and used for updating the reward signals during each
+update. By default, we update the reward signals once every time the main policy is updated.
+However, to imitate the training procedure in certain imitation learning papers (e.g.
+[Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
+we may want to update the policy N times, then update the reward signal (GAIL) N times.
+We can change `train_interval` and `updates_per_train` of SAC, as well as `updates_per_train`
+under `reward_signals` to N to accomplish this.
+
+Typical Range: `1`
+
 ### Buffer Size
 
 `buffer_size` corresponds the maximum number of experiences (agent observations, actions
@@ -62,6 +74,15 @@ can learn from old as well as new experiences. It should also be much larger tha
 `batch_size`.
 
 Typical Range: `50000` - `1000000`
+
+### Buffer Init Steps
+
+`buffer_init_steps` is the number of experiences to prefill the buffer with before attempting training.
+As the untrained policy is fairly random, prefilling the buffer with random actions is
+useful for exploration. Typically, at least several episodes of experiences should be
+prefilled.
+
+Typical Range: `1000` - `10000`
 
 ### Batch Size
 
@@ -74,6 +95,50 @@ smaller (in order of 10s).
 Typical Range (Continuous): `128` - `1024`
 
 Typical Range (Discrete): `32` - `512`
+
+### Init EntCoef
+
+`init_entcoef` refers to the initial entropy coefficient set at the beginning of training. In
+SAC, the agent is incentivized to make its actions entropic to facilitate better exploration.
+The entropy coefficient weighs the true reward with a bonus entropy reward. The entropy
+coefficient is [automatically adjusted](https://arxiv.org/abs/1812.05905) to a preset target
+entropy, so the `init_entcoef` only corresponds to the starting value of the entropy bonus.
+Increase `init_entcoef` to explore more in the beginning, decrease to converge to a solution faster.
+
+Typical Range (Continuous): `0.5` - `1.0`
+
+Typical Range (Discrete): `0.05` - `0.5`
+
+### Train Interval
+
+`train_interval` is the number of steps taken between each agent update. In SAC, a single "update" corresponds
+to grabbing a batch of size `batch_size` from the experience replay buffer, and using this mini batch to
+update the models. Typically, we can update every timestep, but if your environment's steps are
+very small, there may not be any new interesting information between steps, and `train_interval` can be
+increased.
+
+Typical Range: `1` - `5`
+
+### Updates Per Train
+
+`updates_per_train` corresponds to the number of mini batches sampled and used for training during each
+update. Typically, this can be left at 1. However, to imitate the training procedure in certain papers (e.g.
+[Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
+we may want to update N times with different mini batches before grabbing additional samples.
+We can change `train_interval` and `updates_per_train` to N to accomplish this.
+
+Typical Range: `1`
+
+### Tau
+
+`tau` corresponds to the magnitude of the target Q update during the SAC model update.
+In SAC, there are two neural networks: the target and the policy. The target network is
+used to bootstrap the policy's estimate of the future rewards at a given state, and is fixed
+while the policy is being updated. This target is then slowly updated according to `tau`.
+Typically, this value should be left at `0.005`. For very simple problems, increasing
+`tau` to `0.01` might reduce the time it takes to learn, at the cost of stability.
+
+Typical Range: `0.005` - `0.01`
 
 ### Learning Rate
 
@@ -212,13 +277,6 @@ Typical Range (Continuous): `512` - `5120`
 
 Typical Range (Discrete): `32` - `512`
 
-### (Optional) Number of Epochs
-
-`num_epoch` is the number of passes through the demonstration buffer during
-gradient descent. If not specified, it will default to the number of epochs set for PPO.
-
-Typical Range: `3` - `10`
-
 ### (Optional) Samples Per Update
 
 `samples_per_update` is the maximum number of samples
@@ -243,11 +301,23 @@ and downs are to be expected. Depending on the complexity of the task, a
 significant increase in reward may not present itself until millions of steps
 into the training process.
 
+### Entropy Coefficient
+
+SAC is a "maximum entropy" reinforcement learning algorithm, and agents trained using
+SAC are incentivized to behave randomly while also solving the problem. The entropy
+coefficient balances the incentive to behave randomly vs. maximizing the reward.
+This value is adjusted automatically so that the agent retains some amount of randomness during
+training. It should steadily decrease in the beginning of training, and reach some small
+value where it will level off. If it decreases too soon or takes too
+long to decrease, `init_entcoef` should be adjusted.
+
 ### Entropy
 
 This corresponds to how random the decisions of a Brain are. This should
-consistently decrease during training. If it decreases too soon or not at all,
-`beta` should be adjusted (when using discrete action space).
+initially increase during training, reach a peak, and should decline along
+with the Entropy Coefficient. This is because in the beginning, the agent is
+incentivised to be more random for exploration due to a high entropy coefficient.
+If it decreases too soon or takes too long to decrease, `init_entcoef` should be adjusted.
 
 ### Learning Rate
 
@@ -255,14 +325,16 @@ This will decrease over time on a linear schedule.
 
 ### Policy Loss
 
-These values will oscillate during training. Generally they should be less than
-1.0.
+These values may increase as the agent explores, but should decrease longterm
+as the agent learns how to solve the task.
 
 ### Value Estimate
 
 These values should increase as the cumulative reward increases. They correspond
 to how much future reward the agent predicts itself receiving at any given
-point.
+point. They may also increase at the beginning as the agent is rewarded for
+being random (see: Entropy and Entropy Coefficient), but should decline as
+Entropy Coefficient decreases.
 
 ### Value Loss
 
