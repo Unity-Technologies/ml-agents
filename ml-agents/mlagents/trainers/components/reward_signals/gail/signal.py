@@ -77,8 +77,8 @@ class GAILRewardSignal(RewardSignal):
         # Construct the batch
         mini_batch["actions"] = next_info.previous_vector_actions
         mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
-        for i, _ in enumerate(current_info.visual_observations):
-            mini_batch["visual_obs%d" % i] = current_info.visual_observations[i]
+        for i, obs in enumerate(current_info.visual_observations):
+            mini_batch["visual_obs%d" % i] = obs
         if self.policy.use_vec_obs:
             mini_batch["vector_obs"] = current_info.vector_observations
 
@@ -96,7 +96,7 @@ class GAILRewardSignal(RewardSignal):
         if self.policy.use_vec_obs:
             feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
         if self.policy.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.policy.model.visual_in):
+            for i in range(len(self.policy.model.visual_in)):
                 _obs = mini_batch["visual_obs%d" % i]
                 feed_dict[self.policy.model.visual_in[i]] = _obs
 
