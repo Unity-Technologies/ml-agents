@@ -720,8 +720,6 @@ class SACModel(LearningModel):
                 _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
 
                 self.min_policy_qs[name] = tf.minimum(_q1_p_mean, _q2_p_mean)
-
-                # self.min_policy_q = tf.Print(self.min_policy_q, [self.policy_network.action_probs], summarize = 11)
             else:
                 self.min_policy_qs[name] = tf.minimum(
                     self.policy_network.q1_pheads[name],
@@ -732,7 +730,6 @@ class SACModel(LearningModel):
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )
             self.rewards_holders[name] = rewards_holder
-            # self.old_values.append(old_value)
         self.learning_rate = tf.train.polynomial_decay(
             lr, self.global_step, max_step, 1e-10, power=1.0
         )
