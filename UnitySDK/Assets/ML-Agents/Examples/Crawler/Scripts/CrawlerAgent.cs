@@ -91,7 +91,7 @@ public class CrawlerAgent : Agent
     public void CollectObservationBodyPart(BodyPart bp)
     {
         var rb = bp.rb;
-        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+        AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // is the bp currently touching the ground?
 
         Vector3 velocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.velocity);
         AddVectorObs(velocityRelativeToLookRotationToTarget);
@@ -113,20 +113,25 @@ public class CrawlerAgent : Agent
     public override void CollectObservations()
     {
         jdController.GetCurrentJointForces();
-        // Normalize dir vector to help generalize
 
+        //Create a look rotation for the dirToTarget
         lookRotation = Quaternion.LookRotation(dirToTarget);
+        //Create a new Matrix4x4 to use as the reference point for some of the observations
         targetDirMatrix = Matrix4x4.TRS(Vector3.zero, lookRotation, Vector3.one);
 
-        // Forward & up to help with orientation
+
         RaycastHit hit;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        float maxRaycastDist = 5;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
         {
-            AddVectorObs(hit.distance);
+            AddVectorObs(hit.distance/maxRaycastDist); //normalized hit dist
         }
         else
-            AddVectorObs(10.0f);
+        {
+            AddVectorObs(1); //normalized hit dist (no hit so return a 1)
+        }
 
+        // Forward & up to help with orientation
         Vector3 bodyForwardRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.forward);
         AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
 
