@@ -64,8 +64,15 @@ class SACPolicy(TFPolicy):
                     policy_learning_rate=trainer_params["learning_rate"],
                     default_batch_size=trainer_params["batch_size"],
                     default_num_epoch=1,
+                    samples_per_update=trainer_params["batch_size"],
                     **trainer_params["pretraining"],
                 )
+                # SAC-specific setting - we don't want to do a whole epoch each update!
+                if "samples_per_update" in trainer_params["pretraining"]:
+                    logger.warning(
+                        "Pretraining: Samples Per Update is not a valid setting for SAC."
+                    )
+                    self.bc_module.samples_per_update = 1
             else:
                 self.bc_module = None
 

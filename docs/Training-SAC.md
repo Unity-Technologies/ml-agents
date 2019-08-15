@@ -282,17 +282,6 @@ Typical Range (Continuous): `512` - `5120`
 
 Typical Range (Discrete): `32` - `512`
 
-### (Optional) Samples Per Update
-
-`samples_per_update` is the maximum number of samples
-to use during each imitation update. You may want to lower this if your demonstration
-dataset is very large to avoid overfitting the policy on demonstrations. Set to 0
-to train over all of the demonstrations at each update step.
-
-Default Value: `0` (all)
-
-Typical Range: Approximately equal to SAC's `batch_size`
-
 ## Training Statistics
 
 To view training statistics, use TensorBoard. For information on launching and

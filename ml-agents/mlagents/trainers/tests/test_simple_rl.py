@@ -208,7 +208,6 @@ def _check_environment_trains(env, config):
             meta_curriculum=None,
             multi_gpu=False,
         )
-        print(trainers)
 
         tc = TrainerController(
             trainers=trainers,
