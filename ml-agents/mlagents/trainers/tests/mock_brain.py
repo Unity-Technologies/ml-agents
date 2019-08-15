@@ -107,7 +107,7 @@ def simulate_rollout(env, policy, buffer_init_samples):
     return buffer
 
 
-def create_buffer(brain_infos, brain_params, sequence_length):
+def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
     buffer = Buffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):
@@ -144,11 +144,62 @@ def create_buffer(brain_infos, brain_params, sequence_length):
         buffer[0]["random_normal_epsilon"].append(
             np.ones(buffer[0]["actions"][0].shape)
         )
-        buffer[0]["action_mask"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["memory"].append(np.ones(8))
+        buffer[0]["action_mask"].append(
+            np.ones(np.sum(brain_params.vector_action_space_size))
+        )
+        buffer[0]["memory"].append(np.ones(memory_size))
 
     buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
     return buffer
+
+
+def setup_mock_env_and_brains(
+    mock_env,
+    use_discrete,
+    use_visual,
+    num_agents=12,
+    discrete_action_space=[3, 3, 3, 2],
+    vector_action_space=[2],
+    vector_obs_space=8,
+):
+    if not use_visual:
+        mock_brain = create_mock_brainparams(
+            vector_action_space_type="discrete" if use_discrete else "continuous",
+            vector_action_space_size=discrete_action_space
+            if use_discrete
+            else vector_action_space,
+            vector_observation_space_size=vector_obs_space,
+        )
+        mock_braininfo = create_mock_braininfo(
+            num_agents=num_agents,
+            num_vector_observations=vector_obs_space,
+            num_vector_acts=sum(
+                discrete_action_space if use_discrete else vector_action_space
+            ),
+            discrete=use_discrete,
+            num_discrete_branches=len(discrete_action_space),
+        )
+    else:
+        mock_brain = create_mock_brainparams(
+            vector_action_space_type="discrete" if use_discrete else "continuous",
+            vector_action_space_size=discrete_action_space
+            if use_discrete
+            else vector_action_space,
+            vector_observation_space_size=0,
+            number_visual_observations=1,
+        )
+        mock_braininfo = create_mock_braininfo(
+            num_agents=num_agents,
+            num_vis_observations=1,
+            num_vector_acts=sum(
+                discrete_action_space if use_discrete else vector_action_space
+            ),
+            discrete=use_discrete,
+            num_discrete_branches=len(discrete_action_space),
+        )
+    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    env = mock_env()
+    return env, mock_brain, mock_braininfo
 
 
 def create_mock_3dball_brain():

@@ -52,8 +52,8 @@ class GAILRewardSignal(RewardSignal):
         self.update_dict: Dict[str, tf.Tensor] = {
             "gail_loss": self.model.loss,
             "gail_update_batch": self.model.update_batch,
-            "gail_policy_estimate": self.model.policy_estimate,
-            "gail_expert_estimate": self.model.expert_estimate,
+            "gail_policy_estimate": self.model.mean_policy_estimate,
+            "gail_expert_estimate": self.model.mean_expert_estimate,
         }
         if self.model.use_vail:
             self.update_dict["kl_loss"] = self.model.kl_loss
@@ -62,31 +62,51 @@ class GAILRewardSignal(RewardSignal):
             self.update_dict["z_mean_policy"] = self.model.z_mean_policy
             self.update_dict["beta_update"] = self.model.update_beta
 
-        self.stats_name_to_update_name = {"Losses/GAIL Loss": "gail_loss"}
+        self.stats_name_to_update_name = {
+            "Losses/GAIL Loss": "gail_loss",
+            "Policy/GAIL Policy Estimate": "gail_policy_estimate",
+            "Policy/GAIL Expert Estimate": "gail_expert_estimate",
+        }
 
     def evaluate(
         self, current_info: BrainInfo, next_info: BrainInfo
     ) -> RewardSignalResult:
         if len(current_info.agents) == 0:
-            return []
+            return RewardSignalResult([], [])
+        mini_batch: Dict[str, np.array] = {}
+        # Construct the batch
+        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
+        for i, obs in enumerate(current_info.visual_observations):
+            mini_batch["visual_obs%d" % i] = obs
+        if self.policy.use_vec_obs:
+            mini_batch["vector_obs"] = current_info.vector_observations
 
+        result = self.evaluate_batch(mini_batch)
+        return result
+
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.model.batch_size: len(next_info.vector_observations),
-            self.policy.model.sequence_length: 1,
+            self.policy.model.batch_size: len(mini_batch["actions"]),
+            self.policy.model.sequence_length: self.policy.sequence_length,
         }
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [0]
 
-        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
-        feed_dict[self.model.done_policy] = np.reshape(next_info.local_done, [-1, 1])
+        if self.policy.use_vec_obs:
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+        if self.policy.model.vis_obs_size > 0:
+            for i in range(len(self.policy.model.visual_in)):
+                _obs = mini_batch["visual_obs%d" % i]
+                feed_dict[self.policy.model.visual_in[i]] = _obs
+
         if self.policy.use_continuous_act:
-            feed_dict[
-                self.policy.model.selected_actions
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
         else:
-            feed_dict[
-                self.policy.model.action_holder
-            ] = next_info.previous_vector_actions
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+        feed_dict[self.model.done_policy_holder] = np.array(
+            mini_batch["done"]
+        ).flatten()
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -123,11 +143,10 @@ class GAILRewardSignal(RewardSignal):
         # If num_sequences is less, we need to shorten the input batch.
         for key, element in mini_batch_policy.items():
             mini_batch_policy[key] = element[:max_num_experiences]
-        # Get demo buffer
-        self.demonstration_buffer.update_buffer.shuffle(1)
-        # TODO: Replace with SAC sample method
-        mini_batch_demo = self.demonstration_buffer.update_buffer.make_mini_batch(
-            0, len(mini_batch_policy["actions"])
+
+        # Get batch from demo buffer
+        mini_batch_demo = self.demonstration_buffer.update_buffer.sample_mini_batch(
+            len(mini_batch_policy["actions"]), 1
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {

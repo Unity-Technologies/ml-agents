@@ -1,8 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo
-
 import tensorflow as tf
+from mlagents.envs.brain import BrainInfo
 
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
@@ -56,25 +55,40 @@ class CuriosityRewardSignal(RewardSignal):
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         if len(current_info.agents) == 0:
-            return []
-
-        feed_dict = {
-            self.policy.model.batch_size: len(next_info.vector_observations),
-            self.policy.model.sequence_length: 1,
-        }
-        feed_dict = self.policy.fill_eval_dict(feed_dict, brain_info=current_info)
-        if self.policy.use_continuous_act:
-            feed_dict[
-                self.policy.model.selected_actions
-            ] = next_info.previous_vector_actions
-        else:
-            feed_dict[
-                self.policy.model.action_holder
-            ] = next_info.previous_vector_actions
-        for i in range(self.policy.model.vis_obs_size):
-            feed_dict[self.model.next_visual_in[i]] = next_info.visual_observations[i]
+            return RewardSignalResult([], [])
+        mini_batch: Dict[str, np.array] = {}
+        # Construct the batch and use evaluate_batch
+        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
+        for i in range(len(current_info.visual_observations)):
+            mini_batch["visual_obs%d" % i] = current_info.visual_observations[i]
+            mini_batch["next_visual_obs%d" % i] = next_info.visual_observations[i]
         if self.policy.use_vec_obs:
-            feed_dict[self.model.next_vector_in] = next_info.vector_observations
+            mini_batch["vector_obs"] = current_info.vector_observations
+            mini_batch["next_vector_in"] = next_info.vector_observations
+
+        result = self.evaluate_batch(mini_batch)
+        return result
+
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.policy.model.batch_size: len(mini_batch["actions"]),
+            self.policy.model.sequence_length: self.policy.sequence_length,
+        }
+        if self.policy.use_vec_obs:
+            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
+        if self.policy.model.vis_obs_size > 0:
+            for i in range(len(self.policy.model.visual_in)):
+                _obs = mini_batch["visual_obs%d" % i]
+                _next_obs = mini_batch["next_visual_obs%d" % i]
+                feed_dict[self.policy.model.visual_in[i]] = _obs
+                feed_dict[self.model.next_visual_in[i]] = _next_obs
+
+        if self.policy.use_continuous_act:
+            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
+        else:
+            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -110,8 +124,6 @@ class CuriosityRewardSignal(RewardSignal):
             policy_model.batch_size: num_sequences,
             policy_model.sequence_length: self.policy.sequence_length,
             policy_model.mask_input: mini_batch["masks"],
-            policy_model.advantage: mini_batch["advantages"],
-            policy_model.all_old_log_probs: mini_batch["action_probs"],
         }
         if self.policy.use_continuous_act:
             feed_dict[policy_model.output_pre] = mini_batch["actions_pre"]
@@ -121,12 +133,10 @@ class CuriosityRewardSignal(RewardSignal):
             feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
         if policy_model.vis_obs_size > 0:
-            for i, _ in enumerate(policy_model.visual_in):
-                feed_dict[policy_model.visual_in[i]] = mini_batch["visual_obs%d" % i]
-            for i, _ in enumerate(policy_model.visual_in):
-                feed_dict[self.model.next_visual_in[i]] = mini_batch[
-                    "next_visual_obs%d" % i
-                ]
+            for i, vis_in in enumerate(policy_model.visual_in):
+                feed_dict[vis_in] = mini_batch["visual_obs%d" % i]
+            for i, next_vis_in in enumerate(self.model.next_visual_in):
+                feed_dict[next_vis_in] = mini_batch["next_visual_obs%d" % i]
 
         self.has_updated = True
         return feed_dict

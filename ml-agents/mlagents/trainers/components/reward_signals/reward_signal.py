@@ -63,6 +63,21 @@ class RewardSignal(abc.ABC):
             np.zeros(len(current_info.agents)),
         )
 
+    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+        """
+        Evaluates the reward for the data present in the Dict mini_batch. Note the distiction between
+        evaluate(), which takes in two BrainInfos. This reflects the different data formats (i.e. from the Buffer
+        vs. before being placed into the Buffer. Use this when evaluating a reward function drawn straight from a
+        Buffer.
+        :param mini_batch: A Dict of numpy arrays (the format used by our Buffer)
+            when drawing from the update buffer.
+        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
+        """
+        mini_batch_len = len(next(iter(mini_batch.values())))
+        return RewardSignalResult(
+            self.strength * np.zeros(mini_batch_len), np.zeros(mini_batch_len)
+        )
+
     def prepare_update(
         self,
         policy_model: LearningModel,

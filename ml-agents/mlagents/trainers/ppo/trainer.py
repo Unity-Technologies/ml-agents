@@ -13,7 +13,7 @@ from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.envs.action_info import ActionInfoOutputs
 
@@ -193,8 +193,8 @@ class PPOTrainer(RLTrainer):
 
     def add_rewards_outputs(
         self,
-        value: Dict[str, Any],
-        rewards_dict: Dict[str, RewardSignalResult],
+        rewards_out: AllRewardsOutput,
+        values: Dict[str, np.ndarray],
         agent_id: str,
         agent_idx: int,
         agent_next_idx: int,
@@ -202,26 +202,14 @@ class PPOTrainer(RLTrainer):
         """
         Takes the value output of the last action and store it into the training buffer.
         """
-        for name, reward_result in rewards_dict.items():
+        for name, reward_result in rewards_out.reward_signals.items():
             # 0 because we use the scaled reward to train the agent
             self.training_buffer[agent_id]["{}_rewards".format(name)].append(
                 reward_result.scaled_reward[agent_idx]
             )
             self.training_buffer[agent_id]["{}_value_estimates".format(name)].append(
-                value[name][agent_next_idx][0]
+                values[name][agent_next_idx][0]
             )
-
-    def end_episode(self):
-        """
-        A signal that the Episode has ended. The buffer must be reset.
-        Get only called when the academy resets.
-        """
-        self.training_buffer.reset_local_buffers()
-        for agent_id in self.episode_steps:
-            self.episode_steps[agent_id] = 0
-        for rewards in self.collected_rewards.values():
-            for agent_id in rewards:
-                rewards[agent_id] = 0
 
     def is_ready_update(self):
         """

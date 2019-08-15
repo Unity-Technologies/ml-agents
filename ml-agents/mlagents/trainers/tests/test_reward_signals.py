@@ -73,44 +73,15 @@ NUM_AGENTS = 12
 def create_ppo_policy_mock(
     mock_env, dummy_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
-
-    if not use_visual:
-        mock_brain = mb.create_mock_brainparams(
-            vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=DISCRETE_ACTION_SPACE
-            if use_discrete
-            else VECTOR_ACTION_SPACE,
-            vector_observation_space_size=VECTOR_OBS_SPACE,
-        )
-        mock_braininfo = mb.create_mock_braininfo(
-            num_agents=NUM_AGENTS,
-            num_vector_observations=VECTOR_OBS_SPACE,
-            num_vector_acts=sum(
-                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
-            ),
-            discrete=use_discrete,
-            num_discrete_branches=len(DISCRETE_ACTION_SPACE),
-        )
-    else:
-        mock_brain = mb.create_mock_brainparams(
-            vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=DISCRETE_ACTION_SPACE
-            if use_discrete
-            else VECTOR_ACTION_SPACE,
-            vector_observation_space_size=0,
-            number_visual_observations=1,
-        )
-        mock_braininfo = mb.create_mock_braininfo(
-            num_agents=NUM_AGENTS,
-            num_vis_observations=1,
-            num_vector_acts=sum(
-                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
-            ),
-            discrete=use_discrete,
-            num_discrete_branches=len(DISCRETE_ACTION_SPACE),
-        )
-    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
-    env = mock_env()
+    env, mock_brain, _ = mb.setup_mock_env_and_brains(
+        mock_env,
+        use_discrete,
+        use_visual,
+        num_agents=NUM_AGENTS,
+        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+        discrete_action_space=DISCRETE_ACTION_SPACE,
+    )
 
     trainer_parameters = dummy_config
     model_path = env.brain_names[0]
