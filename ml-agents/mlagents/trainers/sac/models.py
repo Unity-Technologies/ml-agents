@@ -161,7 +161,7 @@ class SACNetwork(LearningModel):
         Creates just the critic network
         """
         scope = self.join_scopes(scope, "critic")
-        self.value = self.create_sac_value_head(
+        self.create_sac_value_head(
             self.stream_names,
             hidden_value,
             self.num_layers,
@@ -197,7 +197,7 @@ class SACNetwork(LearningModel):
         Creates just the critic network
         """
         scope = self.join_scopes(scope, "critic")
-        self.value = self.create_sac_value_head(
+        self.create_sac_value_head(
             self.stream_names,
             hidden_value,
             self.num_layers,
@@ -455,12 +455,7 @@ class SACNetwork(LearningModel):
                     name="lstm_value",
                 )
                 self.value_memory_out = memory_out
-            for name in stream_names:
-                self.value_heads[name] = tf.layers.dense(
-                    value_hidden, 1, reuse=False, name="{}_value".format(name)
-                )
-        value = tf.reduce_mean(list(self.value_heads.values()), 0)
-        return value
+            self.create_value_heads(stream_names, value_hidden)
 
     def create_q_heads(
         self,
@@ -751,7 +746,9 @@ class SACModel(LearningModel):
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
-                + (1.0 - expanded_dones) * self.gammas[i] * self.target_network.value
+                + (1.0 - expanded_dones)
+                * self.gammas[i]
+                * self.target_network.value_heads[name]
             )
 
             if discrete:
