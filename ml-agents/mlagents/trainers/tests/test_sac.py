@@ -105,6 +105,31 @@ def test_sac_cc_policy(mock_env, dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
+def test_sac_update_reward_signals(mock_env, dummy_config):
+    # Test evaluate
+    tf.reset_default_graph()
+    # Add a Curiosity module
+    dummy_config["reward_signals"]["curiosity"] = {}
+    dummy_config["reward_signals"]["curiosity"]["strength"] = 1.0
+    dummy_config["reward_signals"]["curiosity"]["gamma"] = 0.99
+    dummy_config["reward_signals"]["curiosity"]["encoding_size"] = 128
+    env, policy = create_sac_policy_mock(
+        mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+    )
+
+    # Test update
+    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Mock out reward signal eval
+    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
+    policy.update_reward_signals(
+        {"curiosity": buffer.update_buffer},
+        num_sequences=len(buffer.update_buffer["actions"]),
+    )
+    env.close()
+
+
+@mock.patch("mlagents.envs.UnityEnvironment")
 def test_sac_dc_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
