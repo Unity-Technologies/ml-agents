@@ -99,13 +99,13 @@ GoalieLearning:
 
 PyramidsLearning:
     summary_freq: 2000
-    curiosity_enc_size: 256
     time_horizon: 128
     batch_size: 128
-    buffer_size: 2048
+    buffer_init_steps: 10000
+    buffer_size: 500000
     hidden_units: 512
     num_layers: 2
-    init_entcoef: 0.1
+    init_entcoef: 0.5
     max_steps: 5.0e5
     sequence_length: 16
     use_recurrent: false
@@ -113,16 +113,28 @@ PyramidsLearning:
         extrinsic:
             strength: 1.0
             gamma: 0.99
+        curiosity:
+            strength: 0.1
+            gamma: 0.99
+            encoding_size: 256
 
 VisualPyramidsLearning:
-    curiosity_enc_size: 256
     time_horizon: 128
     batch_size: 64
-    buffer_size: 2024
     hidden_units: 256
+    buffer_init_steps: 1000
     num_layers: 1
     beta: 1.0e-2
     max_steps: 5.0e5
+    buffer_size: 200000
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.99
+        curiosity:
+            strength: 0.1
+            gamma: 0.99
+            encoding_size: 256
 
 3DBallLearning:
     normalize: true
