@@ -133,7 +133,7 @@ class BCModule:
         else:
             feed_dict[self.policy.model.action_masks] = np.ones(
                 (
-                    self.n_sequences,
+                    self.n_sequences * self.policy.sequence_length,
                     sum(self.policy.model.brain.vector_action_space_size),
                 )
             )
