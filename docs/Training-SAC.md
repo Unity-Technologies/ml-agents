@@ -233,6 +233,16 @@ the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
 
+### (Optional) Save Replay Buffer
+
+`save_replay_buffer` enables you to save and load the experience replay buffer as well as
+the model when quitting and re-starting training. This may help resumes go more smoothly,
+as the experiences collected won't be wiped. Note that replay buffers can be very large, and
+will take up a considerable amount of disk space. For that reason, we disable this feature by
+default.
+
+Default: `False`
+
 ## (Optional) Pretraining Using Demonstrations
 
 In some cases, you might want to bootstrap the agent's policy using behavior recorded
