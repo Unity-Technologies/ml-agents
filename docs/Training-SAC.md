@@ -18,15 +18,12 @@ To train an agent, you will need to provide the agent one or more reward signals
 the agent should attempt to maximize. See [Reward Signals](Training-RewardSignals.md)
 for the available reward signals and the corresponding hyperparameters.
 
-See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
-training program, `learn.py`.
-
 ## Best Practices when training with SAC
 
 Successfully training a reinforcement learning model often involves tuning
- hyperparameters. This guide contains some best practices for tuning the
-training process when the default parameters don't seem to be giving the level
-of performance you would like.
+hyperparameters. This guide contains some best practices for training
+when the default parameters don't seem to be giving the level of performance
+you would like.
 
 ## Hyperparameters
 
