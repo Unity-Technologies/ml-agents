@@ -113,10 +113,12 @@ PyramidsLearning:
         extrinsic:
             strength: 1.0
             gamma: 0.99
-        curiosity:
-            strength: 0.02
+        gail:
+            strength: 0.005
             gamma: 0.99
-            encoding_size: 256
+            encoding_size: 128
+            demo_path: demos/ExpertPyramid.demo
+
 
 VisualPyramidsLearning:
     time_horizon: 128
@@ -131,10 +133,11 @@ VisualPyramidsLearning:
         extrinsic:
             strength: 1.0
             gamma: 0.99
-        curiosity:
-            strength: 0.02
+        gail:
+            strength: 0.005
             gamma: 0.99
-            encoding_size: 256
+            encoding_size: 128
+            demo_path: demos/ExpertPyramid.demo
 
 3DBallLearning:
     normalize: true
