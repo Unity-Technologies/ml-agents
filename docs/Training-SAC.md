@@ -23,8 +23,8 @@ training program, `learn.py`.
 
 ## Best Practices when training with SAC
 
-Successfully training a reinforcement learning model often involves tuning the
-training hyperparameters. This guide contains some best practices for tuning the
+Successfully training a reinforcement learning model often involves tuning
+ hyperparameters. This guide contains some best practices for tuning the
 training process when the default parameters don't seem to be giving the level
 of performance you would like.
 
