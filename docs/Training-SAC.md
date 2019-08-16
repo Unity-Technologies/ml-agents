@@ -1,14 +1,10 @@
 # Training with Soft-Actor Critic
 
-In addition to [Proximal Policy Optimization (PPO)](Training-PPO.md), ML-Agents provides
+In addition to [Proximal Policy Optimization (PPO)](Training-PPO.md), ML-Agents also provides
 [Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/) to perform
 reinforcement learning.
-SAC uses several neural networks. During training, it uses two neural networks to learn
-the expected return of a given action when at a certain state. Then, a 3rd neural network
-learns the optimal policy that matches the probability of choosing an action to the
-Q function learned.
 
-In contrast with PPO, SAC is _off-policy_, i.e. can learn from experiences collected
+In contrast with PPO, SAC is _off-policy_, which means it can learn from experiences collected
 at any time during the past. As experiences are collected, they are placed in an
 experience replay buffer, and randomly drawn during training. This makes SAC
 significantly more sample-efficient, often requiring 5-10 times less samples to learn
@@ -25,20 +21,9 @@ for the available reward signals and the corresponding hyperparameters.
 See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
 training program, `learn.py`.
 
-If you are using the recurrent neural network (RNN) to utilize memory, see
-[Using Recurrent Neural Networks](Feature-Memory.md) for RNN-specific training
-details.
-
-If you are using curriculum training to pace the difficulty of the learning task
-presented to an agent, see [Training with Curriculum
-Learning](Training-Curriculum-Learning.md).
-
-For information about imitation learning from demonstrations, see
-[Training with Imitation Learning](Training-Imitation-Learning.md).
-
 ## Best Practices when training with SAC
 
-Successfully training a Reinforcement Learning model often involves tuning the
+Successfully training a reinforcement learning model often involves tuning the
 training hyperparameters. This guide contains some best practices for tuning the
 training process when the default parameters don't seem to be giving the level
 of performance you would like.
@@ -48,9 +33,9 @@ of performance you would like.
 ### Reward Signals
 
 In reinforcement learning, the goal is to learn a Policy that maximizes reward.
-At a base level, the reward is given by the environment. However, we could imagine
+In the most basic case, the reward is given by the environment. However, we could imagine
 rewarding the agent for various different behaviors. For instance, we could reward
-the agent for exploring new states, rather than just when an explicit reward is given.
+the agent for exploring new states, rather than explicitly defined reward signals.
 Furthermore, we could mix reward signals to help the learning process.
 
 `reward_signals` provides a section to define [reward signals.](Training-RewardSignals.md)

@@ -25,8 +25,8 @@ developer communities.
 
 * Unity environment control from Python
 * 10+ sample Unity environments
-* Support for multiple environment configurations and training scenarios
 * Two deep reinforcement learning algorithms, [Proximal Policy Optimization](docs/Training-PPO.md) (PPO) and [Soft Actor-Critic](docs/Training-SAC.md) (SAC)
+* Support for multiple environment configurations and training scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
 * Broadcasting of agent behavior for supervised learning

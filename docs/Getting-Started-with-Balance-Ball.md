@@ -190,7 +190,7 @@ In order to train an agent to correctly balance the ball, we provide two
 deep reinforcement learning algorithms.
 
 The default algorithm is Proximal Policy Optimization (PPO). This
-is a method that has been shown to be safe, efficient, and more general purpose
+is a method that has been shown to be more general purpose and stable
 than many other RL algorithms. For more information on PPO, OpenAI
 has a [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it, and [our page](Training-PPO.md) for how to use it in training.
@@ -200,11 +200,11 @@ has been shown to be both stable and sample-efficient.
 For more information on SAC, see UC Berkeley's
 [blog post](https://bair.berkeley.edu/blog/2018/12/14/sac/) and
 [our page](Training-SAC.md) for more guidance on when to use SAC vs. PPO. To
-use SAC to train Balance Ball, replace all references to `trainer_config.yaml`
-with `sac_trainer_config.yaml` below.
+use SAC to train Balance Ball, replace all references to `config/trainer_config.yaml`
+with `config/sac_trainer_config.yaml` below.
 
 To train the agents within the Balance Ball environment, we will be using the
-Python package. We have provided a convenient command called `mlagents-learn`
+ML-Agents Python package. We have provided a convenient command called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
 We can use `run_id` to identify the experiment and create a folder where the
