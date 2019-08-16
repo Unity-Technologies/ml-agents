@@ -262,6 +262,12 @@ class SACPolicy(TFPolicy):
     def construct_feed_dict(
         self, model: SACModel, mini_batch: Dict[str, Any], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
+        """
+        Builds the feed dict for updating the SAC model.
+        :param model: The model to update. May be different when, e.g. using multi-GPU.
+        :param mini_batch: Mini-batch to use to update.
+        :param num_sequences: Number of LSTM sequences in mini_batch.
+        """
         feed_dict = {
             self.model.batch_size: num_sequences,
             self.model.sequence_length: self.sequence_length,

@@ -148,11 +148,13 @@ class SACNetwork(LearningModel):
 
     def join_scopes(self, scope_1, scope_2):
         """
-        Joins two scopes. Does so safetly (i.e., if there is no scope_1, don't add
-        a backslash)
+        Joins two scopes. Does so safetly (i.e., if one of the two scopes doesn't
+        exist, don't add any backslashes)
         """
         if not scope_1:
             return scope_2
+        if not scope_2:
+            return scope_1
         else:
             return "/".join(filter(None, [scope_1, scope_2]))
 
@@ -441,7 +443,6 @@ class SACNetwork(LearningModel):
         :param h_size: size of hidden layers for value network
         :param scope: TF scope for value network.
         """
-
         self.value_heads = {}
         with tf.variable_scope(scope):
             value_hidden = self.create_vector_observation_encoder(
@@ -516,6 +517,14 @@ class SACNetwork(LearningModel):
         return q1_heads, q2_heads, q1, q2
 
     def copy_normalization(self, mean, variance, steps):
+        """
+        Copies the mean, variance, and steps into the normalizers of the
+        input of this SACNetwork. Used to copy the normalizer from the policy network
+        to the target network.
+        param mean: Tensor containing the mean.
+        param variance: Tensor containing the variance
+        param steps: Tensor containing the number of steps.
+        """
         update_mean = tf.assign(self.running_mean, mean)
         update_variance = tf.assign(self.running_variance, variance)
         update_norm_step = tf.assign(self.normalization_steps, steps)
@@ -701,23 +710,29 @@ class SACModel(LearningModel):
 
         for i, name in enumerate(stream_names):
             if discrete:
-                _broken_mpq1 = self.apply_as_branches(
+                _branched_mpq1 = self.apply_as_branches(
                     self.policy_network.q1_pheads[name]
                     * self.policy_network.action_probs
                 )
-                broken_mpq1 = tf.stack(
-                    [tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq1]
+                branched_mpq1 = tf.stack(
+                    [
+                        tf.reduce_sum(_br, axis=1, keep_dims=True)
+                        for _br in _branched_mpq1
+                    ]
                 )
-                _q1_p_mean = tf.reduce_mean(broken_mpq1, axis=0)
+                _q1_p_mean = tf.reduce_mean(branched_mpq1, axis=0)
 
-                _broken_mpq2 = self.apply_as_branches(
+                _branched_mpq2 = self.apply_as_branches(
                     self.policy_network.q2_pheads[name]
                     * self.policy_network.action_probs
                 )
-                broken_mpq2 = tf.stack(
-                    [tf.reduce_sum(_br, axis=1, keep_dims=True) for _br in _broken_mpq2]
+                branched_mpq2 = tf.stack(
+                    [
+                        tf.reduce_sum(_br, axis=1, keep_dims=True)
+                        for _br in _branched_mpq2
+                    ]
                 )
-                _q2_p_mean = tf.reduce_mean(broken_mpq2, axis=0)
+                _q2_p_mean = tf.reduce_mean(branched_mpq2, axis=0)
 
                 self.min_policy_qs[name] = tf.minimum(_q1_p_mean, _q2_p_mean)
             else:
@@ -750,25 +765,25 @@ class SACModel(LearningModel):
 
             if discrete:
                 # We need to break up the Q functions by branch, and update them individually.
-                broken_q1_stream = self.apply_as_branches(
+                branched_q1_stream = self.apply_as_branches(
                     self.policy_network.external_action_in * q1_streams[name]
                 )
-                broken_q2_stream = self.apply_as_branches(
+                branched_q2_stream = self.apply_as_branches(
                     self.policy_network.external_action_in * q2_streams[name]
                 )
 
                 # Reduce each branch into scalar
-                broken_q1_stream = [
+                branched_q1_stream = [
                     tf.reduce_sum(_branch, axis=1, keep_dims=True)
-                    for _branch in broken_q1_stream
+                    for _branch in branched_q1_stream
                 ]
-                broken_q2_stream = [
+                branched_q2_stream = [
                     tf.reduce_sum(_branch, axis=1, keep_dims=True)
-                    for _branch in broken_q2_stream
+                    for _branch in branched_q2_stream
                 ]
 
-                q1_stream = tf.reduce_mean(broken_q1_stream, axis=0)
-                q2_stream = tf.reduce_mean(broken_q2_stream, axis=0)
+                q1_stream = tf.reduce_mean(branched_q1_stream, axis=0)
+                q2_stream = tf.reduce_mean(branched_q2_stream, axis=0)
 
             else:
                 q1_stream = q1_streams[name]
@@ -810,11 +825,13 @@ class SACModel(LearningModel):
         self.ent_coef = tf.exp(self.log_ent_coef)
         if discrete:
             # We also have to do a different entropy and target_entropy per branch.
-            broken_log_probs = self.apply_as_branches(self.policy_network.all_log_probs)
-            broken_ent_sums = tf.stack(
+            branched_log_probs = self.apply_as_branches(
+                self.policy_network.all_log_probs
+            )
+            branched_ent_sums = tf.stack(
                 [
                     tf.reduce_sum(_lp, axis=1, keep_dims=True) + _te
-                    for _lp, _te in zip(broken_log_probs, self.target_entropy)
+                    for _lp, _te in zip(branched_log_probs, self.target_entropy)
                 ],
                 axis=1,
             )
@@ -822,7 +839,7 @@ class SACModel(LearningModel):
                 tf.to_float(self.mask)
                 * tf.reduce_mean(
                     self.log_ent_coef
-                    * tf.squeeze(tf.stop_gradient(broken_ent_sums), axis=2),
+                    * tf.squeeze(tf.stop_gradient(branched_ent_sums), axis=2),
                     axis=1,
                 )
             )
@@ -830,31 +847,34 @@ class SACModel(LearningModel):
             # Same with policy loss, we have to do the loss per branch and average them,
             # so that larger branches don't get more weight.
             # The equivalent KL divergence from Eq 10 of Haarnoja et al. is also pi*log(pi) - Q
-            broken_q_term = self.apply_as_branches(
+            branched_q_term = self.apply_as_branches(
                 self.policy_network.action_probs * self.policy_network.q1_p
             )
 
-            broken_policy_loss = tf.stack(
+            branched_policy_loss = tf.stack(
                 [
                     tf.reduce_sum(self.ent_coef[i] * _lp - _qt, axis=1, keep_dims=True)
-                    for i, (_lp, _qt) in enumerate(zip(broken_log_probs, broken_q_term))
+                    for i, (_lp, _qt) in enumerate(
+                        zip(branched_log_probs, branched_q_term)
+                    )
                 ]
             )
             self.policy_loss = tf.reduce_mean(
-                tf.to_float(self.mask) * tf.squeeze(broken_policy_loss)
+                tf.to_float(self.mask) * tf.squeeze(branched_policy_loss)
             )
 
             # Do vbackup entropy bonus per branch as well.
-            broken_ent_bonus = tf.stack(
+            branched_ent_bonus = tf.stack(
                 [
                     tf.reduce_sum(self.ent_coef[i] * _lp, axis=1, keep_dims=True)
-                    for i, _lp in enumerate(broken_log_probs)
+                    for i, _lp in enumerate(branched_log_probs)
                 ]
             )
             value_losses = []
             for name in stream_names:
                 v_backup = tf.stop_gradient(
-                    self.min_policy_qs[name] - tf.reduce_mean(broken_ent_bonus, axis=0)
+                    self.min_policy_qs[name]
+                    - tf.reduce_mean(branched_ent_bonus, axis=0)
                 )
                 value_losses.append(
                     0.5
@@ -923,6 +943,10 @@ class SACModel(LearningModel):
         return branches_logits
 
     def create_sac_optimizers(self):
+        """
+        Creates the Adam optimizers and update ops for SAC, including
+        the policy, value, and entropy updates, as well as the target network update.
+        """
         policy_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         entropy_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         value_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)

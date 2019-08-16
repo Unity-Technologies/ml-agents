@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agent Learning (PPO)
-# Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
+# ## ML-Agent Learning (SAC)
+# Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
+# and implemented in https://github.com/hill-a/stable-baselines
 
 import logging
 from collections import deque, defaultdict
@@ -24,13 +25,16 @@ LOGGER = logging.getLogger("mlagents.trainers")
 
 
 class SACTrainer(RLTrainer):
-    """The SACTrainer is an implementation of the SAC algorithm."""
+    """
+    The SACTrainer is an implementation of the SAC algorithm, with support
+    for discrete actions and recurrent networks.
+    """
 
     def __init__(
         self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
     ):
         """
-        Responsible for collecting experiences and training PPO model.
+        Responsible for collecting experiences and training SAC model.
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
