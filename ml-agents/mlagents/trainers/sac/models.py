@@ -571,14 +571,16 @@ class SACModel(LearningModel):
         self.init_entcoef = init_entcoef
         if stream_names is None:
             stream_names = []
+        # Use to reduce "survivor bonus" when using Curiosity or GAIL.
+        self.use_dones_in_backup = {name: tf.Variable(1.0) for name in stream_names}
+        self.disable_use_dones = {
+            name: self.use_dones_in_backup[name].assign(0.0) for name in stream_names
+        }
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
         )
         if num_layers < 1:
             num_layers = 1
-        self.last_reward, self.new_reward, self.update_reward = (
-            self.create_reward_encoder()
-        )
 
         self.policy_network = SACNetwork(
             brain=brain,
@@ -629,16 +631,6 @@ class SACModel(LearningModel):
             self.running_mean = self.policy_network.running_mean
             self.running_variance = self.policy_network.running_variance
             self.normalization_steps = self.policy_network.normalization_steps
-
-    @staticmethod
-    def create_reward_encoder():
-        """Creates TF ops to track and increment recent average cumulative reward."""
-        last_reward = tf.Variable(
-            0, name="last_reward", trainable=False, dtype=tf.float32
-        )
-        new_reward = tf.placeholder(shape=[], dtype=tf.float32, name="new_reward")
-        update_reward = tf.assign(last_reward, new_reward)
-        return last_reward, new_reward, update_reward
 
     def create_inputs_and_outputs(self):
         """
@@ -744,6 +736,9 @@ class SACModel(LearningModel):
             rewards_holder = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )
+            rewards_holder = tf.placeholder(
+                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
+            )
             self.rewards_holders[name] = rewards_holder
         self.learning_rate = tf.train.polynomial_decay(
             lr, self.global_step, max_step, 1e-10, power=1.0
@@ -758,7 +753,7 @@ class SACModel(LearningModel):
 
             q_backup = tf.stop_gradient(
                 _expanded_rewards
-                + (1.0 - expanded_dones)
+                + (1.0 - self.use_dones_in_backup[name] * expanded_dones)
                 * self.gammas[i]
                 * self.target_network.value_heads[name]
             )

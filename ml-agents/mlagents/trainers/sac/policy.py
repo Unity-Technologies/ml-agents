@@ -82,6 +82,11 @@ class SACPolicy(TFPolicy):
             self._initialize_graph()
             self.sess.run(self.model.target_init_op)
 
+        # Disable terminal states for certain reward signals to avoid survivor bias
+        for name, reward_signal in self.reward_signals.items():
+            if not reward_signal.use_terminal_states:
+                self.sess.run(self.model.disable_use_dones[name])
+
     def create_model(
         self,
         brain: BrainParameters,
