@@ -205,10 +205,10 @@ class PPOTrainer(RLTrainer):
         for name, reward_result in rewards_out.reward_signals.items():
             # 0 because we use the scaled reward to train the agent
             self.training_buffer[agent_id]["{}_rewards".format(name)].append(
-                reward_result.scaled_reward[agent_idx]
+                reward_result.scaled_reward[agent_next_idx]
             )
             self.training_buffer[agent_id]["{}_value_estimates".format(name)].append(
-                values[name][agent_next_idx][0]
+                values[name][agent_idx][0]
             )
 
     def is_ready_update(self):
