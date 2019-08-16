@@ -1,6 +1,6 @@
 # Training with Proximal Policy Optimization
 
-ML-Agents provides an implementation of a reinforcement learning technique called
+ML-Agents provides an implementation of a reinforcement learning algorithm called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
 PPO uses a neural network to approximate the ideal function that maps an agent's
 observations to the best action an agent can take in a given state. The

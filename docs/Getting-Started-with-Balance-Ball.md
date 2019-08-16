@@ -195,7 +195,7 @@ than many other RL algorithms. For more information on PPO, OpenAI
 has a [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it, and [our page](Training-PPO.md) for how to use it in training.
 
-We also provide Soft-Actor Critic, a state-of-the-art off-policy algorithm that
+We also provide Soft-Actor Critic, an off-policy algorithm that
 has been shown to be both stable and sample-efficient.
 For more information on SAC, see UC Berkeley's
 [blog post](https://bair.berkeley.edu/blog/2018/12/14/sac/) and
