@@ -49,7 +49,7 @@ class SACTrainer(RLTrainer):
             "init_entcoef",
             "max_steps",
             "normalize",
-            "updates_per_train",
+            "num_update",
             "num_layers",
             "time_horizon",
             "sequence_length",
@@ -72,9 +72,9 @@ class SACTrainer(RLTrainer):
             else 1
         )
         self.reward_signal_updates_per_train = (
-            trainer_parameters["reward_signals"]["updates_per_train"]
-            if "updates_per_train" in trainer_parameters["reward_signals"]
-            else trainer_parameters["updates_per_train"]
+            trainer_parameters["reward_signals"]["reward_signal_num_update"]
+            if "reward_signal_num_update" in trainer_parameters["reward_signals"]
+            else trainer_parameters["num_update"]
         )
 
         self.checkpoint_replay_buffer = (
@@ -245,7 +245,7 @@ class SACTrainer(RLTrainer):
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
 
-        num_updates = self.trainer_parameters["updates_per_train"]
+        num_updates = self.trainer_parameters["num_update"]
         batch_update_stats: Dict[str, list] = defaultdict(list)
         for _ in range(num_updates):
             LOGGER.debug("Updating SAC policy at step {}".format(self.step))

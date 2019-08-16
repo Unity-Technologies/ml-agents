@@ -9,7 +9,7 @@ default:
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
-    updates_per_train: 1
+    num_update: 1
     train_interval: 1
     num_layers: 2
     time_horizon: 64
@@ -114,7 +114,7 @@ PyramidsLearning:
             strength: 1.0
             gamma: 0.99
         curiosity:
-            strength: 0.1
+            strength: 0.02
             gamma: 0.99
             encoding_size: 256
 
@@ -126,13 +126,13 @@ VisualPyramidsLearning:
     num_layers: 1
     beta: 1.0e-2
     max_steps: 5.0e5
-    buffer_size: 200000
+    buffer_size: 500000
     reward_signals:
         extrinsic:
             strength: 1.0
             gamma: 0.99
         curiosity:
-            strength: 0.1
+            strength: 0.02
             gamma: 0.99
             encoding_size: 256
 

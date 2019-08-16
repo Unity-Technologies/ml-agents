@@ -168,7 +168,7 @@ SAC_CONFIG = """
         max_steps: 2000
         memory_size: 256
         normalize: false
-        updates_per_train: 1
+        num_update: 1
         train_interval: 1
         num_layers: 1
         time_horizon: 64

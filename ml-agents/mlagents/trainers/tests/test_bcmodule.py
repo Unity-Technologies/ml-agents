@@ -55,7 +55,7 @@ def sac_dummy_config():
         max_steps: 5.0e4
         memory_size: 256
         normalize: false
-        updates_per_train: 1
+        num_update: 1
         train_interval: 1
         num_layers: 2
         time_horizon: 64

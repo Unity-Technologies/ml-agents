@@ -58,17 +58,19 @@ ML-Agents provides two reward signals by default, the Extrinsic (environment) re
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
 environments.
 
-#### Updates Per Train (Optional, separate from SAC's Updates Per Train)
+#### Number of Updates for Reward Signal (Optional)
 
-`updates_per_train` corresponds to the number of mini batches sampled and used for updating the reward signals during each
+`reward_signal_num_update` for the reward signals corresponds to the number of mini batches sampled
+and used for updating the reward signals during each
 update. By default, we update the reward signals once every time the main policy is updated.
 However, to imitate the training procedure in certain imitation learning papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
-we may want to update the policy N times, then update the reward signal (GAIL) N times.
-We can change `train_interval` and `updates_per_train` of SAC, as well as `updates_per_train`
-under `reward_signals` to N to accomplish this.
+we may want to update the policy N times, then update the reward signal (GAIL) M times.
+We can change `train_interval` and `num_update` of SAC to N, as well as `reward_signal_num_update`
+under `reward_signals` to M to accomplish this. By default, `reward_signal_num_update` is set to
+`num_update`.
 
-Typical Range: `1`
+Typical Range: `num_update`
 
 ### Buffer Size
 
@@ -116,21 +118,21 @@ Typical Range (Discrete): `0.05` - `0.5`
 
 ### Train Interval
 
-`train_interval` is the number of steps taken between each agent training session. Typically,
+`train_interval` is the number of steps taken between each agent training event. Typically,
 we can train after every step, but if your environment's steps are very small and very frequent,
 there may not be any new interesting information between steps, and `train_interval` can be increased.
 
 Typical Range: `1` - `5`
 
-### Updates Per Train
+### Number of Updates
 
-`updates_per_train` corresponds to the number of mini batches sampled and used for training during each
-update. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
+`num_update` corresponds to the number of mini batches sampled and used for training during each
+training event. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
 replay buffer, and using this mini batch to update the models. Typically, this can be left at 1.
 However, to imitate the training procedure in certain papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
 we may want to update N times with different mini batches before grabbing additional samples.
-We can change `train_interval` and `updates_per_train` to N to accomplish this.
+We can change `train_interval` and `num_update` to N to accomplish this.
 
 Typical Range: `1`
 
