@@ -28,7 +28,7 @@ Let's get started!
 In order to install and set up the ML-Agents toolkit, the Python dependencies
 and Unity, see the [installation instructions](Installation.md).
 
-## Understanding a Unity Environment (3D Balance Ball)
+## Understanding the Unity Environment (3D Balance Ball)
 
 An agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
@@ -52,22 +52,27 @@ to speed up training since all twelve agents contribute to training in parallel.
 
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
-properties that control how the environment works. For example, the **Training**
-and **Inference Configuration**  properties set the graphics and timescale
-properties for the Unity application. The Academy uses the **Training
-Configuration**  during training and the **Inference Configuration** when not
-training. (*Inference* means that the Agent is using a trained model or
-heuristics or direct control — in other words, whenever **not** training.)
-Typically, you set low graphics quality and a high time scale for the **Training
-configuration** and a high graphics quality and the timescale to `1.0` for the
+properties that control how the environment works. 
+The **Broadcast Hub** keeps track of which Brains will send data during training.
+If a Brain is added to the hub, the data from this Brain will be sent to the external training
+process. If the `Control` checkbox is checked, the training process will be able to
+control and train the agents linked to the Brain.
+The **Training Configuration** and **Inference Configuration** properties 
+set the graphics and timescale properties for the Unity application. 
+The Academy uses the **Training Configuration**  during training and the
+**Inference Configuration** when not training. (*Inference* means that the 
+Agent is using a trained model or heuristics or direct control — in other 
+words, whenever **not** training.)
+Typically, you would set a low graphics quality and timescale to greater `1.0` for the **Training
+Configuration** and a high graphics quality and timescale to `1.0` for the
 **Inference Configuration** .
 
 **Note:** if you want to observe the environment during training, you can adjust
-the **Inference Configuration** settings to use a larger window and a timescale
+the **Training Configuration** settings to use a larger window and a timescale
 closer to 1:1. Be sure to set these parameters back when training in earnest;
 otherwise, training can take a very long time.
 
-Another aspect of an environment to look at is the Academy implementation. Since
+Another aspect of an environment is the Academy implementation. Since
 the base Academy class is abstract, you must always define a subclass. There are
 three functions you can implement, though they are all optional:
 
@@ -83,27 +88,24 @@ environment around the Agents.
 
 ### Brain
 
-The Ball3DBrain GameObject in the scene, which contains a Brain component, is a
-child of the Academy object. (All Brain objects in a scene must be children of
-the Academy.) All the Agents in the 3D Balance Ball environment use the same
-Brain instance. A Brain doesn't store any information about an Agent, it just
+As of v0.6, a Brain is a Unity asset and exists within the `UnitySDK` folder. These brains (ex. **3DBallLearning.asset**) are loaded into each Agent object (ex. **Ball3DAgents**).  A Brain doesn't store any information about an Agent, it just
 routes the Agent's collected observations to the decision making process and
-returns the chosen action to the Agent. Thus, all Agents can share the same
-Brain, but act independently. The Brain settings tell you quite a bit about how
+returns the chosen action to the Agent. All Agents can share the same
+Brain, but would act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-The **Brain Type** determines how an Agent makes its decisions. The **External**
-and **Internal** types work together — use **External** when training your
-Agents; use **Internal** when using the trained model. The **Heuristic** Brain
-allows you to hand-code the Agent's logic by extending the Decision class.
+You can create new Brain assets by selecting `Assets -> 
+Create -> ML-Agents -> Brain`. There are 3 types of Brains. 
+The **Learning Brain** is a Brain that uses a trained neural network to make decisions.
+When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy, the external process that is training the neural network will take over decision making for the agents
+and ultimately generate a trained neural network. You can also use the
+**Learning Brain** with a pre-trained model.
+The **Heuristic** Brain allows you to hand-code the Agent logic by extending
+the Decision class.
 Finally, the **Player** Brain lets you map keyboard commands to actions, which
-can be useful when testing your agents and environment. If none of these types
-of Brains do what you need, you can implement your own CoreBrain to create your
-own type.
+can be useful when testing your agents and environment. You can also implement your own type of Brain.
 
-In this tutorial, you will set the **Brain Type** to **External** for training;
-when you embed the trained model in the Unity application, you will change the
-**Brain Type** to **Internal**.
+In this tutorial, you will use the **Learning Brain** for training.
 
 #### Vector Observation Space
 
@@ -166,7 +168,7 @@ The Ball3DAgent subclass defines the following methods:
   collecting the Agent's observations of the environment. Since the Brain
   instance assigned to the Agent is set to the continuous vector observation
   space with a state size of 8, the `CollectObservations()` must call
-  `AddVectorObs` 8 times.
+  `AddVectorObs` such that  vector size adds up to 8.
 * agent.AgentAction() — Called every simulation step. Receives the action chosen
   by the Brain. The Ball3DAgent example handles both the continuous and the
   discrete action space types. There isn't actually much difference between the
@@ -193,7 +195,7 @@ has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
 explaining it.
 
 To train the agents within the Ball Balance environment, we will be using the
-Python package. We have provided a convenient script called `mlagents-learn`
+Python package. We have provided a convenient command called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
 We can use `run_id` to identify the experiment and create a folder where the
@@ -219,8 +221,12 @@ environment first.
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
-follow the intructions in
+follow the instructions in
 [Using an Executable](Learning-Environment-Executable.md).
+
+**Note**: Re-running this command will start training from scratch again. To resume
+a previous training run, append the `--load` flag and give the same `--run-id` as the
+run you want to resume.
 
 ### Observing Training Progress
 
@@ -264,21 +270,11 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with Agents having an **Internal** Brain type. **Note:** Do not just
-close the Unity Window once the `Saved Model` message appears. Either wait for
-the training process to close the window or press Ctrl+C at the command-line
-prompt. If you simply close the window manually, the .bytes file containing the
-trained model is not exported into the ml-agents folder.
-
-### Setting up TensorFlowSharp Support
-
-Because TensorFlowSharp support is still experimental, it is disabled by
-default. In order to enable it, you must follow these steps. Please note that
-the `Internal` Brain mode will only be available once completing these steps.
-
-To set up the TensorFlowSharp Support, follow [Setting up ML-Agents Toolkit
-within Unity](Basic-Guide.md#setting-up-ml-agents-within-unity) section. of the
-Basic Guide page.
+use it with Agents having a **Learning Brain**.
+__Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
+Either wait for the training process to close the window or press Ctrl+C at the 
+command-line prompt. If you close the window manually, the `.nn` file 
+containing the trained model is not exported into the ml-agents folder.
 
 ### Embedding the trained model into Unity
 

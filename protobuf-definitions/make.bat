@@ -8,7 +8,7 @@
 
 SRC_DIR=proto/mlagents/envs/communicator_objects
 DST_DIR_C=../UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects
-DST_DIR_P=../ml-agents
+DST_DIR_P=../ml-agents-envs
 PROTO_PATH=proto
 
 PYTHON_PACKAGE=mlagents/envs/communicator_objects
@@ -22,7 +22,7 @@ mkdir -p $DST_DIR_P/$PYTHON_PACKAGE
 # generate proto objects in python and C#
 
 protoc --proto_path=proto --csharp_out=$DST_DIR_C $SRC_DIR/*.proto
-protoc --proto_path=proto --python_out=$DST_DIR_P $SRC_DIR/*.proto 
+protoc --proto_path=proto --python_out=$DST_DIR_P --mypy_out=$DST_DIR_P $SRC_DIR/*.proto
 
 # grpc 
 

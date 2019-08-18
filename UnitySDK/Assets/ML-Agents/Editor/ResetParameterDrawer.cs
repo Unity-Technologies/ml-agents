@@ -6,134 +6,169 @@ using UnityEditor.SceneManagement;
 
 namespace MLAgents
 {
-
+    /// <summary>
+    /// PropertyDrawer for ResetParameters. Defines how ResetParameters are displayed in the
+    /// Inspector.
+    /// </summary>
     [CustomPropertyDrawer(typeof(ResetParameters))]
     public class ResetParameterDrawer : PropertyDrawer
     {
-        private ResetParameters _Dictionary;
-        private const float lineHeight = 17f;
+        private ResetParameters _parameters;
+        // The height of a line in the Unity Inspectors
+        private const float LineHeight = 17f;
+        // This is the prefix for the key when you add a reset parameter
+        private const string NewKeyPrefix = "Param-";
 
+        /// <summary>
+        /// Computes the height of the Drawer depending on the property it is showing
+        /// </summary>
+        /// <param name="property">The property that is being drawn.</param>
+        /// <param name="label">The label of the property being drawn.</param>
+        /// <returns>The vertical space needed to draw the property.</returns>
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            CheckInitialize(property, label);
-            return (_Dictionary.Count + 2) * lineHeight;
+            LazyInitializeParameters(property, label);
+            return (_parameters.Count + 2) * LineHeight;
         }
 
+        /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
-            CheckInitialize(property, label);
-            position.height = lineHeight;
+            LazyInitializeParameters(property, label);
+            position.height = LineHeight;
             EditorGUI.LabelField(position, label);
-
+            position.y += LineHeight;
+            var width = position.width / 2 - 24;
+            var keyRect = new Rect(position.x + 20, position.y, width, position.height);
+            var valueRect = new Rect(position.x + width + 30, position.y, width, position.height);
+            DrawAddRemoveButtons(keyRect, valueRect);
             EditorGUI.BeginProperty(position, label, property);
-            foreach (var item in _Dictionary)
+            foreach (var parameter in _parameters)
             {
-                var key = item.Key;
-                var value = item.Value;
-                position.y += lineHeight;
-
-                // This is the rectangle for the key
-                var keyRect = position;
-                keyRect.x += 20;
-                keyRect.width /= 2;
-                keyRect.width -= 24;
+                var key = parameter.Key;
+                var value = parameter.Value;
+                keyRect.y += LineHeight;
+                valueRect.y += LineHeight;
                 EditorGUI.BeginChangeCheck();
                 var newKey = EditorGUI.TextField(keyRect, key);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                    MarkSceneAsDirty();
                     try
                     {
-                        _Dictionary.Remove(key);
-                        _Dictionary.Add(newKey, value);
+                        _parameters.Remove(key);
+                        _parameters.Add(newKey, value);
                     }
                     catch (Exception e)
                     {
                         Debug.Log(e.Message);
                     }
-
                     break;
                 }
 
-                // This is the Rectangle for the value
-                var valueRect = position;
-                valueRect.x = position.width / 2 + 15;
-                valueRect.width = keyRect.width - 18;
                 EditorGUI.BeginChangeCheck();
                 value = EditorGUI.FloatField(valueRect, value);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                    _Dictionary[key] = value;
+                    MarkSceneAsDirty();
+                    _parameters[key] = value;
                     break;
                 }
             }
-
-            // This is the rectangle for the Add button
-            position.y += lineHeight;
-            var AddButtonRect = position;
-            AddButtonRect.x += 20;
-            AddButtonRect.width /= 2;
-            AddButtonRect.width -= 24;
-            if (GUI.Button(AddButtonRect, new GUIContent("Add New",
-                "Add a new item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                AddNewItem();
-            }
-
-            // This is the rectangle for the Remove button
-            var RemoveButtonRect = position;
-            RemoveButtonRect.x = position.width / 2 + 15;
-            RemoveButtonRect.width = AddButtonRect.width - 18;
-            if (GUI.Button(RemoveButtonRect, new GUIContent("Remove Last",
-                "Remove the last item to the default reset paramters"), EditorStyles.miniButton))
-            {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-                RemoveLastItem();
-            }
-
-
             EditorGUI.EndProperty();
-
         }
 
-        private void CheckInitialize(SerializedProperty property, GUIContent label)
+        /// <summary>
+        /// Draws the Add and Remove buttons.
+        /// </summary>
+        /// <param name="addRect">The rectangle for the Add New button.</param>
+        /// <param name="removeRect">The rectangle for the Remove Last button.</param>
+        private void DrawAddRemoveButtons(Rect addRect, Rect removeRect)
         {
-            if (_Dictionary == null)
+            // This is the Add button
+            if (_parameters.Count == 0)
             {
-                var target = property.serializedObject.targetObject;
-                _Dictionary = fieldInfo.GetValue(target) as ResetParameters;
-                if (_Dictionary == null)
-                {
-                    _Dictionary = new ResetParameters();
-                    fieldInfo.SetValue(target, _Dictionary);
-                }
+                addRect.width *= 2;
+            }
+            if (GUI.Button(addRect,
+                new GUIContent("Add New", "Add a new item to the default reset parameters"), 
+                EditorStyles.miniButton))
+            {
+                MarkSceneAsDirty();
+                AddParameter();
+            }
+            
+            // If there are no items in the ResetParameters, Hide the Remove button
+            if (_parameters.Count == 0)
+            {
+                return;
+            }
+            // This is the Remove button
+            if (GUI.Button(removeRect, 
+                new GUIContent(
+                    "Remove Last", "Remove the last item from the default reset parameters"), 
+                EditorStyles.miniButton))
+            {
+                MarkSceneAsDirty();
+                RemoveLastParameter();
             }
         }
 
-        private void ClearResetParamters()
+        /// <summary>
+        /// Signals that the property has been modified and requires the scene to be saved for
+        /// the changes to persist. Only works when the Editor is not playing.
+        /// </summary>
+        private static void MarkSceneAsDirty()
         {
-            _Dictionary.Clear();
-        }
-
-        private void RemoveLastItem()
-        {
-            if (_Dictionary.Count > 0)
+            if (!EditorApplication.isPlaying)
             {
-                string key = _Dictionary.Keys.ToList()[_Dictionary.Count - 1];
-                _Dictionary.Remove(key);
+                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             }
         }
 
-        private void AddNewItem()
+        /// <summary>
+        /// Ensures that the state of the Drawer is synchronized with the property.
+        /// </summary>
+        /// <param name="property">The SerializedProperty of the ResetParameters
+        /// to make the custom GUI for.</param>
+        /// <param name="label">The label of this property.</param>
+        private void LazyInitializeParameters(SerializedProperty property, GUIContent label)
         {
-            string key = "Param-" + _Dictionary.Count.ToString();
+            if (_parameters != null)
+            {
+                return;
+            }
+            var target = property.serializedObject.targetObject;
+            _parameters = fieldInfo.GetValue(target) as ResetParameters;
+            if (_parameters == null)
+            {
+                _parameters = new ResetParameters();
+                fieldInfo.SetValue(target, _parameters);
+            }
+        }
+
+        /// <summary>
+        /// Removes the last ResetParameter from the ResetParameters
+        /// </summary>
+        private void RemoveLastParameter()
+        {
+            if (_parameters.Count > 0)
+            {
+                string key = _parameters.Keys.ToList()[_parameters.Count - 1];
+                _parameters.Remove(key);
+            }
+        }
+
+        /// <summary>
+        /// Adds a new ResetParameter to the ResetParameters with a default name.
+        /// </summary>
+        private void AddParameter()
+        {
+            string key = NewKeyPrefix + _parameters.Count;
             var value = default(float);
             try
             {
-                _Dictionary.Add(key, value);
+                _parameters.Add(key, value);
             }
             catch (Exception e)
             {

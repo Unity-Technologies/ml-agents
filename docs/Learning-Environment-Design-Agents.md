@@ -17,13 +17,12 @@ trained agents or for imitation learning.)
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its
-decisions depends on the type of Brain it is. An **External** Brain simply
-passes the observations from its Agents to an external process and then passes
-the decisions made externally back to the Agents. An **Internal** Brain uses the
-trained policy parameters to make decisions (and no longer adjusts the
-parameters in search of a better decision). The other types of Brains do not
-directly involve training, but you might find them useful as part of a training
-project. See [Brains](Learning-Environment-Design-Brains.md).
+decisions depends on the kind of Brain it is. A Player Brain allows you
+to directly control the agent. A Heuristic Brain allows you to create a 
+decision script to control the agent with a set of rules. These two Brains
+do not involve neural networks but they can be useful for debugging. The
+Learning Brain allows you to train and use neural network models for
+your Agents. See [Brains](Learning-Environment-Design-Brains.md).
   
 ## Decisions
 
@@ -67,14 +66,14 @@ state of the world. A state observation can take the following forms:
 
 * **Vector Observation** — a feature vector consisting of an array of floating
   point numbers.
-* **Visual Observations** — one or more camera images.
+* **Visual Observations** — one or more camera images and/or render textures.
 
 When you use vector observations for an Agent, implement the
 `Agent.CollectObservations()` method to create the feature vector. When you use
-**Visual Observations**, you only need to identify which Unity Camera objects
-will provide images and the base Agent class handles the rest. You do not need
-to implement the `CollectObservations()` method when your Agent uses visual
-observations (unless it also uses vector observations).
+**Visual Observations**, you only need to identify which Unity Camera objects 
+or RenderTextures will provide images and the base Agent class handles the rest. 
+You do not need to implement the `CollectObservations()` method when your Agent 
+uses visual observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
 
@@ -127,28 +126,14 @@ When you set up an Agent's Brain in the Unity Editor, set the following
 properties to use a continuous vector observation:
 
 * **Space Size** — The state size must match the length of your feature vector.
-* **Brain Type** — Set to **External** during training; set to **Internal** to
-  use the trained model.
 
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-Integers can be be added directly to the observation vector. You must explicitly
-convert Boolean values to a number:
-
-```csharp
-AddVectorObs(isTrueOrFalse ? 1 : 0);
-```
-
-For entities like positions and rotations, you can add their components to the
-feature list individually.  For example:
-
-```csharp
-Vector3 speed = ball.transform.GetComponent<Rigidbody>().velocity;
-AddVectorObs(speed.x);
-AddVectorObs(speed.y);
-AddVectorObs(speed.z);
-```
+The `AddVectorObs` method provides a number of overloads for adding common types
+of data to your observation vector. You can add Integers and booleans directly to
+the observation vector, as well as some common Unity data types such as `Vector2`,
+`Vector3`, and `Quaternion`.
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an
 element to the feature vector for each element of enumeration, setting the
@@ -166,6 +151,21 @@ public override void CollectObservations()
     {
         AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);
     }
+}
+```
+
+`AddVectorObs` also provides a two-argument version as a shortcut for _one-hot_
+style observations. The following example is identical to the previous one.
+
+```csharp
+enum CarriedItems { Sword, Shield, Bow, LastItem }
+const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
+
+public override void CollectObservations()
+{
+    // The first argument is the selection index; the second is the
+    // number of possibilities
+    AddVectorObs((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
@@ -200,29 +200,62 @@ used in your normalization formula.
 
 ### Multiple Visual Observations
 
-Camera observations use rendered textures from one or more cameras in a scene.
-The Brain vectorizes the textures into a 3D Tensor which can be fed into a
-convolutional neural network (CNN). For more information on CNNs, see [this
-guide](http://cs231n.github.io/convolutional-networks/). You can use camera
-observations along side vector observations.
+Visual observations use rendered textures directly or from one or more 
+cameras in a scene. The Brain vectorizes the textures into a 3D Tensor which 
+can be fed into a convolutional neural network (CNN). For more information on 
+CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You 
+can use visual observations along side vector observations.
 
-Agents using camera images can capture state of arbitrary complexity and are
-useful when the state is difficult to describe numerically. However, they are
-also typically less efficient and slower to train, and sometimes don't succeed
-at all.  
+Agents using visual observations can capture state of arbitrary complexity and 
+are useful when the state is difficult to describe numerically. However, they 
+are also typically less efficient and slower to train, and sometimes don't 
+succeed at all.
 
-To add a visual observation to an Agent, click on the `Add Camera` button in the
-Agent inspector. Then drag the camera you want to add to the `Camera` field. You
-can have more than one camera attached to an Agent.
+Visual observations can be derived from Cameras or RenderTextures within your scene. 
+To add a visual observation to an Agent, either click on the `Add Camera` or 
+`Add RenderTexture` button in the Agent inspector. Then drag the camera or 
+render texture you want to add to the `Camera` or `RenderTexture` field. 
+You can have more than one camera or render texture and even use a combination 
+of both attached to an Agent.
 
 ![Agent Camera](images/visual-observation.png)
 
+or
+
+![Agent RenderTexture](images/visual-observation-rendertexture.png)
+
 In addition, make sure that the Agent's Brain expects a visual observation. In
 the Brain inspector, under **Brain Parameters** > **Visual Observations**,
-specify the number of Cameras the Agent is using for its visual observations.
+specify the number of Resolutions the Agent is using for its visual observations.
 For each visual observation, set the width and height of the image (in pixels)
 and whether or not the observation is color or grayscale (when `Black And White`
-is checked).
+is checked). 
+
+For instance, if you are using two cameras and one render texture on your Agent,
+three **Visual Observations** have to be added to the **Brain Parameters**. 
+During runtime, if a combination of `Cameras` and `RenderTextures` is used, all 
+cameras are captured first, then all render textures will be added, in the
+order they appear in the editor. 
+
+![Agent Camera and RenderTexture combination](images/visual-observation-combination.png)
+
+RenderTexture observations will throw an `Exception` if the width/height doesn't 
+match the resolution specified under **Brain Parameters** > **Visual Observations**.
+
+When using `RenderTexture` visual observations, a handy feature for debugging is 
+adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's 
+`RenderTexture`. This will render the agent observation on the game screen. 
+
+![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
+
+The [GridWorld environment](Learning-Environment-Examples.md#gridworld) 
+is an example on how to use a RenderTexure for both debugging and observation. Note 
+that in this example, a Camera is rendered to a RenderTexture, which is then used for 
+observations and debugging. To update the RenderTexture, the Camera must be asked to 
+render every time a decision is requested within the game code. When using Cameras 
+as observations directly, this is done automatically by the Agent.
+
+![Agent RenderTexture Debug](images/visual-observation-debug.png)
 
 ## Vector Actions
 
@@ -237,7 +270,8 @@ of commands. In the **Discrete** vector action space type, the action parameter
 is an array of indices. The number of indices in the array is determined by the
 number of branches defined in the `Branches Size` property. Each branch
 corresponds to an action table, you can specify the size of each table by
-modifying the `Branches` property. Set the `Vector Action Space Size` and
+modifying the `Branches` property. The `Branch Descriptions` property holds the names
+for each available branch. Set the `Vector Action Space Size` and
 `Vector Action Space Type` properties on the Brain object assigned to the Agent
 (using the Unity Editor Inspector window).
 
@@ -346,8 +380,8 @@ continuous action spaces.
 #### Masking Discrete Actions
 
 When using Discrete Actions, it is possible to specify that some actions are
-impossible for the next decision. Then the Agent is controlled by an External or
-Internal Brain, the Agent will be unable to perform the specified action. Note
+impossible for the next decision. Then the Agent is controlled by a
+Learning Brain, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by a Player or Heuristic Brain, the Agent will
 still be able to decide to perform the masked action. In order to mask an
 action, call the method `SetActionMask` within the `CollectObservation` method :
@@ -398,9 +432,13 @@ to display the cumulative reward received by an Agent. You can even use a Player
 Brain to control the Agent while watching how it accumulates rewards.
 
 Allocate rewards to an Agent by calling the `AddReward()` method in the
-`AgentAction()` function. The reward assigned in any step should be in the range
-[-1,1].  Values outside this range can lead to unstable training. The `reward`
-value is reset to zero at every step.
+`AgentAction()` function. The reward assigned between each decision
+should be in the range [-1,1]. Values outside this range can lead to
+unstable training. The `reward` value is reset to zero when the agent receives a
+new decision. If there are multiple calls to `AddReward()` for a single agent
+decision, the rewards will be summed together to evaluate how good the previous
+decision was. There is a method called `SetReward()` that will override all
+previous rewards given to an agent since the previous decision.
 
 ### Examples
 
@@ -478,14 +516,18 @@ if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
+Note that all of these environments make use of the `Done()` method, which manually
+terminates an episode when a termination condition is reached. This can be 
+called independently of the `Max Step` property.
+
 ## Agent Properties
 
 ![Agent Inspector](images/agent.png)
 
 * `Brain` - The Brain to register this Agent to. Can be dragged into the
   inspector using the Editor.
-* `Visual Observations` - A list of `Cameras` which will be used to generate
-  observations.
+* `Visual Observations` - A list of `Cameras` or `RenderTextures` which will 
+  be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the Agent's `AgentReset()` function should be called
@@ -507,7 +549,7 @@ platform.
     * `RequestAction()` Signals that the Agent is requesting an action. The
         action provided to the Agent in this case is the same action that was
         provided the last time it requested a decision.
-* `Decision Frequency` - The number of steps between decision requests. Not used
+* `Decision Interval` - The number of steps between decision requests. Not used
   if `On Demand Decision`, is true.
 
 ## Monitoring Agents

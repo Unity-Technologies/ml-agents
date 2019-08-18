@@ -10,20 +10,40 @@ public class TennisAgent : Agent
     public GameObject ball;
     public bool invertX;
     public int score;
-    public GameObject scoreText;
     public GameObject myArea;
-    public GameObject opponent;
+    public float angle;
+    public float scale;
 
     private Text textComponent;
     private Rigidbody agentRb;
     private Rigidbody ballRb;
     private float invertMult;
+    private ResetParameters resetParams;
+
+    // Looks for the scoreboard based on the name of the gameObjects.
+    // Do not modify the names of the Score GameObjects
+    private const string CanvasName = "Canvas";
+    private const string ScoreBoardAName = "ScoreA";
+    private const string ScoreBoardBName = "ScoreB";
 
     public override void InitializeAgent()
     {
         agentRb = GetComponent<Rigidbody>();
-        ballRb = GetComponent<Rigidbody>();
-        textComponent = scoreText.GetComponent<Text>();
+        ballRb = ball.GetComponent<Rigidbody>();
+        var canvas = GameObject.Find(CanvasName);
+        GameObject scoreBoard;
+        var academy = Object.FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+        if (invertX)
+        {
+            scoreBoard = canvas.transform.Find(ScoreBoardBName).gameObject;
+        }
+        else
+        {
+            scoreBoard = canvas.transform.Find(ScoreBoardAName).gameObject;
+        }
+        textComponent = scoreBoard.GetComponent<Text>();
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -44,7 +64,7 @@ public class TennisAgent : Agent
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
-        
+
         if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
             agentRb.velocity = new Vector3(agentRb.velocity.x, 7f, 0f);
@@ -52,12 +72,12 @@ public class TennisAgent : Agent
 
         agentRb.velocity = new Vector3(moveX * 30f, agentRb.velocity.y, 0f);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult || 
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -invertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -invertMult)
         {
-                transform.position = new Vector3(-invertMult + transform.parent.transform.position.x, 
-                                                            transform.position.y, 
-                                                            transform.position.z);
+            transform.position = new Vector3(-invertMult + transform.parent.transform.position.x,
+                                                        transform.position.y,
+                                                        transform.position.z);
         }
 
         textComponent.text = score.ToString();
@@ -69,5 +89,29 @@ public class TennisAgent : Agent
 
         transform.position = new Vector3(-invertMult * Random.Range(6f, 8f), -1.5f, 0f) + transform.parent.transform.position;
         agentRb.velocity = new Vector3(0f, 0f, 0f);
+
+        SetResetParameters();
+    }
+
+    public void SetRacket()
+    {
+        angle = resetParams["angle"];
+        gameObject.transform.eulerAngles = new Vector3(
+                                                gameObject.transform.eulerAngles.x,
+                                                gameObject.transform.eulerAngles.y,
+                                                invertMult * angle
+                                            );
+    }
+
+    public void SetBall()
+    {
+        scale = resetParams["scale"];
+        ball.transform.localScale = new Vector3(scale, scale, scale);
+    }
+
+    public void SetResetParameters()
+    {
+        SetRacket();
+        SetBall();
     }
 }

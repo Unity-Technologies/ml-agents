@@ -2,7 +2,7 @@
 
 Given that a number of users of the ML-Agents toolkit might not have a formal
 machine learning background, this page provides an overview to facilitate the
-understanding of the ML-Agents toolkit. However, We will not attempt to provide
+understanding of the ML-Agents toolkit. However, we will not attempt to provide
 a thorough treatment of machine learning as there are fantastic resources
 online.
 
@@ -118,7 +118,7 @@ good policies can be difficult (and/or time-consuming) for complex environments.
 [Learning a policy](https://blogs.unity3d.com/2017/08/22/unity-ai-reinforcement-learning-with-q-learning/)
 usually requires many trials and iterative policy updates. More specifically,
 the robot is placed in several fire situations and over time learns an optimal
-policy which allows it to put our fires more effectively. Obviously, we cannot
+policy which allows it to put out fires more effectively. Obviously, we cannot
 expect to train a robot repeatedly in the real world, particularly when fires
 are involved. This is precisely why the use of
 [Unity as a simulator](https://blogs.unity3d.com/2018/01/23/designing-safer-cities-through-simulations/)

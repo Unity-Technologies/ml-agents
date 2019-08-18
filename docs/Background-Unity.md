@@ -17,3 +17,5 @@ with the ML-Agents toolkit:
 * [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html)
 * [Ordering of event functions](https://docs.unity3d.com/Manual/ExecutionOrder.html)
   (e.g. FixedUpdate, Update)
+* [Prefabs](https://docs.unity3d.com/Manual/Prefabs.html)
+

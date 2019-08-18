@@ -26,16 +26,19 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkVtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2Vudmlyb25t",
             "ZW50X3BhcmFtZXRlcnNfcHJvdG8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmpl",
-            "Y3RzIrUBChpFbnZpcm9ubWVudFBhcmFtZXRlcnNQcm90bxJfChBmbG9hdF9w",
-            "YXJhbWV0ZXJzGAEgAygLMkUuY29tbXVuaWNhdG9yX29iamVjdHMuRW52aXJv",
-            "bm1lbnRQYXJhbWV0ZXJzUHJvdG8uRmxvYXRQYXJhbWV0ZXJzRW50cnkaNgoU",
-            "RmxvYXRQYXJhbWV0ZXJzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIg",
-            "ASgCOgI4AUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJv",
-            "dG8z"));
+            "Y3RzGkBtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2N1c3Rv",
+            "bV9yZXNldF9wYXJhbWV0ZXJzLnByb3RvIoMCChpFbnZpcm9ubWVudFBhcmFt",
+            "ZXRlcnNQcm90bxJfChBmbG9hdF9wYXJhbWV0ZXJzGAEgAygLMkUuY29tbXVu",
+            "aWNhdG9yX29iamVjdHMuRW52aXJvbm1lbnRQYXJhbWV0ZXJzUHJvdG8uRmxv",
+            "YXRQYXJhbWV0ZXJzRW50cnkSTAoXY3VzdG9tX3Jlc2V0X3BhcmFtZXRlcnMY",
+            "AiABKAsyKy5jb21tdW5pY2F0b3Jfb2JqZWN0cy5DdXN0b21SZXNldFBhcmFt",
+            "ZXRlcnMaNgoURmxvYXRQYXJhbWV0ZXJzRW50cnkSCwoDa2V5GAEgASgJEg0K",
+            "BXZhbHVlGAIgASgCOgI4AUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2Jq",
+            "ZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CustomResetParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentParametersProto), global::MLAgents.CommunicatorObjects.EnvironmentParametersProto.Parser, new[]{ "FloatParameters" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentParametersProto), global::MLAgents.CommunicatorObjects.EnvironmentParametersProto.Parser, new[]{ "FloatParameters", "CustomResetParameters" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, })
           }));
     }
     #endregion
@@ -68,6 +71,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public EnvironmentParametersProto(EnvironmentParametersProto other) : this() {
       floatParameters_ = other.floatParameters_.Clone();
+      customResetParameters_ = other.customResetParameters_ != null ? other.customResetParameters_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -86,6 +90,17 @@ namespace MLAgents.CommunicatorObjects {
       get { return floatParameters_; }
     }
 
+    /// <summary>Field number for the "custom_reset_parameters" field.</summary>
+    public const int CustomResetParametersFieldNumber = 2;
+    private global::MLAgents.CommunicatorObjects.CustomResetParameters customResetParameters_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CustomResetParameters CustomResetParameters {
+      get { return customResetParameters_; }
+      set {
+        customResetParameters_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as EnvironmentParametersProto);
@@ -100,6 +115,7 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (!FloatParameters.Equals(other.FloatParameters)) return false;
+      if (!object.Equals(CustomResetParameters, other.CustomResetParameters)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -107,6 +123,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= FloatParameters.GetHashCode();
+      if (customResetParameters_ != null) hash ^= CustomResetParameters.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -121,6 +138,10 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       floatParameters_.WriteTo(output, _map_floatParameters_codec);
+      if (customResetParameters_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(CustomResetParameters);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -130,6 +151,9 @@ namespace MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       size += floatParameters_.CalculateSize(_map_floatParameters_codec);
+      if (customResetParameters_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CustomResetParameters);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -142,6 +166,12 @@ namespace MLAgents.CommunicatorObjects {
         return;
       }
       floatParameters_.Add(other.floatParameters_);
+      if (other.customResetParameters_ != null) {
+        if (customResetParameters_ == null) {
+          CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+        }
+        CustomResetParameters.MergeFrom(other.CustomResetParameters);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -155,6 +185,13 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             floatParameters_.AddEntriesFrom(input, _map_floatParameters_codec);
+            break;
+          }
+          case 18: {
+            if (customResetParameters_ == null) {
+              CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+            }
+            input.ReadMessage(CustomResetParameters);
             break;
           }
         }

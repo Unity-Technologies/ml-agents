@@ -1,12 +1,10 @@
 # API Reference
 
 Our developer-facing C# classes (Academy, Agent, Decision and Monitor) have been
-documented to be compatible with
-[Doxygen](http://www.stack.nl/~dimitri/doxygen/) for auto-generating HTML
+documented to be compatible with Doxygen for auto-generating HTML
 documentation.
 
-To generate the API reference,
-[download Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html)
+To generate the API reference, download Doxygen
 and run the following command within the `docs/` directory:
 
 ```sh

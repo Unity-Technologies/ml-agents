@@ -48,9 +48,22 @@ the platform, and provide a unique non-trivial challenge to modern
 machine learning algorithms. Feel free to submit these environments with a
 PR explaining the nature of the environment and task.
 
-## Style Guide
+## Continuous Integration (CI)
 
-When performing changes to the codebase, ensure that you follow the style guide
-of the file you're modifying. For Python, we follow
-[PEP 8](https://www.python.org/dev/peps/pep-0008/).
-For C#, we will soon be adding a formal style guide for our repository.
+We run CircleCI on all PRs; all tests must be passing before the PR is merged.
+
+Several static checks are run on the codebase using the [pre-commit framework](https://pre-commit.com/) during CI. To execute the same checks locally, install `pre-commit` and run `pre-commit run --all-files`. Some hooks (for example, `black`) will output the corrected version of the code; others (like `mypy`) may require more effort to fix.
+
+### Code style
+All python code should be formatted with [`black`](https://github.com/ambv/black). Style and formatting for C# may be enforced later.
+
+### Python type annotations
+We use [`mypy`](http://mypy-lang.org/) to perform static type checking on python code. Currently not all code is annotated but we will increase coverage over time. If you are adding or refactoring code, please
+1. Add type annotations to the new or refactored code.
+2. Make sure that code calling or called by the modified code also has type annotations.
+
+The [type hint cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) provides a good introduction to adding type hints.
+
+## Contributor License Agreements
+
+When you open a pull request, you will be asked to acknolwedge our Contributor License Agreement. We allow both individual contributions and contributions made on behalf of companies. We use an open source tool called CLA assistant. If you have any questions on our CLA, please [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) or email us at ml-agents@unity3d.com.

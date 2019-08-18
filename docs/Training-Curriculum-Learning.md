@@ -104,7 +104,7 @@ We will save this file into our metacurriculum folder with the name of its
 corresponding Brain. For example, in the Wall Jump environment, there are two
 Brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
 the BigWallBrain, we will save `BigWallBrain.json` into
-`curricula/wall-jump/`.
+`config/curricula/wall-jump/`.
 
 ### Training with a Curriculum
 
@@ -114,7 +114,7 @@ folder and PPO will train using Curriculum Learning. For example, to train
 agents in the Wall Jump environment with curriculum learning, we can run
 
 ```sh
-mlagents-learn config/trainer_config.yaml --curriculum=curricula/wall-jump/ --run-id=wall-jump-curriculum --train
+mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall-jump/ --run-id=wall-jump-curriculum --train
 ```
 
 We can then keep track of the current lessons and progresses via TensorBoard.

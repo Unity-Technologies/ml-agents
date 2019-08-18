@@ -244,7 +244,7 @@ namespace MLAgents.CommunicatorObjects {
       brainParameters_.Add(other.brainParameters_);
       if (other.environmentParameters_ != null) {
         if (environmentParameters_ == null) {
-          environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+          EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
         }
         EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
       }
@@ -277,9 +277,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 50: {
             if (environmentParameters_ == null) {
-              environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+              EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
             }
-            input.ReadMessage(environmentParameters_);
+            input.ReadMessage(EnvironmentParameters);
             break;
           }
         }

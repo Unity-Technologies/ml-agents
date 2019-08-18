@@ -10,6 +10,11 @@ public class GridAgent : Agent
     public float timeBetweenDecisionsAtInference;
     private float timeSinceDecision;
 
+    [Tooltip("Because we want an observation right before making a decision, we can force " + 
+             "a camera to render before making a decision. Place the agentCam here if using " +
+             "RenderTexture as observations.")]
+    public Camera renderCamera;
+
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
              "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
@@ -127,6 +132,11 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
+        if(renderCamera != null)
+        {
+            renderCamera.Render();
+        }
+
         if (!academy.GetIsInference())
         {
             RequestDecision();

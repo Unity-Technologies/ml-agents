@@ -1,0 +1,188 @@
+//#pragma kernel Dense64
+//#pragma kernel Conv2D_Kernel3x3_64
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(W)
+TENSOR_DECL(K)
+TENSOR_DECL(B)
+TENSOR_DECL(WBK)
+TENSOR_DECL_RW(O)
+
+uint4 _Pad;
+uint4 _Stride;
+
+#undef THREAD_COUNT
+#define THREAD_COUNT 64 // ATM support only 8x8
+
+#undef BLOCK_WIDTH
+#define BLOCK_WIDTH 8
+
+#undef LOAD_WIDTH
+#define LOAD_WIDTH THREAD_COUNT
+
+#undef LOAD_DEPTH
+#define LOAD_DEPTH BLOCK_WIDTH
+
+groupshared float DenseTiled_XcacheR[LOAD_DEPTH][LOAD_WIDTH];
+groupshared float DenseTiled_WcacheR[LOAD_DEPTH][LOAD_WIDTH];
+
+[numthreads(THREAD_COUNT, 1, 1)]
+void Dense64(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    // @TODO: DISPATCH_ARGS(...)
+    TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+    #define X_ DenseTiled_XcacheR
+    #define W_ DenseTiled_WcacheR
+
+    uint id = groupThreadID.x;
+    uint bx = groupID.x;
+    uint by = groupID.y;
+
+    uint bbx = id % BLOCK_WIDTH;
+    uint bby = id / BLOCK_WIDTH;
+
+    float v[BLOCK_WIDTH][BLOCK_WIDTH];
+    for (uint yy = 0; yy < BLOCK_WIDTH; ++yy)
+        for (uint xx = 0; xx < BLOCK_WIDTH; ++xx)
+        {
+            float bias = B.Get(bx*LOAD_WIDTH + bbx*BLOCK_WIDTH + xx);
+            v[yy][xx] = bias;
+        }
+
+    for (uint m = 0; m < X.GetFlatWidth()/LOAD_DEPTH; ++m)
+    {
+        for (uint q = 0; q < LOAD_DEPTH; ++q)
+        {
+            X_[q][id] = X.Get(by*LOAD_WIDTH + id, m*LOAD_DEPTH + q);
+            W_[q][id] = W.Get(m*LOAD_DEPTH + q, bx*LOAD_WIDTH + id);
+        }
+
+        GroupMemoryBarrierWithGroupSync();
+
+        for (uint yyy = 0; yyy < BLOCK_WIDTH; ++yyy)
+            [unroll] for (uint xxx = 0; xxx < BLOCK_WIDTH; ++xxx)
+                [unroll] for (uint i = 0; i < LOAD_DEPTH; ++i)
+                {
+                    v[yyy][xxx] = mad(X_[i][bby*BLOCK_WIDTH + yyy], W_[i][bbx*BLOCK_WIDTH + xxx], v[yyy][xxx]);
+                }
+
+        GroupMemoryBarrierWithGroupSync();
+    }
+
+    for (uint yyy = 0; yyy < BLOCK_WIDTH; ++yyy)
+        for (uint xxx = 0; xxx < BLOCK_WIDTH; ++xxx)
+            O.Set(by*LOAD_WIDTH + bby*BLOCK_WIDTH + yyy, bx*LOAD_WIDTH + bbx*BLOCK_WIDTH + xxx, v[yyy][xxx]);
+
+    #undef X_
+    #undef W_
+}
+
+
+#undef THREAD_COUNT
+#define THREAD_COUNT 64 // ATM support only 8x8
+
+#undef BLOCK_WIDTH
+#define BLOCK_WIDTH 8
+
+#undef LOAD_WIDTH
+#define LOAD_WIDTH THREAD_COUNT
+
+#undef LOAD_DEPTH
+#define LOAD_DEPTH BLOCK_WIDTH
+
+groupshared float Conv_KcacheR[LOAD_DEPTH][LOAD_WIDTH];
+groupshared float Conv_XcacheR[LOAD_DEPTH][LOAD_WIDTH];
+[numthreads(THREAD_COUNT, 1, 1)]
+void Conv2D_Kernel3x3_64(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    // @TODO: DISPATCH_ARGS(...)
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    #define X_ Conv_XcacheR
+    #define K_ Conv_KcacheR
+
+    uint id = groupThreadID.x;
+    uint bx = groupID.x;
+    uint by = groupID.y;
+
+    uint bbx = id % BLOCK_WIDTH;
+    uint bby = id / BLOCK_WIDTH;
+
+    uint width = O.width;
+    uint height = O.height;
+
+    // ASSERT(LOAD_WIDTH == THREAD_COUNT)
+    uint loadNYX = by*LOAD_WIDTH + id; // only works for 8x8
+    uint loadX = loadNYX % width;
+    uint loadNY = loadNYX / width;
+    uint loadY = loadNY % height;
+    uint loadN = loadNY / height;
+
+    // @TODO: validate that _Stride works, added the following 2 lines without testing
+    loadX *= _Stride.x;
+    loadY *= _Stride.y;
+
+    float v[BLOCK_WIDTH][BLOCK_WIDTH];
+    [unroll] for (uint yy = 0; yy < BLOCK_WIDTH; ++yy)
+        [unroll] for (uint xx = 0; xx < BLOCK_WIDTH; ++xx)
+        {
+            float bias = B.Get(bx*LOAD_WIDTH + bbx*BLOCK_WIDTH + xx);
+            v[yy][xx] = bias;
+        }
+
+    for (uint dy = 0; dy < 3; ++dy)
+    {
+        bool mask = true;
+
+        if (loadY+dy < _Pad.y) mask = false;
+        if (loadY+dy - _Pad.w >= X.height) mask = false;
+
+        for (uint dx = 0; dx < 3; ++dx)
+        {
+            if (loadX+dx < _Pad.x) mask = false;
+            if (loadX+dx - _Pad.z >= X.width) mask = false;
+
+            for (uint m = 0; m < X.channels/LOAD_DEPTH; ++m)
+            {
+                for (uint q = 0; q < LOAD_DEPTH; ++q)
+                {
+                    if (mask)
+                        X_[q][id] = X.Get(loadN, loadY+dy-_Pad.y, loadX+dx-_Pad.x, m*LOAD_DEPTH + q);
+                    else
+                        X_[q][id] = 0;
+                    K_[q][id] = K.Get(dy, dx, m*LOAD_DEPTH + q, bx*LOAD_WIDTH + id);
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+
+                for (uint yyy = 0; yyy < BLOCK_WIDTH; ++yyy)
+                    [unroll] for (uint xxx = 0; xxx < BLOCK_WIDTH; ++xxx) 
+                        [unroll] for (uint i = 0; i < LOAD_DEPTH; ++i)
+                        {
+                            v[yyy][xxx] += X_[i][bby*BLOCK_WIDTH + yyy] * K_[i][bbx*BLOCK_WIDTH + xxx];
+                        }
+
+                GroupMemoryBarrierWithGroupSync();
+            }
+        }
+    }
+
+    [unroll] for (uint yyy = 0; yyy < BLOCK_WIDTH; ++yyy)
+        [unroll] for (uint xxx = 0; xxx < BLOCK_WIDTH; ++xxx)
+        {
+            uint saveNYX = by*LOAD_WIDTH + bby*BLOCK_WIDTH + yyy;
+            uint saveX = saveNYX % width;
+            uint saveNY = saveNYX / width;
+            uint saveY = saveNY % height;
+            uint saveN = saveNY / height;
+
+            uint saveK = bx*LOAD_WIDTH + bbx*BLOCK_WIDTH + xxx;
+            O.Set(saveN, saveY, saveX, saveK, v[yyy][xxx]);
+        }
+
+    #undef X_
+    #undef K_
+}

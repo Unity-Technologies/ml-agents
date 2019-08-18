@@ -171,13 +171,13 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.rlInput_ != null) {
         if (rlInput_ == null) {
-          rlInput_ = new global::MLAgents.CommunicatorObjects.UnityRLInput();
+          RlInput = new global::MLAgents.CommunicatorObjects.UnityRLInput();
         }
         RlInput.MergeFrom(other.RlInput);
       }
       if (other.rlInitializationInput_ != null) {
         if (rlInitializationInput_ == null) {
-          rlInitializationInput_ = new global::MLAgents.CommunicatorObjects.UnityRLInitializationInput();
+          RlInitializationInput = new global::MLAgents.CommunicatorObjects.UnityRLInitializationInput();
         }
         RlInitializationInput.MergeFrom(other.RlInitializationInput);
       }
@@ -194,16 +194,16 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             if (rlInput_ == null) {
-              rlInput_ = new global::MLAgents.CommunicatorObjects.UnityRLInput();
+              RlInput = new global::MLAgents.CommunicatorObjects.UnityRLInput();
             }
-            input.ReadMessage(rlInput_);
+            input.ReadMessage(RlInput);
             break;
           }
           case 18: {
             if (rlInitializationInput_ == null) {
-              rlInitializationInput_ = new global::MLAgents.CommunicatorObjects.UnityRLInitializationInput();
+              RlInitializationInput = new global::MLAgents.CommunicatorObjects.UnityRLInitializationInput();
             }
-            input.ReadMessage(rlInitializationInput_);
+            input.ReadMessage(RlInitializationInput);
             break;
           }
         }

@@ -1,0 +1,72 @@
+#pragma kernel DenseFP16Div2
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(W)
+TENSOR_DECL(B)
+TENSOR_DECL(WBK)
+TENSOR_DECL_RW(O)
+
+float f16tof32_(uint src)
+{
+    // Based on Fabian Giesen's public domain half_to_float_fast3
+    const uint magic = 113 << 23;
+    const uint shiftedExp = 0x7c00 << 13; // exponent mask after shift
+
+    // Mask out sign bit
+    uint o = src & 0x7fff;
+    if (o)
+    {
+        // Move exponent + mantissa to correct bits
+        o <<= 13;
+        uint exponent = o & shiftedExp;
+        if (exponent == 0)
+        {
+            // Handle denormal
+            o = asuint(asfloat(o + magic) - asfloat(magic));
+        }
+        else if (exponent == shiftedExp) // Inf/NaN
+            o += (255 - 31) << 23;
+        else
+            o += (127 - 15) << 23;
+    }
+
+    // Copy sign bit
+    o |= (src & 0x8000) << 16;
+
+    return asfloat(o);
+}
+
+float2 Unpack(SharedTensor t, uint y, uint x)
+{
+    uint v = asuint(t.data[t.Index(y, x) >> 1]);
+    // TEMPORARY: f16tof32 is broken in GLSL/Metal compiler
+    // using custom conversion function for now
+    //return float2(f16tof32(v), f16tof32(v>>16));
+    return float2(f16tof32_(v), f16tof32_(v>>16));
+}
+
+// NOTE: usually this path is used for <16 batches
+NUMTHREADS((256,1,1), (128,1,1), (64,1,1))
+void DenseFP16Div2(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.flatWidth/2, O.flatHeight, 1);
+    TENSOR_SHARED2_ARGS4(X, W, B, WBK, O);
+
+    uint x = dispatchThreadID.x;
+    uint y = dispatchThreadID.y;
+
+    if (x*2 >= O.GetFlatWidth()) return;
+    if (y >= O.GetFlatHeight()) return;
+
+    float2 acc = Unpack(B, 0, x*2);
+    for (uint i = 0; i < X.width; ++i)
+    {
+        float2 w = Unpack(W, i, x*2);
+        acc += X.Get(y, i) * w;
+    }
+
+    O.Set(y, x*2+0, acc[0]);
+    O.Set(y, x*2+1, acc[1]);
+}

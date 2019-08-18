@@ -80,9 +80,10 @@ Run the Docker container by calling the following command at the top-level of
 the repository:
 
 ```sh
-docker run --name <container-name> \
+docker run -it --name <container-name> \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
+           -p 6006:6006 \
            <image-name>:latest \
            --docker-target-name=unity-volume \
            <trainer-config-file> \
@@ -118,19 +119,37 @@ Notes on argument values:
 To train with a `3DBall` environment executable, the command would be:
 
 ```sh
-docker run --name 3DBallContainer.first.trial \
+docker run -it --name 3DBallContainer.first.trial \
            --mount type=bind,source="$(pwd)"/unity-volume,target=/unity-volume \
            -p 5005:5005 \
+           -p 6006:6006 \
            balance.ball.v0.1:latest 3DBall \
            --docker-target-name=unity-volume \
            trainer_config.yaml \
-           --env=3DBall
+           --env=3DBall \
            --train \
            --run-id=3dball_first_trial
 ```
 
 For more detail on Docker mounts, check out
 [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
+
+**NOTE** If you are training using docker for environments that use visual observations, you may need to increase the default memory that Docker allocates for the container. For example, see [here](https://docs.docker.com/docker-for-mac/#advanced) for instructions for Docker for Mac.
+
+### Running Tensorboard
+
+You can run Tensorboard to monitor your training instance on http://localhost:6006:
+
+```sh
+docker exec -it <container-name> tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
+```
+
+With our previous 3DBall example, this command would look like this:
+```sh
+docker exec -it 3DBallContainer.first.trial tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
+```
+
+For more details on Tensorboard, check out the documentation about [Using Tensorboard](Using-Tensorboard.md).
 
 ### Stopping Container and Saving State
 

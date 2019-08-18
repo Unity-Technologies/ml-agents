@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "mlagents/envs/communicator_objects/custom_action.proto";
+
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
@@ -8,4 +10,5 @@ message AgentActionProto {
     string text_actions = 2;
     repeated float memories = 3;
     float value = 4;
+    CustomAction custom_action = 5;
 }

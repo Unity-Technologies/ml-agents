@@ -7,7 +7,7 @@
 /UnitySDK/[Uu]nity[Pp]ackage[Mm]anager/
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
-/UnitySDK/Assets/Gizmos*
+/UnitySDK/Assets/Demonstrations*
 
 # Tensorflow Model Info
 /models
@@ -55,7 +55,11 @@
 /UnitySDK/Assets/ML-Agents/Plugins/Android*
 /UnitySDK/Assets/ML-Agents/Plugins/iOS*
 /UnitySDK/Assets/ML-Agents/Plugins/Computer*
-/UnitySDK/Assets/ML-Agents/Plugins/System*
+/UnitySDK/Assets/ML-Agents/Plugins/System.Numerics*
+/UnitySDK/Assets/ML-Agents/Plugins/System.ValueTuple*
+
+# Plugins
+/UnitySDK/Assets/ML-Agents/VideoRecorder*
 
 # Generated doc folders
 /docs/html
@@ -67,6 +71,7 @@
 *.pyc
 *.idea/misc.xml
 *.idea/modules.xml
+*.idea/
 *.iml
 *.cache
 */build/
@@ -81,14 +86,19 @@
 .DS_Store
 .ipynb_checkpoints
 
-# pytest cache 
+# pytest cache
 *.pytest_cache/
 
 # Ignore compiled protobuf files.
-ml-agents-protobuf/cs
-ml-agents-protobuf/python
-ml-agents-protobuf/Grpc*
+*Grpc.Tools*
 
 # Ignore PyPi build files.
 dist/
 build/
+
+# Python virtual environment
+venv/
+.mypy_cache/
+
+# Code coverage report
+.coverage

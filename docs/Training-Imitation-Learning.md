@@ -1,75 +1,90 @@
-# Imitation Learning
+# Training with Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 Consider our
 [running example](ML-Agents-Overview.md#running-example-training-npc-behaviors)
-of training a medic NPC : instead of indirectly training a medic with the help
+of training a medic NPC. Instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
-More specifically, in this mode, the Brain type during training is set to Player
-and all the actions performed with the controller (in addition to the agent
-observations) will be recorded and sent to the Python API. The imitation
-learning algorithm will then use these pairs of observations and actions from
-the human player to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
+Imitation Learning uses pairs of observations and actions from
+from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
-## Using Behavioral Cloning
-
-There are a variety of possible imitation learning algorithms which can be used,
-the simplest one of them is Behavioral Cloning. It works by collecting training
-data from a teacher, and then simply uses it to directly learn a policy, in the
-same way the supervised learning for image classification or other traditional
-Machine Learning tasks work.
-
-1. In order to use imitation learning in a scene, the first thing you will need
-   is to create two Brains, one which will be the "Teacher," and the other which
-   will be the "Student." We will assume that the names of the Brain
-   `GameObject`s are "Teacher" and "Student" respectively.
-2. Set the "Teacher" Brain to Player mode, and properly configure the inputs to
-   map to the corresponding actions. **Ensure that "Broadcast" is checked within
-   the Brain inspector window.**
-3. Set the "Student" Brain to External mode.
-4. Link the Brains to the desired Agents (one Agent as the teacher and at least
-   one Agent as a student).
-5. In `config/trainer_config.yaml`, add an entry for the "Student" Brain. Set
-   the `trainer` parameter of this entry to `imitation`, and the
-   `brain_to_imitate` parameter to the name of the teacher Brain: "Teacher".
-   Additionally, set `batches_per_epoch`, which controls how much training to do
-   each moment. Increase the `max_steps` option if you'd like to keep training
-   the Agents for a longer period of time.
-6. Launch the training process with `mlagents-learn config/trainer_config.yaml
-   --train --slow`, and press the :arrow_forward: button in Unity when the
-   message _"Start training by pressing the Play button in the Unity Editor"_ is
-   displayed on the screen
-7. From the Unity window, control the Agent with the Teacher Brain by providing
-   "teacher demonstrations" of the behavior you would like to see.
-8. Watch as the Agent(s) with the student Brain attached begin to behave
-   similarly to the demonstrations.
-9. Once the Student Agents are exhibiting the desired behavior, end the training
-   process with `CTL+C` from the command line.
-10. Move the resulting `*.bytes` file into the `TFModels` subdirectory of the
-    Assets folder (or a subdirectory within Assets of your choosing) , and use
-    with `Internal` Brain.
-
-### BC Teacher Helper
-
-We provide a convenience utility, `BC Teacher Helper` component that you can add
-to the Teacher Agent.
+Imitation learning can also be used to help reinforcement learning. Especially in
+environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
+the reward and thus not learn from it. Curiosity (which is available in the toolkit)
+helps the agent explore, but in some cases
+it is easier to show the agent how to achieve the reward. In these cases,
+imitation learning combined with reinforcement learning can dramatically
+reduce the time the agent takes to solve the environment.
+For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids),
+using 6 episodes of demonstrations can reduce training steps by more than 4 times.
+See PreTraining + GAIL + Curiosity + RL below.
 
 <p align="center">
-  <img src="images/bc_teacher_helper.png"
+  <img src="images/mlagents-ImitationAndRL.png"
+       alt="Using Demonstrations with Reinforcement Learning"
+       width="700" border="0" />
+</p>
+
+The ML-Agents toolkit provides several ways to learn from demonstrations.
+
+* To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
+  [GAIL reward signal](Reward-Signals.md#the-gail-reward-signal). GAIL can be
+  used with or without environment rewards, and works well when there are a limited
+  number of demonstrations.
+* To help bootstrap reinforcement learning, you can enable
+  [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations)
+  on the PPO trainer, in addition to using a small GAIL reward signal.
+* To train an agent to exactly mimic demonstrations, you can use the
+  [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be
+  used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
+  on more complex environments without a large number of demonstrations.
+
+### How to Choose
+
+If you want to help your agents learn (especially with environments that have sparse rewards)
+using pre-recorded demonstrations, you can generally enable both GAIL and Pretraining.
+An example of this is provided for the Pyramids example environment under
+ `PyramidsLearning` in `config/gail_config.yaml`.
+
+If you want to train purely from demonstrations, GAIL is generally the preferred approach, especially
+if you have few (<10) episodes of demonstrations. An example of this is provided for the Crawler example
+environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
+
+If you have plenty of demonstrations and/or a very simple environment, Behavioral Cloning
+(online and offline) can be effective and quick. However, it cannot be combined with RL.
+
+## Recording Demonstrations
+
+It is possible to record demonstrations of agent behavior from the Unity Editor,
+and save them as assets. These demonstrations contain information on the
+observations, actions, and rewards for a given agent during the recording session.
+They can be managed from the Editor, as well as used for training with Offline
+Behavioral Cloning and GAIL.
+
+In order to record demonstrations from an agent, add the `Demonstration Recorder`
+component to a GameObject in the scene which contains an `Agent` component.
+Once added, it is possible to name the demonstration that will be recorded
+from the agent.
+
+<p align="center">
+  <img src="images/demo_component.png"
        alt="BC Teacher Helper"
        width="375" border="10" />
 </p>
 
-This utility enables you to use keyboard shortcuts to do the following:
+When `Record` is checked, a demonstration will be created whenever the scene
+is played from the Editor. Depending on the complexity of the task, anywhere
+from a few minutes or a few hours of demonstration data may be necessary to
+be useful for imitation learning. When you have recorded enough data, end
+the Editor play session, and a `.demo` file will be created in the
+`Assets/Demonstrations` folder. This file contains the demonstrations.
+Clicking on the file will provide metadata about the demonstration in the
+inspector.
 
-1. To start and stop recording experiences. This is useful in case you'd like to
-   interact with the game _but not have the agents learn from these
-   interactions_. The default command to toggle this is to press `R` on the
-   keyboard.
-
-2. Reset the training buffer. This enables you to instruct the agents to forget
-   their buffer of recent experiences. This is useful if you'd like to get them
-   to quickly learn a new behavior. The default command to reset the buffer is
-   to press `C` on the keyboard.
+<p align="center">
+  <img src="images/demo_inspector.png"
+       alt="BC Teacher Helper"
+       width="375" border="10" />
+</p>

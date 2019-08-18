@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "mlagents/envs/communicator_objects/custom_observation.proto";
+
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
@@ -15,4 +17,5 @@ message AgentInfoProto {
     bool max_step_reached = 9;
     int32 id = 10;
     repeated bool action_mask = 11;
+    CustomObservation custom_observation = 12;
 }
