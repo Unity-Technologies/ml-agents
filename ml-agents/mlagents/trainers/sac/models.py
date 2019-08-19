@@ -26,7 +26,6 @@ class SACNetwork(LearningModel):
         num_layers=2,
         stream_names=None,
         seed=0,
-        is_target=False,
         vis_encode_type="default",
     ):
         LearningModel.__init__(
@@ -37,111 +36,7 @@ class SACNetwork(LearningModel):
         self.num_layers = num_layers
         self.stream_names = stream_names
         self.h_size = h_size
-        self.share_ac_cnn = False
         self.activ_fn = self.swish
-
-        if is_target:
-            if self.use_recurrent:
-                self.memory_in = tf.placeholder(
-                    shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-                )
-                self.value_memory_in = self.memory_in
-            with tf.variable_scope(TARGET_SCOPE):
-                hidden_streams = self.create_observation_streams(
-                    1,
-                    self.h_size,
-                    0,
-                    vis_encode_type=vis_encode_type,
-                    stream_scopes=["critic/value/"],
-                )
-            if brain.vector_action_space_type == "continuous":
-                self.create_cc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
-            else:
-                self.create_dc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
-            if self.use_recurrent:
-                mem_outs = [self.value_memory_out]
-        else:
-            if self.use_recurrent:
-                # Create the Policy input separate from the rest
-                # This is so in inference we only have to run the Policy network.
-                # Barracuda will grab the recurrent_in and recurrent_out named tensors.
-                self.inference_memory_in = tf.placeholder(
-                    shape=[None, self.m_size // 4],
-                    dtype=tf.float32,
-                    name="recurrent_in",
-                )
-                # We assume m_size is divisible by 4
-                # Create the non-Policy inputs
-                three_fourths_m_size = self.m_size * 3 // 4
-                self.other_memory_in = tf.placeholder(
-                    shape=[None, three_fourths_m_size],
-                    dtype=tf.float32,
-                    name="other_recurrent_in",
-                )
-
-                # Concat and use this as the "placeholder"
-                # for training
-                self.memory_in = tf.concat(
-                    [self.other_memory_in, self.inference_memory_in], axis=1
-                )
-
-                # Re-break-up for each network
-                num_mems = 4
-                mem_ins = []
-                for i in range(num_mems):
-                    _start = self.m_size // num_mems * i
-                    _end = self.m_size // num_mems * (i + 1)
-                    mem_ins.append(self.memory_in[:, _start:_end])
-                self.value_memory_in = mem_ins[0]
-                self.q1_memory_in = mem_ins[1]
-                self.q2_memory_in = mem_ins[2]
-                self.policy_memory_in = mem_ins[3]
-
-            if self.share_ac_cnn:
-                with tf.variable_scope(POLICY_SCOPE):
-                    hidden_streams = self.create_observation_streams(
-                        1,
-                        self.h_size,
-                        0,
-                        vis_encode_type=vis_encode_type,
-                        stream_scopes=["critic/value/"],
-                    )
-                hidden_policy = hidden_streams[0]
-                hidden_critic = hidden_streams[0]
-            else:
-                with tf.variable_scope(POLICY_SCOPE):
-                    hidden_streams = self.create_observation_streams(
-                        2,
-                        self.h_size,
-                        0,
-                        vis_encode_type=vis_encode_type,
-                        stream_scopes=["policy/", "critic/value/"],
-                    )
-                hidden_policy = hidden_streams[0]
-                hidden_critic = hidden_streams[1]
-
-            if brain.vector_action_space_type == "continuous":
-                self.create_cc_actor(hidden_policy, POLICY_SCOPE)
-                self.create_cc_critic(hidden_critic, POLICY_SCOPE)
-
-            else:
-                self.create_dc_actor(hidden_policy, POLICY_SCOPE)
-                self.create_dc_critic(hidden_critic, POLICY_SCOPE)
-
-            if self.share_ac_cnn:
-                # Make sure that the policy also contains the CNN
-                self.policy_vars += self.get_vars(
-                    self.join_scopes(POLICY_SCOPE, "critic/value/main_graph_0_encoder0")
-                )
-            if self.use_recurrent:
-                mem_outs = [
-                    self.value_memory_out,
-                    self.q1_memory_out,
-                    self.q2_memory_out,
-                    self.policy_memory_out,
-                ]
-        if self.use_recurrent:
-            self.memory_out = tf.concat(mem_outs, axis=1)
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -531,6 +426,178 @@ class SACNetwork(LearningModel):
         return tf.group([update_mean, update_variance, update_norm_step])
 
 
+class SACTargetNetwork(SACNetwork):
+    def __init__(
+        self,
+        brain,
+        m_size=None,
+        h_size=128,
+        normalize=False,
+        use_recurrent=False,
+        num_layers=2,
+        stream_names=None,
+        seed=0,
+        vis_encode_type="default",
+    ):
+        super().__init__(
+            brain,
+            m_size,
+            h_size,
+            normalize,
+            use_recurrent,
+            num_layers,
+            stream_names,
+            seed,
+            vis_encode_type,
+        )
+        if self.use_recurrent:
+            self.memory_in = tf.placeholder(
+                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+            )
+            self.value_memory_in = self.memory_in
+        with tf.variable_scope(TARGET_SCOPE):
+            hidden_streams = self.create_observation_streams(
+                1,
+                self.h_size,
+                0,
+                vis_encode_type=vis_encode_type,
+                stream_scopes=["critic/value/"],
+            )
+        if brain.vector_action_space_type == "continuous":
+            self.create_cc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
+        else:
+            self.create_dc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
+        if self.use_recurrent:
+            self.memory_out = tf.concat(
+                self.value_memory_out, axis=1
+            )  # Needed for Barracuda to work
+
+
+class SACPolicyNetwork(SACNetwork):
+    def __init__(
+        self,
+        brain,
+        m_size=None,
+        h_size=128,
+        normalize=False,
+        use_recurrent=False,
+        num_layers=2,
+        stream_names=None,
+        seed=0,
+        vis_encode_type="default",
+    ):
+        super().__init__(
+            brain,
+            m_size,
+            h_size,
+            normalize,
+            use_recurrent,
+            num_layers,
+            stream_names,
+            seed,
+            vis_encode_type,
+        )
+        self.share_ac_cnn = False
+        if self.use_recurrent:
+            self.create_memory_ins(self.m_size)
+
+        hidden_policy, hidden_critic = self.create_observation_ins(
+            vis_encode_type, self.share_ac_cnn
+        )
+
+        if brain.vector_action_space_type == "continuous":
+            self.create_cc_actor(hidden_policy, POLICY_SCOPE)
+            self.create_cc_critic(hidden_critic, POLICY_SCOPE)
+
+        else:
+            self.create_dc_actor(hidden_policy, POLICY_SCOPE)
+            self.create_dc_critic(hidden_critic, POLICY_SCOPE)
+
+        if self.share_ac_cnn:
+            # Make sure that the policy also contains the CNN
+            self.policy_vars += self.get_vars(
+                self.join_scopes(POLICY_SCOPE, "critic/value/main_graph_0_encoder0")
+            )
+        if self.use_recurrent:
+            mem_outs = [
+                self.value_memory_out,
+                self.q1_memory_out,
+                self.q2_memory_out,
+                self.policy_memory_out,
+            ]
+            self.memory_out = tf.concat(mem_outs, axis=1)
+
+    def create_memory_ins(self, m_size):
+        """
+        Creates the memory input placeholders for LSTM.
+        :param m_size: the total size of the memory.
+        """
+        # Create the Policy input separate from the rest
+        # This is so in inference we only have to run the Policy network.
+        # Barracuda will grab the recurrent_in and recurrent_out named tensors.
+        self.inference_memory_in = tf.placeholder(
+            shape=[None, m_size // 4], dtype=tf.float32, name="recurrent_in"
+        )
+        # We assume m_size is divisible by 4
+        # Create the non-Policy inputs
+        three_fourths_m_size = m_size * 3 // 4
+        self.other_memory_in = tf.placeholder(
+            shape=[None, three_fourths_m_size],
+            dtype=tf.float32,
+            name="other_recurrent_in",
+        )
+
+        # Concat and use this as the "placeholder"
+        # for training
+        self.memory_in = tf.concat(
+            [self.other_memory_in, self.inference_memory_in], axis=1
+        )
+
+        # Re-break-up for each network
+        num_mems = 4
+        mem_ins = []
+        for i in range(num_mems):
+            _start = m_size // num_mems * i
+            _end = m_size // num_mems * (i + 1)
+            mem_ins.append(self.memory_in[:, _start:_end])
+        self.value_memory_in = mem_ins[0]
+        self.q1_memory_in = mem_ins[1]
+        self.q2_memory_in = mem_ins[2]
+        self.policy_memory_in = mem_ins[3]
+
+    def create_observation_ins(self, vis_encode_type, share_ac_cnn):
+        """
+        Creates the observation inputs, and a CNN if needed,
+        :param vis_encode_type: Type of CNN encoder.
+        :param share_ac_cnn: Whether or not to share the actor and critic CNNs.
+        :return A tuple of (hidden_policy, hidden_critic). We don't save it to self since they're used
+        once and thrown away.
+        """
+        if share_ac_cnn:
+            with tf.variable_scope(POLICY_SCOPE):
+                hidden_streams = self.create_observation_streams(
+                    1,
+                    self.h_size,
+                    0,
+                    vis_encode_type=vis_encode_type,
+                    stream_scopes=["critic/value/"],
+                )
+            hidden_policy = hidden_streams[0]
+            hidden_critic = hidden_streams[0]
+        else:
+            with tf.variable_scope(POLICY_SCOPE):
+                hidden_streams = self.create_observation_streams(
+                    2,
+                    self.h_size,
+                    0,
+                    vis_encode_type=vis_encode_type,
+                    stream_scopes=["policy/", "critic/value/"],
+                )
+            hidden_policy = hidden_streams[0]
+            hidden_critic = hidden_streams[1]
+        return hidden_policy, hidden_critic
+
+
 class SACModel(LearningModel):
     def __init__(
         self,
@@ -582,7 +649,7 @@ class SACModel(LearningModel):
         if num_layers < 1:
             num_layers = 1
 
-        self.policy_network = SACNetwork(
+        self.policy_network = SACPolicyNetwork(
             brain=brain,
             m_size=m_size,
             h_size=h_size,
@@ -591,10 +658,9 @@ class SACModel(LearningModel):
             num_layers=num_layers,
             seed=seed,
             stream_names=stream_names,
-            is_target=False,
             vis_encode_type=vis_encode_type,
         )
-        self.target_network = SACNetwork(
+        self.target_network = SACTargetNetwork(
             brain=brain,
             m_size=m_size // 4 if m_size else None,
             h_size=h_size,
@@ -603,7 +669,6 @@ class SACModel(LearningModel):
             num_layers=num_layers,
             seed=seed,
             stream_names=stream_names,
-            is_target=True,
             vis_encode_type=vis_encode_type,
         )
         self.create_inputs_and_outputs()
