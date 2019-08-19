@@ -11,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 from time import time
 
-from mlagents.envs.env_manager import StepInfo
+from mlagents.envs.env_manager import EnvironmentStep
 from mlagents.envs.env_manager import EnvManager
 from mlagents.envs.exception import (
     UnityEnvironmentException,
@@ -141,7 +141,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
-    def _reset_env(self, env: EnvManager) -> List[StepInfo]:
+    def _reset_env(self, env: EnvManager) -> List[EnvironmentStep]:
         """Resets the environment.
 
         Returns:
