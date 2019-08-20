@@ -172,17 +172,24 @@ CrawlerStaticLearning:
     init_entcoef: 1.0
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 CrawlerDynamicLearning:
     normalize: true
     time_horizon: 1000
     batch_size: 256
     buffer_size: 500000
-    max_steps: 1e5
     summary_freq: 3000
     train_interval: 3
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 WalkerLearning:
     normalize: true
