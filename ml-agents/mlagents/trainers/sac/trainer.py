@@ -22,6 +22,7 @@ from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
+BUFFER_TRUNCATE_PERCENT = 0.8
 
 
 class SACTrainer(RLTrainer):
@@ -41,9 +42,7 @@ class SACTrainer(RLTrainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super(SACTrainer, self).__init__(
-            brain, trainer_parameters, training, run_id, reward_buff_cap
-        )
+        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
         self.param_keys = [
             "batch_size",
             "buffer_size",
@@ -281,7 +280,7 @@ class SACTrainer(RLTrainer):
             > self.trainer_parameters["buffer_size"]
         ):
             self.training_buffer.truncate_update_buffer(
-                int(self.trainer_parameters["buffer_size"] * 0.8)
+                int(self.trainer_parameters["buffer_size"] * BUFFER_TRUNCATE_PERCENT)
             )
 
         for stat, stat_list in batch_update_stats.items():

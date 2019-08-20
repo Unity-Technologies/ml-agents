@@ -309,7 +309,9 @@ class SACPolicy(TFPolicy):
             # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
             offset = 1 if self.sequence_length > 1 else 0
             next_mem_in = [
-                mini_batch["memory"][i][: self.m_size // 4]
+                mini_batch["memory"][i][
+                    : self.m_size // 4
+                ]  # only pass value part of memory to target network
                 for i in range(offset, len(mini_batch["memory"]), self.sequence_length)
             ]
             feed_dict[model.memory_in] = mem_in

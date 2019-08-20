@@ -8,6 +8,8 @@ import tensorflow.contrib.layers as c_layers
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
 EPSILON = 1e-6  # Small value to avoid divide by zero
+DISCRETE_TARGET_ENTROPY_SCALE = 0.1  # TODO: Make hyperparameters
+CONTINUOUS_TARGET_ENTROPY_SCALE = 1.0
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -771,10 +773,15 @@ class SACModel(LearningModel):
 
         if discrete:
             self.target_entropy = [
-                0.1 * np.log(i).astype(np.float32) for i in self.act_size
+                DISCRETE_TARGET_ENTROPY_SCALE * np.log(i).astype(np.float32)
+                for i in self.act_size
             ]
         else:
-            self.target_entropy = -np.prod(self.act_size[0]).astype(np.float32)
+            self.target_entropy = (
+                -1
+                * CONTINUOUS_TARGET_ENTROPY_SCALE
+                * np.prod(self.act_size[0]).astype(np.float32)
+            )
 
         self.rewards_holders = {}
         self.min_policy_qs = {}
