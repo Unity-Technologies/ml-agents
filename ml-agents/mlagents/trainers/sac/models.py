@@ -148,15 +148,15 @@ class SACNetwork(LearningModel):
                 "encoder",
                 False,
             )
-            if self.use_recurrent:
-                hidden_policy, memory_out = self.create_recurrent_encoder(
-                    hidden_policy,
-                    self.policy_memory_in,
-                    self.sequence_length,
-                    name="lstm_policy",
-                )
-                self.policy_memory_out = memory_out
-
+        if self.use_recurrent:
+            hidden_policy, memory_out = self.create_recurrent_encoder(
+                hidden_policy,
+                self.policy_memory_in,
+                self.sequence_length,
+                name="lstm_policy",
+            )
+            self.policy_memory_out = memory_out
+        with tf.variable_scope(scope):
             mu = tf.layers.dense(
                 hidden_policy,
                 self.act_size[0],
@@ -243,24 +243,24 @@ class SACNetwork(LearningModel):
                 "encoder",
                 False,
             )
-            if self.use_recurrent:
-                prev_action_oh = tf.concat(
-                    [
-                        tf.one_hot(self.prev_action[:, i], self.act_size[i])
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-                hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
+        if self.use_recurrent:
+            prev_action_oh = tf.concat(
+                [
+                    tf.one_hot(self.prev_action[:, i], self.act_size[i])
+                    for i in range(len(self.act_size))
+                ],
+                axis=1,
+            )
+            hidden_policy = tf.concat([hidden_policy, prev_action_oh], axis=1)
 
-                hidden_policy, memory_out = self.create_recurrent_encoder(
-                    hidden_policy,
-                    self.policy_memory_in,
-                    self.sequence_length,
-                    name="lstm_policy",
-                )
-                self.policy_memory_out = memory_out
-
+            hidden_policy, memory_out = self.create_recurrent_encoder(
+                hidden_policy,
+                self.policy_memory_in,
+                self.sequence_length,
+                name="lstm_policy",
+            )
+            self.policy_memory_out = memory_out
+        with tf.variable_scope(scope):
             policy_branches = []
             for size in self.act_size:
                 policy_branches.append(
