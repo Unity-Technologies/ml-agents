@@ -16,6 +16,10 @@ TARGET_SCOPE = "target_network"
 
 
 class SACNetwork(LearningModel):
+    """
+    Base class for an SAC network. Implements methods for creating the actor and critic heads.
+    """
+
     def __init__(
         self,
         brain,
@@ -427,6 +431,11 @@ class SACNetwork(LearningModel):
 
 
 class SACTargetNetwork(SACNetwork):
+    """
+    Instantiation for the SAC target network. Only contains a single
+    value estimator and is updated from the Policy Network.
+    """
+
     def __init__(
         self,
         brain,
@@ -474,6 +483,11 @@ class SACTargetNetwork(SACNetwork):
 
 
 class SACPolicyNetwork(SACNetwork):
+    """
+    Instantiation for SAC policy network. Contains a dual Q estimator,
+    a value estimator, and the actual policy network.
+    """
+
     def __init__(
         self,
         brain,
