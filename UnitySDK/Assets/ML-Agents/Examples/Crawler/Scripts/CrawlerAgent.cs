@@ -54,6 +54,8 @@ public class CrawlerAgent : Agent
     {
         jdController = GetComponent<JointDriveController>();
         currentDecisionStep = 1;
+        dirToTarget = target.position - body.position;
+
 
         //Setup each body part
         jdController.SetupBodyPart(body);
@@ -113,12 +115,12 @@ public class CrawlerAgent : Agent
     public override void CollectObservations()
     {
         jdController.GetCurrentJointForces();
-        // Normalize dir vector to help generalize
 
+        // Update pos to target
+        dirToTarget = target.position - body.position;
         lookRotation = Quaternion.LookRotation(dirToTarget);
         targetDirMatrix = Matrix4x4.TRS(Vector3.zero, lookRotation, Vector3.one);
 
-        // Forward & up to help with orientation
         RaycastHit hit;
         if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
         {
@@ -127,6 +129,7 @@ public class CrawlerAgent : Agent
         else
             AddVectorObs(10.0f);
 
+        // Forward & up to help with orientation
         Vector3 bodyForwardRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.forward);
         AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
 
@@ -173,9 +176,6 @@ public class CrawlerAgent : Agent
                 }
             }
         }
-
-        // Update pos to target
-        dirToTarget = target.position - jdController.bodyPartsDict[body].rb.position;
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
