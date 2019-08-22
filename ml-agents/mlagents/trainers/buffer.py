@@ -98,11 +98,13 @@ class Buffer(dict):
                     if batch_size * training_length > len(self):
                         padding = np.array(self[-1]) * self.padding_value
                         return np.array(
-                            [padding] * (training_length - leftover) + self[:]
+                            [padding] * (training_length - leftover) + self[:],
+                            dtype=np.float32,
                         )
                     else:
                         return np.array(
-                            self[len(self) - batch_size * training_length :]
+                            self[len(self) - batch_size * training_length :],
+                            dtype=np.float32,
                         )
                 else:
                     # The sequences will have overlapping elements
@@ -119,7 +121,7 @@ class Buffer(dict):
                     tmp_list = []
                     for end in range(len(self) - batch_size + 1, len(self) + 1):
                         tmp_list += self[end - training_length : end]
-                    return np.array(tmp_list)
+                    return np.array(tmp_list, dtype=np.float32)
 
             def reset_field(self):
                 """
