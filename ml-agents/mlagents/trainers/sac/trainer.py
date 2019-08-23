@@ -167,7 +167,6 @@ class SACTrainer(RLTrainer):
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
-        Processing involves calculating value and advantage targets for model updating step.
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
@@ -179,6 +178,20 @@ class SACTrainer(RLTrainer):
                 or len(agent_actions) >= self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
                 agent_id = info.agents[l]
+
+                # Bootstrap using last brain info. Set last element to duplicate obs and remove dones.
+                if info.max_reached[l]:
+                    bootstrapping_info = self.training_buffer[agent_id].last_brain_info
+                    idx = bootstrapping_info.agents.index(agent_id)
+                    for i, _ in enumerate(bootstrapping_info.visual_observations):
+                        self.training_buffer[agent_id]["next_visual_obs%d" % i][
+                            -1
+                        ] = bootstrapping_info.visual_observations[i][idx]
+                    if self.policy.use_vec_obs:
+                        self.training_buffer[agent_id]["next_vector_in"][
+                            -1
+                        ] = bootstrapping_info.vector_observations[idx]
+                    self.training_buffer[agent_id]["done"][-1] = False
 
                 self.training_buffer.append_update_buffer(
                     agent_id,
