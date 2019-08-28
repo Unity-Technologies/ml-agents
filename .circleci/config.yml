@@ -61,3 +61,4 @@ jobs:
 
       - store_artifacts:
           path: htmlcov
+          destination: htmlcov
