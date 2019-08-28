@@ -148,6 +148,7 @@ environment, you can set the following command line options when invoking
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
+* `--multi-gpu`: Whether to use multiple GPU training.
 
 ### Training Config File
 
