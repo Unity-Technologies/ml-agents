@@ -308,7 +308,7 @@ def main():
       --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
       --no-graphics               Whether to run the environment in no-graphics mode [default: False].
       --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
-      --multi-gpu                Whether to use multiple GPU training [default: False].
+      --multi-gpu                 Setting this flag enables the use of multiple GPU's (if available) during training [default: False].
     """
 
     options = docopt(_USAGE)
