@@ -37,7 +37,7 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir test-reports
-            pytest --cov=ml-agents --cov=ml-agents-envs --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
           name: Check Code Style using pre-commit
