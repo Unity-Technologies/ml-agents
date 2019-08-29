@@ -65,7 +65,7 @@ def curiosity_dummy_config():
 
 VECTOR_ACTION_SPACE = [2]
 VECTOR_OBS_SPACE = 8
-DISCRETE_ACTION_SPACE = [2]
+DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 20
 NUM_AGENTS = 12
 
@@ -73,42 +73,15 @@ NUM_AGENTS = 12
 def create_ppo_policy_mock(
     mock_env, dummy_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
-
-    if not use_visual:
-        mock_brain = mb.create_mock_brainparams(
-            vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=DISCRETE_ACTION_SPACE
-            if use_discrete
-            else VECTOR_ACTION_SPACE,
-            vector_observation_space_size=VECTOR_OBS_SPACE,
-        )
-        mock_braininfo = mb.create_mock_braininfo(
-            num_agents=NUM_AGENTS,
-            num_vector_observations=VECTOR_OBS_SPACE,
-            num_vector_acts=sum(
-                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
-            ),
-            discrete=use_discrete,
-        )
-    else:
-        mock_brain = mb.create_mock_brainparams(
-            vector_action_space_type="discrete" if use_discrete else "continuous",
-            vector_action_space_size=DISCRETE_ACTION_SPACE
-            if use_discrete
-            else VECTOR_ACTION_SPACE,
-            vector_observation_space_size=0,
-            number_visual_observations=1,
-        )
-        mock_braininfo = mb.create_mock_braininfo(
-            num_agents=NUM_AGENTS,
-            num_vis_observations=1,
-            num_vector_acts=sum(
-                DISCRETE_ACTION_SPACE if use_discrete else VECTOR_ACTION_SPACE
-            ),
-            discrete=use_discrete,
-        )
-    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
-    env = mock_env()
+    env, mock_brain, _ = mb.setup_mock_env_and_brains(
+        mock_env,
+        use_discrete,
+        use_visual,
+        num_agents=NUM_AGENTS,
+        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+        discrete_action_space=DISCRETE_ACTION_SPACE,
+    )
 
     trainer_parameters = dummy_config
     model_path = env.brain_names[0]
@@ -134,7 +107,12 @@ def reward_signal_eval(env, policy, reward_signal_name):
 
 def reward_signal_update(env, policy, reward_signal_name):
     buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
-    out = policy.reward_signals[reward_signal_name].update(buffer.update_buffer, 2)
+    feed_dict = policy.reward_signals[reward_signal_name].prepare_update(
+        policy.model, buffer.update_buffer.make_mini_batch(0, 10), 2
+    )
+    out = policy._execute_model(
+        feed_dict, policy.reward_signals[reward_signal_name].update_dict
+    )
     assert type(out) is dict
 
 
@@ -148,16 +126,7 @@ def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
 
 
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_dc(mock_env, dummy_config, gail_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, gail_dummy_config, False, True, False
-    )
-    reward_signal_eval(env, policy, "gail")
-    reward_signal_update(env, policy, "gail")
-
-
-@mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_visual(mock_env, dummy_config, gail_dummy_config):
+def test_gail_dc_visual(mock_env, dummy_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
     )

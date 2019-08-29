@@ -51,17 +51,6 @@ class OnlineBCTrainer(BCTrainer):
             int(trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
 
-    def __str__(self):
-        return """Hyperparameters for the Imitation Trainer of brain {0}: \n{1}""".format(
-            self.brain_name,
-            "\n".join(
-                [
-                    "\t{0}:\t{1}".format(x, self.trainer_parameters[x])
-                    for x in self.param_keys
-                ]
-            ),
-        )
-
     def add_experiences(
         self,
         curr_info: AllBrainInfo,

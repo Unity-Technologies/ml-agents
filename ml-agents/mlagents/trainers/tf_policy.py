@@ -60,6 +60,11 @@ class TFPolicy(Policy):
         self.graph = tf.Graph()
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
+        # For multi-GPU training, set allow_soft_placement to True to allow
+        # placing the operation into an alternative device automatically
+        # to prevent from exceptions if the device doesn't suppport the operation
+        # or the device does not exist
+        config.allow_soft_placement = True
         self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         if self.use_recurrent:

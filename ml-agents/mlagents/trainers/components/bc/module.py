@@ -95,15 +95,17 @@ class BCModule:
 
         n_epoch = self.num_epoch
         for _ in range(n_epoch):
-            self.demonstration_buffer.update_buffer.shuffle()
+            self.demonstration_buffer.update_buffer.shuffle(
+                sequence_length=self.policy.sequence_length
+            )
             if max_batches == 0:
                 num_batches = possible_batches
             else:
                 num_batches = min(possible_batches, max_batches)
-            for i in range(num_batches):
+            for i in range(num_batches // self.policy.sequence_length):
                 demo_update_buffer = self.demonstration_buffer.update_buffer
-                start = i * self.n_sequences
-                end = (i + 1) * self.n_sequences
+                start = i * self.n_sequences * self.policy.sequence_length
+                end = (i + 1) * self.n_sequences * self.policy.sequence_length
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
                 run_out = self._update_batch(mini_batch_demo, self.n_sequences)
                 loss = run_out["loss"]
@@ -123,40 +125,24 @@ class BCModule:
             self.policy.model.batch_size: n_sequences,
             self.policy.model.sequence_length: self.policy.sequence_length,
         }
+        feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
         if self.policy.model.brain.vector_action_space_type == "continuous":
-            feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
-                [-1, self.policy.model.brain.vector_action_space_size[0]]
-            )
             feed_dict[self.policy.model.epsilon] = np.random.normal(
                 size=(1, self.policy.model.act_size[0])
             )
         else:
-            feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"].reshape(
-                [-1, len(self.policy.model.brain.vector_action_space_size)]
-            )
             feed_dict[self.policy.model.action_masks] = np.ones(
                 (
-                    self.n_sequences,
+                    self.n_sequences * self.policy.sequence_length,
                     sum(self.policy.model.brain.vector_action_space_size),
                 )
             )
         if self.policy.model.brain.vector_observation_space_size > 0:
-            apparent_obs_size = (
-                self.policy.model.brain.vector_observation_space_size
-                * self.policy.model.brain.num_stacked_vector_observations
-            )
-            feed_dict[self.policy.model.vector_in] = mini_batch_demo[
-                "vector_obs"
-            ].reshape([-1, apparent_obs_size])
+            feed_dict[self.policy.model.vector_in] = mini_batch_demo["vector_obs"]
         for i, _ in enumerate(self.policy.model.visual_in):
-            visual_obs = mini_batch_demo["visual_obs%d" % i]
-            if self.policy.sequence_length > 1 and self.policy.use_recurrent:
-                (_batch, _seq, _w, _h, _c) = visual_obs.shape
-                feed_dict[self.policy.model.visual_in[i]] = visual_obs.reshape(
-                    [-1, _w, _h, _c]
-                )
-            else:
-                feed_dict[self.policy.model.visual_in[i]] = visual_obs
+            feed_dict[self.policy.model.visual_in[i]] = mini_batch_demo[
+                "visual_obs%d" % i
+            ]
         if self.use_recurrent:
             feed_dict[self.policy.model.memory_in] = np.zeros(
                 [self.n_sequences, self.policy.m_size]
@@ -164,7 +150,7 @@ class BCModule:
             if not self.policy.model.brain.vector_action_space_type == "continuous":
                 feed_dict[self.policy.model.prev_action] = mini_batch_demo[
                     "prev_action"
-                ].reshape([-1, len(self.policy.model.act_size)])
+                ]
 
         network_out = self.policy.sess.run(
             list(self.out_dict.values()), feed_dict=feed_dict

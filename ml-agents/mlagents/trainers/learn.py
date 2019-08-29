@@ -15,6 +15,7 @@ from typing import Any, Callable, Dict, Optional
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import UnityEnvironmentException, SamplerException
@@ -54,6 +55,7 @@ def run_training(
     lesson = int(run_options["--lesson"])
     fast_simulation = not bool(run_options["--slow"])
     no_graphics = run_options["--no-graphics"]
+    multi_gpu = run_options["--multi-gpu"]
     trainer_config_path = run_options["<trainer-config-path>"]
     sampler_file_path = (
         run_options["--sampler"] if run_options["--sampler"] != "None" else None
@@ -89,22 +91,34 @@ def run_training(
         base_port + (sub_id * num_envs),
     )
     env = SubprocessEnvManager(env_factory, num_envs)
-    maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env)
+    maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env, lesson)
     sampler_manager, resampling_interval = create_sampler_manager(
         sampler_file_path, env.reset_parameters, run_seed
     )
 
+    trainers = initialize_trainers(
+        trainer_config,
+        env.external_brains,
+        summaries_dir,
+        run_id,
+        model_path,
+        keep_checkpoints,
+        train_model,
+        load_model,
+        run_seed,
+        maybe_meta_curriculum,
+        multi_gpu,
+    )
+
     # Create controller and begin training.
     tc = TrainerController(
+        trainers,
         model_path,
         summaries_dir,
         run_id + "-" + str(sub_id),
         save_freq,
         maybe_meta_curriculum,
-        load_model,
         train_model,
-        keep_checkpoints,
-        lesson,
         run_seed,
         fast_simulation,
         sampler_manager,
@@ -115,7 +129,7 @@ def run_training(
     process_queue.put(True)
 
     # Begin training
-    tc.start_learning(env, trainer_config)
+    tc.start_learning(env)
 
 
 def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
@@ -123,7 +137,7 @@ def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
     resample_interval = None
     if sampler_file_path is not None:
         sampler_config = load_config(sampler_file_path)
-        if ("resampling-interval") in sampler_config:
+        if "resampling-interval" in sampler_config:
             # Filter arguments that do not exist in the environment
             resample_interval = sampler_config.pop("resampling-interval")
             if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
@@ -141,24 +155,26 @@ def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
 
 
 def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: SubprocessEnvManager
+    curriculum_folder: Optional[str], env: SubprocessEnvManager, lesson: int
 ) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
-        if meta_curriculum:
-            for brain_name in meta_curriculum.brains_to_curriculums.keys():
-                if brain_name not in env.external_brains.keys():
-                    raise MetaCurriculumError(
-                        "One of the curricula "
-                        "defined in " + curriculum_folder + " "
-                        "does not have a corresponding "
-                        "Brain. Check that the "
-                        "curriculum file has the same "
-                        "name as the Brain "
-                        "whose curriculum it defines."
-                    )
+        # TODO: Should be able to start learning at different lesson numbers
+        # for each curriculum.
+        meta_curriculum.set_all_curriculums_to_lesson_num(lesson)
+        for brain_name in meta_curriculum.brains_to_curriculums.keys():
+            if brain_name not in env.external_brains.keys():
+                raise MetaCurriculumError(
+                    "One of the curricula "
+                    "defined in " + curriculum_folder + " "
+                    "does not have a corresponding "
+                    "Brain. Check that the "
+                    "curriculum file has the same "
+                    "name as the Brain "
+                    "whose curriculum it defines."
+                )
         return meta_curriculum
 
 
@@ -292,6 +308,8 @@ def main():
       --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
       --no-graphics               Whether to run the environment in no-graphics mode [default: False].
       --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
+      --multi-gpu                 Setting this flag enables the use of multiple GPU's (if available) during training
+                                  [default: False].
     """
 
     options = docopt(_USAGE)

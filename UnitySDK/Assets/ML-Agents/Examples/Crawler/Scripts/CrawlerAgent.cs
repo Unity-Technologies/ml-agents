@@ -47,10 +47,15 @@ public class CrawlerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    Quaternion lookRotation;
+    Matrix4x4 targetDirMatrix;
+
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
         currentDecisionStep = 1;
+        dirToTarget = target.position - body.position;
+
 
         //Setup each body part
         jdController.SetupBodyPart(body);
@@ -62,7 +67,7 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
-    }
+   }
 
     /// <summary>
     /// We only need to change the joint settings based on decision freq.
@@ -89,8 +94,12 @@ public class CrawlerAgent : Agent
     {
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
-        AddVectorObs(rb.velocity);
-        AddVectorObs(rb.angularVelocity);
+
+        Vector3 velocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.velocity);
+        AddVectorObs(velocityRelativeToLookRotationToTarget);
+
+        Vector3 angularVelocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
 
         if (bp.rb.transform != body)
         {
@@ -106,13 +115,27 @@ public class CrawlerAgent : Agent
     public override void CollectObservations()
     {
         jdController.GetCurrentJointForces();
-        // Normalize dir vector to help generalize
-        AddVectorObs(dirToTarget.normalized);
+
+        // Update pos to target
+        dirToTarget = target.position - body.position;
+        lookRotation = Quaternion.LookRotation(dirToTarget);
+        targetDirMatrix = Matrix4x4.TRS(Vector3.zero, lookRotation, Vector3.one);
+
+        RaycastHit hit;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        {
+            AddVectorObs(hit.distance);
+        }
+        else
+            AddVectorObs(10.0f);
 
         // Forward & up to help with orientation
-        AddVectorObs(body.transform.position.y);
-        AddVectorObs(body.forward);
-        AddVectorObs(body.up);
+        Vector3 bodyForwardRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.forward);
+        AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
+
+        Vector3 bodyUpRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.up);
+        AddVectorObs(bodyUpRelativeToLookRotationToTarget);
+
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
@@ -153,9 +176,6 @@ public class CrawlerAgent : Agent
                 }
             }
         }
-
-        // Update pos to target
-        dirToTarget = target.position - jdController.bodyPartsDict[body].rb.position;
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
@@ -257,6 +277,7 @@ public class CrawlerAgent : Agent
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
+        transform.Rotate(Vector3.up,Random.Range(0.0f, 360.0f));
 
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {

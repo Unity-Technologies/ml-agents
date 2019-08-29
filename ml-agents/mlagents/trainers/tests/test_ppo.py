@@ -8,6 +8,8 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.rl_trainer import AllRewardsOutput
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.envs import UnityEnvironment, BrainParameters
 from mlagents.envs.mock_communicator import MockCommunicator
 
@@ -344,7 +346,7 @@ def test_trainer_increment_step():
     }
     brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
 
-    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0")
+    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
     policy_mock = mock.Mock()
     step_count = 10
     policy_mock.increment_step = mock.Mock(return_value=step_count)
@@ -353,6 +355,35 @@ def test_trainer_increment_step():
     trainer.increment_step(5)
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == 10
+
+
+def test_add_rewards_output(dummy_config):
+    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    rewardsout = AllRewardsOutput(
+        reward_signals={
+            "extrinsic": RewardSignalResult(
+                scaled_reward=np.array([1.0, 1.0]), unscaled_reward=np.array([1.0, 1.0])
+            )
+        },
+        environment=np.array([1.0, 1.0]),
+    )
+    values = {"extrinsic": np.array([[2.0]])}
+    agent_id = "123"
+    idx = 0
+    # make sure that we're grabbing from the next_idx for rewards. If we're not, the test will fail.
+    next_idx = 1
+    trainer.add_rewards_outputs(
+        rewardsout,
+        values=values,
+        agent_id=agent_id,
+        agent_idx=idx,
+        agent_next_idx=next_idx,
+    )
+    assert trainer.training_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
+    assert trainer.training_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
 
 
 if __name__ == "__main__":

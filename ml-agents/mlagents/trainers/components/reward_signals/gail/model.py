@@ -37,35 +37,31 @@ class GAILModel(object):
         self.gradient_penalty_weight = gradient_penalty_weight
         self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
-        self.make_beta()
         self.make_inputs()
         self.create_network()
         self.create_loss(learning_rate)
+        if self.use_vail:
+            self.make_beta_update()
 
-    def make_beta(self) -> None:
+    def make_beta_update(self) -> None:
         """
         Creates the beta parameter and its updater for GAIL
         """
-        self.beta = tf.get_variable(
-            "gail_beta",
-            [],
-            trainable=False,
-            dtype=tf.float32,
-            initializer=tf.ones_initializer(),
-        )
-        self.kl_div_input = tf.placeholder(shape=[], dtype=tf.float32)
+
         new_beta = tf.maximum(
-            self.beta + self.alpha * (self.kl_div_input - self.mutual_information),
-            EPSILON,
+            self.beta + self.alpha * (self.kl_loss - self.mutual_information), EPSILON
         )
-        self.update_beta = tf.assign(self.beta, new_beta)
+        with tf.control_dependencies(self.update_batch):
+            self.update_beta = tf.assign(self.beta, new_beta)
 
     def make_inputs(self) -> None:
         """
         Creates the input layers for the discriminator
         """
-        self.done_expert = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-        self.done_policy = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+        self.done_expert_holder = tf.placeholder(shape=[None], dtype=tf.float32)
+        self.done_policy_holder = tf.placeholder(shape=[None], dtype=tf.float32)
+        self.done_expert = tf.expand_dims(self.done_expert_holder, -1)
+        self.done_policy = tf.expand_dims(self.done_policy_holder, -1)
 
         if self.policy_model.brain.vector_action_space_type == "continuous":
             action_length = self.policy_model.act_size[0]
@@ -228,6 +224,8 @@ class GAILModel(object):
             self.done_policy,
             reuse=True,
         )
+        self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
+        self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.discriminator_score = tf.reshape(
             self.policy_estimate, [-1], name="gail_reward"
         )
@@ -268,6 +266,15 @@ class GAILModel(object):
         """
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
+
+        if self.use_vail:
+            self.beta = tf.get_variable(
+                "gail_beta",
+                [],
+                trainable=False,
+                dtype=tf.float32,
+                initializer=tf.ones_initializer(),
+            )
 
         self.discriminator_loss = -tf.reduce_mean(
             tf.log(self.expert_estimate + EPSILON)
