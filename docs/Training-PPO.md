@@ -175,7 +175,7 @@ Valid options include:
 * `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236),
 consisting of three convolutional layers
 * `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
-consisting of three stacked layers, each with two risidual blocks, making a
+consisting of three stacked layers, each with two residual blocks, making a
 much larger network than the other two.
 
 Options: `simple`, `nature_cnn`, `resnet`
