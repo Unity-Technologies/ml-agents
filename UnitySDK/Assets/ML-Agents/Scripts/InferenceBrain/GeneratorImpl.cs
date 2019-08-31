@@ -19,7 +19,7 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
@@ -38,7 +38,7 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensorProxy.Data = _allocator.Alloc(new TensorShape(1,1));
@@ -60,7 +60,7 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensorProxy.Shape = new long[0];
@@ -83,12 +83,12 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
             var vecObsSizeT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
-            
+
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -111,16 +111,16 @@ namespace MLAgents.InferenceBrain
     public class RecurrentInputGenerator : TensorGenerator.Generator
     {
         private ITensorAllocator _allocator;
-        
+
         public RecurrentInputGenerator(ITensorAllocator allocator)
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            
+
             var memorySize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -143,31 +143,31 @@ namespace MLAgents.InferenceBrain
             }
         }
     }
-    
+
     public class BarracudaRecurrentInputGenerator : TensorGenerator.Generator
     {
         private int memoriesCount;
         private int memoryIndex;
-        private ITensorAllocator _allocator;   
-        
+        private ITensorAllocator _allocator;
+
         public BarracudaRecurrentInputGenerator(int memoryIndex, ITensorAllocator allocator)
         {
             this.memoryIndex = memoryIndex;
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            
+
             var memorySize = (int)tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
-                var memory = agentInfo[agent].memories;         
+                var memory = agentInfo[agent].memories;
 
                 int offset = memorySize * memoryIndex;
-                
+
                 if (memory == null)
                 {
                     agentIndex++;
@@ -200,11 +200,11 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            
+
             var actionSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -234,11 +234,11 @@ namespace MLAgents.InferenceBrain
         {
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            
+
             var maskSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -263,13 +263,13 @@ namespace MLAgents.InferenceBrain
     {
         private RandomNormal _randomNormal;
         private ITensorAllocator _allocator;
-        
+
         public RandomNormalInputGenerator(int seed, ITensorAllocator allocator)
         {
             _randomNormal = new RandomNormal(seed);
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
@@ -288,21 +288,21 @@ namespace MLAgents.InferenceBrain
         private int _index;
         private bool _grayScale;
         private ITensorAllocator _allocator;
-        
+
         public VisualObservationInputGenerator(int index, bool grayScale, ITensorAllocator allocator)
         {
             _index = index;
             _grayScale = grayScale;
             _allocator = allocator;
         }
-        
+
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             var textures = agentInfo.Keys.Select(
                 agent => agentInfo[agent].visualObservations[_index]).ToList();
-            
+
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            Utilities.TextureToTensorProxy(tensorProxy, textures, _grayScale, _allocator);
-        } 
-    } 
+            Utilities.TextureToTensorProxy(textures, tensorProxy, _grayScale);
+        }
+    }
 }
