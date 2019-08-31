@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Barracuda;
+using MLAgents.InferenceBrain.Utils;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -9,7 +10,7 @@ namespace MLAgents.InferenceBrain
 
 	/// <summary>
 	/// Tensor - A class to encapsulate a Tensor used for inference.
-	/// 
+	///
 	/// This class contains the Array that holds the data array, the shapes, type and the placeholder in the
 	/// execution graph. All the fields are editable in the inspector, allowing the user to specify everything
 	/// but the data in a graphical way.
@@ -37,21 +38,21 @@ namespace MLAgents.InferenceBrain
 			get { return m_typeMap[ValueType]; }
 		}
 		public long[] Shape;
-		
+
 		public Tensor Data;
 	}
-	
+
 	public class TensorUtils
 	{
 		public static void ResizeTensor(TensorProxy tensor, int batch, ITensorAllocator allocator)
 		{
 			if (tensor.Shape[0] == batch &&
 			    tensor.Data != null && tensor.Data.batch == batch)
-				return; 
+				return;
 
 			tensor.Data?.Dispose();
 			tensor.Shape[0] = batch;
-			
+
 			if (tensor.Shape.Length == 4)
 				tensor.Data = allocator.Alloc(new TensorShape(batch, (int)tensor.Shape[1], (int)tensor.Shape[2], (int)tensor.Shape[3]));
 			else
@@ -61,24 +62,24 @@ namespace MLAgents.InferenceBrain
 		public static Array BarracudaToFloatArray(Tensor tensor)
 		{
 			Array res;
-			
+
 			if (tensor.height == 1 && tensor.width == 1)
 				res = new float[tensor.batch, tensor.channels];
 			else
 				res = new float[tensor.batch, tensor.height, tensor.width, tensor.channels];
-			
+
 			Buffer.BlockCopy(tensor.readonlyArray, 0, res, 0, tensor.length * Marshal.SizeOf<float>());
 
 			return res;
 		}
-		
+
 		public static Array BarracudaToIntArray(Tensor tensor)
 		{
 
 			if (tensor.height == 1 && tensor.width == 1)
 			{
 				var res = new int[tensor.batch, tensor.channels];
-				
+
 				for (int b = 0; b < tensor.batch; b++)
 				for (int c = 0; c < tensor.channels; c++)
 				{
@@ -105,7 +106,7 @@ namespace MLAgents.InferenceBrain
 		public static Tensor ArrayToBarracuda(Array array)
 		{
 			Tensor res;
-			
+
 			if (array.Rank == 2)
 				res = new Tensor(array.GetLength(0), array.GetLength(1));
 			else
@@ -115,7 +116,7 @@ namespace MLAgents.InferenceBrain
 			var barracudaArray = res.data != null ? res.tensorOnDevice.SharedAccess(out offset) : null;
 
 			Buffer.BlockCopy(array, 0, barracudaArray, offset, res.length * Marshal.SizeOf<float>());
-			
+
 			return res;
 		}
 
@@ -138,6 +139,35 @@ namespace MLAgents.InferenceBrain
 				Data = src
 			};
 		}
-	}
+		
+		/// <summary>
+		/// Fill a pre-allocated Tensor with random numbers
+		/// </summary>
+		/// <param name="tensorProxy">The pre-allocated Tensor to fill</param>
+		/// <param name="randomNormal">RandomNormal object used to populate tensor</param>
+		/// <exception cref="NotImplementedException">
+		/// Throws when trying to fill a Tensor of type other than float
+		/// </exception>
+		/// <exception cref="ArgumentNullException">
+		/// Throws when the Tensor is not allocated
+		/// </exception>
+		public static void FillTensorWithRandomNormal(
+			TensorProxy tensorProxy, RandomNormal randomNormal)
+		{
+			if (tensorProxy.DataType != typeof(float))
+			{
+				throw new NotImplementedException("Only float data types are currently supported");
+			}
 
+			if (tensorProxy.Data == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			for (var i = 0; i < tensorProxy.Data.length; i++)
+			{
+				tensorProxy.Data[i] = (float) randomNormal.NextDouble();
+			}
+		}
+	}
 }
