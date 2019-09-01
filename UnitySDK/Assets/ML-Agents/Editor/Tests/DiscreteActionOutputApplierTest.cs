@@ -43,7 +43,10 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                data = new Tensor(1, 3, new[] {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}),
+                data = new Tensor(
+                    1,
+                    3,
+                    new[] { Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50 }),
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
@@ -105,7 +108,8 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.Integer
             };
 
-            Assert.Throws<NotImplementedException>(() => DiscreteActionOutputApplier.Eval(src, null, m));
+            Assert.Throws<NotImplementedException>(
+                () => DiscreteActionOutputApplier.Eval(src, null, m));
         }
 
         [Test]
@@ -123,7 +127,8 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.Integer
             };
 
-            Assert.Throws<ArgumentException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
+            Assert.Throws<ArgumentException>(
+                () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -141,7 +146,8 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            Assert.Throws<ArgumentNullException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
+            Assert.Throws<ArgumentNullException>(
+                () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -160,7 +166,8 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
-            Assert.Throws<ArgumentNullException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
+            Assert.Throws<ArgumentNullException>(
+                () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
         [Test]
@@ -180,7 +187,8 @@ namespace MLAgents.Tests
                 data = new Tensor(2, 1)
             };
 
-            Assert.Throws<ArgumentException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
+            Assert.Throws<ArgumentException>(
+                () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
     }
 }
