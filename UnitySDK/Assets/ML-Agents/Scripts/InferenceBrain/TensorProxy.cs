@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
 
@@ -68,80 +67,6 @@ namespace MLAgents.InferenceBrain
                         batch,
                         (int) tensor.Shape[tensor.Shape.Length - 1]));
             }
-        }
-
-        public static Array BarracudaToFloatArray(Tensor tensor)
-        {
-            Array res;
-
-            if (tensor.height == 1 && tensor.width == 1)
-            {
-                res = new float[tensor.batch, tensor.channels];
-            }
-            else
-            {
-                res = new float[tensor.batch, tensor.height, tensor.width, tensor.channels];
-            }
-
-            Buffer.BlockCopy(
-                tensor.readonlyArray, 0, res, 0, tensor.length * Marshal.SizeOf<float>());
-
-            return res;
-        }
-
-        public static Array BarracudaToIntArray(Tensor tensor)
-        {
-            if (tensor.height == 1 && tensor.width == 1)
-            {
-                var res = new int[tensor.batch, tensor.channels];
-
-                for (var b = 0; b < tensor.batch; b++)
-                {
-                    for (var c = 0; c < tensor.channels; c++)
-                    {
-                        res[b, c] = (int) tensor[b, c];
-                    }
-                }
-
-                return res;
-            }
-            else
-            {
-                var res = new int[tensor.batch, tensor.height, tensor.width, tensor.channels];
-                for (var b = 0; b < tensor.batch; b++)
-                for (var y = 0; y < tensor.height; y++)
-                for (var x = 0; x < tensor.width; x++)
-                for (var c = 0; c < tensor.channels; c++)
-                {
-                    res[b, y, x, c] = (int) tensor[b, y, x, c];
-                }
-
-                return res;
-            }
-        }
-
-        public static Tensor ArrayToBarracuda(Array array)
-        {
-            Tensor res;
-
-            if (array.Rank == 2)
-            {
-                res = new Tensor(array.GetLength(0), array.GetLength(1));
-            }
-            else
-            {
-                res = new Tensor(
-                    array.GetLength(0), array.GetLength(1), array.GetLength(2), array.GetLength(3));
-            }
-
-            var offset = 0;
-            var barracudaArray =
-                res.data != null ? res.tensorOnDevice.SharedAccess(out offset) : null;
-
-            Buffer.BlockCopy(
-                array, 0, barracudaArray, offset, res.length * Marshal.SizeOf<float>());
-
-            return res;
         }
 
         internal static long[] TensorShapeFromBarracuda(TensorShape src)
