@@ -43,7 +43,7 @@ namespace MLAgents.InferenceBrain
             modelParamLoader.GenerateChecks();
             return modelParamLoader;
         }
-        
+
         private BarracudaModelParamLoader(IWorker engine, Model model, BrainParameters brainParameters)
         {
             _engine = engine;
@@ -52,7 +52,7 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
-        /// Generates the Tensor inputs that are expected to be present in the Model. 
+        /// Generates the Tensor inputs that are expected to be present in the Model.
         /// </summary>
         /// <returns>TensorProxy IEnumerable with the expected Tensor inputs</returns>
         public IReadOnlyList<TensorProxy> GetInputTensors()
@@ -61,37 +61,37 @@ namespace MLAgents.InferenceBrain
 
             if (_model == null)
                 return tensors;
-            
+
             foreach (var input in _model.inputs)
             {
                 tensors.Add(new TensorProxy
                 {
-                    Name = input.name,
-                    ValueType = TensorProxy.TensorType.FloatingPoint,
-                    Data = null,
-                    Shape = input.shape.Select(i => (long)i).ToArray()
+                    name = input.name,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = input.shape.Select(i => (long)i).ToArray()
                 });
             }
-            
+
             foreach (var mem in _model.memories)
             {
                 //Debug.Log($"{mem.input}: {mem.shape} -> {BarracudaUtils.TensorShapeFromBarracuda(mem.shape).Length}");
                 tensors.Add(new TensorProxy
                 {
-                    Name = mem.input,
-                    ValueType = TensorProxy.TensorType.FloatingPoint,
-                    Data = null,
-                    Shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
+                    name = mem.input,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
                 });
             }
-            
-            tensors.Sort((el1, el2) => el1.Name.CompareTo(el2.Name));
-            
+
+            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+
             return tensors;
         }
-        
+
         /// <summary>
-        /// Generates the Tensor outputs that are expected to be present in the Model. 
+        /// Generates the Tensor outputs that are expected to be present in the Model.
         /// </summary>
         /// <returns>TensorProxy IEnumerable with the expected Tensor outputs</returns>
         public string[] GetOutputNames()
@@ -100,9 +100,9 @@ namespace MLAgents.InferenceBrain
 
             if (_model == null)
                 return names.ToArray();
-            
-            names.Add(TensorNames.ActionOutput);                
-             
+
+            names.Add(TensorNames.ActionOutput);
+
             var memory = GetIntScalar(TensorNames.MemorySize);
             if (memory > 0)
             {
@@ -113,14 +113,14 @@ namespace MLAgents.InferenceBrain
             }
 
             names.Sort();
-            
+
             return names.ToArray();
         }
 
         /// <summary>
         /// Queries the InferenceEngine for the value of a variable in the graph given its name.
         /// Only works with int32 Tensors with zero dimensions containing a unique element.
-        /// If the node was not found or could not be retrieved, the value -1 will be returned. 
+        /// If the node was not found or could not be retrieved, the value -1 will be returned.
         /// </summary>
         /// <param name="name">The name of the Tensor variable</param>
         /// <returns>The value of the scalar variable in the model. (-1 if not found)</returns>
@@ -131,7 +131,7 @@ namespace MLAgents.InferenceBrain
 
         /// <summary>
         /// Retrieves an IEnumerable of string corresponding to the failed compatibility checks
-        /// between the InferenceEngine and the BrainParameters. 
+        /// between the InferenceEngine and the BrainParameters.
         /// </summary>
         public IEnumerable<string> GetChecks()
         {
@@ -200,7 +200,7 @@ namespace MLAgents.InferenceBrain
                 case 0:
                     isContinuous = ModelActionType.Discrete;
                     break;
-                case 1: 
+                case 1:
                     isContinuous = ModelActionType.Continuous;
                     break;
                 default:
@@ -236,8 +236,8 @@ namespace MLAgents.InferenceBrain
         /// checks.</returns>
         private void CheckInputTensorPresence(int memory, ModelActionType isContinuous)
         {
-            var tensorsNames = GetInputTensors().Select(x => x.Name).ToList();
-            
+            var tensorsNames = GetInputTensors().Select(x => x.name).ToList();
+
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((_brainParameters.vectorObservationSize != 0) &&
                 (!tensorsNames.Contains(TensorNames.VectorObservationPlacholder)))
@@ -280,7 +280,7 @@ namespace MLAgents.InferenceBrain
                 }
             }
         }
-        
+
         /// <summary>
         /// Generates failed checks that correspond to outputs expected by the model that are not
         /// present in the BrainParameters.
@@ -295,13 +295,13 @@ namespace MLAgents.InferenceBrain
             {
                 _failedModelChecks.Add("The model does not contain an Action Output Node.");
             }
-            
+
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
             {
                 var memOutputs = _model.memories.Select(x => x.output).ToList();
-                
-                if (!memOutputs.Any(x => x.EndsWith("_h")) || 
+
+                if (!memOutputs.Any(x => x.EndsWith("_h")) ||
                     !memOutputs.Any(x => x.EndsWith("_c")))
                 {
                     _failedModelChecks.Add(
@@ -309,7 +309,7 @@ namespace MLAgents.InferenceBrain
                 }
             }
         }
-        
+
         /// <summary>
         /// Generates failed checks that correspond to inputs shapes incompatibilities between
         /// the model and the BrainParameters.
@@ -329,7 +329,7 @@ namespace MLAgents.InferenceBrain
 
             foreach (var mem in _model.memories)
                 tensorTester[mem.input] = ((tensor) => null);
-            
+
             for (var obsIndex = 0; obsIndex < _brainParameters.cameraResolutions.Length; obsIndex++)
             {
                 var index = obsIndex;
@@ -339,14 +339,14 @@ namespace MLAgents.InferenceBrain
             // If the model expects an input but it is not in this list
             foreach (var tensor in GetInputTensors())
             {
-                if (!tensorTester.ContainsKey(tensor.Name))
+                if (!tensorTester.ContainsKey(tensor.name))
                 {
                     _failedModelChecks.Add(
-                        "Model requires an unknown input named : " + tensor.Name);
+                        "Model requires an unknown input named : " + tensor.name);
                 }
                 else
                 {
-                    var tester = tensorTester[tensor.Name];
+                    var tester = tensorTester[tensor.name];
                     var error = tester.Invoke(tensor);
                     if (error != null)
                     {
@@ -355,7 +355,7 @@ namespace MLAgents.InferenceBrain
                 }
             }
         }
-        
+
         /// <summary>
         /// Checks that the shape of the Vector Observation input placeholder is the same in the
         /// model and in the Brain Parameters.
@@ -367,7 +367,7 @@ namespace MLAgents.InferenceBrain
         {
             var vecObsSizeBp = _brainParameters.vectorObservationSize;
             var numStackedVector = _brainParameters.numStackedVectorObservations;
-            var totalVecObsSizeT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var totalVecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (vecObsSizeBp * numStackedVector != totalVecObsSizeT)
             {
                 return string.Format(
@@ -377,7 +377,7 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-        
+
         /// <summary>
         /// Checks that the shape of the Previous Vector Action input placeholder is the same in the
         /// model and in the Brain Parameters.
@@ -388,7 +388,7 @@ namespace MLAgents.InferenceBrain
         private string CheckPreviousActionShape(TensorProxy tensorProxy)
         {
             var numberActionsBp = _brainParameters.vectorActionSize.Length;
-            var numberActionsT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if  (numberActionsBp != numberActionsT)
             {
                 return string.Format(
@@ -398,7 +398,7 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-        
+
         /// <summary>
         /// Checks that the shape of the visual observation input placeholder is the same in the
         /// model and in the Brain Parameters.
@@ -412,10 +412,10 @@ namespace MLAgents.InferenceBrain
             var resolutionBp = _brainParameters.cameraResolutions[visObsIndex];
             var widthBp = resolutionBp.width;
             var heightBp = resolutionBp.height;
-            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;  
-            var heightT = tensorProxy.Shape[1];
-            var widthT = tensorProxy.Shape[2];
-            var pixelT = tensorProxy.Shape[3];
+            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
+            var heightT = tensorProxy.shape[1];
+            var widthT = tensorProxy.shape[2];
+            var pixelT = tensorProxy.shape[3];
             if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return string.Format(
@@ -425,7 +425,7 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-        
+
         /// <summary>
         /// Generates failed checks that correspond to output shapes incompatibilities between
         /// the model and the BrainParameters.
@@ -505,7 +505,7 @@ namespace MLAgents.InferenceBrain
             }
             return null;
         }
-        
+
         /// <summary>
         /// Checks that the shape of the continuous action output is the same in the
         /// model and in the Brain Parameters.

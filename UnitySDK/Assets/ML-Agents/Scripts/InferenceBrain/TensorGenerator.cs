@@ -99,12 +99,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!_dict.ContainsKey(tensor.Name))
+                if (!_dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
-                        "Unknow tensorProxy expected as input : " + tensor.Name);
+                        "Unknow tensorProxy expected as input : " + tensor.name);
                 }
-                _dict[tensor.Name].Generate(tensor, currentBatchSize, agentInfos);
+                _dict[tensor.name].Generate(tensor, currentBatchSize, agentInfos);
             }
         }
     }

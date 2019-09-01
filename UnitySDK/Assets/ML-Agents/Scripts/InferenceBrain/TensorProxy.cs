@@ -28,44 +28,43 @@ namespace MLAgents.InferenceBrain
                 {TensorType.Integer, typeof(int)}
             };
 
-        public string Name;
-        public TensorType ValueType;
+        public string name;
+        public TensorType valueType;
 
         // Since Type is not serializable, we use the DisplayType for the Inspector
-        public Type DataType => _typeMap[ValueType];
-        public long[] Shape;
-
-        public Tensor Data;
+        public Type DataType => _typeMap[valueType];
+        public long[] shape;
+        public Tensor data;
     }
 
     public static class TensorUtils
     {
         public static void ResizeTensor(TensorProxy tensor, int batch, ITensorAllocator allocator)
         {
-            if (tensor.Shape[0] == batch &&
-                tensor.Data != null && tensor.Data.batch == batch)
+            if (tensor.shape[0] == batch &&
+                tensor.data != null && tensor.data.batch == batch)
             {
                 return;
             }
 
-            tensor.Data?.Dispose();
-            tensor.Shape[0] = batch;
+            tensor.data?.Dispose();
+            tensor.shape[0] = batch;
 
-            if (tensor.Shape.Length == 4)
+            if (tensor.shape.Length == 4)
             {
-                tensor.Data = allocator.Alloc(
+                tensor.data = allocator.Alloc(
                     new TensorShape(
                         batch,
-                        (int) tensor.Shape[1],
-                        (int) tensor.Shape[2],
-                        (int) tensor.Shape[3]));
+                        (int) tensor.shape[1],
+                        (int) tensor.shape[2],
+                        (int) tensor.shape[3]));
             }
             else
             {
-                tensor.Data = allocator.Alloc(
+                tensor.data = allocator.Alloc(
                     new TensorShape(
                         batch,
-                        (int) tensor.Shape[tensor.Shape.Length - 1]));
+                        (int) tensor.shape[tensor.shape.Length - 1]));
             }
         }
 
@@ -84,10 +83,10 @@ namespace MLAgents.InferenceBrain
             var shape = TensorShapeFromBarracuda(src.shape);
             return new TensorProxy
             {
-                Name = nameOverride ?? src.name,
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Shape = shape,
-                Data = src
+                name = nameOverride ?? src.name,
+                valueType = TensorProxy.TensorType.FloatingPoint,
+                shape = shape,
+                data = src
             };
         }
 
@@ -110,14 +109,14 @@ namespace MLAgents.InferenceBrain
                 throw new NotImplementedException("Only float data types are currently supported");
             }
 
-            if (tensorProxy.Data == null)
+            if (tensorProxy.data == null)
             {
                 throw new ArgumentNullException();
             }
 
-            for (var i = 0; i < tensorProxy.Data.length; i++)
+            for (var i = 0; i < tensorProxy.data.length; i++)
             {
-                tensorProxy.Data[i] = (float) randomNormal.NextDouble();
+                tensorProxy.data[i] = (float) randomNormal.NextDouble();
             }
         }
     }

@@ -14,7 +14,7 @@ namespace MLAgents.Tests
             var rn = new RandomNormal(1982);
             var t = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.Integer
+                valueType = TensorProxy.TensorType.Integer
             };
 
             Assert.Throws<NotImplementedException>(
@@ -27,7 +27,7 @@ namespace MLAgents.Tests
             var rn = new RandomNormal(1982);
             var t = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             Assert.Throws<ArgumentNullException>(
@@ -40,8 +40,8 @@ namespace MLAgents.Tests
             var rn = new RandomNormal(1982);
             var t = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(1, 3, 4, 2)
+                valueType = TensorProxy.TensorType.FloatingPoint,
+                data = new Tensor(1, 3, 4, 2)
             };
 
             TensorUtils.FillTensorWithRandomNormal(t, rn);
@@ -74,9 +74,9 @@ namespace MLAgents.Tests
                 -1.177194f,
             };
 
-            for (var i = 0; i < t.Data.length; i++)
+            for (var i = 0; i < t.data.length; i++)
             {
-                Assert.AreEqual(t.Data[i], reference[i], 0.0001);
+                Assert.AreEqual(t.data[i], reference[i], 0.0001);
             }
         }
     }

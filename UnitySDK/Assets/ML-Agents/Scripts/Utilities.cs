@@ -28,7 +28,7 @@ namespace MLAgents
             var numTextures = textures.Count;
             var width = textures[0].width;
             var height = textures[0].height;
-            var data = tensorProxy.Data;
+            var data = tensorProxy.data;
 
             for (var t = 0; t < numTextures; t++)
             {

@@ -41,8 +41,8 @@ namespace MLAgents.InferenceBrain
 
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            tensorProxy.Data = _allocator.Alloc(new TensorShape(1,1));
-            tensorProxy.Data[0] = batchSize;
+            tensorProxy.data = _allocator.Alloc(new TensorShape(1,1));
+            tensorProxy.data[0] = batchSize;
         }
     }
 
@@ -63,10 +63,10 @@ namespace MLAgents.InferenceBrain
 
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            tensorProxy.Shape = new long[0];
-            tensorProxy.Data = _allocator.Alloc(new TensorShape(1,1));
+            tensorProxy.shape = new long[0];
+            tensorProxy.data = _allocator.Alloc(new TensorShape(1,1));
 
-            tensorProxy.Data[0] = 1;
+            tensorProxy.data[0] = 1;
         }
     }
 
@@ -88,7 +88,7 @@ namespace MLAgents.InferenceBrain
             TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
-            var vecObsSizeT = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
 
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
@@ -96,7 +96,7 @@ namespace MLAgents.InferenceBrain
                 var vectorObs = agentInfo[agent].stackedVectorObservation;
                 for (var j = 0; j < vecObsSizeT; j++)
                 {
-                    tensorProxy.Data[agentIndex, j] = vectorObs[j];
+                    tensorProxy.data[agentIndex, j] = vectorObs[j];
                 }
                 agentIndex++;
             }
@@ -123,7 +123,7 @@ namespace MLAgents.InferenceBrain
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
 
-            var memorySize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var memorySize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -139,7 +139,7 @@ namespace MLAgents.InferenceBrain
                     {
                         break;
                     }
-                    tensorProxy.Data[agentIndex, j] = memory[j];
+                    tensorProxy.data[agentIndex, j] = memory[j];
                 }
                 agentIndex++;
             }
@@ -163,7 +163,7 @@ namespace MLAgents.InferenceBrain
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
 
-            var memorySize = (int)tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -182,7 +182,7 @@ namespace MLAgents.InferenceBrain
                     {
                         break;
                     }
-                    tensorProxy.Data[agentIndex, j] = memory[j + offset];
+                    tensorProxy.data[agentIndex, j] = memory[j + offset];
                 }
                 agentIndex++;
             }
@@ -209,14 +209,14 @@ namespace MLAgents.InferenceBrain
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
 
-            var actionSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
                 var pastAction = agentInfo[agent].storedVectorActions;
                 for (var j = 0; j < actionSize; j++)
                 {
-                    tensorProxy.Data[agentIndex, j] = pastAction[j];
+                    tensorProxy.data[agentIndex, j] = pastAction[j];
                 }
 
                 agentIndex++;
@@ -244,7 +244,7 @@ namespace MLAgents.InferenceBrain
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, _allocator);
 
-            var maskSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
+            var maskSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -252,7 +252,7 @@ namespace MLAgents.InferenceBrain
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
-                    tensorProxy.Data[agentIndex, j] = isUnmasked;
+                    tensorProxy.data[agentIndex, j] = isUnmasked;
                 }
                 agentIndex++;
             }

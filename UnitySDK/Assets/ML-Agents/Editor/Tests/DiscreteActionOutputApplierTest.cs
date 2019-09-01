@@ -16,22 +16,22 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                Data = new Tensor(1, 3, new[] {0.1f, 0.2f, 0.7f}),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                data = new Tensor(1, 3, new[] {0.1f, 0.2f, 0.7f}),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             var dst = new TensorProxy
             {
-                Data = new Tensor(1, 3),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                data = new Tensor(1, 3),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
             float[] reference = {2, 2, 1};
-            for (var i = 0; i < dst.Data.length; i++)
+            for (var i = 0; i < dst.data.length; i++)
             {
-                Assert.AreEqual(reference[i], dst.Data[i]);
+                Assert.AreEqual(reference[i], dst.data[i]);
                 ++i;
             }
         }
@@ -43,22 +43,22 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                Data = new Tensor(1, 3, new[] {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                data = new Tensor(1, 3, new[] {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             var dst = new TensorProxy
             {
-                Data = new Tensor(1, 3),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                data = new Tensor(1, 3),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
             float[] reference = {2, 2, 2};
-            for (var i = 0; i < dst.Data.length; i++)
+            for (var i = 0; i < dst.data.length; i++)
             {
-                Assert.AreEqual(reference[i], dst.Data[i]);
+                Assert.AreEqual(reference[i], dst.data[i]);
                 ++i;
             }
         }
@@ -70,27 +70,27 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                Data = new Tensor(2, 3, new []
+                data = new Tensor(2, 3, new []
                 {
                     Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50,
                     Mathf.Log(0.3f) - 25, Mathf.Log(0.4f) - 25, Mathf.Log(0.3f) - 25
 
                 }),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             var dst = new TensorProxy
             {
-                Data = new Tensor(2, 3),
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                data = new Tensor(2, 3),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
             float[] reference = {2, 2, 2, 0, 1, 0};
-            for (var i = 0; i < dst.Data.length; i++)
+            for (var i = 0; i < dst.data.length; i++)
             {
-                Assert.AreEqual(reference[i], dst.Data[i]);
+                Assert.AreEqual(reference[i], dst.data[i]);
                 ++i;
             }
         }
@@ -102,7 +102,7 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.Integer
+                valueType = TensorProxy.TensorType.Integer
             };
 
             Assert.Throws<NotImplementedException>(() => DiscreteActionOutputApplier.Eval(src, null, m));
@@ -115,12 +115,12 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             var dst = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.Integer
+                valueType = TensorProxy.TensorType.Integer
             };
 
             Assert.Throws<ArgumentException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
@@ -133,12 +133,12 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             var dst = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             Assert.Throws<ArgumentNullException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
@@ -151,13 +151,13 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(0,1)
+                valueType = TensorProxy.TensorType.FloatingPoint,
+                data = new Tensor(0,1)
             };
 
             var dst = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
 
             Assert.Throws<ArgumentNullException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));
@@ -170,14 +170,14 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(1, 1)
+                valueType = TensorProxy.TensorType.FloatingPoint,
+                data = new Tensor(1, 1)
             };
 
             var dst = new TensorProxy
             {
-                ValueType = TensorProxy.TensorType.FloatingPoint,
-                Data = new Tensor(2, 1)
+                valueType = TensorProxy.TensorType.FloatingPoint,
+                data = new Tensor(2, 1)
             };
 
             Assert.Throws<ArgumentException>(() => DiscreteActionOutputApplier.Eval(src, dst, m));

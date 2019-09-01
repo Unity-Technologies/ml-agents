@@ -226,7 +226,7 @@ namespace MLAgents
             var inputs = new Dictionary<string, Tensor>();
             foreach (var inp in _inferenceInputs)
             {        
-                inputs[inp.Name] = inp.Data;
+                inputs[inp.name] = inp.data;
             }
 
             return inputs;

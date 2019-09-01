@@ -47,8 +47,8 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                Shape = new long[] {2, 3},
-                Data = new Tensor (2, 3, new float[] {1, 2, 3, 
+                shape = new long[] {2, 3},
+                data = new Tensor (2, 3, new float[] {1, 2, 3, 
                                                                 4, 5, 6})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -73,8 +73,8 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                Shape = new long[] {2, 5},
-                Data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
+                shape = new long[] {2, 5},
+                data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
                                                                 4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -98,8 +98,8 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                Shape = new long[] {2, 5},
-                Data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
+                shape = new long[] {2, 5},
+                data = new Tensor (2, 5, new[] {0.5f, 22.5f, 0.1f, 5f, 1f,
                                                           4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
@@ -122,8 +122,8 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                Shape = new long[] {2, 1},
-                Data = new Tensor (2, 1, new[]{0.5f, 8f})
+                shape = new long[] {2, 1},
+                data = new Tensor (2, 1, new[]{0.5f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
             
