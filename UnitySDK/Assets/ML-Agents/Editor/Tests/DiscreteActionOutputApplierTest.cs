@@ -9,7 +9,7 @@ namespace MLAgents.Tests
 {
     public class DiscreteActionOutputApplierTest
     {
-                [Test]
+        [Test]
         public void TestEvalP()
         {
             var m = new Multinomial(2018);
