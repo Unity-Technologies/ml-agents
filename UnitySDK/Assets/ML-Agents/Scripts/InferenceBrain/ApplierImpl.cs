@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
@@ -14,7 +15,7 @@ namespace MLAgents.InferenceBrain
     {
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
-            var actionSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];    
+            var actionSize = tensorProxy.Shape[tensorProxy.Shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
@@ -35,17 +36,17 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class DiscreteActionOutputApplier : TensorApplier.Applier
     {
-        private int[] _actionSize;
-        private Multinomial _multinomial;
-        private ITensorAllocator _allocator;
-        
+        private readonly int[] _actionSize;
+        private readonly Multinomial _multinomial;
+        private readonly ITensorAllocator _allocator;
+
         public DiscreteActionOutputApplier(int[] actionSize, int seed, ITensorAllocator allocator)
         {
             _actionSize = actionSize;
             _multinomial = new Multinomial(seed);
             _allocator = allocator;
         }
-        
+
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
@@ -61,27 +62,27 @@ namespace MLAgents.InferenceBrain
                     Shape = new long[]{batchSize, nBranchAction},
                     Data = _allocator.Alloc(new TensorShape(batchSize, nBranchAction))
                 };
-                
+
                 for (var batchIndex = 0; batchIndex < batchSize; batchIndex++)
                 {
-                    for (var branchActionIndex = 0; 
-                        branchActionIndex < nBranchAction; 
+                    for (var branchActionIndex = 0;
+                        branchActionIndex < nBranchAction;
                         branchActionIndex++)
                     {
-                        actionProbs.Data[batchIndex, branchActionIndex] = 
+                        actionProbs.Data[batchIndex, branchActionIndex] =
                             tensorProxy.Data[batchIndex, startActionIndices[actionIndex] + branchActionIndex];
                     }
                 }
-                
+
                 var outputTensor = new TensorProxy()
                 {
                     ValueType = TensorProxy.TensorType.FloatingPoint,
                     Shape = new long[]{batchSize, 1},
                     Data = _allocator.Alloc(new TensorShape(batchSize, 1))
                 };
-                
-                _multinomial.Eval(actionProbs, outputTensor);
-                
+
+                Eval(actionProbs, outputTensor, _multinomial);
+
                 for (var ii = 0; ii < batchSize; ii++)
                 {
                     actions[ii, actionIndex] = outputTensor.Data[ii, 0];
@@ -99,39 +100,103 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
+
+        /// <summary>
+        /// Draw samples from a multinomial distribution based on log-probabilities specified
+        /// in tensor src. The samples will be saved in the dst tensor.
+        /// </summary>
+        /// <param name="src">2-D tensor with shape batch_size x num_classes</param>
+        /// <param name="dst">Allocated tensor with size batch_size x num_samples</param>
+        /// <param name="multinomial">Multinomial object used to sample values</param>
+        /// <exception cref="NotImplementedException">
+        /// Multinomial doesn't support integer tensors
+        /// </exception>
+        /// <exception cref="ArgumentException">Issue with tensor shape or type</exception>
+        /// <exception cref="ArgumentNullException">
+        /// At least one of the tensors is not allocated
+        /// </exception>
+        public static void Eval(TensorProxy src, TensorProxy dst, Multinomial multinomial)
+        {
+            if (src.DataType != typeof(float))
+            {
+                throw new NotImplementedException("Only float tensors are currently supported");
+            }
+
+            if (src.ValueType != dst.ValueType)
+            {
+                throw new ArgumentException(
+                    "Source and destination tensors have different types!");
+            }
+
+            if (src.Data == null || dst.Data == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (src.Data.batch != dst.Data.batch)
+            {
+                throw new ArgumentException("Batch size for input and output data is different!");
+            }
+
+            var cdf = new float[src.Data.channels];
+
+            for (var batch = 0; batch < src.Data.batch; ++batch)
+            {
+                // Find the class maximum
+                var maxProb = float.NegativeInfinity;
+                for (var cls = 0; cls < src.Data.channels; ++cls)
+                {
+                    maxProb = Mathf.Max(src.Data[batch, cls], maxProb);
+                }
+
+                // Sum the log probabilities and compute CDF
+                var sumProb = 0.0f;
+                for (var cls = 0; cls < src.Data.channels; ++cls)
+                {
+                    sumProb += Mathf.Exp(src.Data[batch, cls] - maxProb);
+                    cdf[cls] = sumProb;
+                }
+
+                // Generate the samples
+                for (var sample = 0; sample < dst.Data.channels; ++sample)
+                {
+                    dst.Data[batch, sample] = multinomial.Sample(cdf);
+                }
+            }
+        }
     }
-    
+
     public class BarracudaMemoryOutputApplier : TensorApplier.Applier
     {
-        private int memoriesCount;
-        private int memoryIndex;
+        private readonly int _memoriesCount;
+        private readonly int _memoryIndex;
 
         public BarracudaMemoryOutputApplier(int memoriesCount, int memoryIndex)
         {
-            this.memoriesCount = memoriesCount;
-            this.memoryIndex = memoryIndex;
+            _memoriesCount = memoriesCount;
+            _memoryIndex = memoryIndex;
         }
-        
+
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.Shape[tensorProxy.Shape.Length - 1];
-            
+
             foreach (var agent in agentInfo.Keys)
             {
                 var memory = agent.GetMemoriesAction();
 
-                if (memory == null || memory.Count < memorySize * memoriesCount)
+                if (memory == null || memory.Count < memorySize * _memoriesCount)
                 {
                     memory = new List<float>();
-                    memory.AddRange(Enumerable.Repeat(0f, memorySize * memoriesCount));
+                    memory.AddRange(Enumerable.Repeat(0f, memorySize * _memoriesCount));
                 }
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[memorySize * memoryIndex + j] = tensorProxy.Data[agentIndex, j];
+                    memory[memorySize * _memoryIndex + j] = tensorProxy.Data[agentIndex, j];
                 }
-                
+
                 agent.UpdateMemoriesAction(memory);
 
                 agentIndex++;
