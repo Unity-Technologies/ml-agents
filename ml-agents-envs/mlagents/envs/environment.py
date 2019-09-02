@@ -63,7 +63,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         :bool docker_training: Informs this class whether the process is being run within a container.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
-        :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         :list args: Addition Unity command line arguments
         """
 
