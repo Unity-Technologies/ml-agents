@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4482636, g: 0.49828887, b: 0.5755903, a: 1}
+  m_IndirectSpecularColor: {r: 0.44824898, g: 0.49827564, b: 0.5755826, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1002,6 +1002,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 5527511df7b944e8e9177dd69db5a9c1, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 1
@@ -1547,6 +1548,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 573920e3a672d40038169c7ffdbdca05, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 1
@@ -1638,7 +1640,9 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: banana_scale
+      value: 150
   gravityMultiplier: 2
 --- !u!4 &1453982295
 Transform:

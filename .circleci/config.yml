@@ -24,7 +24,7 @@ jobs:
             pip install --upgrade setuptools
             cd ml-agents-envs && pip install -e .
             cd ../ml-agents && pip install -e .
-            pip install pre-commit pytest-cov==2.6.1 codacy-coverage==1.3.11
+            pip install pre-commit pytest-cov==2.6.1
             cd ../gym-unity && pip install -e .
 
       - save_cache:
@@ -37,11 +37,10 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir test-reports
-            pytest --cov=mlagents --cov-report xml --junitxml=test-reports/junit.xml -p no:warnings
-            python-codacy-coverage -r coverage.xml
+            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
-          name: Check Code Style for ml-agents and gym_unity using black
+          name: Check Code Style using pre-commit
           command: |
             . venv/bin/activate
             pre-commit run --show-diff-on-failure --all-files
@@ -59,3 +58,7 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+      - store_artifacts:
+          path: htmlcov
+          destination: htmlcov

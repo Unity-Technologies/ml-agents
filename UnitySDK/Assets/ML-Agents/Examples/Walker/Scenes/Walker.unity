@@ -715,7 +715,15 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: gravity
+      value: 9.81
+    - key: hip_mass
+      value: 15
+    - key: chest_mass
+      value: 8
+    - key: spine_mass
+      value: 10
 --- !u!4 &1409355322
 Transform:
   m_ObjectHideFlags: 0

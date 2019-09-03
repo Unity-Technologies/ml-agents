@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -15,10 +15,17 @@ public class BouncerAgent : Agent {
     int numberJumps = 20;
     int jumpLeft = 20;
 
+    ResetParameters resetParams;
+
     public override void InitializeAgent()
     {
         rb = gameObject.GetComponent<Rigidbody>();
         lookDir = Vector3.zero;
+
+        var academy = FindObjectOfType<Academy>() as Academy;
+        resetParams = academy.resetParameters;
+
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -29,7 +36,7 @@ public class BouncerAgent : Agent {
 
     public override void AgentAction(float[] vectorAction, string textAction)
 	{
-	    for (int i = 0; i < vectorAction.Length; i++)
+        for (int i = 0; i < vectorAction.Length; i++)
 	    {
 	        vectorAction[i] = Mathf.Clamp(vectorAction[i], -1f, 1f);
 	    }
@@ -60,6 +67,8 @@ public class BouncerAgent : Agent {
             bb.Respawn();
         }
         jumpLeft = numberJumps;
+
+        SetResetParameters();
     }
 
     public override void AgentOnDone()
@@ -108,5 +117,16 @@ public class BouncerAgent : Agent {
                 Quaternion.LookRotation(lookDir),
                 Time.deltaTime * 10f);
         }
+    }
+
+    public void SetBananaScale()
+    {
+        var banana_scale = resetParams["banana_scale"];
+        banana.transform.localScale = new Vector3(banana_scale, banana_scale, banana_scale);
+    }
+
+    public void SetResetParameters()
+    {
+        SetBananaScale();
     }
 }

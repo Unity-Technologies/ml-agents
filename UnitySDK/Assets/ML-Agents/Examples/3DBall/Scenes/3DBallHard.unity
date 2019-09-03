@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45096254, g: 0.5008292, b: 0.5744089, a: 1}
+  m_IndirectSpecularColor: {r: 0.45096314, g: 0.50082976, b: 0.57440954, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -711,7 +711,13 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: -1
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: mass
+      value: 1
+    - key: gravity
+      value: 9.81
+    - key: scale
+      value: 1
 --- !u!1001 &1591880668
 Prefab:
   m_ObjectHideFlags: 0

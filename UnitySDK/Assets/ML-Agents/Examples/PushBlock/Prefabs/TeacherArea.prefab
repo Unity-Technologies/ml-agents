@@ -791,7 +791,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1492788814869846}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: f440cd475293044139739aff331224fb, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -919,6 +919,7 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: dd07b1953eac4411b81fba032f394726, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

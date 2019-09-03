@@ -44,47 +44,6 @@ class BCTrainer(Trainer):
         self.demonstration_buffer = Buffer()
         self.evaluation_buffer = Buffer()
 
-    @property
-    def parameters(self):
-        """
-        Returns the trainer parameters of the trainer.
-        """
-        return self.trainer_parameters
-
-    @property
-    def get_max_steps(self):
-        """
-        Returns the maximum number of steps. Is used to know when the trainer should be stopped.
-        :return: The maximum number of steps of the trainer
-        """
-        return float(self.trainer_parameters["max_steps"])
-
-    @property
-    def get_step(self):
-        """
-        Returns the number of steps the trainer has performed
-        :return: the step count of the trainer
-        """
-        return self.policy.get_current_step()
-
-    @property
-    def get_last_reward(self):
-        """
-        Returns the last reward the trainer has had
-        :return: the new last reward
-        """
-        if len(self.stats["Environment/Cumulative Reward"]) > 0:
-            return np.mean(self.stats["Environment/Cumulative Reward"])
-        else:
-            return 0
-
-    def increment_step_and_update_last_reward(self):
-        """
-        Increment the step count of the trainer and Updates the last reward
-        """
-        self.policy.increment_step()
-        return
-
     def add_experiences(
         self,
         curr_info: AllBrainInfo,
@@ -137,6 +96,7 @@ class BCTrainer(Trainer):
                 self.stats["Environment/Episode Length"].append(
                     self.episode_steps.get(agent_id, 0)
                 )
+                self.reward_buffer.appendleft(self.cumulative_rewards.get(agent_id, 0))
                 self.cumulative_rewards[agent_id] = 0
                 self.episode_steps[agent_id] = 0
 
@@ -164,7 +124,7 @@ class BCTrainer(Trainer):
         """
         Updates the policy.
         """
-        self.demonstration_buffer.update_buffer.shuffle()
+        self.demonstration_buffer.update_buffer.shuffle(self.policy.sequence_length)
         batch_losses = []
         num_batches = min(
             len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,

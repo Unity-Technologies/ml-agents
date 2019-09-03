@@ -91,65 +91,66 @@ While this example used the default training hyperparameters, you can edit the
 [training_config.yaml file](#training-config-file) with a text editor to set
 different values.
 
-### Command line training options
+### Command Line Training Options
 
 In addition to passing the path of the Unity executable containing your training
 environment, you can set the following command line options when invoking
 `mlagents-learn`:
 
-* `--env=<env>` - Specify an executable environment to train.
-* `--curriculum=<file>` – Specify a curriculum JSON file for defining the
+* `--env=<env>`: Specify an executable environment to train.
+* `--curriculum=<file>`: Specify a curriculum JSON file for defining the
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
-* `--keep-checkpoints=<n>` – Specify the maximum number of model checkpoints to
+* `--sampler=<file>`: Specify a sampler YAML file for defining the
+  sampler for generalization training. See [Generalization
+  Training](Training-Generalized-Reinforcement-Learning-Agents.md) for more information.
+* `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
   the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
-* `--lesson=<n>` – Specify which lesson to start with when performing curriculum
+* `--lesson=<n>`: Specify which lesson to start with when performing curriculum
   training. Defaults to 0.
-* `--load` – If set, the training code loads an already trained model to
+* `--load`: If set, the training code loads an already trained model to
   initialize the neural network before training. The learning code looks for the
   model in `models/<run-id>/` (which is also where it saves models at the end of
   training). When not set (the default), the neural network weights are randomly
   initialized and an existing model is not loaded.
-* `--num-runs=<n>` - Sets the number of concurrent training sessions to perform.
+* `--num-runs=<n>`: Sets the number of concurrent training sessions to perform.
   Default is set to 1. Set to higher values when benchmarking performance and
   multiple training sessions is desired. Training sessions are independent, and
   do not improve learning performance.
-* `--run-id=<path>` – Specifies an identifier for each training run. This
+* `--run-id=<path>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
   summary statistics are saved as well as the saved model itself. The default id
   is "ppo". If you use TensorBoard to view the training statistics, always set a
   unique run-id for each training run. (The statistics for all runs with the
   same id are combined as if they were produced by a the same session.)
-* `--save-freq=<n>` Specifies how often (in  steps) to save the model during
+* `--save-freq=<n>`: Specifies how often (in  steps) to save the model during
   training. Defaults to 50000.
-* `--seed=<n>` – Specifies a number to use as a seed for the random number
+* `--seed=<n>`: Specifies a number to use as a seed for the random number
   generator used by the training code.
-* `--slow` – Specify this option to run the Unity environment at normal, game
+* `--slow`: Specify this option to run the Unity environment at normal, game
   speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
   specified in the Academy's **Inference Configuration**. By default, training
   runs using the speeds specified in your Academy's **Training Configuration**.
   See
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
-* `--train` – Specifies whether to train model or only run in inference mode.
+* `--train`: Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--num-envs=<n>` - Specifies the number of concurrent Unity environment instances to collect
+* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to collect
   experiences from when training. Defaults to 1.
-* `--base-port` - Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
-* `--docker-target-name=<dt>` – The Docker Volume on which to store curriculum,
+* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance will get assigned a port sequentially, starting from the `base-port`.  Each instance will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance from 0 to `num_envs - 1`. Default is 5005.
+* `--docker-target-name=<dt>`: The Docker Volume on which to store curriculum,
   executable and model files. See [Using Docker](Using-Docker.md).
-* `--no-graphics` - Specify this option to run the Unity executable in
+* `--no-graphics`: Specify this option to run the Unity executable in
   `-batchmode` and doesn't initialize the graphics driver. Use this only if your
   training doesn't involve visual observations (reading from Pixels). See
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
-* `--debug` - Specify this option to run ML-Agents in debug mode and log Trainer
-  Metrics to a CSV stored in the `summaries` directory. The metrics  stored are:
-  brain name, time to update policy, time since start of training, time for last experience collection, number of experiences used for training, mean return. This
-  option is not available currently for Imitation Learning.
+* `--debug`: Specify this option to enable debug-level logging for some parts of the code.
+* `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
 
-### Training config file
+### Training Config File
 
 The training config files `config/trainer_config.yaml`,
 `config/online_bc_config.yaml` and `config/offline_bc_config.yaml` specifies the
@@ -170,10 +171,7 @@ environments are included in the provided config file.
 | brain\_to\_imitate   | For online imitation learning, the name of the GameObject containing the Brain component to imitate.                                                                                    | (online)BC               |
 | demo_path            | For offline imitation learning, the file path of the recorded demonstration file                                                                                                        | (offline)BC              |
 | buffer_size          | The number of experiences to collect before updating the policy model.                                                                                                                  | PPO                      |
-| curiosity\_enc\_size | The size of the encoding to use in the forward and inverse models in the Curiosity module.                                                                                               | PPO                      |
-| curiosity_strength   | Magnitude of intrinsic reward generated by Intrinsic Curiosity Module.                                                                                                                  | PPO                      |
 | epsilon              | Influences how rapidly the policy can evolve during training.                                                                                                                           | PPO                      |
-| gamma                | The reward discount rate for the Generalized Advantage Estimator (GAE).                                                                                                                 | PPO                      |
 | hidden_units         | The number of units in the hidden layers of the neural network.                                                                                                                         | PPO, BC                  |
 | lambd                | The regularization parameter.                                                                                                                                                           | PPO                      |
 | learning_rate        | The initial learning rate for gradient descent.                                                                                                                                         | PPO, BC                  |
@@ -182,12 +180,14 @@ environments are included in the provided config file.
 | normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO                      |
 | num_epoch            | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
 | num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, BC                  |
+| pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                                                                                            | PPO                      |
+| reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                                                                            | PPO                      |
 | sequence_length      | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, BC                  |
 | summary_freq         | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, BC                  |
 | time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, (online)BC          |
-| trainer              | The type of training to perform: "ppo" or "imitation".                                                                                                                                  | PPO, BC                  |
-| use_curiosity        | Train using an additional intrinsic reward signal generated from Intrinsic Curiosity Module.                                                                                            | PPO                      |
+| trainer              | The type of training to perform: "ppo", "offline_bc" or "online_bc".                                                                                                                                  | PPO, BC                  |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, BC                  |
+
 
 \*PPO = Proximal Policy Optimization, BC = Behavioral Cloning (Imitation)
 
@@ -198,9 +198,25 @@ are conducting, see:
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
+* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md)
 to the corresponding sections of the `config/trainer_config.yaml` file for each
 example to see how the hyperparameters and other configuration variables have
 been changed from the defaults.
+
+### Debugging and Profiling
+If you enable the `--debug` flag in the command line, the trainer metrics are logged to a CSV file
+stored in the `summaries` directory. The metrics stored are:
+  * brain name
+  * time to update policy
+  * time since start of training
+  * time for last experience collection
+  * number of experiences used for training
+  * mean return
+
+This option is not available currently for Behavioral Cloning.
+
+Additionally, we have included basic [Profiling in Python](Profiling-Python.md) as part of the toolkit.
+This information is also saved in the `summaries` directory.

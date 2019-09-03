@@ -1,10 +1,10 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: '19.3b0'
+    rev: 19.3b0
     hooks:
     -   id: black
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.701'
+    rev: v0.720
     hooks:
     -   id: mypy
         name: mypy-ml-agents
@@ -21,3 +21,19 @@ repos:
         name: mypy-gym-unity
         files: "gym-unity/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+    -   id: mixed-line-ending
+        exclude: >
+            (?x)^(
+                .*cs.meta|
+                .*.css
+            )$
+        args: [--fix=lf]
+    -   id: flake8
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$

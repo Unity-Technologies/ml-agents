@@ -6,10 +6,10 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerState
 {
-    public int playerIndex; 
-    public Rigidbody agentRB; 
-    public Vector3 startingPos; 
-    public AgentSoccer agentScript; 
+    public int playerIndex;
+    public Rigidbody agentRB;
+    public Vector3 startingPos;
+    public AgentSoccer agentScript;
     public float ballPosReward;
 }
 
@@ -24,7 +24,7 @@ public class SoccerFieldArea : MonoBehaviour
     public GameObject ball;
     [HideInInspector]
     public Rigidbody ballRB;
-    public GameObject ground; 
+    public GameObject ground;
     public GameObject centerPitch;
     SoccerBallController ballController;
     public List<PlayerState> playerStates = new List<PlayerState>();
@@ -49,7 +49,7 @@ public class SoccerFieldArea : MonoBehaviour
     public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         groundRenderer.material = mat;
-        yield return new WaitForSeconds(time); 
+        yield return new WaitForSeconds(time);
         groundRenderer.material = groundMaterial;
     }
 
@@ -57,7 +57,7 @@ public class SoccerFieldArea : MonoBehaviour
     void Awake()
     {
         academy = FindObjectOfType<SoccerAcademy>();
-        groundRenderer = centerPitch.GetComponent<Renderer>(); 
+        groundRenderer = centerPitch.GetComponent<Renderer>();
         groundMaterial = groundRenderer.material;
         canResetBall = true;
         if (goalTextUI) { goalTextUI.SetActive(false); }
@@ -152,8 +152,8 @@ public class SoccerFieldArea : MonoBehaviour
         {
             xOffset = xOffset * -1f;
         }
-        var randomSpawnPos = ground.transform.position + 
-                               new Vector3(xOffset, 0f, 0f) 
+        var randomSpawnPos = ground.transform.position +
+                               new Vector3(xOffset, 0f, 0f)
                                + (Random.insideUnitSphere * 2);
         randomSpawnPos.y = ground.transform.position.y + 2;
         return randomSpawnPos;
@@ -161,8 +161,8 @@ public class SoccerFieldArea : MonoBehaviour
 
     public Vector3 GetBallSpawnPosition()
     {
-        var randomSpawnPos = ground.transform.position + 
-                             new Vector3(0f, 0f, 0f) 
+        var randomSpawnPos = ground.transform.position +
+                             new Vector3(0f, 0f, 0f)
                              + (Random.insideUnitSphere * 2);
         randomSpawnPos.y = ground.transform.position.y + 2;
         return randomSpawnPos;
@@ -178,5 +178,8 @@ public class SoccerFieldArea : MonoBehaviour
         ball.transform.position = GetBallSpawnPosition();
         ballRB.velocity = Vector3.zero;
         ballRB.angularVelocity = Vector3.zero;
+
+        var ballScale = academy.resetParameters["ball_scale"];
+        ballRB.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

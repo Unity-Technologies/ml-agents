@@ -16,7 +16,7 @@ public class BananaAgent : Agent
     float effectTime;
     Rigidbody agentRb;
     private int bananas;
-
+    private float laser_length;
     // Speed of agent rotation.
     public float turnSpeed = 300;
 
@@ -30,6 +30,7 @@ public class BananaAgent : Agent
     public bool contribute;
     private RayPerception3D rayPer;
     public bool useVectorObs;
+  
 
     public override void InitializeAgent()
     {
@@ -39,6 +40,8 @@ public class BananaAgent : Agent
         myArea = area.GetComponent<BananaArea>();
         rayPer = GetComponent<RayPerception3D>();
         myAcademy = FindObjectOfType<BananaAcademy>();
+
+        SetResetParameters();
     }
 
     public override void CollectObservations()
@@ -157,7 +160,7 @@ public class BananaAgent : Agent
 
         if (shoot)
         {
-            myLaser.transform.localScale = new Vector3(1f, 1f, 1f);
+            myLaser.transform.localScale = new Vector3(1f, 1f, laser_length);
             Vector3 position = transform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
             Debug.DrawRay(transform.position, position, Color.red, 0f, true);
             RaycastHit hit;
@@ -239,6 +242,8 @@ public class BananaAgent : Agent
                                          2f, Random.Range(-myArea.range, myArea.range))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
+
+        SetResetParameters();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -270,5 +275,22 @@ public class BananaAgent : Agent
     public override void AgentOnDone()
     {
 
+    }
+
+    public void SetLaserLengths()
+    {
+        laser_length = myAcademy.resetParameters["laser_length"];
+    }
+
+    public void SetAgentScale()
+    {
+        var agent_scale = myAcademy.resetParameters["agent_scale"];
+        gameObject.transform.localScale = new Vector3(agent_scale, agent_scale, agent_scale);
+    }
+    
+    public void SetResetParameters()
+    {
+        SetLaserLengths();
+        SetAgentScale();
     }
 }

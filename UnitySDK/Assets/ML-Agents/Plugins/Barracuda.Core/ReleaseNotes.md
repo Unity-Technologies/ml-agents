@@ -1,5 +1,19 @@
 # Release notes
 
+## 0.2.4
+- Switched to 2018.4.3f1 as primary Unity version for testing.
+- Fixed ScaleBias scheduling issue with large amounts of data (reproduced with MobileNet @ 16 batch)
+- Fixed buffer overrun in ThreadGroup SharedMemory when TRANSPOSE_X and/or SHIFTED_X paths are enabled. This should fix GPU worker issues on Windows.
+- Added string cache to minimise string concat generated GC pressure.
+- Added small fixes for temp memory allocations, saves ~200B per layer.
+- Refactored inner loop workings, to avoid GC allocations for delegates.
+- Fixed input handling for layers, now inputs are not regenerated with every execution. Static model tensors are to stay forever until worker is disposed.
+- Bumped Burst version to 1.1.1.
+
+## 0.2.3
+- Rewritten Dense, Conv and some other ops on GPU. Speedup of 33% in most models with batch=1 and over 100% for batch=16.
+- Optimizations: reimplemented InstanceNormalization using pyramid approach for calculating mean and variance.
+
 ## 0.2.2
 - Added support for --print-supported-ops flag for model converters, now it will print approximate list of supported operations. List of supported ops depends on converter.
 - Added Keras converter as part of distribution.
@@ -130,6 +144,7 @@
 - Renaldas (ReJ) Zioma
 - Mantas Puida
 - Vladimir Oster
+- Aurimas Petrovas
 - Martin Sternevald
 - Valdemar Bučilko
 - Kuba Cupisz

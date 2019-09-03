@@ -2,12 +2,12 @@ import logging
 
 import numpy as np
 from mlagents.trainers.bc.models import BehavioralCloningModel
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class BCPolicy(Policy):
+class BCPolicy(TFPolicy):
     def __init__(self, seed, brain, trainer_parameters, load):
         """
         :param seed: Random seed.
@@ -57,7 +57,7 @@ class BCPolicy(Policy):
             self.model.sequence_length: 1,
         }
 
-        feed_dict = self._fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         if self.use_recurrent:
             if brain_info.memories.shape[1] == 0:
                 brain_info.memories = self.make_empty_memory(len(brain_info.agents))
@@ -79,24 +79,14 @@ class BCPolicy(Policy):
             self.model.sequence_length: self.sequence_length,
         }
         if self.use_continuous_act:
-            feed_dict[self.model.true_action] = mini_batch["actions"].reshape(
-                [-1, self.brain.vector_action_space_size[0]]
-            )
+            feed_dict[self.model.true_action] = mini_batch["actions"]
         else:
-            feed_dict[self.model.true_action] = mini_batch["actions"].reshape(
-                [-1, len(self.brain.vector_action_space_size)]
-            )
+            feed_dict[self.model.true_action] = mini_batch["actions"]
             feed_dict[self.model.action_masks] = np.ones(
                 (num_sequences, sum(self.brain.vector_action_space_size))
             )
         if self.use_vec_obs:
-            apparent_obs_size = (
-                self.brain.vector_observation_space_size
-                * self.brain.num_stacked_vector_observations
-            )
-            feed_dict[self.model.vector_in] = mini_batch["vector_obs"].reshape(
-                [-1, apparent_obs_size]
-            )
+            feed_dict[self.model.vector_in] = mini_batch["vector_obs"]
         for i, _ in enumerate(self.model.visual_in):
             visual_obs = mini_batch["visual_obs%d" % i]
             feed_dict[self.model.visual_in[i]] = visual_obs

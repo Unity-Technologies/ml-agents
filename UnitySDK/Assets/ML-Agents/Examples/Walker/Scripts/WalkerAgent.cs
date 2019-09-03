@@ -29,6 +29,12 @@ public class WalkerAgent : Agent
     bool isNewDecisionStep;
     int currentDecisionStep;
 
+    private Rigidbody hipsRb;
+    private Rigidbody chestRb;
+    private Rigidbody spineRb;
+
+    private ResetParameters resetParams;
+
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
@@ -48,6 +54,15 @@ public class WalkerAgent : Agent
         jdController.SetupBodyPart(armR);
         jdController.SetupBodyPart(forearmR);
         jdController.SetupBodyPart(handR);
+
+        hipsRb = hips.GetComponent<Rigidbody>();
+        chestRb = chest.GetComponent<Rigidbody>();
+        spineRb = spine.GetComponent<Rigidbody>();
+
+        var academy = FindObjectOfType<WalkerAcademy>() as WalkerAcademy;
+        resetParams = academy.resetParameters;
+
+        SetResetParameters();
     }
 
     /// <summary>
@@ -184,5 +199,18 @@ public class WalkerAgent : Agent
 
         isNewDecisionStep = true;
         currentDecisionStep = 1;
+        SetResetParameters();
+    }
+
+    public void SetTorsoMass()
+    {
+        chestRb.mass = resetParams["chest_mass"];
+        spineRb.mass = resetParams["spine_mass"];
+        hipsRb.mass = resetParams["hip_mass"];
+    }
+
+    public void SetResetParameters()
+    {
+        SetTorsoMass();
     }
 }

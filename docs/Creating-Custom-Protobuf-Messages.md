@@ -4,7 +4,7 @@ Unity and Python communicate by sending protobuf messages to and from each other
 
 ## Implementing a Custom Message
 
-Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT. Whenever you change the fields of a custom message, you must run `$MLAGENTS_ROOT/protobuf-definitions/make.bat` to create C# and Python files corresponding to the new message. Follow the directions in [this file](../protobuf-definitions/README.md) for guidance. After running `$MLAGENTS_ROOT/protobuf-definitions/make.bat`, reinstall the Python package by running `pip install $MLAGENTS_ROOT/ml-agents` and make sure your Unity project is using the newly-generated version of `$MLAGENTS_ROOT/UnitySDK`.
+Whenever you change the fields of a custom message, you must follow the directions in [this file](../protobuf-definitions/README.md) to create C# and Python files corresponding to the new message and re-install the mlagents Python package.
 
 ## Custom Message Types
 

@@ -86,13 +86,11 @@
 .DS_Store
 .ipynb_checkpoints
 
-# pytest cache 
+# pytest cache
 *.pytest_cache/
 
 # Ignore compiled protobuf files.
-ml-agents-protobuf/cs
-ml-agents-protobuf/python
-ml-agents-protobuf/Grpc*
+*Grpc.Tools*
 
 # Ignore PyPi build files.
 dist/
@@ -101,3 +99,8 @@ build/
 # Python virtual environment
 venv/
 .mypy_cache/
+
+# Code coverage report
+.coverage
+coverage.xml
+/htmlcov/

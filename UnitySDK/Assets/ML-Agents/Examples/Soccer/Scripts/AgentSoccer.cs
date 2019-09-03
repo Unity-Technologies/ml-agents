@@ -26,6 +26,12 @@ public class AgentSoccer : Agent
     SoccerAcademy academy;
     Renderer agentRenderer;
     RayPerception rayPer;
+    
+    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+    string[] detectableObjectsRed = { "ball", "redGoal", "blueGoal",
+        "wall", "redAgent", "blueAgent" };
+    string[] detectableObjectsBlue = { "ball", "blueGoal", "redGoal",
+        "wall", "blueAgent", "redAgent" };
 
     public void ChooseRandomTeam()
     {
@@ -79,17 +85,14 @@ public class AgentSoccer : Agent
     public override void CollectObservations()
     {
         float rayDistance = 20f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
         string[] detectableObjects;
         if (team == Team.Red)
         {
-            detectableObjects = new[] { "ball", "redGoal", "blueGoal",
-                "wall", "redAgent", "blueAgent" };
+            detectableObjects = detectableObjectsRed;
         }
         else
         {
-            detectableObjects = new[] { "ball", "blueGoal", "redGoal",
-                "wall", "blueAgent", "redAgent" };
+            detectableObjects = detectableObjectsBlue;
         }
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));
@@ -206,6 +209,11 @@ public class AgentSoccer : Agent
         transform.position = area.GetRandomSpawnPos(agentRole, team);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
+        SetResetParameters();
+    }
+
+    public void SetResetParameters()
+    {
         area.ResetBall();
     }
 }
