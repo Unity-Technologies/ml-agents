@@ -167,7 +167,7 @@ CrawlerStaticLearning:
     train_interval: 3
     buffer_size: 500000
     buffer_init_steps: 2000
-    max_steps: 1e6
+    max_steps: 5e5
     summary_freq: 3000
     init_entcoef: 1.0
     num_layers: 3
@@ -181,7 +181,7 @@ CrawlerDynamicLearning:
     summary_freq: 3000
     train_interval: 3
     num_layers: 3
-    max_steps: 1e6
+    max_steps: 5e5
     hidden_units: 512
 
 WalkerLearning:
