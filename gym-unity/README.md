@@ -162,6 +162,7 @@ such a method using the PPO2 baseline:
 ```python
 from gym_unity.envs import UnityEnv
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
+from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
 from baselines.bench import Monitor
 from baselines import logger
 import baselines.ppo2.ppo2 as ppo2
@@ -187,7 +188,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
         return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
     else:
         rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
-        return make_env(rank, use_visual=False)
+        return DummyVecEnv([make_env(rank, use_visual=False)])
 
 def main():
     env = make_unity_env('./envs/GridWorld', 4, True)
