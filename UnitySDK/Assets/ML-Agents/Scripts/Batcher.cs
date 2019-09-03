@@ -216,7 +216,8 @@ namespace MLAgents
                 if (m_hasData.Values.Any(x => x) || m_academyDone)
                 {
                     m_currentUnityRLOutput.GlobalDone = m_academyDone;
-                    using (TimerStack.Scoped ("SendBatchedMessageHelper")) {
+                    using (TimerStack.Scoped ("SendBatchedMessageHelper"))
+                    {
                         SendBatchedMessageHelper();
                     }
                 }
@@ -272,9 +273,10 @@ namespace MLAgents
                 return;
             }
 
-            using (TimerStack.Scoped ("UpdateActionSampler")) {
-
-                foreach (var brainName in rlInput.AgentActions.Keys) {
+            using (TimerStack.Scoped ("UpdateActionSampler"))
+            {
+                foreach (var brainName in rlInput.AgentActions.Keys)
+                {
                     if (!m_currentAgents [brainName].Any ()) {
                         continue;
                     }
