@@ -59,7 +59,7 @@ class RLTrainer(Trainer):
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
         visual_observations: List[List[Any]] = [
-            []
+            [] for _ in next_info.visual_observations
         ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
