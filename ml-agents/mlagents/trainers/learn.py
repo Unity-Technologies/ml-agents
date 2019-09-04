@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 
 import logging
+import shlex
 
 from multiprocessing import Process, Queue
 import os
@@ -60,6 +61,11 @@ def run_training(
     sampler_file_path = (
         run_options["--sampler"] if run_options["--sampler"] != "None" else None
     )
+    env_args = (
+        shlex.split(run_options["--env-args"])
+        if run_options["--env-args"] != "None"
+        else []
+    )
 
     # Recognize and use docker volume if one is passed as an argument
     if not docker_target_name:
@@ -89,6 +95,7 @@ def run_training(
         no_graphics,
         run_seed,
         base_port + (sub_id * num_envs),
+        env_args,
     )
     env = SubprocessEnvManager(env_factory, num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env, lesson)
@@ -222,6 +229,7 @@ def create_environment_factory(
     no_graphics: bool,
     seed: Optional[int],
     start_port: int,
+    env_args: [],
 ) -> Callable[[int], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
@@ -257,6 +265,7 @@ def create_environment_factory(
             docker_training=docker_training,
             no_graphics=no_graphics,
             base_port=start_port,
+            args=env_args,
         )
 
     return create_unity_environment
@@ -292,6 +301,7 @@ def main():
 
     Options:
       --env=<file>                Name of the Unity executable [default: None].
+      --env-args=<string>         Arguments of the Unity executable [default: None].
       --curriculum=<directory>    Curriculum json directory for environment [default: None].
       --sampler=<file>            Reset parameter yaml file for environment [default: None].
       --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
