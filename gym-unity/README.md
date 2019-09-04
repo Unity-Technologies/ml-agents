@@ -84,6 +84,8 @@ using these algorithms. This requires the creation of custom training scripts to
 launch each algorithm. In most cases these scripts can be created by making
 slight modifications to the ones provided for Atari and Mujoco environments.
 
+These examples were tested with baselines version 0.1.6.
+
 ### Example - DQN Baseline
 
 In order to train an agent to play the `GridWorld` environment using the
