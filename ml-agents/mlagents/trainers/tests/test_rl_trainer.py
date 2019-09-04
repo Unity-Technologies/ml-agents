@@ -79,6 +79,10 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs):
 
     # assert construct_curr_info worked properly
     assert len(brain_info.agents) == 1
+    assert len(brain_info.visual_observations) == 1
+    assert len(brain_info.visual_observations[0]) == 1
+    assert len(brain_info.vector_observations) == 1
+    assert len(brain_info.previous_vector_actions) == 1
 
     # Test end episode
     trainer.end_episode()
