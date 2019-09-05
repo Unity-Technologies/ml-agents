@@ -1,17 +1,15 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
-
     /// <summary>
-    /// Behavioral Cloning Helper script. Attach to teacher agent to enable 
+    /// Behavioral Cloning Helper script. Attach to teacher agent to enable
     /// resetting the experience buffer, as well as toggling session recording.
     /// </summary>
     public class BCTeacherHelper : MonoBehaviour
     {
-
         bool recordExperiences;
         bool resetBuffer;
         Agent myAgent;
@@ -49,14 +47,14 @@ namespace MLAgents
 
             Monitor.Log("Recording experiences " + recordKey, recordExperiences.ToString());
             float timeSinceBufferReset = Time.time - bufferResetTime;
-            Monitor.Log("Seconds since buffer reset " + resetKey, 
+            Monitor.Log("Seconds since buffer reset " + resetKey,
                 Mathf.FloorToInt(timeSinceBufferReset).ToString());
         }
 
         void FixedUpdate()
         {
             // Convert both bools into single comma separated string. Python makes
-            // assumption that this structure is preserved. 
+            // assumption that this structure is preserved.
             myAgent.SetTextObs(recordExperiences + "," + resetBuffer);
         }
     }

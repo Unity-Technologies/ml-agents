@@ -1,4 +1,4 @@
-﻿#if UNITY_CLOUD_BUILD
+#if UNITY_CLOUD_BUILD
 
 using System.Linq;
 using UnityEditor;
@@ -40,5 +40,5 @@ namespace MLAgents
         }
     }
 }
-    
+
 #endif

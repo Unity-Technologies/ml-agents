@@ -1,4 +1,4 @@
-﻿namespace MLAgents.InferenceBrain.Utils
+namespace MLAgents.InferenceBrain.Utils
 {
     /// <summary>
     /// Multinomial - Draws samples from a multinomial distribution given the CDF.
@@ -14,7 +14,7 @@
 
         public int Sample(float[] cdf)
         {
-            var p = (float) _random.NextDouble() * cdf[cdf.Length - 1];
+            var p = (float)_random.NextDouble() * cdf[cdf.Length - 1];
             var cls = 0;
             while (cdf[cls] < p)
             {

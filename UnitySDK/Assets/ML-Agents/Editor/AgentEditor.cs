@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
@@ -11,7 +11,6 @@ namespace MLAgents
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
     {
-
         public override void OnInspectorGUI()
         {
             SerializedObject serializedAgent = serializedObject;
@@ -35,9 +34,9 @@ namespace MLAgents
 
             if (cameras.arraySize > 0 && renderTextures.arraySize > 0)
             {
-                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);    
+                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);
             }
-            
+
             EditorGUILayout.LabelField("Agent Cameras");
             for (int i = 0; i < cameras.arraySize; i++)
             {
@@ -58,7 +57,7 @@ namespace MLAgents
             }
 
             EditorGUILayout.EndHorizontal();
-            
+
             EditorGUILayout.LabelField("Agent RenderTextures");
             for (int i = 0; i < renderTextures.arraySize; i++)
             {

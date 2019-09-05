@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -74,7 +74,7 @@ public class DemonstrationEditor : Editor
         var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
         var vecActSizeLabel = actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
         var camResLabel = camResProp.displayName + ": " + camResProp.arraySize;
-        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType) actSpaceTypeProp.enumValueIndex;
+        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType)actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);

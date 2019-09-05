@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
@@ -53,21 +53,21 @@ namespace MLAgents.InferenceBrain
             var batchSize = agentInfo.Keys.Count;
             var actions = new float[batchSize, _actionSize.Length];
             var startActionIndices = Utilities.CumSum(_actionSize);
-            for (var actionIndex=0; actionIndex < _actionSize.Length; actionIndex++)
+            for (var actionIndex = 0; actionIndex < _actionSize.Length; actionIndex++)
             {
                 var nBranchAction = _actionSize[actionIndex];
                 var actionProbs = new TensorProxy()
                 {
                     valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[]{batchSize, nBranchAction},
+                    shape = new long[] {batchSize, nBranchAction},
                     data = _allocator.Alloc(new TensorShape(batchSize, nBranchAction))
                 };
 
                 for (var batchIndex = 0; batchIndex < batchSize; batchIndex++)
                 {
                     for (var branchActionIndex = 0;
-                        branchActionIndex < nBranchAction;
-                        branchActionIndex++)
+                         branchActionIndex < nBranchAction;
+                         branchActionIndex++)
                     {
                         actionProbs.data[batchIndex, branchActionIndex] =
                             tensorProxy.data[batchIndex, startActionIndices[actionIndex] + branchActionIndex];
@@ -77,7 +77,7 @@ namespace MLAgents.InferenceBrain
                 var outputTensor = new TensorProxy()
                 {
                     valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[]{batchSize, 1},
+                    shape = new long[] {batchSize, 1},
                     data = _allocator.Alloc(new TensorShape(batchSize, 1))
                 };
 

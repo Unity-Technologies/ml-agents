@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Linq;
 
 namespace MLAgents
@@ -25,7 +25,7 @@ namespace MLAgents
 
         /**< \brief The height of the observation in pixels */
         public bool blackAndWhite;
-        /**< \brief If true, the image will be in black and white. 
+        /**< \brief If true, the image will be in black and white.
          * If false, it will be in colors RGB */
     }
 
@@ -37,13 +37,13 @@ namespace MLAgents
     public class BrainParameters
     {
         public int vectorObservationSize = 1;
-        /**< \brief If continuous : The length of the float vector that represents 
+        /**< \brief If continuous : The length of the float vector that represents
          * the state
          * <br> If discrete : The number of possible values the state can take*/
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int[] vectorActionSize = new int[1]{1};
+        public int[] vectorActionSize = new int[1] {1};
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
@@ -56,15 +56,15 @@ namespace MLAgents
 
         public SpaceType vectorActionSpaceType = SpaceType.discrete;
         /**< \brief Defines if the action is discrete or continuous */
-        
+
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public CommunicatorObjects.BrainParametersProto 
-            ToProto(string name, bool isTraining)
+        public CommunicatorObjects.BrainParametersProto
+        ToProto(string name, bool isTraining)
         {
             var brainParametersProto = new CommunicatorObjects.BrainParametersProto
             {
@@ -92,7 +92,6 @@ namespace MLAgents
 
         public BrainParameters()
         {
-            
         }
 
         public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
@@ -114,9 +113,9 @@ namespace MLAgents
             {
                 vectorObservationSize = this.vectorObservationSize,
                 numStackedVectorObservations = this.numStackedVectorObservations,
-                vectorActionSize = (int[]) this.vectorActionSize.Clone(),
-                cameraResolutions = (Resolution[]) this.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[]) this.vectorActionDescriptions.Clone(),
+                vectorActionSize = (int[])this.vectorActionSize.Clone(),
+                cameraResolutions = (Resolution[])this.cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])this.vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = this.vectorActionSpaceType
             };
         }

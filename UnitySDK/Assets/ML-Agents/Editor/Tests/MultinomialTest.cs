@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using MLAgents.InferenceBrain.Utils;
 
 namespace MLAgents.Tests

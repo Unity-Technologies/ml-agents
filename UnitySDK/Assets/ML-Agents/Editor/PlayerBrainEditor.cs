@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,14 +21,14 @@ namespace MLAgents
         private const string KeyContinuousPropName = "keyContinuousPlayerActions";
         private const string KeyDiscretePropName = "discretePlayerActions";
         private const string AxisContinuousPropName = "axisContinuousPlayerActions";
-        
+
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);
-            var brain = (PlayerBrain) target;
+            var brain = (PlayerBrain)target;
             var serializedBrain = serializedObject;
             base.OnInspectorGUI();
-            
+
             serializedBrain.Update();
             if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
@@ -39,7 +39,7 @@ namespace MLAgents
                 DrawDiscreteKeyMapping(serializedBrain);
             }
             serializedBrain.ApplyModifiedProperties();
-        } 
+        }
 
         /// <summary>
         /// Draws the UI for continuous control key mapping to actions.
@@ -72,7 +72,7 @@ namespace MLAgents
                     EditorGUILayout.HelpBox(
                         $"Key {action.key.ToString()} is assigned to index " +
                         $"{action.index.ToString()} but the action size is only of size " +
-                        $"{brainParams.vectorActionSize.ToString()}", 
+                        $"{brainParams.vectorActionSize.ToString()}",
                         MessageType.Error);
                 }
             }
@@ -82,12 +82,12 @@ namespace MLAgents
                 {
                     EditorGUILayout.HelpBox(
                         $"Axis {action.axis} is assigned to index {action.index.ToString()} " +
-                        $"but the action size is only of size {brainParams.vectorActionSize}", 
+                        $"but the action size is only of size {brainParams.vectorActionSize}",
                         MessageType.Error);
                 }
             }
-            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
-                EditorStyles.helpBox );
+            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input",
+                EditorStyles.helpBox);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace MLAgents
         /// <param name="serializedBrain"> The SerializedObject corresponding to the brain. </param>
         private static void DrawDiscreteKeyMapping(SerializedObject serializedBrain)
         {
-            GUILayout.Label("Edit the discrete inputs for your actions", 
+            GUILayout.Label("Edit the discrete inputs for your actions",
                 EditorStyles.boldLabel);
             var dhas = serializedBrain.FindProperty(KeyDiscretePropName);
             serializedBrain.Update();

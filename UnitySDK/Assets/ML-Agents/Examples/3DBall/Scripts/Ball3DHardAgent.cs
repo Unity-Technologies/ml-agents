@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -27,7 +27,6 @@ public class Ball3DHardAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-
         if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
@@ -65,10 +64,8 @@ public class Ball3DHardAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         ballRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
-                                  + gameObject.transform.position;
-
+            + gameObject.transform.position;
     }
-
 
     public void SetBall()
     {

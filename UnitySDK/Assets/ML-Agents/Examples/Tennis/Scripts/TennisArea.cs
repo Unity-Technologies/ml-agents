@@ -1,22 +1,22 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TennisArea : MonoBehaviour {
-
+public class TennisArea : MonoBehaviour
+{
     public GameObject ball;
     public GameObject agentA;
     public GameObject agentB;
     private Rigidbody ballRb;
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         ballRb = ball.GetComponent<Rigidbody>();
         MatchReset();
     }
-    
-    public void MatchReset() 
+
+    public void MatchReset()
     {
         float ballOut = Random.Range(6f, 8f);
         int flip = Random.Range(0, 2);
@@ -33,7 +33,7 @@ public class TennisArea : MonoBehaviour {
         ball.GetComponent<HitWall>().lastAgentHit = -1;
     }
 
-    void FixedUpdate() 
+    void FixedUpdate()
     {
         Vector3 rgV = ballRb.velocity;
         ballRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -9f, 9f), Mathf.Clamp(rgV.y, -9f, 9f), rgV.z);

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -30,7 +30,7 @@ public class BananaAgent : Agent
     public bool contribute;
     private RayPerception3D rayPer;
     public bool useVectorObs;
-  
+
 
     public override void InitializeAgent()
     {
@@ -106,7 +106,7 @@ public class BananaAgent : Agent
                 var rightAxis = (int)act[1];
                 var rotateAxis = (int)act[2];
                 var shootAxis = (int)act[3];
-                
+
                 switch (forwardAxis)
                 {
                     case 1:
@@ -116,7 +116,7 @@ public class BananaAgent : Agent
                         dirToGo = -transform.forward;
                         break;
                 }
-                
+
                 switch (rightAxis)
                 {
                     case 1:
@@ -134,7 +134,7 @@ public class BananaAgent : Agent
                         break;
                     case 2:
                         rotateDir = transform.up;
-                        break; 
+                        break;
                 }
                 switch (shootAxis)
                 {
@@ -175,10 +175,8 @@ public class BananaAgent : Agent
         else
         {
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-
         }
     }
-
 
     void Freeze()
     {
@@ -187,7 +185,6 @@ public class BananaAgent : Agent
         frozenTime = Time.time;
         gameObject.GetComponent<Renderer>().material = frozenMaterial;
     }
-
 
     void Unfreeze()
     {
@@ -222,8 +219,6 @@ public class BananaAgent : Agent
         gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
-
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
@@ -239,7 +234,7 @@ public class BananaAgent : Agent
         bananas = 0;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
-                                         2f, Random.Range(-myArea.range, myArea.range))
+            2f, Random.Range(-myArea.range, myArea.range))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
@@ -274,7 +269,6 @@ public class BananaAgent : Agent
 
     public override void AgentOnDone()
     {
-
     }
 
     public void SetLaserLengths()
@@ -287,7 +281,7 @@ public class BananaAgent : Agent
         var agent_scale = myAcademy.resetParameters["agent_scale"];
         gameObject.transform.localScale = new Vector3(agent_scale, agent_scale, agent_scale);
     }
-    
+
     public void SetResetParameters()
     {
         SetLaserLengths();

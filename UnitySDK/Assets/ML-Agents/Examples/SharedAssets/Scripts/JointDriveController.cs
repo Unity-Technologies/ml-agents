@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,19 +10,19 @@ namespace MLAgents
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
 
-        [Header("Ground & Target Contact")] [Space(10)]
+        [Header("Ground & Target Contact")][Space(10)]
         public GroundContact groundContact;
 
         public TargetContact targetContact;
 
         [HideInInspector] public JointDriveController thisJDController;
 
-        [Header("Current Joint Settings")] [Space(10)]
+        [Header("Current Joint Settings")][Space(10)]
         public Vector3 currentEularJointRotation;
 
         [HideInInspector] public float currentStrength;
@@ -30,7 +30,7 @@ namespace MLAgents
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
 
-        [Header("Other Debug Info")] [Space(10)]
+        [Header("Other Debug Info")][Space(10)]
         public Vector3 currentJointForce;
 
         public float currentJointForceSqrMag;
@@ -97,7 +97,7 @@ namespace MLAgents
 
     public class JointDriveController : MonoBehaviour
     {
-        [Header("Joint Drive Settings")] [Space(10)]
+        [Header("Joint Drive Settings")][Space(10)]
         public float maxJointSpring;
 
         public float jointDampen;

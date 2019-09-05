@@ -1,10 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SoccerBallController : MonoBehaviour
 {
-
     [HideInInspector]
     public SoccerFieldArea area;
     public AgentSoccer lastTouchedBy; //who was the last to touch the ball
@@ -15,13 +14,11 @@ public class SoccerBallController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     void OnCollisionEnter(Collision col)

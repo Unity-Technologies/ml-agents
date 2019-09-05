@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -21,10 +21,10 @@ namespace MLAgents
         public int Count
         {
             get { return broadcastingBrains.Count; }
-        }        
+        }
 
         /// <summary>
-        /// Checks that a given Brain is set to be remote controlled. 
+        /// Checks that a given Brain is set to be remote controlled.
         /// </summary>
         /// <param name="brain"> The Brain that is beeing checked</param>
         /// <returns>true if the Brain is set to Controlled and false otherwise. Will return
@@ -33,7 +33,7 @@ namespace MLAgents
         {
             return _brainsToControl.Contains(brain);
         }
-        
+
         /// <summary>
         /// Sets a brain to controlled.
         /// </summary>
@@ -55,7 +55,7 @@ namespace MLAgents
                 }
             }
         }
-        
+
         /// <summary>
         /// Removes all the Brains of the BroadcastHub
         /// </summary>

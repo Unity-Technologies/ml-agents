@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
@@ -37,10 +37,10 @@ namespace MLAgents
         [Tooltip("Height of the environment window in pixels.")]
         public int height;
 
-        [Tooltip("Rendering quality of environment. (Higher is better quality.)")] [Range(0, 5)]
+        [Tooltip("Rendering quality of environment. (Higher is better quality.)")][Range(0, 5)]
         public int qualityLevel;
 
-        [Tooltip("Speed at which environment is run. (Higher is faster.)")] [Range(1f, 100f)]
+        [Tooltip("Speed at which environment is run. (Higher is faster.)")][Range(1f, 100f)]
         public float timeScale;
 
         [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
@@ -89,7 +89,7 @@ namespace MLAgents
     /// attached to it (which may be internal, heuristic or player).
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-             "docs/Learning-Environment-Design-Academy.md")]
+        "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
         [SerializeField]
@@ -113,20 +113,20 @@ namespace MLAgents
 
         [SerializeField]
         [Tooltip("Total number of steps per global episode.\nNon-positive " +
-                 "values correspond to episodes without a maximum number of \n" +
-                 "steps. Once the step counter reaches this maximum value, the " +
-                 "environment will reset.")]
+            "values correspond to episodes without a maximum number of \n" +
+            "steps. Once the step counter reaches this maximum value, the " +
+            "environment will reset.")]
         int maxSteps;
 
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
-                 "quality and engine speed during Training.")]
+            "quality and engine speed during Training.")]
         EnvironmentConfiguration trainingConfiguration =
             new EnvironmentConfiguration(80, 80, 1, 100.0f, -1);
 
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
-                 "quality and engine speed during Inference.")]
+            "quality and engine speed during Inference.")]
         EnvironmentConfiguration inferenceConfiguration =
             new EnvironmentConfiguration(1280, 720, 5, 1.0f, 60);
 
@@ -142,7 +142,7 @@ namespace MLAgents
         /// </remarks>
         [SerializeField]
         [Tooltip("List of custom parameters that can be changed in the " +
-                 "environment when it resets.")]
+            "environment when it resets.")]
         public ResetParameters resetParameters;
         public CommunicatorObjects.CustomResetParameters customResetParameters;
 
@@ -360,13 +360,13 @@ namespace MLAgents
             // in inference mode.
             isInference = !isCommunicatorOn;
 
-            BrainDecideAction += () => { };
-            DestroyAction += () => { };
-            AgentSetStatus += (m, d, i) => { };
-            AgentResetIfDone += () => { };
-            AgentSendState += () => { };
-            AgentAct += () => { };
-            AgentForceReset += () => { };
+            BrainDecideAction += () => {};
+            DestroyAction += () => {};
+            AgentSetStatus += (m, d, i) => {};
+            AgentResetIfDone += () => {};
+            AgentSendState += () => {};
+            AgentAct += () => {};
+            AgentForceReset += () => {};
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.

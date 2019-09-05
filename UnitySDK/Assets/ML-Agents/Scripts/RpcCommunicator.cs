@@ -19,7 +19,7 @@ namespace MLAgents
         bool m_isOpen;
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-        /// The Unity to External client. 
+        /// The Unity to External client.
         UnityToExternal.UnityToExternalClient m_client;
 #endif
         /// The communicator parameters sent at construction
@@ -35,19 +35,19 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Initialize the communicator by sending the first UnityOutput and receiving the 
+        /// Initialize the communicator by sending the first UnityOutput and receiving the
         /// first UnityInput. The second UnityInput is stored in the unityInput argument.
         /// </summary>
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
         public UnityInput Initialize(UnityOutput unityOutput,
-                                     out UnityInput unityInput)
+            out UnityInput unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_isOpen = true;
             var channel = new Channel(
-                "localhost:"+m_communicatorParameters.port, 
+                "localhost:" + m_communicatorParameters.port,
                 ChannelCredentials.Insecure);
 
             m_client = new UnityToExternal.UnityToExternalClient(channel);
@@ -161,11 +161,12 @@ namespace MLAgents
         private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
-            if (state==PlayModeStateChange.ExitingPlayMode)
+            if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
             }
         }
+
 #else
         /// <summary>
         /// When the editor exits, the communicator must be closed
@@ -178,8 +179,8 @@ namespace MLAgents
                 Close();
             }
         }
-#endif
-#endif
 
+#endif
+#endif
     }
 }

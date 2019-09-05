@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
@@ -18,24 +18,24 @@ namespace MLAgents
         private const string ActionTypePropName = "vectorActionSpaceType";
         private const string ActionDescriptionPropName = "vectorActionDescriptions";
         private const string VecObsPropName = "vectorObservationSize";
-        private const string NumVecObsPropName ="numStackedVectorObservations";
+        private const string NumVecObsPropName = "numStackedVectorObservations";
         private const string CamWidthPropName = "width";
         private const string CamHeightPropName = "height";
         private const string CamGrayPropName = "blackAndWhite";
         private const int DefaultCameraWidth = 84;
         private const int DefaultCameraHeight = 84;
         private const bool DefaultCameraGray = false;
-        
+
         /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             if (property.isExpanded)
             {
-                return LineHeight + 
-                       GetHeightDrawVectorObservation() +
-                       GetHeightDrawVisualObservation(property) +
-                       GetHeightDrawVectorAction(property) +
-                       GetHeightDrawVectorActionDescriptions(property);
+                return LineHeight +
+                    GetHeightDrawVectorObservation() +
+                    GetHeightDrawVisualObservation(property) +
+                    GetHeightDrawVectorAction(property) +
+                    GetHeightDrawVectorActionDescriptions(property);
             }
             return LineHeight;
         }
@@ -52,19 +52,19 @@ namespace MLAgents
             {
                 EditorGUI.BeginProperty(position, label, property);
                 EditorGUI.indentLevel++;
-            
+
                 // Vector Observations
                 DrawVectorObservation(position, property);
                 position.y += GetHeightDrawVectorObservation();
-            
+
                 //Visual Observations
                 DrawVisualObservations(position, property);
                 position.y += GetHeightDrawVisualObservation(property);
-            
+
                 // Vector Action
                 DrawVectorAction(position, property);
                 position.y += GetHeightDrawVectorAction(property);
-            
+
                 // Vector Action Descriptions
                 DrawVectorActionDescriptions(position, property);
                 position.y += GetHeightDrawVectorActionDescriptions(property);
@@ -92,14 +92,14 @@ namespace MLAgents
                     "vector for brain (In Continuous state space)." +
                     "Or number of possible values (in Discrete state space)."));
             position.y += LineHeight;
-            
+
             EditorGUI.PropertyField(position,
                 property.FindPropertyRelative(NumVecObsPropName),
                 new GUIContent("Stacked Vectors",
                     "Number of states that will be stacked before " +
                     "being fed to the neural network."));
             position.y += LineHeight;
-            EditorGUI.indentLevel--; 
+            EditorGUI.indentLevel--;
         }
 
         /// <summary>
@@ -118,19 +118,19 @@ namespace MLAgents
         /// <param name="property">The SerializedProperty of the BrainParameters
         /// to make the custom GUI for.</param>
         private static void DrawVisualObservations(Rect position, SerializedProperty property)
-        {            
+        {
             EditorGUI.LabelField(position, "Visual Observations");
             position.y += LineHeight;
             var quarter = position.width / 4;
             var resolutions = property.FindPropertyRelative(CamResPropName);
             DrawVisualObsButtons(position, resolutions);
             position.y += LineHeight;
-            
+
             // Display the labels for the columns : Index, Width, Height and Gray
             var indexRect = new Rect(position.x, position.y, quarter, position.height);
             var widthRect = new Rect(position.x + quarter, position.y, quarter, position.height);
-            var heightRect = new Rect(position.x + 2*quarter, position.y, quarter, position.height);
-            var bwRect = new Rect(position.x + 3*quarter, position.y, quarter, position.height);
+            var heightRect = new Rect(position.x + 2 * quarter, position.y, quarter, position.height);
+            var bwRect = new Rect(position.x + 3 * quarter, position.y, quarter, position.height);
             EditorGUI.indentLevel++;
             if (resolutions.arraySize > 0)
             {
@@ -172,7 +172,7 @@ namespace MLAgents
         private static void DrawVisualObsButtons(Rect position, SerializedProperty resolutions)
         {
             var widthEighth = position.width / 8;
-            var addButtonRect = new Rect(position.x + widthEighth, position.y, 
+            var addButtonRect = new Rect(position.x + widthEighth, position.y,
                 3 * widthEighth, position.height);
             var removeButtonRect = new Rect(position.x + 4 * widthEighth, position.y,
                 3 * widthEighth, position.height);
@@ -188,7 +188,6 @@ namespace MLAgents
                 newRes.FindPropertyRelative(CamWidthPropName).intValue = DefaultCameraWidth;
                 newRes.FindPropertyRelative(CamHeightPropName).intValue = DefaultCameraHeight;
                 newRes.FindPropertyRelative(CamGrayPropName).boolValue = DefaultCameraGray;
-
             }
             if (resolutions.arraySize > 0)
             {
@@ -198,7 +197,7 @@ namespace MLAgents
                 }
             }
         }
-        
+
         /// <summary>
         /// The Height required to draw the Visual Observations parameters
         /// </summary>
@@ -221,7 +220,7 @@ namespace MLAgents
         /// to make the custom GUI for.</param>
         private static void DrawVectorAction(Rect position, SerializedProperty property)
         {
-            EditorGUI.LabelField(position, "Vector Action"); 
+            EditorGUI.LabelField(position, "Vector Action");
             position.y += LineHeight;
             EditorGUI.indentLevel++;
             var bpVectorActionType = property.FindPropertyRelative(ActionTypePropName);
@@ -259,7 +258,7 @@ namespace MLAgents
                 continuousActionSize,
                 new GUIContent("Space Size", "Length of continuous action vector."));
         }
-        
+
         /// <summary>
         /// Draws the Discrete Vector Actions parameters for the Brain Parameters
         /// </summary>
@@ -275,12 +274,12 @@ namespace MLAgents
             position.x += 20;
             position.width -= 20;
             for (var branchIndex = 0;
-                branchIndex < vecActionSize.arraySize;
-                branchIndex++)
+                 branchIndex < vecActionSize.arraySize;
+                 branchIndex++)
             {
                 SerializedProperty branchActionSize =
                     vecActionSize.GetArrayElementAtIndex(branchIndex);
-                
+
                 EditorGUI.PropertyField(
                     position,
                     branchActionSize,
@@ -289,7 +288,7 @@ namespace MLAgents
                 position.y += LineHeight;
             }
         }
-        
+
         /// <summary>
         /// The Height required to draw the Vector Action parameters
         /// </summary>
@@ -335,7 +334,7 @@ namespace MLAgents
                     position,
                     vecActionDescriptions,
                     new GUIContent("Action Descriptions",
-                        "A list of strings used to name the available actionsm for the Brain."), 
+                        "A list of strings used to name the available actionsm for the Brain."),
                     true);
                 position.y += LineHeight;
             }
@@ -346,11 +345,12 @@ namespace MLAgents
                     position,
                     vecActionDescriptions,
                     new GUIContent("Branch Descriptions",
-                        "A list of strings used to name the available branches for the Brain."), 
+                        "A list of strings used to name the available branches for the Brain."),
                     true);
                 position.y += LineHeight;
             }
         }
+
         /// <summary>
         /// The Height required to draw the Action Descriptions
         /// </summary>

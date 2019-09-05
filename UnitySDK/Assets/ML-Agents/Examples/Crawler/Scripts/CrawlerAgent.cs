@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -6,7 +6,7 @@ using MLAgents;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
 {
-    [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Target To Walk Towards")][Space(10)]
     public Transform target;
 
     public Transform ground;
@@ -14,7 +14,7 @@ public class CrawlerAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    [Header("Body Parts")] [Space(10)] public Transform body;
+    [Header("Body Parts")][Space(10)] public Transform body;
     public Transform leg0Upper;
     public Transform leg0Lower;
     public Transform leg1Upper;
@@ -24,18 +24,18 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    [Header("Joint Settings")] [Space(10)] JointDriveController jdController;
+    [Header("Joint Settings")][Space(10)] JointDriveController jdController;
     Vector3 dirToTarget;
     float movingTowardsDot;
     float facingDot;
 
-    [Header("Reward Functions To Use")] [Space(10)]
+    [Header("Reward Functions To Use")][Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
 
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    [Header("Foot Grounded Visualization")] [Space(10)]
+    [Header("Foot Grounded Visualization")][Space(10)]
     public bool useFootGroundedVisualization;
 
     public MeshRenderer foot0;
@@ -67,7 +67,7 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg2Lower);
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
-   }
+    }
 
     /// <summary>
     /// We only need to change the joint settings based on decision freq.
@@ -277,7 +277,7 @@ public class CrawlerAgent : Agent
         {
             transform.rotation = Quaternion.LookRotation(dirToTarget);
         }
-        transform.Rotate(Vector3.up,Random.Range(0.0f, 360.0f));
+        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
         foreach (var bodyPart in jdController.bodyPartsDict.Values)
         {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,9 +86,9 @@ public class PyramidAgent : Agent
     {
         var enumerable = Enumerable.Range(0, 9).OrderBy(x => Guid.NewGuid()).Take(9);
         var items = enumerable.ToArray();
-        
+
         myArea.CleanPyramidArea();
-        
+
         agentRb.velocity = Vector3.zero;
         myArea.PlaceObject(gameObject, items[0]);
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
@@ -113,6 +113,5 @@ public class PyramidAgent : Agent
 
     public override void AgentOnDone()
     {
-
     }
 }
