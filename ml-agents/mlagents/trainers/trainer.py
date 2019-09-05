@@ -59,6 +59,7 @@ class Trainer(object):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: Policy = None
+        self.step: int = 0
 
     def check_param_keys(self):
         for k in self.param_keys:
