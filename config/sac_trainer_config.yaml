@@ -103,17 +103,17 @@ PyramidsLearning:
     buffer_size: 500000
     hidden_units: 256
     num_layers: 2
-    init_entcoef: 0.1
+    init_entcoef: 0.02
     max_steps: 5.0e5
     sequence_length: 16
     tau: 0.01
     use_recurrent: false
     reward_signals:
         extrinsic:
-            strength: 1.0
+            strength: 2.0
             gamma: 0.99
         gail:
-            strength: 0.1
+            strength: 0.05
             gamma: 0.99
             encoding_size: 128
             use_actions: true
@@ -168,7 +168,7 @@ CrawlerStaticLearning:
     train_interval: 1
     buffer_size: 500000
     buffer_init_steps: 2000
-    max_steps: 2e5
+    max_steps: 5e5
     summary_freq: 3000
     init_entcoef: 1.0
     num_layers: 3
@@ -182,7 +182,7 @@ CrawlerDynamicLearning:
     summary_freq: 3000
     train_interval: 1
     num_layers: 3
-    max_steps: 2e5
+    max_steps: 5e5
     hidden_units: 512
 
 WalkerLearning:
