@@ -183,10 +183,10 @@ class SACTrainer(RLTrainer):
                 if info.max_reached[l]:
                     bootstrapping_info = self.training_buffer[agent_id].last_brain_info
                     idx = bootstrapping_info.agents.index(agent_id)
-                    for i, _ in enumerate(bootstrapping_info.visual_observations):
+                    for i, obs in enumerate(bootstrapping_info.visual_observations):
                         self.training_buffer[agent_id]["next_visual_obs%d" % i][
                             -1
-                        ] = bootstrapping_info.visual_observations[i][idx]
+                        ] = obs[idx]
                     if self.policy.use_vec_obs:
                         self.training_buffer[agent_id]["next_vector_in"][
                             -1
