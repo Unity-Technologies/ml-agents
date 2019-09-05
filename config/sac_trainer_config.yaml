@@ -103,7 +103,7 @@ PyramidsLearning:
     buffer_size: 500000
     hidden_units: 256
     num_layers: 2
-    init_entcoef: 0.02
+    init_entcoef: 0.01
     max_steps: 5.0e5
     sequence_length: 16
     tau: 0.01
@@ -113,7 +113,7 @@ PyramidsLearning:
             strength: 2.0
             gamma: 0.99
         gail:
-            strength: 0.05
+            strength: 0.02
             gamma: 0.99
             encoding_size: 128
             use_actions: true
@@ -128,13 +128,14 @@ VisualPyramidsLearning:
     beta: 1.0e-2
     max_steps: 5.0e5
     buffer_size: 500000
+    init_entcoef: 0.01
     tau: 0.01
     reward_signals:
         extrinsic:
-            strength: 1.0
+            strength: 2.0
             gamma: 0.99
         gail:
-            strength: 0.1
+            strength: 0.02
             gamma: 0.99
             encoding_size: 128
             use_actions: true
