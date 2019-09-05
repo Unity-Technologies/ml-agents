@@ -102,21 +102,23 @@ PyramidsLearning:
     time_horizon: 128
     batch_size: 128
     buffer_init_steps: 10000
-    buffer_size: 500000
-    hidden_units: 512
+    buffer_size: 50000
+    hidden_units: 256
     num_layers: 2
-    init_entcoef: 0.5
+    init_entcoef: 0.1
     max_steps: 5.0e5
     sequence_length: 16
+    tau: 0.05
     use_recurrent: false
     reward_signals:
         extrinsic:
-            strength: 1.0
-            gamma: 0.99
+            strength: 5.0
+            gamma: 0.995
         gail:
-            strength: 0.005
+            strength: 0.01
             gamma: 0.99
             encoding_size: 128
+            use_actions: true
             demo_path: demos/ExpertPyramid.demo
 
 
@@ -131,8 +133,8 @@ VisualPyramidsLearning:
     buffer_size: 500000
     reward_signals:
         extrinsic:
-            strength: 1.0
-            gamma: 0.99
+            strength: 5.0
+            gamma: 0.995
         gail:
             strength: 0.005
             gamma: 0.99
@@ -164,10 +166,10 @@ CrawlerStaticLearning:
     normalize: true
     time_horizon: 1000
     batch_size: 256
-    train_interval: 3
+    train_interval: 1
     buffer_size: 500000
     buffer_init_steps: 2000
-    max_steps: 5e5
+    max_steps: 2e5
     summary_freq: 3000
     init_entcoef: 1.0
     num_layers: 3
@@ -179,9 +181,9 @@ CrawlerDynamicLearning:
     batch_size: 256
     buffer_size: 500000
     summary_freq: 3000
-    train_interval: 3
+    train_interval: 1
     num_layers: 3
-    max_steps: 5e5
+    max_steps: 2e5
     hidden_units: 512
 
 WalkerLearning:
@@ -189,10 +191,10 @@ WalkerLearning:
     time_horizon: 1000
     batch_size: 256
     buffer_size: 500000
-    max_steps: 2e6
+    max_steps: 1e6
     summary_freq: 3000
     num_layers: 3
-    train_interval: 3
+    train_interval: 1
     hidden_units: 512
     reward_signals:
         extrinsic:
