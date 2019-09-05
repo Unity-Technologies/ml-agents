@@ -18,7 +18,6 @@ namespace MLAgents
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
         {
-
         }
     }
 }

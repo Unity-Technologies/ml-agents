@@ -4,12 +4,14 @@ using UnityEngine;
 public abstract class RayPerception : MonoBehaviour
 {
     protected List<float> m_PerceptionBuffer = new List<float>();
+    protected List<float> perceptionBuffer = new List<float>();
 
     public virtual List<float> Perceive(float rayDistance,
         float[] rayAngles, string[] detectableObjects,
         float startOffset, float endOffset)
     {
         return m_PerceptionBuffer;
+        return perceptionBuffer;
     }
 
     /// <summary>

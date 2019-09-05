@@ -536,7 +536,7 @@ namespace MLAgents.Tests
                 "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
 
             var maxStep = typeof(Academy).GetField(
-                "maxSteps", BindingFlags.Instance | BindingFlags.NonPublic);
+                "m_MaxSteps", BindingFlags.Instance | BindingFlags.NonPublic);
             maxStep?.SetValue(aca, 100);
 
             agent1.agentParameters = new AgentParameters();

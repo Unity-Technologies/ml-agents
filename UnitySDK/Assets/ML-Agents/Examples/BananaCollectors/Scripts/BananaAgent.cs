@@ -29,8 +29,7 @@ public class BananaAgent : Agent
     private RayPerception3D m_RayPer;
     public bool useVectorObs;
 
-
-    public override void InitializeAgent()
+    protected override void InitializeAgent()
     {
         base.InitializeAgent();
         m_AgentRb = GetComponent<Rigidbody>();

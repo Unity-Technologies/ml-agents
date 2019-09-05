@@ -36,7 +36,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(2, m.Sample(cdf));
             Assert.AreEqual(2, m.Sample(cdf));
             Assert.AreEqual(2, m.Sample(cdf));
-            Assert.AreEqual(1, m.Sample(cdf));
+            Assert.AreEqual(2, m.Sample(cdf));
         }
 
         [Test]
