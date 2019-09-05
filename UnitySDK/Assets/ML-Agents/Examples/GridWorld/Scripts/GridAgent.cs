@@ -6,9 +6,9 @@ using MLAgents;
 public class GridAgent : Agent
 {
     [Header("Specific to GridWorld")]
-    private GridAcademy academy;
+    private GridAcademy m_Academy;
     public float timeBetweenDecisionsAtInference;
-    private float timeSinceDecision;
+    private float m_TimeSinceDecision;
 
     [Tooltip("Because we want an observation right before making a decision, we can force " +
         "a camera to render before making a decision. Place the agentCam here if using " +
@@ -18,19 +18,20 @@ public class GridAgent : Agent
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
+    Collider[] m_BlockTest = new Collider[8];
 
-    private const int NoAction = 0;  // do nothing!
-    private const int Up = 1;
-    private const int Down = 2;
-    private const int Left = 3;
-    private const int Right = 4;
+    private const int k_NoAction = 0;  // do nothing!
+    private const int k_Up = 1;
+    private const int k_Down = 2;
+    private const int k_Left = 3;
+    private const int k_Right = 4;
 
-    public override void InitializeAgent()
+    protected override void InitializeAgent()
     {
-        academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
+        m_Academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
     }
 
-    public override void CollectObservations()
+    protected override void CollectObservations()
     {
         // There are no numeric observations to collect as this environment uses visual
         // observations.
@@ -48,28 +49,29 @@ public class GridAgent : Agent
     private void SetMask()
     {
         // Prevents the agent from picking an action that would make it collide with a wall
-        var positionX = (int)transform.position.x;
-        var positionZ = (int)transform.position.z;
-        var maxPosition = academy.gridSize - 1;
+        var position = transform.position;
+        var positionX = (int)position.x;
+        var positionZ = (int)position.z;
+        var maxPosition = m_Academy.gridSize - 1;
 
         if (positionX == 0)
         {
-            SetActionMask(Left);
+            SetActionMask(k_Left);
         }
 
         if (positionX == maxPosition)
         {
-            SetActionMask(Right);
+            SetActionMask(k_Right);
         }
 
         if (positionZ == 0)
         {
-            SetActionMask(Down);
+            SetActionMask(k_Down);
         }
 
         if (positionZ == maxPosition)
         {
-            SetActionMask(Up);
+            SetActionMask(k_Up);
         }
     }
 
@@ -82,36 +84,37 @@ public class GridAgent : Agent
         Vector3 targetPos = transform.position;
         switch (action)
         {
-            case NoAction:
+            case k_NoAction:
                 // do nothing
                 break;
-            case Right:
+            case k_Right:
                 targetPos = transform.position + new Vector3(1f, 0, 0f);
                 break;
-            case Left:
+            case k_Left:
                 targetPos = transform.position + new Vector3(-1f, 0, 0f);
                 break;
-            case Up:
+            case k_Up:
                 targetPos = transform.position + new Vector3(0f, 0, 1f);
                 break;
-            case Down:
+            case k_Down:
                 targetPos = transform.position + new Vector3(0f, 0, -1f);
                 break;
             default:
                 throw new ArgumentException("Invalid action value");
         }
 
-        Collider[] blockTest = Physics.OverlapBox(targetPos, new Vector3(0.3f, 0.3f, 0.3f));
-        if (blockTest.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
+
+        Physics.OverlapBoxNonAlloc(targetPos, new Vector3(0.3f, 0.3f, 0.3f), m_BlockTest);
+        if (m_BlockTest.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
             transform.position = targetPos;
 
-            if (blockTest.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
+            if (m_BlockTest.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(1f);
             }
-            if (blockTest.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            if (m_BlockTest.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(-1f);
@@ -122,7 +125,7 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentReset()
     {
-        academy.AcademyReset();
+        m_Academy.AcademyReset();
     }
 
     public void FixedUpdate()
@@ -137,20 +140,20 @@ public class GridAgent : Agent
             renderCamera.Render();
         }
 
-        if (!academy.GetIsInference())
+        if (!m_Academy.GetIsInference())
         {
             RequestDecision();
         }
         else
         {
-            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
+            if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
             {
-                timeSinceDecision = 0f;
+                m_TimeSinceDecision = 0f;
                 RequestDecision();
             }
             else
             {
-                timeSinceDecision += Time.fixedDeltaTime;
+                m_TimeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }

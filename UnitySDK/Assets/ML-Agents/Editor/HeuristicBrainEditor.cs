@@ -42,7 +42,7 @@ namespace MLAgents
         {
             if (brain.decisionScript != null)
             {
-                var decisionInstance = (CreateInstance(brain.decisionScript.name) as Decision);
+                var decisionInstance = CreateInstance(brain.decisionScript.name) as Decision;
                 if (decisionInstance == null)
                 {
                     Debug.LogError(

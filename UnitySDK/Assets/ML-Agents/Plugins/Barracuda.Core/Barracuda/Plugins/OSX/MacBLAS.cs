@@ -6,9 +6,10 @@ using UnityEngine.Scripting;
 
 
 [Preserve]
-public class MacBLAS : BLASPlugin
+public class MacBlas : BLASPlugin
 {
     [DllImport("macblas")]
+    // ReSharper disable InconsistentNaming
     static extern unsafe void macsgemm(float* Ap, int AN, int AM,
         float* Bp, int BN, int BM,
         float* Cp, int CN, int CM,
@@ -25,5 +26,7 @@ public class MacBLAS : BLASPlugin
     {
         macsgemm(Ap, AN, AM, Bp, BN, BM, Cp, CN, CM, bs, transposeA, transposeB);
     }
+
+    // ReSharper restore InconsistentNaming
 }
 #endif // UNITY_OSX

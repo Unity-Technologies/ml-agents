@@ -9,20 +9,20 @@ using UnityEditor;
 
 namespace MLAgents
 {
-    public class SocketCommunicator : Communicator
+    public class SocketCommunicator : ICommunicator
     {
-        private const float TimeOut = 10f;
-        private const int MessageLength = 12000;
-        byte[] m_messageHolder = new byte[MessageLength];
-        int m_comPort;
-        Socket m_sender;
-        byte[] m_lengthHolder = new byte[4];
-        CommunicatorParameters communicatorParameters;
+        private const float k_TimeOut = 10f;
+        private const int k_MessageLength = 12000;
+        byte[] m_MessageHolder = new byte[k_MessageLength];
+        int m_ComPort;
+        Socket m_Sender;
+        byte[] m_LengthHolder = new byte[4];
+        CommunicatorParameters m_CommunicatorParameters;
 
 
         public SocketCommunicator(CommunicatorParameters communicatorParameters)
         {
-            this.communicatorParameters = communicatorParameters;
+            m_CommunicatorParameters = communicatorParameters;
         }
 
         /// <summary>
@@ -35,11 +35,11 @@ namespace MLAgents
         public UnityInput Initialize(UnityOutput unityOutput,
             out UnityInput unityInput)
         {
-            m_sender = new Socket(
+            m_Sender = new Socket(
                 AddressFamily.InterNetwork,
                 SocketType.Stream,
                 ProtocolType.Tcp);
-            m_sender.Connect("localhost", communicatorParameters.port);
+            m_Sender.Connect("localhost", m_CommunicatorParameters.port);
 
             UnityMessage initializationInput =
                 UnityMessage.Parser.ParseFrom(Receive());
@@ -58,21 +58,21 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Uses the socke to receive a byte[] from External. Reassemble a message that was split
+        /// Uses the socket to receive a byte[] from External. Reassemble a message that was split
         /// by External if it was too long.
         /// </summary>
         /// <returns>The byte[] sent by External.</returns>
         byte[] Receive()
         {
-            m_sender.Receive(m_lengthHolder);
-            int totalLength = System.BitConverter.ToInt32(m_lengthHolder, 0);
+            m_Sender.Receive(m_LengthHolder);
+            int totalLength = System.BitConverter.ToInt32(m_LengthHolder, 0);
             int location = 0;
             byte[] result = new byte[totalLength];
             while (location != totalLength)
             {
-                int fragment = m_sender.Receive(m_messageHolder);
+                int fragment = m_Sender.Receive(m_MessageHolder);
                 System.Buffer.BlockCopy(
-                    m_messageHolder, 0, result, location, fragment);
+                    m_MessageHolder, 0, result, location, fragment);
                 location += fragment;
             }
             return result;
@@ -88,7 +88,7 @@ namespace MLAgents
             byte[] newArray = new byte[input.Length + 4];
             input.CopyTo(newArray, 4);
             System.BitConverter.GetBytes(input.Length).CopyTo(newArray, 0);
-            m_sender.Send(newArray);
+            m_Sender.Send(newArray);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace MLAgents
             Send(WrapMessage(unityOutput, 200).ToByteArray());
             byte[] received = null;
             var task = Task.Run(() => received = Receive());
-            if (!task.Wait(System.TimeSpan.FromSeconds(TimeOut)))
+            if (!task.Wait(System.TimeSpan.FromSeconds(k_TimeOut)))
             {
                 throw new UnityAgentsException(
                     "The communicator took too long to respond.");
@@ -125,7 +125,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Wraps the UnityOuptut into a message with the appropriate status.
+        /// Wraps the UnityOutput into a message with the appropriate status.
         /// </summary>
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
@@ -155,7 +155,7 @@ namespace MLAgents
         /// <param name="state">State.</param>
         private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
-            // This method is run whenever the playmode state is changed.
+            // This method is run whenever the PlayMode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
@@ -168,7 +168,7 @@ namespace MLAgents
         /// </summary>
         private void HandleOnPlayModeChanged()
         {
-            // This method is run whenever the playmode state is changed.
+            // This method is run whenever the PlayMode state is changed.
             if (!EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 Close();

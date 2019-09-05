@@ -9,11 +9,11 @@ namespace Barracuda
     /// Asset Importer of barracuda models.
     /// </summary>
     [ScriptedImporter(1, new[] {"nn"})]
-    public class NNModelImporter : ScriptedImporter
+    public class NnModelImporter : ScriptedImporter
     {
-        private const string iconName = "NNModelIcon";
+        private const string k_IconName = "NNModelIcon";
 
-        private Texture2D iconTexture;
+        private Texture2D m_IconTexture;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -27,16 +27,16 @@ namespace Barracuda
 
         private Texture2D LoadIconTexture()
         {
-            if (iconTexture == null)
+            if (m_IconTexture == null)
             {
-                string[] allCandidates = AssetDatabase.FindAssets(iconName);
+                string[] allCandidates = AssetDatabase.FindAssets(k_IconName);
 
                 if (allCandidates.Length > 0)
                 {
-                    iconTexture = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allCandidates[0]), typeof(Texture2D)) as Texture2D;
+                    m_IconTexture = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(allCandidates[0]), typeof(Texture2D)) as Texture2D;
                 }
             }
-            return iconTexture;
+            return m_IconTexture;
         }
     }
 }

@@ -18,13 +18,13 @@ namespace MLAgents
     {
         [SerializeField] public BrainParameters brainParameters;
 
-        protected Dictionary<Agent, AgentInfo> agentInfos =
+        protected Dictionary<Agent, AgentInfo> m_AgentInfos =
             new Dictionary<Agent, AgentInfo>(1024);
 
-        protected Batcher brainBatcher;
+        Batcher m_BrainBatcher;
 
         [System.NonSerialized]
-        private bool _isInitialized;
+        private bool m_IsInitialized;
 
         /// <summary>
         /// Sets the Batcher of the Brain. The brain will call the batcher at every step and give
@@ -35,12 +35,12 @@ namespace MLAgents
         {
             if (batcher == null)
             {
-                brainBatcher = null;
+                m_BrainBatcher = null;
             }
             else
             {
-                brainBatcher = batcher;
-                brainBatcher.SubscribeBrain(name);
+                m_BrainBatcher = batcher;
+                m_BrainBatcher.SubscribeBrain(name);
             }
             LazyInitialize();
         }
@@ -53,7 +53,7 @@ namespace MLAgents
         public void SendState(Agent agent, AgentInfo info)
         {
             LazyInitialize();
-            agentInfos.Add(agent, info);
+            m_AgentInfos.Add(agent, info);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace MLAgents
         /// </summary>
         private void LazyInitialize()
         {
-            if (!_isInitialized)
+            if (!m_IsInitialized)
             {
                 var academy = FindObjectOfType<Academy>();
                 if (academy)
@@ -70,7 +70,7 @@ namespace MLAgents
                     academy.BrainDecideAction += BrainDecideAction;
                     academy.DestroyAction += Shutdown;
                     Initialize();
-                    _isInitialized = true;
+                    m_IsInitialized = true;
                 }
             }
         }
@@ -81,11 +81,11 @@ namespace MLAgents
         /// </summary>
         private void Shutdown()
         {
-            if (_isInitialized)
+            if (m_IsInitialized)
             {
-                agentInfos.Clear();
+                m_AgentInfos.Clear();
 
-                _isInitialized = false;
+                m_IsInitialized = false;
             }
         }
 
@@ -94,12 +94,12 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
-            brainBatcher?.SendBrainInfo(name, agentInfos);
+            m_BrainBatcher?.SendBrainInfo(name, m_AgentInfos);
             DecideAction();
         }
 
         /// <summary>
-        /// Is called only once at the begening of the training or inference session.
+        /// Is called only once at the beginning of the training or inference session.
         /// </summary>
         protected abstract void Initialize();
 

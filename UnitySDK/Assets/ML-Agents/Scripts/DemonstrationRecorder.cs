@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Text.RegularExpressions;
-
 namespace MLAgents
 {
     /// <summary>
@@ -11,9 +10,10 @@ namespace MLAgents
     {
         public bool record;
         public string demonstrationName;
-        private Agent recordingAgent;
-        private string filePath;
-        private DemonstrationStore demoStore;
+        private Agent m_RecordingAgent;
+        private string m_FilePath;
+        private DemonstrationStore m_DemoStore;
+
         public const int MaxNameLength = 16;
 
         private void Start()
@@ -26,8 +26,9 @@ namespace MLAgents
 
         private void Update()
         {
-            if (Application.isEditor && record && demoStore == null)
+            if (Application.isEditor && record && m_DemoStore == null)
             {
+                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 InitializeDemoStore();
             }
         }
@@ -37,14 +38,16 @@ namespace MLAgents
         /// </summary>
         private void InitializeDemoStore()
         {
-            recordingAgent = GetComponent<Agent>();
-            demoStore = new DemonstrationStore();
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
+            m_RecordingAgent = GetComponent<Agent>();
+            m_DemoStore = new DemonstrationStore();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            demoStore.Initialize(
+            m_DemoStore.Initialize(
                 demonstrationName,
-                recordingAgent.brain.brainParameters,
-                recordingAgent.brain.name);
-            Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
+                m_RecordingAgent.brain.brainParameters,
+                m_RecordingAgent.brain.name);
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
+            Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info)
         {
-            demoStore.Record(info);
+            m_DemoStore.Record(info);
         }
 
         /// <summary>
@@ -76,9 +79,9 @@ namespace MLAgents
         /// </summary>
         private void OnApplicationQuit()
         {
-            if (Application.isEditor && record && demoStore != null)
+            if (Application.isEditor && record)
             {
-                demoStore.Close();
+                m_DemoStore?.Close();
             }
         }
     }

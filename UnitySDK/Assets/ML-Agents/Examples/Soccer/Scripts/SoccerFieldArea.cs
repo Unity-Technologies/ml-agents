@@ -1,70 +1,49 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
-
-[System.Serializable]
+[Serializable]
 public class PlayerState
 {
-    public int playerIndex;
-    public Rigidbody agentRB;
-    public Vector3 startingPos;
     public AgentSoccer agentScript;
-    public float ballPosReward;
 }
 
 public class SoccerFieldArea : MonoBehaviour
 {
-    public Transform redGoal;
-    public Transform blueGoal;
-    public AgentSoccer redStriker;
-    public AgentSoccer blueStriker;
-    public AgentSoccer redGoalie;
-    public AgentSoccer blueGoalie;
     public GameObject ball;
+    [FormerlySerializedAs("ballRB")]
     [HideInInspector]
-    public Rigidbody ballRB;
+    public Rigidbody ballRb;
     public GameObject ground;
     public GameObject centerPitch;
-    SoccerBallController ballController;
+    SoccerBallController m_BallController;
     public List<PlayerState> playerStates = new List<PlayerState>();
-    [HideInInspector]
-    public Vector3 ballStartingPos;
-    public bool drawSpawnAreaGizmo;
-    Vector3 spawnAreaSize;
-    public float goalScoreByTeamReward;
-    public float goalScoreAgainstTeamReward;
+    Vector3 m_SpawnAreaSize;
     public GameObject goalTextUI;
-    public float totalPlayers;
-    [HideInInspector]
-    public bool canResetBall;
-    public bool useSpawnPoint;
-    public Transform spawnPoint;
-    Material groundMaterial;
-    Renderer groundRenderer;
-    SoccerAcademy academy;
-    public float blueBallPosReward;
-    public float redBallPosReward;
+    Material m_GroundMaterial;
+    Renderer m_GroundRenderer;
+    SoccerAcademy m_Academy;
 
-    public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
+    IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
-        groundRenderer.material = mat;
+        m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
-        groundRenderer.material = groundMaterial;
+        // ReSharper disable once Unity.InefficientPropertyAccess
+        m_GroundRenderer.material = m_GroundMaterial;
     }
 
     void Awake()
     {
-        academy = FindObjectOfType<SoccerAcademy>();
-        groundRenderer = centerPitch.GetComponent<Renderer>();
-        groundMaterial = groundRenderer.material;
-        canResetBall = true;
+        m_Academy = FindObjectOfType<SoccerAcademy>();
+        m_GroundRenderer = centerPitch.GetComponent<Renderer>();
+        m_GroundMaterial = m_GroundRenderer.material;
         if (goalTextUI) { goalTextUI.SetActive(false); }
-        ballRB = ball.GetComponent<Rigidbody>();
-        ballController = ball.GetComponent<SoccerBallController>();
-        ballController.area = this;
-        ballStartingPos = ball.transform.position;
-        Mesh mesh = ground.GetComponent<MeshFilter>().mesh;
+        ballRb = ball.GetComponent<Rigidbody>();
+        m_BallController = ball.GetComponent<SoccerBallController>();
+        m_BallController.area = this;
     }
 
     IEnumerator ShowGoalUI()
@@ -74,46 +53,26 @@ public class SoccerFieldArea : MonoBehaviour
         if (goalTextUI) goalTextUI.SetActive(false);
     }
 
-    public void AllPlayersDone(float reward)
-    {
-        foreach (PlayerState ps in playerStates)
-        {
-            if (ps.agentScript.gameObject.activeInHierarchy)
-            {
-                if (reward != 0)
-                {
-                    ps.agentScript.AddReward(reward);
-                }
-                ps.agentScript.Done();
-            }
-        }
-    }
-
     public void GoalTouched(AgentSoccer.Team scoredTeam)
     {
         foreach (PlayerState ps in playerStates)
         {
             if (ps.agentScript.team == scoredTeam)
             {
-                RewardOrPunishPlayer(ps, academy.strikerReward, academy.goalieReward);
+                RewardOrPunishPlayer(ps, m_Academy.strikerReward, m_Academy.goalieReward);
             }
             else
             {
-                RewardOrPunishPlayer(ps, academy.strikerPunish, academy.goaliePunish);
+                RewardOrPunishPlayer(ps, m_Academy.strikerPunish, m_Academy.goaliePunish);
             }
-            if (academy.randomizePlayersTeamForTraining)
+            if (m_Academy.randomizePlayersTeamForTraining)
             {
                 ps.agentScript.ChooseRandomTeam();
             }
 
-            if (scoredTeam == AgentSoccer.Team.Red)
-            {
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.redMaterial, 1));
-            }
-            else
-            {
-                StartCoroutine(GoalScoredSwapGroundMaterial(academy.blueMaterial, 1));
-            }
+            StartCoroutine(scoredTeam == AgentSoccer.Team.Red
+                ? GoalScoredSwapGroundMaterial(m_Academy.redMaterial, 1)
+                : GoalScoredSwapGroundMaterial(m_Academy.blueMaterial, 1));
             if (goalTextUI)
             {
                 StartCoroutine(ShowGoalUI());
@@ -121,7 +80,7 @@ public class SoccerFieldArea : MonoBehaviour
         }
     }
 
-    public void RewardOrPunishPlayer(PlayerState ps, float striker, float goalie)
+    static void RewardOrPunishPlayer(PlayerState ps, float striker, float goalie)
     {
         if (ps.agentScript.agentRole == AgentSoccer.AgentRole.Striker)
         {
@@ -136,47 +95,49 @@ public class SoccerFieldArea : MonoBehaviour
 
     public Vector3 GetRandomSpawnPos(AgentSoccer.AgentRole role, AgentSoccer.Team team)
     {
-        float xOffset = 0f;
-        if (role == AgentSoccer.AgentRole.Goalie)
+        float xOffset;
+        switch (role)
         {
-            xOffset = 13f;
+            case AgentSoccer.AgentRole.Goalie:
+                xOffset = 13f;
+                break;
+            case AgentSoccer.AgentRole.Striker:
+                xOffset = 7f;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(role), role, null);
         }
-        if (role == AgentSoccer.AgentRole.Striker)
-        {
-            xOffset = 7f;
-        }
+
         if (team == AgentSoccer.Team.Blue)
         {
-            xOffset = xOffset * -1f;
+            xOffset *= -1f;
         }
-        var randomSpawnPos = ground.transform.position +
+
+        var position = ground.transform.position;
+        var randomSpawnPos = position +
             new Vector3(xOffset, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+            + Random.insideUnitSphere * 2;
+        randomSpawnPos.y = position.y + 2;
         return randomSpawnPos;
     }
 
-    public Vector3 GetBallSpawnPosition()
+    Vector3 GetBallSpawnPosition()
     {
-        var randomSpawnPos = ground.transform.position +
+        var position = ground.transform.position;
+        var randomSpawnPos = position +
             new Vector3(0f, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+            + Random.insideUnitSphere * 2;
+        randomSpawnPos.y = position.y + 2;
         return randomSpawnPos;
-    }
-
-    void SpawnObjAtPos(GameObject obj, Vector3 pos)
-    {
-        obj.transform.position = pos;
     }
 
     public void ResetBall()
     {
         ball.transform.position = GetBallSpawnPosition();
-        ballRB.velocity = Vector3.zero;
-        ballRB.angularVelocity = Vector3.zero;
+        ballRb.velocity = Vector3.zero;
+        ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = academy.resetParameters["ball_scale"];
-        ballRB.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
+        var ballScale = m_Academy.resetParameters["ball_scale"];
+        ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

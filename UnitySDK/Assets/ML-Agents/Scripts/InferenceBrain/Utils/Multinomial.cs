@@ -5,16 +5,16 @@ namespace MLAgents.InferenceBrain.Utils
     /// </summary>
     public class Multinomial
     {
-        private readonly System.Random _random;
+        private readonly System.Random m_Random;
 
         public Multinomial(int seed)
         {
-            _random = new System.Random(seed);
+            m_Random = new System.Random(seed);
         }
 
         public int Sample(float[] cdf)
         {
-            var p = (float)_random.NextDouble() * cdf[cdf.Length - 1];
+            var p = (float)m_Random.NextDouble() * cdf[cdf.Length - 1];
             var cls = 0;
             while (cdf[cls] < p)
             {

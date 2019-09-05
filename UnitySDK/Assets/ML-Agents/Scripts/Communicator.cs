@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
 
@@ -43,10 +41,10 @@ namespace MLAgents
     ......UnityRLIntput
     ......UnityRLInitializationIntput
 
-    UnityOutput and UnityInput can be extended to provide functionalities beyond RL
-    UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
+    UnityOutput and UnityInput can be extended to provide functionality beyond RL
+    UnityRLOutput and UnityRLInput can be extended to provide new RL functionality
      */
-    public interface Communicator
+    public interface ICommunicator
     {
         /// <summary>
         /// Initialize the communicator by sending the first UnityOutput and receiving the

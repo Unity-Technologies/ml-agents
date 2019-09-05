@@ -13,20 +13,20 @@ namespace MLAgents
     [CustomEditor(typeof(LearningBrain))]
     public class LearningBrainEditor : BrainEditor
     {
-        private const string ModelPropName = "model";
-        private const string InferenceDevicePropName = "inferenceDevice";
-        private const float TimeBetweenModelReloads = 2f;
+        private const string k_ModelPropName = "model";
+        private const string k_InferenceDevicePropName = "inferenceDevice";
+        private const float k_TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model
-        private float _timeSinceModelReload;
+        private float m_TimeSinceModelReload;
         // Whether or not the model needs to be reloaded
-        private bool _requireReload;
+        private bool m_RequireReload;
 
         /// <summary>
         /// Called when the user opens the Inspector for the LearningBrain
         /// </summary>
         public void OnEnable()
         {
-            _requireReload = true;
+            m_RequireReload = true;
             EditorApplication.update += IncreaseTimeSinceLastModelReload;
         }
 
@@ -35,6 +35,7 @@ namespace MLAgents
         /// </summary>
         public void OnDisable()
         {
+            // ReSharper disable once DelegateSubtraction
             EditorApplication.update -= IncreaseTimeSinceLastModelReload;
         }
 
@@ -46,20 +47,20 @@ namespace MLAgents
             EditorGUI.BeginChangeCheck();
             base.OnInspectorGUI();
             serializedBrain.Update();
-            var tfGraphModel = serializedBrain.FindProperty(ModelPropName);
+            var tfGraphModel = serializedBrain.FindProperty(k_ModelPropName);
             EditorGUILayout.ObjectField(tfGraphModel);
-            var inferenceDevice = serializedBrain.FindProperty(InferenceDevicePropName);
+            var inferenceDevice = serializedBrain.FindProperty(k_InferenceDevicePropName);
             EditorGUILayout.PropertyField(inferenceDevice);
             serializedBrain.ApplyModifiedProperties();
             if (EditorGUI.EndChangeCheck())
             {
-                _requireReload = true;
+                m_RequireReload = true;
             }
-            if (_requireReload && _timeSinceModelReload > TimeBetweenModelReloads)
+            if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
             {
                 brain.ReloadModel();
-                _requireReload = false;
-                _timeSinceModelReload = 0;
+                m_RequireReload = false;
+                m_TimeSinceModelReload = 0;
             }
             // Display all failed checks
             var failedChecks = brain.GetModelFailedChecks();
@@ -78,7 +79,7 @@ namespace MLAgents
         /// </summary>
         private void IncreaseTimeSinceLastModelReload()
         {
-            _timeSinceModelReload += Time.deltaTime;
+            m_TimeSinceModelReload += Time.deltaTime;
         }
     }
 }

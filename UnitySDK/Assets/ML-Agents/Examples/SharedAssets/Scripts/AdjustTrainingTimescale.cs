@@ -1,7 +1,4 @@
 //This script lets you change time scale during training. It is not a required script for this demo to function
-
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace  MLAgents

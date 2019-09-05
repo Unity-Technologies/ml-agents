@@ -14,10 +14,10 @@ namespace MLAgents
         public DemonstrationMetaData metaData;
         public BrainParameters brainParameters;
 
-        public void Initialize(BrainParameters brainParameters,
+        public void Initialize(BrainParameters initBrainParams,
             DemonstrationMetaData demonstrationMetaData)
         {
-            this.brainParameters = brainParameters;
+            brainParameters = initBrainParams;
             metaData = demonstrationMetaData;
         }
     }
@@ -33,6 +33,7 @@ namespace MLAgents
         public int numberEpisodes;
         public float meanReward;
         public string demonstrationName;
+
         public const int ApiVersion = 1;
 
         /// <summary>

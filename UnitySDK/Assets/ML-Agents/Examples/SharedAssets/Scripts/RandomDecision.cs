@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using MLAgents;
 
 namespace MLAgents
 {
@@ -13,7 +12,7 @@ namespace MLAgents
             bool done,
             List<float> memory)
         {
-            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
             {
                 List<float> act = new List<float>();
 

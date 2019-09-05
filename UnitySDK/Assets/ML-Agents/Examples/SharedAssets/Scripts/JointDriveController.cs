@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -20,7 +20,8 @@ namespace MLAgents
 
         public TargetContact targetContact;
 
-        [HideInInspector] public JointDriveController thisJDController;
+        [FormerlySerializedAs("thisJDController")]
+        [HideInInspector] public JointDriveController thisJdController;
 
         [Header("Current Joint Settings")][Space(10)]
         public Vector3 currentEularJointRotation;
@@ -44,8 +45,9 @@ namespace MLAgents
         /// </summary>
         public void Reset(BodyPart bp)
         {
-            bp.rb.transform.position = bp.startingPos;
-            bp.rb.transform.rotation = bp.startingRot;
+            var transform = bp.rb.transform;
+            transform.position = bp.startingPos;
+            transform.rotation = bp.startingRot;
             bp.rb.velocity = Vector3.zero;
             bp.rb.angularVelocity = Vector3.zero;
             if (bp.groundContact)
@@ -69,13 +71,15 @@ namespace MLAgents
             z = (z + 1f) * 0.5f;
 
             var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+            var angularYLimit = joint.angularYLimit;
+            var angularZLimit = joint.angularZLimit;
+            var yRot = Mathf.Lerp(-angularYLimit.limit, angularYLimit.limit, y);
+            var zRot = Mathf.Lerp(-angularZLimit.limit, angularZLimit.limit, z);
 
             currentXNormalizedRot =
                 Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
-            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
-            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
+            currentYNormalizedRot = Mathf.InverseLerp(-angularYLimit.limit, angularYLimit.limit, yRot);
+            currentZNormalizedRot = Mathf.InverseLerp(-angularZLimit.limit, angularZLimit.limit, zRot);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
             currentEularJointRotation = new Vector3(xRot, yRot, zRot);
@@ -83,11 +87,11 @@ namespace MLAgents
 
         public void SetJointStrength(float strength)
         {
-            var rawVal = (strength + 1f) * 0.5f * thisJDController.maxJointForceLimit;
+            var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
             var jd = new JointDrive
             {
-                positionSpring = thisJDController.maxJointSpring,
-                positionDamper = thisJDController.jointDampen,
+                positionSpring = thisJdController.maxJointSpring,
+                positionDamper = thisJdController.jointDampen,
                 maximumForce = rawVal
             };
             joint.slerpDrive = jd;
@@ -102,7 +106,7 @@ namespace MLAgents
 
         public float jointDampen;
         public float maxJointForceLimit;
-        float facingDot;
+        float m_FacingDot;
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
@@ -141,7 +145,7 @@ namespace MLAgents
                 bp.targetContact = t.gameObject.AddComponent<TargetContact>();
             }
 
-            bp.thisJDController = this;
+            bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
         }
@@ -152,10 +156,12 @@ namespace MLAgents
             {
                 if (bodyPart.joint)
                 {
-                    bodyPart.currentJointForce = bodyPart.joint.currentForce;
-                    bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.magnitude;
-                    bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
-                    bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.magnitude;
+                    var currentForce = bodyPart.joint.currentForce;
+                    bodyPart.currentJointForce = currentForce;
+                    bodyPart.currentJointForceSqrMag = currentForce.magnitude;
+                    var currentTorque = bodyPart.joint.currentTorque;
+                    bodyPart.currentJointTorque = currentTorque;
+                    bodyPart.currentJointTorqueSqrMag = currentTorque.magnitude;
                     if (Application.isEditor)
                     {
                         if (bodyPart.jointForceCurve.length > 1000)

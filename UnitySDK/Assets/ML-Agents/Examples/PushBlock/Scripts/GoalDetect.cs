@@ -8,6 +8,7 @@ using UnityEngine;
 public class GoalDetect : MonoBehaviour
 {
     [HideInInspector]
+    // ReSharper disable once InvalidXmlDocComment
     /// <summary>
     /// The associated agent.
     /// This will be set by the agent script on Initialization.
@@ -20,7 +21,7 @@ public class GoalDetect : MonoBehaviour
         // Touched goal.
         if (col.gameObject.CompareTag("goal"))
         {
-            agent.IScoredAGoal();
+            agent.ScoredAGoal();
         }
     }
 }

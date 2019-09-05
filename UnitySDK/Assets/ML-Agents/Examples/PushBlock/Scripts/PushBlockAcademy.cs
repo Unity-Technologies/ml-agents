@@ -2,8 +2,6 @@
 //Create an empty gameObject and attach this script.
 //The brain needs to be a child of the Academy gameObject.
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -13,12 +11,6 @@ public class PushBlockAcademy : Academy
     /// The "walking speed" of the agents in the scene.
     /// </summary>
     public float agentRunSpeed;
-
-    /// <summary>
-    /// The agent rotation speed.
-    /// Every agent will use this setting.
-    /// </summary>
-    public float agentRotationSpeed;
 
     /// <summary>
     /// The spawn area margin multiplier.
@@ -33,20 +25,4 @@ public class PushBlockAcademy : Academy
     /// material for a few seconds.
     /// </summary>
     public Material goalScoredMaterial;
-
-    /// <summary>
-    /// When an agent fails, the ground will turn this material for a few seconds.
-    /// </summary>
-    public Material failMaterial;
-
-    /// <summary>
-    /// The gravity multiplier.
-    /// Use ~3 to make things less floaty
-    /// </summary>
-    public float gravityMultiplier;
-
-    void State()
-    {
-        Physics.gravity *= gravityMultiplier;
-    }
 }

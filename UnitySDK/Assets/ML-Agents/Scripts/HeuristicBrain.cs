@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,7 +10,7 @@ namespace MLAgents
     /// The Heuristic Brain type allows you to hand code an Agent's decision making process.
     /// A Heuristic Brain requires an implementation of the Decision interface to which it
     /// delegates the decision making process.
-    /// When yusing a Heuristic Brain, you must give it a Monoscript of a Decision implementation.
+    /// When using a Heuristic Brain, you must give it a Mono script of a Decision implementation.
     /// </summary>
     [CreateAssetMenu(fileName = "NewHeuristicBrain", menuName = "ML-Agents/Heuristic Brain")]
     public class HeuristicBrain : Brain
@@ -24,31 +22,25 @@ namespace MLAgents
         [HideInInspector]
         public MonoScript decisionScript;
 #endif
+        [FormerlySerializedAs("c_decision")]
         [SerializeField]
         [HideInInspector]
-        public string c_decision;
+        public string cDecision;
 
         public void OnValidate()
         {
 #if UNITY_EDITOR
-            if (decisionScript != null)
-            {
-                c_decision = decisionScript.GetClass().Name;
-            }
-            else
-            {
-                c_decision = "";
-            }
+            cDecision = decisionScript != null ? decisionScript.GetClass().Name : "";
 #endif
         }
 
         /// <inheritdoc/>
         protected override void Initialize()
         {
-            if ((c_decision != null) && decision == null)
+            if (cDecision != null && decision == null)
             {
-                decision = CreateInstance(c_decision) as Decision;
-                decision.brainParameters = brainParameters;
+                decision = CreateInstance(cDecision) as Decision;
+                if (decision != null) decision.brainParameters = brainParameters;
             }
         }
 
@@ -60,25 +52,25 @@ namespace MLAgents
                 throw new UnityAgentsException(
                     "The Brain is set to Heuristic, but no decision script attached to it");
             }
-            foreach (Agent agent in agentInfos.Keys)
+            foreach (var agent in m_AgentInfos.Keys)
             {
                 agent.UpdateVectorAction(decision.Decide(
-                    agentInfos[agent].stackedVectorObservation,
-                    agentInfos[agent].visualObservations,
-                    agentInfos[agent].reward,
-                    agentInfos[agent].done,
-                    agentInfos[agent].memories));
+                    m_AgentInfos[agent].stackedVectorObservation,
+                    m_AgentInfos[agent].visualObservations,
+                    m_AgentInfos[agent].reward,
+                    m_AgentInfos[agent].done,
+                    m_AgentInfos[agent].memories));
             }
-            foreach (Agent agent in agentInfos.Keys)
+            foreach (Agent agent in m_AgentInfos.Keys)
             {
                 agent.UpdateMemoriesAction(decision.MakeMemory(
-                    agentInfos[agent].stackedVectorObservation,
-                    agentInfos[agent].visualObservations,
-                    agentInfos[agent].reward,
-                    agentInfos[agent].done,
-                    agentInfos[agent].memories));
+                    m_AgentInfos[agent].stackedVectorObservation,
+                    m_AgentInfos[agent].visualObservations,
+                    m_AgentInfos[agent].reward,
+                    m_AgentInfos[agent].done,
+                    m_AgentInfos[agent].memories));
             }
-            agentInfos.Clear();
+            m_AgentInfos.Clear();
         }
     }
 }

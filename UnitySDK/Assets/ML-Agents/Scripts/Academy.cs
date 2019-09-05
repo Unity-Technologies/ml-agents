@@ -1,7 +1,10 @@
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 using System.IO;
 using System.Linq;
+using MLAgents.CommunicatorObjects;
+using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -12,7 +15,7 @@ using UnityEditor;
  *
  * The ML-Agents toolkit contains five entities: Academy, Brain, Agent, Communicator and
  * Python API. The academy, and all its brains and connected agents live within
- * a learning environment (herin called Environment), while the communicator
+ * a learning environment (herein called Environment), while the communicator
  * manages the communication between the learning environment and the Python
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
@@ -28,7 +31,7 @@ namespace MLAgents
     /// modes separately and represent screen resolution, rendering quality and
     /// frame rate.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class EnvironmentConfiguration
     {
         [Tooltip("Width of the environment window in pixels.")]
@@ -84,7 +87,7 @@ namespace MLAgents
     /// The mode is determined by the presence or absence of a Communicator. In
     /// the presence of a communicator, the academy is run in training mode where
     /// the states and observations of each agent are sent through the
-    /// communicator. In the absence of a communciator, the academy is run in
+    /// communicator. In the absence of a communicator, the academy is run in
     /// inference mode where the agent behavior is determined by the brain
     /// attached to it (which may be internal, heuristic or player).
     /// </remarks>
@@ -95,41 +98,47 @@ namespace MLAgents
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
-        private const string kApiVersion = "API-9";
+        private const string k_ApiVersion = "API-9";
 
         /// Temporary storage for global gravity value
-        /// Used to restore oringal value when deriving Academy modifies it
-        private Vector3 originalGravity;
+        /// Used to restore original value when deriving Academy modifies it
+        private Vector3 m_OriginalGravity;
 
         /// Temporary storage for global fixedDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it
-        private float originalFixedDeltaTime;
+        /// Used to restore original value when deriving Academy modifies it
+        private float m_OriginalFixedDeltaTime;
 
         /// Temporary storage for global maximumDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it
-        private float originalMaximumDeltaTime;
+        /// Used to restore original value when deriving Academy modifies it
+        private float m_OriginalMaximumDeltaTime;
 
         // Fields provided in the Inspector
 
+        [FormerlySerializedAs("maxSteps")]
         [SerializeField]
         [Tooltip("Total number of steps per global episode.\nNon-positive " +
             "values correspond to episodes without a maximum number of \n" +
             "steps. Once the step counter reaches this maximum value, the " +
             "environment will reset.")]
-        int maxSteps;
+        #pragma warning disable 0649
+        int m_MaxSteps;
+        #pragma warning restore 0649
 
+        [FormerlySerializedAs("trainingConfiguration")]
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
             "quality and engine speed during Training.")]
-        EnvironmentConfiguration trainingConfiguration =
+        EnvironmentConfiguration m_TrainingConfiguration =
             new EnvironmentConfiguration(80, 80, 1, 100.0f, -1);
 
+        [FormerlySerializedAs("inferenceConfiguration")]
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
             "quality and engine speed during Inference.")]
-        EnvironmentConfiguration inferenceConfiguration =
+        EnvironmentConfiguration m_InferenceConfiguration =
             new EnvironmentConfiguration(1280, 720, 5, 1.0f, 60);
 
+        // ReSharper disable once InvalidXmlDocComment
         /// <summary>
         /// Contains a mapping from parameter names to float values. They are
         /// used in <see cref="AcademyReset"/> and <see cref="AcademyStep"/>
@@ -137,72 +146,72 @@ namespace MLAgents
         /// <summary/>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training with an external Brain by passinga config
+        /// be modified when training with an external Brain by passing a config
         /// dictionary at reset.
         /// </remarks>
         [SerializeField]
         [Tooltip("List of custom parameters that can be changed in the " +
             "environment when it resets.")]
         public ResetParameters resetParameters;
-        public CommunicatorObjects.CustomResetParameters customResetParameters;
+        public CustomResetParameters customResetParameters;
 
         // Fields not provided in the Inspector.
 
         /// Boolean flag indicating whether a communicator is accessible by the
         /// environment. This also specifies whether the environment is in
         /// Training or Inference mode.
-        bool isCommunicatorOn;
+        bool m_IsCommunicatorOn;
 
         /// Keeps track of the id of the last communicator message received.
         /// Remains 0 if there are no communicators. Is used to ensure that
         /// the same message is not used multiple times.
-        private ulong lastCommunicatorMessageNumber;
+        private ulong m_LastCommunicatorMessageNumber;
 
         /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
         /// or absence of a communicator. Furthermore, it can be modified by an
         /// external Brain during reset via <see cref="SetIsInference"/>.
-        bool isInference = true;
+        bool m_IsInference = true;
 
         /// The done flag of the academy. When set to true, the academy will
         /// call <see cref="AcademyReset"/> instead of <see cref="AcademyStep"/>
         /// at step time. If true, all agents done flags will be set to true.
-        bool done;
+        bool m_Done;
 
         /// Whether the academy has reached the maximum number of steps for the
         /// current episode.
-        bool maxStepReached;
+        bool m_MaxStepReached;
 
         /// The number of episodes completed by the environment. Incremented
         /// each time the environment is reset.
-        int episodeCount;
+        int m_EpisodeCount;
 
-        /// The number of steps completed within the current episide. Incremented
+        /// The number of steps completed within the current episode. Incremented
         /// each time a step is taken in the environment. Is reset to 0 during
         /// <see cref="AcademyReset"/>.
-        int stepCount;
+        int m_StepCount;
 
         /// The number of total number of steps completed during the whole simulation. Incremented
         /// each time a step is taken in the environment.
-        int totalStepCount;
+        int m_TotalStepCount;
 
         /// Flag that indicates whether the inference/training mode of the
         /// environment was switched by the external Brain. This impacts the
         /// engine settings at the next environment step.
-        bool modeSwitched;
+        bool m_ModeSwitched;
 
         /// Pointer to the batcher currently in use by the Academy.
-        MLAgents.Batcher brainBatcher;
+        Batcher m_BrainBatcher;
 
         /// Used to write error messages.
-        StreamWriter logWriter;
+        StreamWriter m_LogWriter;
 
         /// The path to where the log should be written.
-        string logPath;
+        string m_LogPath;
 
 
         // Flag used to keep track of the first time the Academy is reset.
-        bool firstAcademyReset;
+        bool m_FirstAcademyReset;
 
         // The Academy uses a series of events to communicate with agents and
         // brains to facilitate synchronization. More specifically, it ensure
@@ -212,32 +221,32 @@ namespace MLAgents
 
         // Signals to all the Brains at each environment step so they can decide
         // actions for their agents.
-        public event System.Action BrainDecideAction;
+        public event Action BrainDecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
-        public event System.Action DestroyAction;
+        public event Action DestroyAction;
 
         // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
-        public event System.Action<bool, bool, int> AgentSetStatus;
+        public event Action<bool, bool, int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can reset
         // if their flag has been set to done (assuming the agent has requested a
         // decision).
-        public event System.Action AgentResetIfDone;
+        public event Action AgentResetIfDone;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Brain if they have requested a decision.
-        public event System.Action AgentSendState;
+        public event Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
         // they have requested a decision.
-        public event System.Action AgentAct;
+        public event Action AgentAct;
 
-        // Sigals to all the agents each time the Academy force resets.
-        public event System.Action AgentForceReset;
+        // Signals to all the agents each time the Academy force resets.
+        public event Action AgentForceReset;
 
         /// <summary>
         /// Monobehavior function called at the very beginning of environment
@@ -251,9 +260,9 @@ namespace MLAgents
         }
 
         // Used to read Python-provided environment parameters
-        private int ReadArgs()
+        private static int ReadArgs()
         {
-            var args = System.Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs();
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
@@ -271,25 +280,25 @@ namespace MLAgents
         /// </summary>
         private void InitializeEnvironment()
         {
-            originalGravity = Physics.gravity;
-            originalFixedDeltaTime = Time.fixedDeltaTime;
-            originalMaximumDeltaTime = Time.maximumDeltaTime;
+            m_OriginalGravity = Physics.gravity;
+            m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
+            m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
 
             InitializeAcademy();
-            Communicator communicator = null;
+            ICommunicator communicator;
 
-            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();;
+            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();
             var controlledBrains = broadcastHub.broadcastingBrains.Where(
-                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
-            foreach (LearningBrain brain in controlledBrains)
+                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x)).ToList();
+            foreach (var learningBrain in controlledBrains.Cast<LearningBrain>())
             {
-                brain.SetToControlledExternally();
+                learningBrain.SetToControlledExternally();
             }
 
-            // Try to launch the communicator by usig the arguments passed at launch
+            // Try to launch the communicator by using the arguments passed at launch
             try
             {
-                communicator = new RPCCommunicator(
+                communicator = new RpcCommunicator(
                     new CommunicatorParameters
                     {
                         port = ReadArgs()
@@ -297,14 +306,14 @@ namespace MLAgents
             }
             // If it fails, we check if there are any external brains in the scene
             // If there are : Launch the communicator on the default port
-            // If there arn't, there is no need for a communicator and it is set
+            // If there aren't, there is no need for a communicator and it is set
             // to null
             catch
             {
                 communicator = null;
-                if (controlledBrains.ToList().Count > 0)
+                if (controlledBrains.Any())
                 {
-                    communicator = new RPCCommunicator(
+                    communicator = new RpcCommunicator(
                         new CommunicatorParameters
                         {
                             port = 5005
@@ -312,21 +321,23 @@ namespace MLAgents
                 }
             }
 
-            brainBatcher = new Batcher(communicator);
+            m_BrainBatcher = new Batcher(communicator);
 
             foreach (var trainingBrain in exposedBrains)
             {
-                trainingBrain.SetBatcher(brainBatcher);
+                trainingBrain.SetBatcher(m_BrainBatcher);
             }
 
             if (communicator != null)
             {
-                isCommunicatorOn = true;
+                m_IsCommunicatorOn = true;
 
                 var academyParameters =
-                    new CommunicatorObjects.UnityRLInitializationOutput();
-                academyParameters.Name = gameObject.name;
-                academyParameters.Version = kApiVersion;
+                    new UnityRLInitializationOutput
+                {
+                    Name = gameObject.name,
+                    Version = k_ApiVersion
+                };
                 foreach (var brain in exposedBrains)
                 {
                     var bp = brain.brainParameters;
@@ -334,7 +345,7 @@ namespace MLAgents
                         bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
                 }
                 academyParameters.EnvironmentParameters =
-                    new CommunicatorObjects.EnvironmentParametersProto();
+                    new EnvironmentParametersProto();
                 foreach (var key in resetParameters.Keys)
                 {
                     academyParameters.EnvironmentParameters.FloatParameters.Add(
@@ -342,23 +353,23 @@ namespace MLAgents
                     );
                 }
 
-                var pythonParameters = brainBatcher.SendAcademyParameters(academyParameters);
+                var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
                 Random.InitState(pythonParameters.Seed);
                 Application.logMessageReceived += HandleLog;
-                logPath = Path.GetFullPath(".") + "/UnitySDK.log";
-                using (var fs = File.Open(logPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                m_LogPath = Path.GetFullPath(".") + "/UnitySDK.log";
+                using (var fs = File.Open(m_LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
                 {
-                    logWriter = new StreamWriter(fs);
-                    logWriter.WriteLine(System.DateTime.Now.ToString());
-                    logWriter.WriteLine(" ");
-                    logWriter.Close();
+                    m_LogWriter = new StreamWriter(fs);
+                    m_LogWriter.WriteLine(DateTime.Now.ToString());
+                    m_LogWriter.WriteLine(" ");
+                    m_LogWriter.Close();
                 }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
-            isInference = !isCommunicatorOn;
+            m_IsInference = !m_IsCommunicatorOn;
 
             BrainDecideAction += () => {};
             DestroyAction += () => {};
@@ -370,13 +381,13 @@ namespace MLAgents
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
-            SetIsInference(!brainBatcher.GetIsTraining());
+            SetIsInference(!m_BrainBatcher.GetIsTraining());
             ConfigureEnvironment();
         }
 
         private void UpdateResetParameters()
         {
-            var newResetParameters = brainBatcher.GetEnvironmentParameters();
+            var newResetParameters = m_BrainBatcher.GetEnvironmentParameters();
             if (newResetParameters != null)
             {
                 foreach (var kv in newResetParameters.FloatParameters)
@@ -389,13 +400,13 @@ namespace MLAgents
 
         void HandleLog(string logString, string stackTrace, LogType type)
         {
-            using (var fs = File.Open(logPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            using (var fs = File.Open(m_LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             {
-                logWriter = new StreamWriter(fs);
-                logWriter.WriteLine(type.ToString());
-                logWriter.WriteLine(logString);
-                logWriter.WriteLine(stackTrace);
-                logWriter.Close();
+                m_LogWriter = new StreamWriter(fs);
+                m_LogWriter.WriteLine(type.ToString());
+                m_LogWriter.WriteLine(logString);
+                m_LogWriter.WriteLine(stackTrace);
+                m_LogWriter.Close();
             }
         }
 
@@ -405,14 +416,14 @@ namespace MLAgents
         /// </summary>
         void ConfigureEnvironment()
         {
-            if (isInference)
+            if (m_IsInference)
             {
-                ConfigureEnvironmentHelper(inferenceConfiguration);
+                ConfigureEnvironmentHelper(m_InferenceConfiguration);
                 Monitor.SetActive(true);
             }
             else
             {
-                ConfigureEnvironmentHelper(trainingConfiguration);
+                ConfigureEnvironmentHelper(m_TrainingConfiguration);
                 Monitor.SetActive(false);
             }
         }
@@ -458,34 +469,34 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the <see cref="isInference"/> flag.
+        /// Returns the <see cref="m_IsInference"/> flag.
         /// </summary>
         /// <returns>
         /// <c>true</c>, if current mode is inference, <c>false</c> if training.
         /// </returns>
         public bool GetIsInference()
         {
-            return isInference;
+            return m_IsInference;
         }
 
         /// <summary>
-        /// Sets the <see cref="isInference"/> flag to the provided value. If
+        /// Sets the <see cref="m_IsInference"/> flag to the provided value. If
         /// the new flag differs from the current flag value, this signals that
         /// the environment configuration needs to be updated.
         /// </summary>
         /// <param name="isInference">
         /// Environment mode, if true then inference, otherwise training.
         /// </param>
-        public void SetIsInference(bool isInference)
+        void SetIsInference(bool isInference)
         {
-            if (this.isInference != isInference)
+            if (m_IsInference != isInference)
             {
-                this.isInference = isInference;
+                m_IsInference = isInference;
 
                 // This signals to the academy that at the next environment step
                 // the engine configurations need updating to the respective mode
-                // (i.e. training vs inference) configuraiton.
-                modeSwitched = true;
+                // (i.e. training vs inference) configuration.
+                m_ModeSwitched = true;
             }
         }
 
@@ -497,18 +508,7 @@ namespace MLAgents
         /// </returns>
         public int GetEpisodeCount()
         {
-            return episodeCount;
-        }
-
-        /// <summary>
-        /// Returns the current step counter (within the current episode).
-        /// </summary>
-        /// <returns>
-        /// Current step count.
-        /// </returns>
-        public int GetStepCount()
-        {
-            return stepCount;
+            return m_EpisodeCount;
         }
 
         /// <summary>
@@ -519,7 +519,18 @@ namespace MLAgents
         /// </returns>
         public int GetTotalStepCount()
         {
-            return totalStepCount;
+            return m_TotalStepCount;
+        }
+
+        /// <summary>
+        /// Returns the current step counter (within the current episode).
+        /// </summary>
+        /// <returns>
+        /// Current step count.
+        /// </returns>
+        public int GetStepCount()
+        {
+            return m_StepCount;
         }
 
         /// <summary>
@@ -527,7 +538,7 @@ namespace MLAgents
         /// </summary>
         public void Done()
         {
-            done = true;
+            m_Done = true;
         }
 
         /// <summary>
@@ -538,18 +549,7 @@ namespace MLAgents
         /// </returns>
         public bool IsDone()
         {
-            return done;
-        }
-
-        /// <summary>
-        /// Returns whether or not the communicator is on.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsCommunicatorOn()
-        {
-            return isCommunicatorOn;
+            return m_Done;
         }
 
         /// <summary>
@@ -560,8 +560,8 @@ namespace MLAgents
         void ForcedFullReset()
         {
             EnvironmentReset();
-            AgentForceReset();
-            firstAcademyReset = true;
+            AgentForceReset?.Invoke();
+            m_FirstAcademyReset = true;
         }
 
         /// <summary>
@@ -570,28 +570,29 @@ namespace MLAgents
         /// </summary>
         void EnvironmentStep()
         {
-            if (modeSwitched)
+            if (m_ModeSwitched)
             {
+                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 ConfigureEnvironment();
-                modeSwitched = false;
+                m_ModeSwitched = false;
             }
 
-            if ((isCommunicatorOn) &&
-                (lastCommunicatorMessageNumber != brainBatcher.GetNumberMessageReceived()))
+            if (m_IsCommunicatorOn &&
+                m_LastCommunicatorMessageNumber != m_BrainBatcher.GetNumberMessageReceived())
             {
-                lastCommunicatorMessageNumber = brainBatcher.GetNumberMessageReceived();
-                if (brainBatcher.GetCommand() ==
-                    CommunicatorObjects.CommandProto.Reset)
+                m_LastCommunicatorMessageNumber = m_BrainBatcher.GetNumberMessageReceived();
+                if (m_BrainBatcher.GetCommand() ==
+                    CommandProto.Reset)
                 {
                     UpdateResetParameters();
 
-                    SetIsInference(!brainBatcher.GetIsTraining());
+                    SetIsInference(!m_BrainBatcher.GetIsTraining());
 
                     ForcedFullReset();
                 }
 
-                if (brainBatcher.GetCommand() ==
-                    CommunicatorObjects.CommandProto.Quit)
+                if (m_BrainBatcher.GetCommand() ==
+                    CommandProto.Quit)
                 {
 #if UNITY_EDITOR
                     EditorApplication.isPlaying = false;
@@ -600,39 +601,39 @@ namespace MLAgents
                     return;
                 }
             }
-            else if (!firstAcademyReset)
+            else if (!m_FirstAcademyReset)
             {
                 UpdateResetParameters();
                 ForcedFullReset();
             }
 
-            if ((stepCount >= maxSteps) && maxSteps > 0)
+            if ((m_StepCount >= m_MaxSteps) && m_MaxSteps > 0)
             {
-                maxStepReached = true;
+                m_MaxStepReached = true;
                 Done();
             }
 
-            AgentSetStatus(maxStepReached, done, stepCount);
+            AgentSetStatus?.Invoke(m_MaxStepReached, m_Done, m_StepCount);
 
-            brainBatcher.RegisterAcademyDoneFlag(done);
+            m_BrainBatcher.RegisterAcademyDoneFlag(m_Done);
 
-            if (done)
+            if (m_Done)
             {
                 EnvironmentReset();
             }
 
-            AgentResetIfDone();
+            AgentResetIfDone?.Invoke();
 
-            AgentSendState();
+            AgentSendState?.Invoke();
 
-            BrainDecideAction();
+            BrainDecideAction?.Invoke();
 
             AcademyStep();
 
-            AgentAct();
+            AgentAct?.Invoke();
 
-            stepCount += 1;
-            totalStepCount += 1;
+            m_TotalStepCount += 1;
+            m_StepCount += 1;
         }
 
         /// <summary>
@@ -640,10 +641,10 @@ namespace MLAgents
         /// </summary>
         void EnvironmentReset()
         {
-            stepCount = 0;
-            episodeCount++;
-            done = false;
-            maxStepReached = false;
+            m_StepCount = 0;
+            m_EpisodeCount++;
+            m_Done = false;
+            m_MaxStepReached = false;
             AcademyReset();
         }
 
@@ -652,6 +653,7 @@ namespace MLAgents
         /// </summary>
         void FixedUpdate()
         {
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             EnvironmentStep();
         }
 
@@ -660,12 +662,12 @@ namespace MLAgents
         /// </summary>
         protected virtual void OnDestroy()
         {
-            Physics.gravity = originalGravity;
-            Time.fixedDeltaTime = originalFixedDeltaTime;
-            Time.maximumDeltaTime = originalMaximumDeltaTime;
+            Physics.gravity = m_OriginalGravity;
+            Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
+            Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
 
             // Signal to listeners that the academy is being destroyed now
-            DestroyAction();
+            DestroyAction?.Invoke();
         }
     }
 }

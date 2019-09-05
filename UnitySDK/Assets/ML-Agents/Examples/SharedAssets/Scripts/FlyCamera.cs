@@ -1,12 +1,11 @@
 using UnityEngine;
-using System.Collections;
 
 namespace MLAgents
 {
     public class FlyCamera : MonoBehaviour
     {
         /*
-        wasd : basic movement
+        WASD : basic movement
         shift : Makes camera accelerate
         space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/
 
@@ -19,11 +18,11 @@ namespace MLAgents
         public bool movementStaysFlat = true;
 
         private Vector3
-            lastMouse =
+            m_LastMouse =
             new Vector3(255, 255,
                 255);     // kind of in the middle of the screen, rather than at the top (play)
 
-        private float totalRun = 1.0f;
+        private float m_TotalRun = 1.0f;
 
         void Awake()
         {
@@ -39,47 +38,54 @@ namespace MLAgents
         {
             if (Input.GetMouseButtonDown(1))
             {
-                lastMouse = Input.mousePosition; // $CTK reset when we begin
+                m_LastMouse = Input.mousePosition; // $CTK reset when we begin
             }
 
+            Transform myTransform;
             if (!rotateOnlyIfMousedown ||
                 (rotateOnlyIfMousedown && Input.GetMouseButton(1)))
             {
-                lastMouse = Input.mousePosition - lastMouse;
-                lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
-                lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x,
-                    transform.eulerAngles.y + lastMouse.y, 0);
-                transform.eulerAngles = lastMouse;
-                lastMouse = Input.mousePosition;
+                m_LastMouse = Input.mousePosition - m_LastMouse;
+                m_LastMouse = new Vector3(-m_LastMouse.y * camSens, m_LastMouse.x * camSens, 0);
+                myTransform = transform;
+                var eulerAngles = myTransform.eulerAngles;
+                m_LastMouse = new Vector3(eulerAngles.x + m_LastMouse.x,
+                    eulerAngles.y + m_LastMouse.y, 0);
+                eulerAngles = m_LastMouse;
+                myTransform.eulerAngles = eulerAngles;
+                m_LastMouse = Input.mousePosition;
                 // Mouse  camera angle done.
             }
 
             // Keyboard commands
-            Vector3 p = GetBaseInput();
+            var p = GetBaseInput();
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                totalRun += Time.deltaTime;
-                p = p * totalRun * shiftAdd;
+                m_TotalRun += Time.deltaTime;
+                p = shiftAdd * m_TotalRun * p;
                 p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
                 p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
                 p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
             }
             else
             {
-                totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, 1000f);
-                p = p * mainSpeed;
+                m_TotalRun = Mathf.Clamp(m_TotalRun * 0.5f, 1f, 1000f);
+                p *= mainSpeed;
             }
 
-            p = p * Time.deltaTime;
-            Vector3 newPosition = transform.position;
+            p *= Time.deltaTime;
+            myTransform = transform;
+            var newPosition = myTransform.position;
             if (Input.GetKey(KeyCode.Space)
-                || (movementStaysFlat && !(rotateOnlyIfMousedown && Input.GetMouseButton(1))))
+                || movementStaysFlat && !(rotateOnlyIfMousedown && Input.GetMouseButton(1)))
             {
                 // If player wants to move on X and Z axis only
-                transform.Translate(p);
-                newPosition.x = transform.position.x;
-                newPosition.z = transform.position.z;
-                transform.position = newPosition;
+                myTransform.Translate(p);
+                var position = myTransform.position;
+                newPosition.x = position.x;
+                newPosition.z = position.z;
+                position = newPosition;
+                myTransform.position = position;
             }
             else
             {
@@ -87,31 +93,31 @@ namespace MLAgents
             }
         }
 
-        private Vector3 GetBaseInput()
+        private static Vector3 GetBaseInput()
         {
             // returns the basic values, if it's 0 than it's not active.
-            Vector3 p_Velocity = new Vector3();
+            var pVelocity = new Vector3();
             if (Input.GetKey(KeyCode.W))
             {
-                p_Velocity += new Vector3(0, 0, 1);
+                pVelocity += new Vector3(0, 0, 1);
             }
 
             if (Input.GetKey(KeyCode.S))
             {
-                p_Velocity += new Vector3(0, 0, -1);
+                pVelocity += new Vector3(0, 0, -1);
             }
 
             if (Input.GetKey(KeyCode.A))
             {
-                p_Velocity += new Vector3(-1, 0, 0);
+                pVelocity += new Vector3(-1, 0, 0);
             }
 
             if (Input.GetKey(KeyCode.D))
             {
-                p_Velocity += new Vector3(1, 0, 0);
+                pVelocity += new Vector3(1, 0, 0);
             }
 
-            return p_Velocity;
+            return pVelocity;
         }
     }
 }

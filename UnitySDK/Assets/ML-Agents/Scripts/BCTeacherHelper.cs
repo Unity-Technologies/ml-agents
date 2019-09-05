@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -8,12 +6,12 @@ namespace MLAgents
     /// Behavioral Cloning Helper script. Attach to teacher agent to enable
     /// resetting the experience buffer, as well as toggling session recording.
     /// </summary>
-    public class BCTeacherHelper : MonoBehaviour
+    public class BcTeacherHelper : MonoBehaviour
     {
-        bool recordExperiences;
-        bool resetBuffer;
-        Agent myAgent;
-        float bufferResetTime;
+        bool m_RecordExperiences;
+        bool m_ResetBuffer;
+        Agent m_MyAgent;
+        float m_BufferResetTime;
 
         public KeyCode recordKey = KeyCode.R;
         public KeyCode resetKey = KeyCode.C;
@@ -21,10 +19,10 @@ namespace MLAgents
         // Use this for initialization
         void Start()
         {
-            recordExperiences = true;
-            resetBuffer = false;
-            myAgent = GetComponent<Agent>();
-            bufferResetTime = Time.time;
+            m_RecordExperiences = true;
+            m_ResetBuffer = false;
+            m_MyAgent = GetComponent<Agent>();
+            m_BufferResetTime = Time.time;
         }
 
         // Update is called once per frame
@@ -32,30 +30,32 @@ namespace MLAgents
         {
             if (Input.GetKeyDown(recordKey))
             {
-                recordExperiences = !recordExperiences;
+                m_RecordExperiences = !m_RecordExperiences;
             }
 
             if (Input.GetKeyDown(resetKey))
             {
-                resetBuffer = true;
-                bufferResetTime = Time.time;
+                m_ResetBuffer = true;
+                m_BufferResetTime = Time.time;
             }
             else
             {
-                resetBuffer = false;
+                m_ResetBuffer = false;
             }
 
-            Monitor.Log("Recording experiences " + recordKey, recordExperiences.ToString());
-            float timeSinceBufferReset = Time.time - bufferResetTime;
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
+            Monitor.Log("Recording experiences " + recordKey, m_RecordExperiences.ToString());
+            var timeSinceBufferReset = Time.time - m_BufferResetTime;
+            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Monitor.Log("Seconds since buffer reset " + resetKey,
                 Mathf.FloorToInt(timeSinceBufferReset).ToString());
         }
 
         void FixedUpdate()
         {
-            // Convert both bools into single comma separated string. Python makes
+            // Convert both booleans into single comma separated string. Python makes
             // assumption that this structure is preserved.
-            myAgent.SetTextObs(recordExperiences + "," + resetBuffer);
+            m_MyAgent.SetTextObs(m_RecordExperiences + "," + m_ResetBuffer);
         }
     }
 }

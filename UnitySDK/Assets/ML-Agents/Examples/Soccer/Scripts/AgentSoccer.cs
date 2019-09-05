@@ -16,21 +16,20 @@ public class AgentSoccer : Agent
 
     public Team team;
     public AgentRole agentRole;
-    float kickPower;
-    int playerIndex;
+    float m_KickPower;
     public SoccerFieldArea area;
 
     [HideInInspector]
     public Rigidbody agentRb;
-    SoccerAcademy academy;
-    Renderer agentRenderer;
-    RayPerception rayPer;
+    SoccerAcademy m_Academy;
+    Renderer m_AgentRenderer;
+    RayPerception m_RayPer;
 
-    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] detectableObjectsRed = { "ball", "redGoal", "blueGoal",
-                                      "wall", "redAgent", "blueAgent" };
-    string[] detectableObjectsBlue = { "ball", "blueGoal", "redGoal",
-                                       "wall", "blueAgent", "redAgent" };
+    float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+    string[] m_DetectableObjectsRed = { "ball", "redGoal", "blueGoal",
+                                        "wall", "redAgent", "blueAgent" };
+    string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "redGoal",
+                                         "wall", "blueAgent", "redAgent" };
 
     public void ChooseRandomTeam()
     {
@@ -45,74 +44,63 @@ public class AgentSoccer : Agent
         }
     }
 
-    public void JoinRedTeam(AgentRole role)
+    void JoinRedTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.Red;
-        agentRenderer.material = academy.redMaterial;
+        m_AgentRenderer.material = m_Academy.redMaterial;
         tag = "redAgent";
     }
 
-    public void JoinBlueTeam(AgentRole role)
+    void JoinBlueTeam(AgentRole role)
     {
         agentRole = role;
         team = Team.Blue;
-        agentRenderer.material = academy.blueMaterial;
+        m_AgentRenderer.material = m_Academy.blueMaterial;
         tag = "blueAgent";
     }
 
-    public override void InitializeAgent()
+    protected override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRenderer = GetComponent<Renderer>();
-        rayPer = GetComponent<RayPerception>();
-        academy = FindObjectOfType<SoccerAcademy>();
+        m_AgentRenderer = GetComponent<Renderer>();
+        m_RayPer = GetComponent<RayPerception>();
+        m_Academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
 
         var playerState = new PlayerState
         {
-            agentRB = agentRb,
-            startingPos = transform.position,
-            agentScript = this,
+            agentScript = this
         };
         area.playerStates.Add(playerState);
-        playerIndex = area.playerStates.IndexOf(playerState);
-        playerState.playerIndex = playerIndex;
     }
 
-    public override void CollectObservations()
+    protected override void CollectObservations()
     {
-        float rayDistance = 20f;
-        string[] detectableObjects;
-        if (team == Team.Red)
-        {
-            detectableObjects = detectableObjectsRed;
-        }
-        else
-        {
-            detectableObjects = detectableObjectsBlue;
-        }
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));
+        const float rayDistance = 20f;
+        var detectableObjects = team == Team.Red ? m_DetectableObjectsRed : m_DetectableObjectsBlue;
+        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 0f));
     }
 
-    public void MoveAgent(float[] act)
+    void MoveAgent(float[] act)
     {
-        Vector3 dirToGo = Vector3.zero;
-        Vector3 rotateDir = Vector3.zero;
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
 
-        int action = Mathf.FloorToInt(act[0]);
+        var action = Mathf.FloorToInt(act[0]);
 
         // Goalies and Strikers have slightly different action spaces.
         if (agentRole == AgentRole.Goalie)
         {
-            kickPower = 0f;
+            m_KickPower = 0f;
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (action)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
-                    kickPower = 1f;
+                    m_KickPower = 1f;
                     break;
                 case 2:
                     dirToGo = transform.forward * -1f;
@@ -127,12 +115,13 @@ public class AgentSoccer : Agent
         }
         else
         {
-            kickPower = 0f;
+            m_KickPower = 0f;
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (action)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
-                    kickPower = 1f;
+                    m_KickPower = 1f;
                     break;
                 case 2:
                     dirToGo = transform.forward * -1f;
@@ -152,7 +141,7 @@ public class AgentSoccer : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * academy.agentRunSpeed,
+        agentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
             ForceMode.VelocityChange);
     }
 
@@ -176,7 +165,7 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        float force = 2000f * kickPower;
+        float force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
             Vector3 dir = c.contacts[0].point - transform.position;
@@ -187,7 +176,7 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
-        if (academy.randomizePlayersTeamForTraining)
+        if (m_Academy.randomizePlayersTeamForTraining)
         {
             ChooseRandomTeam();
         }
@@ -208,7 +197,7 @@ public class AgentSoccer : Agent
         SetResetParameters();
     }
 
-    public void SetResetParameters()
+    void SetResetParameters()
     {
         area.ResetBall();
     }

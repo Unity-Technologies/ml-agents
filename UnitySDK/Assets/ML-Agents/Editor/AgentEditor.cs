@@ -13,21 +13,21 @@ namespace MLAgents
     {
         public override void OnInspectorGUI()
         {
-            SerializedObject serializedAgent = serializedObject;
+            var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            SerializedProperty brain = serializedAgent.FindProperty("brain");
-            SerializedProperty actionsPerDecision = serializedAgent.FindProperty(
+            var brain = serializedAgent.FindProperty("brain");
+            var actionsPerDecision = serializedAgent.FindProperty(
                 "agentParameters.numberOfActionsBetweenDecisions");
-            SerializedProperty maxSteps = serializedAgent.FindProperty(
+            var maxSteps = serializedAgent.FindProperty(
                 "agentParameters.maxStep");
-            SerializedProperty isResetOnDone = serializedAgent.FindProperty(
+            var isResetOnDone = serializedAgent.FindProperty(
                 "agentParameters.resetOnDone");
-            SerializedProperty isODD = serializedAgent.FindProperty(
+            var isOnDemandDecision = serializedAgent.FindProperty(
                 "agentParameters.onDemandDecision");
-            SerializedProperty cameras = serializedAgent.FindProperty(
+            var cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
-            SerializedProperty renderTextures = serializedAgent.FindProperty(
+            var renderTextures = serializedAgent.FindProperty(
                 "agentParameters.agentRenderTextures");
 
             EditorGUILayout.PropertyField(brain);
@@ -38,7 +38,7 @@ namespace MLAgents
             }
 
             EditorGUILayout.LabelField("Agent Cameras");
-            for (int i = 0; i < cameras.arraySize; i++)
+            for (var i = 0; i < cameras.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     cameras.GetArrayElementAtIndex(i),
@@ -59,7 +59,7 @@ namespace MLAgents
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.LabelField("Agent RenderTextures");
-            for (int i = 0; i < renderTextures.arraySize; i++)
+            for (var i = 0; i < renderTextures.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     renderTextures.GetArrayElementAtIndex(i),
@@ -90,11 +90,11 @@ namespace MLAgents
                     "Reset On Done",
                     "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
             EditorGUILayout.PropertyField(
-                isODD,
+                isOnDemandDecision,
                 new GUIContent(
                     "On Demand Decisions",
                     "If checked, you must manually request decisions."));
-            if (!isODD.boolValue)
+            if (!isOnDemandDecision.boolValue)
             {
                 EditorGUILayout.PropertyField(
                     actionsPerDecision,
