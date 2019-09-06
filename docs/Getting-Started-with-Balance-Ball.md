@@ -52,16 +52,16 @@ to speed up training since all twelve agents contribute to training in parallel.
 
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
-properties that control how the environment works. 
+properties that control how the environment works.
 The **Broadcast Hub** keeps track of which Brains will send data during training.
 If a Brain is added to the hub, the data from this Brain will be sent to the external training
 process. If the `Control` checkbox is checked, the training process will be able to
 control and train the agents linked to the Brain.
-The **Training Configuration** and **Inference Configuration** properties 
-set the graphics and timescale properties for the Unity application. 
+The **Training Configuration** and **Inference Configuration** properties
+set the graphics and timescale properties for the Unity application.
 The Academy uses the **Training Configuration**  during training and the
-**Inference Configuration** when not training. (*Inference* means that the 
-Agent is using a trained model or heuristics or direct control — in other 
+**Inference Configuration** when not training. (*Inference* means that the
+Agent is using a trained model or heuristics or direct control — in other
 words, whenever **not** training.)
 Typically, you would set a low graphics quality and timescale to greater `1.0` for the **Training
 Configuration** and a high graphics quality and timescale to `1.0` for the
@@ -94,8 +94,8 @@ returns the chosen action to the Agent. All Agents can share the same
 Brain, but would act independently. The Brain settings tell you quite a bit about how
 an Agent works.
 
-You can create new Brain assets by selecting `Assets -> 
-Create -> ML-Agents -> Brain`. There are 3 types of Brains. 
+You can create new Brain assets by selecting `Assets ->
+Create -> ML-Agents -> Brain`. There are 3 types of Brains.
 The **Learning Brain** is a Brain that uses a trained neural network to make decisions.
 When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy, the external process that is training the neural network will take over decision making for the agents
 and ultimately generate a trained neural network. You can also use the
@@ -184,18 +184,27 @@ The Ball3DAgent subclass defines the following methods:
 
 Now that we have an environment, we can perform the training.
 
-### Training with PPO
+### Training with Deep Reinforcement Learning
 
-In order to train an agent to correctly balance the ball, we will use a
-Reinforcement Learning algorithm called Proximal Policy Optimization (PPO). This
-is a method that has been shown to be safe, efficient, and more general purpose
-than many other RL algorithms, as such we have chosen it as the example
-algorithm for use with ML-Agents toolkit. For more information on PPO, OpenAI
-has a recent [blog post](https://blog.openai.com/openai-baselines-ppo/)
-explaining it.
+In order to train an agent to correctly balance the ball, we provide two
+deep reinforcement learning algorithms.
 
-To train the agents within the Ball Balance environment, we will be using the
-Python package. We have provided a convenient command called `mlagents-learn`
+The default algorithm is Proximal Policy Optimization (PPO). This
+is a method that has been shown to be more general purpose and stable
+than many other RL algorithms. For more information on PPO, OpenAI
+has a [blog post](https://blog.openai.com/openai-baselines-ppo/)
+explaining it, and [our page](Training-PPO.md) for how to use it in training.
+
+We also provide Soft-Actor Critic, an off-policy algorithm that
+has been shown to be both stable and sample-efficient.
+For more information on SAC, see UC Berkeley's
+[blog post](https://bair.berkeley.edu/blog/2018/12/14/sac/) and
+[our page](Training-SAC.md) for more guidance on when to use SAC vs. PPO. To
+use SAC to train Balance Ball, replace all references to `config/trainer_config.yaml`
+with `config/sac_trainer_config.yaml` below.
+
+To train the agents within the Balance Ball environment, we will be using the
+ML-Agents Python package. We have provided a convenient command called `mlagents-learn`
 which accepts arguments used to configure both training and inference phases.
 
 We can use `run_id` to identify the experiment and create a folder where the
@@ -271,9 +280,9 @@ From TensorBoard, you will see the summary statistics:
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
 use it with Agents having a **Learning Brain**.
-__Note:__ Do not just close the Unity Window once the `Saved Model` message appears. 
-Either wait for the training process to close the window or press Ctrl+C at the 
-command-line prompt. If you close the window manually, the `.nn` file 
+__Note:__ Do not just close the Unity Window once the `Saved Model` message appears.
+Either wait for the training process to close the window or press Ctrl+C at the
+command-line prompt. If you close the window manually, the `.nn` file
 containing the trained model is not exported into the ml-agents folder.
 
 ### Embedding the trained model into Unity

@@ -10,13 +10,13 @@ import os
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.demo_loader import make_demo_buffer
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
 
-@pytest.fixture
-def dummy_config():
+def ppo_dummy_config():
     return yaml.safe_load(
         """
         trainer: ppo
@@ -36,12 +36,44 @@ def dummy_config():
         summary_freq: 1000
         use_recurrent: false
         memory_size: 8
-        curiosity_strength: 0.0
-        curiosity_enc_size: 1
         reward_signals:
           extrinsic:
             strength: 1.0
             gamma: 0.99
+        """
+    )
+
+
+def sac_dummy_config():
+    return yaml.safe_load(
+        """
+        trainer: sac
+        batch_size: 128
+        buffer_size: 50000
+        buffer_init_steps: 0
+        hidden_units: 128
+        init_entcoef: 1.0
+        learning_rate: 3.0e-4
+        max_steps: 5.0e4
+        memory_size: 256
+        normalize: false
+        num_update: 1
+        train_interval: 1
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 1000
+        tau: 0.005
+        use_recurrent: false
+        vis_encode_type: default
+        pretraining:
+            demo_path: ./demos/ExpertPyramid.demo
+            strength: 1.0
+            steps: 10000000
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
         """
     )
 
@@ -70,8 +102,8 @@ BUFFER_INIT_SAMPLES = 20
 NUM_AGENTS = 12
 
 
-def create_ppo_policy_mock(
-    mock_env, dummy_config, reward_signal_config, use_rnn, use_discrete, use_visual
+def create_policy_mock(
+    mock_env, trainer_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
     env, mock_brain, _ = mb.setup_mock_env_and_brains(
         mock_env,
@@ -83,13 +115,16 @@ def create_ppo_policy_mock(
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
-    trainer_parameters = dummy_config
+    trainer_parameters = trainer_config
     model_path = env.brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
-    policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
+    if trainer_config["trainer"] == "ppo":
+        policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
+    else:
+        policy = SACPolicy(0, mock_brain, trainer_parameters, False, False)
     return env, policy
 
 
@@ -116,76 +151,100 @@ def reward_signal_update(env, policy, reward_signal_name):
     assert type(out) is dict
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_cc(mock_env, dummy_config, gail_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, gail_dummy_config, False, False, False
+def test_gail_cc(mock_env, trainer_config, gail_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, gail_dummy_config, False, False, False
     )
     reward_signal_eval(env, policy, "gail")
     reward_signal_update(env, policy, "gail")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_dc_visual(mock_env, dummy_config, gail_dummy_config):
+def test_gail_dc_visual(mock_env, trainer_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
     )
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, gail_dummy_config, False, True, True
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, gail_dummy_config, False, True, True
     )
     reward_signal_eval(env, policy, "gail")
     reward_signal_update(env, policy, "gail")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_gail_rnn(mock_env, dummy_config, gail_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, gail_dummy_config, True, False, False
+def test_gail_rnn(mock_env, trainer_config, gail_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, gail_dummy_config, True, False, False
     )
     reward_signal_eval(env, policy, "gail")
     reward_signal_update(env, policy, "gail")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_cc(mock_env, dummy_config, curiosity_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, curiosity_dummy_config, False, False, False
+def test_curiosity_cc(mock_env, trainer_config, curiosity_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, curiosity_dummy_config, False, False, False
     )
     reward_signal_eval(env, policy, "curiosity")
     reward_signal_update(env, policy, "curiosity")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_dc(mock_env, dummy_config, curiosity_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, curiosity_dummy_config, False, True, False
+def test_curiosity_dc(mock_env, trainer_config, curiosity_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, curiosity_dummy_config, False, True, False
     )
     reward_signal_eval(env, policy, "curiosity")
     reward_signal_update(env, policy, "curiosity")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_visual(mock_env, dummy_config, curiosity_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, curiosity_dummy_config, False, False, True
+def test_curiosity_visual(mock_env, trainer_config, curiosity_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, curiosity_dummy_config, False, False, True
     )
     reward_signal_eval(env, policy, "curiosity")
     reward_signal_update(env, policy, "curiosity")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_curiosity_rnn(mock_env, dummy_config, curiosity_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, curiosity_dummy_config, True, False, False
+def test_curiosity_rnn(mock_env, trainer_config, curiosity_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, curiosity_dummy_config, True, False, False
     )
     reward_signal_eval(env, policy, "curiosity")
     reward_signal_update(env, policy, "curiosity")
 
 
+@pytest.mark.parametrize(
+    "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
+)
 @mock.patch("mlagents.envs.UnityEnvironment")
-def test_extrinsic(mock_env, dummy_config, curiosity_dummy_config):
-    env, policy = create_ppo_policy_mock(
-        mock_env, dummy_config, curiosity_dummy_config, False, False, False
+def test_extrinsic(mock_env, trainer_config, curiosity_dummy_config):
+    env, policy = create_policy_mock(
+        mock_env, trainer_config, curiosity_dummy_config, False, False, False
     )
     reward_signal_eval(env, policy, "extrinsic")
     reward_signal_update(env, policy, "extrinsic")

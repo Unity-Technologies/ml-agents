@@ -13,5 +13,8 @@ from .bc.policy import *
 from .ppo.models import *
 from .ppo.trainer import *
 from .ppo.policy import *
+from .sac.models import *
+from .sac.trainer import *
+from .sac.policy import *
 from .exception import *
 from .demo_loader import *
