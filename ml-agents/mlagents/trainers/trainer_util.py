@@ -5,6 +5,7 @@ from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers import Trainer
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
+from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 
@@ -87,6 +88,18 @@ def initialize_trainers(
                 seed,
                 run_id,
                 multi_gpu,
+            )
+        elif trainer_parameters_dict[brain_name]["trainer"] == "sac":
+            trainers[brain_name] = SACTrainer(
+                external_brains[brain_name],
+                meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
+                if meta_curriculum
+                else 1,
+                trainer_parameters_dict[brain_name],
+                train_model,
+                load_model,
+                seed,
+                run_id,
             )
         else:
             raise UnityEnvironmentException(
