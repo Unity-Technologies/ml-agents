@@ -36,7 +36,6 @@ class RLTrainer(Trainer):
 
     def __init__(self, *args, **kwargs):
         super(RLTrainer, self).__init__(*args, **kwargs)
-        self.step = 0
         # Make sure we have at least one reward_signal
         if not self.trainer_parameters["reward_signals"]:
             raise UnityTrainerException(
