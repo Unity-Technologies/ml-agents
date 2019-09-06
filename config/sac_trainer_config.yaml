@@ -57,7 +57,6 @@ PushBlockLearning:
 
 SmallWallJumpLearning:
     max_steps: 1.0e6
-    beta: 5.0e-3
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -67,7 +66,6 @@ SmallWallJumpLearning:
 
 BigWallJumpLearning:
     max_steps: 1.0e6
-    beta: 5.0e-3
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -103,22 +101,23 @@ PyramidsLearning:
     batch_size: 128
     buffer_init_steps: 10000
     buffer_size: 500000
-    hidden_units: 512
+    hidden_units: 256
     num_layers: 2
-    init_entcoef: 0.5
+    init_entcoef: 0.01
     max_steps: 5.0e5
     sequence_length: 16
+    tau: 0.01
     use_recurrent: false
     reward_signals:
         extrinsic:
-            strength: 1.0
+            strength: 2.0
             gamma: 0.99
         gail:
-            strength: 0.005
+            strength: 0.02
             gamma: 0.99
             encoding_size: 128
+            use_actions: true
             demo_path: demos/ExpertPyramid.demo
-
 
 VisualPyramidsLearning:
     time_horizon: 128
@@ -129,14 +128,17 @@ VisualPyramidsLearning:
     beta: 1.0e-2
     max_steps: 5.0e5
     buffer_size: 500000
+    init_entcoef: 0.01
+    tau: 0.01
     reward_signals:
         extrinsic:
-            strength: 1.0
+            strength: 2.0
             gamma: 0.99
         gail:
-            strength: 0.005
+            strength: 0.02
             gamma: 0.99
             encoding_size: 128
+            use_actions: true
             demo_path: demos/ExpertPyramid.demo
 
 3DBallLearning:
