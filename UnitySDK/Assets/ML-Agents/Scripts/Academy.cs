@@ -138,12 +138,11 @@ namespace MLAgents
         EnvironmentConfiguration m_InferenceConfiguration =
             new EnvironmentConfiguration(1280, 720, 5, 1.0f, 60);
 
-        // ReSharper disable once InvalidXmlDocComment
         /// <summary>
         /// Contains a mapping from parameter names to float values. They are
         /// used in <see cref="AcademyReset"/> and <see cref="AcademyStep"/>
         /// to modify elements in the environment at reset time.
-        /// <summary/>
+        /// </summary>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
         /// be modified when training with an external Brain by passing a config
@@ -572,7 +571,6 @@ namespace MLAgents
         {
             if (m_ModeSwitched)
             {
-                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 ConfigureEnvironment();
                 m_ModeSwitched = false;
             }
@@ -653,7 +651,6 @@ namespace MLAgents
         /// </summary>
         void FixedUpdate()
         {
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             EnvironmentStep();
         }
 

@@ -227,11 +227,13 @@ namespace MLAgents.InferenceBrain
         private void CheckIntScalarPresenceHelper(Dictionary<string, int> requiredScalarFields)
         {
             foreach (var field in requiredScalarFields)
+            {
                 if (field.Value == -1)
                 {
                     _failedModelChecks.Add(
                         $"Missing node in the model provided : {field.Key}");
                 }
+            }
         }
 
         /// <summary>

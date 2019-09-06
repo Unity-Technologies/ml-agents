@@ -95,7 +95,6 @@ public class AgentSoccer : Agent
         if (agentRole == AgentRole.Goalie)
         {
             m_KickPower = 0f;
-            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (action)
             {
                 case 1:
@@ -116,7 +115,6 @@ public class AgentSoccer : Agent
         else
         {
             m_KickPower = 0f;
-            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (action)
             {
                 case 1:

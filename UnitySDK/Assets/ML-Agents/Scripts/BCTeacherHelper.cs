@@ -43,10 +43,8 @@ namespace MLAgents
                 m_ResetBuffer = false;
             }
 
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Monitor.Log("Recording experiences " + recordKey, m_RecordExperiences.ToString());
             var timeSinceBufferReset = Time.time - m_BufferResetTime;
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Monitor.Log("Seconds since buffer reset " + resetKey,
                 Mathf.FloorToInt(timeSinceBufferReset).ToString());
         }

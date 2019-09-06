@@ -23,8 +23,9 @@ namespace MLAgents
         {
             m_ResetParameters.Clear();
 
-            foreach (var rp in this.Select(pair => new ResetParameter { key = pair.Key, value = pair.Value }))
+            foreach (var pair in this)
             {
+                var rp = new ResetParameter { key = pair.Key, value = pair.Value };
                 m_ResetParameters.Add(rp);
             }
         }

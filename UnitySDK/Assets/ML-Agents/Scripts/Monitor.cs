@@ -279,7 +279,6 @@ namespace MLAgents
 
         public static void RemoveValue(Transform target, string key)
         {
-            // ReSharper disable once Unity.PerformanceCriticalCodeNullComparison
             if (target == null)
             {
                 target = s_Canvas.transform;
@@ -325,7 +324,6 @@ namespace MLAgents
         {
             if (!s_IsInstantiated)
             {
-                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 InstantiateCanvas();
                 s_IsInstantiated = true;
             }
@@ -339,13 +337,11 @@ namespace MLAgents
         /// Initializes the canvas.
         static void InstantiateCanvas()
         {
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             s_Canvas = GameObject.Find("AgentMonitorCanvas");
             if (s_Canvas == null)
             {
                 s_Canvas = new GameObject { name = "AgentMonitorCanvas" };
 
-                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 s_Canvas.AddComponent<Monitor>();
             }
 

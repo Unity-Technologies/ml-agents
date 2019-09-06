@@ -35,7 +35,6 @@ namespace MLAgents
         /// </summary>
         public void OnDisable()
         {
-            // ReSharper disable once DelegateSubtraction
             EditorApplication.update -= IncreaseTimeSinceLastModelReload;
         }
 

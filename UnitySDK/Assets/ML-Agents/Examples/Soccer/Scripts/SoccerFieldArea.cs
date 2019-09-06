@@ -31,7 +31,6 @@ public class SoccerFieldArea : MonoBehaviour
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time);
-        // ReSharper disable once Unity.InefficientPropertyAccess
         m_GroundRenderer.material = m_GroundMaterial;
     }
 

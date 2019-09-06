@@ -28,7 +28,6 @@ namespace MLAgents
         {
             if (Application.isEditor && record && m_DemoStore == null)
             {
-                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
                 InitializeDemoStore();
             }
         }
@@ -38,7 +37,6 @@ namespace MLAgents
         /// </summary>
         private void InitializeDemoStore()
         {
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             m_RecordingAgent = GetComponent<Agent>();
             m_DemoStore = new DemonstrationStore();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
@@ -46,7 +44,6 @@ namespace MLAgents
                 demonstrationName,
                 m_RecordingAgent.brain.brainParameters,
                 m_RecordingAgent.brain.name);
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
             Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 

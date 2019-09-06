@@ -233,7 +233,6 @@ namespace MLAgents
         List<TensorProxy> FetchBarracudaOutputs(string[] names)
         {
             var outputs = new List<TensorProxy>();
-            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var n in names)
             {
                 var output = m_Engine.Peek(n);

@@ -134,7 +134,6 @@ public class PushAgentBasic : Agent
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time); // Wait for 2 sec
-        // ReSharper disable once Unity.InefficientPropertyAccess
         m_GroundRenderer.material = m_GroundMaterial;
     }
 

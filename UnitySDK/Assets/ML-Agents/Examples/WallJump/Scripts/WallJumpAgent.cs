@@ -83,7 +83,6 @@ public class WallJumpAgent : Agent
             return hitGroundColliders.Any(col =>
                 col != null &&
                 col.transform != transform &&
-                // ReSharper disable once Unity.UnknownTag (the tag is in the project)
                 (col.CompareTag("walkableSurface") || col.CompareTag("block") || col.CompareTag("wall")));
         }
 
@@ -92,7 +91,6 @@ public class WallJumpAgent : Agent
             1f);
 
         return hit.collider != null &&
-            // ReSharper disable once Unity.UnknownTag (the tag is in the project)
             (hit.collider.CompareTag("walkableSurface") ||
                 hit.collider.CompareTag("block") ||
                 hit.collider.CompareTag("wall"))
@@ -159,7 +157,6 @@ public class WallJumpAgent : Agent
     {
         m_GroundRenderer.material = mat;
         yield return new WaitForSeconds(time); //wait for 2 sec
-        // ReSharper disable once Unity.InefficientPropertyAccess
         m_GroundRenderer.material = m_GroundMaterial;
     }
 

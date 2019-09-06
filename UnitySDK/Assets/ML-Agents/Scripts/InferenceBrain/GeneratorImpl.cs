@@ -125,21 +125,25 @@ namespace MLAgents.InferenceBrain
 
             var memorySize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
-            foreach (var memory in agentInfo.Keys.Select(agent => agentInfo[agent].memories))
+            foreach (var agent in agentInfo.Keys)
             {
+                var memory = agentInfo[agent].memories;
                 if (memory == null)
                 {
                     agentIndex++;
                     continue;
                 }
+
                 for (var j = 0; j < Math.Min(memorySize, memory.Count); j++)
                 {
                     if (j >= memory.Count)
                     {
                         break;
                     }
+
                     tensorProxy.data[agentIndex, j] = memory[j];
                 }
+
                 agentIndex++;
             }
         }
