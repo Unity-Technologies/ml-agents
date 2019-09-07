@@ -49,10 +49,29 @@ def test_bc_trainer(mock_env, dummy_config):
         mock_brain, trainer_parameters, training=True, load=False, seed=0, run_id=0
     )
     trainer.demonstration_buffer = mb.simulate_rollout(env, trainer.policy, 100)
+    # Test get_step
+    assert trainer.get_step == 0
+    # Test update policy
     trainer.update_policy()
     assert len(trainer.stats["Losses/Cloning Loss"]) > 0
+    # Test increment step
     trainer.increment_step(1)
     assert trainer.step == 1
+    # Test add_experiences
+    returned_braininfo = env.step()
+    trainer.add_experiences(
+        returned_braininfo, returned_braininfo, {}
+    )  # Take action outputs is not used
+    for agent_id in mock_braininfo.agents:
+        assert trainer.evaluation_buffer[agent_id].last_brain_info is not None
+        assert trainer.episode_steps[agent_id] > 0
+        assert trainer.cumulative_rewards[agent_id] > 0
+    # Test process_experiences by setting done
+    returned_braininfo["Ball3DBrain"].local_done = 12 * [True]
+    trainer.process_experiences(returned_braininfo, returned_braininfo)
+    for agent_id in mock_braininfo.agents:
+        assert trainer.episode_steps[agent_id] == 0
+        assert trainer.cumulative_rewards[agent_id] == 0
 
 
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
