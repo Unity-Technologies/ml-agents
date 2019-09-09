@@ -95,9 +95,28 @@ namespace MLAgents
             
         }
 
+        /// <summary>
+        /// Converts Resolution array protobuf to C# Resolution array.
+        /// </summary>
+        static Resolution[] CameraProtoToNative(CommunicatorObjects.ResolutionProto[] resolutionProtos)
+        {
+            Resolution[] localCameraResolutions = new Resolution[resolutionProtos.Length];
+            for (int i = 0; i < resolutionProtos.Length; i++)
+            {
+                localCameraResolutions[i] = new Resolution
+                {
+                    height = resolutionProtos[i].Height,
+                    width = resolutionProtos[i].Width,
+                    blackAndWhite = resolutionProtos[i].GrayScale
+                };
+            }
+            return localCameraResolutions;
+        }
+
         public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
         {
             vectorObservationSize = brainParametersProto.VectorObservationSize;
+            cameraResolutions = CameraProtoToNative(brainParametersProto.CameraResolutions.ToArray());
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();

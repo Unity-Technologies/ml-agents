@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.NetworkInformation;
+using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -60,6 +61,29 @@ public class DemonstrationEditor : Editor
     }
 
     /// <summary>
+    /// Constructs complex label for each CameraResolution object.
+    /// </summary>
+    static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
+    {
+        var numCameras = cameraArray.arraySize;
+        StringBuilder cameraLabel = new StringBuilder("[ ");
+        for (int i = 0; i < numCameras; i++)
+        {
+            cameraLabel.Append(cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height").intValue);
+            cameraLabel.Append(" X ");
+            cameraLabel.Append(cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width").intValue);
+            if (i < numCameras - 1)
+            {
+                cameraLabel.Append(", ");
+            }
+        }
+
+        cameraLabel.Append(" ]");
+        return cameraLabel.ToString();
+
+    }
+
+    /// <summary>
     /// Renders Inspector UI for Brain Parameters of Demonstration.
     /// </summary>
     void MakeBrainParametersProperty(SerializedProperty property)
@@ -73,7 +97,7 @@ public class DemonstrationEditor : Editor
         var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
         var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
         var vecActSizeLabel = actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
-        var camResLabel = camResProp.displayName + ": " + camResProp.arraySize;
+        var camResLabel = camResProp.displayName + ": " + BuildCameraResolutionLabel(camResProp);
         var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType) actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
