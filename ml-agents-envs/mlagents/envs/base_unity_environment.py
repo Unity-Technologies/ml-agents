@@ -19,11 +19,6 @@ class BaseUnityEnvironment(ABC):
 
     @property
     @abstractmethod
-    def global_done(self):
-        pass
-
-    @property
-    @abstractmethod
     def external_brains(self) -> Dict[str, BrainParameters]:
         pass
 

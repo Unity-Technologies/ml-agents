@@ -41,7 +41,6 @@ def test_reset(mock_communicator, mock_launcher):
     brain = env.brains["RealFakeBrain"]
     brain_info = env.reset()
     env.close()
-    assert not env.global_done
     assert isinstance(brain_info, dict)
     assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
     assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
@@ -87,7 +86,6 @@ def test_step(mock_communicator, mock_launcher):
             * len(brain_info["RealFakeBrain"].agents)
         )
     env.close()
-    assert env.global_done
     assert isinstance(brain_info, dict)
     assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
     assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)

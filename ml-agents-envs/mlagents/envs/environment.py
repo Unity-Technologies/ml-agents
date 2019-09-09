@@ -112,6 +112,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "of ML-Agents.".format(self._version_, self._unity_version)
             )
         self._n_agents: Dict[str, int] = {}
+        self._is_first_message = True
         self._academy_name = aca_params.name
         self._log_path = aca_params.log_path
         self._brains: Dict[str, BrainParameters] = {}
@@ -344,6 +345,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             s = self._get_state(rl_output)
             for _b in self._external_brain_names:
                 self._n_agents[_b] = len(s[_b].agents)
+            self._is_first_message = False
             return s
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
@@ -367,6 +369,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
+        if self._is_first_message:
+            return self.reset()
         vector_action = {} if vector_action is None else vector_action
         memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action

@@ -41,40 +41,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         self.assertEqual(len(env.env_workers), 2)
 
-    def test_worker_step_resets_on_global_done(self):
-        env_mock = Mock()
-        env_mock.reset = Mock(return_value="reset_data")
-        env_mock.global_done = True
-
-        def mock_global_done_env_factory(worker_id: int):
-            return env_mock
-
-        mock_parent_connection = Mock()
-        mock_step_queue = Mock()
-        step_command = EnvironmentCommand("step", (None, None, None, None))
-        close_command = EnvironmentCommand("close")
-        mock_parent_connection.recv.side_effect = [step_command, close_command]
-        mock_parent_connection.send = Mock()
-
-        worker(
-            mock_parent_connection,
-            mock_step_queue,
-            cloudpickle.dumps(mock_global_done_env_factory),
-            0,
-        )
-
-        # recv called twice to get step and close command
-        self.assertEqual(mock_parent_connection.recv.call_count, 2)
-
-        expected_step_response = StepResponse(
-            all_brain_info="reset_data", timer_root=mock.ANY
-        )
-
-        # worker returns the data from the reset
-        mock_step_queue.put.assert_called_with(
-            EnvironmentResponse("step", 0, expected_step_response)
-        )
-
     def test_reset_passes_reset_params(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
             worker_id, EnvironmentResponse("reset", worker_id, worker_id)
