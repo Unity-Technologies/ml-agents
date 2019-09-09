@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 namespace MLAgents
 {
     /// <summary>
-    /// BroadcastHub holds reference to brains and keeps track wether or not the brain be
+    /// BroadcastHub holds reference to brains and keeps track whether or not the brain be
     /// remotely controlled.
     /// </summary>
     [System.Serializable]
