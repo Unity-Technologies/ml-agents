@@ -388,7 +388,7 @@ namespace MLAgents
                 academy.AgentResetIfDone -= ResetIfDone;
                 academy.AgentSendState -= SendInfo;
                 academy.AgentAct -= AgentStep;
-                academy.AgentForceReset -= _AgentReset;
+                academy.AgentForceReset -= ForceReset;
             }
         }
 
@@ -890,6 +890,17 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
+        /// This way, even if the agent was already in the process of reseting, it will be reset again
+        /// and will not send a Done flag at the next step.
+        /// </summary>
+        void ForceReset()
+        {
+            hasAlreadyReset = false;
+            _AgentReset();
+        }
+
+        /// <summary>
         /// An internal reset method that updates internal data structures in
         /// addition to calling <see cref="AgentReset"/>.
         /// </summary>
@@ -975,33 +986,13 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the status of the agent.
+        /// Sets the status of the agent. Will request decisions or actions according 
+        /// to the Academy's stepcount.
         /// </summary>
-        /// <param name="academyMaxStep">If set to <c>true</c>
-        /// The agent must set maxStepReached.</param>
-        /// <param name="academyDone">If set to <c>true</c>
-        /// The agent must set done.</param>
         /// <param name="academyStepCounter">Number of current steps in episode</param>
-        void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
+        void SetStatus( int academyStepCounter)
         {
-            if (academyDone)
-            {
-                academyStepCounter = 0;
-            }
-
             MakeRequests(academyStepCounter);
-            if (academyMaxStep)
-            {
-                maxStepReached = true;
-            }
-
-            // If the Academy needs to reset, the agent should reset
-            // even if it reseted recently.
-            if (academyDone)
-            {
-                Done();
-                hasAlreadyReset = false;
-            }
         }
 
         /// Signals the agent that it must reset if its done flag is set to true.
