@@ -52,7 +52,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         self.position = 0.0
         self.step_count = 0
         self.random = random.Random(str(self._brains))
-        self.goal = random.choice([-1, 1])
+        self.goal = self.random.choice([-1, 1])
 
     def step(
         self,
@@ -94,7 +94,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     def _reset_agent(self):
         self.position = 0.0
         self.step_count = 0
-        self.goal = random.choice([-1, 1])
+        self.goal = self.random.choice([-1, 1])
 
     def reset(
         self,
