@@ -116,10 +116,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         }
 
     @property
-    def global_done(self):
-        return False
-
-    @property
     def external_brains(self) -> Dict[str, BrainParameters]:
         return self._brains
 
