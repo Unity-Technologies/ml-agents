@@ -112,13 +112,6 @@ namespace MLAgents
         // Fields provided in the Inspector
 
         [SerializeField]
-        [Tooltip("Total number of steps per global episode.\nNon-positive " +
-                 "values correspond to episodes without a maximum number of \n" +
-                 "steps. Once the step counter reaches this maximum value, the " +
-                 "environment will reset.")]
-        int maxSteps;
-
-        [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
                  "quality and engine speed during Training.")]
         EnvironmentConfiguration trainingConfiguration =
