@@ -91,12 +91,13 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     :Mock mock_brain: A mock Brain object that specifies the params of this environment.
     :Mock mock_braininfo: A mock BrainInfo object that will be returned at each step and reset.
     """
+    brain_name = mock_brain.brain_name
     mock_env.return_value.academy_name = "MockAcademy"
-    mock_env.return_value.brains = {"MockBrain": mock_brain}
-    mock_env.return_value.external_brain_names = ["MockBrain"]
-    mock_env.return_value.brain_names = ["MockBrain"]
-    mock_env.return_value.reset.return_value = {"MockBrain": mock_braininfo}
-    mock_env.return_value.step.return_value = {"MockBrain": mock_braininfo}
+    mock_env.return_value.brains = {brain_name: mock_brain}
+    mock_env.return_value.external_brain_names = [brain_name]
+    mock_env.return_value.brain_names = [brain_name]
+    mock_env.return_value.reset.return_value = {brain_name: mock_braininfo}
+    mock_env.return_value.step.return_value = {brain_name: mock_braininfo}
 
 
 def simulate_rollout(env, policy, buffer_init_samples):
