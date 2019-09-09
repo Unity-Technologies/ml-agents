@@ -10,8 +10,8 @@ namespace MLAgents
 {
     public enum InferenceDevice
     {
-        Cpu = 0,
-        Gpu = 1
+        CPU = 0,
+        GPU = 1
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ namespace MLAgents
 
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
             "(This field is not applicable for training).")]
-        public InferenceDevice inferenceDevice = InferenceDevice.Cpu;
+        public InferenceDevice inferenceDevice = InferenceDevice.CPU;
 
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
@@ -112,7 +112,7 @@ namespace MLAgents
                 m_Engine?.Dispose();
 
                 m_BarracudaModel = ModelLoader.Load(model.Value);
-                var executionDevice = inferenceDevice == InferenceDevice.Gpu
+                var executionDevice = inferenceDevice == InferenceDevice.GPU
                     ? BarracudaWorkerFactory.Type.ComputePrecompiled
                     : BarracudaWorkerFactory.Type.CSharp;
 
