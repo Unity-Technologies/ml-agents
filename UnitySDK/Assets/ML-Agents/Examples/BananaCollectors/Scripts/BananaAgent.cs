@@ -30,7 +30,7 @@ public class BananaAgent : Agent
     public bool contribute;
     private RayPerception3D rayPer;
     public bool useVectorObs;
-  
+
 
     public override void InitializeAgent()
     {
@@ -106,7 +106,7 @@ public class BananaAgent : Agent
                 var rightAxis = (int)act[1];
                 var rotateAxis = (int)act[2];
                 var shootAxis = (int)act[3];
-                
+
                 switch (forwardAxis)
                 {
                     case 1:
@@ -116,7 +116,7 @@ public class BananaAgent : Agent
                         dirToGo = -transform.forward;
                         break;
                 }
-                
+
                 switch (rightAxis)
                 {
                     case 1:
@@ -134,7 +134,7 @@ public class BananaAgent : Agent
                         break;
                     case 2:
                         rotateDir = transform.up;
-                        break; 
+                        break;
                 }
                 switch (shootAxis)
                 {
@@ -279,15 +279,16 @@ public class BananaAgent : Agent
 
     public void SetLaserLengths()
     {
-        laser_length = myAcademy.resetParameters["laser_length"];
+        laser_length = myAcademy.resetParameters.TryGetValue("laser_length", out laser_length) ? laser_length: 1.0f;
     }
 
     public void SetAgentScale()
     {
-        var agent_scale = myAcademy.resetParameters["agent_scale"];
-        gameObject.transform.localScale = new Vector3(agent_scale, agent_scale, agent_scale);
+        float agentScale;
+        agentScale = myAcademy.resetParameters.TryGetValue("agent_scale", out agentScale) ? agentScale : 1.0f;
+        gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
-    
+
     public void SetResetParameters()
     {
         SetLaserLengths();
