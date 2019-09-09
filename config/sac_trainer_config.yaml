@@ -31,13 +31,6 @@ BananaLearning:
     init_entcoef: 0.05
     train_interval: 1
 
-VisualBananaLearning:
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 1
-    max_steps: 5.0e5
-    summary_freq: 1000
-
 BouncerLearning:
     normalize: true
     beta: 0.0
