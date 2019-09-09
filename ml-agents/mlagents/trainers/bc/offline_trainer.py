@@ -57,6 +57,8 @@ class OfflineBCTrainer(BCTrainer):
         expert_brain = copy.deepcopy(brain_params.__dict__)
         policy_brain.pop("brain_name")
         expert_brain.pop("brain_name")
+        policy_brain.pop("vector_action_descriptions")
+        expert_brain.pop("vector_action_descriptions")
         if expert_brain != policy_brain:
             raise UnityTrainerException(
                 "The provided demonstration is not compatible with the "
