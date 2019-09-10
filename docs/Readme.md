@@ -50,7 +50,12 @@
 * [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 * [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
 
-### Cloud Training 
+### Cloud Training (Unsupported)
+Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and 
+so they may not be work correctly. We've decided to keep them up just in case they are helpful to
+you. If you do try them out, please share your experience with us, and feel free to submit a PR
+with any necessary changes.
+
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 
