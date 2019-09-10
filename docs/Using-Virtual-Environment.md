@@ -26,7 +26,7 @@ installed from [here](https://www.python.org/downloads/).
 ## Ubuntu Setup 
 
 1. Install the python3-venv package using `$ sudo apt-get install python3-venv`
-1. Now follow the steps in the Mac OS X installation.
+1. Follow steps 2-5 in the Mac OS X installation.
 
 ## Windows Setup
 
