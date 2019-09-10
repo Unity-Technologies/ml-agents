@@ -61,7 +61,8 @@ public class DemonstrationEditor : Editor
 
     /// <summary>
     /// Constructs complex label for each CameraResolution object.
-    /// An example of this could be `[ 84 X 84 ]` for a single camera with 84 pixels height and width. 
+    /// An example of this could be `[ 84 X 84 ]`
+    /// for a single camera with 84 pixels height and width. 
     /// </summary>
     private static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
     {
@@ -69,10 +70,12 @@ public class DemonstrationEditor : Editor
         var cameraLabel = new StringBuilder("[ ");
         for (var i = 0; i < numCameras; i++)
         {
-            var camHeightPropName = cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height");
+            var camHeightPropName =
+                cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height");
             cameraLabel.Append(camHeightPropName.intValue);
             cameraLabel.Append(" X ");
-            var camWidthPropName = cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width");
+            var camWidthPropName =
+                cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width");
             cameraLabel.Append(camWidthPropName.intValue);
             if (i < numCameras - 1)
             {
@@ -97,9 +100,11 @@ public class DemonstrationEditor : Editor
 
         var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
         var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
-        var vecActSizeLabel = actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
+        var vecActSizeLabel =
+            actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
         var camResLabel = camResProp.displayName + ": " + BuildCameraResolutionLabel(camResProp);
-        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType) actSpaceTypeProp.enumValueIndex;
+        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
+                                (SpaceType) actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);

@@ -98,7 +98,8 @@ namespace MLAgents
         /// <summary>
         /// Converts Resolution protobuf array to C# Resolution array.
         /// </summary>
-        private static Resolution[] ResolutionProtoToNative(CommunicatorObjects.ResolutionProto[] resolutionProtos)
+        private static Resolution[] ResolutionProtoToNative(
+            CommunicatorObjects.ResolutionProto[] resolutionProtos)
         {
             var localCameraResolutions = new Resolution[resolutionProtos.Length];
             for (var i = 0; i < resolutionProtos.Length; i++)
