@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using System.Text;
+﻿using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -62,16 +61,19 @@ public class DemonstrationEditor : Editor
 
     /// <summary>
     /// Constructs complex label for each CameraResolution object.
+    /// An example of this could be `[ 84 X 84 ]` for a single camera with 84 pixels height and width. 
     /// </summary>
-    static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
+    private static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
     {
         var numCameras = cameraArray.arraySize;
-        StringBuilder cameraLabel = new StringBuilder("[ ");
-        for (int i = 0; i < numCameras; i++)
+        var cameraLabel = new StringBuilder("[ ");
+        for (var i = 0; i < numCameras; i++)
         {
-            cameraLabel.Append(cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height").intValue);
+            var camHeightPropName = cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height");
+            cameraLabel.Append(camHeightPropName.intValue);
             cameraLabel.Append(" X ");
-            cameraLabel.Append(cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width").intValue);
+            var camWidthPropName = cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width");
+            cameraLabel.Append(camWidthPropName.intValue);
             if (i < numCameras - 1)
             {
                 cameraLabel.Append(", ");
@@ -80,7 +82,6 @@ public class DemonstrationEditor : Editor
 
         cameraLabel.Append(" ]");
         return cameraLabel.ToString();
-
     }
 
     /// <summary>

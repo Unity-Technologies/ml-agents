@@ -43,7 +43,7 @@ namespace MLAgents
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int[] vectorActionSize = new int[1]{1};
+        public int[] vectorActionSize = new int[1] {1};
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
@@ -56,14 +56,14 @@ namespace MLAgents
 
         public SpaceType vectorActionSpaceType = SpaceType.discrete;
         /**< \brief Defines if the action is discrete or continuous */
-        
+
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public CommunicatorObjects.BrainParametersProto 
+        public CommunicatorObjects.BrainParametersProto
             ToProto(string name, bool isTraining)
         {
             var brainParametersProto = new CommunicatorObjects.BrainParametersProto
@@ -72,7 +72,7 @@ namespace MLAgents
                 NumStackedVectorObservations = numStackedVectorObservations,
                 VectorActionSize = {vectorActionSize},
                 VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
+                    (CommunicatorObjects.SpaceTypeProto) vectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
@@ -87,21 +87,21 @@ namespace MLAgents
                         GrayScale = res.blackAndWhite
                     });
             }
+
             return brainParametersProto;
         }
 
         public BrainParameters()
         {
-            
         }
 
         /// <summary>
         /// Converts Resolution protobuf array to C# Resolution array.
         /// </summary>
-        static Resolution[] ResolutionProtoToNative(CommunicatorObjects.ResolutionProto[] resolutionProtos)
+        private static Resolution[] ResolutionProtoToNative(CommunicatorObjects.ResolutionProto[] resolutionProtos)
         {
-            Resolution[] localCameraResolutions = new Resolution[resolutionProtos.Length];
-            for (int i = 0; i < resolutionProtos.Length; i++)
+            var localCameraResolutions = new Resolution[resolutionProtos.Length];
+            for (var i = 0; i < resolutionProtos.Length; i++)
             {
                 localCameraResolutions[i] = new Resolution
                 {
@@ -110,17 +110,20 @@ namespace MLAgents
                     blackAndWhite = resolutionProtos[i].GrayScale
                 };
             }
+
             return localCameraResolutions;
         }
 
         public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
         {
             vectorObservationSize = brainParametersProto.VectorObservationSize;
-            cameraResolutions = ResolutionProtoToNative(brainParametersProto.CameraResolutions.ToArray());
+            cameraResolutions = ResolutionProtoToNative(
+                brainParametersProto.CameraResolutions.ToArray()
+            );
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
+            vectorActionSpaceType = (SpaceType) brainParametersProto.VectorActionSpaceType;
         }
 
         /// <summary>
