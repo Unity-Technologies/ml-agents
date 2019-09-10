@@ -5,7 +5,7 @@
 * [Installation](Installation.md)
   * [Background: Jupyter Notebooks](Background-Jupyter.md)
   * [Docker Set-up](Using-Docker.md)
-  * [Using Python Virtual Environment](Using-Virtual-Environment.md) 
+  * [Using Virtual Environment](Using-Virtual-Environment.md) 
 * [Basic Guide](Basic-Guide.md)
 
 ## Getting Started
