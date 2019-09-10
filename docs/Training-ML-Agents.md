@@ -83,6 +83,10 @@ tensorboard --logdir=summaries --port 6006
 
 And then opening the URL: [localhost:6006](http://localhost:6006).
 
+**Note:** The default port TensorBoard uses is 6006. If there is an existing session
+running on port 6006 a new session can be launched on an open port using the --port 
+option.
+
 When training is finished, you can find the saved model in the `models` folder
 under the assigned run-id — in the cats example, the path to the model would be
 `models/cob_1/CatsOnBicycles_cob_1.nn`.
@@ -117,7 +121,7 @@ environment, you can set the following command line options when invoking
 * `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to 
   collect experiences from when training. Defaults to 1.
 * `--base-port`: Specifies the starting port. Each concurrent Unity environment instance 
-  will get assigned a port sequentially, starting from the `base-port`.  Each instance 
+  will get assigned a port sequentially, starting from the `base-port`. Each instance 
   will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs 
   given to each instance from 0 to `num_envs - 1`. Default is 5005.
 * `--docker-target-name=<dt>`: The Docker Volume on which to store curriculum,

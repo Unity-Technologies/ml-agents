@@ -5,12 +5,11 @@
 * [Installation](Installation.md)
   * [Background: Jupyter Notebooks](Background-Jupyter.md)
   * [Docker Set-up](Using-Docker.md)
-  * [Using Python Virtual Environment](Python-venv.md) 
-
+  * [Using Python Virtual Environment](Using-Virtual-Environment.md) 
+* [Basic Guide](Basic-Guide.md)
 
 ## Getting Started
 
-* [Basic Guide](Basic-Guide.md)
 * [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
   * [Background: Unity](Background-Unity.md)
   * [Background: Machine Learning](Background-Machine-Learning.md)
@@ -30,7 +29,7 @@
     [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 
-Optional for first time users
+### Advanced Usage
   * [Using the Monitor](Feature-Monitor.md)
   * [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
   * [Using an Executable Environment](Learning-Environment-Executable.md)
@@ -41,10 +40,10 @@ Optional for first time users
 * [Training ML-Agents](Training-ML-Agents.md)
 * [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 * [Training with Proximal Policy Optimization](Training-PPO.md)
+* [Training with Soft Actor-Critic](Training-SAC.md)
 
 ### Advanced Training Methods
 
-* [Training with Soft Actor-Critic](Training-SAC.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 * [Training with LSTM](Feature-Memory.md)
