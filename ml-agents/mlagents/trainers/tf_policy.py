@@ -89,18 +89,39 @@ class TFPolicy(Policy):
             init = tf.global_variables_initializer()
             self.sess.run(init)
 
-    def _load_graph(self):
+    def load_or_finetune_graph(self, trainer_parameters: Dict[str, Any]) -> None:
+        """
+        Loads the graph either fresh, or in finetune mode.
+        """
+        if trainer_parameters["finetune_path"]:
+            self._load_graph(
+                finetune=True, model_load_path=trainer_parameters["finetune_path"]
+            )
+        else:
+            self._load_graph()
+
+    def _load_graph(self, finetune: bool = False, model_load_path: str = None) -> None:
+        """
+        Loads the TensorFlow graph.
+        :param finetune: If True, set the global steps back to 0.
+        :param model_load_path: Load the model from this folder. If None, load from the
+            default model_path.
+        """
+        if not model_load_path:
+            model_load_path = self.model_path
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             logger.info("Loading Model for brain {}".format(self.brain.brain_name))
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
+            ckpt = tf.train.get_checkpoint_state(model_load_path)
             if ckpt is None:
                 logger.info(
                     "The model {0} could not be found. Make "
                     "sure you specified the right "
-                    "--run-id".format(self.model_path)
+                    "--run-id".format(model_load_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+        if finetune:
+            self.set_step(0)
 
     def evaluate(self, brain_info: BrainInfo) -> Dict[str, Any]:
         """
@@ -173,6 +194,21 @@ class TFPolicy(Policy):
         """
         step = self.sess.run(self.model.global_step)
         return step
+
+    def set_step(self, step: int) -> int:
+        """
+        Sets current model step to step
+        :param step: Step to set the current model step to.
+        :return: The step the model was set to.
+        """
+        current_step = self.get_current_step()
+        out_dict = {
+            "global_step": self.model.global_step,
+            "increment_step": self.model.increment_step,
+        }
+        # Increment by the inverse of what you want.
+        feed_dict = {self.model.steps_to_increment: step - current_step}
+        return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
 
     def increment_step(self, n_steps):
         """

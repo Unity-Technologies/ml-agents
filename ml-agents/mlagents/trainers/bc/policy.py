@@ -31,7 +31,7 @@ class BCPolicy(TFPolicy):
                 )
 
         if load:
-            self._load_graph()
+            self.load_or_finetune_graph(trainer_parameters)
         else:
             self._initialize_graph()
 

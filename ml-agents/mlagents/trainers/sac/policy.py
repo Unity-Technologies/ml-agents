@@ -77,7 +77,7 @@ class SACPolicy(TFPolicy):
                 self.bc_module = None
 
         if load:
-            self._load_graph()
+            self.load_or_finetune_graph(trainer_params)
         else:
             self._initialize_graph()
             self.sess.run(self.model.target_init_op)
