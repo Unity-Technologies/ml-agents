@@ -50,3 +50,5 @@ repos:
         types: [markdown]
         # Don't check localized files since their target might not be localized.
         exclude: ".*localized.*"
+        # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
+        stages: [manual]

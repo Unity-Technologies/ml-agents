@@ -26,9 +26,6 @@ jobs:
             cd ../ml-agents && pip install -e .
             pip install pre-commit pytest-cov==2.6.1
             cd ../gym-unity && pip install -e .
-      - run: sudo apt-get update
-      - run: sudo apt-get install npm
-      - run: sudo npm install -g markdown-link-check
 
       - save_cache:
           paths:
@@ -65,3 +62,37 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: htmlcov
+
+
+  build_node:
+    docker:
+      - image: circleci/node:12.6.0
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-node-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pre-commit pytest-cov==2.6.1
+      - run: npm install -g markdown-link-check
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: Run markdown-link-check via precommit
+          command: |
+            . venv/bin/activate
+            pre-commit run --hook-stage manual markdown-link-check --all-files
