@@ -64,7 +64,22 @@ jobs:
           destination: htmlcov
 
 
-  markdown_link_check:
+#  markdown_link_check:
+#    docker:
+#      - image: circleci/node:12.6.0
+#    working_directory: ~/repo
+#
+#    steps:
+#      - checkout
+#
+#      - run: sudo npm install -g markdown-link-check
+#
+#      - run:
+#          name: Run markdown-link-check
+#          command: |
+#            git ls-files | grep \.md$ | grep -v localized | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json
+
+  markdown_link_check_precommit:
     docker:
       - image: circleci/node:12.6.0
     working_directory: ~/repo
@@ -72,16 +87,36 @@ jobs:
     steps:
       - checkout
 
-      - run: sudo npm install -g markdown-link-check
+      - restore_cache:
+          keys:
+          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-node-dependencies-
 
       - run:
-          name: Run markdown-link-check
+          name: Install Dependencies
           command: |
-            git ls-files | grep \.md$ | grep -v localized | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json
+            apt-get install python3-venv
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pre-commit
+      - run: npm install -g markdown-link-check
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: Run markdown-link-check via precommit
+          command: |
+            . venv/bin/activate
+            pre-commit run --hook-stage manual markdown-link-check --all-files
 
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - markdown_link_check
+      #- markdown_link_check
+      - markdown_link_check_precommit
