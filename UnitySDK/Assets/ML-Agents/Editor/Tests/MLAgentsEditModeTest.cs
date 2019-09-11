@@ -113,8 +113,8 @@ namespace MLAgents.Tests
         private Brain GenerateTestBrain()
         {
             return ScriptableObject.CreateInstance<TestBrain>();
-        } 
-        
+        }
+
         [Test]
         public void TestAcademy()
         {
@@ -245,12 +245,13 @@ namespace MLAgents.Tests
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
+            var requester = agentGO1.AddComponent<DecisionAutoRequester>();
+            requester.OnEnable();
+            requester.DecisionPeriod = 2;
+            requester.RepeatAction = true;
             // agent2 will request decisions only when RequestDecision is called
+
             brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
@@ -383,12 +384,13 @@ namespace MLAgents.Tests
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
+            var requester = agentGO1.AddComponent<DecisionAutoRequester>();
+            requester.OnEnable();
+            requester.DecisionPeriod = 2;
+            requester.RepeatAction = true;
             // agent2 will request decisions only when RequestDecision is called
+
             brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
@@ -416,7 +418,6 @@ namespace MLAgents.Tests
                 Assert.AreEqual(i, aca.AcademyStepCalls);
 
                 Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
-                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
                 // Agent 2  and academy reset at the first step
@@ -468,7 +469,7 @@ namespace MLAgents.Tests
                     requestAction += 1;
                     agent2.RequestAction();
                 }
-                if (agent1.IsDone() && (((acaStepsSinceReset) % agent1.agentParameters.numberOfActionsBetweenDecisions == 0)) || aca.IsDone())
+                if (agent1.IsDone() && (((acaStepsSinceReset) % requester.DecisionPeriod == 0)) || aca.IsDone())
                 {
                     numberAgent1Reset += 1;
                     agent1StepSinceReset = 0;
@@ -566,12 +567,13 @@ namespace MLAgents.Tests
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
+            var requester = agentGO1.AddComponent<DecisionAutoRequester>();
+            requester.OnEnable();
+            requester.DecisionPeriod = 2;
+            requester.RepeatAction = true;
             // agent2 will request decisions only when RequestDecision is called
+
             agent1.agentParameters.maxStep = 20;
             agent2.agentParameters.maxStep = 30;
             brain.brainParameters.vectorObservationSize = 0;
@@ -694,12 +696,12 @@ namespace MLAgents.Tests
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            // agent1 will take an action at every step and request a decision every steps
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
+            // agent1 will take an action at every step and request a decision every 2 steps
+            var requester = agentGO1.AddComponent<DecisionAutoRequester>();
+            requester.OnEnable();
+            requester.DecisionPeriod = 1;
+            requester.RepeatAction = true;
             // agent2 will request decisions only when RequestDecision is called
-            agent2.agentParameters.onDemandDecision = true;
             agent1.agentParameters.maxStep = 20;
             //Here we specify that the agent does not reset when done
             agent1.agentParameters.resetOnDone = false;
@@ -779,12 +781,11 @@ namespace MLAgents.Tests
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             brain.brainParameters = new BrainParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 3;
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
-            // agent2 will request decisions only when RequestDecision is called
+            var requester = agentGO1.AddComponent<DecisionAutoRequester>();
+            requester.OnEnable();
+            requester.DecisionPeriod = 3;
+            requester.RepeatAction = true;
             agent1.agentParameters.maxStep = 20;
             brain.brainParameters.vectorObservationSize = 0;
             brain.brainParameters.cameraResolutions = new Resolution[0];
