@@ -37,3 +37,15 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
+# "Local" hooks, see https://pre-commit.com/#repository-local-hooks
+-   repo: local
+    hooks:
+    -   id: markdown-link-check
+        name: markdown-link-check
+        # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
+        # Note that you must install the package separately via node.
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json' --
+        language: system
+        types: [markdown]
+        # Don't check localized files since their target might not be localized.
+        exclude: ".*localized.*"
