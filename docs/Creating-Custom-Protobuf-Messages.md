@@ -1,5 +1,5 @@
 # Disclaimer
-> *NOTE:* `CustomAction` and `CustomObservation` are intended for expert users. In addition implementing a custom message, you will also need to make extensive modifications to the trainer in order to produce custom actions or consume custom observations; these modifications are not supported nor documented. *Proceed at your own risk*.
+*NOTE:* `CustomAction` and `CustomObservation` are intended for expert users. In addition implementing a custom message, you will also need to make extensive modifications to the trainer in order to produce custom actions or consume custom observations; these modifications are not supported nor documented. *Proceed at your own risk*.
 
 # Creating Custom Protobuf Messages
 
