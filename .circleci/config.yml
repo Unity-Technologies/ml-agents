@@ -72,30 +72,13 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-node-dependencies-
-
-      - run:
-          name: Install Dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install pre-commit pytest-cov==2.6.1
       - run: npm install -g markdown-link-check
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-
       - run:
-          name: Run markdown-link-check via precommit
+          name: Run markdown-link-check
           command: |
-            . venv/bin/activate
-            pre-commit run --hook-stage manual markdown-link-check --all-files
+            git ls-files | grep \.md$ | grep -v localized | xargs -n1 -t markdown-link-check
+
 workflows:
   version: 2
   build_and_test:
