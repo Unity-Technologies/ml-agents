@@ -229,7 +229,7 @@ def _check_environment_trains(env, config):
         print(tc._get_measure_vals())
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
-            assert mean_reward > 0.9
+            assert mean_reward > 0.99
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
