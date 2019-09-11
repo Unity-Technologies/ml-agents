@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
@@ -13,8 +12,8 @@ namespace MLAgents.InferenceBrain
     /// When the TensorProxy is an Input to the model, the shape of the Tensor will be modified
     /// depending on the current batch size and the data of the Tensor will be filled using the
     /// Dictionary of Agent to AgentInfo.
-    /// When the TensorProxy is an Output of the model, only the shape of the Tensor will be modified
-    /// using the current batch size. The data will be prefilled with zeros.
+    /// When the TensorProxy is an Output of the model, only the shape of the Tensor will be
+    /// modified using the current batch size. The data will be pre-filled with zeros.
     /// </summary>
     public class TensorGenerator
     {
@@ -28,11 +27,11 @@ namespace MLAgents.InferenceBrain
             /// <param name="batchSize"> The number of agents present in the current batch</param>
             /// <param name="agentInfo"> Dictionary of Agent to AgentInfo containing the
             /// information that will be used to populate the tensor's data</param>
-            void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
+            void Generate(
+                TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
         }
-        
-        Dictionary<string, Generator> _dict = new Dictionary<string, Generator>();
-        ITensorAllocator _allocator;
+
+        private readonly Dictionary<string, Generator> _dict = new Dictionary<string, Generator>();
 
         /// <summary>
         /// Returns a new TensorGenerators object.
@@ -41,28 +40,36 @@ namespace MLAgents.InferenceBrain
         /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
-        public TensorGenerator(BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+        /// <param name="barracudaModel"></param>
+        public TensorGenerator(
+            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
-            _allocator = allocator;
-            
             // Generator for Inputs
-            _dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator(_allocator);
-            _dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator(_allocator);
-            _dict[TensorNames.VectorObservationPlacholder] = new VectorObservationGenerator(_allocator);
-            _dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator(_allocator);
+            _dict[TensorNames.BatchSizePlaceholder] =
+                new BatchSizeGenerator(allocator);
+            _dict[TensorNames.SequenceLengthPlaceholder] =
+                new SequenceLengthGenerator(allocator);
+            _dict[TensorNames.VectorObservationPlacholder] =
+                new VectorObservationGenerator(allocator);
+            _dict[TensorNames.RecurrentInPlaceholder] =
+                new RecurrentInputGenerator(allocator);
 
             if (barracudaModel != null)
             {
-                Model model = (Model) barracudaModel;
+                var model = (Model) barracudaModel;
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
-                    _dict[model.memories[i].input] = new BarracudaRecurrentInputGenerator(i, _allocator);
+                    _dict[model.memories[i].input] =
+                        new BarracudaRecurrentInputGenerator(i, allocator);
                 }
             }
 
-            _dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator(_allocator);
-            _dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator(_allocator);
-            _dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed, _allocator);
+            _dict[TensorNames.PreviousActionPlaceholder] =
+                new PreviousActionInputGenerator(allocator);
+            _dict[TensorNames.ActionMaskPlaceholder] =
+                new ActionMaskInputGenerator(allocator);
+            _dict[TensorNames.RandomNormalEpsilonPlaceholder] =
+                new RandomNormalInputGenerator(seed, allocator);
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
@@ -71,15 +78,15 @@ namespace MLAgents.InferenceBrain
                 {
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;
-                    _dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] = new
-                            VisualObservationInputGenerator(index, bw, _allocator);
+                    _dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
+                        new VisualObservationInputGenerator(index, bw, allocator);
                 }
             }
 
             // Generators for Outputs
-            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(_allocator);
-            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(_allocator);
-            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(_allocator);
+            _dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
+            _dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
+            _dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
         }
 
         /// <summary>
@@ -93,18 +100,19 @@ namespace MLAgents.InferenceBrain
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
-        public void GenerateTensors(IEnumerable<TensorProxy> tensors, 
-            int currentBatchSize, 
+        public void GenerateTensors(
+            IEnumerable<TensorProxy> tensors,
+            int currentBatchSize,
             Dictionary<Agent, AgentInfo> agentInfos)
         {
             foreach (var tensor in tensors)
             {
-                if (!_dict.ContainsKey(tensor.Name))
+                if (!_dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
-                        "Unknow tensorProxy expected as input : " + tensor.Name);
+                        $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                _dict[tensor.Name].Generate(tensor, currentBatchSize, agentInfos);
+                _dict[tensor.name].Generate(tensor, currentBatchSize, agentInfos);
             }
         }
     }
