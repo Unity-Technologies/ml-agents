@@ -96,3 +96,9 @@ jobs:
           command: |
             . venv/bin/activate
             pre-commit run --hook-stage manual markdown-link-check --all-files
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - build_node
