@@ -41,6 +41,7 @@ namespace MLAgents.InferenceBrain
 
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
+            tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
             tensorProxy.data[0] = batchSize;
         }
@@ -64,8 +65,8 @@ namespace MLAgents.InferenceBrain
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensorProxy.shape = new long[0];
+            tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-
             tensorProxy.data[0] = 1;
         }
     }
