@@ -194,17 +194,6 @@ namespace MLAgents
         /// </remarks>
         public bool resetOnDone = true;
 
-        /// <summary>
-        /// Whether to enable On Demand Decisions or make a decision at
-        /// every step.
-        /// </summary>
-        public bool onDemandDecision;
-
-        /// <summary>
-        /// Number of actions between decisions (used when On Demand Decisions
-        /// is turned off).
-        /// </summary>
-        public int numberOfActionsBetweenDecisions;
     }
 
 
@@ -989,7 +978,6 @@ namespace MLAgents
                 academyStepCounter = 0;
             }
 
-            MakeRequests(academyStepCounter);
             if (academyMaxStep)
             {
                 maxStepReached = true;
@@ -1013,21 +1001,12 @@ namespace MLAgents
             {
                 if (agentParameters.resetOnDone)
                 {
-                    if (agentParameters.onDemandDecision)
+                    if (!hasAlreadyReset)
                     {
-                        if (!hasAlreadyReset)
-                        {
-                            // If event based, the agent can reset as soon
-                            // as it is done
-                            _AgentReset();
-                            hasAlreadyReset = true;
-                        }
-                    }
-                    else if (requestDecision)
-                    {
-                        // If not event based, the agent must wait to request a
-                        // decsion before reseting to keep multiple agents in sync.
+                        // If event based, the agent can reset as soon
+                        // as it is done
                         _AgentReset();
+                        hasAlreadyReset = true;
                     }
                 }
                 else
@@ -1086,25 +1065,6 @@ namespace MLAgents
             }
 
             stepCount += 1;
-        }
-
-        /// <summary>
-        /// Is called after every step, contains the logic to decide if the agent
-        /// will request a decision at the next step.
-        /// </summary>
-        void MakeRequests(int academyStepCounter)
-        {
-            agentParameters.numberOfActionsBetweenDecisions =
-                Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
-            if (!agentParameters.onDemandDecision)
-            {
-                RequestAction();
-                if (academyStepCounter %
-                    agentParameters.numberOfActionsBetweenDecisions == 0)
-                {
-                    RequestDecision();
-                }
-            }
         }
 
         /// <summary>
