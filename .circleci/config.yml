@@ -72,7 +72,7 @@ jobs:
     steps:
       - checkout
 
-      - run: npm install -g markdown-link-check
+      - run: sudo npm install -g markdown-link-check
 
       - run:
           name: Run markdown-link-check
