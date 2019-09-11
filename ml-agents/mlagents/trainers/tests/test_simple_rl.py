@@ -38,7 +38,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         super().__init__()
         self.discrete = use_discrete
         self._brains: Dict[str, BrainParameters] = {}
-        self._brains[BRAIN_NAME] = BrainParameters(
+        brain_params = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
             num_stacked_vector_observations=1,
@@ -47,11 +47,12 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             vector_action_descriptions=["moveDirection"],
             vector_action_space_type=0 if use_discrete else 1,
         )
+        self._brains[BRAIN_NAME] = brain_params
 
         # state
         self.position = 0.0
         self.step_count = 0
-        self.random = random.Random(str(self._brains))
+        self.random = random.Random(str(brain_params))
         self.goal = self.random.choice([-1, 1])
 
     def step(
