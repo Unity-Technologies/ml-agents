@@ -26,6 +26,7 @@ jobs:
             cd ../ml-agents && pip install -e .
             pip install pre-commit pytest-cov==2.6.1
             cd ../gym-unity && pip install -e .
+            npm install -g markdown-link-check
 
       - save_cache:
           paths:
@@ -33,17 +34,17 @@ jobs:
           key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
 
       - run:
+          name: Check Code Style using pre-commit
+          command: |
+            . venv/bin/activate
+            pre-commit run --show-diff-on-failure --all-files
+
+      - run:
           name: Run Tests for ml-agents and gym_unity
           command: |
             . venv/bin/activate
             mkdir test-reports
             pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
-
-      - run:
-          name: Check Code Style using pre-commit
-          command: |
-            . venv/bin/activate
-            pre-commit run --show-diff-on-failure --all-files
 
       - run:
           name: Verify there are no hidden/missing metafiles.

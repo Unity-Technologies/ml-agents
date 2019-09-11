@@ -43,7 +43,8 @@ repos:
     -   id: markdown-link-check
         name: markdown-link-check
         # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
-        # Note that you must install the package separately via node.
+        # Note that you must install the package separately via npm. For example:
+        #  brew install npm; npm install -g markdown-link-check
         entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json' --
         language: system
         types: [markdown]
