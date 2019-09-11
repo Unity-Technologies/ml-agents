@@ -87,6 +87,8 @@ namespace MLAgents.InferenceBrain
                 {
                     actions[ii, actionIndex] = outputTensor.data[ii, 0];
                 }
+                actionProbs.Data.Dispose();
+                outputTensor.Data.Dispose();
             }
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
