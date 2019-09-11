@@ -43,7 +43,6 @@ def test_reset(mock_communicator, mock_launcher):
     env.close()
     assert not env.global_done
     assert isinstance(brain_info, dict)
-    assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
     assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
     assert isinstance(brain_info["RealFakeBrain"].vector_observations, np.ndarray)
     assert (
