@@ -9,7 +9,6 @@ namespace MLAgents.Tests
         private const float k_FirstValue = -1.19580f;
         private const float k_SecondValue = -0.97345f;
         private const double k_Epsilon = 0.0001;
-
         [Test]
         public void RandomNormalTestTwoDouble()
         {

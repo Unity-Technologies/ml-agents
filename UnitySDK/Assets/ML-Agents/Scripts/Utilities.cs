@@ -127,8 +127,10 @@ namespace MLAgents
         /// Source array, where the elements are copied from
         /// </param>
         /// </summary>
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Global
         public static void AddRangeNoAlloc<T>(List<T> dst, T[] src)
         {
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var item in src)
             {
                 dst.Add(item);

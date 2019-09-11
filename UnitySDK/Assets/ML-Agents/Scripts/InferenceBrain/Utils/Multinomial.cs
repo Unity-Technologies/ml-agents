@@ -7,6 +7,12 @@ namespace MLAgents.InferenceBrain.Utils
     {
         private readonly System.Random m_Random;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="seed">
+        /// Seed for the random number generator used in the sampling process.
+        /// </param>
         public Multinomial(int seed)
         {
             m_Random = new System.Random(seed);
