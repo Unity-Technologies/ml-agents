@@ -87,10 +87,6 @@ class MockCommunicator(Communicator):
         dict_agent_info["RealFakeBrain"] = UnityRLOutput.ListAgentInfoProto(
             value=list_agent_info
         )
-        try:
-            fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
-        except Exception:
-            pass
         result = UnityRLOutput(agentInfos=dict_agent_info)
         return UnityOutput(rl_output=result)
 
