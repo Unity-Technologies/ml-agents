@@ -55,7 +55,6 @@ def test_reset(mock_communicator, mock_launcher):
         == brain.vector_observation_space_size * brain.num_stacked_vector_observations
     )
 
-
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
 def test_step(mock_communicator, mock_launcher):
@@ -64,7 +63,7 @@ def test_step(mock_communicator, mock_launcher):
     )
     env = UnityEnvironment(" ")
     brain = env.brains["RealFakeBrain"]
-    brain_info = env.reset()
+    brain_info = env.step()
     brain_info = env.step(
         [0]
         * brain.vector_action_space_size[0]
