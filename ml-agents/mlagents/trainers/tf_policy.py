@@ -93,7 +93,7 @@ class TFPolicy(Policy):
         """
         Loads the graph either fresh, or in finetune mode.
         """
-        if trainer_parameters["finetune_path"]:
+        if "finetune_path" in trainer_parameters:
             self._load_graph(
                 finetune=True, model_load_path=trainer_parameters["finetune_path"]
             )
