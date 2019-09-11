@@ -44,8 +44,6 @@ public class CrawlerAgent : Agent
     public MeshRenderer foot3;
     public Material groundedMaterial;
     public Material unGroundedMaterial;
-    bool isNewDecisionStep;
-    int currentDecisionStep;
 
     Quaternion lookRotation;
     Matrix4x4 targetDirMatrix;
@@ -53,9 +51,7 @@ public class CrawlerAgent : Agent
     public override void InitializeAgent()
     {
         jdController = GetComponent<JointDriveController>();
-        currentDecisionStep = 1;
         dirToTarget = target.position - body.position;
-
 
         //Setup each body part
         jdController.SetupBodyPart(body);
@@ -68,24 +64,6 @@ public class CrawlerAgent : Agent
         jdController.SetupBodyPart(leg3Upper);
         jdController.SetupBodyPart(leg3Lower);
    }
-
-    /// <summary>
-    /// We only need to change the joint settings based on decision freq.
-    /// </summary>
-    public void IncrementDecisionTimer()
-    {
-        if (currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions
-            || agentParameters.numberOfActionsBetweenDecisions == 1)
-        {
-            currentDecisionStep = 1;
-            isNewDecisionStep = true;
-        }
-        else
-        {
-            currentDecisionStep++;
-            isNewDecisionStep = false;
-        }
-    }
 
     /// <summary>
     /// Add relevant information on each body part to observations.
@@ -166,6 +144,32 @@ public class CrawlerAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // The dictionary with all the body parts in it are in the jdController
+        var bpDict = jdController.bodyPartsDict;
+
+        int i = -1;
+        // Pick a new target joint rotation
+        bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+
+        // Update joint strength
+        bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
+        bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
+        bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
+        bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
+        bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
+        bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
+        bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
+        bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
+    }
+
+    void FixedUpdate(){
         if (detectTargets)
         {
             foreach (var bodyPart in jdController.bodyPartsDict.Values)
@@ -195,34 +199,6 @@ public class CrawlerAgent : Agent
                 : unGroundedMaterial;
         }
 
-        // Joint update logic only needs to happen when a new decision is made
-        if (isNewDecisionStep)
-        {
-            // The dictionary with all the body parts in it are in the jdController
-            var bpDict = jdController.bodyPartsDict;
-
-            int i = -1;
-            // Pick a new target joint rotation
-            bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-
-            // Update joint strength
-            bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
-            bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
-            bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
-        }
-
         // Set reward for this step according to mixture of the following elements.
         if (rewardMovingTowardsTarget)
         {
@@ -238,8 +214,6 @@ public class CrawlerAgent : Agent
         {
             RewardFunctionTimePenalty();
         }
-
-        IncrementDecisionTimer();
     }
 
     /// <summary>
@@ -283,8 +257,5 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-
-        isNewDecisionStep = true;
-        currentDecisionStep = 1;
     }
 }
