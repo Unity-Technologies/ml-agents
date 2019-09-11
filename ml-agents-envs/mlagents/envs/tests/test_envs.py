@@ -55,6 +55,7 @@ def test_reset(mock_communicator, mock_launcher):
         == brain.vector_observation_space_size * brain.num_stacked_vector_observations
     )
 
+
 @mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
 def test_step(mock_communicator, mock_launcher):
