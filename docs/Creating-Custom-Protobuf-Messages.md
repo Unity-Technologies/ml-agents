@@ -2,6 +2,10 @@
 
 Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default. 
 
+<aside class="warning">
+`CustomAction` and `CustomObservation` are intended for expert users. In addition implementing a custom message, you will also need to make extensive modifications to the trainer in order to produce custom actions or consume custom observations; these modifications are not supported nor documented. *Proceed at your own risk*.
+</aside>
+
 ## Implementing a Custom Message
 
 Whenever you change the fields of a custom message, you must follow the directions in [this file](../protobuf-definitions/README.md) to create C# and Python files corresponding to the new message and re-install the mlagents Python package.
