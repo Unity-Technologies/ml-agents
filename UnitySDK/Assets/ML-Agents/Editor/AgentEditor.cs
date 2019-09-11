@@ -18,14 +18,10 @@ namespace MLAgents
             serializedAgent.Update();
 
             SerializedProperty brain = serializedAgent.FindProperty("brain");
-            SerializedProperty actionsPerDecision = serializedAgent.FindProperty(
-                "agentParameters.numberOfActionsBetweenDecisions");
             SerializedProperty maxSteps = serializedAgent.FindProperty(
                 "agentParameters.maxStep");
             SerializedProperty isResetOnDone = serializedAgent.FindProperty(
                 "agentParameters.resetOnDone");
-            SerializedProperty isODD = serializedAgent.FindProperty(
-                "agentParameters.onDemandDecision");
             SerializedProperty cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
             SerializedProperty renderTextures = serializedAgent.FindProperty(
@@ -90,21 +86,6 @@ namespace MLAgents
                 new GUIContent(
                     "Reset On Done",
                     "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
-            EditorGUILayout.PropertyField(
-                isODD,
-                new GUIContent(
-                    "On Demand Decisions",
-                    "If checked, you must manually request decisions."));
-            if (!isODD.boolValue)
-            {
-                EditorGUILayout.PropertyField(
-                    actionsPerDecision,
-                    new GUIContent(
-                        "Decision Interval",
-                        "The agent will automatically request a decision every X" +
-                        " steps and perform an action at every step."));
-                actionsPerDecision.intValue = Mathf.Max(1, actionsPerDecision.intValue);
-            }
 
             serializedAgent.ApplyModifiedProperties();
 
