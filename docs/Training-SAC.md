@@ -232,7 +232,7 @@ Default: `False`
 In some cases, you might want to bootstrap the agent's policy using behavior recorded
 from a player. This can help guide the agent towards the reward. Pretraining adds
 training operations that mimic a demonstration rather than attempting to maximize reward.
-It is essentially equivalent to running [behavioral cloning](./Training-Behavioral-Cloning.md)
+It is essentially equivalent to running [behavioral cloning](./Training-BehavioralCloning.md)
 in-line with SAC.
 
 To use pretraining, add a `pretraining` section to the trainer_config. For instance:
