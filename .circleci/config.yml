@@ -17,7 +17,7 @@ jobs:
 
       - run: sudo apt-get update
       - run: sudo apt-get install npm
-      - run: npm install -g markdown-link-check
+      - run: sudo npm install -g markdown-link-check
 
       - run:
           name: Install Dependencies
