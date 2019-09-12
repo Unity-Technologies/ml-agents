@@ -124,3 +124,10 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: htmlcov
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_python_3.6.1
+      - build_python_3.7.3
