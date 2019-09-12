@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// Ray 2D perception component. Attach this to agents to enable "local perception"
-    /// via the use of ray casts directed outward from the agent. 
+    /// via the use of ray casts directed outward from the agent.
     /// </summary>
     public class RayPerception2D : RayPerception
     {
@@ -30,7 +29,7 @@ namespace MLAgents
         /// <param name="rayAngles">Angles of rays (starting from (1,0) on unit circle).</param>
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         public List<float> Perceive(float rayDistance,
-            float[] rayAngles, string[] detectableObjects)					   
+            float[] rayAngles, string[] detectableObjects)
         {
             perceptionBuffer.Clear();
             // For each ray sublist stores categorical information on detected object
@@ -38,7 +37,7 @@ namespace MLAgents
             foreach (float angle in rayAngles)
             {
                 endPosition = transform.TransformDirection(
-                    PolarToCartesian(rayDistance, angle));						  
+                    PolarToCartesian(rayDistance, angle));
                 if (Application.isEditor)
                 {
                     Debug.DrawRay(transform.position,
@@ -79,6 +78,5 @@ namespace MLAgents
             float y = radius * Mathf.Sin(DegreeToRadian(angle));
             return new Vector2(x, y);
         }
-
     }
 }

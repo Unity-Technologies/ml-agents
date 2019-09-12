@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,7 +41,7 @@ namespace MLAgents
             }
 #endif
         }
-        
+
         /// <inheritdoc/>
         protected override void Initialize()
         {
@@ -68,7 +68,6 @@ namespace MLAgents
                     agentInfos[agent].reward,
                     agentInfos[agent].done,
                     agentInfos[agent].memories));
-
             }
             foreach (Agent agent in agentInfos.Keys)
             {

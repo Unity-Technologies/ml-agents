@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
@@ -8,7 +8,7 @@ namespace MLAgents
     /// LearningBrain.
     /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
     /// between brains. Also exposes a drag box for the Model that will be used by the
-    /// LearningBrain. 
+    /// LearningBrain.
     /// </summary>
     [CustomEditor(typeof(LearningBrain))]
     public class LearningBrainEditor : BrainEditor
@@ -20,7 +20,7 @@ namespace MLAgents
         private float _timeSinceModelReload;
         // Whether or not the model needs to be reloaded
         private bool _requireReload;
-        
+
         /// <summary>
         /// Called when the user opens the Inspector for the LearningBrain
         /// </summary>
@@ -29,7 +29,7 @@ namespace MLAgents
             _requireReload = true;
             EditorApplication.update += IncreaseTimeSinceLastModelReload;
         }
-        
+
         /// <summary>
         /// Called when the user leaves the Inspector for the LearningBrain
         /// </summary>
@@ -37,15 +37,15 @@ namespace MLAgents
         {
             EditorApplication.update -= IncreaseTimeSinceLastModelReload;
         }
-        
+
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);
-            var brain = (LearningBrain) target;
+            var brain = (LearningBrain)target;
             var serializedBrain = serializedObject;
             EditorGUI.BeginChangeCheck();
             base.OnInspectorGUI();
-            serializedBrain.Update(); 
+            serializedBrain.Update();
             var tfGraphModel = serializedBrain.FindProperty(ModelPropName);
             EditorGUILayout.ObjectField(tfGraphModel);
             var inferenceDevice = serializedBrain.FindProperty(InferenceDevicePropName);

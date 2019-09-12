@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
@@ -10,13 +10,13 @@ public class GridAgent : Agent
     public float timeBetweenDecisionsAtInference;
     private float timeSinceDecision;
 
-    [Tooltip("Because we want an observation right before making a decision, we can force " + 
-             "a camera to render before making a decision. Place the agentCam here if using " +
-             "RenderTexture as observations.")]
+    [Tooltip("Because we want an observation right before making a decision, we can force " +
+        "a camera to render before making a decision. Place the agentCam here if using " +
+        "RenderTexture as observations.")]
     public Camera renderCamera;
 
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
-             "masking turned on may not behave optimally when action masking is turned off.")]
+        "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
 
     private const int NoAction = 0;  // do nothing!
@@ -48,8 +48,8 @@ public class GridAgent : Agent
     private void SetMask()
     {
         // Prevents the agent from picking an action that would make it collide with a wall
-        var positionX = (int) transform.position.x;
-        var positionZ = (int) transform.position.z;
+        var positionX = (int)transform.position.x;
+        var positionZ = (int)transform.position.z;
         var maxPosition = academy.gridSize - 1;
 
         if (positionX == 0)
@@ -132,7 +132,7 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
-        if(renderCamera != null)
+        if (renderCamera != null)
         {
             renderCamera.Render();
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +18,7 @@ namespace MLAgents
         {
             this._brainParameters = brainParameters;
         }
-        
+
         /// <summary>
         /// Modifies an action mask for discrete control agents. When used, the agent will not be
         /// able to perform the action passed as argument at the next decision. If no branch is
@@ -28,14 +28,14 @@ namespace MLAgents
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndices">The indices of the masked actions</param>
         public void SetActionMask(int branch, IEnumerable<int> actionIndices)
-        {   
+        {
             // If the branch does not exist, raise an error
-            if (branch >= _brainParameters.vectorActionSize.Length )
+            if (branch >= _brainParameters.vectorActionSize.Length)
                 throw new UnityAgentsException(
-                    "Invalid Action Masking : Branch "+branch+" does not exist.");
+                    "Invalid Action Masking : Branch " + branch + " does not exist.");
 
             int totalNumberActions = _brainParameters.vectorActionSize.Sum();
-            
+
             // By default, the masks are null. If we want to specify a new mask, we initialize
             // the actionMasks with trues.
             if (_currentMask == null)
@@ -49,7 +49,7 @@ namespace MLAgents
             {
                 _startingActionIndices = Utilities.CumSum(_brainParameters.vectorActionSize);
             }
-            
+
             // Perform the masking
             foreach (var actionIndex in actionIndices)
             {
@@ -59,7 +59,7 @@ namespace MLAgents
                         "Invalid Action Masking: Action Mask is too large for specified branch.");
                 }
                 _currentMask[actionIndex + _startingActionIndices[branch]] = true;
-            } 
+            }
         }
 
         /// <summary>
@@ -87,9 +87,9 @@ namespace MLAgents
                 throw new UnityAgentsException(
                     "Invalid Action Masking : Can only set action mask for Discrete Control.");
             }
-            
+
             var numBranches = _brainParameters.vectorActionSize.Length;
-            for (var branchIndex = 0 ; branchIndex < numBranches; branchIndex++ )
+            for (var branchIndex = 0; branchIndex < numBranches; branchIndex++)
             {
                 if (AreAllActionsMasked(branchIndex))
                 {
@@ -132,7 +132,6 @@ namespace MLAgents
                 }
             }
             return true;
-
         }
     }
 }

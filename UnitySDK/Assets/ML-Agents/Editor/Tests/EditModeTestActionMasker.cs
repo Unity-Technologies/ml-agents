@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 
 namespace MLAgents.Tests
 {
@@ -21,7 +21,6 @@ namespace MLAgents.Tests
             var masker = new ActionMasker(bp);
             masker.SetActionMask(0, new int[1] {0});
             Assert.Catch<UnityAgentsException>(() => masker.GetMask());
-            
         }
 
         [Test]
@@ -33,7 +32,7 @@ namespace MLAgents.Tests
             var mask = masker.GetMask();
             Assert.IsNull(mask);
         }
-        
+
         [Test]
         public void FirstBranchMask()
         {
@@ -43,7 +42,7 @@ namespace MLAgents.Tests
             var masker = new ActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
-            masker.SetActionMask(0, new int[]{1,2,3});
+            masker.SetActionMask(0, new int[] {1, 2, 3});
             mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsTrue(mask[1]);
@@ -52,7 +51,7 @@ namespace MLAgents.Tests
             Assert.IsFalse(mask[4]);
             Assert.AreEqual(mask.Length, 15);
         }
-        
+
         [Test]
         public void SecondBranchMask()
         {
@@ -61,7 +60,7 @@ namespace MLAgents.Tests
             bp.vectorActionSize = new int[3] {4, 5, 6};
             var masker = new ActionMasker(bp);
             bool[] mask = masker.GetMask();
-            masker.SetActionMask(1, new int[]{1,2,3});
+            masker.SetActionMask(1, new int[] {1, 2, 3});
             mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsFalse(mask[4]);
@@ -71,7 +70,7 @@ namespace MLAgents.Tests
             Assert.IsFalse(mask[8]);
             Assert.IsFalse(mask[9]);
         }
-        
+
         [Test]
         public void MaskReset()
         {
@@ -80,7 +79,7 @@ namespace MLAgents.Tests
             bp.vectorActionSize = new int[3] {4, 5, 6};
             var masker = new ActionMasker(bp);
             var mask = masker.GetMask();
-            masker.SetActionMask(1, new int[3]{1,2,3});
+            masker.SetActionMask(1, new int[3] {1, 2, 3});
             mask = masker.GetMask();
             masker.ResetMask();
             mask = masker.GetMask();
@@ -97,21 +96,21 @@ namespace MLAgents.Tests
             bp.vectorActionSpaceType = SpaceType.discrete;
             bp.vectorActionSize = new int[3] {4, 5, 6};
             var masker = new ActionMasker(bp);
-            
+
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(0, new int[1]{5}));
+                () => masker.SetActionMask(0, new int[1] {5}));
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(1, new int[1]{5}));
+                () => masker.SetActionMask(1, new int[1] {5}));
             masker.SetActionMask(2, new int[1] {5});
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(3, new int[1]{1}));
+                () => masker.SetActionMask(3, new int[1] {1}));
             masker.GetMask();
             masker.ResetMask();
-            masker.SetActionMask(0, new int[4] {0, 1, 2, 3});    
+            masker.SetActionMask(0, new int[4] {0, 1, 2, 3});
             Assert.Catch<UnityAgentsException>(
                 () => masker.GetMask());
         }
-        
+
         [Test]
         public void MultipleMaskEdit()
         {
@@ -125,7 +124,7 @@ namespace MLAgents.Tests
             var mask = masker.GetMask();
             for (var i = 0; i < 15; i++)
             {
-                if ((i == 0) || (i == 1) || (i == 3)|| (i == 10))
+                if ((i == 0) || (i == 1) || (i == 3) || (i == 10))
                 {
                     Assert.IsTrue(mask[i]);
                 }

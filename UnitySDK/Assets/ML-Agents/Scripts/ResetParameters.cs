@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +7,6 @@ namespace MLAgents
     [System.Serializable]
     public class ResetParameters : Dictionary<string, float>, ISerializationCallbackReceiver
     {
-
         [System.Serializable]
         public struct ResetParameter
         {
@@ -29,13 +28,11 @@ namespace MLAgents
                 rp.value = pair.Value;
                 resetParameters.Add(rp);
             }
-
         }
 
         public void OnAfterDeserialize()
         {
             this.Clear();
-
 
 
             for (int i = 0; i < resetParameters.Count; i++)

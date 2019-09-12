@@ -28,22 +28,22 @@ public class BasicAgent : Agent
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
-	{
+    {
         var movement = (int)vectorAction[0];
-	    
-		int direction = 0;
-	    
-		switch (movement)
-		{
-		    case 1:
-		        direction = -1;
-		        break;
-		    case 2:
-		        direction = 1;
-		        break;
-		}
 
-	    position += direction;
+        int direction = 0;
+
+        switch (movement)
+        {
+            case 1:
+                direction = -1;
+                break;
+            case 2:
+                direction = 1;
+                break;
+        }
+
+        position += direction;
         if (position < minPosition) { position = minPosition; }
         if (position > maxPosition) { position = maxPosition; }
 
@@ -77,7 +77,6 @@ public class BasicAgent : Agent
 
     public override void AgentOnDone()
     {
-
     }
 
     public void FixedUpdate()
@@ -104,5 +103,4 @@ public class BasicAgent : Agent
             }
         }
     }
-
 }

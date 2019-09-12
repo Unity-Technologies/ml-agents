@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -44,7 +44,7 @@ namespace MLAgents
             }
             LazyInitialize();
         }
-        
+
         /// <summary>
         /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
         /// </summary>
@@ -54,7 +54,6 @@ namespace MLAgents
         {
             LazyInitialize();
             agentInfos.Add(agent, info);
-
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace MLAgents
                 }
             }
         }
-        
+
         /// <summary>
         /// Called by the Academy when it shuts down. This ensures that the Brain cleans up properly
         /// after scene changes.
@@ -85,7 +84,7 @@ namespace MLAgents
             if (_isInitialized)
             {
                 agentInfos.Clear();
-                
+
                 _isInitialized = false;
             }
         }

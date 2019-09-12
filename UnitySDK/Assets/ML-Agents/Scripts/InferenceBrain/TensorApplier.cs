@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
@@ -61,7 +61,7 @@ namespace MLAgents.InferenceBrain
 
             if (barracudaModel != null)
             {
-                var model = (Model) barracudaModel;
+                var model = (Model)barracudaModel;
 
                 for (var i = 0; i < model?.memories.Length; i++)
                 {

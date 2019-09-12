@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,14 +25,13 @@ public class HitWall : MonoBehaviour
         {
             if (lastAgentHit == 0)
             {
-                agentA.AddReward( 0.1f);
+                agentA.AddReward(0.1f);
             }
             else
             {
                 agentB.AddReward(0.1f);
             }
             lastAgentHit = 0;
-
         }
     }
 
@@ -44,7 +43,7 @@ public class HitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
+                    agentA.AddReward(-0.01f);
                     agentB.SetReward(0);
                     agentB.score += 1;
                 }
@@ -59,14 +58,14 @@ public class HitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
+                    agentA.AddReward(-0.01f);
                     agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
                     agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
+                    agentB.AddReward(-0.01f);
                     agentA.score += 1;
                 }
             }
@@ -74,16 +73,15 @@ public class HitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0 || lastAgentHit == -1)
                 {
-                    agentA.AddReward( -0.01f);
+                    agentA.AddReward(-0.01f);
                     agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
-                    agentA.AddReward( -0.01f);
+                    agentA.AddReward(-0.01f);
                     agentB.SetReward(0);
                     agentB.score += 1;
-
                 }
             }
             else if (collision.gameObject.name == "floorB")
@@ -91,13 +89,13 @@ public class HitWall : MonoBehaviour
                 if (lastAgentHit == 1 || lastAgentHit == -1)
                 {
                     agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
+                    agentB.AddReward(-0.01f);
                     agentA.score += 1;
                 }
                 else
                 {
                     agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
+                    agentB.AddReward(-0.01f);
                     agentA.score += 1;
                 }
             }
@@ -105,14 +103,14 @@ public class HitWall : MonoBehaviour
             {
                 if (lastAgentHit == 0)
                 {
-                    agentA.AddReward( -0.01f);
+                    agentA.AddReward(-0.01f);
                     agentB.SetReward(0);
                     agentB.score += 1;
                 }
                 else
                 {
                     agentA.SetReward(0);
-                    agentB.AddReward( -0.01f);
+                    agentB.AddReward(-0.01f);
                     agentA.score += 1;
                 }
             }

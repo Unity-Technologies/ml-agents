@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
@@ -50,9 +50,9 @@ public class GridAcademy : Academy
 
     public void SetEnvironment()
     {
-        cam.transform.position = new Vector3(-((int)resetParameters["gridSize"] - 1) / 2f, 
-                                             (int)resetParameters["gridSize"] * 1.25f, 
-                                             -((int)resetParameters["gridSize"] - 1) / 2f);
+        cam.transform.position = new Vector3(-((int)resetParameters["gridSize"] - 1) / 2f,
+            (int)resetParameters["gridSize"] * 1.25f,
+            -((int)resetParameters["gridSize"] - 1) / 2f);
         cam.orthographicSize = ((int)resetParameters["gridSize"] + 5f) / 2f;
 
         List<int> playersList = new List<int>();
@@ -81,7 +81,6 @@ public class GridAcademy : Academy
 
         agentCam.orthographicSize = (gridSize) / 2f;
         agentCam.transform.position = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
-
     }
 
     public override void AcademyReset()
@@ -113,11 +112,9 @@ public class GridAcademy : Academy
         int x_a = (numbersA[players.Length]) / gridSize;
         int y_a = (numbersA[players.Length]) % gridSize;
         trueAgent.transform.position = new Vector3(x_a, -0.25f, y_a);
-
     }
 
     public override void AcademyStep()
     {
-
     }
 }

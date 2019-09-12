@@ -73,11 +73,10 @@ namespace MLAgents.Tests
 
             var src = new TensorProxy
             {
-                data = new Tensor(2, 3, new []
+                data = new Tensor(2, 3, new[]
                 {
                     Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50,
                     Mathf.Log(0.3f) - 25, Mathf.Log(0.4f) - 25, Mathf.Log(0.3f) - 25
-
                 }),
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
@@ -158,7 +157,7 @@ namespace MLAgents.Tests
             var src = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(0,1)
+                data = new Tensor(0, 1)
             };
 
             var dst = new TensorProxy

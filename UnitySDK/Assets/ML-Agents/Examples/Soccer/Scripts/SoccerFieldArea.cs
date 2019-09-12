@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,7 +53,6 @@ public class SoccerFieldArea : MonoBehaviour
         groundRenderer.material = groundMaterial;
     }
 
-
     void Awake()
     {
         academy = FindObjectOfType<SoccerAcademy>();
@@ -87,7 +86,6 @@ public class SoccerFieldArea : MonoBehaviour
                 }
                 ps.agentScript.Done();
             }
-
         }
     }
 
@@ -136,7 +134,6 @@ public class SoccerFieldArea : MonoBehaviour
         ps.agentScript.Done();  //all agents need to be reset
     }
 
-
     public Vector3 GetRandomSpawnPos(AgentSoccer.AgentRole role, AgentSoccer.Team team)
     {
         float xOffset = 0f;
@@ -153,8 +150,8 @@ public class SoccerFieldArea : MonoBehaviour
             xOffset = xOffset * -1f;
         }
         var randomSpawnPos = ground.transform.position +
-                               new Vector3(xOffset, 0f, 0f)
-                               + (Random.insideUnitSphere * 2);
+            new Vector3(xOffset, 0f, 0f)
+            + (Random.insideUnitSphere * 2);
         randomSpawnPos.y = ground.transform.position.y + 2;
         return randomSpawnPos;
     }
@@ -162,8 +159,8 @@ public class SoccerFieldArea : MonoBehaviour
     public Vector3 GetBallSpawnPosition()
     {
         var randomSpawnPos = ground.transform.position +
-                             new Vector3(0f, 0f, 0f)
-                             + (Random.insideUnitSphere * 2);
+            new Vector3(0f, 0f, 0f)
+            + (Random.insideUnitSphere * 2);
         randomSpawnPos.y = ground.transform.position.y + 2;
         return randomSpawnPos;
     }

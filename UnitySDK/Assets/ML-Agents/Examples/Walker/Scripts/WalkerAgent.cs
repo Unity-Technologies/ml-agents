@@ -1,11 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class WalkerAgent : Agent
 {
-    [Header("Specific to Walker")] [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Specific to Walker")][Header("Target To Walk Towards")][Space(10)]
     public Transform target;
 
     Vector3 dirToTarget;
@@ -109,7 +109,7 @@ public class WalkerAgent : Agent
     {
         dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
 
-        // Apply action to all relevant body parts. 
+        // Apply action to all relevant body parts.
         if (isNewDecisionStep)
         {
             var bpDict = jdController.bodyPartsDict;

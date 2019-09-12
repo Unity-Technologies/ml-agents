@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
@@ -56,7 +56,7 @@ namespace MLAgents.InferenceBrain
 
             if (barracudaModel != null)
             {
-                var model = (Model) barracudaModel;
+                var model = (Model)barracudaModel;
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     _dict[model.memories[i].input] =
@@ -73,8 +73,8 @@ namespace MLAgents.InferenceBrain
             if (bp.cameraResolutions != null)
             {
                 for (var visIndex = 0;
-                    visIndex < bp.cameraResolutions.Length;
-                    visIndex++)
+                     visIndex < bp.cameraResolutions.Length;
+                     visIndex++)
                 {
                     var index = visIndex;
                     var bw = bp.cameraResolutions[visIndex].blackAndWhite;

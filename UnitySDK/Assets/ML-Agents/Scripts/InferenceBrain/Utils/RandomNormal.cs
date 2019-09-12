@@ -43,7 +43,8 @@ namespace MLAgents.InferenceBrain.Utils
                 u = _random.NextDouble() * 2.0 - 1.0;
                 v = _random.NextDouble() * 2.0 - 1.0;
                 s = u * u + v * v;
-            } while (s >= 1.0 || Math.Abs(s) < double.Epsilon);
+            }
+            while (s >= 1.0 || Math.Abs(s) < double.Epsilon);
 
             s = Math.Sqrt(-2.0 * Math.Log(s) / s);
             _spareUnscaled = u * s;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace MLAgents.Tests
             {
                 var f =  typeof(Agent).GetField(
                     "action", BindingFlags.Instance | BindingFlags.NonPublic);
-                return (AgentAction) f.GetValue(this);
+                return (AgentAction)f.GetValue(this);
             }
         }
 
@@ -29,7 +29,7 @@ namespace MLAgents.Tests
             var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo();
 
-            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA},{agentB, infoB}};
+            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA}, {agentB, infoB}};
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] {2, 3},
-                data = new Tensor (2, 3, new float[] {1, 2, 3, 4, 5, 6})
+                data = new Tensor(2, 3, new float[] {1, 2, 3, 4, 5, 6})
             };
             var agentInfos = GetFakeAgentInfos();
 
@@ -77,14 +77,14 @@ namespace MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] {2, 5},
-                data = new Tensor (
+                data = new Tensor(
                     2,
                     5,
                     new[] {0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
-            var applier = new DiscreteActionOutputApplier(new []{2, 3}, 0, alloc);
+            var applier = new DiscreteActionOutputApplier(new[] {2, 3}, 0, alloc);
             applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos.Keys.ToList();
 
@@ -108,7 +108,7 @@ namespace MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] {2, 5},
-                data = new Tensor (
+                data = new Tensor(
                     2,
                     5,
                     new[] {0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f})
@@ -138,7 +138,7 @@ namespace MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] {2, 1},
-                data = new Tensor (2, 1, new[]{0.5f, 8f})
+                data = new Tensor(2, 1, new[] {0.5f, 8f})
             };
             var agentInfos = GetFakeAgentInfos();
 

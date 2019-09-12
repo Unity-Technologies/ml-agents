@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -59,7 +59,6 @@ public class TennisAgent : Agent
         AddVectorObs(ballRb.velocity.y);
     }
 
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * invertMult;
@@ -76,8 +75,8 @@ public class TennisAgent : Agent
             !invertX && transform.position.x - transform.parent.transform.position.x > -invertMult)
         {
             transform.position = new Vector3(-invertMult + transform.parent.transform.position.x,
-                                                        transform.position.y,
-                                                        transform.position.z);
+                transform.position.y,
+                transform.position.z);
         }
 
         textComponent.text = score.ToString();
@@ -97,10 +96,10 @@ public class TennisAgent : Agent
     {
         angle = resetParams["angle"];
         gameObject.transform.eulerAngles = new Vector3(
-                                                gameObject.transform.eulerAngles.x,
-                                                gameObject.transform.eulerAngles.y,
-                                                invertMult * angle
-                                            );
+            gameObject.transform.eulerAngles.x,
+            gameObject.transform.eulerAngles.y,
+            invertMult * angle
+        );
     }
 
     public void SetBall()
