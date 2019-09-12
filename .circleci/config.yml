@@ -33,10 +33,10 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install --upgrade setuptools
-            cd ml-agents-envs && pip install -e .
-            cd ../ml-agents && pip install -e .
-            cd .. && pip install -r test_requirements.txt
-            cd gym-unity && pip install -e .
+            pushd ml-agents-envs && pip install -e . && popd
+            pushd ml-agents && pip install -e . && popd
+            pip install -r test_requirements.txt
+            pushd gym-unity && pip install -e . && popd
 
       - save_cache:
           paths:
