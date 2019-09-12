@@ -1,17 +1,9 @@
 version: 2.1
 executors:
   python361:
-    parameters:
-      pyversion:
-        type: string
-        default: 3.6.1
     docker:
       - image: circleci/python:3.6.1
   python373:
-    parameters:
-      pyversion:
-        type: string
-        default: 3.7.3
     docker:
       - image: circleci/python:3.7.3
 
@@ -85,13 +77,16 @@ jobs:
 
       - store_artifacts:
           path: pip_versions.txt
+          destination: test-reports/pip_versions.txt
 
 workflows:
   workflow:
     jobs:
       - build_python:
+          name: python3.6.1
           e: python361
           pyversion: 3.6.1
       - build_python:
+          name: python3.7.3
           e: python373
           pyversion: 3.7.3
