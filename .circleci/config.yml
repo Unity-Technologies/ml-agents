@@ -75,6 +75,41 @@ jobs:
           path: htmlcov
           destination: htmlcov
 
+
+  markdown_link_check:
+    docker:
+      - image: circleci/node:12.6.0
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-node-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get install python3-venv
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install pre-commit
+      - run: sudo npm install -g markdown-link-check
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: Run markdown-link-check via precommit
+          command: |
+            . venv/bin/activate
+            pre-commit run --hook-stage manual markdown-link-check --all-files
+
 workflows:
   workflow:
     jobs:
@@ -86,3 +121,4 @@ workflows:
           name: python_3.7.3
           executor: python373
           pyversion: 3.7.3
+      - markdown_link_check
