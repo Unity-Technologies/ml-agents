@@ -1,35 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace MLAgents{
-	[RequireComponent(typeof(Agent))]
-	public class DecisionAutoRequester : MonoBehaviour {
+    [RequireComponent(typeof(Agent))]
+    public class DecisionAutoRequester : MonoBehaviour {
 
-		public int DecisionPeriod;
-		public bool RepeatAction;
-		private Agent m_Agent;
+        public int DecisionPeriod;
+        public bool RepeatAction;
+        private Agent m_Agent;
 
-		public void OnEnable()
+        public void OnEnable()
         {
-			DecisionPeriod = Mathf.Max(DecisionPeriod, 1);
-			m_Agent = gameObject.GetComponent<Agent>();
+            DecisionPeriod = Mathf.Max(DecisionPeriod, 1);
+            m_Agent = gameObject.GetComponent<Agent>();
             GameObject.FindObjectOfType<Academy>().AgentSetStatus += SetStatus;
-		}
+        }
 
         void OnDisable()
         {
             GameObject.FindObjectOfType<Academy>().AgentSetStatus -= SetStatus;
         }
 
-		void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
+        void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
         {
-			if(academyStepCounter % DecisionPeriod == 0){
-				m_Agent.RequestDecision();
-			}
-			if (RepeatAction){
-				m_Agent.RequestAction();
-			}
-		}
-	}
+            if(academyStepCounter % DecisionPeriod == 0){
+                m_Agent.RequestDecision();
+            }
+            if (RepeatAction){
+                m_Agent.RequestAction();
+            }
+        }
+    }
 }
