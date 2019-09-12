@@ -6,6 +6,7 @@ default:
     hidden_units: 128
     init_entcoef: 1.0
     learning_rate: 3.0e-4
+    learning_rate_schedule: constant
     max_steps: 5.0e4
     memory_size: 256
     normalize: false

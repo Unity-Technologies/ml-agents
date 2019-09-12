@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
+from mlagents.trainers.models import LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -100,6 +101,9 @@ class SACPolicy(TFPolicy):
             self.model = SACModel(
                 brain,
                 lr=float(trainer_params["learning_rate"]),
+                lr_schedule=LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "constant")
+                ),
                 h_size=int(trainer_params["hidden_units"]),
                 init_entcoef=float(trainer_params["init_entcoef"]),
                 max_step=float(trainer_params["max_steps"]),
