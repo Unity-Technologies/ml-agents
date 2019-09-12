@@ -20,6 +20,8 @@ jobs:
     parameters:
       e:
         type: executor
+      pyversion:
+        type: string
     executor: << parameters.e >>
     working_directory: ~/repo
 
@@ -89,5 +91,7 @@ workflows:
     jobs:
       - build_python:
           e: python361
+          pyversion: 3.6.1
       - build_python:
           e: python373
+          pyversion: 3.7.3
