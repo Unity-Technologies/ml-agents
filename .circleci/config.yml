@@ -87,7 +87,7 @@ jobs:
 workflows:
   workflow:
     jobs:
-      - test:
+      - build_python:
           e: python361
-      - test:
+      - build_python:
           e: python373
