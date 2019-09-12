@@ -15,6 +15,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     packages=["mlagents.envs", "mlagents.envs.communicator_objects"],  # Required
     zip_safe=False,

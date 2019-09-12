@@ -22,6 +22,7 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
     packages=find_namespace_packages(

@@ -45,8 +45,8 @@ The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
 ### Install Python and mlagents Package
 
-In order to use ML-Agents toolkit, you need Python 3.6.  
-[Download](https://www.python.org/downloads/) and install Python 3.6 if you do not already have it.
+In order to use ML-Agents toolkit, you need Python 3.6.1 or higher.  
+[Download](https://www.python.org/downloads/) and install Python 3.7 if you do not already have it.
 
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
@@ -71,7 +71,7 @@ Some of the primary dependencies include:
 
 **Notes:**
 
-- We do not currently support Python 3.7 or Python 3.5.
+- We do not currently support Python 3.5 or lower.
 - If you are using Anaconda and are having trouble with TensorFlow, please see
   the following
   [link](https://www.tensorflow.org/install/pip)
