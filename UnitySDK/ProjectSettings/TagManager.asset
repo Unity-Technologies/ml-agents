@@ -26,6 +26,8 @@ TagManager:
   - pyramid
   - switchOn
   - stone
+  - walkableSurface
+  - target
   layers:
   - Default
   - TransparentFX
@@ -41,7 +43,7 @@ TagManager:
   - goalie
   - strikerWall
   - striker
-  - 
+  - visualCameraIgnore
   - 
   - 
   - 

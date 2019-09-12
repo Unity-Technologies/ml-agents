@@ -24,7 +24,6 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerAcademy academy;
-    Renderer agentRenderer;
     RayPerception rayPer;
 
     public void ChooseRandomTeam()
@@ -44,7 +43,6 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Red;
-        agentRenderer.material = academy.redMaterial;
         tag = "redAgent";
     }
 
@@ -52,14 +50,12 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Blue;
-        agentRenderer.material = academy.blueMaterial;
         tag = "blueAgent";
     }
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRenderer = GetComponent<Renderer>();
         rayPer = GetComponent<RayPerception>();
         academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();
