@@ -35,7 +35,7 @@ jobs:
             pip install --upgrade setuptools
             cd ml-agents-envs && pip install -e .
             cd ../ml-agents && pip install -e .
-            pip install -r test_requirements.txt
+            cd .. && pip install -r test_requirements.txt
             cd ../gym-unity && pip install -e .
 
       - save_cache:
