@@ -46,7 +46,7 @@ def dummy_config():
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None
-        vis_encode_type: default
+        vis_encode_type: simple
         reward_signals:
             extrinsic:
                 strength: 1.0
