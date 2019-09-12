@@ -36,7 +36,7 @@ jobs:
             cd ml-agents-envs && pip install -e .
             cd ../ml-agents && pip install -e .
             cd .. && pip install -r test_requirements.txt
-            cd ../gym-unity && pip install -e .
+            cd gym-unity && pip install -e .
 
       - save_cache:
           paths:
