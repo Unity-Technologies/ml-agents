@@ -232,13 +232,13 @@ def _check_environment_trains(env, config):
             assert mean_reward > 0.99
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ppo(use_discrete):
-    env = Simple1DEnvironment(use_discrete=use_discrete)
-    _check_environment_trains(env, PPO_CONFIG)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_sac(use_discrete):
-    env = Simple1DEnvironment(use_discrete=use_discrete)
-    _check_environment_trains(env, SAC_CONFIG)
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ppo(use_discrete):
+#     env = Simple1DEnvironment(use_discrete=use_discrete)
+#     _check_environment_trains(env, PPO_CONFIG)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_sac(use_discrete):
+#     env = Simple1DEnvironment(use_discrete=use_discrete)
+#     _check_environment_trains(env, SAC_CONFIG)
