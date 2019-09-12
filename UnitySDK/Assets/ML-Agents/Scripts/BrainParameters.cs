@@ -78,7 +78,7 @@ namespace MLAgents
                 NumStackedVectorObservations = numStackedVectorObservations,
                 VectorActionSize = {vectorActionSize},
                 VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
+                    (CommunicatorObjects.SpaceTypeProto) vectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
@@ -93,6 +93,7 @@ namespace MLAgents
                         GrayScale = res.blackAndWhite
                     });
             }
+
             return brainParametersProto;
         }
 
@@ -100,13 +101,36 @@ namespace MLAgents
         {
         }
 
+        /// <summary>
+        /// Converts Resolution protobuf array to C# Resolution array.
+        /// </summary>
+        private static Resolution[] ResolutionProtoToNative(
+            CommunicatorObjects.ResolutionProto[] resolutionProtos)
+        {
+            var localCameraResolutions = new Resolution[resolutionProtos.Length];
+            for (var i = 0; i < resolutionProtos.Length; i++)
+            {
+                localCameraResolutions[i] = new Resolution
+                {
+                    height = resolutionProtos[i].Height,
+                    width = resolutionProtos[i].Width,
+                    blackAndWhite = resolutionProtos[i].GrayScale
+                };
+            }
+
+            return localCameraResolutions;
+        }
+
         public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
         {
             vectorObservationSize = brainParametersProto.VectorObservationSize;
+            cameraResolutions = ResolutionProtoToNative(
+                brainParametersProto.CameraResolutions.ToArray()
+            );
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
+            vectorActionSpaceType = (SpaceType) brainParametersProto.VectorActionSpaceType;
         }
 
         /// <summary>
