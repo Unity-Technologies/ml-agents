@@ -35,9 +35,8 @@ jobs:
             pip install --upgrade setuptools
             cd ml-agents-envs && pip install -e .
             cd ../ml-agents && pip install -e .
-            pip install pre-commit pytest-cov==2.6.1
+            pip install -r test_requirements.txt
             cd ../gym-unity && pip install -e .
-            pip freeze > pip_versions.txt
 
       - save_cache:
           paths:
@@ -49,6 +48,7 @@ jobs:
           command: |
             . venv/bin/activate
             mkdir test-reports
+            pip freeze > test-reports/pip_versions.txt
             pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
@@ -74,10 +74,6 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: htmlcov
-
-      - store_artifacts:
-          path: pip_versions.txt
-          destination: test-reports/pip_versions.txt
 
 workflows:
   workflow:

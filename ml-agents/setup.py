@@ -29,13 +29,13 @@ setup(
     ),
     zip_safe=False,
     install_requires=[
+        # Test-only dependencies should go in test_requirements.txt, not here.
         "mlagents_envs==0.9.3",
         "tensorflow>=1.7,<1.15",
         "Pillow>=4.2.1",
-        "matplotlib",  # TODO remove
+        "matplotlib",
         "numpy>=1.13.3,<=1.17.0",
         "jupyter",
-        "pytest>=3.2.2,<4.0.0",  # TODO move to a requirements.txt file
         "docopt",
         "pyyaml",
         "protobuf>=3.6,<3.7",
