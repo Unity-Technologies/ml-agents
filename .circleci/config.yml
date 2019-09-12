@@ -15,6 +15,10 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      - run: sudo apt-get update
+      - run: sudo apt-get install npm
+      - run: npm install -g markdown-link-check
+
       - run:
           name: Install Dependencies
           command: |
@@ -32,12 +36,12 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
 
-      - run:
-          name: Run Tests for ml-agents and gym_unity
-          command: |
-            . venv/bin/activate
-            mkdir test-reports
-            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+#      - run:
+#          name: Run Tests for ml-agents and gym_unity
+#          command: |
+#            . venv/bin/activate
+#            mkdir test-reports
+#            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
           name: Check Code Style using pre-commit
@@ -62,44 +66,44 @@ jobs:
       - store_artifacts:
           path: htmlcov
           destination: htmlcov
-
-  markdown_link_check:
-    docker:
-      - image: circleci/node:12.6.0
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-node-dependencies-
-
-      - run:
-          name: Install Dependencies
-          command: |
-            sudo apt-get install python3-venv
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install pre-commit
-      - run: sudo npm install -g markdown-link-check
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-
-      - run:
-          name: Run markdown-link-check via precommit
-          command: |
-            . venv/bin/activate
-            pre-commit run --hook-stage manual markdown-link-check --all-files
-
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - markdown_link_check
+#
+#  markdown_link_check:
+#    docker:
+#      - image: circleci/node:12.6.0
+#    working_directory: ~/repo
+#
+#    steps:
+#      - checkout
+#
+#      - restore_cache:
+#          keys:
+#          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+#          # fallback to using the latest cache if no exact match is found
+#          - v1-node-dependencies-
+#
+#      - run:
+#          name: Install Dependencies
+#          command: |
+#            sudo apt-get install python3-venv
+#            python3 -m venv venv
+#            . venv/bin/activate
+#            pip install pre-commit
+#      - run: sudo npm install -g markdown-link-check
+#
+#      - save_cache:
+#          paths:
+#            - ./venv
+#          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
+#
+#      - run:
+#          name: Run markdown-link-check via precommit
+#          command: |
+#            . venv/bin/activate
+#            pre-commit run --hook-stage manual markdown-link-check --all-files
+#
+#workflows:
+#  version: 2
+#  build_and_test:
+#    jobs:
+#      - build
+#      - markdown_link_check
