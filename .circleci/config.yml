@@ -100,7 +100,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install pre-commit
-      - run: npm install -g markdown-link-check
+      - run: sudo npm install -g markdown-link-check
 
       - save_cache:
           paths:
