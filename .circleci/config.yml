@@ -1,7 +1,7 @@
 version: 2.0
 
 jobs:
-  build:
+  build_python_3.6.1:
     docker:
       - image: circleci/python:3.6.1
     working_directory: ~/repo
@@ -11,9 +11,9 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+          - v1-dependencies-py3-6-1-{{ checksum "ml-agents/setup.py" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v1-dependencies-py3-6-1-
 
       - run:
           name: Install Dependencies
@@ -30,7 +30,69 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "ml-agents/setup.py" }}
+          key: v1-dependencies-py3-6-1-{{ checksum "ml-agents/setup.py" }}
+
+      - run:
+          name: Run Tests for ml-agents and gym_unity
+          command: |
+            . venv/bin/activate
+            mkdir test-reports
+            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+
+      - run:
+          name: Check Code Style using pre-commit
+          command: |
+            . venv/bin/activate
+            pre-commit run --show-diff-on-failure --all-files
+
+      - run:
+          name: Verify there are no hidden/missing metafiles.
+          # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
+          command: |
+            . venv/bin/activate
+            python utils/validate_meta_files.py
+
+      - store_test_results:
+          path: test-reports
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+      - store_artifacts:
+          path: htmlcov
+          destination: htmlcov
+
+  build_python_3.7.3:
+    docker:
+      - image: circleci/python:3.7.3
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-py3-7-3-{{ checksum "ml-agents/setup.py" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-py3-7-3
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install --upgrade setuptools
+            cd ml-agents-envs && pip install -e .
+            cd ../ml-agents && pip install -e .
+            pip install pre-commit pytest-cov==2.6.1
+            cd ../gym-unity && pip install -e .
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-py3-7-3-{{ checksum "ml-agents/setup.py" }}
 
       - run:
           name: Run Tests for ml-agents and gym_unity
