@@ -32,7 +32,7 @@ PyramidsLearning:
     max_steps: 5.0e5
     num_epoch: 3
     pretraining:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
     reward_signals:
@@ -47,7 +47,7 @@ PyramidsLearning:
             strength: 0.01
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertPyramid.demo
+            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPyramid.demo
 
 CrawlerStaticLearning:
     normalize: true
@@ -64,7 +64,7 @@ CrawlerStaticLearning:
             strength: 1.0
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertCrawlerSta.demo
+            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertCrawlerSta.demo
 
 PushBlockLearning:
     max_steps: 5.0e4
@@ -80,7 +80,7 @@ PushBlockLearning:
             strength: 1.0
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertPush.demo
+            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPush.demo
 
 HallwayLearning:
     use_recurrent: true
@@ -103,4 +103,4 @@ HallwayLearning:
             strength: 0.1
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertHallway.demo
+            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertHallway.demo

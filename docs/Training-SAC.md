@@ -239,7 +239,7 @@ To use pretraining, add a `pretraining` section to the trainer_config. For insta
 
 ```
     pretraining:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
 ```

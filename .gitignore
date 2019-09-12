@@ -7,7 +7,7 @@
 /UnitySDK/[Uu]nity[Pp]ackage[Mm]anager/
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
-/UnitySDK/Assets/Demonstrations*
+/UnitySDK/Assets/Demonstrations/*.demo
 
 # Tensorflow Model Info
 /models
