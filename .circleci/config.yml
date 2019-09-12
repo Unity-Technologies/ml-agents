@@ -63,23 +63,7 @@ jobs:
           path: htmlcov
           destination: htmlcov
 
-
-#  markdown_link_check:
-#    docker:
-#      - image: circleci/node:12.6.0
-#    working_directory: ~/repo
-#
-#    steps:
-#      - checkout
-#
-#      - run: sudo npm install -g markdown-link-check
-#
-#      - run:
-#          name: Run markdown-link-check
-#          command: |
-#            git ls-files | grep \.md$ | grep -v localized | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json
-
-  markdown_link_check_precommit:
+  markdown_link_check:
     docker:
       - image: circleci/node:12.6.0
     working_directory: ~/repo
@@ -118,5 +102,4 @@ workflows:
   build_and_test:
     jobs:
       - build
-      #- markdown_link_check
-      - markdown_link_check_precommit
+      - markdown_link_check
