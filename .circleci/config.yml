@@ -10,11 +10,11 @@ executors:
 jobs:
   build_python:
     parameters:
-      e:
+      executor:
         type: executor
       pyversion:
         type: string
-    executor: << parameters.e >>
+    executor: << parameters.executor >>
     working_directory: ~/repo
 
     steps:
@@ -79,10 +79,10 @@ workflows:
   workflow:
     jobs:
       - build_python:
-          name: python3.6.1
-          e: python361
+          name: python_3.6.1
+          executor: python361
           pyversion: 3.6.1
       - build_python:
-          name: python3.7.3
-          e: python373
+          name: python_3.7.3
+          executor: python373
           pyversion: 3.7.3
