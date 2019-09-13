@@ -143,16 +143,15 @@ VisualPyramidsLearning:
     time_horizon: 1000
     hidden_units: 64
     init_entcoef: 0.5
-    max_steps: 5.0e5
 
 3DBallHardLearning:
     normalize: true
     batch_size: 256
     summary_freq: 1000
     time_horizon: 1000
-    max_steps: 5.0e5
 
 TennisLearning:
+    buffer_size: 500000
     normalize: true
     max_steps: 2e5
 
@@ -177,7 +176,7 @@ CrawlerDynamicLearning:
     summary_freq: 3000
     train_interval: 3
     num_layers: 3
-    max_steps: 5e5
+    max_steps: 1e6
     hidden_units: 512
 
 WalkerLearning:
@@ -200,7 +199,7 @@ ReacherLearning:
     time_horizon: 1000
     batch_size: 128
     buffer_size: 500000
-    max_steps: 1e6
+    max_steps: 2e5
     summary_freq: 3000
 
 HallwayLearning:
