@@ -5,6 +5,7 @@ import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
+from mlagents.trainers.models import EncoderType
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -111,7 +112,9 @@ class SACPolicy(TFPolicy):
                 stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
                 gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
-                vis_encode_type=trainer_params["vis_encode_type"],
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
             )
             self.model.create_sac_optimizers()
 
