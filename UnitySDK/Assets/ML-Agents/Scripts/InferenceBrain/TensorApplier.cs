@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
-{    
+{
     /// <summary>
     /// Mapping between the output tensor names and the method that will use the
     /// output tensors and the Agents present in the batch to update their action, memories and
@@ -19,18 +19,22 @@ namespace MLAgents.InferenceBrain
         /// are assumed to have the batch size on the first dimension and the agents to be ordered
         /// the same way in the dictionary and in the tensor.
         /// </summary>
-        public interface Applier
+        public interface IApplier
         {
             /// <summary>
             /// Applies the values in the Tensor to the Agents present in the agentInfos
             /// </summary>
-            /// <param name="tensorProxy"> The Tensor containing the data to be applied to the Agents</param>
-            /// <param name="agentInfo"> Dictionary of Agents to AgentInfo that will reveive
-            /// the values of the Tensor.</param>
+            /// <param name="tensorProxy">
+            /// The Tensor containing the data to be applied to the Agents
+            /// </param>
+            /// <param name="agentInfo">
+            /// Dictionary of Agents to AgentInfo that will receive
+            /// the values of the Tensor.
+            /// </param>
             void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo);
         }
-        
-        Dictionary<string, Applier>  _dict = new Dictionary<string, Applier>();
+
+        private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.
@@ -39,26 +43,30 @@ namespace MLAgents.InferenceBrain
         /// used</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
-        public TensorApplier(BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+        /// <param name="barracudaModel"></param>
+        public TensorApplier(
+            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
-            _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
-            if (bp.vectorActionSpaceType == SpaceType.continuous)
+            m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            if (bp.vectorActionSpaceType == SpaceType.Continuous)
             {
-                _dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
-                _dict[TensorNames.ActionOutput] = new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
+                m_Dict[TensorNames.ActionOutput] =
+                    new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
 
             if (barracudaModel != null)
             {
-                Model model = (Model) barracudaModel;
+                var model = (Model)barracudaModel;
 
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
-                    _dict[model.memories[i].output] = new BarracudaMemoryOutputApplier(model.memories.Length, i);
+                    m_Dict[model.memories[i].output] =
+                        new BarracudaMemoryOutputApplier(model.memories.Length, i);
                 }
             }
         }
@@ -76,12 +84,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!_dict.ContainsKey(tensor.Name))
+                if (!m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
-                        "Unknow tensorProxy expected as output : "+tensor.Name);
+                        $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                _dict[tensor.Name].Apply(tensor, agentInfos);
+                m_Dict[tensor.name].Apply(tensor, agentInfos);
             }
         }
     }

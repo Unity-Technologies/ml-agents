@@ -8,10 +8,10 @@ using UnityEngine.Scripting;
 public class iOSBLAS : BLASPlugin
 {
     [DllImport("__Internal")]
-    static extern unsafe void iossgemm(float* Ap, int AN, int AM, 
-                                        float* Bp, int BN, int BM, 
-                                        float* Cp, int CN, int CM, 
-                                        int bs, bool transposeA, bool transposeB);
+    static extern unsafe void iossgemm(float* Ap, int AN, int AM,
+        float* Bp, int BN, int BM,
+        float* Cp, int CN, int CM,
+        int bs, bool transposeA, bool transposeB);
 
     public bool IsCurrentPlatformSupported()
     {

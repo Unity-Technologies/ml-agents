@@ -15,7 +15,7 @@ SAC is also a "maximum entropy" algorithm, and enables exploration in an intrins
 Read more about maximum entropy RL [here](https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/).
 
 To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Training-RewardSignals.md)
+the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
 for the available reward signals and the corresponding hyperparameters.
 
 ## Best Practices when training with SAC
@@ -35,7 +35,7 @@ rewarding the agent for various different behaviors. For instance, we could rewa
 the agent for exploring new states, rather than explicitly defined reward signals.
 Furthermore, we could mix reward signals to help the learning process.
 
-`reward_signals` provides a section to define [reward signals.](Training-RewardSignals.md)
+`reward_signals` provides a section to define [reward signals.](Reward-Signals.md)
 ML-Agents provides two reward signals by default, the Extrinsic (environment) reward, and the
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
 environments.
@@ -232,7 +232,7 @@ Default: `False`
 In some cases, you might want to bootstrap the agent's policy using behavior recorded
 from a player. This can help guide the agent towards the reward. Pretraining adds
 training operations that mimic a demonstration rather than attempting to maximize reward.
-It is essentially equivalent to running [behavioral cloning](./Training-BehavioralCloning.md)
+It is essentially equivalent to running [behavioral cloning](./Training-Behavioral-Cloning.md)
 in-line with SAC.
 
 To use pretraining, add a `pretraining` section to the trainer_config. For instance:

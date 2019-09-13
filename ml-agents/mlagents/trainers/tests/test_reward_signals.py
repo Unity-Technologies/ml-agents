@@ -65,7 +65,7 @@ def sac_dummy_config():
         summary_freq: 1000
         tau: 0.005
         use_recurrent: false
-        vis_encode_type: default
+        vis_encode_type: simple
         pretraining:
             demo_path: ./demos/ExpertPyramid.demo
             strength: 1.0

@@ -38,7 +38,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         super().__init__()
         self.discrete = use_discrete
         self._brains: Dict[str, BrainParameters] = {}
-        self._brains[BRAIN_NAME] = BrainParameters(
+        brain_params = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
             num_stacked_vector_observations=1,
@@ -47,12 +47,13 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             vector_action_descriptions=["moveDirection"],
             vector_action_space_type=0 if use_discrete else 1,
         )
+        self._brains[BRAIN_NAME] = brain_params
 
         # state
         self.position = 0.0
         self.step_count = 0
-        self.random = random.Random(str(self._brains))
-        self.goal = random.choice([-1, 1])
+        self.random = random.Random(str(brain_params))
+        self.goal = self.random.choice([-1, 1])
 
     def step(
         self,
@@ -94,7 +95,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     def _reset_agent(self):
         self.position = 0.0
         self.step_count = 0
-        self.goal = random.choice([-1, 1])
+        self.goal = self.random.choice([-1, 1])
 
     def reset(
         self,
@@ -174,7 +175,7 @@ SAC_CONFIG = """
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None
-        vis_encode_type: default
+        vis_encode_type: simple
         reward_signals:
             extrinsic:
                 strength: 1.0

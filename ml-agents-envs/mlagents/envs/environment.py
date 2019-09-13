@@ -241,21 +241,21 @@ class UnityEnvironment(BaseUnityEnvironment):
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             if not docker_training:
+                subprocess_args = [launch_string]
                 if no_graphics:
-                    self.proc1 = subprocess.Popen(
-                        [
-                            launch_string,
-                            "-nographics",
-                            "-batchmode",
-                            "--port",
-                            str(self.port),
-                        ]
-                        + args
-                    )
-                else:
-                    self.proc1 = subprocess.Popen(
-                        [launch_string, "--port", str(self.port)] + args
-                    )
+                    subprocess_args += ["-nographics", "-batchmode"]
+                subprocess_args += ["--port", str(self.port)]
+                subprocess_args += args
+                try:
+                    self.proc1 = subprocess.Popen(subprocess_args)
+                except PermissionError as perm:
+                    # This is likely due to missing read or execute permissions on file.
+                    raise UnityEnvironmentException(
+                        f"Error when trying to launch environment - make sure "
+                        f"permissions are set correctly. For example "
+                        f'"chmod -R 755 {launch_string}"'
+                    ) from perm
+
             else:
                 """
                 Comments for future maintenance:

@@ -2,7 +2,7 @@ import logging
 import numpy as np
 
 import tensorflow as tf
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import LearningModel, EncoderType
 import tensorflow.contrib.layers as c_layers
 
 LOG_STD_MAX = 2
@@ -32,7 +32,7 @@ class SACNetwork(LearningModel):
         num_layers=2,
         stream_names=None,
         seed=0,
-        vis_encode_type="default",
+        vis_encode_type=EncoderType.SIMPLE,
     ):
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
@@ -448,7 +448,7 @@ class SACTargetNetwork(SACNetwork):
         num_layers=2,
         stream_names=None,
         seed=0,
-        vis_encode_type="default",
+        vis_encode_type=EncoderType.SIMPLE,
     ):
         super().__init__(
             brain,
@@ -500,7 +500,7 @@ class SACPolicyNetwork(SACNetwork):
         num_layers=2,
         stream_names=None,
         seed=0,
-        vis_encode_type="default",
+        vis_encode_type=EncoderType.SIMPLE,
     ):
         super().__init__(
             brain,
@@ -630,7 +630,7 @@ class SACModel(LearningModel):
         stream_names=None,
         tau=0.005,
         gammas=None,
-        vis_encode_type="default",
+        vis_encode_type=EncoderType.SIMPLE,
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
