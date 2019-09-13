@@ -171,6 +171,8 @@ class SACTrainer(RLTrainer):
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
         info = new_info[self.brain_name]
+        if self.is_training:
+            self.policy.update_normalization(info.vector_observations)
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
             if (

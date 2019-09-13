@@ -104,13 +104,6 @@ class PPOPolicy(TFPolicy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
-        if (
-            is_training
-            and self.use_vec_obs
-            and trainer_params["normalize"]
-            and not load
-        ):
-            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.total_policy_loss = self.model.abs_policy_loss
         self.update_dict.update(
@@ -176,6 +169,7 @@ class PPOPolicy(TFPolicy):
         :param num_sequences: Number of sequences to process.
         :return: Results of update.
         """
+
         feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats = {}
@@ -189,6 +183,7 @@ class PPOPolicy(TFPolicy):
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
+
         return update_stats
 
     def construct_feed_dict(self, model, mini_batch, num_sequences):
