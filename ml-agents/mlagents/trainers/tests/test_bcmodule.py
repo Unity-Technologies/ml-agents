@@ -31,7 +31,7 @@ def ppo_dummy_config():
         use_recurrent: false
         memory_size: 8
         pretraining:
-          demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPyramid.demo
+          demo_path: ./UnitySDK/Assets/Demonstrations/ExpertPyramid.demo
           strength: 1.0
           steps: 10000000
         reward_signals:
@@ -65,7 +65,7 @@ def sac_dummy_config():
         use_recurrent: false
         vis_encode_type: default
         pretraining:
-            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertDemos/ExpertPyramid.demo
+            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000
         reward_signals:

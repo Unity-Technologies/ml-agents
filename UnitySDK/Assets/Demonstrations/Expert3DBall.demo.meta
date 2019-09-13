@@ -1,0 +1,7 @@
+fileFormatVersion: 2
+guid: 3305ed8c00f49430ba28224d6de5b3a4
+ScriptedImporter:
+  userData: ' (MLAgents.Demonstration)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}
