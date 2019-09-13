@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -175,10 +175,8 @@ public class BananaAgent : Agent
         else
         {
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-
         }
     }
-
 
     void Freeze()
     {
@@ -187,7 +185,6 @@ public class BananaAgent : Agent
         frozenTime = Time.time;
         gameObject.GetComponent<Renderer>().material = frozenMaterial;
     }
-
 
     void Unfreeze()
     {
@@ -222,8 +219,6 @@ public class BananaAgent : Agent
         gameObject.GetComponent<Renderer>().material = normalMaterial;
     }
 
-
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
@@ -239,7 +234,7 @@ public class BananaAgent : Agent
         bananas = 0;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
-                                         2f, Random.Range(-myArea.range, myArea.range))
+            2f, Random.Range(-myArea.range, myArea.range))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
@@ -274,12 +269,11 @@ public class BananaAgent : Agent
 
     public override void AgentOnDone()
     {
-
     }
 
     public void SetLaserLengths()
     {
-        laser_length = myAcademy.resetParameters.TryGetValue("laser_length", out laser_length) ? laser_length: 1.0f;
+        laser_length = myAcademy.resetParameters.TryGetValue("laser_length", out laser_length) ? laser_length : 1.0f;
     }
 
     public void SetAgentScale()

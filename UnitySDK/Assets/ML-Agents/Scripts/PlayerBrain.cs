@@ -30,7 +30,7 @@ namespace MLAgents
             public int index;
             public float value;
         }
-        
+
         [System.Serializable]
         public struct AxisContinuousPlayerAction
         {
@@ -44,20 +44,20 @@ namespace MLAgents
         [Tooltip("The list of keys and the value they correspond to for continuous control.")]
         /// Contains the mapping from input to continuous actions
         public KeyContinuousPlayerAction[] keyContinuousPlayerActions;
-        
+
         [SerializeField]
         [Tooltip("The list of axis actions.")]
         /// Contains the mapping from input to continuous actions
         public AxisContinuousPlayerAction[] axisContinuousPlayerActions;
-        
+
         [SerializeField]
         [Tooltip("The list of keys and the value they correspond to for discrete control.")]
         /// Contains the mapping from input to discrete actions
         public DiscretePlayerAction[] discretePlayerActions;
 
-        protected override void Initialize(){ }
-        
-        /// Uses the continuous inputs or dicrete inputs of the player to 
+        protected override void Initialize() {}
+
+        /// Uses the continuous inputs or dicrete inputs of the player to
         /// decide action
         protected override void DecideAction()
         {
@@ -83,7 +83,7 @@ namespace MLAgents
                         }
                     }
                     agent.UpdateVectorAction(action);
-                } 
+                }
             }
             else
             {
@@ -94,7 +94,7 @@ namespace MLAgents
                     {
                         if (Input.GetKey(dha.key))
                         {
-                            action[dha.branchIndex] = (float) dha.value;
+                            action[dha.branchIndex] = (float)dha.value;
                         }
                     }
                     agent.UpdateVectorAction(action);

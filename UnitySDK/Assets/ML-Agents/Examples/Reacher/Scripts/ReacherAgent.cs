@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using MLAgents;
 
 public class ReacherAgent : Agent
 {
-
     public GameObject pendulumA;
     public GameObject pendulumB;
     public GameObject hand;
@@ -109,13 +108,11 @@ public class ReacherAgent : Agent
         goal.transform.localScale = new Vector3(goalSize, goalSize, goalSize);
     }
 
-
     public void SetResetParameters()
     {
         goalSize = myAcademy.resetParameters["goal_size"];
         goalSpeed = Random.Range(-1f, 1f) * myAcademy.resetParameters["goal_speed"];
         deviation = myAcademy.resetParameters["deviation"];
         deviationFreq = myAcademy.resetParameters["deviation_freq"];
-
     }
 }

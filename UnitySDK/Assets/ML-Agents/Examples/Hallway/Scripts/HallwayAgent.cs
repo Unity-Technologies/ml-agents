@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
@@ -51,7 +51,6 @@ public class HallwayAgent : Agent
 
     public void MoveAgent(float[] act)
     {
-
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
@@ -125,15 +124,15 @@ public class HallwayAgent : Agent
         else
         {
             orangeBlock.transform.position =
-                           new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
-                           + ground.transform.position;
+                new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
+                + ground.transform.position;
             redBlock.transform.position =
                 new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
         }
 
         transform.position = new Vector3(0f + Random.Range(-3f, 3f),
-                                         1f, agentOffset + Random.Range(-5f, 5f))
+            1f, agentOffset + Random.Range(-5f, 5f))
             + ground.transform.position;
         transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         agentRB.velocity *= 0f;

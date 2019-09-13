@@ -1,37 +1,36 @@
-﻿using UnityEngine;
+using UnityEngine;
 using MLAgents;
 
 public class AgentSoccer : Agent
 {
-
     public enum Team
     {
-        Red, 
+        Red,
         Blue
     }
     public enum AgentRole
     {
-        Striker, 
+        Striker,
         Goalie
     }
-    
+
     public Team team;
     public AgentRole agentRole;
     float kickPower;
     int playerIndex;
     public SoccerFieldArea area;
-    
+
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerAcademy academy;
     Renderer agentRenderer;
     RayPerception rayPer;
-    
+
     float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
     string[] detectableObjectsRed = { "ball", "redGoal", "blueGoal",
-        "wall", "redAgent", "blueAgent" };
+                                      "wall", "redAgent", "blueAgent" };
     string[] detectableObjectsBlue = { "ball", "blueGoal", "redGoal",
-        "wall", "blueAgent", "redAgent" };
+                                       "wall", "blueAgent", "redAgent" };
 
     public void ChooseRandomTeam()
     {
@@ -73,8 +72,8 @@ public class AgentSoccer : Agent
 
         var playerState = new PlayerState
         {
-            agentRB = agentRb, 
-            startingPos = transform.position, 
+            agentRB = agentRb,
+            startingPos = transform.position,
             agentScript = this,
         };
         area.playerStates.Add(playerState);
@@ -154,10 +153,8 @@ public class AgentSoccer : Agent
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * academy.agentRunSpeed,
-                         ForceMode.VelocityChange);
-
+            ForceMode.VelocityChange);
     }
-
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -172,7 +169,6 @@ public class AgentSoccer : Agent
             AddReward(1f / 3000f);
         }
         MoveAgent(vectorAction);
-
     }
 
     /// <summary>

@@ -47,7 +47,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(FirstValue * stddev + mean, rn.NextDouble(), Epsilon);
             Assert.AreEqual(SecondValue * stddev + mean, rn.NextDouble(), Epsilon);
         }
-        
+
         [Test]
         public void RandomNormalTestDistribution()
         {

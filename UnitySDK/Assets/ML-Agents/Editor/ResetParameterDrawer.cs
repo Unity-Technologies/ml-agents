@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
@@ -91,22 +91,22 @@ namespace MLAgents
                 addRect.width *= 2;
             }
             if (GUI.Button(addRect,
-                new GUIContent("Add New", "Add a new item to the default reset parameters"), 
+                new GUIContent("Add New", "Add a new item to the default reset parameters"),
                 EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
                 AddParameter();
             }
-            
+
             // If there are no items in the ResetParameters, Hide the Remove button
             if (_parameters.Count == 0)
             {
                 return;
             }
             // This is the Remove button
-            if (GUI.Button(removeRect, 
+            if (GUI.Button(removeRect,
                 new GUIContent(
-                    "Remove Last", "Remove the last item from the default reset parameters"), 
+                    "Remove Last", "Remove the last item from the default reset parameters"),
                 EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();

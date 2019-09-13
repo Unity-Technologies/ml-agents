@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
@@ -259,15 +259,15 @@ namespace MLAgents.InferenceBrain
             // If there are not enough Visual Observation Input compared to what the
             // Brain Parameters expect.
             for (var visObsIndex = 0;
-                visObsIndex < _brainParameters.cameraResolutions.Length;
-                visObsIndex++)
+                 visObsIndex < _brainParameters.cameraResolutions.Length;
+                 visObsIndex++)
             {
                 if (!tensorsNames.Contains(
                     TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
                 {
                     _failedModelChecks.Add(
                         "The model does not contain a Visual Observation Placeholder Input " +
-                        "for visual observation "+visObsIndex+".");
+                        "for visual observation " + visObsIndex + ".");
                 }
             }
 
@@ -331,14 +331,14 @@ namespace MLAgents.InferenceBrain
         {
             var tensorTester =
                 new Dictionary<string, Func<TensorProxy, string>>()
-                {
-                    {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
-                    {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
-                    {TensorNames.RandomNormalEpsilonPlaceholder, ((tensor) => null)},
-                    {TensorNames.ActionMaskPlaceholder, ((tensor) => null)},
-                    {TensorNames.SequenceLengthPlaceholder, ((tensor) => null)},
-                    {TensorNames.RecurrentInPlaceholder, ((tensor) => null)},
-                };
+            {
+                {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
+                {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
+                {TensorNames.RandomNormalEpsilonPlaceholder, ((tensor) => null)},
+                {TensorNames.ActionMaskPlaceholder, ((tensor) => null)},
+                {TensorNames.SequenceLengthPlaceholder, ((tensor) => null)},
+                {TensorNames.RecurrentInPlaceholder, ((tensor) => null)},
+            };
 
             foreach (var mem in _model.memories)
             {
@@ -388,7 +388,7 @@ namespace MLAgents.InferenceBrain
             if (vecObsSizeBp * numStackedVector != totalVecObsSizeT)
             {
                 return "Vector Observation Size of the model does not match. Received " +
-                       $"{vecObsSizeBp} x {numStackedVector} but was expecting {totalVecObsSizeT}.";
+                    $"{vecObsSizeBp} x {numStackedVector} but was expecting {totalVecObsSizeT}.";
             }
             return null;
         }
@@ -404,10 +404,10 @@ namespace MLAgents.InferenceBrain
         {
             var numberActionsBp = _brainParameters.vectorActionSize.Length;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            if  (numberActionsBp != numberActionsT)
+            if (numberActionsBp != numberActionsT)
             {
                 return "Previous Action Size of the model does not match. " +
-                       $"Received {numberActionsBp} but was expecting {numberActionsT}.";
+                    $"Received {numberActionsBp} but was expecting {numberActionsT}.";
             }
             return null;
         }
@@ -431,11 +431,11 @@ namespace MLAgents.InferenceBrain
             var heightT = tensorProxy.shape[1];
             var widthT = tensorProxy.shape[2];
             var pixelT = tensorProxy.shape[3];
-            if  ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
+            if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return $"The visual Observation {visObsIndex} of the model does not match. " +
-                       $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
-                       $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
+                    $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
+                    $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
             }
             return null;
         }
@@ -516,10 +516,10 @@ namespace MLAgents.InferenceBrain
         private string CheckDiscreteActionOutputShape(TensorShape shape, int modelActionSize)
         {
             var bpActionSize = _brainParameters.vectorActionSize.Sum();
-            if  (modelActionSize != bpActionSize)
+            if (modelActionSize != bpActionSize)
             {
                 return "Action Size of the model does not match. The BrainParameters expect " +
-                       $"{bpActionSize} but the model contains {modelActionSize}.";
+                    $"{bpActionSize} but the model contains {modelActionSize}.";
             }
             return null;
         }
@@ -537,10 +537,10 @@ namespace MLAgents.InferenceBrain
         private string CheckContinuousActionOutputShape(TensorShape shape, int modelActionSize)
         {
             var bpActionSize = _brainParameters.vectorActionSize[0];
-            if  (modelActionSize != bpActionSize)
+            if (modelActionSize != bpActionSize)
             {
                 return "Action Size of the model does not match. The BrainParameters expect " +
-                       $"{bpActionSize} but the model contains {modelActionSize}.";
+                    $"{bpActionSize} but the model contains {modelActionSize}.";
             }
             return null;
         }

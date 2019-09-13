@@ -9,7 +9,6 @@ using UnityEditor;
 
 namespace MLAgents
 {
-
     public class SocketCommunicator : Communicator
     {
         private const float TimeOut = 10f;
@@ -27,16 +26,15 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Initialize the communicator by sending the first UnityOutput and receiving the 
+        /// Initialize the communicator by sending the first UnityOutput and receiving the
         /// first UnityInput. The second UnityInput is stored in the unityInput argument.
         /// </summary>
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
         public UnityInput Initialize(UnityOutput unityOutput,
-                                     out UnityInput unityInput)
+            out UnityInput unityInput)
         {
-
             m_sender = new Socket(
                 AddressFamily.InterNetwork,
                 SocketType.Stream,
@@ -57,7 +55,6 @@ namespace MLAgents
 #endif
 #endif
             return initializationInput.UnityInput;
-
         }
 
         /// <summary>
@@ -82,7 +79,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Send the specified input via socket to External. Split the message into smaller 
+        /// Send the specified input via socket to External. Split the message into smaller
         /// parts if it is too long.
         /// </summary>
         /// <param name="input">The byte[] to be sent.</param>
@@ -159,11 +156,12 @@ namespace MLAgents
         private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
-            if (state==PlayModeStateChange.ExitingPlayMode)
+            if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
             }
         }
+
 #else
         /// <summary>
         /// When the editor exits, the communicator must be closed
@@ -176,8 +174,8 @@ namespace MLAgents
                 Close();
             }
         }
-#endif
-#endif
 
+#endif
+#endif
     }
 }

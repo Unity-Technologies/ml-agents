@@ -257,7 +257,7 @@ namespace MLAgents
     /// see the Examples/ directory within this Unity project.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-             "docs/Learning-Environment-Design-Agents.md")]
+        "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
     public abstract class Agent : MonoBehaviour
     {
@@ -558,7 +558,7 @@ namespace MLAgents
                 new List<float>(param.vectorObservationSize);
             info.stackedVectorObservation =
                 new List<float>(param.vectorObservationSize
-                                * brain.brainParameters.numStackedVectorObservations);
+                    * brain.brainParameters.numStackedVectorObservations);
             info.stackedVectorObservation.AddRange(
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
@@ -612,10 +612,10 @@ namespace MLAgents
 
             Utilities.ShiftLeft(info.stackedVectorObservation, param.vectorObservationSize);
             Utilities.ReplaceRange(info.stackedVectorObservation, info.vectorObservation,
-                                    info.stackedVectorObservation.Count - info.vectorObservation.Count);
+                info.stackedVectorObservation.Count - info.vectorObservation.Count);
 
             info.visualObservations.Clear();
-            var visualObservationCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
+            var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
             if (param.cameraResolutions.Length > visualObservationCount)
             {
                 throw new UnityAgentsException(string.Format(
@@ -642,8 +642,8 @@ namespace MLAgents
             {
                 var obsTexture = ObservationToTexture(
                     agentParameters.agentRenderTextures[i],
-                    param.cameraResolutions[camCount+i].width,
-                    param.cameraResolutions[camCount+i].height);
+                    param.cameraResolutions[camCount + i].width,
+                    param.cameraResolutions[camCount + i].height);
                 info.visualObservations.Add(obsTexture);
             }
 
@@ -745,7 +745,6 @@ namespace MLAgents
         {
             actionMasker.SetActionMask(branch, actionIndices);
         }
-
 
         /// <summary>
         /// Adds a float observation to the vector observations of the agent.
@@ -1162,7 +1161,7 @@ namespace MLAgents
                 texture2D.Resize(width, height);
             }
 
-            if(width != obsTexture.width || height != obsTexture.height)
+            if (width != obsTexture.width || height != obsTexture.height)
             {
                 throw new UnityAgentsException(string.Format(
                     "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",

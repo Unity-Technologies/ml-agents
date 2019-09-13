@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace MLAgents
 {
-    public class Startup: MonoBehaviour
+    public class Startup : MonoBehaviour
     {
         private const string SceneVariableName = "SCENE_NAME";
 

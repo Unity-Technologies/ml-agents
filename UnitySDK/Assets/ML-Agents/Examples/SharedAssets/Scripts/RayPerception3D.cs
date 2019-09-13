@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// Ray perception component. Attach this to agents to enable "local perception"
-    /// via the use of ray casts directed outward from the agent. 
+    /// via the use of ray casts directed outward from the agent.
     /// </summary>
     public class RayPerception3D : RayPerception
     {
@@ -39,10 +38,10 @@ namespace MLAgents
         {
             if (subList == null || subList.Length != detectableObjects.Length + 2)
                 subList = new float[detectableObjects.Length + 2];
-            
+
             perceptionBuffer.Clear();
             perceptionBuffer.Capacity = subList.Length * rayAngles.Length;
-            
+
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
             foreach (float angle in rayAngles)
@@ -57,9 +56,9 @@ namespace MLAgents
                 }
 
                 Array.Clear(subList, 0, subList.Length);
-                
+
                 if (Physics.SphereCast(transform.position +
-                                       new Vector3(0f, startOffset, 0f), 0.5f,
+                    new Vector3(0f, startOffset, 0f), 0.5f,
                     endPosition, out hit, rayDistance))
                 {
                     for (int i = 0; i < detectableObjects.Length; i++)
@@ -92,6 +91,5 @@ namespace MLAgents
             float z = radius * Mathf.Sin(DegreeToRadian(angle));
             return new Vector3(x, 0f, z);
         }
-
     }
 }

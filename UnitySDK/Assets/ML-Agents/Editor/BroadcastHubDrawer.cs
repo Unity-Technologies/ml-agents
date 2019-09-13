@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
@@ -38,7 +38,7 @@ namespace MLAgents
         {
             LazyInitializeHub(property, label);
             position.height = LineHeight;
-            EditorGUI.LabelField(position, new GUIContent(label.text, 
+            EditorGUI.LabelField(position, new GUIContent(label.text,
                 "The Broadcast Hub helps you define which Brains you want to expose to " +
                 "the external process"));
             position.y += LineHeight;
@@ -48,7 +48,7 @@ namespace MLAgents
             EditorGUI.indentLevel++;
             DrawAddRemoveButtons(position);
             position.y += LineHeight;
-            
+
             // This is the labels for each columns
             var brainWidth = position.width - ControlSize;
             var brainRect = new Rect(
@@ -67,7 +67,7 @@ namespace MLAgents
             EditorGUI.indentLevel--;
             EditorGUI.EndProperty();
         }
-        
+
         /// <summary>
         /// Draws the Add and Remove buttons.
         /// </summary>
@@ -173,7 +173,7 @@ namespace MLAgents
                 fieldInfo.SetValue(target, _hub);
             }
         }
-        
+
         /// <summary>
         /// Signals that the property has been modified and requires the scene to be saved for
         /// the changes to persist. Only works when the Editor is not playing.

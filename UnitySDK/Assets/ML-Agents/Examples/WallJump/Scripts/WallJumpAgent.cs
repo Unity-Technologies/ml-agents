@@ -1,4 +1,4 @@
-﻿//Put this script on your blue cube.
+//Put this script on your blue cube.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -60,11 +60,9 @@ public class WallJumpAgent : Agent
         spawnArea.SetActive(false);
     }
 
-
     // Begin the jump sequence
     public void Jump()
     {
-
         jumpingTime = 0.2f;
         jumpStartingPos = agentRB.position;
     }
@@ -72,9 +70,9 @@ public class WallJumpAgent : Agent
     /// <summary>
     /// Does the ground check.
     /// </summary>
-    /// <returns><c>true</c>, if the agent is on the ground, 
+    /// <returns><c>true</c>, if the agent is on the ground,
     /// <c>false</c> otherwise.</returns>
-    /// <param name="boxWidth">The width of the box used to perform 
+    /// <param name="boxWidth">The width of the box used to perform
     /// the ground check. </param>
     public bool DoGroundCheck(bool smallCheck)
     {
@@ -89,7 +87,6 @@ public class WallJumpAgent : Agent
             bool grounded = false;
             foreach (Collider col in hitGroundColliders)
             {
-
                 if (col != null && col.transform != this.transform &&
                     (col.CompareTag("walkableSurface") ||
                      col.CompareTag("block") ||
@@ -103,7 +100,6 @@ public class WallJumpAgent : Agent
         }
         else
         {
-
             RaycastHit hit;
             Physics.Raycast(transform.position + new Vector3(0, -0.05f, 0), -Vector3.up, out hit,
                 1f);
@@ -120,7 +116,6 @@ public class WallJumpAgent : Agent
             return false;
         }
     }
-
 
     /// <summary>
     /// Moves  a rigidbody towards a position smoothly.
@@ -144,16 +139,16 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-            float rayDistance = 20f;
-            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-            AddVectorObs(rayPer.Perceive(
-                rayDistance, rayAngles, detectableObjects, 0f, 0f));
-            AddVectorObs(rayPer.Perceive(
-                rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
-            Vector3 agentPos = agentRB.position - ground.transform.position;
+        float rayDistance = 20f;
+        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+        AddVectorObs(rayPer.Perceive(
+            rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(
+            rayDistance, rayAngles, detectableObjects, 2.5f, 2.5f));
+        Vector3 agentPos = agentRB.position - ground.transform.position;
 
-            AddVectorObs(agentPos / 20f);
-            AddVectorObs(DoGroundCheck(true) ? 1 : 0);
+        AddVectorObs(agentPos / 20f);
+        AddVectorObs(DoGroundCheck(true) ? 1 : 0);
     }
 
     /// <summary>
@@ -164,12 +159,12 @@ public class WallJumpAgent : Agent
     {
         Vector3 randomSpawnPos = Vector3.zero;
         float randomPosX = Random.Range(-spawnAreaBounds.extents.x,
-                                        spawnAreaBounds.extents.x);
+            spawnAreaBounds.extents.x);
         float randomPosZ = Random.Range(-spawnAreaBounds.extents.z,
-                                        spawnAreaBounds.extents.z);
+            spawnAreaBounds.extents.z);
 
         randomSpawnPos = spawnArea.transform.position +
-                                  new Vector3(randomPosX, 0.45f, randomPosZ);
+            new Vector3(randomPosX, 0.45f, randomPosZ);
         return randomSpawnPos;
     }
 
@@ -186,32 +181,30 @@ public class WallJumpAgent : Agent
         groundRenderer.material = groundMaterial;
     }
 
-
     public void MoveAgent(float[] act)
     {
-
         AddReward(-0.0005f);
         bool smallGrounded = DoGroundCheck(true);
         bool largeGrounded = DoGroundCheck(false);
 
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
-        int dirToGoForwardAction = (int) act[0];
-        int rotateDirAction = (int) act[1];
-        int dirToGoSideAction = (int) act[2];
-        int jumpAction = (int) act[3];
+        int dirToGoForwardAction = (int)act[0];
+        int rotateDirAction = (int)act[1];
+        int dirToGoSideAction = (int)act[2];
+        int jumpAction = (int)act[3];
 
-        if (dirToGoForwardAction==1)
+        if (dirToGoForwardAction == 1)
             dirToGo = transform.forward * 1f * (largeGrounded ? 1f : 0.5f);
-        else if (dirToGoForwardAction==2)
+        else if (dirToGoForwardAction == 2)
             dirToGo = transform.forward * -1f * (largeGrounded ? 1f : 0.5f);
-        if (rotateDirAction==1)
+        if (rotateDirAction == 1)
             rotateDir = transform.up * -1f;
-        else if (rotateDirAction==2)
+        else if (rotateDirAction == 2)
             rotateDir = transform.up * 1f;
-        if (dirToGoSideAction==1)
+        if (dirToGoSideAction == 1)
             dirToGo = transform.right * -0.6f * (largeGrounded ? 1f : 0.5f);
-        else if (dirToGoSideAction==2)
+        else if (dirToGoSideAction == 2)
             dirToGo = transform.right * 0.6f * (largeGrounded ? 1f : 0.5f);
         if (jumpAction == 1)
             if ((jumpingTime <= 0f) && smallGrounded)
@@ -221,23 +214,22 @@ public class WallJumpAgent : Agent
 
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 300f);
         agentRB.AddForce(dirToGo * academy.agentRunSpeed,
-                         ForceMode.VelocityChange);
+            ForceMode.VelocityChange);
 
         if (jumpingTime > 0f)
         {
             jumpTargetPos =
-            new Vector3(agentRB.position.x,
-                        jumpStartingPos.y + academy.agentJumpHeight,
-                        agentRB.position.z) + dirToGo;
+                new Vector3(agentRB.position.x,
+                    jumpStartingPos.y + academy.agentJumpHeight,
+                    agentRB.position.z) + dirToGo;
             MoveTowards(jumpTargetPos, agentRB, academy.agentJumpVelocity,
-                        academy.agentJumpVelocityMaxChange);
-
+                academy.agentJumpVelocityMaxChange);
         }
 
         if (!(jumpingTime > 0f) && !largeGrounded)
         {
             agentRB.AddForce(
-            Vector3.down * fallingForce, ForceMode.Acceleration);
+                Vector3.down * fallingForce, ForceMode.Acceleration);
         }
         jumpingTime -= Time.fixedDeltaTime;
     }
@@ -283,7 +275,6 @@ public class WallJumpAgent : Agent
             18 * (Random.value - 0.5f), 1, -12);
         configuration = Random.Range(0, 5);
         agentRB.velocity = default(Vector3);
-
     }
 
     private void FixedUpdate()
@@ -299,7 +290,7 @@ public class WallJumpAgent : Agent
     /// Configures the agent. Given an integer config, the wall will have
     /// different height and a different brain will be assigned to the agent.
     /// </summary>
-    /// <param name="config">Config. 
+    /// <param name="config">Config.
     /// If 0 : No wall and noWallBrain.
     /// If 1:  Small wall and smallWallBrain.
     /// Other : Tall wall and BigWallBrain. </param>
@@ -326,7 +317,7 @@ public class WallJumpAgent : Agent
             float height =
                 academy.resetParameters["big_wall_min_height"] +
                 Random.value * (academy.resetParameters["big_wall_max_height"] -
-                academy.resetParameters["big_wall_min_height"]);
+                    academy.resetParameters["big_wall_min_height"]);
             wall.transform.localScale = new Vector3(
                 wall.transform.localScale.x,
                 height,
@@ -335,4 +326,3 @@ public class WallJumpAgent : Agent
         }
     }
 }
-

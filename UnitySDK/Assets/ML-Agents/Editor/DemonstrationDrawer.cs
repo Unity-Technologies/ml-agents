@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -62,7 +62,7 @@ public class DemonstrationEditor : Editor
     /// <summary>
     /// Constructs complex label for each CameraResolution object.
     /// An example of this could be `[ 84 X 84 ]`
-    /// for a single camera with 84 pixels height and width. 
+    /// for a single camera with 84 pixels height and width.
     /// </summary>
     private static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
     {
@@ -104,7 +104,7 @@ public class DemonstrationEditor : Editor
             actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
         var camResLabel = camResProp.displayName + ": " + BuildCameraResolutionLabel(camResProp);
         var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
-                                (SpaceType) actSpaceTypeProp.enumValueIndex;
+            (SpaceType)actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);

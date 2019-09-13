@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System;
 using System.Linq;
 using Barracuda;
@@ -42,7 +42,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo)
         {
             tensorProxy.data?.Dispose();
-            tensorProxy.data = _allocator.Alloc(new TensorShape(1,1));
+            tensorProxy.data = _allocator.Alloc(new TensorShape(1, 1));
             tensorProxy.data[0] = batchSize;
         }
     }
@@ -66,7 +66,7 @@ namespace MLAgents.InferenceBrain
         {
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
-            tensorProxy.data = _allocator.Alloc(new TensorShape(1,1));
+            tensorProxy.data = _allocator.Alloc(new TensorShape(1, 1));
             tensorProxy.data[0] = 1;
         }
     }

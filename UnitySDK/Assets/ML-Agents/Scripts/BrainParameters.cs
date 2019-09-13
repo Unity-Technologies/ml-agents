@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Linq;
 
 namespace MLAgents
@@ -25,7 +25,7 @@ namespace MLAgents
 
         /**< \brief The height of the observation in pixels */
         public bool blackAndWhite;
-        /**< \brief If true, the image will be in black and white. 
+        /**< \brief If true, the image will be in black and white.
          * If false, it will be in colors RGB */
     }
 
@@ -37,7 +37,7 @@ namespace MLAgents
     public class BrainParameters
     {
         public int vectorObservationSize = 1;
-        /**< \brief If continuous : The length of the float vector that represents 
+        /**< \brief If continuous : The length of the float vector that represents
          * the state
          * <br> If discrete : The number of possible values the state can take*/
 
@@ -64,7 +64,7 @@ namespace MLAgents
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public CommunicatorObjects.BrainParametersProto
-            ToProto(string name, bool isTraining)
+        ToProto(string name, bool isTraining)
         {
             var brainParametersProto = new CommunicatorObjects.BrainParametersProto
             {
@@ -72,7 +72,7 @@ namespace MLAgents
                 NumStackedVectorObservations = numStackedVectorObservations,
                 VectorActionSize = {vectorActionSize},
                 VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto) vectorActionSpaceType,
+                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
@@ -124,7 +124,7 @@ namespace MLAgents
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType) brainParametersProto.VectorActionSpaceType;
+            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
         }
 
         /// <summary>
@@ -137,9 +137,9 @@ namespace MLAgents
             {
                 vectorObservationSize = this.vectorObservationSize,
                 numStackedVectorObservations = this.numStackedVectorObservations,
-                vectorActionSize = (int[]) this.vectorActionSize.Clone(),
-                cameraResolutions = (Resolution[]) this.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[]) this.vectorActionDescriptions.Clone(),
+                vectorActionSize = (int[])this.vectorActionSize.Clone(),
+                cameraResolutions = (Resolution[])this.cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])this.vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = this.vectorActionSpaceType
             };
         }

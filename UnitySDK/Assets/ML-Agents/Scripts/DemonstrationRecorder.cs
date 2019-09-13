@@ -41,9 +41,9 @@ namespace MLAgents
             demoStore = new DemonstrationStore();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             demoStore.Initialize(
-                demonstrationName, 
-                recordingAgent.brain.brainParameters, 
-                recordingAgent.brain.name);            
+                demonstrationName,
+                recordingAgent.brain.brainParameters,
+                recordingAgent.brain.name);
             Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
         }
 
@@ -55,7 +55,7 @@ namespace MLAgents
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
-            // If the string is too long, it will overflow the metadata. 
+            // If the string is too long, it will overflow the metadata.
             if (demoName.Length > maxNameLength)
             {
                 demoName = demoName.Substring(0, maxNameLength);

@@ -1,13 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
-
     public class CameraFollow : MonoBehaviour
     {
-
         public Transform target;
         Vector3 offset;
 

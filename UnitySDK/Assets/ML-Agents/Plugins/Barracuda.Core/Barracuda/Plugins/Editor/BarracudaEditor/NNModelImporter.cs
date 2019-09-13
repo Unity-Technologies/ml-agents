@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
@@ -9,7 +9,8 @@ namespace Barracuda
     /// Asset Importer of barracuda models.
     /// </summary>
     [ScriptedImporter(1, new[] {"nn"})]
-    public class NNModelImporter : ScriptedImporter {
+    public class NNModelImporter : ScriptedImporter
+    {
         private const string iconName = "NNModelIcon";
 
         private Texture2D iconTexture;
@@ -19,7 +20,7 @@ namespace Barracuda
             var model = File.ReadAllBytes(ctx.assetPath);
             var asset = ScriptableObject.CreateInstance<NNModel>();
             asset.Value = model;
-            
+
             ctx.AddObjectToAsset("main obj", asset, LoadIconTexture());
             ctx.SetMainObject(asset);
         }
@@ -37,6 +38,5 @@ namespace Barracuda
             }
             return iconTexture;
         }
-        
     }
 }

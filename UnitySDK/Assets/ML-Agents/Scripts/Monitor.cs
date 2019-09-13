@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -274,7 +274,6 @@ namespace MLAgents
             }
         }
 
-
         /// <summary>
         /// Remove a value from a monitor.
         /// </summary>
@@ -300,7 +299,6 @@ namespace MLAgents
                     }
                 }
             }
-
         }
 
         /// <summary>
@@ -320,7 +318,6 @@ namespace MLAgents
             {
                 displayTransformValues.Remove(target);
             }
-
         }
 
         /// <summary>
@@ -333,14 +330,12 @@ namespace MLAgents
             {
                 InstantiateCanvas();
                 isInstantiated = true;
-
             }
 
             if (canvas != null)
             {
                 canvas.SetActive(active);
             }
-
         }
 
         /// Initializes the canvas.
@@ -355,7 +350,7 @@ namespace MLAgents
             }
 
             displayTransformValues = new Dictionary<Transform,
-                Dictionary<string, DisplayValue>>();
+                                                    Dictionary<string, DisplayValue>>();
 
             transformCamera = new Dictionary<Transform, Camera>();
         }
@@ -408,7 +403,7 @@ namespace MLAgents
                 keyPixelWidth *= scale;
                 keyPixelHeight *= scale;
                 paddingwidth *= scale;
-                keyStyle.fontSize = (int) (keyPixelHeight * 0.8f);
+                keyStyle.fontSize = (int)(keyPixelHeight * 0.8f);
                 if (keyStyle.fontSize < 2)
                 {
                     continue;
@@ -418,7 +413,7 @@ namespace MLAgents
                 Dictionary<string, DisplayValue> displayValues = displayTransformValues[target];
 
                 int index = 0;
-                var orderedKeys = displayValues.Keys.OrderBy(x => -displayValues[x].time);
+                var orderedKeys = displayValues.Keys.OrderBy(x => - displayValues[x].time);
                 float[] vals;
                 GUIStyle s;
                 foreach (string key in orderedKeys)
@@ -499,9 +494,9 @@ namespace MLAgents
                             {
                                 Debug.LogError(
                                     string.Format("The Monitor value for key {0} " +
-                                                  "must be a list or array of " +
-                                                  "positive values and cannot " +
-                                                  "be empty.", key));
+                                        "must be a list or array of " +
+                                        "positive values and cannot " +
+                                        "be empty.", key));
                             }
                             else
                             {
@@ -517,9 +512,7 @@ namespace MLAgents
                                         GUIContent.none,
                                         colorStyle[i % colorStyle.Length]);
                                     valsCum += value;
-
                                 }
-
                             }
 
                             break;

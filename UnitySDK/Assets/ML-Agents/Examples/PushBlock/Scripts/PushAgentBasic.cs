@@ -1,4 +1,4 @@
-﻿//Put this script on your blue cube.
+//Put this script on your blue cube.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -10,14 +10,14 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// The ground. The bounds are used to spawn the elements.
     /// </summary>
-	public GameObject ground;
+    public GameObject ground;
 
     public GameObject area;
 
     /// <summary>
     /// The area bounds.
     /// </summary>
-	[HideInInspector]
+    [HideInInspector]
     public Bounds areaBounds;
 
     PushBlockAcademy academy;
@@ -35,7 +35,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Detects when the block touches the goal.
     /// </summary>
-	[HideInInspector]
+    [HideInInspector]
     public GoalDetect goalDetect;
 
     public bool useVectorObs;
@@ -44,7 +44,7 @@ public class PushAgentBasic : Agent
     Rigidbody agentRB;  //cached on initialization
     Material groundMaterial; //cached on Awake()
     RayPerception rayPer;
-    
+
     float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
     string[] detectableObjects = { "block", "goal", "wall" };
 
@@ -84,7 +84,7 @@ public class PushAgentBasic : Agent
         if (useVectorObs)
         {
             var rayDistance = 12f;
-            
+
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
         }
@@ -100,10 +100,10 @@ public class PushAgentBasic : Agent
         while (foundNewSpawnLocation == false)
         {
             float randomPosX = Random.Range(-areaBounds.extents.x * academy.spawnAreaMarginMultiplier,
-                                areaBounds.extents.x * academy.spawnAreaMarginMultiplier);
+                areaBounds.extents.x * academy.spawnAreaMarginMultiplier);
 
             float randomPosZ = Random.Range(-areaBounds.extents.z * academy.spawnAreaMarginMultiplier,
-                                            areaBounds.extents.z * academy.spawnAreaMarginMultiplier);
+                areaBounds.extents.z * academy.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
             if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
             {
@@ -141,9 +141,8 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Moves the agent according to the selected action.
     /// </summary>
-	public void MoveAgent(float[] act)
+    public void MoveAgent(float[] act)
     {
-
         Vector3 dirToGo = Vector3.zero;
         Vector3 rotateDir = Vector3.zero;
 
@@ -173,14 +172,13 @@ public class PushAgentBasic : Agent
         }
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         agentRB.AddForce(dirToGo * academy.agentRunSpeed,
-                         ForceMode.VelocityChange);
-
+            ForceMode.VelocityChange);
     }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-	public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction, string textAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);
@@ -204,12 +202,11 @@ public class PushAgentBasic : Agent
         blockRB.angularVelocity = Vector3.zero;
     }
 
-
     /// <summary>
-    /// In the editor, if "Reset On Done" is checked then AgentReset() will be 
+    /// In the editor, if "Reset On Done" is checked then AgentReset() will be
     /// called automatically anytime we mark done = true in an agent script.
     /// </summary>
-	public override void AgentReset()
+    public override void AgentReset()
     {
         int rotation = Random.Range(0, 4);
         float rotationAngle = rotation * 90f;
