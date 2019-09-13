@@ -197,13 +197,6 @@ namespace MLAgents
         /// Pointer to the batcher currently in use by the Academy.
         Batcher m_BrainBatcher;
 
-        /// Used to write error messages.
-        StreamWriter m_LogWriter;
-
-        /// The path to where the log should be written.
-        string m_LogPath;
-
-
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
@@ -348,15 +341,6 @@ namespace MLAgents
 
                 var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
                 Random.InitState(pythonParameters.Seed);
-                Application.logMessageReceived += HandleLog;
-                m_LogPath = Path.GetFullPath(".") + "/UnitySDK.log";
-                using (var fs = File.Open(m_LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-                {
-                    m_LogWriter = new StreamWriter(fs);
-                    m_LogWriter.WriteLine(System.DateTime.Now.ToString());
-                    m_LogWriter.WriteLine(" ");
-                    m_LogWriter.Close();
-                }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
@@ -388,18 +372,6 @@ namespace MLAgents
                     resetParameters[kv.Key] = kv.Value;
                 }
                 customResetParameters = newResetParameters.CustomResetParameters;
-            }
-        }
-
-        void HandleLog(string logString, string stackTrace, LogType type)
-        {
-            using (var fs = File.Open(m_LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-            {
-                m_LogWriter = new StreamWriter(fs);
-                m_LogWriter.WriteLine(type.ToString());
-                m_LogWriter.WriteLine(logString);
-                m_LogWriter.WriteLine(stackTrace);
-                m_LogWriter.Close();
             }
         }
 
