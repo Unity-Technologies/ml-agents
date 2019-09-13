@@ -13,9 +13,9 @@ public class Ball3DDecision : Decision
         bool done,
         List<float> memory)
     {
-        if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
+        if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
         {
-            List<float> act = new List<float>();
+            var act = new List<float>();
 
             // state[5] is the velocity of the ball in the x orientation.
             // We use this number to control the Platform's z axis rotation speed,
@@ -31,7 +31,7 @@ public class Ball3DDecision : Decision
         }
 
         // If the vector action space type is discrete, then we don't do anything.
-        return new float[1] { 1f };
+        return new[] { 1f };
     }
 
     public override List<float> MakeMemory(

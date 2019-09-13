@@ -21,7 +21,7 @@ namespace MLAgents.InferenceBrain
             FloatingPoint
         };
 
-        private static readonly Dictionary<TensorType, Type> _typeMap =
+        private static readonly Dictionary<TensorType, Type> k_TypeMap =
             new Dictionary<TensorType, Type>()
         {
             {TensorType.FloatingPoint, typeof(float)},
@@ -32,7 +32,7 @@ namespace MLAgents.InferenceBrain
         public TensorType valueType;
 
         // Since Type is not serializable, we use the DisplayType for the Inspector
-        public Type DataType => _typeMap[valueType];
+        public Type DataType => k_TypeMap[valueType];
         public long[] shape;
         public Tensor data;
     }

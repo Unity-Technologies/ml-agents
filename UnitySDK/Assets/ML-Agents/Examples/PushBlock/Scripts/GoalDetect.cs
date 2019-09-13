@@ -7,12 +7,12 @@ using UnityEngine;
 
 public class GoalDetect : MonoBehaviour
 {
-    [HideInInspector]
     /// <summary>
     /// The associated agent.
     /// This will be set by the agent script on Initialization.
     /// Don't need to manually set.
     /// </summary>
+    [HideInInspector]
     public PushAgentBasic agent;  //
 
     void OnCollisionEnter(Collision col)
@@ -20,7 +20,7 @@ public class GoalDetect : MonoBehaviour
         // Touched goal.
         if (col.gameObject.CompareTag("goal"))
         {
-            agent.IScoredAGoal();
+            agent.ScoredAGoal();
         }
     }
 }
