@@ -6,7 +6,7 @@ using UnityEngine.Scripting;
 
 
 [Preserve]
-public class MacBlas : BLASPlugin
+public class MacBLAS : BLASPlugin
 {
     [DllImport("macblas")]
     static extern unsafe void macsgemm(float* ap, int an, int am,
@@ -16,7 +16,7 @@ public class MacBlas : BLASPlugin
 
     public bool IsCurrentPlatformSupported()
     {
-        return Application.platform == RuntimePlatform.OSXEditor ||
+        return Application.platform == RuntimePlatform.OSXEditor || 
             Application.platform == RuntimePlatform.OSXPlayer;
     }
 

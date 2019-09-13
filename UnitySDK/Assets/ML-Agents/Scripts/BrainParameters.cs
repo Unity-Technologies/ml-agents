@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Linq;
 
@@ -15,47 +16,53 @@ namespace MLAgents
     /// The height defines the number of pixels on the verical axis.
     /// blackAndWhite defines whether or not the image is grayscale.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public struct Resolution
     {
+        /// <summary>The width of the observation in pixels </summary>
         public int width;
 
-        /**< \brief The width of the observation in pixels */
+        /// <summary>The height of the observation in pixels</summary>
         public int height;
 
-        /**< \brief The height of the observation in pixels */
+        /// <summary>
+        /// If true, the image will be in black and white.
+        /// If false, it will be in colors RGB
+        /// </summary>
         public bool blackAndWhite;
-        /**< \brief If true, the image will be in black and white.
-         * If false, it will be in colors RGB */
     }
 
     /// <summary>
     /// Holds information about the Brain. It defines what are the inputs and outputs of the
     /// decision process.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class BrainParameters
     {
+        /// <summary>
+        /// If continuous : The length of the float vector that represents
+        /// the state
+        /// If discrete : The number of possible values the state can take
+        /// </summary>
         public int vectorObservationSize = 1;
-        /**< \brief If continuous : The length of the float vector that represents
-         * the state
-         * <br> If discrete : The number of possible values the state can take*/
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
+        /// <summary>
+        /// If continuous : The length of the float vector that represents
+        /// the action
+        /// If discrete : The number of possible values the action can take*/
+        /// </summary>
         public int[] vectorActionSize = new[] {1};
-        /**< \brief If continuous : The length of the float vector that represents
-         * the action
-         * <br> If discrete : The number of possible values the action can take*/
 
+        /// <summary> The list of observation resolutions for the brain</summary>
         public Resolution[] cameraResolutions;
-        /**<\brief  The list of observation resolutions for the brain */
 
+        /// <summary></summary>The list of strings describing what the actions correpond to */
         public string[] vectorActionDescriptions;
-        /**< \brief The list of strings describing what the actions correpond to */
 
+        /// <summary>Defines if the action is discrete or continuous</summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
-        /**< \brief Defines if the action is discrete or continuous */
 
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
