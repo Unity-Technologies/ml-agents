@@ -5,8 +5,8 @@ namespace MLAgents
 {
     public enum SpaceType
     {
-        discrete,
-        continuous
+        Discrete,
+        Continuous
     };
 
     /// <summary>
@@ -43,7 +43,7 @@ namespace MLAgents
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int[] vectorActionSize = new int[1] {1};
+        public int[] vectorActionSize = new[] {1};
         /**< \brief If continuous : The length of the float vector that represents
          * the action
          * <br> If discrete : The number of possible values the action can take*/
@@ -54,7 +54,7 @@ namespace MLAgents
         public string[] vectorActionDescriptions;
         /**< \brief The list of strings describing what the actions correpond to */
 
-        public SpaceType vectorActionSpaceType = SpaceType.discrete;
+        public SpaceType vectorActionSpaceType = SpaceType.Discrete;
         /**< \brief Defines if the action is discrete or continuous */
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace MLAgents
                 IsTraining = isTraining
             };
             brainParametersProto.VectorActionDescriptions.AddRange(vectorActionDescriptions);
-            foreach (Resolution res in cameraResolutions)
+            foreach (var res in cameraResolutions)
             {
                 brainParametersProto.CameraResolutions.Add(
                     new CommunicatorObjects.ResolutionProto
@@ -135,12 +135,12 @@ namespace MLAgents
         {
             return new BrainParameters()
             {
-                vectorObservationSize = this.vectorObservationSize,
-                numStackedVectorObservations = this.numStackedVectorObservations,
-                vectorActionSize = (int[])this.vectorActionSize.Clone(),
-                cameraResolutions = (Resolution[])this.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[])this.vectorActionDescriptions.Clone(),
-                vectorActionSpaceType = this.vectorActionSpaceType
+                vectorObservationSize = vectorObservationSize,
+                numStackedVectorObservations = numStackedVectorObservations,
+                vectorActionSize = (int[])vectorActionSize.Clone(),
+                cameraResolutions = (Resolution[])cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
+                vectorActionSpaceType = vectorActionSpaceType
             };
         }
     }

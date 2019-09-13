@@ -10,9 +10,9 @@ namespace MLAgents
     /// </summary>
     public class RayPerception3D : RayPerception
     {
-        Vector3 endPosition;
-        RaycastHit hit;
-        private float[] subList;
+        Vector3 m_EndPosition;
+        RaycastHit m_Hit;
+        private float[] m_SubList;
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
@@ -36,50 +36,50 @@ namespace MLAgents
             float[] rayAngles, string[] detectableObjects,
             float startOffset, float endOffset)
         {
-            if (subList == null || subList.Length != detectableObjects.Length + 2)
-                subList = new float[detectableObjects.Length + 2];
+            if (m_SubList == null || m_SubList.Length != detectableObjects.Length + 2)
+                m_SubList = new float[detectableObjects.Length + 2];
 
-            perceptionBuffer.Clear();
-            perceptionBuffer.Capacity = subList.Length * rayAngles.Length;
+            m_PerceptionBuffer.Clear();
+            m_PerceptionBuffer.Capacity = m_SubList.Length * rayAngles.Length;
 
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
-            foreach (float angle in rayAngles)
+            foreach (var angle in rayAngles)
             {
-                endPosition = transform.TransformDirection(
+                m_EndPosition = transform.TransformDirection(
                     PolarToCartesian(rayDistance, angle));
-                endPosition.y = endOffset;
+                m_EndPosition.y = endOffset;
                 if (Application.isEditor)
                 {
                     Debug.DrawRay(transform.position + new Vector3(0f, startOffset, 0f),
-                        endPosition, Color.black, 0.01f, true);
+                        m_EndPosition, Color.black, 0.01f, true);
                 }
 
-                Array.Clear(subList, 0, subList.Length);
+                Array.Clear(m_SubList, 0, m_SubList.Length);
 
                 if (Physics.SphereCast(transform.position +
                     new Vector3(0f, startOffset, 0f), 0.5f,
-                    endPosition, out hit, rayDistance))
+                    m_EndPosition, out m_Hit, rayDistance))
                 {
-                    for (int i = 0; i < detectableObjects.Length; i++)
+                    for (var i = 0; i < detectableObjects.Length; i++)
                     {
-                        if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
+                        if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
                         {
-                            subList[i] = 1;
-                            subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
+                            m_SubList[i] = 1;
+                            m_SubList[detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
                             break;
                         }
                     }
                 }
                 else
                 {
-                    subList[detectableObjects.Length] = 1f;
+                    m_SubList[detectableObjects.Length] = 1f;
                 }
 
-                Utilities.AddRangeNoAlloc(perceptionBuffer, subList);
+                Utilities.AddRangeNoAlloc(m_PerceptionBuffer, m_SubList);
             }
 
-            return perceptionBuffer;
+            return m_PerceptionBuffer;
         }
 
         /// <summary>
@@ -87,8 +87,8 @@ namespace MLAgents
         /// </summary>
         public static Vector3 PolarToCartesian(float radius, float angle)
         {
-            float x = radius * Mathf.Cos(DegreeToRadian(angle));
-            float z = radius * Mathf.Sin(DegreeToRadian(angle));
+            var x = radius * Mathf.Cos(DegreeToRadian(angle));
+            var z = radius * Mathf.Sin(DegreeToRadian(angle));
             return new Vector3(x, 0f, z);
         }
     }

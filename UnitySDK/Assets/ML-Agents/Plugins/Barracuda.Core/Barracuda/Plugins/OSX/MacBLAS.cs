@@ -6,12 +6,12 @@ using UnityEngine.Scripting;
 
 
 [Preserve]
-public class MacBLAS : BLASPlugin
+public class MacBlas : BLASPlugin
 {
     [DllImport("macblas")]
-    static extern unsafe void macsgemm(float* Ap, int AN, int AM,
-        float* Bp, int BN, int BM,
-        float* Cp, int CN, int CM,
+    static extern unsafe void macsgemm(float* ap, int an, int am,
+        float* bp, int bn, int bm,
+        float* cp, int cn, int cm,
         int bs, bool transposeA, bool transposeB);
 
     public bool IsCurrentPlatformSupported()
@@ -20,10 +20,10 @@ public class MacBLAS : BLASPlugin
             Application.platform == RuntimePlatform.OSXPlayer;
     }
 
-    public unsafe void SGEMM(float* Ap, int AN, int AM, float* Bp, int BN, int BM, float* Cp, int CN, int CM, int bs,
+    public unsafe void SGEMM(float* ap, int an, int am, float* bp, int bn, int bm, float* cp, int cn, int cm, int bs,
         bool transposeA = false, bool transposeB = false)
     {
-        macsgemm(Ap, AN, AM, Bp, BN, BM, Cp, CN, CM, bs, transposeA, transposeB);
+        macsgemm(ap, an, am, bp, bn, bm, cp, cn, cm, bs, transposeA, transposeB);
     }
 }
 #endif // UNITY_OSX

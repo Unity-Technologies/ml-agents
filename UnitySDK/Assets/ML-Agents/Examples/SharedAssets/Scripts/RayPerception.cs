@@ -1,16 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class RayPerception : MonoBehaviour
 {
-    protected List<float> perceptionBuffer = new List<float>();
+    protected List<float> m_PerceptionBuffer = new List<float>();
 
     public virtual List<float> Perceive(float rayDistance,
         float[] rayAngles, string[] detectableObjects,
         float startOffset, float endOffset)
     {
-        return perceptionBuffer;
+        return m_PerceptionBuffer;
     }
 
     /// <summary>

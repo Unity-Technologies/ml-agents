@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -11,15 +9,6 @@ public class BananaArea : Area
     public int numBadBananas;
     public bool respawnBananas;
     public float range;
-    // Use this for initialization
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     void CreateBanana(int numBana, GameObject bananaType)
     {

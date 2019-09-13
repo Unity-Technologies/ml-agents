@@ -6,11 +6,11 @@ namespace MLAgents
 {
     public class Startup : MonoBehaviour
     {
-        private const string SceneVariableName = "SCENE_NAME";
+        private const string k_SceneVariableName = "SCENE_NAME";
 
         private void Awake()
         {
-            var sceneName = Environment.GetEnvironmentVariable(SceneVariableName);
+            var sceneName = Environment.GetEnvironmentVariable(k_SceneVariableName);
             SwitchScene(sceneName);
         }
 
@@ -19,7 +19,7 @@ namespace MLAgents
             if (sceneName == null)
             {
                 throw new ArgumentException(
-                    $"You didn't specified the {SceneVariableName} environment variable");
+                    $"You didn't specified the {k_SceneVariableName} environment variable");
             }
             if (SceneUtility.GetBuildIndexByScenePath(sceneName) < 0)
             {
