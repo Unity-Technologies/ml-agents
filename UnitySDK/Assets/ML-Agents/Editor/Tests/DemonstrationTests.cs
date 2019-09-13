@@ -7,9 +7,9 @@ namespace MLAgents.Tests
 {
     public class DemonstrationTests : MonoBehaviour
     {
-        private const string DemoDirecory = "Assets/Demonstrations/";
-        private const string ExtensionType = ".demo";
-        private const string DemoName = "Test";
+        private const string k_DemoDirecory = "Assets/Demonstrations/";
+        private const string k_ExtensionType = ".demo";
+        private const string k_DemoName = "Test";
 
         [Test]
         public void TestSanitization()
@@ -27,7 +27,7 @@ namespace MLAgents.Tests
             var fileSystem = new MockFileSystem();
             var demoStore = new DemonstrationStore(fileSystem);
 
-            Assert.IsFalse(fileSystem.Directory.Exists(DemoDirecory));
+            Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirecory));
 
             var brainParameters = new BrainParameters
             {
@@ -36,13 +36,13 @@ namespace MLAgents.Tests
                 cameraResolutions = new[] {new Resolution()},
                 vectorActionDescriptions = new[] {"TestActionA", "TestActionB"},
                 vectorActionSize = new[] {2, 2},
-                vectorActionSpaceType = SpaceType.discrete
+                vectorActionSpaceType = SpaceType.Discrete
             };
 
-            demoStore.Initialize(DemoName, brainParameters, "TestBrain");
+            demoStore.Initialize(k_DemoName, brainParameters, "TestBrain");
 
-            Assert.IsTrue(fileSystem.Directory.Exists(DemoDirecory));
-            Assert.IsTrue(fileSystem.FileExists(DemoDirecory + DemoName + ExtensionType));
+            Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirecory));
+            Assert.IsTrue(fileSystem.FileExists(k_DemoDirecory + k_DemoName + k_ExtensionType));
 
             var agentInfo = new AgentInfo
             {

@@ -19,7 +19,7 @@ namespace MLAgents.InferenceBrain
         /// are assumed to have the batch size on the first dimension and the agents to be ordered
         /// the same way in the dictionary and in the tensor.
         /// </summary>
-        public interface Applier
+        public interface IApplier
         {
             /// <summary>
             /// Applies the values in the Tensor to the Agents present in the agentInfos
@@ -34,7 +34,7 @@ namespace MLAgents.InferenceBrain
             void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo);
         }
 
-        private readonly Dictionary<string, Applier> _dict = new Dictionary<string, Applier>();
+        private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.
@@ -47,17 +47,17 @@ namespace MLAgents.InferenceBrain
         public TensorApplier(
             BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
-            _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
-            if (bp.vectorActionSpaceType == SpaceType.continuous)
+            m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            if (bp.vectorActionSpaceType == SpaceType.Continuous)
             {
-                _dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
-                _dict[TensorNames.ActionOutput] =
+                m_Dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
 
             if (barracudaModel != null)
             {
@@ -65,7 +65,7 @@ namespace MLAgents.InferenceBrain
 
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
-                    _dict[model.memories[i].output] =
+                    m_Dict[model.memories[i].output] =
                         new BarracudaMemoryOutputApplier(model.memories.Length, i);
                 }
             }
@@ -84,12 +84,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!_dict.ContainsKey(tensor.name))
+                if (!m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                _dict[tensor.name].Apply(tensor, agentInfos);
+                m_Dict[tensor.name].Apply(tensor, agentInfos);
             }
         }
     }

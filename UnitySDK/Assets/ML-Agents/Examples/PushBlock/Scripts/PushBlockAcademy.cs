@@ -2,8 +2,6 @@
 //Create an empty gameObject and attach this script.
 //The brain needs to be a child of the Academy gameObject.
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 

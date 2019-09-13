@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -20,7 +20,8 @@ namespace MLAgents
 
         public TargetContact targetContact;
 
-        [HideInInspector] public JointDriveController thisJDController;
+        [FormerlySerializedAs("thisJDController")]
+        [HideInInspector] public JointDriveController thisJdController;
 
         [Header("Current Joint Settings")][Space(10)]
         public Vector3 currentEularJointRotation;
@@ -83,11 +84,11 @@ namespace MLAgents
 
         public void SetJointStrength(float strength)
         {
-            var rawVal = (strength + 1f) * 0.5f * thisJDController.maxJointForceLimit;
+            var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
             var jd = new JointDrive
             {
-                positionSpring = thisJDController.maxJointSpring,
-                positionDamper = thisJDController.jointDampen,
+                positionSpring = thisJdController.maxJointSpring,
+                positionDamper = thisJdController.jointDampen,
                 maximumForce = rawVal
             };
             joint.slerpDrive = jd;
@@ -102,7 +103,7 @@ namespace MLAgents
 
         public float jointDampen;
         public float maxJointForceLimit;
-        float facingDot;
+        float m_FacingDot;
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
@@ -113,7 +114,7 @@ namespace MLAgents
         /// </summary>
         public void SetupBodyPart(Transform t)
         {
-            BodyPart bp = new BodyPart
+            var bp = new BodyPart
             {
                 rb = t.GetComponent<Rigidbody>(),
                 joint = t.GetComponent<ConfigurableJoint>(),
@@ -141,7 +142,7 @@ namespace MLAgents
                 bp.targetContact = t.gameObject.AddComponent<TargetContact>();
             }
 
-            bp.thisJDController = this;
+            bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
         }

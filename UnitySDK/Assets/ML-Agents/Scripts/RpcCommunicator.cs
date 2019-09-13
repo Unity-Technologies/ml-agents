@@ -1,9 +1,6 @@
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
 #endif
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,25 +10,25 @@ using MLAgents.CommunicatorObjects;
 namespace MLAgents
 {
     /// Responsible for communication with External using gRPC.
-    public class RPCCommunicator : Communicator
+    public class RpcCommunicator : ICommunicator
     {
         /// If true, the communication is active.
-        bool m_isOpen;
+        bool m_IsOpen;
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
-        UnityToExternal.UnityToExternalClient m_client;
+        UnityToExternal.UnityToExternalClient m_Client;
 #endif
         /// The communicator parameters sent at construction
-        CommunicatorParameters m_communicatorParameters;
+        CommunicatorParameters m_CommunicatorParameters;
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
         /// <param name="communicatorParameters">Communicator parameters.</param>
-        public RPCCommunicator(CommunicatorParameters communicatorParameters)
+        public RpcCommunicator(CommunicatorParameters communicatorParameters)
         {
-            m_communicatorParameters = communicatorParameters;
+            m_CommunicatorParameters = communicatorParameters;
         }
 
         /// <summary>
@@ -45,14 +42,14 @@ namespace MLAgents
             out UnityInput unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            m_isOpen = true;
+            m_IsOpen = true;
             var channel = new Channel(
-                "localhost:" + m_communicatorParameters.port,
+                "localhost:" + m_CommunicatorParameters.port,
                 ChannelCredentials.Insecure);
 
-            m_client = new UnityToExternal.UnityToExternalClient(channel);
-            var result = m_client.Exchange(WrapMessage(unityOutput, 200));
-            unityInput = m_client.Exchange(WrapMessage(null, 200)).UnityInput;
+            m_Client = new UnityToExternal.UnityToExternalClient(channel);
+            var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
+            unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
 #if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
@@ -73,19 +70,19 @@ namespace MLAgents
         public void Close()
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_isOpen)
+            if (!m_IsOpen)
             {
                 return;
             }
 
             try
             {
-                m_client.Exchange(WrapMessage(null, 400));
-                m_isOpen = false;
+                m_Client.Exchange(WrapMessage(null, 400));
+                m_IsOpen = false;
             }
             catch
             {
-                return;
+                // ignored
             }
 #else
             throw new UnityAgentsException(
@@ -101,26 +98,26 @@ namespace MLAgents
         public UnityInput Exchange(UnityOutput unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_isOpen)
+            if (!m_IsOpen)
             {
                 return null;
             }
             try
             {
-                var message = m_client.Exchange(WrapMessage(unityOutput, 200));
+                var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
                 if (message.Header.Status == 200)
                 {
                     return message.UnityInput;
                 }
                 else
                 {
-                    m_isOpen = false;
+                    m_IsOpen = false;
                     return null;
                 }
             }
             catch
             {
-                m_isOpen = false;
+                m_IsOpen = false;
                 return null;
             }
 #else

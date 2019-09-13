@@ -9,13 +9,13 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class DemonstrationEditor : Editor
 {
-    SerializedProperty brainParameters;
-    SerializedProperty demoMetaData;
+    SerializedProperty m_BrainParameters;
+    SerializedProperty m_DemoMetaData;
 
     void OnEnable()
     {
-        brainParameters = serializedObject.FindProperty("brainParameters");
-        demoMetaData = serializedObject.FindProperty("metaData");
+        m_BrainParameters = serializedObject.FindProperty("brainParameters");
+        m_DemoMetaData = serializedObject.FindProperty("metaData");
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ public class DemonstrationEditor : Editor
     static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
     {
         var actionSize = actionSizeProperty.arraySize;
-        StringBuilder actionLabel = new StringBuilder("[ ");
-        for (int i = 0; i < actionSize; i++)
+        var actionLabel = new StringBuilder("[ ");
+        for (var i = 0; i < actionSize; i++)
         {
             actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
             if (i < actionSize - 1)
@@ -117,9 +117,9 @@ public class DemonstrationEditor : Editor
     {
         serializedObject.Update();
         EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
-        MakeMetaDataProperty(demoMetaData);
+        MakeMetaDataProperty(m_DemoMetaData);
         EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
-        MakeBrainParametersProperty(brainParameters);
+        MakeBrainParametersProperty(m_BrainParameters);
         serializedObject.ApplyModifiedProperties();
     }
 }

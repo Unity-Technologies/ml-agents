@@ -15,7 +15,7 @@ namespace MLAgents.Tests
             public AgentAction GetAction()
             {
                 var f =  typeof(Agent).GetField(
-                    "action", BindingFlags.Instance | BindingFlags.NonPublic);
+                    "m_Action", BindingFlags.Instance | BindingFlags.NonPublic);
                 return (AgentAction)f.GetValue(this);
             }
         }
