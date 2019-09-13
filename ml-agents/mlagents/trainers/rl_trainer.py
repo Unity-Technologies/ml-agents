@@ -99,6 +99,7 @@ class RLTrainer(Trainer):
                 agent_brain_info.previous_text_actions[agent_index]
             )
             action_masks.append(agent_brain_info.action_masks[agent_index])
+        # Check if memories exists (i.e. next_info is not empty) before attempting vstack
         if self.policy.use_recurrent and memories:
             memories = np.vstack(memories)
         curr_info = BrainInfo(
