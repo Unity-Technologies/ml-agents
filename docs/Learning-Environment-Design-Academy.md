@@ -31,7 +31,7 @@ in your Academy subclass.
 Implement an `AcademyReset()` function to alter the environment at the start of
 each episode. For example, you might want to reset an Agent to its starting
 position or move a goal to a random position. An environment resets when the
-Academy `Max Steps` count is reached.
+Python training process needs to reset the environment to facilitate training.
 
 When you reset an environment, consider the factors that should change so that
 training is generalizable to different conditions. For example, if you were
@@ -54,9 +54,6 @@ logic for creating them in the `AcademyStep()` function.
   process. Any Brain added to the Broadcast Hub will be visible from the external
   process. In addition, if the checkbox `Control` is checked, the Brain will be 
   controllable from the external process and will thus be trainable.
-* `Max Steps` - Total number of steps per-episode. `0` corresponds to episodes
-  without a maximum number of steps. Once the step counter reaches maximum, the
-  environment will reset.
 * `Configuration` - The engine-level settings which correspond to rendering
   quality and engine speed.
   * `Width` - Width of the environment window in pixels.
