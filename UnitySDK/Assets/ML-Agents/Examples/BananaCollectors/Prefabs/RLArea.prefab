@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: 54003028566323092}
   - component: {fileID: 114508049814297234}
   - component: {fileID: 114319858423652580}
+  - component: {fileID: 114597851434740806}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -413,6 +414,7 @@ GameObject:
   - component: {fileID: 54954634146314380}
   - component: {fileID: 114245753946332258}
   - component: {fileID: 114224893239649398}
+  - component: {fileID: 114643312465795884}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -452,6 +454,7 @@ GameObject:
   - component: {fileID: 54037289868324690}
   - component: {fileID: 114816434626527468}
   - component: {fileID: 114186765435509360}
+  - component: {fileID: 114022791795131638}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -575,6 +578,7 @@ GameObject:
   - component: {fileID: 54080280227514422}
   - component: {fileID: 114846764322938622}
   - component: {fileID: 114480047999801980}
+  - component: {fileID: 114576260558151336}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -968,6 +972,7 @@ GameObject:
   - component: {fileID: 54813053450223828}
   - component: {fileID: 114875485509234200}
   - component: {fileID: 114477126339898300}
+  - component: {fileID: 114041672242694020}
   m_Layer: 0
   m_Name: Agent (4)
   m_TagString: agent
@@ -5719,6 +5724,32 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1488462118980570}
   m_Enabled: 1
+--- !u!114 &114022791795131638
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1360088657774708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114041672242694020
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1681658446374862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114186765435509360
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5755,10 +5786,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -5833,10 +5863,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -5847,6 +5876,45 @@ MonoBehaviour:
   myLaser: {fileID: 1282191557182746}
   contribute: 0
   useVectorObs: 1
+--- !u!114 &114576260558151336
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1467077889318146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114597851434740806
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1239112350928502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114643312465795884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1316359915995896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114816434626527468
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5861,10 +5929,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -5889,10 +5956,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -5917,10 +5983,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2

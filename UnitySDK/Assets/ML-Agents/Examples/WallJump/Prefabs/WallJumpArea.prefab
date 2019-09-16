@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 54678503543725326}
   - component: {fileID: 114925928594762506}
   - component: {fileID: 114092229367912210}
+  - component: {fileID: 114775468004443452}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -679,6 +680,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114775468004443452
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1195095783991828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114925928594762506
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -693,10 +707,9 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 2000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   noWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
   smallWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
   bigWallBrain: {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}

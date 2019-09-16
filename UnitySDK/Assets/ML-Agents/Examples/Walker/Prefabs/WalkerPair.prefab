@@ -470,6 +470,7 @@ GameObject:
   - component: {fileID: 4821824385666130}
   - component: {fileID: 114363722412740164}
   - component: {fileID: 114614375190687060}
+  - component: {fileID: 114779299362184470}
   m_Layer: 0
   m_Name: WalkerAgent
   m_TagString: Untagged
@@ -2413,10 +2414,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 3541a9a488cf54088a4526cff85512cc, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4085853164035250}
   hips: {fileID: 4333477265252406}
   chest: {fileID: 4027052323869384}
@@ -2545,6 +2545,19 @@ MonoBehaviour:
   jointDampen: 50
   maxJointForceLimit: 25000
   bodyPartsList: []
+--- !u!114 &114779299362184470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1800913799254612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 0
 --- !u!114 &114794817064035654
 MonoBehaviour:
   m_ObjectHideFlags: 1
