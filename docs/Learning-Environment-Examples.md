@@ -355,8 +355,8 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
   * Visual Observations: None
-* Reset Parameters: Two
-    * banana_scale: The scale of the banana in the 3 dimensions
+* Reset Parameters:
+    * `banana_scale`: The scale of the banana in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
         * Recommended Maximum: 250
@@ -390,12 +390,12 @@ If you would like to contribute environments, please see our
       as well as rotation.
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None
-* Reset Parameters: Two
-  * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
+* Reset Parameters:
+  * `ball_scale`: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
     * Default: 7.5
     * Recommended minimum: 4
     * Recommended maximum: 10
-  * gravity: Magnitude of the gravity
+  * `gravity`: Magnitude of the gravity
     * Default: 9.81
     * Recommended minimum: 6
     * Recommended maximum: 20
@@ -424,20 +424,20 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
   * Visual Observations: None
-* Reset Parameters: Four
-    * gravity: Magnitude of gravity
+* Reset Parameters:
+    * `gravity`: Magnitude of gravity
         * Default: 9.81
         * Recommended Minimum:
         * Recommended Maximum:
-    * hip_mass: Mass of the hip component of the walker
+    * `hip_mass`: Mass of the hip component of the walker
         * Default: 15
         * Recommended Minimum: 7
         * Recommended Maximum: 28
-    * chest_mass: Mass of the chest component of the walker
+    * `chest_mass`: Mass of the chest component of the walker
         * Default: 8
         * Recommended Minimum: 3
         * Recommended Maximum: 20
-    * spine_mass: Mass of the spine component of the walker
+    * `spine_mass`: Mass of the spine component of the walker
         * Default: 10
         * Recommended Minimum: 3
         * Recommended Maximum: 20
