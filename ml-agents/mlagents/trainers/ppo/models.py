@@ -2,7 +2,7 @@ import logging
 import numpy as np
 
 import tensorflow as tf
-from mlagents.trainers.models import LearningModel, EncoderType
+from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -12,6 +12,7 @@ class PPOModel(LearningModel):
         self,
         brain,
         lr=1e-4,
+        lr_schedule=LearningRateSchedule.LINEAR,
         h_size=128,
         epsilon=0.2,
         beta=1e-3,
@@ -29,6 +30,7 @@ class PPOModel(LearningModel):
         appropriate PPO agent model for the environment.
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
+        :param lr_schedule: Learning rate decay schedule.
         :param h_size: Size of hidden layers
         :param epsilon: Value for policy-divergence threshold.
         :param beta: Strength of entropy regularization.
@@ -51,6 +53,9 @@ class PPOModel(LearningModel):
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
+        self.learning_rate = self.create_learning_rate(
+            lr_schedule, lr, self.global_step, max_step
+        )
         self.create_losses(
             self.log_probs,
             self.old_log_probs,
@@ -320,9 +325,6 @@ class PPOModel(LearningModel):
             shape=[None], dtype=tf.float32, name="advantages"
         )
         advantage = tf.expand_dims(self.advantage, -1)
-        self.learning_rate = tf.train.polynomial_decay(
-            lr, self.global_step, max_step, 1e-10, power=1.0
-        )
 
         decay_epsilon = tf.train.polynomial_decay(
             epsilon, self.global_step, max_step, 0.1, power=1.0

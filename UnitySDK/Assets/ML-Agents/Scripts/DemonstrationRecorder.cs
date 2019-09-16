@@ -11,9 +11,9 @@ namespace MLAgents
     {
         public bool record;
         public string demonstrationName;
-        private Agent recordingAgent;
-        private string filePath;
-        private DemonstrationStore demoStore;
+        private Agent m_RecordingAgent;
+        private string m_FilePath;
+        private DemonstrationStore m_DemoStore;
         public const int MaxNameLength = 16;
 
         private void Start()
@@ -26,7 +26,7 @@ namespace MLAgents
 
         private void Update()
         {
-            if (Application.isEditor && record && demoStore == null)
+            if (Application.isEditor && record && m_DemoStore == null)
             {
                 InitializeDemoStore();
             }
@@ -37,14 +37,14 @@ namespace MLAgents
         /// </summary>
         private void InitializeDemoStore()
         {
-            recordingAgent = GetComponent<Agent>();
-            demoStore = new DemonstrationStore();
+            m_RecordingAgent = GetComponent<Agent>();
+            m_DemoStore = new DemonstrationStore();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            demoStore.Initialize(
-                demonstrationName, 
-                recordingAgent.brain.brainParameters, 
-                recordingAgent.brain.name);            
-            Monitor.Log("Recording Demonstration of Agent: ", recordingAgent.name);
+            m_DemoStore.Initialize(
+                demonstrationName,
+                m_RecordingAgent.brain.brainParameters,
+                m_RecordingAgent.brain.name);
+            Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MLAgents
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
-            // If the string is too long, it will overflow the metadata. 
+            // If the string is too long, it will overflow the metadata.
             if (demoName.Length > maxNameLength)
             {
                 demoName = demoName.Substring(0, maxNameLength);
@@ -68,7 +68,7 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info)
         {
-            demoStore.Record(info);
+            m_DemoStore.Record(info);
         }
 
         /// <summary>
@@ -76,9 +76,9 @@ namespace MLAgents
         /// </summary>
         private void OnApplicationQuit()
         {
-            if (Application.isEditor && record && demoStore != null)
+            if (Application.isEditor && record && m_DemoStore != null)
             {
-                demoStore.Close();
+                m_DemoStore.Close();
             }
         }
     }

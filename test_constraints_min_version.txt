@@ -1,0 +1,6 @@
+# pip constraints to use the *lowest* versions allowed in ml-agents/setup.py
+grpcio==1.11.0
+numpy==1.13.3
+Pillow==4.2.1
+protobuf==3.6
+tensorflow==1.7

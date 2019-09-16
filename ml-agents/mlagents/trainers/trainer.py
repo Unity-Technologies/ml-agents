@@ -8,7 +8,7 @@ from collections import deque, defaultdict
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
 from mlagents.envs.timers import set_gauge
-from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.tf_policy import Policy
 from mlagents.envs import BrainParameters
@@ -32,7 +32,7 @@ class Trainer(object):
         brain: BrainParameters,
         trainer_parameters: dict,
         training: bool,
-        run_id: int,
+        run_id: str,
         reward_buff_cap: int = 1,
     ):
         """
@@ -40,7 +40,7 @@ class Trainer(object):
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
-        :int run_id: The identifier of the current run
+        :str run_id: The identifier of the current run
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []

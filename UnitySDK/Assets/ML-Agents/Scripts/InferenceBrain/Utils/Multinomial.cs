@@ -1,4 +1,4 @@
-﻿namespace MLAgents.InferenceBrain.Utils
+namespace MLAgents.InferenceBrain.Utils
 {
     /// <summary>
     /// Multinomial - Draws samples from a multinomial distribution given a (potentially unscaled)
@@ -10,7 +10,7 @@
     /// </summary>
     public class Multinomial
     {
-        private readonly System.Random _random;
+        private readonly System.Random m_Random;
 
         /// <summary>
         /// Constructor.
@@ -20,7 +20,7 @@
         /// </param>
         public Multinomial(int seed)
         {
-            _random = new System.Random(seed);
+            m_Random = new System.Random(seed);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@
         /// <returns>A sampled index from the CMF ranging from 0 to cmf.Length-1.</returns>
         public int Sample(float[] cmf)
         {
-            var p = (float) _random.NextDouble() * cmf[cmf.Length - 1];
+            var p = (float)m_Random.NextDouble() * cmf[cmf.Length - 1];
             var cls = 0;
             while (cmf[cls] < p)
             {

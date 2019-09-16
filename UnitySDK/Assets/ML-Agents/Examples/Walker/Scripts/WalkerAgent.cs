@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class WalkerAgent : Agent
 {
-    [Header("Specific to Walker")] [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Specific to Walker")][Header("Target To Walk Towards")][Space(10)]
     public Transform target;
 
-    Vector3 dirToTarget;
+    Vector3 m_DirToTarget;
     public Transform hips;
     public Transform chest;
     public Transform spine;
@@ -25,42 +23,42 @@ public class WalkerAgent : Agent
     public Transform armR;
     public Transform forearmR;
     public Transform handR;
-    JointDriveController jdController;
-    bool isNewDecisionStep;
-    int currentDecisionStep;
+    JointDriveController m_JdController;
+    bool m_IsNewDecisionStep;
+    int m_CurrentDecisionStep;
 
-    private Rigidbody hipsRb;
-    private Rigidbody chestRb;
-    private Rigidbody spineRb;
+    private Rigidbody m_HipsRb;
+    private Rigidbody m_ChestRb;
+    private Rigidbody m_SpineRb;
 
-    private ResetParameters resetParams;
+    private ResetParameters m_ResetParams;
 
     public override void InitializeAgent()
     {
-        jdController = GetComponent<JointDriveController>();
-        jdController.SetupBodyPart(hips);
-        jdController.SetupBodyPart(chest);
-        jdController.SetupBodyPart(spine);
-        jdController.SetupBodyPart(head);
-        jdController.SetupBodyPart(thighL);
-        jdController.SetupBodyPart(shinL);
-        jdController.SetupBodyPart(footL);
-        jdController.SetupBodyPart(thighR);
-        jdController.SetupBodyPart(shinR);
-        jdController.SetupBodyPart(footR);
-        jdController.SetupBodyPart(armL);
-        jdController.SetupBodyPart(forearmL);
-        jdController.SetupBodyPart(handL);
-        jdController.SetupBodyPart(armR);
-        jdController.SetupBodyPart(forearmR);
-        jdController.SetupBodyPart(handR);
+        m_JdController = GetComponent<JointDriveController>();
+        m_JdController.SetupBodyPart(hips);
+        m_JdController.SetupBodyPart(chest);
+        m_JdController.SetupBodyPart(spine);
+        m_JdController.SetupBodyPart(head);
+        m_JdController.SetupBodyPart(thighL);
+        m_JdController.SetupBodyPart(shinL);
+        m_JdController.SetupBodyPart(footL);
+        m_JdController.SetupBodyPart(thighR);
+        m_JdController.SetupBodyPart(shinR);
+        m_JdController.SetupBodyPart(footR);
+        m_JdController.SetupBodyPart(armL);
+        m_JdController.SetupBodyPart(forearmL);
+        m_JdController.SetupBodyPart(handL);
+        m_JdController.SetupBodyPart(armR);
+        m_JdController.SetupBodyPart(forearmR);
+        m_JdController.SetupBodyPart(handR);
 
-        hipsRb = hips.GetComponent<Rigidbody>();
-        chestRb = chest.GetComponent<Rigidbody>();
-        spineRb = spine.GetComponent<Rigidbody>();
+        m_HipsRb = hips.GetComponent<Rigidbody>();
+        m_ChestRb = chest.GetComponent<Rigidbody>();
+        m_SpineRb = spine.GetComponent<Rigidbody>();
 
-        var academy = FindObjectOfType<WalkerAcademy>() as WalkerAcademy;
-        resetParams = academy.resetParameters;
+        var academy = FindObjectOfType<WalkerAcademy>();
+        m_ResetParams = academy.resetParameters;
 
         SetResetParameters();
     }
@@ -74,7 +72,7 @@ public class WalkerAgent : Agent
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
         AddVectorObs(rb.velocity);
         AddVectorObs(rb.angularVelocity);
-        Vector3 localPosRelToHips = hips.InverseTransformPoint(rb.position);
+        var localPosRelToHips = hips.InverseTransformPoint(rb.position);
         AddVectorObs(localPosRelToHips);
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
@@ -83,7 +81,7 @@ public class WalkerAgent : Agent
             AddVectorObs(bp.currentXNormalizedRot);
             AddVectorObs(bp.currentYNormalizedRot);
             AddVectorObs(bp.currentZNormalizedRot);
-            AddVectorObs(bp.currentStrength / jdController.maxJointForceLimit);
+            AddVectorObs(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
@@ -92,14 +90,14 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations()
     {
-        jdController.GetCurrentJointForces();
+        m_JdController.GetCurrentJointForces();
 
-        AddVectorObs(dirToTarget.normalized);
-        AddVectorObs(jdController.bodyPartsDict[hips].rb.position);
+        AddVectorObs(m_DirToTarget.normalized);
+        AddVectorObs(m_JdController.bodyPartsDict[hips].rb.position);
         AddVectorObs(hips.forward);
         AddVectorObs(hips.up);
 
-        foreach (var bodyPart in jdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
         }
@@ -107,13 +105,13 @@ public class WalkerAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        dirToTarget = target.position - jdController.bodyPartsDict[hips].rb.position;
+        m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
 
-        // Apply action to all relevant body parts. 
-        if (isNewDecisionStep)
+        // Apply action to all relevant body parts.
+        if (m_IsNewDecisionStep)
         {
-            var bpDict = jdController.bodyPartsDict;
-            int i = -1;
+            var bpDict = m_JdController.bodyPartsDict;
+            var i = -1;
 
             bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
             bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
@@ -156,11 +154,11 @@ public class WalkerAgent : Agent
         // c. Encourage head height.
         // d. Discourage head movement.
         AddReward(
-            +0.03f * Vector3.Dot(dirToTarget.normalized, jdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Vector3.Dot(dirToTarget.normalized, hips.forward)
+            +0.03f * Vector3.Dot(m_DirToTarget.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+            + 0.01f * Vector3.Dot(m_DirToTarget.normalized, hips.forward)
             + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(jdController.bodyPartsDict[head].rb.velocity,
-                jdController.bodyPartsDict[hips].rb.velocity)
+            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+                m_JdController.bodyPartsDict[hips].rb.velocity)
         );
     }
 
@@ -169,16 +167,16 @@ public class WalkerAgent : Agent
     /// </summary>
     public void IncrementDecisionTimer()
     {
-        if (currentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||
+        if (m_CurrentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||
             agentParameters.numberOfActionsBetweenDecisions == 1)
         {
-            currentDecisionStep = 1;
-            isNewDecisionStep = true;
+            m_CurrentDecisionStep = 1;
+            m_IsNewDecisionStep = true;
         }
         else
         {
-            currentDecisionStep++;
-            isNewDecisionStep = false;
+            m_CurrentDecisionStep++;
+            m_IsNewDecisionStep = false;
         }
     }
 
@@ -187,26 +185,26 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (dirToTarget != Vector3.zero)
+        if (m_DirToTarget != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(dirToTarget);
+            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
         }
 
-        foreach (var bodyPart in jdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
 
-        isNewDecisionStep = true;
-        currentDecisionStep = 1;
+        m_IsNewDecisionStep = true;
+        m_CurrentDecisionStep = 1;
         SetResetParameters();
     }
 
     public void SetTorsoMass()
     {
-        chestRb.mass = resetParams["chest_mass"];
-        spineRb.mass = resetParams["spine_mass"];
-        hipsRb.mass = resetParams["hip_mass"];
+        m_ChestRb.mass = m_ResetParams["chest_mass"];
+        m_SpineRb.mass = m_ResetParams["spine_mass"];
+        m_HipsRb.mass = m_ResetParams["hip_mass"];
     }
 
     public void SetResetParameters()
