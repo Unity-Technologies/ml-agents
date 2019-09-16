@@ -24,14 +24,15 @@ jobs:
 
       - run:
           # Combine all the python dependencies into one file so that we can use that for the cache checksum
-          name: Install Dependencies
+          name: Combine pip dependencies for caching
           command: cat ml-agents/setup.py ml-agents-envs/setup.py gym-unity/setup.py test_requirements.txt << parameters.pip_constraints >> > python_deps.txt
 
       - restore_cache:
           keys:
+          # Parameterize the cache so that different python versions can get different versions of the packages
           - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
           # fallback to using the latest cache if no exact match is found
-          #- v1-dependencies-py<< parameters.pyversion >>-
+          - v1-dependencies-py<< parameters.pyversion >>-
 
       - run:
           name: Install Dependencies
@@ -52,6 +53,7 @@ jobs:
 
       - run:
           name: Run Tests for ml-agents and gym_unity
+          # This also dumps the installed pip packages to a file, so we can see what versions are actually being used.
           command: |
             . venv/bin/activate
             mkdir test-reports
