@@ -1,4 +1,4 @@
-﻿#if UNITY_CLOUD_BUILD
+#if UNITY_CLOUD_BUILD
 
 namespace MLAgents
 {

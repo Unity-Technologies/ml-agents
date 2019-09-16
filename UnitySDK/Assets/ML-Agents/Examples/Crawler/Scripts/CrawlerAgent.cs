@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
 {
-    [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Target To Walk Towards")]
+    [Space(10)]
     public Transform target;
 
     public Transform ground;
@@ -24,18 +23,20 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    [Header("Joint Settings")] [Space(10)] JointDriveController jdController;
-    Vector3 dirToTarget;
-    float movingTowardsDot;
-    float facingDot;
+    [Header("Joint Settings")] [Space(10)] JointDriveController m_JdController;
+    Vector3 m_DirToTarget;
+    float m_MovingTowardsDot;
+    float m_FacingDot;
 
-    [Header("Reward Functions To Use")] [Space(10)]
+    [Header("Reward Functions To Use")]
+    [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
 
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    [Header("Foot Grounded Visualization")] [Space(10)]
+    [Header("Foot Grounded Visualization")]
+    [Space(10)]
     public bool useFootGroundedVisualization;
 
     public MeshRenderer foot0;
@@ -45,25 +46,25 @@ public class CrawlerAgent : Agent
     public Material groundedMaterial;
     public Material unGroundedMaterial;
 
-    Quaternion lookRotation;
-    Matrix4x4 targetDirMatrix;
+    Quaternion m_LookRotation;
+    Matrix4x4 m_TargetDirMatrix;
 
     public override void InitializeAgent()
     {
-        jdController = GetComponent<JointDriveController>();
-        dirToTarget = target.position - body.position;
+        m_JdController = GetComponent<JointDriveController>();
+        m_DirToTarget = target.position - body.position;
 
         //Setup each body part
-        jdController.SetupBodyPart(body);
-        jdController.SetupBodyPart(leg0Upper);
-        jdController.SetupBodyPart(leg0Lower);
-        jdController.SetupBodyPart(leg1Upper);
-        jdController.SetupBodyPart(leg1Lower);
-        jdController.SetupBodyPart(leg2Upper);
-        jdController.SetupBodyPart(leg2Lower);
-        jdController.SetupBodyPart(leg3Upper);
-        jdController.SetupBodyPart(leg3Lower);
-   }
+        m_JdController.SetupBodyPart(body);
+        m_JdController.SetupBodyPart(leg0Upper);
+        m_JdController.SetupBodyPart(leg0Lower);
+        m_JdController.SetupBodyPart(leg1Upper);
+        m_JdController.SetupBodyPart(leg1Lower);
+        m_JdController.SetupBodyPart(leg2Upper);
+        m_JdController.SetupBodyPart(leg2Lower);
+        m_JdController.SetupBodyPart(leg3Upper);
+        m_JdController.SetupBodyPart(leg3Lower);
+    }
 
     /// <summary>
     /// Add relevant information on each body part to observations.
@@ -73,31 +74,31 @@ public class CrawlerAgent : Agent
         var rb = bp.rb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        Vector3 velocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.velocity);
+        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
         AddVectorObs(velocityRelativeToLookRotationToTarget);
 
-        Vector3 angularVelocityRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
         AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
 
         if (bp.rb.transform != body)
         {
-            Vector3 localPosRelToBody = body.InverseTransformPoint(rb.position);
+            var localPosRelToBody = body.InverseTransformPoint(rb.position);
             AddVectorObs(localPosRelToBody);
             AddVectorObs(bp.currentXNormalizedRot); // Current x rot
             AddVectorObs(bp.currentYNormalizedRot); // Current y rot
             AddVectorObs(bp.currentZNormalizedRot); // Current z rot
-            AddVectorObs(bp.currentStrength / jdController.maxJointForceLimit);
+            AddVectorObs(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
     public override void CollectObservations()
     {
-        jdController.GetCurrentJointForces();
+        m_JdController.GetCurrentJointForces();
 
         // Update pos to target
-        dirToTarget = target.position - body.position;
-        lookRotation = Quaternion.LookRotation(dirToTarget);
-        targetDirMatrix = Matrix4x4.TRS(Vector3.zero, lookRotation, Vector3.one);
+        m_DirToTarget = target.position - body.position;
+        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
+        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
         RaycastHit hit;
         if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
@@ -108,13 +109,13 @@ public class CrawlerAgent : Agent
             AddVectorObs(10.0f);
 
         // Forward & up to help with orientation
-        Vector3 bodyForwardRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.forward);
+        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
         AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
 
-        Vector3 bodyUpRelativeToLookRotationToTarget = targetDirMatrix.inverse.MultiplyVector(body.up);
+        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
         AddVectorObs(bodyUpRelativeToLookRotationToTarget);
 
-        foreach (var bodyPart in jdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart);
         }
@@ -137,7 +138,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void GetRandomTargetPos()
     {
-        Vector3 newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
+        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
         newTargetPos.y = 5;
         target.position = newTargetPos + ground.position;
     }
@@ -145,7 +146,7 @@ public class CrawlerAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         // The dictionary with all the body parts in it are in the jdController
-        var bpDict = jdController.bodyPartsDict;
+        var bpDict = m_JdController.bodyPartsDict;
 
         int i = -1;
         // Pick a new target joint rotation
@@ -169,10 +170,11 @@ public class CrawlerAgent : Agent
         bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
     }
 
-    void FixedUpdate(){
+    void FixedUpdate()
+    {
         if (detectTargets)
         {
-            foreach (var bodyPart in jdController.bodyPartsDict.Values)
+            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
             {
                 if (bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
                 {
@@ -185,16 +187,16 @@ public class CrawlerAgent : Agent
         // This is just a visualization and isn't necessary for function
         if (useFootGroundedVisualization)
         {
-            foot0.material = jdController.bodyPartsDict[leg0Lower].groundContact.touchingGround
+            foot0.material = m_JdController.bodyPartsDict[leg0Lower].groundContact.touchingGround
                 ? groundedMaterial
                 : unGroundedMaterial;
-            foot1.material = jdController.bodyPartsDict[leg1Lower].groundContact.touchingGround
+            foot1.material = m_JdController.bodyPartsDict[leg1Lower].groundContact.touchingGround
                 ? groundedMaterial
                 : unGroundedMaterial;
-            foot2.material = jdController.bodyPartsDict[leg2Lower].groundContact.touchingGround
+            foot2.material = m_JdController.bodyPartsDict[leg2Lower].groundContact.touchingGround
                 ? groundedMaterial
                 : unGroundedMaterial;
-            foot3.material = jdController.bodyPartsDict[leg3Lower].groundContact.touchingGround
+            foot3.material = m_JdController.bodyPartsDict[leg3Lower].groundContact.touchingGround
                 ? groundedMaterial
                 : unGroundedMaterial;
         }
@@ -221,8 +223,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        movingTowardsDot = Vector3.Dot(jdController.bodyPartsDict[body].rb.velocity, dirToTarget.normalized);
-        AddReward(0.03f * movingTowardsDot);
+        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
+        AddReward(0.03f * m_MovingTowardsDot);
     }
 
     /// <summary>
@@ -230,8 +232,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        facingDot = Vector3.Dot(dirToTarget.normalized, body.forward);
-        AddReward(0.01f * facingDot);
+        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
+        AddReward(0.01f * m_FacingDot);
     }
 
     /// <summary>
@@ -247,13 +249,13 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (dirToTarget != Vector3.zero)
+        if (m_DirToTarget != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(dirToTarget);
+            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
         }
-        transform.Rotate(Vector3.up,Random.Range(0.0f, 360.0f));
+        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
-        foreach (var bodyPart in jdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }

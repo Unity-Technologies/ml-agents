@@ -1,45 +1,45 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
-*/
+    /*
+     This code is meant to modify the behavior of the inspector on Brain Components.
+     Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
+    */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
     {
-
         public override void OnInspectorGUI()
         {
-            SerializedObject serializedAgent = serializedObject;
+            var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            SerializedProperty brain = serializedAgent.FindProperty("brain");
-            SerializedProperty maxSteps = serializedAgent.FindProperty(
+            var brain = serializedAgent.FindProperty("brain");
+            var maxSteps = serializedAgent.FindProperty(
+
                 "agentParameters.maxStep");
-            SerializedProperty isResetOnDone = serializedAgent.FindProperty(
+            var isResetOnDone = serializedAgent.FindProperty(
                 "agentParameters.resetOnDone");
-            SerializedProperty cameras = serializedAgent.FindProperty(
+            var cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
-            SerializedProperty renderTextures = serializedAgent.FindProperty(
+            var renderTextures = serializedAgent.FindProperty(
                 "agentParameters.agentRenderTextures");
 
             EditorGUILayout.PropertyField(brain);
 
             if (cameras.arraySize > 0 && renderTextures.arraySize > 0)
             {
-                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);    
+                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);
             }
-            
+
             EditorGUILayout.LabelField("Agent Cameras");
-            for (int i = 0; i < cameras.arraySize; i++)
+            for (var i = 0; i < cameras.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     cameras.GetArrayElementAtIndex(i),
-                    new GUIContent("Camera " + (i + 1).ToString() + ": "));
+                    new GUIContent("Camera " + (i + 1) + ": "));
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -54,13 +54,13 @@ namespace MLAgents
             }
 
             EditorGUILayout.EndHorizontal();
-            
+
             EditorGUILayout.LabelField("Agent RenderTextures");
-            for (int i = 0; i < renderTextures.arraySize; i++)
+            for (var i = 0; i < renderTextures.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     renderTextures.GetArrayElementAtIndex(i),
-                    new GUIContent("RenderTexture " + (i + 1).ToString() + ": "));
+                    new GUIContent("RenderTexture " + (i + 1) + ": "));
             }
 
             EditorGUILayout.BeginHorizontal();
