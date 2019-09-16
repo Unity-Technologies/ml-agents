@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
@@ -11,7 +11,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Continuous Action output tensor. Tensor is assumed to contain the
     /// continuous action data of the agents in the batch.
     /// </summary>
-    public class ContinuousActionOutputApplier : TensorApplier.Applier
+    public class ContinuousActionOutputApplier : TensorApplier.IApplier
     {
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -34,40 +34,40 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
     /// actions from the logits contained in the tensor.
     /// </summary>
-    public class DiscreteActionOutputApplier : TensorApplier.Applier
+    public class DiscreteActionOutputApplier : TensorApplier.IApplier
     {
-        private readonly int[] _actionSize;
-        private readonly Multinomial _multinomial;
-        private readonly ITensorAllocator _allocator;
+        private readonly int[] m_ActionSize;
+        private readonly Multinomial m_Multinomial;
+        private readonly ITensorAllocator m_Allocator;
 
         public DiscreteActionOutputApplier(int[] actionSize, int seed, ITensorAllocator allocator)
         {
-            _actionSize = actionSize;
-            _multinomial = new Multinomial(seed);
-            _allocator = allocator;
+            m_ActionSize = actionSize;
+            m_Multinomial = new Multinomial(seed);
+            m_Allocator = allocator;
         }
 
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
             var batchSize = agentInfo.Keys.Count;
-            var actions = new float[batchSize, _actionSize.Length];
-            var startActionIndices = Utilities.CumSum(_actionSize);
-            for (var actionIndex=0; actionIndex < _actionSize.Length; actionIndex++)
+            var actions = new float[batchSize, m_ActionSize.Length];
+            var startActionIndices = Utilities.CumSum(m_ActionSize);
+            for (var actionIndex = 0; actionIndex < m_ActionSize.Length; actionIndex++)
             {
-                var nBranchAction = _actionSize[actionIndex];
+                var nBranchAction = m_ActionSize[actionIndex];
                 var actionProbs = new TensorProxy()
                 {
                     valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[]{batchSize, nBranchAction},
-                    data = _allocator.Alloc(new TensorShape(batchSize, nBranchAction))
+                    shape = new long[] {batchSize, nBranchAction},
+                    data = m_Allocator.Alloc(new TensorShape(batchSize, nBranchAction))
                 };
 
                 for (var batchIndex = 0; batchIndex < batchSize; batchIndex++)
                 {
                     for (var branchActionIndex = 0;
-                        branchActionIndex < nBranchAction;
-                        branchActionIndex++)
+                         branchActionIndex < nBranchAction;
+                         branchActionIndex++)
                     {
                         actionProbs.data[batchIndex, branchActionIndex] =
                             tensorProxy.data[batchIndex, startActionIndices[actionIndex] + branchActionIndex];
@@ -77,22 +77,24 @@ namespace MLAgents.InferenceBrain
                 var outputTensor = new TensorProxy()
                 {
                     valueType = TensorProxy.TensorType.FloatingPoint,
-                    shape = new long[]{batchSize, 1},
-                    data = _allocator.Alloc(new TensorShape(batchSize, 1))
+                    shape = new long[] {batchSize, 1},
+                    data = m_Allocator.Alloc(new TensorShape(batchSize, 1))
                 };
 
-                Eval(actionProbs, outputTensor, _multinomial);
+                Eval(actionProbs, outputTensor, m_Multinomial);
 
                 for (var ii = 0; ii < batchSize; ii++)
                 {
                     actions[ii, actionIndex] = outputTensor.data[ii, 0];
                 }
+                actionProbs.data.Dispose();
+                outputTensor.data.Dispose();
             }
             var agentIndex = 0;
             foreach (var agent in agentInfo.Keys)
             {
-                var action = new float[_actionSize.Length];
-                for (var j = 0; j < _actionSize.Length; j++)
+                var action = new float[m_ActionSize.Length];
+                for (var j = 0; j < m_ActionSize.Length; j++)
                 {
                     action[j] = actions[agentIndex, j];
                 }
@@ -166,15 +168,15 @@ namespace MLAgents.InferenceBrain
         }
     }
 
-    public class BarracudaMemoryOutputApplier : TensorApplier.Applier
+    public class BarracudaMemoryOutputApplier : TensorApplier.IApplier
     {
-        private readonly int _memoriesCount;
-        private readonly int _memoryIndex;
+        private readonly int m_MemoriesCount;
+        private readonly int m_MemoryIndex;
 
         public BarracudaMemoryOutputApplier(int memoriesCount, int memoryIndex)
         {
-            _memoriesCount = memoriesCount;
-            _memoryIndex = memoryIndex;
+            m_MemoriesCount = memoriesCount;
+            m_MemoryIndex = memoryIndex;
         }
 
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
@@ -186,15 +188,15 @@ namespace MLAgents.InferenceBrain
             {
                 var memory = agent.GetMemoriesAction();
 
-                if (memory == null || memory.Count < memorySize * _memoriesCount)
+                if (memory == null || memory.Count < memorySize * m_MemoriesCount)
                 {
                     memory = new List<float>();
-                    memory.AddRange(Enumerable.Repeat(0f, memorySize * _memoriesCount));
+                    memory.AddRange(Enumerable.Repeat(0f, memorySize * m_MemoriesCount));
                 }
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[memorySize * _memoryIndex + j] = tensorProxy.data[agentIndex, j];
+                    memory[memorySize * m_MemoryIndex + j] = tensorProxy.data[agentIndex, j];
                 }
 
                 agent.UpdateMemoriesAction(memory);
@@ -208,7 +210,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
     /// memory data of the agents in the batch.
     /// </summary>
-    public class MemoryOutputApplier : TensorApplier.Applier
+    public class MemoryOutputApplier : TensorApplier.IApplier
     {
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {
@@ -232,7 +234,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Value Estimate output tensor. Tensor is assumed to contain the
     /// value estimates of the agents in the batch.
     /// </summary>
-    public class ValueEstimateApplier : TensorApplier.Applier
+    public class ValueEstimateApplier : TensorApplier.IApplier
     {
         public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
         {

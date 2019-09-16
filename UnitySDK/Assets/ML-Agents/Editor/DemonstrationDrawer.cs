@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -9,13 +9,13 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class DemonstrationEditor : Editor
 {
-    SerializedProperty brainParameters;
-    SerializedProperty demoMetaData;
+    SerializedProperty m_BrainParameters;
+    SerializedProperty m_DemoMetaData;
 
     void OnEnable()
     {
-        brainParameters = serializedObject.FindProperty("brainParameters");
-        demoMetaData = serializedObject.FindProperty("metaData");
+        m_BrainParameters = serializedObject.FindProperty("brainParameters");
+        m_DemoMetaData = serializedObject.FindProperty("metaData");
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ public class DemonstrationEditor : Editor
     static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
     {
         var actionSize = actionSizeProperty.arraySize;
-        StringBuilder actionLabel = new StringBuilder("[ ");
-        for (int i = 0; i < actionSize; i++)
+        var actionLabel = new StringBuilder("[ ");
+        for (var i = 0; i < actionSize; i++)
         {
             actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
             if (i < actionSize - 1)
@@ -57,6 +57,34 @@ public class DemonstrationEditor : Editor
 
         actionLabel.Append(" ]");
         return actionLabel.ToString();
+    }
+
+    /// <summary>
+    /// Constructs complex label for each CameraResolution object.
+    /// An example of this could be `[ 84 X 84 ]`
+    /// for a single camera with 84 pixels height and width.
+    /// </summary>
+    private static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
+    {
+        var numCameras = cameraArray.arraySize;
+        var cameraLabel = new StringBuilder("[ ");
+        for (var i = 0; i < numCameras; i++)
+        {
+            var camHeightPropName =
+                cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("height");
+            cameraLabel.Append(camHeightPropName.intValue);
+            cameraLabel.Append(" X ");
+            var camWidthPropName =
+                cameraArray.GetArrayElementAtIndex(i).FindPropertyRelative("width");
+            cameraLabel.Append(camWidthPropName.intValue);
+            if (i < numCameras - 1)
+            {
+                cameraLabel.Append(", ");
+            }
+        }
+
+        cameraLabel.Append(" ]");
+        return cameraLabel.ToString();
     }
 
     /// <summary>
@@ -72,9 +100,11 @@ public class DemonstrationEditor : Editor
 
         var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
         var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
-        var vecActSizeLabel = actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
-        var camResLabel = camResProp.displayName + ": " + camResProp.arraySize;
-        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " + (SpaceType) actSpaceTypeProp.enumValueIndex;
+        var vecActSizeLabel =
+            actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
+        var camResLabel = camResProp.displayName + ": " + BuildCameraResolutionLabel(camResProp);
+        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
+            (SpaceType)actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);
@@ -87,9 +117,9 @@ public class DemonstrationEditor : Editor
     {
         serializedObject.Update();
         EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
-        MakeMetaDataProperty(demoMetaData);
+        MakeMetaDataProperty(m_DemoMetaData);
         EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
-        MakeBrainParametersProperty(brainParameters);
+        MakeBrainParametersProperty(m_BrainParameters);
         serializedObject.ApplyModifiedProperties();
     }
 }

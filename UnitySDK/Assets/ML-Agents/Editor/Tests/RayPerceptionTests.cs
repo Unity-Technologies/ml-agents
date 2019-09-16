@@ -11,9 +11,9 @@ namespace MLAgents.Tests
         {
             var angles = new[] {0f, 90f, 180f};
             var tags = new[] {"test", "test_1"};
-            
+
             var go = new GameObject("MyGameObject");
-            RayPerception3D rayPer3D = go.AddComponent<RayPerception3D>();
+            var rayPer3D = go.AddComponent<RayPerception3D>();
             var result = rayPer3D.Perceive(1f, angles ,
                 tags, 0f, 0f);
             Debug.Log(result.Count);
@@ -25,9 +25,9 @@ namespace MLAgents.Tests
         {
             var angles = new[] {0f, 90f, 180f};
             var tags = new[] {"test", "test_1"};
-            
+
             var go = new GameObject("MyGameObject");
-            RayPerception2D rayPer2D = go.AddComponent<RayPerception2D>();
+            var rayPer2D = go.AddComponent<RayPerception2D>();
             var result = rayPer2D.Perceive(1f, angles,
                 tags);
             Debug.Log(result.Count);

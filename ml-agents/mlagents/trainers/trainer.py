@@ -32,7 +32,7 @@ class Trainer(object):
         brain: BrainParameters,
         trainer_parameters: dict,
         training: bool,
-        run_id: int,
+        run_id: str,
         reward_buff_cap: int = 1,
     ):
         """
@@ -40,7 +40,7 @@ class Trainer(object):
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
-        :int run_id: The identifier of the current run
+        :str run_id: The identifier of the current run
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []

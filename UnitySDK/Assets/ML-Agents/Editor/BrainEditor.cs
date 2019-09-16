@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 
@@ -11,10 +11,10 @@ namespace MLAgents
     /// </summary>
     [CustomEditor(typeof(Brain))]
     public class BrainEditor : Editor
-    {        
+    {
         public override void OnInspectorGUI()
         {
-            var brain = (Brain) target;
+            var brain = (Brain)target;
             var brainToCopy = EditorGUILayout.ObjectField(
                 "Copy Brain Parameters from : ", null, typeof(Brain), false) as Brain;
             if (brainToCopy != null)
@@ -25,10 +25,10 @@ namespace MLAgents
                 return;
             }
             var serializedBrain = serializedObject;
-            serializedBrain.Update(); 
+            serializedBrain.Update();
             EditorGUILayout.PropertyField(serializedBrain.FindProperty("brainParameters"), true);
             serializedBrain.ApplyModifiedProperties();
-            
+
             // Draws a horizontal thick line
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }

@@ -1,5 +1,15 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.9 to v0.10
+
+### Important Changes
+* We have updated the C# code in our repository to be in line with Unity Coding Conventions.  This has changed the name of some public facing classes and enums.
+
+#### Steps to Migrate
+* `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
+* The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
+
+
 ## Migrating from ML-Agents toolkit v0.8 to v0.9
 
 ### Important Changes

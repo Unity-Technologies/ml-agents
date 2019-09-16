@@ -1,52 +1,51 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
-    [System.Serializable]
+    [Serializable]
     public class ResetParameters : Dictionary<string, float>, ISerializationCallbackReceiver
     {
-
-        [System.Serializable]
+        [Serializable]
         public struct ResetParameter
         {
             public string key;
             public float value;
         }
 
-        [SerializeField] private List<ResetParameter> resetParameters = new List<ResetParameter>();
+        [FormerlySerializedAs("resetParameters")]
+        [SerializeField] private List<ResetParameter> m_ResetParameters = new List<ResetParameter>();
 
         public void OnBeforeSerialize()
         {
-            resetParameters.Clear();
+            m_ResetParameters.Clear();
 
-            foreach (KeyValuePair<string, float> pair in this)
+            foreach (var pair in this)
             {
-                ResetParameter rp = new ResetParameter();
+                var rp = new ResetParameter();
                 rp.key = pair.Key;
 
                 rp.value = pair.Value;
-                resetParameters.Add(rp);
+                m_ResetParameters.Add(rp);
             }
-
         }
 
         public void OnAfterDeserialize()
         {
-            this.Clear();
+            Clear();
 
 
-
-            for (int i = 0; i < resetParameters.Count; i++)
+            for (var i = 0; i < m_ResetParameters.Count; i++)
             {
-                if (this.ContainsKey(resetParameters[i].key))
+                if (ContainsKey(m_ResetParameters[i].key))
                 {
                     Debug.LogError("The ResetParameters contains the same key twice");
                 }
                 else
                 {
-                    this.Add(resetParameters[i].key, resetParameters[i].value);
+                    Add(m_ResetParameters[i].key, m_ResetParameters[i].value);
                 }
             }
         }
