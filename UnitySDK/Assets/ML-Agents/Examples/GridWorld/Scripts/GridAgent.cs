@@ -24,12 +24,10 @@ public class GridAgent : Agent
     private const int k_Down = 2;
     private const int k_Left = 3;
     private const int k_Right = 4;
-    static Collider[] s_Colliders;
 
     public override void InitializeAgent()
     {
         m_Academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
-        s_Colliders = new Collider[16];
     }
 
     public override void CollectObservations()
@@ -103,18 +101,18 @@ public class GridAgent : Agent
                 throw new ArgumentException("Invalid action value");
         }
 
-        Physics.OverlapBoxNonAlloc(
-            targetPos, new Vector3(0.3f, 0.3f, 0.3f), s_Colliders);
-        if (s_Colliders.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
+        var hit = Physics.OverlapBox(
+            targetPos, new Vector3(0.3f, 0.3f, 0.3f));
+        if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
             transform.position = targetPos;
 
-            if (s_Colliders.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
+            if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(1f);
             }
-            if (s_Colliders.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(-1f);
