@@ -14,8 +14,10 @@ jobs:
         type: executor
       pyversion:
         type: string
+        description: python version to being used (currently only affects caching).
       pip_constraints:
         type: string
+        description: Constraints file that is passed to "pip install". We constraint older versions of libraries for older python runtime, in order to help ensure compatibility.
     executor: << parameters.executor >>
     working_directory: ~/repo
 
