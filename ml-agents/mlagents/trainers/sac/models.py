@@ -2,7 +2,7 @@ import logging
 import numpy as np
 
 import tensorflow as tf
-from mlagents.trainers.models import LearningModel, EncoderType
+from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
 import tensorflow.contrib.layers as c_layers
 
 LOG_STD_MAX = 2
@@ -619,6 +619,7 @@ class SACModel(LearningModel):
         self,
         brain,
         lr=1e-4,
+        lr_schedule=LearningRateSchedule.CONSTANT,
         h_size=128,
         init_entcoef=0.1,
         max_step=5e6,
@@ -637,6 +638,7 @@ class SACModel(LearningModel):
         appropriate PPO agent model for the environment.
         :param brain: BrainInfo used to generate specific network graph.
         :param lr: Learning rate.
+        :param lr_schedule: Learning rate decay schedule.
         :param h_size: Size of hidden layers
         :param init_entcoef: Initial value for entropy coefficient. Set lower to learn faster,
             set higher to explore more.
@@ -688,6 +690,9 @@ class SACModel(LearningModel):
             vis_encode_type=vis_encode_type,
         )
         self.create_inputs_and_outputs()
+        self.learning_rate = self.create_learning_rate(
+            lr_schedule, lr, self.global_step, max_step
+        )
         self.create_losses(
             self.policy_network.q1_heads,
             self.policy_network.q2_heads,
@@ -826,9 +831,6 @@ class SACModel(LearningModel):
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )
             self.rewards_holders[name] = rewards_holder
-        self.learning_rate = tf.train.polynomial_decay(
-            lr, self.global_step, max_step, 1e-10, power=1.0
-        )
 
         q1_losses = []
         q2_losses = []

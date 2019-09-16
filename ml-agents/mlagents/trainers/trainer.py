@@ -8,7 +8,7 @@ from collections import deque, defaultdict
 
 from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
 from mlagents.envs.timers import set_gauge
-from mlagents.trainers import TrainerMetrics
+from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.tf_policy import Policy
 from mlagents.envs import BrainParameters
