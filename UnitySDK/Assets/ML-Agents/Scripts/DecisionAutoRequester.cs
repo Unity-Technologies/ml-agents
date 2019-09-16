@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 
-namespace MLAgents{
+namespace MLAgents
+{
     [RequireComponent(typeof(Agent))]
-    public class DecisionAutoRequester : MonoBehaviour {
+    public class DecisionAutoRequester : MonoBehaviour
+    {
 
-        public int DecisionPeriod;
-        public bool RepeatAction;
+        public int DecisionPeriod = 1;
+        public bool RepeatAction = true;
         private Agent m_Agent;
 
         public void OnEnable()
@@ -22,10 +24,12 @@ namespace MLAgents{
 
         void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
         {
-            if(academyStepCounter % DecisionPeriod == 0){
+            if (academyStepCounter % DecisionPeriod == 0)
+            {
                 m_Agent.RequestDecision();
             }
-            if (RepeatAction){
+            if (RepeatAction)
+            {
                 m_Agent.RequestAction();
             }
         }
