@@ -140,7 +140,7 @@ Typical Range: `1e-5` - `1e-3`
 ### (Optional) Learning Rate Schedule
 
 `learning_rate_schedule` corresponds to how the learning rate is changed over time.
-For SAC, we typically hold learning rate constant so that the agent can continue to
+For SAC, we recommend holding learning rate constant so that the agent can continue to
 learn until its Q function converges naturally.
 
 Options:

@@ -109,7 +109,7 @@ Typical Range: `1e-5` - `1e-3`
 ### (Optional) Learning Rate Schedule
 
 `learning_rate_schedule` corresponds to how the learning rate is changed over time.
-For PPO, we typically can decrease it linearly until `max_steps` so learning converges
+For PPO, we recommend decaying learning rate until `max_steps` so learning converges
 more stably. However, for some cases (e.g. training for an unknown amount of time)
 this feature can be disabled.
 
