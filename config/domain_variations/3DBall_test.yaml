@@ -1,0 +1,13 @@
+resampling-interval: 5000
+
+mass:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.1, 0.5], [10, 20]]
+
+gravity:
+    sampler-type: "multirange_uniform"
+    intervals: [[4, 7], [12, 105]]
+
+scale:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.2, 0.75], [3, 5]]
