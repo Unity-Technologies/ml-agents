@@ -1,0 +1,21 @@
+resampling-interval: 5000
+
+no_wall_height:
+    sampler-type: "uniform"
+    min_value: 0
+    max_value: 0
+
+small_wall_height:
+    sampler-type: "uniform"
+    min_value: 3
+    max_value: 4
+
+big_wall_min_height:
+    sampler-type: "uniform"
+    min_value: 8
+    max_value: 8
+
+big_wall_max_height:
+    sampler-type: "uniform"
+    min_value: 8
+    max_value: 8

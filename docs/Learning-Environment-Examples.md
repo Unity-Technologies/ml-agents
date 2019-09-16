@@ -201,7 +201,15 @@ If you would like to contribute environments, please see our
     * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
   * Visual Observations: None
-* Reset Parameters: Four
+* Reset Parameters:
+    * `no_wall_height`: Height of wall in "no wall" condition.
+        * Default: 0
+    * `small_wall_height`: Height of wall in "small wall" condition.
+        * Default: 4
+    * `big_wall_min_height`: Minimum height of wall in "big wall" condition.
+        * Default: 8
+    * `big_wall_max_height`: Maximum height of wall in "big wall" condition.
+        * Default: 8
 * Benchmark Mean Reward (Big & Small Wall Brain): 0.8
 
 ## [Reacher](https://youtu.be/2N9EoF6pQyE)
