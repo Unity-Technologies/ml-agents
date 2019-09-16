@@ -22,9 +22,14 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          # Combine all the python dependencies into one file so that we can use that for the cache checksum
+          name: Install Dependencies
+          command: cat ml-agents/setup.py ml-agents-envs/setup.py gym-unity/setup.py test_requirements.txt << parameters.pip_constraints >> > python_deps.txt
+
       - restore_cache:
           keys:
-          - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "ml-agents/setup.py" }}
+          - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-py<< parameters.pyversion >>-
 
@@ -43,7 +48,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-py<< parameters.pyversion >>-{{ checksum "ml-agents/setup.py" }}
+          key: v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
 
       - run:
           name: Run Tests for ml-agents and gym_unity
