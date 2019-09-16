@@ -1,0 +1,9 @@
+resampling-interval: 5000
+
+laser_length:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.2, 0.5], [1.5, 5]]
+
+agent_scale:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.5, 0.75], [1.5, 5]]
