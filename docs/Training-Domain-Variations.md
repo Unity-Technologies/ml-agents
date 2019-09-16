@@ -1,32 +1,29 @@
-# Training Generalized Reinforcement Learning Agents
+# Training on Environments with Domain Variations
 
 One of the challenges of training and testing agents on the same
-environment is that the agents tend to overfit. The result is that the
-agents are unable to generalize to any tweaks or variations in the enviornment.
+environment is that the agents tend to overfit to the specific parameters of the environment. The result is that the
+agents are unable to generalize when anything about the environment or the task is changed.
 This is analgous to a model being trained and tested on an identical dataset
-in supervised learning. This becomes problematic in cases where environments
+in supervised learning, something that is typically frowned upon. Training on a single fixed version of the environment can become problematic in cases where environments
 are randomly instantiated with varying objects or properties. 
 
-To make agents robust and generalizable to different environments, the agent
-should be trained over multiple variations of the enviornment. Using this approach
-for training, the agent will be better suited to adapt (with higher performance)
-to future unseen variations of the enviornment
+To help make agents more robust and generalizable to changes in an enviornment, the agent
+can be trained over multiple variations of the enviornment, ensuring that during training time it has been a wide range of possible instances of the task. Using this approach
+for training, the agent can be better suited to adapt (with higher performance)
+to future unseen variations of the enviornment. We provide a standardized way of sampling variations on environments, which we describe here.
 
-_Example of variations of the 3D Ball environment._
+## How to Enable Domain Variations Using Reset Parameters
+
+To enable variations in the environments, we take advantage of the `Reset Parameters` feature, which allows a configuration file to be passed to an environment when `env.reset()` is called from the python api. The domain variation feature
+includes different sampling methods and the ability to create new kinds of
+sampling methods for each `Reset Parameter` present within an environment. In the `3DBall` environment example displayed
+in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
+
 
 Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
 ![](images/3dball_small.png)  |  ![](images/3dball_big.png)
-
-## Introducing Generalization Using Reset Parameters
-
-To enable variations in the environments, we implemented `Reset Parameters`. We
-also included different sampling methods and the ability to create new kinds of
-sampling methods for each `Reset Parameter`. In the 3D ball environment example displayed
-in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
-
-
-## How to Enable Generalization Using Reset Parameters
+_Example of variations of the 3DBall environment._
 
 We first need to provide a way to modify the environment by supplying a set of `Reset Parameters`
 and vary them over time. This provision can be done either deterministically or randomly. 
@@ -42,7 +39,7 @@ values for the reset parameters when needed.
 To setup the Sampler Manager, we create a YAML file that specifies how we wish to 
 generate new samples for each `Reset Parameters`. In this file, we specify the samplers and the 
 `resampling-interval` (the number of simulation steps after which reset parameters are 
-resampled). Below is an example of a sampler file for the 3D ball environment.
+resampled). Below is an example of a sampler file for the `3DBall` environment.
 
 ```yaml
 resampling-interval: 5000
@@ -118,7 +115,7 @@ Below is a list of included `sampler-type` as part of the toolkit.
     
     * **sub-arguments** - `intervals`
 
-The implementation of the samplers can be found at `ml-agents-envs/mlagents/envs/sampler_class.py`.
+The implementation of the samplers can be found in `ml-agents-envs/mlagents/envs/sampler_class.py`.
 
 ### Defining a New Sampler Type
 
@@ -129,7 +126,9 @@ Once the class for the required method is specified, it must be registered in th
 This can be done by subscribing to the *register_sampler* method of the SamplerFactory. The command
 is as follows:
 
-`SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
+```python
+SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)
+```
 
 Once the Sampler Factory reflects the new register, the new sampler type can be used for sample any
 `Reset Parameter`. For example, lets say a new sampler type was implemented as below and we register
@@ -156,7 +155,7 @@ mass:
     argC: 3
 ```
 
-### Training with Generalization Using Reset Parameters
+### Training with Domain Variations Using Reset Parameters
 
 After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
 our configured sampler file with the `--sampler` flag. For example, if we wanted to train the

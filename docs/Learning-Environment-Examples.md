@@ -298,12 +298,12 @@ If you would like to contribute environments, please see our
     `VisualBanana` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Two
-  * laser_length: Length of the laser used by the agent
+* Reset Parameters:
+  * `laser_length`: Length of the laser used by the agent
     * Default: 1
     * Recommended Minimum: 0.2
     * Recommended Maximum: 7
-  * agent_scale: Specifies the scale of the agent in the 3 dimensions (equal across the three dimensions)
+  * `agent_scale`: Specifies the scale of the agent in the 3 dimensions (equal across the three dimensions)
     * Default: 1
     * Recommended Minimum: 0.5
     * Recommended Maximum: 5
