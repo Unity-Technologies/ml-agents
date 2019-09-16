@@ -38,8 +38,8 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install --progress-bar=off --upgrade pip
-            pip install --progress-bar=off --upgrade setuptools
+            pip install --upgrade pip
+            pip install --upgrade setuptools
             pip install --progress-bar=off -e ./ml-agents-envs -c << parameters.pip_constraints >>
             pip install --progress-bar=off -e ./ml-agents -c << parameters.pip_constraints >>
             pip install --progress-bar=off -r test_requirements.txt -c << parameters.pip_constraints >>
