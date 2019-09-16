@@ -38,7 +38,7 @@ jobs:
             pip install --progress-bar=off -e ./ml-agents-envs -c << parameters.pip_constraints >>
             pip install --progress-bar=off -e ./ml-agents -c << parameters.pip_constraints >>
             pip install --progress-bar=off -r test_requirements.txt -c << parameters.pip_constraints >>
-            pip install --progress-bar=off -e .gym-unity -c << parameters.pip_constraints >>
+            pip install --progress-bar=off -e ./gym-unity -c << parameters.pip_constraints >>
 
       - save_cache:
           paths:
