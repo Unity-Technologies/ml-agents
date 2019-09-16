@@ -321,7 +321,8 @@ If it decreases too soon or takes too long to decrease, `init_entcoef` should be
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule.
+This will stay a constant value by default, unless `learning_rate_schedule`
+is set to `linear`.
 
 ### Policy Loss
 
