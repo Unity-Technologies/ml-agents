@@ -302,7 +302,7 @@ If you would like to contribute environments, please see our
   * `laser_length`: Length of the laser used by the agent
     * Default: 1
     * Recommended Minimum: 0.2
-    * Recommended Maximum: 7
+    * Recommended Maximum: 5
   * `agent_scale`: Specifies the scale of the agent in the 3 dimensions (equal across the three dimensions)
     * Default: 1
     * Recommended Minimum: 0.5
