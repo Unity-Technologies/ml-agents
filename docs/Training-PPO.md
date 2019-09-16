@@ -106,6 +106,19 @@ does not consistently increase.
 
 Typical Range: `1e-5` - `1e-3`
 
+### (Optional) Learning Rate Schedule
+
+`learning_rate_schedule` corresponds to how the learning rate is changed over time.
+For PPO, we typically can decrease it linearly until `max_steps` so learning converges
+more stably. However, for some cases (e.g. training for an unknown amount of time)
+this feature can be disabled.
+
+Options:
+* `linear` (default): Decay `learning_rate` linearly, reaching 0 at `max_steps`.
+* `constant`: Keep learning rate constant for the entire training run.
+
+Options: `linear`, `constant`
+
 ### Time Horizon
 
 `time_horizon` corresponds to how many steps of experience to collect per-agent
@@ -299,7 +312,8 @@ consistently decrease during training. If it decreases too soon or not at all,
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule.
+This will decrease over time on a linear schedule by default, unless `learning_rate_schedule`
+is set to `constant`.
 
 ### Policy Loss
 
