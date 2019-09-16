@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 114033573546398302}
   - component: {fileID: 114832865302211230}
   - component: {fileID: 114827935345898170}
-  - component: {fileID: 114854900318616104}
   m_Layer: 0
   m_Name: TeacherAgent
   m_TagString: agent
@@ -203,7 +202,6 @@ GameObject:
   - component: {fileID: 54849675994401428}
   - component: {fileID: 114085328779651546}
   - component: {fileID: 114217618254455056}
-  - component: {fileID: 114028011944708544}
   m_Layer: 0
   m_Name: StudentAgent
   m_TagString: agent
@@ -839,7 +837,6 @@ GameObject:
   - component: {fileID: 54871550836266580}
   - component: {fileID: 114990713253136410}
   - component: {fileID: 114983848801657944}
-  - component: {fileID: 114628024586164834}
   m_Layer: 0
   m_Name: StudentAgent (1)
   m_TagString: agent
@@ -1159,7 +1156,6 @@ GameObject:
   - component: {fileID: 54702084549932596}
   - component: {fileID: 114142328162608466}
   - component: {fileID: 114025719036432954}
-  - component: {fileID: 114472579949191470}
   m_Layer: 0
   m_Name: StudentAgent (2)
   m_TagString: agent
@@ -1217,7 +1213,6 @@ GameObject:
   - component: {fileID: 54599451830731428}
   - component: {fileID: 114879445014876350}
   - component: {fileID: 114526106590231030}
-  - component: {fileID: 114194228128766974}
   m_Layer: 0
   m_Name: StudentAgent (3)
   m_TagString: agent
@@ -5668,19 +5663,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114028011944708544
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1159045265856464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114033573546398302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5695,9 +5677,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: dff7429d656234fed84c4fac2a7a683c, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
   area: {fileID: 1464170487903594}
   turnSpeed: 150
   moveSpeed: 2
@@ -5739,9 +5722,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
   area: {fileID: 1464170487903594}
   turnSpeed: 150
   moveSpeed: 2
@@ -5766,9 +5750,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
   area: {fileID: 1464170487903594}
   turnSpeed: 150
   moveSpeed: 2
@@ -5779,19 +5764,6 @@ MonoBehaviour:
   myLaser: {fileID: 1653636945240924}
   contribute: 1
   useVectorObs: 1
---- !u!114 &114194228128766974
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1950706750418612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114217618254455056
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5803,19 +5775,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114472579949191470
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1883640871477880}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114526106590231030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5827,19 +5786,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114628024586164834
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1637606940471644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114827935345898170
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5864,19 +5810,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recordKey: 114
   resetKey: 99
---- !u!114 &114854900318616104
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1028048194463098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114879445014876350
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5891,9 +5824,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
   area: {fileID: 1464170487903594}
   turnSpeed: 150
   moveSpeed: 2
@@ -5929,9 +5863,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
   area: {fileID: 1464170487903594}
   turnSpeed: 150
   moveSpeed: 2

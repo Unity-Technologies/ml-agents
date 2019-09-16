@@ -147,7 +147,6 @@ GameObject:
   - component: {fileID: 54428870819512292}
   - component: {fileID: 114612387355902774}
   - component: {fileID: 114880989884352500}
-  - component: {fileID: 114732102047189796}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -974,6 +973,8 @@ MonoBehaviour:
     agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 5
   ground: {fileID: 1553741088268304}
   area: {fileID: 1564309464981496}
   areaBounds:
@@ -983,19 +984,6 @@ MonoBehaviour:
   block: {fileID: 1143489405648548}
   goalDetect: {fileID: 0}
   useVectorObs: 0
---- !u!114 &114732102047189796
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1571924894790648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114880989884352500
 MonoBehaviour:
   m_ObjectHideFlags: 1
