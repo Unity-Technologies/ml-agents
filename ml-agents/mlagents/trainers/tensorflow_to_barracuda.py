@@ -1500,7 +1500,7 @@ def very_slow_but_stable_topological_sort(nodes, verbose):
 
 
 def convert(
-    source_file,
+    source_graph,
     target_file,
     trim_unused_by_output="",
     verbose=False,
@@ -1533,10 +1533,15 @@ def convert(
         barracuda.print_known_operations(known_classes, known_activations)
 
     # Load Tensorflow model
-    print("Converting %s to %s" % (source_file, target_file))
-    f = open(source_file, "rb")
-    i_model = tf.GraphDef()
-    i_model.ParseFromString(f.read())
+    if isinstance(source_graph, str):
+        print("Converting %s to %s" % (source_graph, target_file))
+        f = open(source_graph, "rb")
+        i_model = tf.GraphDef()
+        i_model.ParseFromString(f.read())
+    elif isinstance(source_graph, tf.GraphDef):
+        i_model = source_graph
+    else:
+        raise Exception("Source graph must be either a filename or GraphDef")
 
     if args.verbose:
         print("OP_TYPES:", {layer.op for layer in i_model.node})

@@ -8,6 +8,7 @@ from mlagents.envs.exception import UnityException
 from mlagents.envs.policy import Policy
 from mlagents.envs.action_info import ActionInfo
 from tensorflow.python.tools import freeze_graph
+from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.envs.brain import BrainInfo
 
@@ -219,22 +220,12 @@ class TFPolicy(Policy):
 
         with self.graph.as_default():
             target_nodes = ",".join(self._process_graph())
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
-            freeze_graph.freeze_graph(
-                input_graph=self.model_path + "/raw_graph_def.pb",
-                input_binary=True,
-                input_checkpoint=ckpt.model_checkpoint_path,
-                output_node_names=target_nodes,
-                output_graph=(self.model_path + "/frozen_graph_def.pb"),
-                clear_devices=True,
-                initializer_nodes="",
-                input_saver="",
-                restore_op_name="save/restore_all",
-                filename_tensor_name="save/Const:0",
+            graph_def = self.graph.as_graph_def()
+            output_graph_def = graph_util.convert_variables_to_constants(
+                self.sess, graph_def, target_nodes.replace(" ", "").split(",")
             )
-
-        tf2bc.convert(self.model_path + "/frozen_graph_def.pb", self.model_path + ".nn")
-        logger.info("Exported " + self.model_path + ".nn file")
+            tf2bc.convert(output_graph_def, self.model_path + ".nn")
+            logger.info("Exported " + self.model_path + ".nn file")
 
     def _process_graph(self):
         """

@@ -109,6 +109,7 @@ class PPOModel(LearningModel):
             self.act_size[0],
             activation=None,
             kernel_initializer=LearningModel.scaled_init(0.01),
+            reuse=tf.AUTO_REUSE
         )
 
         self.log_sigma_sq = tf.get_variable(
