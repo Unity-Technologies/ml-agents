@@ -26,9 +26,29 @@ your Agents. See [Brains](Learning-Environment-Design-Brains.md).
   
 ## Decisions
 
-The observation-decision-action-reward cycle repeats after a configurable number
-of simulation steps (the frequency defaults to once-per-step). You can also set
-up an Agent to request decisions on demand. Making decisions at regular step
+In order to start a observation-decision-action-reward cycle, you must call 
+the `Agent.RequestDecision()` function. At each fixed update, all the agents
+that requested a decision will have their observations collected and their
+actions performed in a batched fashion. You can also call the
+`Agent.RequestDecision()` function on the agent to perform the action of
+the agent *without* requesting a new decision. 
+
+### Decision Auto Requester
+
+You can add the **Decision Auto Requester** component to your Agent to request
+decisions at a fixed frequency.
+
+To control the frequency of step-based decision making, set the **Decision
+Period** value for the Decision Auto Requester Component in the Unity 
+Inspector window. Agents using the same Brain instance can use a different
+frequency. If the Decision Period is set to 5, then the Agent will
+automatically request a decision every 5 simulation steps. You can check the
+**Repeat Action** check-box on the Decision Auto Requester Component to have the
+action be repeated at every step even when no new decision is provided. This
+is particularly useful in locomotion tasks where the agent selects what force
+to apply to the joints and apply the force over multiple time-steps.
+
+Making decisions at regular step
 intervals is generally most appropriate for physics-based simulations. Making
 decisions on demand is generally appropriate for situations where Agents only
 respond to specific events or take actions of variable duration. For example, an
@@ -36,28 +56,6 @@ agent in a robotic simulator that must provide fine-control of joint torques
 should make its decisions every step of the simulation. On the other hand, an
 agent that only needs to make decisions when certain game or simulation events
 occur, should use on-demand decision making.  
-
-To control the frequency of step-based decision making, set the **Decision
-Frequency** value for the Agent object in the Unity Inspector window. Agents
-using the same Brain instance can use a different frequency. During simulation
-steps in which no decision is requested, the Agent receives the same action
-chosen by the previous decision.
-
-### On Demand Decision Making
-
-On demand decision making allows Agents to request decisions from their Brains
-only when needed instead of receiving decisions at a fixed frequency. This is
-useful when the agents commit to an action for a variable number of steps or
-when the agents cannot make decisions at the same time. This typically the case
-for turn based games, games where agents must react to events or games where
-agents can take actions of variable duration.
-
-When you turn on **On Demand Decisions** for an Agent, your agent code must call
-the `Agent.RequestDecision()` function. This function call starts one iteration
-of the observation-decision-action-reward cycle. The Brain invokes the Agent's
-`CollectObservations()` method, makes a decision and returns it by calling the
-`AgentAction()` method. The Brain waits for the Agent to request the next
-decision before starting another iteration.
 
 ## Observations
 
