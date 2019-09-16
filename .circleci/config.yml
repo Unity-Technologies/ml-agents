@@ -14,6 +14,8 @@ jobs:
         type: executor
       pyversion:
         type: string
+      pip_constraints:
+        type: string
     executor: << parameters.executor >>
     working_directory: ~/repo
 
@@ -33,10 +35,10 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install --upgrade setuptools
-            pushd ml-agents-envs && pip install -e . && popd
-            pushd ml-agents && pip install -e . && popd
-            pip install -r test_requirements.txt
-            pushd gym-unity && pip install -e . && popd
+            pip install -e ./ml-agents-envs -c << parameters.pip_constraints >>
+            pip install -e ./ml-agents -c << parameters.pip_constraints >>
+            pip install -r test_requirements.txt -c << parameters.pip_constraints >>
+            pip install -e .gym-unity -c << parameters.pip_constraints >>
 
       - save_cache:
           paths:
@@ -117,8 +119,12 @@ workflows:
           name: python_3.6.1
           executor: python361
           pyversion: 3.6.1
+          # Test python 3.6 with the oldest supported versions
+          pip_constraints: test_constraints_min_version.txt
       - build_python:
           name: python_3.7.3
           executor: python373
           pyversion: 3.7.3
+          # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_version.txt
       - markdown_link_check
