@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
 
 namespace MLAgents
@@ -87,9 +88,18 @@ namespace MLAgents
             }
             catch
             {
-                throw new UnityAgentsException(
-                    "The Communicator was unable to connect. Please make sure the External " +
-                    "process is ready to accept communication with Unity.");
+                var exceptionMessage = "The Communicator was unable to connect. Please make sure the External " +
+                                       "process is ready to accept communication with Unity.";
+
+                // Check for common error condition and add details to the exception message.
+                var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
+                var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
+                if (httpProxy != null || httpsProxy != null)
+                {
+                    exceptionMessage += " Try removing HTTP_PROXY and HTTPS_PROXY from the" +
+                                        "environment variables and try again.";
+                }
+                throw new UnityAgentsException(exceptionMessage);
             }
 
             var firstRlInput = input.RlInput;
