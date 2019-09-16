@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
 using NUnit.Framework;
@@ -11,7 +11,6 @@ namespace MLAgents.Tests
     {
         private class TestAgent : Agent
         {
-
         }
 
         private Dictionary<Agent, AgentInfo> GetFakeAgentInfos()
@@ -20,23 +19,22 @@ namespace MLAgents.Tests
             var agentA = goA.AddComponent<TestAgent>();
             var infoA = new AgentInfo()
             {
-                stackedVectorObservation = (new [] {1f, 2f, 3f}).ToList(),
+                stackedVectorObservation = (new[] {1f, 2f, 3f}).ToList(),
                 memories = null,
-                storedVectorActions = new [] {1f, 2f},
+                storedVectorActions = new[] {1f, 2f},
                 actionMasks = null,
-
             };
             var goB = new GameObject("goB");
             var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo()
             {
-                stackedVectorObservation = (new [] {4f, 5f, 6f}).ToList(),
-                memories = (new [] {1f, 1f, 1f}).ToList(),
-                storedVectorActions = new [] {3f, 4f},
-                actionMasks = new [] {true, false, false, false, false},
+                stackedVectorObservation = (new[] {4f, 5f, 6f}).ToList(),
+                memories = (new[] {1f, 1f, 1f}).ToList(),
+                storedVectorActions = new[] {3f, 4f},
+                actionMasks = new[] {true, false, false, false, false},
             };
 
-            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA},{agentB, infoB}};
+            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA}, {agentB, infoB}};
         }
 
         [Test]
@@ -122,7 +120,6 @@ namespace MLAgents.Tests
             {
                 shape = new long[] {2, 2},
                 valueType = TensorProxy.TensorType.Integer
-
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
@@ -145,7 +142,6 @@ namespace MLAgents.Tests
             {
                 shape = new long[] {2, 5},
                 valueType = TensorProxy.TensorType.FloatingPoint
-
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgentInfos();

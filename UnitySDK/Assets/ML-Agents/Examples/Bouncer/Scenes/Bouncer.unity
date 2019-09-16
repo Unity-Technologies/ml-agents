@@ -853,7 +853,9 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: banana_scale
+      value: 150
   gravityMultiplier: 2
 --- !u!4 &1453982295
 Transform:

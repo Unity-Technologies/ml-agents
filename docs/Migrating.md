@@ -1,5 +1,36 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.9 to v0.10
+
+### Important Changes
+* We have updated the C# code in our repository to be in line with Unity Coding Conventions.  This has changed the name of some public facing classes and enums.
+
+#### Steps to Migrate
+* `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
+* The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
+
+
+## Migrating from ML-Agents toolkit v0.8 to v0.9
+
+### Important Changes
+* We have changed the way reward signals (including Curiosity) are defined in the
+`trainer_config.yaml`.
+* When using multiple environments, every "step" is recorded in TensorBoard.
+* The steps in the command line console corresponds to a single step of a single environment.
+Previously, each step corresponded to one step for all environments (i.e., `num_envs` steps).
+
+#### Steps to Migrate
+* If you were overriding any of these following parameters in your config file, remove them
+from the top-level config and follow the steps below:
+  * `gamma`: Define a new `extrinsic` reward signal and set it's `gamma` to your new gamma.
+  * `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a `curiosity` reward signal
+  and set its `strength` to `curiosity_strength`, and `encoding_size` to `curiosity_enc_size`. Give it
+  the same `gamma` as your `extrinsic` signal to mimic previous behavior.
+See [Reward Signals](Reward-Signals.md) for more information on defining reward signals.
+* TensorBoards generated when running multiple environments in v0.8 are not comparable to those generated in
+v0.9 in terms of step count. Multiply your v0.8 step count by `num_envs` for an approximate comparison.
+You may need to change `max_steps` in your config as appropriate as well.
+
 ## Migrating from ML-Agents toolkit v0.7 to v0.8
 
 ### Important Changes

@@ -45,21 +45,14 @@ The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
 ### Install Python and mlagents Package
 
-In order to use ML-Agents toolkit, you need Python 3.6 along with the
-dependencies listed in the [setup.py file](../ml-agents/setup.py).
-Some of the primary dependencies include:
-
-- [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)
-- [Jupyter](Background-Jupyter.md)
-
-[Download](https://www.python.org/downloads/) and install Python 3.6 if you do not
-already have it.
+In order to use ML-Agents toolkit, you need Python 3.6.1 or higher.  
+[Download](https://www.python.org/downloads/) and install the latest version of Python if you do not already have it.
 
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-To install the dependencies and `mlagents` Python package, run from the command line:
+To install the `mlagents` Python package, run from the command line:
 
 ```sh
 pip3 install mlagents
@@ -70,9 +63,15 @@ If you installed this correctly, you should be able to run
 `mlagents-learn --help`, after which you will see the Unity logo and the command line
 parameters you can use with `mlagents-learn`. 
 
+By installing the `mlagents` package, the dependencies listed in the [setup.py file](../ml-agents/setup.py) are also installed.
+Some of the primary dependencies include:
+
+- [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)
+- [Jupyter](Background-Jupyter.md)
+
 **Notes:**
 
-- We do not currently support Python 3.7 or Python 3.5.
+- We do not currently support Python 3.5 or lower.
 - If you are using Anaconda and are having trouble with TensorFlow, please see
   the following
   [link](https://www.tensorflow.org/install/pip)

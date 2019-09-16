@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using MLAgents.CommunicatorObjects;
 using UnityEditor;
@@ -13,7 +13,7 @@ namespace MLAgents
     [ScriptedImporter(1, new[] {"demo"})]
     public class DemonstrationImporter : ScriptedImporter
     {
-        private const string IconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
+        private const string k_IconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -41,8 +41,8 @@ namespace MLAgents
                 demonstration.Initialize(brainParameters, metaData);
                 userData = demonstration.ToString();
 
-                Texture2D texture = (Texture2D)
-                    AssetDatabase.LoadAssetAtPath(IconPath, typeof(Texture2D));
+                var texture = (Texture2D)
+                    AssetDatabase.LoadAssetAtPath(k_IconPath, typeof(Texture2D));
 
 #if UNITY_2017_3_OR_NEWER
                 ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
@@ -53,7 +53,7 @@ namespace MLAgents
             }
             catch
             {
-                return;
+                // ignored
             }
         }
     }

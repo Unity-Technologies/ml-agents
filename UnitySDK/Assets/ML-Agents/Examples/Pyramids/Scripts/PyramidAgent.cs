@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,20 +7,20 @@ using MLAgents;
 public class PyramidAgent : Agent
 {
     public GameObject area;
-    private PyramidArea myArea;
-    private Rigidbody agentRb;
-    private RayPerception rayPer;
-    private PyramidSwitch switchLogic;
+    private PyramidArea m_MyArea;
+    private Rigidbody m_AgentRb;
+    private RayPerception m_RayPer;
+    private PyramidSwitch m_SwitchLogic;
     public GameObject areaSwitch;
     public bool useVectorObs;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        agentRb = GetComponent<Rigidbody>();
-        myArea = area.GetComponent<PyramidArea>();
-        rayPer = GetComponent<RayPerception>();
-        switchLogic = areaSwitch.GetComponent<PyramidSwitch>();
+        m_AgentRb = GetComponent<Rigidbody>();
+        m_MyArea = area.GetComponent<PyramidArea>();
+        m_RayPer = GetComponent<RayPerception>();
+        m_SwitchLogic = areaSwitch.GetComponent<PyramidSwitch>();
     }
 
     public override void CollectObservations()
@@ -35,11 +33,11 @@ public class PyramidAgent : Agent
             float[] rayAngles2 = {15f, 85f, 155f, 40f, 130f, 65f, 105f};
 
             string[] detectableObjects = {"block", "wall", "goal", "switchOff", "switchOn", "stone"};
-            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
-            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
-            AddVectorObs(switchLogic.GetState());
-            AddVectorObs(transform.InverseTransformDirection(agentRb.velocity));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
+            AddVectorObs(m_SwitchLogic.GetState());
+            AddVectorObs(transform.InverseTransformDirection(m_AgentRb.velocity));
         }
     }
 
@@ -48,7 +46,7 @@ public class PyramidAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
         {
             dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
             rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
@@ -73,7 +71,7 @@ public class PyramidAgent : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 200f);
-        agentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
+        m_AgentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -86,20 +84,20 @@ public class PyramidAgent : Agent
     {
         var enumerable = Enumerable.Range(0, 9).OrderBy(x => Guid.NewGuid()).Take(9);
         var items = enumerable.ToArray();
-        
-        myArea.CleanPyramidArea();
-        
-        agentRb.velocity = Vector3.zero;
-        myArea.PlaceObject(gameObject, items[0]);
+
+        m_MyArea.CleanPyramidArea();
+
+        m_AgentRb.velocity = Vector3.zero;
+        m_MyArea.PlaceObject(gameObject, items[0]);
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
 
-        switchLogic.ResetSwitch(items[1], items[2]);
-        myArea.CreateStonePyramid(1, items[3]);
-        myArea.CreateStonePyramid(1, items[4]);
-        myArea.CreateStonePyramid(1, items[5]);
-        myArea.CreateStonePyramid(1, items[6]);
-        myArea.CreateStonePyramid(1, items[7]);
-        myArea.CreateStonePyramid(1, items[8]);
+        m_SwitchLogic.ResetSwitch(items[1], items[2]);
+        m_MyArea.CreateStonePyramid(1, items[3]);
+        m_MyArea.CreateStonePyramid(1, items[4]);
+        m_MyArea.CreateStonePyramid(1, items[5]);
+        m_MyArea.CreateStonePyramid(1, items[6]);
+        m_MyArea.CreateStonePyramid(1, items[7]);
+        m_MyArea.CreateStonePyramid(1, items[8]);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -113,6 +111,5 @@ public class PyramidAgent : Agent
 
     public override void AgentOnDone()
     {
-
     }
 }

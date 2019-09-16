@@ -1,10 +1,10 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: '19.3b0'
+    rev: 19.3b0
     hooks:
     -   id: black
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.701'
+    rev: v0.720
     hooks:
     -   id: mypy
         name: mypy-ml-agents
@@ -31,3 +31,24 @@ repos:
                 .*.css
             )$
         args: [--fix=lf]
+    -   id: flake8
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$
+# "Local" hooks, see https://pre-commit.com/#repository-local-hooks
+-   repo: local
+    hooks:
+    -   id: markdown-link-check
+        name: markdown-link-check
+        # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
+        # Note that you must install the package separately via npm. For example:
+        #  brew install npm; npm install -g markdown-link-check
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json' --
+        language: system
+        types: [markdown]
+        # Don't check localized files since their target might not be localized.
+        exclude: ".*localized.*"
+        # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
+        stages: [manual]

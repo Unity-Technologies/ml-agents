@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class SoccerAcademy : Academy
 {
-
     public Brain brainStriker;
     public Brain brainGoalie;
     public Material redMaterial;
@@ -27,14 +24,13 @@ public class SoccerAcademy : Academy
     {
         Physics.gravity *= gravityMultiplier; //for soccer a multiplier of 3 looks good
     }
+
     public override void AcademyReset()
     {
-
+        Physics.gravity = new Vector3(0, -resetParameters["gravity"], 0);
     }
 
     public override void AcademyStep()
     {
-
     }
-
 }
