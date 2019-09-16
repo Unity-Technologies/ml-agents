@@ -1,0 +1,16 @@
+resampling-interval: 5000
+
+gridSize:
+    sampler-type: "uniform"
+    min_value: 6
+    max_value: 10
+
+numObstacles:
+    sampler-type: "uniform"
+    min_value: 3
+    max_value: 5
+
+numGoals:
+    sampler-type: "uniform"
+    min_value: 3
+    max_value: 5

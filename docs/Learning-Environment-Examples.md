@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -56,16 +56,16 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: Three
-    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
+* Reset Parameters:
+    * `scale`: Specifies the scale of the ball in the x, y, and z dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
-    * gravity: Magnitude of gravity  
+    * `gravity`: Magnitude of gravity  
       * Default: 9.81
       * Recommended Minimum: 4
       * Recommended Maximum: 105
-    * mass: Specifies mass of the ball
+    * `mass`: Specifies mass of the ball
       * Default: 1
       * Recommended Minimum: 0.1
       * Recommended Maximum: 20
@@ -95,6 +95,12 @@ If you would like to contribute environments, please see our
   * Visual Observations: One corresponding to top-down view of GridWorld.
 * Reset Parameters: Three, corresponding to grid size, number of obstacles, and
   number of goals.
+  * `gridSize`: The size of the grid.
+     * Default: 5
+  * `numObstacles`: The number of obstacles in the grid.
+     * Default: 1
+  * `numGoals`: The number of goals in the grid.
+     * Default: 1
 * Benchmark Mean Reward: 0.8
 
 ## [Tennis](https://youtu.be/RDaIh7JX6RI)
@@ -117,16 +123,16 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
   * Visual Observations: None
-* Reset Parameters: Three
-    * angle: Angle of the racket from the vertical (Y) axis.
+* Reset Parameters:
+    * `angle`: Angle of the racket from the vertical (Y) axis.
       * Default: 55
       * Recommended Minimum: 35 
       * Recommended Maximum: 65
-    * gravity: Magnitude of gravity
+    * `gravity`: Magnitude of gravity
       * Default: 9.81
       * Recommended Minimum: 6
       * Recommended Maximum: 20
-    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
+    * `scale`: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
