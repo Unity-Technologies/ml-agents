@@ -145,7 +145,6 @@ GameObject:
   - component: {fileID: 54596704247224538}
   - component: {fileID: 114937736047215868}
   - component: {fileID: 114507422577425370}
-  - component: {fileID: 114650529390468700}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -3759,19 +3758,6 @@ MonoBehaviour:
   onMaterial: {fileID: 2100000, guid: 80ffa2c5b96364e4b80fbb2e42b0af3d, type: 2}
   offMaterial: {fileID: 2100000, guid: 882d882b99bce44c6863ec8d3760e9ca, type: 2}
   myButton: {fileID: 1221747823015168}
---- !u!114 &114650529390468700
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1131043459059966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DecisionPeriod: 5
-  RepeatAction: 1
 --- !u!114 &114937736047215868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3786,9 +3772,10 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576, type: 2}
   agentParameters:
     agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1464170487903594}
   areaSwitch: {fileID: 1562139828900848}
   useVectorObs: 1
