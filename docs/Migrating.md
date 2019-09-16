@@ -8,6 +8,7 @@
 #### Steps to Migrate
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
 * The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
+* We removed the Decision Period field on the Agent. The default way to use the Agent is now to use on-demand-decision. To request decisions at fixed intervals, you must attach a DecisionAutoRequester component to your Agent. 
 
 
 ## Migrating from ML-Agents toolkit v0.8 to v0.9
