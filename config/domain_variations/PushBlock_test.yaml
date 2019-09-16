@@ -1,0 +1,21 @@
+resampling-interval: 5000
+
+block_scale:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.5, 1.5], [3, 4]]
+
+dynamic_friction:
+    sampler-type: "uniform"
+    min_value: 0.5
+    max_value: 1.0
+
+static_friction:
+    sampler-type: "uniform"
+    min_value: 0.5
+    max_value: 1.0
+
+block_drag:
+    sampler-type: "uniform"
+    min_value: 1.0
+    max_value: 2.0
+
