@@ -15,16 +15,16 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     packages=["mlagents.envs", "mlagents.envs.communicator_objects"],  # Required
     zip_safe=False,
     install_requires=[
-        "Pillow>=4.2.1,<=5.4.1",
-        "numpy>=1.13.3,<=1.16.1",
-        "pytest>=3.2.2,<4.0.0",
-        "protobuf>=3.6,<3.7",
-        "grpcio>=1.11.0,<1.12.0",
         "cloudpickle",
+        "grpcio>=1.11.0",
+        "numpy>=1.13.3,<2.0",
+        "Pillow>=4.2.1",
+        "protobuf>=3.6",
     ],
-    python_requires=">=3.5,<3.8",
+    python_requires=">=3.5",
 )
