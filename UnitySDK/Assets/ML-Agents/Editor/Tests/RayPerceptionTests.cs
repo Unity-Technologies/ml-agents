@@ -10,7 +10,7 @@ namespace MLAgents.Tests
         public void TestPerception3D()
         {
             var angles = new[] {0f, 90f, 180f};
-            var tags = new[] {"test", "test_1"};
+            var tags = new[] {"wall", "pit"};
 
             var go = new GameObject("MyGameObject");
             var rayPer3D = go.AddComponent<RayPerception3D>();
@@ -24,7 +24,7 @@ namespace MLAgents.Tests
         public void TestPerception2D()
         {
             var angles = new[] {0f, 90f, 180f};
-            var tags = new[] {"test", "test_1"};
+            var tags = new[] {"wall", "pit"};
 
             var go = new GameObject("MyGameObject");
             var rayPer2D = go.AddComponent<RayPerception2D>();
