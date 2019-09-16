@@ -9,17 +9,19 @@ namespace MLAgents
         public int DecisionPeriod = 1;
         public bool RepeatAction = true;
         private Agent m_Agent;
+        private Academy m_Academy;
 
         public void OnEnable()
         {
             DecisionPeriod = Mathf.Max(DecisionPeriod, 1);
             m_Agent = gameObject.GetComponent<Agent>();
-            GameObject.FindObjectOfType<Academy>().AgentSetStatus += SetStatus;
+            m_Academy = GameObject.FindObjectOfType<Academy>();
+            m_Academy.AgentSetStatus += SetStatus;
         }
 
         void OnDisable()
         {
-            GameObject.FindObjectOfType<Academy>().AgentSetStatus -= SetStatus;
+            m_Academy.AgentSetStatus -= SetStatus;
         }
 
         void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
