@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace MLAgents
 {
     /// <summary>
-    /// Struct that contains all the information for an Agent, including its 
+    /// Struct that contains all the information for an Agent, including its
     /// observations, actions and current status, that is sent to the Brain.
     /// </summary>
     public struct AgentInfo
@@ -121,13 +121,25 @@ namespace MLAgents
                     ByteString.CopyFrom(obs.EncodeToPNG())
                 );
             }
-
             return agentInfoProto;
+        }
+
+        /// <summary>
+        /// Remove the visual observations from memory. Call at each timestep
+        /// to avoid memory leaks.
+        /// </summary>
+        public void ClearVisualObs()
+        {
+            foreach (Texture2D obs in visualObservations)
+            {
+                Object.Destroy(obs);
+            }
+            visualObservations.Clear();
         }
     }
 
     /// <summary>
-    /// Struct that contains the action information sent from the Brain to the 
+    /// Struct that contains the action information sent from the Brain to the
     /// Agent.
     /// </summary>
     public struct AgentAction
@@ -140,7 +152,7 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// Struct that contains all the Agent-specific parameters provided in the 
+    /// Struct that contains all the Agent-specific parameters provided in the
     /// Editor. This excludes the Brain linked to the Agent since it can be
     /// modified programmatically.
     /// </summary>
@@ -152,7 +164,7 @@ namespace MLAgents
         /// observations.
         /// </summary>
         public List<Camera> agentCameras = new List<Camera>();
-        
+
         /// <summary>
         /// The list of the RenderTextures the agent uses for visual
         /// observations.
@@ -161,7 +173,7 @@ namespace MLAgents
 
 
         /// <summary>
-        /// The maximum number of steps the agent takes before being done. 
+        /// The maximum number of steps the agent takes before being done.
         /// </summary>
         /// <remarks>
         /// If set to 0, the agent can only be set to done programmatically (or
@@ -183,7 +195,7 @@ namespace MLAgents
         public bool resetOnDone = true;
 
         /// <summary>
-        /// Whether to enable On Demand Decisions or make a decision at 
+        /// Whether to enable On Demand Decisions or make a decision at
         /// every step.
         /// </summary>
         public bool onDemandDecision;
@@ -198,8 +210,8 @@ namespace MLAgents
 
     /// <summary>
     /// Agent Monobehavior class that is attached to a Unity GameObject, making it
-    /// an Agent. An agent produces observations and takes actions in the 
-    /// environment. Observations are determined by the cameras attached 
+    /// an Agent. An agent produces observations and takes actions in the
+    /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
     /// user in <see cref="CollectObservations"/>. On the other hand, actions
     /// are determined by decisions produced by a linked Brain. Currently, this
@@ -212,23 +224,23 @@ namespace MLAgents
     /// however, an agent need not send its observation at every step since very
     /// little may have changed between sucessive steps. Currently, how often an
     /// agent updates its brain with a fresh observation is determined by the
-    /// Academy. 
-    /// 
-    /// At any step, an agent may be considered <see cref="done"/>. 
+    /// Academy.
+    ///
+    /// At any step, an agent may be considered <see cref="done"/>.
     /// This could occur due to a variety of reasons:
     ///     - The agent reached an end state within its environment.
     ///     - The agent reached the maximum # of steps (i.e. timed out).
     ///     - The academy reached the maximum # of steps (forced agent to be done).
-    /// 
+    ///
     /// Here, an agent reaches an end state if it completes its task successfully
     /// or somehow fails along the way. In the case where an agent is done before
     /// the academy, it either resets and restarts, or just lingers until the
     /// academy is done.
-    /// 
+    ///
     /// An important note regarding steps and episodes is due. Here, an agent step
     /// corresponds to an academy step, which also corresponds to Unity
     /// environment step (i.e. each FixedUpdate call). This is not the case for
-    /// episodes. The academy controls the global episode count and each agent 
+    /// episodes. The academy controls the global episode count and each agent
     /// controls its own local episode count and can reset and start a new local
     /// episode independently (based on its own experience). Thus an academy
     /// (global) episode can be viewed as the upper-bound on an agents episode
@@ -236,10 +248,10 @@ namespace MLAgents
     /// multiple local episodes. Consequently, if an agent max step is
     /// set to a value larger than the academy max steps value, then the academy
     /// value takes precedence (since the agent max step will never be reached).
-    /// 
+    ///
     /// Lastly, note that at any step the brain linked to the agent is allowed to
     /// change programmatically with <see cref="GiveBrain"/>.
-    /// 
+    ///
     /// Implementation-wise, it is required that this class is extended and the
     /// virtual methods overridden. For sample implementations of agent behavior,
     /// see the Examples/ directory within this Unity project.
@@ -251,7 +263,7 @@ namespace MLAgents
     {
         /// <summary>
         /// The Brain attached to this agent. A brain can be attached either
-        /// directly from the Editor through AgentEditor or 
+        /// directly from the Editor through AgentEditor or
         /// programmatically through <see cref="GiveBrain"/>. It is OK for an agent
         /// to not have a brain, as long as no decision is requested.
         /// </summary>
@@ -314,10 +326,6 @@ namespace MLAgents
         /// Keeps track of the actions that are masked at each step.
         private ActionMasker actionMasker;
 
-        /// Array of Texture2D used to render to from render buffer before  
-        /// transforming into float tensor.
-        Texture2D[] textureArray;
-
         /// <summary>
         /// Demonstration recorder.
         /// </summary>
@@ -327,13 +335,6 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            var textureCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
-            textureArray = new Texture2D[textureCount];
-            for (int i = 0; i < textureCount; i++)
-            {
-                textureArray[i] = new Texture2D(1, 1, TextureFormat.RGB24, false);
-            }
-
             id = gameObject.GetInstanceID();
             Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
@@ -533,7 +534,7 @@ namespace MLAgents
             actionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
-            // should stay the previous action before the Done(), so that it is properly recorded. 
+            // should stay the previous action before the Done(), so that it is properly recorded.
             if (action.vectorActions == null)
             {
                 if (param.vectorActionSpaceType == SpaceType.continuous)
@@ -609,9 +610,9 @@ namespace MLAgents
                     info.vectorObservation.Count));
             }
 
-            info.stackedVectorObservation.RemoveRange(
-                0, param.vectorObservationSize);
-            info.stackedVectorObservation.AddRange(info.vectorObservation);
+            Utilities.ShiftLeft(info.stackedVectorObservation, param.vectorObservationSize);
+            Utilities.ReplaceRange(info.stackedVectorObservation, info.vectorObservation,
+                                    info.stackedVectorObservation.Count - info.vectorObservation.Count);
 
             info.visualObservations.Clear();
             var visualObservationCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
@@ -628,24 +629,22 @@ namespace MLAgents
             //First add all cameras
             for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
-                ObservationToTexture(
+                var obsTexture = ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height,
-                    ref textureArray[i]);
-                info.visualObservations.Add(textureArray[i]);
+                    param.cameraResolutions[i].height);
+                info.visualObservations.Add(obsTexture);
             }
-            
+
             //Then add all renderTextures
             var camCount = agentParameters.agentCameras.Count;
             for (int i = 0; i < agentParameters.agentRenderTextures.Count; i++)
             {
-                ObservationToTexture(
+                var obsTexture = ObservationToTexture(
                     agentParameters.agentRenderTextures[i],
                     param.cameraResolutions[camCount+i].width,
-                    param.cameraResolutions[camCount+i].height,
-                    ref textureArray[i]);
-                info.visualObservations.Add(textureArray[i]);
+                    param.cameraResolutions[camCount+i].height);
+                info.visualObservations.Add(obsTexture);
             }
 
             info.reward = reward;
@@ -665,13 +664,13 @@ namespace MLAgents
 
         /// <summary>
         /// Collects the (vector, visual, text) observations of the agent.
-        /// The agent observation describes the current environment from the 
+        /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
         /// <remarks>
         /// Simply, an agents observation is any environment information that helps
         /// the Agent acheive its goal. For example, for a fighting Agent, its
-        /// observation could include distances to friends or enemies, or the 
+        /// observation could include distances to friends or enemies, or the
         /// current level of ammunition at its disposal.
         /// Recall that an Agent may attach vector, visual or textual observations.
         /// Vector observations are added by calling the provided helper methods:
@@ -690,7 +689,7 @@ namespace MLAgents
         /// needs to match the vectorObservationSize attribute of the linked Brain.
         /// Visual observations are implicitly added from the cameras attached to
         /// the Agent.
-        /// Lastly, textual observations are added using 
+        /// Lastly, textual observations are added using
         /// <see cref="SetTextObs(string)"/>.
         /// </remarks>
         public virtual void CollectObservations()
@@ -873,7 +872,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Specifies the agent behavior when done and 
+        /// Specifies the agent behavior when done and
         /// <see cref="AgentParameters.resetOnDone"/> is false. This method can be
         /// used to remove the agent from the scene.
         /// </summary>
@@ -918,7 +917,7 @@ namespace MLAgents
         {
             action.memories = memories;
         }
-        
+
         public void AppendMemoriesAction(List<float> memories)
         {
             action.memories.AddRange(memories);
@@ -978,9 +977,9 @@ namespace MLAgents
         /// <summary>
         /// Sets the status of the agent.
         /// </summary>
-        /// <param name="academyMaxStep">If set to <c>true</c> 
+        /// <param name="academyMaxStep">If set to <c>true</c>
         /// The agent must set maxStepReached.</param>
-        /// <param name="academyDone">If set to <c>true</c> 
+        /// <param name="academyDone">If set to <c>true</c>
         /// The agent must set done.</param>
         /// <param name="academyStepCounter">Number of current steps in episode</param>
         void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
@@ -996,7 +995,7 @@ namespace MLAgents
                 maxStepReached = true;
             }
 
-            // If the Academy needs to reset, the agent should reset 
+            // If the Academy needs to reset, the agent should reset
             // even if it reseted recently.
             if (academyDone)
             {
@@ -1008,7 +1007,7 @@ namespace MLAgents
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            // If an agent is done, then it will also 
+            // If an agent is done, then it will also
             // request for a decision and an action
             if (IsDone())
             {
@@ -1116,8 +1115,9 @@ namespace MLAgents
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
-        public static void ObservationToTexture(Camera obsCamera, int width, int height, ref Texture2D texture2D)
+        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
         {
+            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             Rect oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
@@ -1126,11 +1126,6 @@ namespace MLAgents
 
             var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-
-            if (width != texture2D.width || height != texture2D.height)
-            {
-                texture2D.Resize(width, height);
-            }
 
             var prevActiveRT = RenderTexture.active;
             var prevCameraRT = obsCamera.targetTexture;
@@ -1142,13 +1137,14 @@ namespace MLAgents
             obsCamera.Render();
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-            texture2D.Apply();
+
             obsCamera.targetTexture = prevCameraRT;
             obsCamera.rect = oldRec;
             RenderTexture.active = prevActiveRT;
             RenderTexture.ReleaseTemporary(tempRT);
+            return texture2D;
         }
-        
+
         /// <summary>
         /// Converts a RenderTexture and correspinding resolution to a 2D texture.
         /// </summary>
@@ -1157,13 +1153,15 @@ namespace MLAgents
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
         /// <param name="texture2D">Texture2D to render to.</param>
-        public static void ObservationToTexture(RenderTexture obsTexture, int width, int height, ref Texture2D texture2D)
+        public static Texture2D ObservationToTexture(RenderTexture obsTexture, int width, int height)
         {
+            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+
             if (width != texture2D.width || height != texture2D.height)
             {
                 texture2D.Resize(width, height);
             }
-            
+
             if(width != obsTexture.width || height != obsTexture.height)
             {
                 throw new UnityAgentsException(string.Format(
@@ -1177,6 +1175,7 @@ namespace MLAgents
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
             texture2D.Apply();
             RenderTexture.active = prevActiveRT;
+            return texture2D;
         }
 
         /// <summary>
@@ -1187,5 +1186,5 @@ namespace MLAgents
         {
             info.customObservation = customObservation;
         }
-    }    
+    }
 }

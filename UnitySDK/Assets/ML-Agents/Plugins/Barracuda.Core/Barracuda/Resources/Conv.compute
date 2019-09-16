@@ -1,7 +1,10 @@
 #pragma kernel Conv2D
 #pragma kernel Conv2D_RegisterBlock4x2
-#pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
-#pragma kernel Conv2D_L1Cached32_RegisterBlock4x4
+//#pragma kernel Conv2D_L1Cached64_RegisterBlock4x4
+//#pragma kernel Conv2D_L1Cached32_RegisterBlock4x4
+#pragma kernel Conv2DKernelKxK_T16x16_R4x4 BLOCK_SIZE=4                                             SUFFIX=KernelKxK_T16x16_R
+#pragma kernel Conv2DKernelKxK_StrictC16K64_T16x16_R4x4 BLOCK_SIZE=4 STRICT_CHANNELS=1              SUFFIX=KernelKxK_StrictC16K64_T16x16_R
+#pragma kernel Conv2DKernel1x1_StrictC16K64_T16x16_R4x4 BLOCK_SIZE=4 KERNEL_1x1=1 STRICT_CHANNELS=1 SUFFIX=Kernel1x1_StrictC16K64_T16x16_R
 
 #pragma kernel DepthwiseConv2D
 
@@ -18,6 +21,249 @@ TENSOR_DECL_RW(O)
 
 uint4 _Pad;
 uint4 _Stride;
+
+#define DEBUG_CHECK_BOUNDS 0
+
+// Conv2DBlock64x64_4x4 + index optimizations
+//        T
+//      -1|0             -1|0
+// 16: 142|142ms        144|155ms
+
+float ffma(float a, float b, float c) { return dot(float2(a,c), float2(b,1)); }
+#define FUNC_NAME(KERNEL, SUFFIX, SIZE) KERNEL##SUFFIX##SIZE##x##SIZE
+#define CACHE_NAME(KERNEL, SUFFIX, SIZE, TENSOR) KERNEL##SUFFIX##SIZE##x##SIZE##_Cache_##TENSOR
+
+#define KERNEL_NAME Conv2D
+
+#if BLOCK_SIZE == 4
+#define TRANSPOSED_X 0
+#define BUF_OFFSET 0
+#define CACHE_DEPTH 16
+groupshared float CACHE_NAME(KERNEL_NAME, SUFFIX, BLOCK_SIZE, X)[CACHE_DEPTH*16*BLOCK_SIZE+(1-TRANSPOSED_X)*CACHE_DEPTH];
+groupshared float CACHE_NAME(KERNEL_NAME, SUFFIX, BLOCK_SIZE, W)[CACHE_DEPTH*16*BLOCK_SIZE];
+[numthreads(16,16,1)]
+void FUNC_NAME(KERNEL_NAME, SUFFIX, BLOCK_SIZE)(uint3 dispatchThreadID : SV_DispatchThreadID, uint3 groupThreadID : SV_GroupThreadID, uint threadIndex : SV_GroupIndex)
+{
+    DISPATCH_ARGS(K.kernelCount, O.width * O.height * O.batch, 1);
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    // [W*H, Ky*Kx*In] * [Ky*Kx*In, Out] => [W*H, Out]
+
+    #define X_ CACHE_NAME(KERNEL_NAME, SUFFIX, BLOCK_SIZE, X)
+    #define W_ CACHE_NAME(KERNEL_NAME, SUFFIX, BLOCK_SIZE, W)
+
+    int x = (int)dispatchThreadID.x * BLOCK_SIZE; // output_channels
+    int y = (int)dispatchThreadID.y * BLOCK_SIZE; // batch*width*height
+    int tx = (int)groupThreadID.x;
+    int ty = (int)groupThreadID.y;
+    int bx = ((int)dispatchThreadID.x - (int)groupThreadID.x) * BLOCK_SIZE;
+    int by = ((int)dispatchThreadID.y - (int)groupThreadID.y) * BLOCK_SIZE;
+    int ti = (int)threadIndex;
+    uint w      = O.width;
+    uint h      = O.height;
+    int channels = X.channels;
+    int widthX  = X.width;
+    int heightX = X.height;
+    int strideX = X.channels;
+    int strideK = K.channels;
+    int strideO = O.channels;
+    int offsetX = BUF_OFFSET;
+    int offsetK = BUF_OFFSET;
+    int offsetO = BUF_OFFSET;
+
+    float4 dstA[4];
+    dstA[0].x = B.Get(x+0); dstA[0].y = B.Get(x+1); dstA[0].z = B.Get(x+2); dstA[0].w = B.Get(x+3);
+    dstA[1].x = B.Get(x+0); dstA[1].y = B.Get(x+1); dstA[1].z = B.Get(x+2); dstA[1].w = B.Get(x+3);
+    dstA[2].x = B.Get(x+0); dstA[2].y = B.Get(x+1); dstA[2].z = B.Get(x+2); dstA[2].w = B.Get(x+3);
+    dstA[3].x = B.Get(x+0); dstA[3].y = B.Get(x+1); dstA[3].z = B.Get(x+2); dstA[3].w = B.Get(x+3);
+
+    int readK = strideK * (ti>>6) + bx + (ti&63) + offsetK;
+    #if STRICT_CHANNELS == 1
+    #else
+    bool maskK = (bx + (ti&63)) < strideK;
+    #endif
+
+#if TRANSPOSED_X == 1
+    uint centroidId = by + (ti&63);
+    #if KERNEL_1x1 == 1
+    int readX = strideX * (ti>>6) + centroidId;
+    #else
+    int batch = centroidId / w / h;
+    int topY = (centroidId / w % h) * _Stride.y - _Pad.y;
+    int leftX = (centroidId % w) * _Stride.x - _Pad.x;
+    int cornerId = batch * heightX * widthX + topY * widthX + leftX;
+    int readX = strideX * (ti>>6) + cornerId;
+    bool mask;
+    #endif
+#else
+    uint4 centroidId = uint4(
+        (by + (ti>>4) +  0),
+        (by + (ti>>4) + 16),
+        (by + (ti>>4) + 32),
+        (by + (ti>>4) + 48));
+    #if KERNEL_1x1 == 1
+    int4 readX = strideX * centroidId + (ti&15);
+    #else
+    int4 batch = centroidId / w / h;
+    int4 topY = (centroidId / w % h) * _Stride.y - _Pad.y;
+    int4 leftX = (centroidId % w) * _Stride.x - _Pad.x;
+    int4 cornerId = batch * heightX * widthX + topY * widthX + leftX;
+    int4 readX = strideX * cornerId + (ti&15);
+    bool4 mask;
+    #endif
+#endif
+
+#if KERNEL_1x1 == 1
+    {
+        {
+#else
+    for (int dy = 0; dy < (int)K.GetKernelHeight(); dy++)
+    {
+        for (int dx = 0; dx < (int)K.GetKernelWidth(); dx++)
+        {
+            int kernelOffsetX = (dy * widthX + dx) * strideX;
+            mask =
+                topY + dy >= 0 &&
+                topY + dy < heightX &&
+                leftX + dx >= 0 &&
+                leftX + dx < widthX;
+#endif // KERNEL_1x1
+            for (int i = 0; i < channels; i += CACHE_DEPTH)
+            {
+                #if STRICT_CHANNELS == 1
+                #else
+                if (i + CACHE_DEPTH > channels)
+                {
+                    int channelRemainder = channels - i;
+                    [unroll] for (int j = 0; j < 4; ++j)
+                    {
+                        bool maskChannelsK = ti < 64 * (channelRemainder - j * 4);
+                        bool maskChannelsX = 
+                            #if TRANSPOSED_X == 1
+                            maskChannelsK;
+                            #else
+                            (ti&15) < channelRemainder;
+                            #endif
+
+                        W_[((ti>>6)<<6) + ((ti&3)<<4) + ((ti&63)>>2) + 256*j] = 
+                            (maskK & maskChannelsK) ? K.data[readK] : 0;
+                        readK += strideK * max(0, min(channelRemainder - j * 4, 4));
+
+                        #if TRANSPOSED_X == 1
+                        X_[ti + 256*j] =
+                            #if KERNEL_1x1 == 1
+                            maskChannelsX ? X.data[readX + strideX * (i + j * 4) + offsetX]: 0;
+                            #else
+                            (mask && maskChannelsX) ? X.data[readX + strideX * (i + j * 4) + kernelOffsetX + offsetX]: 0;
+                            #endif
+                        #else
+                        X_[(ti>>4) + 65*(ti&15) + 16*j] =
+                            #if KERNEL_1x1 == 1
+                            maskChannelsX ? X.data[readX[j] + i + offsetX]: 0;
+                            #else
+                            (mask[j] && maskChannelsX) ? X.data[readX[j] + i + kernelOffsetX + offsetX]: 0;
+                            #endif
+                        #endif
+                    }
+                }
+                else
+                #endif
+                [unroll] for (int j = 0; j < 4; ++j)
+                {
+                    W_[((ti>>6)<<6) + ((ti&3)<<4) + ((ti&63)>>2) + 256*j] =
+                        #if STRICT_CHANNELS == 1
+                        K.data[readK];
+                        #else
+                        maskK ? K.data[readK]: 0;
+                        #endif
+                    readK += strideK * 4;
+
+                    #if TRANSPOSED_X == 1
+                    X_[ti + 256*j] = 
+                        #if KERNEL_1x1 == 1
+                        X.data[readX + strideX * (i + j * 4) + offsetX];
+                        #else
+                        mask ? X.data[readX + strideX * (i + j * 4) + kernelOffsetX + offsetX]: 0;
+                        #endif
+                    #else
+                    X_[(ti>>4) + 65*(ti&15) + 16*j] =
+                        #if KERNEL_1x1 == 1
+                        X.data[readX[j] + i + offsetX];
+                        #else
+                        mask[j] ? X.data[readX[j] + i + kernelOffsetX + offsetX]: 0;
+                        #endif
+                    #endif
+
+                    #if DEBUG_CHECK_BOUNDS && KERNEL_1x1 == 0
+                    if (mask[j] && readX[j] + i + kernelOffsetX < 0)
+                        X_[(ti>>4) + 65*(ti&15) + 16*j] = -1;
+                    if (mask[j] && readX[j] + i + kernelOffsetX >= X.GetLength())
+                        X_[(ti>>4) + 65*(ti&15) + 16*j] = -1;
+                    #endif
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+
+                int4 idX = int4(0,1,2,3);
+                int4 idW = int4(0,16,32,48);
+                int incX = 64 + (1-TRANSPOSED_X);
+                int incW = 64;
+
+                for (int di = 0; di < CACHE_DEPTH; di++)
+                {
+                    float4 srcX = float4(
+                        X_[idX.x + ty*4],
+                        X_[idX.y + ty*4],
+                        X_[idX.z + ty*4],
+                        X_[idX.w + ty*4]);
+                    float4 srcW = float4(
+                        W_[idW.x + tx],
+                        W_[idW.y + tx],
+                        W_[idW.z + tx],
+                        W_[idW.w + tx]
+                    );
+                    idX += incX;
+                    idW += incW;
+
+                    dstA[0].x = ffma(srcX.x, srcW.x, dstA[0].x);
+                    dstA[0].y = ffma(srcX.x, srcW.y, dstA[0].y);
+                    dstA[0].z = ffma(srcX.x, srcW.z, dstA[0].z);
+                    dstA[0].w = ffma(srcX.x, srcW.w, dstA[0].w);
+
+                    dstA[1].x = ffma(srcX.y, srcW.x, dstA[1].x);
+                    dstA[1].y = ffma(srcX.y, srcW.y, dstA[1].y);
+                    dstA[1].z = ffma(srcX.y, srcW.z, dstA[1].z);
+                    dstA[1].w = ffma(srcX.y, srcW.w, dstA[1].w);
+
+                    dstA[2].x = ffma(srcX.z, srcW.x, dstA[2].x);
+                    dstA[2].y = ffma(srcX.z, srcW.y, dstA[2].y);
+                    dstA[2].z = ffma(srcX.z, srcW.z, dstA[2].z);
+                    dstA[2].w = ffma(srcX.z, srcW.w, dstA[2].w);
+
+                    dstA[3].x = ffma(srcX.w, srcW.x, dstA[3].x);
+                    dstA[3].y = ffma(srcX.w, srcW.y, dstA[3].y);
+                    dstA[3].z = ffma(srcX.w, srcW.z, dstA[3].z);
+                    dstA[3].w = ffma(srcX.w, srcW.w, dstA[3].w);
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+            }
+        }
+    }
+
+    [unroll] for (int sy = 0; sy < 4 && y+sy < (int)w * (int)h * (int)O.batch; ++sy)
+        [unroll] for (int sx = 0; sx < 4 && x+sx < strideO; ++sx)
+            O.data[strideO * (y+sy) + x+sx + offsetO] = dstA[sy][sx];
+
+    #undef X_
+    #undef W_
+}
+#else
+#endif
+#undef TRANSPOSED_X
+#undef CACHE_DEPTH
+#undef BUF_OFFSET
+#undef KERNEL_NAME
 
 NUMTHREADS((16,4,4), (8,4,4), (4,4,4))
 void Conv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
@@ -178,7 +424,7 @@ CONV2D_L1CACHED(64,4, fastfma)
 CONV2D_L1CACHED(32,4, fastfma)
 
 
-
+// IDEA: iterate over channels in the inner loop - needs channels first layout
 NUMTHREADS((16,4,4), (8,4,4), (4,4,4))
 void DepthwiseConv2D(uint3 dispatchThreadID : SV_DispatchThreadID)
 {

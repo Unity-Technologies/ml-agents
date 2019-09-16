@@ -1,7 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using UnityEngine;
-using MLAgents.InferenceBrain;
+﻿using NUnit.Framework;
 using MLAgents.InferenceBrain.Utils;
 
 namespace MLAgents.Tests
@@ -9,216 +6,49 @@ namespace MLAgents.Tests
     public class MultinomialTest
     {
         [Test]
-        public void TestEvalP()
+        public void TestDim1()
         {
-            Multinomial m = new Multinomial(2018);
+            var m = new Multinomial(2018);
+            var cdf = new[] {1f};
 
-            Tensor src = new Tensor
-            {
-                Data = new float[1, 3] {{0.1f, 0.2f, 0.7f}},
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            Tensor dst = new Tensor
-            {
-                Data = new float[1, 3],
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            m.Eval(src, dst);
-
-            float[] reference = {2, 2, 1};
-            int i = 0;
-            foreach (var f in dst.Data)
-            {
-                Assert.AreEqual(reference[i], f);
-                ++i;
-            }
+            Assert.AreEqual(0, m.Sample(cdf));
+            Assert.AreEqual(0, m.Sample(cdf));
+            Assert.AreEqual(0, m.Sample(cdf));
         }
 
         [Test]
-        public void TestEvalLogits()
+        public void TestDim1Unscaled()
         {
-            Multinomial m = new Multinomial(2018);
+            var m = new Multinomial(2018);
+            var cdf = new[] {0.1f};
 
-            Tensor src = new Tensor
-            {
-                Data = new float[1, 3] {{Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50}},
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            Tensor dst = new Tensor
-            {
-                Data = new float[1, 3],
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            m.Eval(src, dst);
-
-            float[] reference = {2, 2, 2};
-            int i = 0;
-            foreach (var f in dst.Data)
-            {
-                Assert.AreEqual(reference[i], f);
-                ++i;
-            }
+            Assert.AreEqual(0, m.Sample(cdf));
+            Assert.AreEqual(0, m.Sample(cdf));
+            Assert.AreEqual(0, m.Sample(cdf));
         }
 
         [Test]
-        public void TestEvalBatching()
+        public void TestDim3()
         {
-            Multinomial m = new Multinomial(2018);
+            var m = new Multinomial(2018);
+            var cdf = new[] {0.1f, 0.3f, 1.0f};
 
-            Tensor src = new Tensor
-            {
-                Data = new float[2, 3]
-                {
-                    {Mathf.Log(0.1f) - 50, Mathf.Log(0.2f) - 50, Mathf.Log(0.7f) - 50},
-                    {Mathf.Log(0.3f) - 25, Mathf.Log(0.4f) - 25, Mathf.Log(0.3f) - 25},
-                    
-                },
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            Tensor dst = new Tensor
-            {
-                Data = new float[2, 3],
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            m.Eval(src, dst);
-
-            float[] reference = {2, 2, 2, 0, 1, 0};
-            int i = 0;
-            foreach (var f in dst.Data)
-            {
-                Assert.AreEqual(reference[i], f);
-                ++i;
-            }
-        }
-        
-        [Test]
-        public void TestSrcInt()
-        {
-            Multinomial m = new Multinomial(2018);
-
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.Integer
-            };
-
-            Assert.Throws<NotImplementedException>(() => m.Eval(src, null));
-        }
-        
-        [Test]
-        public void TestDstInt()
-        {
-            Multinomial m = new Multinomial(2018);
-
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.Integer
-            };
-
-            Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
-        }
-        
-        [Test]
-        public void TestSrcDataNull()
-        {
-            Multinomial m = new Multinomial(2018);
-            
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
-
-            Assert.Throws<ArgumentNullException>(() => m.Eval(src, dst));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(1, m.Sample(cdf));
         }
 
         [Test]
-        public void TestDstDataNull()
+        public void TestDim3Unscaled()
         {
-            Multinomial m = new Multinomial(2018);
-            
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1]
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint
-            };
+            var m = new Multinomial(2018);
+            var cdf = new[] {0.05f, 0.15f, 0.5f};
 
-            Assert.Throws<ArgumentNullException>(() => m.Eval(src, dst));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(2, m.Sample(cdf));
+            Assert.AreEqual(1, m.Sample(cdf));
         }
-        
-        [Test]
-        public void TestSrcWrongShape()
-        {
-            Multinomial m = new Multinomial(2018);
-            
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1]
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1]
-            };
-
-            Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
-        }
-        
-        [Test]
-        public void TestDstWrongShape()
-        {
-            Multinomial m = new Multinomial(2018);
-            
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1, 1]
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1]
-            };
-
-            Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
-        }
-
-        [Test]
-        public void TestUnequalBatchSize()
-        {
-            Multinomial m = new Multinomial(2018);
-            
-            Tensor src = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[1, 1]
-            };
-            Tensor dst = new Tensor
-            {
-                ValueType = Tensor.TensorType.FloatingPoint,
-                Data = new float[2, 1]
-            };
-
-            Assert.Throws<ArgumentException>(() => m.Eval(src, dst));
-        }
-        
-        
     }
 }

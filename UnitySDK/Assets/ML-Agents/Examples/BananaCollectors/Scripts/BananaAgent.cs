@@ -182,7 +182,7 @@ public class BananaAgent : Agent
         gameObject.tag = "frozenAgent";
         frozen = true;
         frozenTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = frozenMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = frozenMaterial;
     }
 
 
@@ -190,33 +190,33 @@ public class BananaAgent : Agent
     {
         frozen = false;
         gameObject.tag = "agent";
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     void Poison()
     {
         poisioned = true;
         effectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = badMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = badMaterial;
     }
 
     void Unpoison()
     {
         poisioned = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     void Satiate()
     {
         satiated = true;
         effectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = goodMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = goodMaterial;
     }
 
     void Unsatiate()
     {
         satiated = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
 
