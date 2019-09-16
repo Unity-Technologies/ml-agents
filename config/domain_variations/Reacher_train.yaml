@@ -1,0 +1,26 @@
+resampling-interval: 5000
+
+goal_size:
+    sampler-type: "uniform"
+    min_value: 3
+    max_value: 7
+
+goal_speed:
+    sampler-type: "uniform"
+    min_value: 0.75
+    max_value: 2
+
+gravity:
+    sampler-type: "uniform"
+    min_value: 7
+    max_value: 12
+
+deviation:
+    sampler-type: "uniform"
+    min_value: 0.0
+    max_value: 1.0
+
+deviation_freq:
+    sampler-type: "uniform"
+    min_value: 0.0
+    max_value: 1.0

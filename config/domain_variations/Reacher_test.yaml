@@ -1,0 +1,23 @@
+resampling-interval: 5000
+
+goal_size:
+    sampler-type: "multirange_uniform"
+    intervals: [[1, 3], [7, 10]]
+
+goal_speed:
+    sampler-type: "multirange_uniform"
+    intervals: [[0.2, 0.75], [2, 4]]
+
+gravity:
+    sampler-type: "multirange_uniform"
+    intervals: [[4, 7], [12, 20]]
+
+deviation:
+    sampler-type: "uniform"
+    min_value: 1.0
+    max_value: 5.0
+
+deviation_freq:
+    sampler-type: "uniform"
+    min_value: 1.0
+    max_value: 3.0

@@ -227,24 +227,24 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Five
-  * goal_size: radius of the goal zone
+* Reset Parameters:
+  * `goal_size`: radius of the goal zone
     * Default: 5
     * Recommended Minimum: 1
     * Recommended Maximum: 10
-  * goal_speed: speed of the goal zone around the arm (in radians)
+  * `goal_speed`: speed of the goal zone around the arm (in radians)
     * Default: 1
     * Recommended Minimum: 0.2
     * Recommended Maximum: 4
-  * gravity
+  * `gravity`
     * Default: 9.81
     * Recommended Minimum: 4
     * Recommended Maximum: 20
-  * deviation: Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
+  * `deviation`: Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
     * Default: 0
     * Recommended Minimum: 0
     * Recommended Maximum: 5
-  * deviation_freq: Frequency of the cosine deviation of the goal along the vertical dimension
+  * `deviation_freq`: Frequency of the cosine deviation of the goal along the vertical dimension
     * Default: 0
     * Recommended Minimum: 0
     * Recommended Maximum: 3
