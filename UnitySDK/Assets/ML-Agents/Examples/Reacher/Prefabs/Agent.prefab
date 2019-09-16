@@ -76,6 +76,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4067321601414524}
   - component: {fileID: 114955921823023820}
+  - component: {fileID: 114626832774636192}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -528,6 +529,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &114626832774636192
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1395682910799436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 4
+  RepeatAction: 1
 --- !u!114 &114928491800121992
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -556,10 +570,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 4000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
   pendulumA: {fileID: 1644872085946016}
   pendulumB: {fileID: 1053261483945176}
   hand: {fileID: 1654288206095398}

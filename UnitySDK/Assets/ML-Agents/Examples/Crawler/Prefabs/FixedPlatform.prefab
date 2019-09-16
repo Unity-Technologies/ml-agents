@@ -285,6 +285,7 @@ GameObject:
   - component: {fileID: 4031532895835800}
   - component: {fileID: 114423155291099866}
   - component: {fileID: 114348641501778682}
+  - component: {fileID: 114089856015480962}
   m_Layer: 0
   m_Name: Crawler
   m_TagString: Untagged
@@ -1867,6 +1868,19 @@ MonoBehaviour:
   penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
+--- !u!114 &114089856015480962
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1749919549369720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 0
 --- !u!114 &114155262307614862
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1947,8 +1961,6 @@ MonoBehaviour:
     agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4701888930417924}
   ground: {fileID: 4370319734138450}
   detectTargets: 0

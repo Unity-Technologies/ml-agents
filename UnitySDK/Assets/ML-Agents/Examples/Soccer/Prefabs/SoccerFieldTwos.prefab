@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 114492261207303438}
   - component: {fileID: 135232974003521068}
   - component: {fileID: 114692966630797794}
+  - component: {fileID: 114469520239695576}
   m_Layer: 13
   m_Name: RedStriker
   m_TagString: blueAgent
@@ -154,6 +155,7 @@ GameObject:
   - component: {fileID: 114698199869072806}
   - component: {fileID: 135154818167532598}
   - component: {fileID: 114381244552195858}
+  - component: {fileID: 114186853632717364}
   m_Layer: 11
   m_Name: BlueGoalie
   m_TagString: blueAgent
@@ -175,6 +177,7 @@ GameObject:
   - component: {fileID: 114850431417842684}
   - component: {fileID: 135208952479003512}
   - component: {fileID: 114965771318032104}
+  - component: {fileID: 114685993720417164}
   m_Layer: 13
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -815,6 +818,7 @@ GameObject:
   - component: {fileID: 114284769194328828}
   - component: {fileID: 135133947297127334}
   - component: {fileID: 114724674330921748}
+  - component: {fileID: 114899344526193204}
   m_Layer: 11
   m_Name: RedGoalie
   m_TagString: blueAgent
@@ -3828,6 +3832,19 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114186853632717364
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1124213441168130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114273807544954564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3858,14 +3875,13 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   team: 0
   agentRole: 1
   area: {fileID: 114559182131992928}
-  agentRB: {fileID: 0}
+  agentRb: {fileID: 0}
 --- !u!114 &114381244552195858
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3910,6 +3926,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: PushBlock Basic
+--- !u!114 &114469520239695576
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095606497496374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3924,14 +3953,13 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   team: 0
   agentRole: 0
   area: {fileID: 114559182131992928}
-  agentRB: {fileID: 0}
+  agentRb: {fileID: 0}
 --- !u!114 &114559182131992928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3950,7 +3978,7 @@ MonoBehaviour:
   redGoalie: {fileID: 114284769194328828}
   blueGoalie: {fileID: 114698199869072806}
   ball: {fileID: 1682753582128710}
-  ballRB: {fileID: 0}
+  ballRb: {fileID: 0}
   ground: {fileID: 1475025089682726}
   centerPitch: {fileID: 1526808285443624}
   playerStates: []
@@ -3965,6 +3993,19 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   blueBallPosReward: 0
   redBallPosReward: 0
+--- !u!114 &114685993720417164
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1131626411948014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114692966630797794
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4011,14 +4052,13 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   team: 1
   agentRole: 1
   area: {fileID: 114559182131992928}
-  agentRB: {fileID: 0}
+  agentRb: {fileID: 0}
 --- !u!114 &114724674330921748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4044,14 +4084,26 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   team: 1
   agentRole: 0
   area: {fileID: 114559182131992928}
-  agentRB: {fileID: 0}
+  agentRb: {fileID: 0}
+--- !u!114 &114899344526193204
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1890219402901316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114965771318032104
 MonoBehaviour:
   m_ObjectHideFlags: 1

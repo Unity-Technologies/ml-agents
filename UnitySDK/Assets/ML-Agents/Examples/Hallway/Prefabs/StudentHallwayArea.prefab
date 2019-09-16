@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 54039297874992618}
   - component: {fileID: 114717266774083642}
   - component: {fileID: 114699315420779024}
+  - component: {fileID: 114585415269427738}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1260,6 +1261,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114585415269427738
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1455549889968276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114699315420779024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1285,10 +1299,9 @@ MonoBehaviour:
   brain: {fileID: 11400000, guid: 533f2edd327794ca996d0320901b501c, type: 2}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 6
   ground: {fileID: 1050772432208302}
   area: {fileID: 1774868028516396}
   orangeGoal: {fileID: 1579407282136510}

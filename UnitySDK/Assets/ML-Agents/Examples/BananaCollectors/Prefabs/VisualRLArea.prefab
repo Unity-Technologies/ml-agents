@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 23175738623859944}
   - component: {fileID: 54242571438123622}
   - component: {fileID: 114395305755641442}
+  - component: {fileID: 114252992662262332}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -206,6 +207,7 @@ GameObject:
   - component: {fileID: 23280437793470910}
   - component: {fileID: 54474290368517834}
   - component: {fileID: 114661537450162482}
+  - component: {fileID: 114085065394786194}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -405,6 +407,7 @@ GameObject:
   - component: {fileID: 23713689095074374}
   - component: {fileID: 54528379440327788}
   - component: {fileID: 114813974235827884}
+  - component: {fileID: 114188117584551344}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -600,6 +603,7 @@ GameObject:
   - component: {fileID: 23751845529135856}
   - component: {fileID: 54548805639035776}
   - component: {fileID: 114863868205103286}
+  - component: {fileID: 114050291094107594}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -4374,6 +4378,58 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1702170652086832}
   m_Enabled: 1
+--- !u!114 &114050291094107594
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1687808258528990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114085065394786194
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1310185974645282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114188117584551344
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1557392813141962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+--- !u!114 &114252992662262332
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1086276695002122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f5c5b641144f6183670e1bbbc520b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
 --- !u!114 &114395305755641442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4389,10 +4445,9 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20214279307138674}
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1575621625717122}
   turnSpeed: 300
   moveSpeed: 2
@@ -4418,10 +4473,9 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20216502261607616}
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1575621625717122}
   turnSpeed: 300
   moveSpeed: 2
@@ -4447,10 +4501,9 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20704335789641980}
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1575621625717122}
   turnSpeed: 300
   moveSpeed: 2
@@ -4476,10 +4529,9 @@ MonoBehaviour:
   agentParameters:
     agentCameras:
     - {fileID: 20130538700979288}
+    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   area: {fileID: 1575621625717122}
   turnSpeed: 300
   moveSpeed: 2
