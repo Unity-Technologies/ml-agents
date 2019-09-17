@@ -4,7 +4,7 @@ using MLAgents;
 public class BouncerAgent : Agent
 {
     [Header("Bouncer Specific")]
-    public GameObject banana;
+    public GameObject target;
     public GameObject bodyObject;
     Rigidbody m_Rb;
     Vector3 m_LookDir;
@@ -29,7 +29,7 @@ public class BouncerAgent : Agent
     public override void CollectObservations()
     {
         AddVectorObs(gameObject.transform.localPosition);
-        AddVectorObs(banana.transform.localPosition);
+        AddVectorObs(target.transform.localPosition);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -57,11 +57,11 @@ public class BouncerAgent : Agent
             (1 - 2 * Random.value) * 5, 2, (1 - 2 * Random.value) * 5);
         m_Rb.velocity = default(Vector3);
         var environment = gameObject.transform.parent.gameObject;
-        var bananas =
-            environment.GetComponentsInChildren<BouncerBanana>();
-        foreach (var bb in bananas)
+        var targets =
+            environment.GetComponentsInChildren<BouncerTarget>();
+        foreach (var t in targets)
         {
-            bb.Respawn();
+            t.Respawn();
         }
         m_JumpLeft = m_NumberJumps;
 
@@ -114,14 +114,14 @@ public class BouncerAgent : Agent
         }
     }
 
-    public void SetBananaScale()
+    public void SetTargetScale()
     {
-        var bananaScale = m_ResetParams["banana_scale"];
-        banana.transform.localScale = new Vector3(bananaScale, bananaScale, bananaScale);
+        var targetScale = m_ResetParams["target_scale"];
+        target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
 
     public void SetResetParameters()
     {
-        SetBananaScale();
+        SetTargetScale();
     }
 }

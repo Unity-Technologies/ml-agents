@@ -6,13 +6,12 @@ public class HallwayAgent : Agent
 {
     public GameObject ground;
     public GameObject area;
-    public GameObject orangeGoal;
-    public GameObject redGoal;
-    public GameObject orangeBlock;
-    public GameObject redBlock;
+    public GameObject symbolOGoal;
+    public GameObject symbolXGoal;
+    public GameObject symbolO;
+    public GameObject symbolX;
     public bool useVectorObs;
     RayPerception m_RayPer;
-    Rigidbody m_ShortBlockRb;
     Rigidbody m_AgentRb;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
@@ -35,7 +34,7 @@ public class HallwayAgent : Agent
         {
             var rayDistance = 12f;
             float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
-            string[] detectableObjects = { "orangeGoal", "redGoal", "orangeBlock", "redBlock", "wall" };
+            string[] detectableObjects = { "symbol_O_Goal", "symbol_X_Goal", "symbol_O", "symbol_X", "wall" };
             AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
             AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         }
@@ -89,10 +88,10 @@ public class HallwayAgent : Agent
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag("orangeGoal") || col.gameObject.CompareTag("redGoal"))
+        if (col.gameObject.CompareTag("symbol_O_Goal") || col.gameObject.CompareTag("symbol_X_Goal"))
         {
-            if ((m_Selection == 0 && col.gameObject.CompareTag("orangeGoal")) ||
-                (m_Selection == 1 && col.gameObject.CompareTag("redGoal")))
+            if ((m_Selection == 0 && col.gameObject.CompareTag("symbol_O_Goal")) ||
+                (m_Selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
             {
                 SetReward(1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 0.5f));
@@ -113,19 +112,19 @@ public class HallwayAgent : Agent
         m_Selection = Random.Range(0, 2);
         if (m_Selection == 0)
         {
-            orangeBlock.transform.position =
+            symbolO.transform.position =
                 new Vector3(0f + Random.Range(-3f, 3f), 2f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
-            redBlock.transform.position =
+            symbolX.transform.position =
                 new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
         }
         else
         {
-            orangeBlock.transform.position =
+            symbolO.transform.position =
                 new Vector3(0f, -1000f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
-            redBlock.transform.position =
+            symbolX.transform.position =
                 new Vector3(0f, 2f, blockOffset + Random.Range(-5f, 5f))
                 + ground.transform.position;
         }
@@ -139,13 +138,13 @@ public class HallwayAgent : Agent
         var goalPos = Random.Range(0, 2);
         if (goalPos == 0)
         {
-            orangeGoal.transform.position = new Vector3(7f, 0.5f, 9f) + area.transform.position;
-            redGoal.transform.position = new Vector3(-7f, 0.5f, 9f) + area.transform.position;
+            symbolOGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            symbolXGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
         else
         {
-            redGoal.transform.position = new Vector3(7f, 0.5f, 9f) + area.transform.position;
-            orangeGoal.transform.position = new Vector3(-7f, 0.5f, 9f) + area.transform.position;
+            symbolXGoal.transform.position = new Vector3(7f, 0.5f, 22.29f) + area.transform.position;
+            symbolOGoal.transform.position = new Vector3(-7f, 0.5f, 22.29f) + area.transform.position;
         }
     }
 }
