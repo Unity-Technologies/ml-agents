@@ -152,11 +152,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (10)
@@ -203,11 +198,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 12
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (7)
@@ -443,11 +433,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 14
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (9)
@@ -494,11 +479,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (1)
@@ -545,11 +525,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (2)
@@ -596,11 +571,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 13
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (8)
@@ -647,11 +617,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (5)
@@ -766,11 +731,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (4)
@@ -817,11 +777,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 11
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (6)
@@ -868,11 +823,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (11)
@@ -981,11 +931,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 23642118668667602, guid: 0d8ebd51939eb45c88531e9d444bca28,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 2e687a6242afc4a7e993fec6042518a9, type: 2}
     - target: {fileID: 1753668517859216, guid: 0d8ebd51939eb45c88531e9d444bca28, type: 2}
       propertyPath: m_Name
       value: 3DBallHardPlatformNew (3)

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12323, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Unity Colors
+  m_Name: UnityColors
   m_EditorClassIdentifier: 
   m_Presets:
   - m_Name: 
