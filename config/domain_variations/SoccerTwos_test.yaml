@@ -1,0 +1,9 @@
+resampling-interval: 5000
+
+ball_scale:
+    sampler-type: "multirange_uniform"
+    intervals: [[4, 5], [8, 10]]
+
+gravity:
+    sampler-type: "multirange_uniform"
+    intervals: [[4, 7], [12, 20]]

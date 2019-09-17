@@ -1,0 +1,17 @@
+resampling-interval: 5000
+
+gravity:
+    sampler-type: "multirange_uniform"
+    intervals: [[4, 8], [10, 20]]
+
+hip_mass:
+    sampler-type: "multirange_uniform"
+    intervals: [[7, 10], [20, 28]]
+
+chest_mass:
+    sampler-type: "multirange_uniform"
+    intervals: [[3, 5], [12, 20]]
+
+spine_mass:
+    sampler-type: "multirange_uniform"
+    intervals: [[3, 7], [13, 20]]

@@ -1,0 +1,21 @@
+resampling-interval: 5000
+
+gravity:
+    sampler-type: "uniform"
+    min_value: 8
+    max_value: 10
+
+hip_mass:
+    sampler-type: "uniform"
+    min_value: 10
+    max_value: 20
+
+chest_mass:
+    sampler-type: "uniform"
+    min_value: 5
+    max_value: 12
+
+spine_mass:
+    sampler-type: "uniform"
+    min_value: 7
+    max_value: 13
