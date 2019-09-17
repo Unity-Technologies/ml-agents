@@ -31,7 +31,7 @@ in your Academy subclass.
 Implement an `AcademyReset()` function to alter the environment at the start of
 each episode. For example, you might want to reset an Agent to its starting
 position or move a goal to a random position. An environment resets when the
-Python training process needs to reset the environment to facilitate training.
+`reset()` method is called on the Python `UnityEnvironment`.
 
 When you reset an environment, consider the factors that should change so that
 training is generalizable to different conditions. For example, if you were

@@ -110,13 +110,6 @@ namespace MLAgents.Tests
 
     public class EditModeTestInitialization
     {
-        /*
-                private Brain GenerateTestBrain()
-                {
-                    return ScriptableObject.CreateInstance<TestBrain>();
-                }
-        */
-
         [Test]
         public void TestAcademy()
         {
@@ -335,21 +328,7 @@ namespace MLAgents.Tests
                 }
 
                 stepsSinceReset += 1;
-<<<<<<< HEAD
-                AcademyStepMethod.Invoke((object)aca, new object[] { });
-
-
-=======
-                // Regularly set the academy to done to check behavior
-                if (i % 5 == 3)
-                {
-                    aca.Done();
-                    numberReset += 1;
-                    stepsSinceReset = 1;
-                    Assert.AreEqual(true, aca.IsDone());
-                }
-                academyStepMethod?.Invoke(aca, new object[] {});
->>>>>>> develop
+                academyStepMethod.Invoke((object)aca, new object[] { });
             }
         }
 
