@@ -7,7 +7,7 @@ import tensorflow as tf
 from mlagents.envs.exception import UnityException
 from mlagents.envs.policy import Policy
 from mlagents.envs.action_info import ActionInfo
-from tensorflow.python.tools import freeze_graph
+from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.envs.brain import BrainInfo
@@ -224,7 +224,10 @@ class TFPolicy(Policy):
             output_graph_def = graph_util.convert_variables_to_constants(
                 self.sess, graph_def, target_nodes.replace(" ", "").split(",")
             )
-            tf2bc.convert_graph_def(output_graph_def, self.model_path + ".nn")
+            frozen_graph_def_path = self.model_path + "/frozen_graph_def.pb"
+            with gfile.GFile(frozen_graph_def_path, "wb") as f:
+                f.write(output_graph_def.SerializeToString())
+            tf2bc.convert(frozen_graph_def_path, self.model_path + ".nn")
             logger.info("Exported " + self.model_path + ".nn file")
 
     def _process_graph(self):

@@ -1499,13 +1499,23 @@ def very_slow_but_stable_topological_sort(nodes, verbose):
 #########################################################
 
 
-def convert_graph_def(
-    source_graph_def,
+def convert(
+    source_file,
     target_file,
     trim_unused_by_output="",
     verbose=False,
     compress_f16=False,
 ):
+    """
+    Converts a TensorFlow model into a Barracuda model.
+    :param source_file: The TensorFlow Model
+    :param target_file: The name of the file the converted model will be saved to
+    :param trim_unused_by_output: The regexp to match output nodes to remain in the model.
+        All other unconnected nodes will be removed.
+    :param verbose: If True, will display debug messages
+    :param compress_f16: If true, the float values will be converted to f16
+    :return:
+    """
     if type(verbose) == bool:
         args = Struct()
         args.verbose = verbose
@@ -1522,21 +1532,24 @@ def convert_graph_def(
     if args.print_supported_ops:
         barracuda.print_known_operations(known_classes, known_activations)
 
-    if not isinstance(source_graph_def, tf.GraphDef):
-        raise Exception("Source graph must be either a filename or GraphDef")
+    # Load Tensorflow model
+    print("Converting %s to %s" % (source_file, target_file))
+    f = open(source_file, "rb")
+    i_model = tf.GraphDef()
+    i_model.ParseFromString(f.read())
 
     if args.verbose:
-        print("OP_TYPES:", {layer.op for layer in source_graph_def.node})
+        print("OP_TYPES:", {layer.op for layer in i_model.node})
 
     if args.print_source_json or args.verbose:
-        for layer in source_graph_def.node:
+        for layer in i_model.node:
             if not layer.op == "Const":
                 print("MODEL:", MessageToJson(layer) + ",")
 
     # Convert
     o_model = barracuda.Model()
     o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals = process_model(
-        source_graph_def, args
+        i_model, args
     )
 
     # Cleanup unconnected Identities (they might linger after processing complex node patterns like LSTM)
@@ -1647,30 +1660,3 @@ def convert_graph_def(
     # Write to file
     barracuda.write(o_model, target_file)
     print("DONE: wrote", target_file, "file.")
-
-
-def convert(
-    source_graph,
-    target_file,
-    trim_unused_by_output="",
-    verbose=False,
-    compress_f16=False,
-):
-    """
-    Converts a TensorFlow model into a Barracuda model.
-    :param source_file: The TensorFlow Model
-    :param target_file: The name of the file the converted model will be saved to
-    :param trim_unused_by_output: The regexp to match output nodes to remain in the model.
-        All other unconnected nodes will be removed.
-    :param verbose: If True, will display debug messages
-    :param compress_f16: If true, the float values will be converted to f16
-    :return:
-    """
-    # Load Tensorflow model
-    print("Converting %s to %s" % (source_graph, target_file))
-    f = open(source_graph, "rb")
-    graph_def = tf.GraphDef()
-    graph_def.ParseFromString(f.read())
-    convert_graph_def(
-        graph_def, target_file, trim_unused_by_output, verbose, compress_f16
-    )
