@@ -224,7 +224,7 @@ class TFPolicy(Policy):
             output_graph_def = graph_util.convert_variables_to_constants(
                 self.sess, graph_def, target_nodes.replace(" ", "").split(",")
             )
-            tf2bc.convert(output_graph_def, self.model_path + ".nn")
+            tf2bc.convert_graph_def(output_graph_def, self.model_path + ".nn")
             logger.info("Exported " + self.model_path + ".nn file")
 
     def _process_graph(self):
