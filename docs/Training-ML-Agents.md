@@ -205,7 +205,7 @@ are conducting, see:
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
-* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+* [Training on Environments with Domain Variations](Training-Domain-Variations)
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md)
