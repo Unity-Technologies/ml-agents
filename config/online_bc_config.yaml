@@ -13,7 +13,7 @@ default:
     sequence_length: 32
     memory_size: 256
 
-BananaLearning:
+FoodCollectorLearning:
     trainer: online_bc
     max_steps: 10000
     summary_freq: 1000
