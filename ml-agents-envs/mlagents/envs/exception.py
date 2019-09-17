@@ -47,7 +47,7 @@ class UnityTimeOutException(UnityException):
     """
     Related to errors with communication timeouts.
     """
-    
+
     pass
 
 
