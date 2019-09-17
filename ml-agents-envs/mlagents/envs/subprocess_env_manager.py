@@ -81,21 +81,16 @@ def worker(
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
-                # When an environment is "global_done" it means automatic agent reset won't occur, so we need
-                # to perform an academy reset.
-                if env.global_done:
-                    all_brain_info = env.reset()
-                else:
-                    actions = {}
-                    memories = {}
-                    texts = {}
-                    values = {}
-                    for brain_name, action_info in all_action_info.items():
-                        actions[brain_name] = action_info.action
-                        memories[brain_name] = action_info.memory
-                        texts[brain_name] = action_info.text
-                        values[brain_name] = action_info.value
-                    all_brain_info = env.step(actions, memories, texts, values)
+                actions = {}
+                memories = {}
+                texts = {}
+                values = {}
+                for brain_name, action_info in all_action_info.items():
+                    actions[brain_name] = action_info.action
+                    memories[brain_name] = action_info.memory
+                    texts[brain_name] = action_info.text
+                    values[brain_name] = action_info.value
+                all_brain_info = env.step(actions, memories, texts, values)
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -113,8 +108,6 @@ def worker(
                     cmd.payload[0], cmd.payload[1], cmd.payload[2]
                 )
                 _send_response("reset", all_brain_info)
-            elif cmd.name == "global_done":
-                _send_response("global_done", env.global_done)
             elif cmd.name == "close":
                 break
     except (KeyboardInterrupt, UnityCommunicationException):

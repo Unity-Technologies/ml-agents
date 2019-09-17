@@ -42,9 +42,6 @@ namespace MLAgents
         CommunicatorObjects.UnityRLOutput m_CurrentUnityRlOutput =
             new CommunicatorObjects.UnityRLOutput();
 
-        /// Keeps track of the done flag of the Academy
-        bool m_AcademyDone;
-
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_Command;
 
@@ -107,17 +104,6 @@ namespace MLAgents
             m_EnvironmentParameters = firstRlInput.EnvironmentParameters;
             m_IsTraining = firstRlInput.IsTraining;
             return initializationInput.RlInitializationInput;
-        }
-
-        /// <summary>
-        /// Registers the done flag of the academy to the next output to be sent
-        /// to the communicator.
-        /// </summary>
-        /// <param name="done">If set to <c>true</c>
-        /// The academy done state will be sent to External at the next Exchange.</param>
-        public void RegisterAcademyDoneFlag(bool done)
-        {
-            m_AcademyDone = done;
         }
 
         /// <summary>
@@ -219,9 +205,8 @@ namespace MLAgents
             // must be sent
             if (m_HasQueried.Values.All(x => x))
             {
-                if (m_HasData.Values.Any(x => x) || m_AcademyDone)
+                if (m_HasData.Values.Any(x => x))
                 {
-                    m_CurrentUnityRlOutput.GlobalDone = m_AcademyDone;
                     SendBatchedMessageHelper();
                 }
 
@@ -236,7 +221,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Helper method that sends the curent UnityRLOutput, receives the next UnityInput and
+        /// Helper method that sends the current UnityRLOutput, receives the next UnityInput and
         /// Applies the appropriate AgentAction to the agents.
         /// </summary>
         void SendBatchedMessageHelper()
