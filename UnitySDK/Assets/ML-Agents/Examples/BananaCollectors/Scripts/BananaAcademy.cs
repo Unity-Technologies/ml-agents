@@ -1,3 +1,5 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MLAgents;
@@ -18,7 +20,7 @@ public class BananaAcademy : Academy
 
         agents = GameObject.FindGameObjectsWithTag("agent");
         listArea = FindObjectsOfType<BananaArea>();
-        foreach (var ba in listArea)
+        foreach (BananaArea ba in listArea)
         {
             ba.ResetBananaArea(agents);
         }
@@ -28,7 +30,7 @@ public class BananaAcademy : Academy
 
     void ClearObjects(GameObject[] objects)
     {
-        foreach (var bana in objects)
+        foreach (GameObject bana in objects)
         {
             Destroy(bana);
         }

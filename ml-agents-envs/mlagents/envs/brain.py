@@ -84,7 +84,7 @@ class BrainInfo:
         return np.append(m1, m2, axis=0)
 
     @staticmethod
-    def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
+    def process_pixels(image_bytes, gray_scale):
         """
         Converts byte array observation image into numpy array, re-sizes it,
         and optionally converts it to grey scale
@@ -92,8 +92,8 @@ class BrainInfo:
         :param image_bytes: input byte array corresponding to image
         :return: processed numpy array of observation from environment
         """
-        image_bytearray = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(image_bytearray))
+        s = bytearray(image_bytes)
+        image = Image.open(io.BytesIO(s))
         s = np.array(image) / 255.0
         if gray_scale:
             s = np.mean(s, axis=2)
@@ -101,11 +101,11 @@ class BrainInfo:
         return s
 
     @staticmethod
-    def from_agent_proto(worker_id: int, agent_info_list, brain_params):
+    def from_agent_proto(agent_info_list, brain_params):
         """
         Converts list of agent infos to BrainInfo.
         """
-        vis_obs: List[np.ndarray] = []
+        vis_obs = []
         for i in range(brain_params.number_visual_observations):
             obs = [
                 BrainInfo.process_pixels(
@@ -157,14 +157,13 @@ class BrainInfo:
             vector_obs = np.nan_to_num(
                 np.array([x.stacked_vector_observation for x in agent_info_list])
             )
-        agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
             visual_observation=vis_obs,
             vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
             memory=memory,
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
-            agents=agents,
+            agents=[x.id for x in agent_info_list],
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             text_action=[list(x.stored_text_actions) for x in agent_info_list],

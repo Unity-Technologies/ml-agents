@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace MLAgents
 {
@@ -10,6 +10,7 @@ namespace MLAgents
         /// The simulation will end since no steps will be taken.
         public UnityAgentsException(string message) : base(message)
         {
+
         }
 
         /// A constructor is needed for serialization when an exception propagates

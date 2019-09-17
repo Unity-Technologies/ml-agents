@@ -1,4 +1,4 @@
-#if ENABLE_TENSORFLOW
+﻿#if ENABLE_TENSORFLOW
 using System.Collections.Generic;
 using TensorFlow;
 using System.Linq;
@@ -24,13 +24,12 @@ namespace MLAgents.InferenceBrain
             Profiler.BeginSample("TFSharpInferenceComponent.PrepareModel");
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-            // This needs to ba called only once and will raise an exception if called multiple times
-            try
-            {
+            // This needs to ba called only once and will raise an exception if called multiple times 
+            try{
                 TensorFlowSharp.Android.NativeBinding.Init();
             }
-            catch
-            {
+            catch{
+
             }
 #endif
             m_graph = new TFGraph();
@@ -49,7 +48,7 @@ namespace MLAgents.InferenceBrain
             TFSession.Runner runner = m_session.GetRunner();
 
             inputs.ToList().ForEach((TensorProxy input) =>
-            {
+            {   
                 if (input.Shape.Length == 0)
                 {
                     var data = input.Data[0];
@@ -65,8 +64,8 @@ namespace MLAgents.InferenceBrain
                 else
                 {
                     runner.AddInput(m_graph[input.Name][0], input.DataType == typeof(int) ?
-                        TensorUtils.BarracudaToIntArray(input.Data) :
-                        TensorUtils.BarracudaToFloatArray(input.Data));
+                                                            TensorUtils.BarracudaToIntArray(input.Data) :
+                                                            TensorUtils.BarracudaToFloatArray(input.Data));
                 }
             });
 
@@ -91,7 +90,7 @@ namespace MLAgents.InferenceBrain
                 if (outputs[i].Shape.Length == 0)
                 {
                     // Handle scalars
-                    outputs[i].Data = new Tensor(1, 1);
+                    outputs[i].Data = new Tensor(1,1);
                     outputs[i].Data[0] = (float)(int)out_tensors[i].GetValue();
                 }
                 else
@@ -106,24 +105,24 @@ namespace MLAgents.InferenceBrain
         }
 
         [DllImport("libtensorflow")]
-        private static extern unsafe void TF_OperationGetAttrType(IntPtr oper, string attr_name,
+        private static extern unsafe void TF_OperationGetAttrType(IntPtr oper, string attr_name, 
             TFDataType* value, IntPtr status);
-
+                
         [DllImport("libtensorflow")]
-        private static extern unsafe void TF_OperationGetAttrShape(IntPtr oper, string attr_name, long[] value,
+        private static extern unsafe void TF_OperationGetAttrShape(IntPtr oper, string attr_name, long[] value, 
             int num_dims, IntPtr status);
 
         private TensorProxy GetOpMetadata(TFOperation op)
         {
             TFStatus status = new TFStatus();
-
+                        
             // Query the shape
             long[] shape = null;
             var shape_attr = op.GetAttributeMetadata("shape", status);
             if (!status.Ok || shape_attr.TotalSize <= 0)
             {
                 Debug.LogWarning($"Operation {op.Name} does not contain shape attribute or it" +
-                    $" doesn't contain valid shape data! Status: {status.StatusMessage}");
+                                 $" doesn't contain valid shape data! Status: {status.StatusMessage}");
             }
             else
             {
@@ -135,7 +134,7 @@ namespace MLAgents.InferenceBrain
                 {
                     TFStatus s = new TFStatus();
                     long[] dims = new long[shape_attr.TotalSize];
-                    TF_OperationGetAttrShape(op.Handle, "shape", dims, (int)shape_attr.TotalSize,
+                    TF_OperationGetAttrShape(op.Handle, "shape", dims, (int)shape_attr.TotalSize, 
                         s.Handle);
                     if (!status.Ok)
                     {
@@ -159,7 +158,7 @@ namespace MLAgents.InferenceBrain
                     }
                 }
             }
-
+                        
             // Query the data type
             TFDataType type_value = new TFDataType();
             unsafe
@@ -168,8 +167,8 @@ namespace MLAgents.InferenceBrain
                 TF_OperationGetAttrType(op.Handle, "dtype", &type_value, s.Handle);
                 if (!s.Ok)
                 {
-                    Debug.LogWarning("Operation " + op.Name +
-                        ": error retrieving dtype, assuming float!");
+                    Debug.LogWarning("Operation " + op.Name + 
+                                     ": error retrieving dtype, assuming float!");
                     type_value = TFDataType.Float;
                 }
             }
@@ -184,11 +183,11 @@ namespace MLAgents.InferenceBrain
                     placeholder_type = TensorProxy.TensorType.Integer;
                     break;
                 default:
-                    Debug.LogWarning("Operation " + op.Name +
-                        " is not a float/integer. Proceed at your own risk!");
+                    Debug.LogWarning("Operation " + op.Name + 
+                                     " is not a float/integer. Proceed at your own risk!");
                     break;
             }
-
+                        
             TensorProxy t = new TensorProxy
             {
                 Data = null,

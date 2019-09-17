@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 
@@ -64,7 +64,7 @@ namespace MLAgents
         /// Input array whose elements will be cumulatively added
         /// </param>
         /// <returns> The cumulative sum of the input array.</returns>
-        public static int[] CumSum(int[] input)
+        public static int[] CumSum(int [] input)
         {
             var runningSum = 0;
             var result = new int[input.Length + 1];

@@ -796,11 +796,7 @@ MonoBehaviour:
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters:
-    - key: laser_length
-      value: 1
-    - key: agent_scale
-      value: 1
+    resetParameters: []
   agents: []
   listArea: []
   totalScore: 0

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -11,7 +11,7 @@ public class BasicDecision : Decision
         bool done,
         List<float> memory)
     {
-        return new[] { 1f };
+        return new float[1] { 1f };
     }
 
     public override List<float> MakeMemory(

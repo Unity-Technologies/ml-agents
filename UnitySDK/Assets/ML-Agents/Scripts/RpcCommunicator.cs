@@ -1,6 +1,9 @@
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 using Grpc.Core;
 #endif
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -10,46 +13,46 @@ using MLAgents.CommunicatorObjects;
 namespace MLAgents
 {
     /// Responsible for communication with External using gRPC.
-    public class RpcCommunicator : ICommunicator
+    public class RPCCommunicator : Communicator
     {
         /// If true, the communication is active.
-        bool m_IsOpen;
+        bool m_isOpen;
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-        /// The Unity to External client.
-        UnityToExternal.UnityToExternalClient m_Client;
+        /// The Unity to External client. 
+        UnityToExternal.UnityToExternalClient m_client;
 #endif
         /// The communicator parameters sent at construction
-        CommunicatorParameters m_CommunicatorParameters;
+        CommunicatorParameters m_communicatorParameters;
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
         /// <param name="communicatorParameters">Communicator parameters.</param>
-        public RpcCommunicator(CommunicatorParameters communicatorParameters)
+        public RPCCommunicator(CommunicatorParameters communicatorParameters)
         {
-            m_CommunicatorParameters = communicatorParameters;
+            m_communicatorParameters = communicatorParameters;
         }
 
         /// <summary>
-        /// Initialize the communicator by sending the first UnityOutput and receiving the
+        /// Initialize the communicator by sending the first UnityOutput and receiving the 
         /// first UnityInput. The second UnityInput is stored in the unityInput argument.
         /// </summary>
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
         public UnityInput Initialize(UnityOutput unityOutput,
-            out UnityInput unityInput)
+                                     out UnityInput unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            m_IsOpen = true;
+            m_isOpen = true;
             var channel = new Channel(
-                "localhost:" + m_CommunicatorParameters.port,
+                "localhost:"+m_communicatorParameters.port, 
                 ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternal.UnityToExternalClient(channel);
-            var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
-            unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
+            m_client = new UnityToExternal.UnityToExternalClient(channel);
+            var result = m_client.Exchange(WrapMessage(unityOutput, 200));
+            unityInput = m_client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
 #if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
@@ -70,19 +73,19 @@ namespace MLAgents
         public void Close()
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_IsOpen)
+            if (!m_isOpen)
             {
                 return;
             }
 
             try
             {
-                m_Client.Exchange(WrapMessage(null, 400));
-                m_IsOpen = false;
+                m_client.Exchange(WrapMessage(null, 400));
+                m_isOpen = false;
             }
             catch
             {
-                // ignored
+                return;
             }
 #else
             throw new UnityAgentsException(
@@ -98,26 +101,26 @@ namespace MLAgents
         public UnityInput Exchange(UnityOutput unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-            if (!m_IsOpen)
+            if (!m_isOpen)
             {
                 return null;
             }
             try
             {
-                var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
+                var message = m_client.Exchange(WrapMessage(unityOutput, 200));
                 if (message.Header.Status == 200)
                 {
                     return message.UnityInput;
                 }
                 else
                 {
-                    m_IsOpen = false;
+                    m_isOpen = false;
                     return null;
                 }
             }
             catch
             {
-                m_IsOpen = false;
+                m_isOpen = false;
                 return null;
             }
 #else
@@ -158,12 +161,11 @@ namespace MLAgents
         private void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
-            if (state == PlayModeStateChange.ExitingPlayMode)
+            if (state==PlayModeStateChange.ExitingPlayMode)
             {
                 Close();
             }
         }
-
 #else
         /// <summary>
         /// When the editor exits, the communicator must be closed
@@ -176,8 +178,8 @@ namespace MLAgents
                 Close();
             }
         }
+#endif
+#endif
 
-#endif
-#endif
     }
 }

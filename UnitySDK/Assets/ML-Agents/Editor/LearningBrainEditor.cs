@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
@@ -8,28 +8,28 @@ namespace MLAgents
     /// LearningBrain.
     /// Shows the BrainParameters of the Brain and expose a tool to deep copy BrainParameters
     /// between brains. Also exposes a drag box for the Model that will be used by the
-    /// LearningBrain.
+    /// LearningBrain. 
     /// </summary>
     [CustomEditor(typeof(LearningBrain))]
     public class LearningBrainEditor : BrainEditor
     {
-        private const string k_ModelPropName = "model";
-        private const string k_InferenceDevicePropName = "inferenceDevice";
-        private const float k_TimeBetweenModelReloads = 2f;
+        private const string ModelPropName = "model";
+        private const string InferenceDevicePropName = "inferenceDevice";
+        private const float TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model
-        private float m_TimeSinceModelReload;
+        private float _timeSinceModelReload;
         // Whether or not the model needs to be reloaded
-        private bool m_RequireReload;
-
+        private bool _requireReload;
+        
         /// <summary>
         /// Called when the user opens the Inspector for the LearningBrain
         /// </summary>
         public void OnEnable()
         {
-            m_RequireReload = true;
+            _requireReload = true;
             EditorApplication.update += IncreaseTimeSinceLastModelReload;
         }
-
+        
         /// <summary>
         /// Called when the user leaves the Inspector for the LearningBrain
         /// </summary>
@@ -37,29 +37,29 @@ namespace MLAgents
         {
             EditorApplication.update -= IncreaseTimeSinceLastModelReload;
         }
-
+        
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Learning Brain", EditorStyles.boldLabel);
-            var brain = (LearningBrain)target;
+            var brain = (LearningBrain) target;
             var serializedBrain = serializedObject;
             EditorGUI.BeginChangeCheck();
             base.OnInspectorGUI();
-            serializedBrain.Update();
-            var tfGraphModel = serializedBrain.FindProperty(k_ModelPropName);
+            serializedBrain.Update(); 
+            var tfGraphModel = serializedBrain.FindProperty(ModelPropName);
             EditorGUILayout.ObjectField(tfGraphModel);
-            var inferenceDevice = serializedBrain.FindProperty(k_InferenceDevicePropName);
+            var inferenceDevice = serializedBrain.FindProperty(InferenceDevicePropName);
             EditorGUILayout.PropertyField(inferenceDevice);
             serializedBrain.ApplyModifiedProperties();
             if (EditorGUI.EndChangeCheck())
             {
-                m_RequireReload = true;
+                _requireReload = true;
             }
-            if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
+            if (_requireReload && _timeSinceModelReload > TimeBetweenModelReloads)
             {
                 brain.ReloadModel();
-                m_RequireReload = false;
-                m_TimeSinceModelReload = 0;
+                _requireReload = false;
+                _timeSinceModelReload = 0;
             }
             // Display all failed checks
             var failedChecks = brain.GetModelFailedChecks();
@@ -78,7 +78,7 @@ namespace MLAgents
         /// </summary>
         private void IncreaseTimeSinceLastModelReload()
         {
-            m_TimeSinceModelReload += Time.deltaTime;
+            _timeSinceModelReload += Time.deltaTime;
         }
     }
 }

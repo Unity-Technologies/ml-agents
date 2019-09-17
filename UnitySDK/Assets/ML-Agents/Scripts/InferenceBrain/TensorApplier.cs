@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Barracuda;
 
 namespace MLAgents.InferenceBrain
@@ -19,7 +19,7 @@ namespace MLAgents.InferenceBrain
         /// are assumed to have the batch size on the first dimension and the agents to be ordered
         /// the same way in the dictionary and in the tensor.
         /// </summary>
-        public interface IApplier
+        public interface Applier
         {
             /// <summary>
             /// Applies the values in the Tensor to the Agents present in the agentInfos
@@ -34,7 +34,7 @@ namespace MLAgents.InferenceBrain
             void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo);
         }
 
-        private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
+        private readonly Dictionary<string, Applier> _dict = new Dictionary<string, Applier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.
@@ -47,25 +47,25 @@ namespace MLAgents.InferenceBrain
         public TensorApplier(
             BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
         {
-            m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
-            if (bp.vectorActionSpaceType == SpaceType.Continuous)
+            _dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
+            if (bp.vectorActionSpaceType == SpaceType.continuous)
             {
-                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                _dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
-                m_Dict[TensorNames.ActionOutput] =
+                _dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            _dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
 
             if (barracudaModel != null)
             {
-                var model = (Model)barracudaModel;
+                var model = (Model) barracudaModel;
 
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
-                    m_Dict[model.memories[i].output] =
+                    _dict[model.memories[i].output] =
                         new BarracudaMemoryOutputApplier(model.memories.Length, i);
                 }
             }
@@ -84,12 +84,12 @@ namespace MLAgents.InferenceBrain
         {
             foreach (var tensor in tensors)
             {
-                if (!m_Dict.ContainsKey(tensor.name))
+                if (!_dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                m_Dict[tensor.name].Apply(tensor, agentInfos);
+                _dict[tensor.name].Apply(tensor, agentInfos);
             }
         }
     }

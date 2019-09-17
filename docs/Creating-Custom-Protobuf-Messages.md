@@ -1,6 +1,3 @@
-# Disclaimer
-*NOTE:* `CustomAction` and `CustomObservation` are meant for researchers who intend to use the resulting environments with their own training code. In addition to implementing a custom message, you will also need to make extensive modifications to the trainer in order to produce custom actions or consume custom observations; we don't recommend modifying our trainer code, or using this feature unless you know what you are doing and have a very specific use-case in mind. *Proceed at your own risk*.
-
 # Creating Custom Protobuf Messages
 
 Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default. 

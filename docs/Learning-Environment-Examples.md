@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -32,7 +32,7 @@ If you would like to contribute environments, please see our
   * Vector Observation space: One variable corresponding to current state.
   * Vector Action space: (Discrete) Two possible actions (Move left, move
     right).
-  * Visual Observations: None
+  * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.94
 
@@ -56,19 +56,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: Three
-    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
-      * Default: 1
-      * Recommended Minimum: 0.2
-      * Recommended Maximum: 5
-    * gravity: Magnitude of gravity  
-      * Default: 9.81
-      * Recommended Minimum: 4
-      * Recommended Maximum: 105
-    * mass: Specifies mass of the ball
-      * Default: 1
-      * Recommended Minimum: 0.1
-      * Recommended Maximum: 20
+* Reset Parameters: None
 * Benchmark Mean Reward: 100
 
 ## [GridWorld](https://youtu.be/gu8HE9WKEVI)
@@ -116,20 +104,8 @@ If you would like to contribute environments, please see our
     of ball and racket.
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
-  * Visual Observations: None
-* Reset Parameters: Three
-    * angle: Angle of the racket from the vertical (Y) axis.
-      * Default: 55
-      * Recommended Minimum: 35 
-      * Recommended Maximum: 65
-    * gravity: Magnitude of gravity
-      * Default: 9.81
-      * Recommended Minimum: 6
-      * Recommended Maximum: 20
-    * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
-      * Default: 1
-      * Recommended Minimum: 0.2
-      * Recommended Maximum: 5
+  * Visual Observations: None.
+* Reset Parameters: One, corresponding to size of ball.
 * Benchmark Mean Reward: 2.5
 * Optional Imitation Learning scene: `TennisIL`.
 
@@ -153,23 +129,7 @@ If you would like to contribute environments, please see our
     `VisualPushBlock` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Four
-    * block_scale: Scale of the block along the x and z dimensions
-        * Default: 2
-        * Recommended Minimum: 0.5
-        * Recommended Maximum:  4
-    * dynamic_friction: Coefficient of friction for the ground material acting on moving objects
-        * Default: 0
-        * Recommended Minimum: 0
-        * Recommended Maximum: 1
-    * static_friction: Coefficient of friction for the ground material acting on stationary objects
-        * Default: 0
-        * Recommended Minimum: 0
-        * Recommended Maximum: 1
-    * block_drag: Effect of air resistance on block
-        * Default: 0.5
-        * Recommended Minimum: 0
-        * Recommended Maximum: 2000
+* Reset Parameters: None.
 * Benchmark Mean Reward: 4.5
 * Optional Imitation Learning scene: `PushBlockIL`.
 
@@ -194,8 +154,8 @@ If you would like to contribute environments, please see our
     * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
-  * Visual Observations: None
-* Reset Parameters: Four
+  * Visual Observations: None.
+* Reset Parameters: 4, corresponding to the height of the possible walls.
 * Benchmark Mean Reward (Big & Small Wall Brain): 0.8
 
 ## [Reacher](https://youtu.be/2N9EoF6pQyE)
@@ -213,27 +173,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Five
-  * goal_size: radius of the goal zone
-    * Default: 5
-    * Recommended Minimum: 1
-    * Recommended Maximum: 10
-  * goal_speed: speed of the goal zone around the arm (in radians)
-    * Default: 1
-    * Recommended Minimum: 0.2
-    * Recommended Maximum: 4
-  * gravity
-    * Default: 9.81
-    * Recommended Minimum: 4
-    * Recommended Maximum: 20
-  * deviation: Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
-    * Default: 0
-    * Recommended Minimum: 0
-    * Recommended Maximum: 5
-  * deviation_freq: Frequency of the cosine deviation of the goal along the vertical dimension
-    * Default: 0
-    * Recommended Minimum: 0
-    * Recommended Maximum: 3
+* Reset Parameters: Two, corresponding to goal size, and goal movement speed.
 * Benchmark Mean Reward: 30
 
 ## [Crawler](https://youtu.be/ftLliaeooYI)
@@ -254,7 +194,7 @@ If you would like to contribute environments, please see our
     angular acceleration of the body.
   * Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
-  * Visual Observations: None
+  * Visual Observations: None.
 * Reset Parameters: None
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
@@ -284,15 +224,7 @@ If you would like to contribute environments, please see our
     `VisualBanana` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Two
-  * laser_length: Length of the laser used by the agent
-    * Default: 1
-    * Recommended Minimum: 0.2
-    * Recommended Maximum: 7
-  * agent_scale: Specifies the scale of the agent in the 3 dimensions (equal across the three dimensions)
-    * Default: 1
-    * Recommended Minimum: 0.5
-    * Recommended Maximum: 5
+* Reset Parameters: None.
 * Benchmark Mean Reward: 10
 * Optional Imitation Learning scene: `BananaIL`.
 
@@ -318,7 +250,7 @@ If you would like to contribute environments, please see our
     `VisualHallway` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None
+* Reset Parameters: None.
 * Benchmark Mean Reward: 0.7
   * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
 * Optional Imitation Learning scene: `HallwayIL`.
@@ -340,12 +272,8 @@ If you would like to contribute environments, please see our
     banana.
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
-  * Visual Observations: None
-* Reset Parameters: Two
-    * banana_scale: The scale of the banana in the 3 dimensions
-        * Default: 150
-        * Recommended Minimum: 50
-        * Recommended Maximum: 250
+  * Visual Observations: None.
+* Reset Parameters: None.
 * Benchmark Mean Reward: 10
 
 ## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
@@ -375,16 +303,8 @@ If you would like to contribute environments, please see our
     * Striker: 6 actions corresponding to forward, backward, sideways movement,
       as well as rotation.
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
-  * Visual Observations: None
-* Reset Parameters: Two
-  * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
-    * Default: 7.5
-    * Recommended minimum: 4
-    * Recommended maximum: 10
-  * gravity: Magnitude of the gravity
-    * Default: 9.81
-    * Recommended minimum: 6
-    * Recommended maximum: 20
+  * Visual Observations: None.
+* Reset Parameters: None
 * Benchmark Mean Reward (Striker & Goalie Brain): 0 (the means will be inverse
   of each other and criss crosses during training) __Note that our trainer is currently unable to consistently train this environment__
 
@@ -409,24 +329,8 @@ If you would like to contribute environments, please see our
     velocity, and angular velocities of each limb, along with goal direction.
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
-  * Visual Observations: None
-* Reset Parameters: Four
-    * gravity: Magnitude of gravity
-        * Default: 9.81
-        * Recommended Minimum:
-        * Recommended Maximum:
-    * hip_mass: Mass of the hip component of the walker
-        * Default: 15
-        * Recommended Minimum: 7
-        * Recommended Maximum: 28
-    * chest_mass: Mass of the chest component of the walker
-        * Default: 8
-        * Recommended Minimum: 3
-        * Recommended Maximum: 20
-    * spine_mass: Mass of the spine component of the walker
-        * Default: 10
-        * Recommended Minimum: 3
-        * Recommended Maximum: 20
+  * Visual Observations: None.
+* Reset Parameters: None.
 * Benchmark Mean Reward: 1000
 
 ## Pyramids
@@ -450,6 +354,6 @@ If you would like to contribute environments, please see our
     `VisualPyramids` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None
+* Reset Parameters: None.
 * Optional Imitation Learning scene: `PyramidsIL`.
 * Benchmark Mean Reward: 1.75

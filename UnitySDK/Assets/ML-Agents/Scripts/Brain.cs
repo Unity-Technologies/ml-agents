@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -18,13 +18,13 @@ namespace MLAgents
     {
         [SerializeField] public BrainParameters brainParameters;
 
-        protected Dictionary<Agent, AgentInfo> m_AgentInfos =
+        protected Dictionary<Agent, AgentInfo> agentInfos =
             new Dictionary<Agent, AgentInfo>(1024);
 
-        protected Batcher m_BrainBatcher;
+        protected Batcher brainBatcher;
 
         [System.NonSerialized]
-        private bool m_IsInitialized;
+        private bool _isInitialized;
 
         /// <summary>
         /// Sets the Batcher of the Brain. The brain will call the batcher at every step and give
@@ -35,16 +35,16 @@ namespace MLAgents
         {
             if (batcher == null)
             {
-                m_BrainBatcher = null;
+                brainBatcher = null;
             }
             else
             {
-                m_BrainBatcher = batcher;
-                m_BrainBatcher.SubscribeBrain(name);
+                brainBatcher = batcher;
+                brainBatcher.SubscribeBrain(name);
             }
             LazyInitialize();
         }
-
+        
         /// <summary>
         /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
         /// </summary>
@@ -53,7 +53,8 @@ namespace MLAgents
         public void SendState(Agent agent, AgentInfo info)
         {
             LazyInitialize();
-            m_AgentInfos.Add(agent, info);
+            agentInfos.Add(agent, info);
+
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace MLAgents
         /// </summary>
         private void LazyInitialize()
         {
-            if (!m_IsInitialized)
+            if (!_isInitialized)
             {
                 var academy = FindObjectOfType<Academy>();
                 if (academy)
@@ -70,22 +71,22 @@ namespace MLAgents
                     academy.BrainDecideAction += BrainDecideAction;
                     academy.DestroyAction += Shutdown;
                     Initialize();
-                    m_IsInitialized = true;
+                    _isInitialized = true;
                 }
             }
         }
-
+        
         /// <summary>
         /// Called by the Academy when it shuts down. This ensures that the Brain cleans up properly
         /// after scene changes.
         /// </summary>
         private void Shutdown()
         {
-            if (m_IsInitialized)
+            if (_isInitialized)
             {
-                m_AgentInfos.Clear();
-
-                m_IsInitialized = false;
+                agentInfos.Clear();
+                
+                _isInitialized = false;
             }
         }
 
@@ -94,7 +95,7 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
-            m_BrainBatcher?.SendBrainInfo(name, m_AgentInfos);
+            brainBatcher?.SendBrainInfo(name, agentInfos);
             DecideAction();
         }
 

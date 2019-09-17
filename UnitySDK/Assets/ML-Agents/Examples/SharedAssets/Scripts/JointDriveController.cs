@@ -1,6 +1,6 @@
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -10,20 +10,19 @@ namespace MLAgents
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
 
-        [Header("Ground & Target Contact")][Space(10)]
+        [Header("Ground & Target Contact")] [Space(10)]
         public GroundContact groundContact;
 
         public TargetContact targetContact;
 
-        [FormerlySerializedAs("thisJDController")]
-        [HideInInspector] public JointDriveController thisJdController;
+        [HideInInspector] public JointDriveController thisJDController;
 
-        [Header("Current Joint Settings")][Space(10)]
+        [Header("Current Joint Settings")] [Space(10)]
         public Vector3 currentEularJointRotation;
 
         [HideInInspector] public float currentStrength;
@@ -31,7 +30,7 @@ namespace MLAgents
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
 
-        [Header("Other Debug Info")][Space(10)]
+        [Header("Other Debug Info")] [Space(10)]
         public Vector3 currentJointForce;
 
         public float currentJointForceSqrMag;
@@ -84,11 +83,11 @@ namespace MLAgents
 
         public void SetJointStrength(float strength)
         {
-            var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
+            var rawVal = (strength + 1f) * 0.5f * thisJDController.maxJointForceLimit;
             var jd = new JointDrive
             {
-                positionSpring = thisJdController.maxJointSpring,
-                positionDamper = thisJdController.jointDampen,
+                positionSpring = thisJDController.maxJointSpring,
+                positionDamper = thisJDController.jointDampen,
                 maximumForce = rawVal
             };
             joint.slerpDrive = jd;
@@ -98,12 +97,12 @@ namespace MLAgents
 
     public class JointDriveController : MonoBehaviour
     {
-        [Header("Joint Drive Settings")][Space(10)]
+        [Header("Joint Drive Settings")] [Space(10)]
         public float maxJointSpring;
 
         public float jointDampen;
         public float maxJointForceLimit;
-        float m_FacingDot;
+        float facingDot;
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
@@ -114,7 +113,7 @@ namespace MLAgents
         /// </summary>
         public void SetupBodyPart(Transform t)
         {
-            var bp = new BodyPart
+            BodyPart bp = new BodyPart
             {
                 rb = t.GetComponent<Rigidbody>(),
                 joint = t.GetComponent<ConfigurableJoint>(),
@@ -142,7 +141,7 @@ namespace MLAgents
                 bp.targetContact = t.gameObject.AddComponent<TargetContact>();
             }
 
-            bp.thisJdController = this;
+            bp.thisJDController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
         }

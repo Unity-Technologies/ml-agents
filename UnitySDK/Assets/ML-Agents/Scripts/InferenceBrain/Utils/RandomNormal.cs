@@ -10,20 +10,20 @@ namespace MLAgents.InferenceBrain.Utils
     /// </summary>
     public class RandomNormal
     {
-        private readonly double m_Mean;
-        private readonly double m_Stddev;
-        private readonly Random m_Random;
+        private readonly double _mean;
+        private readonly double _stddev;
+        private readonly Random _random;
 
         public RandomNormal(int seed, float mean = 0.0f, float stddev = 1.0f)
         {
-            m_Mean = mean;
-            m_Stddev = stddev;
-            m_Random = new Random(seed);
+            _mean = mean;
+            _stddev = stddev;
+            _random = new Random(seed);
         }
 
         // Each iteration produces two numbers. Hold one here for next call
-        private bool m_HasSpare;
-        private double m_SpareUnscaled;
+        private bool _hasSpare;
+        private double _spareUnscaled;
 
         /// <summary>
         /// Return the next random double number
@@ -31,26 +31,25 @@ namespace MLAgents.InferenceBrain.Utils
         /// <returns>Next random double number</returns>
         public double NextDouble()
         {
-            if (m_HasSpare)
+            if (_hasSpare)
             {
-                m_HasSpare = false;
-                return m_SpareUnscaled * m_Stddev + m_Mean;
+                _hasSpare = false;
+                return _spareUnscaled * _stddev + _mean;
             }
 
             double u, v, s;
             do
             {
-                u = m_Random.NextDouble() * 2.0 - 1.0;
-                v = m_Random.NextDouble() * 2.0 - 1.0;
+                u = _random.NextDouble() * 2.0 - 1.0;
+                v = _random.NextDouble() * 2.0 - 1.0;
                 s = u * u + v * v;
-            }
-            while (s >= 1.0 || Math.Abs(s) < double.Epsilon);
+            } while (s >= 1.0 || Math.Abs(s) < double.Epsilon);
 
             s = Math.Sqrt(-2.0 * Math.Log(s) / s);
-            m_SpareUnscaled = u * s;
-            m_HasSpare = true;
+            _spareUnscaled = u * s;
+            _hasSpare = true;
 
-            return v * s * m_Stddev + m_Mean;
+            return v * s * _stddev + _mean;
         }
     }
 }

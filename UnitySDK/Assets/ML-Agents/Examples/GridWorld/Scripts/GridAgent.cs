@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
@@ -6,28 +6,28 @@ using MLAgents;
 public class GridAgent : Agent
 {
     [Header("Specific to GridWorld")]
-    private GridAcademy m_Academy;
+    private GridAcademy academy;
     public float timeBetweenDecisionsAtInference;
-    private float m_TimeSinceDecision;
+    private float timeSinceDecision;
 
-    [Tooltip("Because we want an observation right before making a decision, we can force " +
-        "a camera to render before making a decision. Place the agentCam here if using " +
-        "RenderTexture as observations.")]
+    [Tooltip("Because we want an observation right before making a decision, we can force " + 
+             "a camera to render before making a decision. Place the agentCam here if using " +
+             "RenderTexture as observations.")]
     public Camera renderCamera;
 
     [Tooltip("Selecting will turn on action masking. Note that a model trained with action " +
-        "masking turned on may not behave optimally when action masking is turned off.")]
+             "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
 
-    private const int k_NoAction = 0;  // do nothing!
-    private const int k_Up = 1;
-    private const int k_Down = 2;
-    private const int k_Left = 3;
-    private const int k_Right = 4;
+    private const int NoAction = 0;  // do nothing!
+    private const int Up = 1;
+    private const int Down = 2;
+    private const int Left = 3;
+    private const int Right = 4;
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
+        academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
     }
 
     public override void CollectObservations()
@@ -48,28 +48,28 @@ public class GridAgent : Agent
     private void SetMask()
     {
         // Prevents the agent from picking an action that would make it collide with a wall
-        var positionX = (int)transform.position.x;
-        var positionZ = (int)transform.position.z;
-        var maxPosition = m_Academy.gridSize - 1;
+        var positionX = (int) transform.position.x;
+        var positionZ = (int) transform.position.z;
+        var maxPosition = academy.gridSize - 1;
 
         if (positionX == 0)
         {
-            SetActionMask(k_Left);
+            SetActionMask(Left);
         }
 
         if (positionX == maxPosition)
         {
-            SetActionMask(k_Right);
+            SetActionMask(Right);
         }
 
         if (positionZ == 0)
         {
-            SetActionMask(k_Down);
+            SetActionMask(Down);
         }
 
         if (positionZ == maxPosition)
         {
-            SetActionMask(k_Up);
+            SetActionMask(Up);
         }
     }
 
@@ -77,42 +77,41 @@ public class GridAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         AddReward(-0.01f);
-        var action = Mathf.FloorToInt(vectorAction[0]);
+        int action = Mathf.FloorToInt(vectorAction[0]);
 
-        var targetPos = transform.position;
+        Vector3 targetPos = transform.position;
         switch (action)
         {
-            case k_NoAction:
+            case NoAction:
                 // do nothing
                 break;
-            case k_Right:
+            case Right:
                 targetPos = transform.position + new Vector3(1f, 0, 0f);
                 break;
-            case k_Left:
+            case Left:
                 targetPos = transform.position + new Vector3(-1f, 0, 0f);
                 break;
-            case k_Up:
+            case Up:
                 targetPos = transform.position + new Vector3(0f, 0, 1f);
                 break;
-            case k_Down:
+            case Down:
                 targetPos = transform.position + new Vector3(0f, 0, -1f);
                 break;
             default:
                 throw new ArgumentException("Invalid action value");
         }
 
-        var hit = Physics.OverlapBox(
-            targetPos, new Vector3(0.3f, 0.3f, 0.3f));
-        if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
+        Collider[] blockTest = Physics.OverlapBox(targetPos, new Vector3(0.3f, 0.3f, 0.3f));
+        if (blockTest.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
             transform.position = targetPos;
 
-            if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
+            if (blockTest.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(1f);
             }
-            if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            if (blockTest.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
                 Done();
                 SetReward(-1f);
@@ -123,7 +122,7 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentReset()
     {
-        m_Academy.AcademyReset();
+        academy.AcademyReset();
     }
 
     public void FixedUpdate()
@@ -133,25 +132,25 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
-        if (renderCamera != null)
+        if(renderCamera != null)
         {
             renderCamera.Render();
         }
 
-        if (!m_Academy.GetIsInference())
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }
         else
         {
-            if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
+            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
             {
-                m_TimeSinceDecision = 0f;
+                timeSinceDecision = 0f;
                 RequestDecision();
             }
             else
             {
-                m_TimeSinceDecision += Time.fixedDeltaTime;
+                timeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }

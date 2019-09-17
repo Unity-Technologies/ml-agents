@@ -12,9 +12,7 @@ class BaseUnityEnvironment(ABC):
         pass
 
     @abstractmethod
-    def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
-    ) -> AllBrainInfo:
+    def reset(self, config=None, train_mode=True) -> AllBrainInfo:
         pass
 
     @property
@@ -29,7 +27,7 @@ class BaseUnityEnvironment(ABC):
 
     @property
     @abstractmethod
-    def reset_parameters(self) -> Dict[str, float]:
+    def reset_parameters(self) -> Dict[str, str]:
         pass
 
     @abstractmethod

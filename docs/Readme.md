@@ -36,11 +36,9 @@
 
 * [Training ML-Agents](Training-ML-Agents.md)
 * [Training with Proximal Policy Optimization](Training-PPO.md)
-* [Training with Soft Actor-Critic](Training-SAC.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 * [Training with LSTM](Feature-Memory.md)
-* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 * [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)

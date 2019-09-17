@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using MLAgents;
 using UnityEditor;
 
@@ -9,13 +9,13 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class DemonstrationEditor : Editor
 {
-    SerializedProperty m_BrainParameters;
-    SerializedProperty m_DemoMetaData;
+    SerializedProperty brainParameters;
+    SerializedProperty demoMetaData;
 
     void OnEnable()
     {
-        m_BrainParameters = serializedObject.FindProperty("brainParameters");
-        m_DemoMetaData = serializedObject.FindProperty("metaData");
+        brainParameters = serializedObject.FindProperty("brainParameters");
+        demoMetaData = serializedObject.FindProperty("metaData");
     }
 
     /// <summary>
@@ -45,8 +45,8 @@ public class DemonstrationEditor : Editor
     static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
     {
         var actionSize = actionSizeProperty.arraySize;
-        var actionLabel = new StringBuilder("[ ");
-        for (var i = 0; i < actionSize; i++)
+        StringBuilder actionLabel = new StringBuilder("[ ");
+        for (int i = 0; i < actionSize; i++)
         {
             actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
             if (i < actionSize - 1)
@@ -62,7 +62,7 @@ public class DemonstrationEditor : Editor
     /// <summary>
     /// Constructs complex label for each CameraResolution object.
     /// An example of this could be `[ 84 X 84 ]`
-    /// for a single camera with 84 pixels height and width.
+    /// for a single camera with 84 pixels height and width. 
     /// </summary>
     private static string BuildCameraResolutionLabel(SerializedProperty cameraArray)
     {
@@ -104,7 +104,7 @@ public class DemonstrationEditor : Editor
             actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
         var camResLabel = camResProp.displayName + ": " + BuildCameraResolutionLabel(camResProp);
         var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
-            (SpaceType)actSpaceTypeProp.enumValueIndex;
+                                (SpaceType) actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);
@@ -117,9 +117,9 @@ public class DemonstrationEditor : Editor
     {
         serializedObject.Update();
         EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
-        MakeMetaDataProperty(m_DemoMetaData);
+        MakeMetaDataProperty(demoMetaData);
         EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
-        MakeBrainParametersProperty(m_BrainParameters);
+        MakeBrainParametersProperty(brainParameters);
         serializedObject.ApplyModifiedProperties();
     }
 }

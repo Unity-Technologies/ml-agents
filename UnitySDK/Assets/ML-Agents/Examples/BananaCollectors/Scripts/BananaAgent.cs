@@ -1,19 +1,22 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class BananaAgent : Agent
 {
-    private BananaAcademy m_MyAcademy;
+    private BananaAcademy myAcademy;
     public GameObject area;
-    BananaArea m_MyArea;
-    bool m_Frozen;
-    bool m_Poisoned;
-    bool m_Satiated;
-    bool m_Shoot;
-    float m_FrozenTime;
-    float m_EffectTime;
-    Rigidbody m_AgentRb;
-    private float m_LaserLength;
+    BananaArea myArea;
+    bool frozen;
+    bool poisioned;
+    bool satiated;
+    bool shoot;
+    float frozenTime;
+    float effectTime;
+    Rigidbody agentRb;
+    private int bananas;
+
     // Speed of agent rotation.
     public float turnSpeed = 300;
 
@@ -25,73 +28,70 @@ public class BananaAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    private RayPerception3D m_RayPer;
+    private RayPerception3D rayPer;
     public bool useVectorObs;
-
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRb = GetComponent<Rigidbody>();
+        agentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
-        m_MyArea = area.GetComponent<BananaArea>();
-        m_RayPer = GetComponent<RayPerception3D>();
-        m_MyAcademy = FindObjectOfType<BananaAcademy>();
-
-        SetResetParameters();
+        myArea = area.GetComponent<BananaArea>();
+        rayPer = GetComponent<RayPerception3D>();
+        myAcademy = FindObjectOfType<BananaAcademy>();
     }
 
     public override void CollectObservations()
     {
         if (useVectorObs)
         {
-            const float rayDistance = 50f;
+            float rayDistance = 50f;
             float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
             string[] detectableObjects = { "banana", "agent", "wall", "badBanana", "frozenAgent" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
-            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            Vector3 localVelocity = transform.InverseTransformDirection(agentRb.velocity);
             AddVectorObs(localVelocity.x);
             AddVectorObs(localVelocity.z);
-            AddVectorObs(System.Convert.ToInt32(m_Frozen));
-            AddVectorObs(System.Convert.ToInt32(m_Shoot));
+            AddVectorObs(System.Convert.ToInt32(frozen));
+            AddVectorObs(System.Convert.ToInt32(shoot));
         }
     }
 
     public Color32 ToColor(int hexVal)
     {
-        var r = (byte)((hexVal >> 16) & 0xFF);
-        var g = (byte)((hexVal >> 8) & 0xFF);
-        var b = (byte)(hexVal & 0xFF);
+        byte r = (byte)((hexVal >> 16) & 0xFF);
+        byte g = (byte)((hexVal >> 8) & 0xFF);
+        byte b = (byte)(hexVal & 0xFF);
         return new Color32(r, g, b, 255);
     }
 
     public void MoveAgent(float[] act)
     {
-        m_Shoot = false;
+        shoot = false;
 
-        if (Time.time > m_FrozenTime + 4f && m_Frozen)
+        if (Time.time > frozenTime + 4f && frozen)
         {
             Unfreeze();
         }
-        if (Time.time > m_EffectTime + 0.5f)
+        if (Time.time > effectTime + 0.5f)
         {
-            if (m_Poisoned)
+            if (poisioned)
             {
                 Unpoison();
             }
-            if (m_Satiated)
+            if (satiated)
             {
                 Unsatiate();
             }
         }
 
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero;
+        Vector3 dirToGo = Vector3.zero;
+        Vector3 rotateDir = Vector3.zero;
 
-        if (!m_Frozen)
+        if (!frozen)
         {
-            var shootCommand = false;
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+            bool shootCommand = false;
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
                 dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
                 rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
@@ -103,7 +103,7 @@ public class BananaAgent : Agent
                 var rightAxis = (int)act[1];
                 var rotateAxis = (int)act[2];
                 var shootAxis = (int)act[3];
-
+                
                 switch (forwardAxis)
                 {
                     case 1:
@@ -113,7 +113,7 @@ public class BananaAgent : Agent
                         dirToGo = -transform.forward;
                         break;
                 }
-
+                
                 switch (rightAxis)
                 {
                     case 1:
@@ -131,7 +131,7 @@ public class BananaAgent : Agent
                         break;
                     case 2:
                         rotateDir = transform.up;
-                        break;
+                        break; 
                 }
                 switch (shootAxis)
                 {
@@ -142,25 +142,24 @@ public class BananaAgent : Agent
             }
             if (shootCommand)
             {
-                m_Shoot = true;
+                shoot = true;
                 dirToGo *= 0.5f;
-                m_AgentRb.velocity *= 0.75f;
+                agentRb.velocity *= 0.75f;
             }
-            m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+            agentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
         }
 
-        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        if (agentRb.velocity.sqrMagnitude > 25f) // slow it down
         {
-            m_AgentRb.velocity *= 0.95f;
+            agentRb.velocity *= 0.95f;
         }
 
-        if (m_Shoot)
+        if (shoot)
         {
-            var myTransform = transform;
-            myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
-            var position = myTransform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
-            Debug.DrawRay(myTransform.position, position, Color.red, 0f, true);
+            myLaser.transform.localScale = new Vector3(1f, 1f, 1f);
+            Vector3 position = transform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
+            Debug.DrawRay(transform.position, position, Color.red, 0f, true);
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
             {
@@ -173,49 +172,54 @@ public class BananaAgent : Agent
         else
         {
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+
         }
     }
+
 
     void Freeze()
     {
         gameObject.tag = "frozenAgent";
-        m_Frozen = true;
-        m_FrozenTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = frozenMaterial;
+        frozen = true;
+        frozenTime = Time.time;
+        gameObject.GetComponentInChildren<Renderer>().material = frozenMaterial;
     }
+
 
     void Unfreeze()
     {
-        m_Frozen = false;
+        frozen = false;
         gameObject.tag = "agent";
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     void Poison()
     {
-        m_Poisoned = true;
-        m_EffectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = badMaterial;
+        poisioned = true;
+        effectTime = Time.time;
+        gameObject.GetComponentInChildren<Renderer>().material = badMaterial;
     }
 
     void Unpoison()
     {
-        m_Poisoned = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        poisioned = false;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     void Satiate()
     {
-        m_Satiated = true;
-        m_EffectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = goodMaterial;
+        satiated = true;
+        effectTime = Time.time;
+        gameObject.GetComponentInChildren<Renderer>().material = goodMaterial;
     }
 
     void Unsatiate()
     {
-        m_Satiated = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        satiated = false;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
+
+
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -227,15 +231,14 @@ public class BananaAgent : Agent
         Unfreeze();
         Unpoison();
         Unsatiate();
-        m_Shoot = false;
-        m_AgentRb.velocity = Vector3.zero;
+        shoot = false;
+        agentRb.velocity = Vector3.zero;
+        bananas = 0;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-        transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
-            2f, Random.Range(-m_MyArea.range, m_MyArea.range))
+        transform.position = new Vector3(Random.Range(-myArea.range, myArea.range),
+                                         2f, Random.Range(-myArea.range, myArea.range))
             + area.transform.position;
         transform.rotation = Quaternion.Euler(new Vector3(0f, Random.Range(0, 360)));
-
-        SetResetParameters();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -245,9 +248,10 @@ public class BananaAgent : Agent
             Satiate();
             collision.gameObject.GetComponent<BananaLogic>().OnEaten();
             AddReward(1f);
+            bananas += 1;
             if (contribute)
             {
-                m_MyAcademy.totalScore += 1;
+                myAcademy.totalScore += 1;
             }
         }
         if (collision.gameObject.CompareTag("badBanana"))
@@ -258,30 +262,13 @@ public class BananaAgent : Agent
             AddReward(-1f);
             if (contribute)
             {
-                m_MyAcademy.totalScore -= 1;
+                myAcademy.totalScore -= 1;
             }
         }
     }
 
     public override void AgentOnDone()
     {
-    }
 
-    public void SetLaserLengths()
-    {
-        m_LaserLength = m_MyAcademy.resetParameters.TryGetValue("laser_length", out m_LaserLength) ? m_LaserLength : 1.0f;
-    }
-
-    public void SetAgentScale()
-    {
-        float agentScale;
-        agentScale = m_MyAcademy.resetParameters.TryGetValue("agent_scale", out agentScale) ? agentScale : 1.0f;
-        gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
-    }
-
-    public void SetResetParameters()
-    {
-        SetLaserLengths();
-        SetAgentScale();
     }
 }

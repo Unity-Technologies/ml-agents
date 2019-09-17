@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -13,9 +12,8 @@ namespace MLAgents
     {
         [SerializeField]
         public List<Brain> broadcastingBrains = new List<Brain>();
-        [FormerlySerializedAs("_brainsToControl")]
         [SerializeField]
-        private List<Brain> m_BrainsToControl = new List<Brain>();
+        private List<Brain> _brainsToControl = new List<Brain>();
 
         /// <summary>
         /// The number of Brains inside the BroadcastingHub.
@@ -23,19 +21,19 @@ namespace MLAgents
         public int Count
         {
             get { return broadcastingBrains.Count; }
-        }
+        }        
 
         /// <summary>
-        /// Checks that a given Brain is set to be remote controlled.
+        /// Checks that a given Brain is set to be remote controlled. 
         /// </summary>
         /// <param name="brain"> The Brain that is beeing checked</param>
         /// <returns>true if the Brain is set to Controlled and false otherwise. Will return
         /// false if the Brain is not present in the Hub.</returns>
         public bool IsControlled(Brain brain)
         {
-            return m_BrainsToControl.Contains(brain);
+            return _brainsToControl.Contains(brain);
         }
-
+        
         /// <summary>
         /// Sets a brain to controlled.
         /// </summary>
@@ -46,25 +44,25 @@ namespace MLAgents
         {
             if (broadcastingBrains.Contains(brain))
             {
-                if (controlled && !m_BrainsToControl.Contains(brain))
+                if (controlled && !_brainsToControl.Contains(brain))
                 {
-                    m_BrainsToControl.Add(brain);
+                    _brainsToControl.Add(brain);
                 }
 
-                if (!controlled && m_BrainsToControl.Contains(brain))
+                if (!controlled && _brainsToControl.Contains(brain))
                 {
-                    m_BrainsToControl.Remove(brain);
+                    _brainsToControl.Remove(brain);
                 }
             }
         }
-
+        
         /// <summary>
         /// Removes all the Brains of the BroadcastHub
         /// </summary>
         public void Clear()
         {
             broadcastingBrains.Clear();
-            m_BrainsToControl.Clear();
+            _brainsToControl.Clear();
         }
     }
 }

@@ -1,3 +1,5 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -5,15 +7,11 @@ public class Ball3DHardAgent : Agent
 {
     [Header("Specific to Ball3DHard")]
     public GameObject ball;
-    private Rigidbody m_BallRb;
-    private ResetParameters m_ResetParams;
+    private Rigidbody ballRb;
 
     public override void InitializeAgent()
     {
-        m_BallRb = ball.GetComponent<Rigidbody>();
-        var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.resetParameters;
-        SetResetParameters();
+        ballRb = ball.GetComponent<Rigidbody>();
     }
 
     public override void CollectObservations()
@@ -25,7 +23,8 @@ public class Ball3DHardAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+        
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
         {
             var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
             var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -60,21 +59,10 @@ public class Ball3DHardAgent : Agent
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
-        m_BallRb.velocity = new Vector3(0f, 0f, 0f);
+        ballRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
-            + gameObject.transform.position;
+                                  + gameObject.transform.position;
+
     }
 
-    public void SetBall()
-    {
-        //Set the attributes of the ball by fetching the information from the academy
-        m_BallRb.mass = m_ResetParams["mass"];
-        var scale = m_ResetParams["scale"];
-        ball.transform.localScale = new Vector3(scale, scale, scale);
-    }
-
-    public void SetResetParameters()
-    {
-        SetBall();
-    }
 }

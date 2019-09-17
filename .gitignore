@@ -86,7 +86,7 @@
 .DS_Store
 .ipynb_checkpoints
 
-# pytest cache
+# pytest cache 
 *.pytest_cache/
 
 # Ignore compiled protobuf files.
@@ -99,8 +99,3 @@ build/
 # Python virtual environment
 venv/
 .mypy_cache/
-
-# Code coverage report
-.coverage
-coverage.xml
-/htmlcov/

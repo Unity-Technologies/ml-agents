@@ -19,25 +19,9 @@ class UnityEnvironmentException(UnityException):
     pass
 
 
-class UnityCommunicationException(UnityException):
-    """
-    Related to errors with the communicator.
-    """
-
-    pass
-
-
 class UnityActionException(UnityException):
     """
     Related to errors with sending actions.
-    """
-
-    pass
-
-
-class SamplerException(UnityException):
-    """
-    Related to errors with the sampler actions.
     """
 
     pass
@@ -54,15 +38,15 @@ class UnityTimeOutException(UnityException):
                 with open(log_file_path, "r") as f:
                     printing = False
                     unity_error = "\n"
-                    for line in f:
-                        line = line.strip()
-                        if (line == "Exception") or (line == "Error"):
+                    for l in f:
+                        l = l.strip()
+                        if (l == "Exception") or (l == "Error"):
                             printing = True
                             unity_error += "----------------------\n"
-                        if line == "":
+                        if l == "":
                             printing = False
                         if printing:
-                            unity_error += line + "\n"
+                            unity_error += l + "\n"
                     logger.info(unity_error)
                     logger.error(
                         "An error might have occured in the environment. "
@@ -70,7 +54,7 @@ class UnityTimeOutException(UnityException):
                             log_file_path
                         )
                     )
-            except Exception:
+            except:
                 logger.error(
                     "An error might have occured in the environment. "
                     "No UnitySDK.log file could be found."

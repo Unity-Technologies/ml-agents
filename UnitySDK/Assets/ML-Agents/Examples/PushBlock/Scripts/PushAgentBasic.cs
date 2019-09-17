@@ -1,6 +1,7 @@
-//Put this script on your blue cube.
+﻿//Put this script on your blue cube.
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -9,17 +10,17 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// The ground. The bounds are used to spawn the elements.
     /// </summary>
-    public GameObject ground;
+	public GameObject ground;
 
     public GameObject area;
 
     /// <summary>
     /// The area bounds.
     /// </summary>
-    [HideInInspector]
+	[HideInInspector]
     public Bounds areaBounds;
 
-    PushBlockAcademy m_Academy;
+    PushBlockAcademy academy;
 
     /// <summary>
     /// The goal to push the block to.
@@ -34,27 +35,24 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Detects when the block touches the goal.
     /// </summary>
-    [HideInInspector]
+	[HideInInspector]
     public GoalDetect goalDetect;
 
     public bool useVectorObs;
 
-    Rigidbody m_BlockRb;  //cached on initialization
-    Rigidbody m_AgentRb;  //cached on initialization
-    Material m_GroundMaterial; //cached on Awake()
-    RayPerception m_RayPer;
-
-    float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] m_DetectableObjects = { "block", "goal", "wall" };
+    Rigidbody blockRB;  //cached on initialization
+    Rigidbody agentRB;  //cached on initialization
+    Material groundMaterial; //cached on Awake()
+    RayPerception rayPer;
 
     /// <summary>
     /// We will be changing the ground material based on success/failue
     /// </summary>
-    Renderer m_GroundRenderer;
+    Renderer groundRenderer;
 
     void Awake()
     {
-        m_Academy = FindObjectOfType<PushBlockAcademy>(); //cache the academy
+        academy = FindObjectOfType<PushBlockAcademy>(); //cache the academy
     }
 
     public override void InitializeAgent()
@@ -62,20 +60,18 @@ public class PushAgentBasic : Agent
         base.InitializeAgent();
         goalDetect = block.GetComponent<GoalDetect>();
         goalDetect.agent = this;
-        m_RayPer = GetComponent<RayPerception>();
+        rayPer = GetComponent<RayPerception>();
 
         // Cache the agent rigidbody
-        m_AgentRb = GetComponent<Rigidbody>();
+        agentRB = GetComponent<Rigidbody>();
         // Cache the block rigidbody
-        m_BlockRb = block.GetComponent<Rigidbody>();
+        blockRB = block.GetComponent<Rigidbody>();
         // Get the ground's bounds
         areaBounds = ground.GetComponent<Collider>().bounds;
         // Get the ground renderer so we can change the material when a goal is scored
-        m_GroundRenderer = ground.GetComponent<Renderer>();
+        groundRenderer = ground.GetComponent<Renderer>();
         // Starting material
-        m_GroundMaterial = m_GroundRenderer.material;
-
-        SetResetParameters();
+        groundMaterial = groundRenderer.material;
     }
 
     public override void CollectObservations()
@@ -83,9 +79,10 @@ public class PushAgentBasic : Agent
         if (useVectorObs)
         {
             var rayDistance = 12f;
-
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 0f, 0f));
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 0f));
+            float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
+            var detectableObjects = new[] { "block", "goal", "wall" };
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1.5f, 0f));
         }
     }
 
@@ -94,15 +91,15 @@ public class PushAgentBasic : Agent
     /// </summary>
     public Vector3 GetRandomSpawnPos()
     {
-        var foundNewSpawnLocation = false;
-        var randomSpawnPos = Vector3.zero;
+        bool foundNewSpawnLocation = false;
+        Vector3 randomSpawnPos = Vector3.zero;
         while (foundNewSpawnLocation == false)
         {
-            var randomPosX = Random.Range(-areaBounds.extents.x * m_Academy.spawnAreaMarginMultiplier,
-                areaBounds.extents.x * m_Academy.spawnAreaMarginMultiplier);
+            float randomPosX = Random.Range(-areaBounds.extents.x * academy.spawnAreaMarginMultiplier,
+                                areaBounds.extents.x * academy.spawnAreaMarginMultiplier);
 
-            var randomPosZ = Random.Range(-areaBounds.extents.z * m_Academy.spawnAreaMarginMultiplier,
-                areaBounds.extents.z * m_Academy.spawnAreaMarginMultiplier);
+            float randomPosZ = Random.Range(-areaBounds.extents.z * academy.spawnAreaMarginMultiplier,
+                                            areaBounds.extents.z * academy.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
             if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
             {
@@ -115,7 +112,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called when the agent moves the block into the goal.
     /// </summary>
-    public void ScoredAGoal()
+    public void IScoredAGoal()
     {
         // We use a reward of 5.
         AddReward(5f);
@@ -124,7 +121,7 @@ public class PushAgentBasic : Agent
         Done();
 
         // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 0.5f));
+        StartCoroutine(GoalScoredSwapGroundMaterial(academy.goalScoredMaterial, 0.5f));
     }
 
     /// <summary>
@@ -132,20 +129,21 @@ public class PushAgentBasic : Agent
     /// </summary>
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
-        m_GroundRenderer.material = mat;
+        groundRenderer.material = mat;
         yield return new WaitForSeconds(time); // Wait for 2 sec
-        m_GroundRenderer.material = m_GroundMaterial;
+        groundRenderer.material = groundMaterial;
     }
 
     /// <summary>
     /// Moves the agent according to the selected action.
     /// </summary>
-    public void MoveAgent(float[] act)
+	public void MoveAgent(float[] act)
     {
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero;
 
-        var action = Mathf.FloorToInt(act[0]);
+        Vector3 dirToGo = Vector3.zero;
+        Vector3 rotateDir = Vector3.zero;
+
+        int action = Mathf.FloorToInt(act[0]);
 
         // Goalies and Strikers have slightly different action spaces.
         switch (action)
@@ -170,14 +168,15 @@ public class PushAgentBasic : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
-            ForceMode.VelocityChange);
+        agentRB.AddForce(dirToGo * academy.agentRunSpeed,
+                         ForceMode.VelocityChange);
+
     }
 
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+	public override void AgentAction(float[] vectorAction, string textAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);
@@ -195,54 +194,26 @@ public class PushAgentBasic : Agent
         block.transform.position = GetRandomSpawnPos();
 
         // Reset block velocity back to zero.
-        m_BlockRb.velocity = Vector3.zero;
+        blockRB.velocity = Vector3.zero;
 
         // Reset block angularVelocity back to zero.
-        m_BlockRb.angularVelocity = Vector3.zero;
+        blockRB.angularVelocity = Vector3.zero;
     }
 
+
     /// <summary>
-    /// In the editor, if "Reset On Done" is checked then AgentReset() will be
+    /// In the editor, if "Reset On Done" is checked then AgentReset() will be 
     /// called automatically anytime we mark done = true in an agent script.
     /// </summary>
-    public override void AgentReset()
+	public override void AgentReset()
     {
-        var rotation = Random.Range(0, 4);
-        var rotationAngle = rotation * 90f;
+        int rotation = Random.Range(0, 4);
+        float rotationAngle = rotation * 90f;
         area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         ResetBlock();
         transform.position = GetRandomSpawnPos();
-        m_AgentRb.velocity = Vector3.zero;
-        m_AgentRb.angularVelocity = Vector3.zero;
-
-        SetResetParameters();
-    }
-
-    public void SetGroundMaterialFriction()
-    {
-        var resetParams = m_Academy.resetParameters;
-
-        var groundCollider = ground.GetComponent<Collider>();
-
-        groundCollider.material.dynamicFriction = resetParams["dynamic_friction"];
-        groundCollider.material.staticFriction = resetParams["static_friction"];
-    }
-
-    public void SetBlockProperties()
-    {
-        var resetParams = m_Academy.resetParameters;
-
-        //Set the scale of the block
-        m_BlockRb.transform.localScale = new Vector3(resetParams["block_scale"], 0.75f, resetParams["block_scale"]);
-
-        // Set the drag of the block
-        m_BlockRb.drag = resetParams["block_drag"];
-    }
-
-    public void SetResetParameters()
-    {
-        SetGroundMaterialFriction();
-        SetBlockProperties();
+        agentRB.velocity = Vector3.zero;
+        agentRB.angularVelocity = Vector3.zero;
     }
 }

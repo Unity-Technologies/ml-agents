@@ -1,23 +1,25 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class TennisArea : MonoBehaviour
-{
+public class TennisArea : MonoBehaviour {
+
     public GameObject ball;
     public GameObject agentA;
     public GameObject agentB;
-    private Rigidbody m_BallRb;
+    private Rigidbody ballRb;
 
     // Use this for initialization
-    void Start()
+    void Start ()
     {
-        m_BallRb = ball.GetComponent<Rigidbody>();
+        ballRb = ball.GetComponent<Rigidbody>();
         MatchReset();
     }
-
-    public void MatchReset()
+    
+    public void MatchReset() 
     {
-        var ballOut = Random.Range(6f, 8f);
-        var flip = Random.Range(0, 2);
+        float ballOut = Random.Range(6f, 8f);
+        int flip = Random.Range(0, 2);
         if (flip == 0)
         {
             ball.transform.position = new Vector3(-ballOut, 6f, 0f) + transform.position;
@@ -26,14 +28,14 @@ public class TennisArea : MonoBehaviour
         {
             ball.transform.position = new Vector3(ballOut, 6f, 0f) + transform.position;
         }
-        m_BallRb.velocity = new Vector3(0f, 0f, 0f);
+        ballRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.localScale = new Vector3(1, 1, 1);
         ball.GetComponent<HitWall>().lastAgentHit = -1;
     }
 
-    void FixedUpdate()
+    void FixedUpdate() 
     {
-        var rgV = m_BallRb.velocity;
-        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -9f, 9f), Mathf.Clamp(rgV.y, -9f, 9f), rgV.z);
+        Vector3 rgV = ballRb.velocity;
+        ballRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -9f, 9f), Mathf.Clamp(rgV.y, -9f, 9f), rgV.z);
     }
 }

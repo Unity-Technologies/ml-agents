@@ -43,8 +43,7 @@ class UnityEnv(gym.Env):
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param multiagent: Whether to run in multi-agent mode (lists of obs, reward, done).
-        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than
-            MultiDiscrete.
+        :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than MultiDiscrete.
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
@@ -219,14 +218,16 @@ class UnityEnv(gym.Env):
     def _single_step(self, info):
         if self.use_visual:
             visual_obs = info.visual_observations
+            if isinstance(visual_obs, list):
+                visual_obs = np.array(visual_obs)
 
             if self._allow_multiple_visual_obs:
                 visual_obs_list = []
                 for obs in visual_obs:
-                    visual_obs_list.append(self._preprocess_single(obs[0]))
+                    visual_obs_list.append(self._preprocess_single(obs[0, :, :, :]))
                 self.visual_obs = visual_obs_list
             else:
-                self.visual_obs = self._preprocess_single(visual_obs[0][0])
+                self.visual_obs = self._preprocess_single(visual_obs[0][0, :, :, :])
 
             default_observation = self.visual_obs
         else:

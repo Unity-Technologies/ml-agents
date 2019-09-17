@@ -6,17 +6,17 @@ namespace MLAgents.Tests
 {
     public class RandomNormalTest
     {
-        private const float k_FirstValue = -1.19580f;
-        private const float k_SecondValue = -0.97345f;
-        private const double k_Epsilon = 0.0001;
+        private const float FirstValue = -1.19580f;
+        private const float SecondValue = -0.97345f;
+        private const double Epsilon = 0.0001;
 
         [Test]
         public void RandomNormalTestTwoDouble()
         {
             var rn = new RandomNormal(2018);
 
-            Assert.AreEqual(k_FirstValue, rn.NextDouble(), k_Epsilon);
-            Assert.AreEqual(k_SecondValue, rn.NextDouble(), k_Epsilon);
+            Assert.AreEqual(FirstValue, rn.NextDouble(), Epsilon);
+            Assert.AreEqual(SecondValue, rn.NextDouble(), Epsilon);
         }
 
         [Test]
@@ -24,8 +24,8 @@ namespace MLAgents.Tests
         {
             var rn = new RandomNormal(2018, 5.0f);
 
-            Assert.AreEqual(k_FirstValue + 5.0, rn.NextDouble(), k_Epsilon);
-            Assert.AreEqual(k_SecondValue + 5.0, rn.NextDouble(), k_Epsilon);
+            Assert.AreEqual(FirstValue + 5.0, rn.NextDouble(), Epsilon);
+            Assert.AreEqual(SecondValue + 5.0, rn.NextDouble(), Epsilon);
         }
 
         [Test]
@@ -33,8 +33,8 @@ namespace MLAgents.Tests
         {
             var rn = new RandomNormal(2018, 0.0f, 4.2f);
 
-            Assert.AreEqual(k_FirstValue * 4.2, rn.NextDouble(), k_Epsilon);
-            Assert.AreEqual(k_SecondValue * 4.2, rn.NextDouble(), k_Epsilon);
+            Assert.AreEqual(FirstValue * 4.2, rn.NextDouble(), Epsilon);
+            Assert.AreEqual(SecondValue * 4.2, rn.NextDouble(), Epsilon);
         }
 
         [Test]
@@ -44,10 +44,10 @@ namespace MLAgents.Tests
             const float stddev = 2.2f;
             var rn = new RandomNormal(2018, mean, stddev);
 
-            Assert.AreEqual(k_FirstValue * stddev + mean, rn.NextDouble(), k_Epsilon);
-            Assert.AreEqual(k_SecondValue * stddev + mean, rn.NextDouble(), k_Epsilon);
+            Assert.AreEqual(FirstValue * stddev + mean, rn.NextDouble(), Epsilon);
+            Assert.AreEqual(SecondValue * stddev + mean, rn.NextDouble(), Epsilon);
         }
-
+        
         [Test]
         public void RandomNormalTestDistribution()
         {

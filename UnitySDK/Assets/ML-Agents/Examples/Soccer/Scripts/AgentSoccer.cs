@@ -1,36 +1,30 @@
-using UnityEngine;
+﻿using UnityEngine;
 using MLAgents;
 
 public class AgentSoccer : Agent
 {
+
     public enum Team
     {
-        Red,
+        Red, 
         Blue
     }
     public enum AgentRole
     {
-        Striker,
+        Striker, 
         Goalie
     }
-
+    
     public Team team;
     public AgentRole agentRole;
-    float m_KickPower;
-    int m_PlayerIndex;
+    float kickPower;
+    int playerIndex;
     public SoccerFieldArea area;
-
+    
     [HideInInspector]
     public Rigidbody agentRb;
-    SoccerAcademy m_Academy;
-    Renderer m_AgentRenderer;
-    RayPerception m_RayPer;
-
-    float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] m_DetectableObjectsRed = { "ball", "redGoal", "blueGoal",
-                                        "wall", "redAgent", "blueAgent" };
-    string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "redGoal",
-                                         "wall", "blueAgent", "redAgent" };
+    SoccerAcademy academy;
+    RayPerception rayPer;
 
     public void ChooseRandomTeam()
     {
@@ -49,7 +43,6 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Red;
-        m_AgentRenderer.material = m_Academy.redMaterial;
         tag = "redAgent";
     }
 
@@ -57,62 +50,63 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Blue;
-        m_AgentRenderer.material = m_Academy.blueMaterial;
         tag = "blueAgent";
     }
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRenderer = GetComponent<Renderer>();
-        m_RayPer = GetComponent<RayPerception>();
-        m_Academy = FindObjectOfType<SoccerAcademy>();
+        rayPer = GetComponent<RayPerception>();
+        academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
 
         var playerState = new PlayerState
         {
-            agentRb = agentRb,
-            startingPos = transform.position,
+            agentRB = agentRb, 
+            startingPos = transform.position, 
             agentScript = this,
         };
         area.playerStates.Add(playerState);
-        m_PlayerIndex = area.playerStates.IndexOf(playerState);
-        playerState.playerIndex = m_PlayerIndex;
+        playerIndex = area.playerStates.IndexOf(playerState);
+        playerState.playerIndex = playerIndex;
     }
 
     public override void CollectObservations()
     {
-        var rayDistance = 20f;
+        float rayDistance = 20f;
+        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
         string[] detectableObjects;
         if (team == Team.Red)
         {
-            detectableObjects = m_DetectableObjectsRed;
+            detectableObjects = new[] { "ball", "redGoal", "blueGoal",
+                "wall", "redAgent", "blueAgent" };
         }
         else
         {
-            detectableObjects = m_DetectableObjectsBlue;
+            detectableObjects = new[] { "ball", "blueGoal", "redGoal",
+                "wall", "blueAgent", "redAgent" };
         }
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 1f, 0f));
     }
 
     public void MoveAgent(float[] act)
     {
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero;
+        Vector3 dirToGo = Vector3.zero;
+        Vector3 rotateDir = Vector3.zero;
 
-        var action = Mathf.FloorToInt(act[0]);
+        int action = Mathf.FloorToInt(act[0]);
 
         // Goalies and Strikers have slightly different action spaces.
         if (agentRole == AgentRole.Goalie)
         {
-            m_KickPower = 0f;
+            kickPower = 0f;
             switch (action)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
+                    kickPower = 1f;
                     break;
                 case 2:
                     dirToGo = transform.forward * -1f;
@@ -127,12 +121,12 @@ public class AgentSoccer : Agent
         }
         else
         {
-            m_KickPower = 0f;
+            kickPower = 0f;
             switch (action)
             {
                 case 1:
                     dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
+                    kickPower = 1f;
                     break;
                 case 2:
                     dirToGo = transform.forward * -1f;
@@ -152,9 +146,11 @@ public class AgentSoccer : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
-            ForceMode.VelocityChange);
+        agentRb.AddForce(dirToGo * academy.agentRunSpeed,
+                         ForceMode.VelocityChange);
+
     }
+
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -169,6 +165,7 @@ public class AgentSoccer : Agent
             AddReward(1f / 3000f);
         }
         MoveAgent(vectorAction);
+
     }
 
     /// <summary>
@@ -176,10 +173,10 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 2000f * m_KickPower;
+        float force = 2000f * kickPower;
         if (c.gameObject.CompareTag("ball"))
         {
-            var dir = c.contacts[0].point - transform.position;
+            Vector3 dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
         }
@@ -187,7 +184,7 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
-        if (m_Academy.randomizePlayersTeamForTraining)
+        if (academy.randomizePlayersTeamForTraining)
         {
             ChooseRandomTeam();
         }
@@ -205,11 +202,6 @@ public class AgentSoccer : Agent
         transform.position = area.GetRandomSpawnPos(agentRole, team);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
-        SetResetParameters();
-    }
-
-    public void SetResetParameters()
-    {
         area.ResetBall();
     }
 }

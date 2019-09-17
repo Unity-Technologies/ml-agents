@@ -1,3 +1,5 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -16,14 +18,14 @@ namespace MLAgents
         public bool penalizeGroundContact; // Whether to penalize on contact.
         public float groundContactPenalty; // Penalty amount (ex: -1).
         public bool touchingGround;
-        private const string k_Ground = "ground"; // Tag of ground object.
+        private const string Ground = "ground"; // Tag of ground object.
 
         /// <summary>
         /// Check for collision with ground, and optionally penalize agent.
         /// </summary>
         void OnCollisionEnter(Collision col)
         {
-            if (col.transform.CompareTag(k_Ground))
+            if (col.transform.CompareTag(Ground))
             {
                 touchingGround = true;
                 if (penalizeGroundContact)
@@ -43,7 +45,7 @@ namespace MLAgents
         /// </summary>
         void OnCollisionExit(Collision other)
         {
-            if (other.transform.CompareTag(k_Ground))
+            if (other.transform.CompareTag(Ground))
             {
                 touchingGround = false;
             }

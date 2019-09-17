@@ -1,61 +1,63 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class BasicAgent : Agent
 {
     [Header("Specific to Basic")]
-    private BasicAcademy m_Academy;
+    private BasicAcademy academy;
     public float timeBetweenDecisionsAtInference;
-    private float m_TimeSinceDecision;
-    int m_Position;
-    int m_SmallGoalPosition;
-    int m_LargeGoalPosition;
+    private float timeSinceDecision;
+    int position;
+    int smallGoalPosition;
+    int largeGoalPosition;
     public GameObject largeGoal;
     public GameObject smallGoal;
-    int m_MinPosition;
-    int m_MaxPosition;
+    int minPosition;
+    int maxPosition;
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
+        academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
     }
 
     public override void CollectObservations()
     {
-        AddVectorObs(m_Position, 20);
+        AddVectorObs(position, 20);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
-    {
+	{
         var movement = (int)vectorAction[0];
+	    
+		int direction = 0;
+	    
+		switch (movement)
+		{
+		    case 1:
+		        direction = -1;
+		        break;
+		    case 2:
+		        direction = 1;
+		        break;
+		}
 
-        var direction = 0;
+	    position += direction;
+        if (position < minPosition) { position = minPosition; }
+        if (position > maxPosition) { position = maxPosition; }
 
-        switch (movement)
-        {
-            case 1:
-                direction = -1;
-                break;
-            case 2:
-                direction = 1;
-                break;
-        }
-
-        m_Position += direction;
-        if (m_Position < m_MinPosition) { m_Position = m_MinPosition; }
-        if (m_Position > m_MaxPosition) { m_Position = m_MaxPosition; }
-
-        gameObject.transform.position = new Vector3(m_Position - 10f, 0f, 0f);
+        gameObject.transform.position = new Vector3(position - 10f, 0f, 0f);
 
         AddReward(-0.01f);
 
-        if (m_Position == m_SmallGoalPosition)
+        if (position == smallGoalPosition)
         {
             Done();
             AddReward(0.1f);
         }
 
-        if (m_Position == m_LargeGoalPosition)
+        if (position == largeGoalPosition)
         {
             Done();
             AddReward(1f);
@@ -64,17 +66,18 @@ public class BasicAgent : Agent
 
     public override void AgentReset()
     {
-        m_Position = 10;
-        m_MinPosition = 0;
-        m_MaxPosition = 20;
-        m_SmallGoalPosition = 7;
-        m_LargeGoalPosition = 17;
-        smallGoal.transform.position = new Vector3(m_SmallGoalPosition - 10f, 0f, 0f);
-        largeGoal.transform.position = new Vector3(m_LargeGoalPosition - 10f, 0f, 0f);
+        position = 10;
+        minPosition = 0;
+        maxPosition = 20;
+        smallGoalPosition = 7;
+        largeGoalPosition = 17;
+        smallGoal.transform.position = new Vector3(smallGoalPosition - 10f, 0f, 0f);
+        largeGoal.transform.position = new Vector3(largeGoalPosition - 10f, 0f, 0f);
     }
 
     public override void AgentOnDone()
     {
+
     }
 
     public void FixedUpdate()
@@ -84,21 +87,22 @@ public class BasicAgent : Agent
 
     private void WaitTimeInference()
     {
-        if (!m_Academy.GetIsInference())
+        if (!academy.GetIsInference())
         {
             RequestDecision();
         }
         else
         {
-            if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
+            if (timeSinceDecision >= timeBetweenDecisionsAtInference)
             {
-                m_TimeSinceDecision = 0f;
+                timeSinceDecision = 0f;
                 RequestDecision();
             }
             else
             {
-                m_TimeSinceDecision += Time.fixedDeltaTime;
+                timeSinceDecision += Time.fixedDeltaTime;
             }
         }
     }
+
 }

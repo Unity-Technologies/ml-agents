@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
@@ -16,76 +16,77 @@ public class GridAcademy : Academy
     public int gridSize;
 
     public GameObject camObject;
-    Camera m_Cam;
-    Camera m_AgentCam;
+    Camera cam;
+    Camera agentCam;
 
     public GameObject agentPref;
     public GameObject goalPref;
     public GameObject pitPref;
-    GameObject[] m_Objects;
+    GameObject[] objects;
 
-    GameObject m_Plane;
-    GameObject m_Sn;
-    GameObject m_Ss;
-    GameObject m_Se;
-    GameObject m_Sw;
+    GameObject plane;
+    GameObject sN;
+    GameObject sS;
+    GameObject sE;
+    GameObject sW;
 
     public override void InitializeAcademy()
     {
         gridSize = (int)resetParameters["gridSize"];
-        m_Cam = camObject.GetComponent<Camera>();
+        cam = camObject.GetComponent<Camera>();
 
-        m_Objects = new[] {agentPref, goalPref, pitPref};
+        objects = new GameObject[3] {agentPref, goalPref, pitPref};
 
-        m_AgentCam = GameObject.Find("agentCam").GetComponent<Camera>();
+        agentCam = GameObject.Find("agentCam").GetComponent<Camera>();
 
         actorObjs = new List<GameObject>();
 
-        m_Plane = GameObject.Find("Plane");
-        m_Sn = GameObject.Find("sN");
-        m_Ss = GameObject.Find("sS");
-        m_Sw = GameObject.Find("sW");
-        m_Se = GameObject.Find("sE");
+        plane = GameObject.Find("Plane");
+        sN = GameObject.Find("sN");
+        sS = GameObject.Find("sS");
+        sW = GameObject.Find("sW");
+        sE = GameObject.Find("sE");
     }
 
     public void SetEnvironment()
     {
-        m_Cam.transform.position = new Vector3(-((int)resetParameters["gridSize"] - 1) / 2f,
-            (int)resetParameters["gridSize"] * 1.25f,
-            -((int)resetParameters["gridSize"] - 1) / 2f);
-        m_Cam.orthographicSize = ((int)resetParameters["gridSize"] + 5f) / 2f;
+        cam.transform.position = new Vector3(-((int)resetParameters["gridSize"] - 1) / 2f, 
+                                             (int)resetParameters["gridSize"] * 1.25f, 
+                                             -((int)resetParameters["gridSize"] - 1) / 2f);
+        cam.orthographicSize = ((int)resetParameters["gridSize"] + 5f) / 2f;
 
-        var playersList = new List<int>();
+        List<int> playersList = new List<int>();
 
-        for (var i = 0; i < (int)resetParameters["numObstacles"]; i++)
+        for (int i = 0; i < (int)resetParameters["numObstacles"]; i++)
         {
             playersList.Add(2);
         }
 
-        for (var i = 0; i < (int)resetParameters["numGoals"]; i++)
+        for (int i = 0; i < (int)resetParameters["numGoals"]; i++)
         {
             playersList.Add(1);
         }
         players = playersList.ToArray();
 
-        m_Plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
-        m_Plane.transform.position = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
-        m_Sn.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Ss.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Sn.transform.position = new Vector3((gridSize - 1) / 2f, 0.0f, gridSize);
-        m_Ss.transform.position = new Vector3((gridSize - 1) / 2f, 0.0f, -1);
-        m_Se.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Sw.transform.localScale = new Vector3(1, 1, gridSize + 2);
-        m_Se.transform.position = new Vector3(gridSize, 0.0f, (gridSize - 1) / 2f);
-        m_Sw.transform.position = new Vector3(-1, 0.0f, (gridSize - 1) / 2f);
+        plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
+        plane.transform.position = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
+        sN.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        sS.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        sN.transform.position = new Vector3((gridSize - 1) / 2f, 0.0f, gridSize);
+        sS.transform.position = new Vector3((gridSize - 1) / 2f, 0.0f, -1);
+        sE.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        sW.transform.localScale = new Vector3(1, 1, gridSize + 2);
+        sE.transform.position = new Vector3(gridSize, 0.0f, (gridSize - 1) / 2f);
+        sW.transform.position = new Vector3(-1, 0.0f, (gridSize - 1) / 2f);
 
-        m_AgentCam.orthographicSize = (gridSize) / 2f;
-        m_AgentCam.transform.position = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
+        agentCam.orthographicSize = (gridSize) / 2f;
+        agentCam.transform.position = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
+
     }
 
     public override void AcademyReset()
     {
-        foreach (var actor in actorObjs)
+        foreach (GameObject actor in actorObjs)
         {
             DestroyImmediate(actor);
         }
@@ -93,28 +94,30 @@ public class GridAcademy : Academy
 
         actorObjs.Clear();
 
-        var numbers = new HashSet<int>();
+        HashSet<int> numbers = new HashSet<int>();
         while (numbers.Count < players.Length + 1)
         {
             numbers.Add(Random.Range(0, gridSize * gridSize));
         }
-        var numbersA = Enumerable.ToArray(numbers);
+        int[] numbersA = Enumerable.ToArray(numbers);
 
-        for (var i = 0; i < players.Length; i++)
+        for (int i = 0; i < players.Length; i++)
         {
-            var x = (numbersA[i]) / gridSize;
-            var y = (numbersA[i]) % gridSize;
-            var actorObj = Instantiate(m_Objects[players[i]]);
+            int x = (numbersA[i]) / gridSize;
+            int y = (numbersA[i]) % gridSize;
+            GameObject actorObj = Instantiate(objects[players[i]]);
             actorObj.transform.position = new Vector3(x, -0.25f, y);
             actorObjs.Add(actorObj);
         }
 
-        var xA = (numbersA[players.Length]) / gridSize;
-        var yA = (numbersA[players.Length]) % gridSize;
-        trueAgent.transform.position = new Vector3(xA, -0.25f, yA);
+        int x_a = (numbersA[players.Length]) / gridSize;
+        int y_a = (numbersA[players.Length]) % gridSize;
+        trueAgent.transform.position = new Vector3(x_a, -0.25f, y_a);
+
     }
 
     public override void AcademyStep()
     {
+
     }
 }

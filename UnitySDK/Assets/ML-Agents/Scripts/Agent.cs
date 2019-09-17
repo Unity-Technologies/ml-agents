@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 using UnityEngine;
@@ -88,10 +89,11 @@ namespace MLAgents
         /// <summary>
         /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
         /// </summary>
-        /// <returns>The protobuf version of the AgentInfo.</returns>
-        public AgentInfoProto ToProto()
+        /// <returns>The protobuf verison of the AgentInfo.</returns>
+        /// <param name="info">The AgentInfo to convert.</param>
+        public CommunicatorObjects.AgentInfoProto ToProto()
         {
-            var agentInfoProto = new AgentInfoProto
+            var agentInfoProto = new CommunicatorObjects.AgentInfoProto
             {
                 StackedVectorObservation = {stackedVectorObservation},
                 StoredVectorActions = {storedVectorActions},
@@ -113,7 +115,7 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(actionMasks);
             }
 
-            foreach (var obs in visualObservations)
+            foreach (Texture2D obs in visualObservations)
             {
                 agentInfoProto.VisualObservations.Add(
                     ByteString.CopyFrom(obs.EncodeToPNG())
@@ -128,7 +130,7 @@ namespace MLAgents
         /// </summary>
         public void ClearVisualObs()
         {
-            foreach (var obs in visualObservations)
+            foreach (Texture2D obs in visualObservations)
             {
                 Object.Destroy(obs);
             }
@@ -146,7 +148,7 @@ namespace MLAgents
         public string textActions;
         public List<float> memories;
         public float value;
-        public CustomAction customAction;
+        public CommunicatorObjects.CustomAction customAction;
     }
 
     /// <summary>
@@ -224,7 +226,7 @@ namespace MLAgents
     /// agent updates its brain with a fresh observation is determined by the
     /// Academy.
     ///
-    /// At any step, an agent may be considered <see cref="m_Done"/>.
+    /// At any step, an agent may be considered <see cref="done"/>.
     /// This could occur due to a variety of reasons:
     ///     - The agent reached an end state within its environment.
     ///     - The agent reached the maximum # of steps (i.e. timed out).
@@ -255,7 +257,7 @@ namespace MLAgents
     /// see the Examples/ directory within this Unity project.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-        "docs/Learning-Environment-Design-Agents.md")]
+             "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
     public abstract class Agent : MonoBehaviour
     {
@@ -273,10 +275,10 @@ namespace MLAgents
         [HideInInspector] public AgentParameters agentParameters;
 
         /// Current Agent information (message sent to Brain).
-        AgentInfo m_Info;
+        AgentInfo info;
 
         /// Current Agent action (message sent from Brain).
-        AgentAction m_Action;
+        AgentAction action;
 
         /// Represents the reward the agent accumulated during the current step.
         /// It is reset to 0 at the beginning of every step.
@@ -284,68 +286,68 @@ namespace MLAgents
         /// action that we wish to reinforce/reward, and set to a negative value
         /// when the agent performs a "bad" action that we wish to punish/deter.
         /// Additionally, the magnitude of the reward should not exceed 1.0
-        float m_Reward;
+        float reward;
 
         /// Keeps track of the cumulative reward in this episode.
-        float m_CumulativeReward;
+        float cumulativeReward;
 
         /// Whether or not the agent requests an action.
-        bool m_RequestAction;
+        bool requestAction;
 
         /// Whether or not the agent requests a decision.
-        bool m_RequestDecision;
+        bool requestDecision;
 
         /// Whether or not the agent has completed the episode. This may be due
         /// to either reaching a success or fail state, or reaching the maximum
         /// number of steps (i.e. timing out).
-        bool m_Done;
+        bool done;
 
         /// Whether or not the agent reached the maximum number of steps.
-        bool m_MaxStepReached;
+        bool maxStepReached;
 
         /// Keeps track of the number of steps taken by the agent in this episode.
         /// Note that this value is different for each agent, and may not overlap
         /// with the step counter in the Academy, since agents reset based on
         /// their own experience.
-        int m_StepCount;
+        int stepCount;
 
         /// Flag to signify that an agent has been reset but the fact that it is
         /// done has not been communicated (required for On Demand Decisions).
-        bool m_HasAlreadyReset;
+        bool hasAlreadyReset;
 
         /// Flag to signify that an agent is done and should not reset until
         /// the fact that it is done has been communicated.
-        bool m_Terminate;
+        bool terminate;
 
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
-        int m_Id;
+        int id;
 
         /// Keeps track of the actions that are masked at each step.
-        private ActionMasker m_ActionMasker;
+        private ActionMasker actionMasker;
 
         /// <summary>
         /// Demonstration recorder.
         /// </summary>
-        private DemonstrationRecorder m_Recorder;
+        private DemonstrationRecorder recorder;
 
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_Id = gameObject.GetInstanceID();
-            var academy = FindObjectOfType<Academy>();
+            id = gameObject.GetInstanceID();
+            Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             OnEnableHelper(academy);
 
-            m_Recorder = GetComponent<DemonstrationRecorder>();
+            recorder = GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
         void OnEnableHelper(Academy academy)
         {
-            m_Info = new AgentInfo();
-            m_Action = new AgentAction();
+            info = new AgentInfo();
+            action = new AgentAction();
 
             if (academy == null)
             {
@@ -379,7 +381,7 @@ namespace MLAgents
         /// becomes disabled or inactive.
         void OnDisable()
         {
-            var academy = FindObjectOfType<Academy>();
+            Academy academy = Object.FindObjectOfType<Academy>() as Academy;
             if (academy != null)
             {
                 academy.AgentSetStatus -= SetStatus;
@@ -402,10 +404,10 @@ namespace MLAgents
         /// brain when an agent is randomly exploring an open world, but switch
         /// to another (fighting) brain when it comes into contact with an enemy.
         /// </remarks>
-        /// <param name="givenBrain">New brain to subscribe this agent to</param>
-        public void GiveBrain(Brain givenBrain)
+        /// <param name="brain">New brain to subscribe this agent to</param>
+        public void GiveBrain(Brain brain)
         {
-            brain = givenBrain;
+            this.brain = brain;
             ResetData();
         }
 
@@ -417,7 +419,7 @@ namespace MLAgents
         /// </returns>
         public int GetStepCount()
         {
-            return m_StepCount;
+            return stepCount;
         }
 
         /// <summary>
@@ -425,10 +427,10 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            m_Reward = 0f;
-            if (m_Done)
+            reward = 0f;
+            if (done)
             {
-                m_CumulativeReward = 0f;
+                cumulativeReward = 0f;
             }
         }
 
@@ -439,8 +441,8 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            m_CumulativeReward += (reward - m_Reward);
-            m_Reward = reward;
+            cumulativeReward += (reward - this.reward);
+            this.reward = reward;
         }
 
         /// <summary>
@@ -449,8 +451,8 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            m_Reward += increment;
-            m_CumulativeReward += increment;
+            reward += increment;
+            cumulativeReward += increment;
         }
 
         /// <summary>
@@ -459,7 +461,7 @@ namespace MLAgents
         /// <returns>The step reward.</returns>
         public float GetReward()
         {
-            return m_Reward;
+            return reward;
         }
 
         /// <summary>
@@ -468,7 +470,7 @@ namespace MLAgents
         /// <returns>The episode reward.</returns>
         public float GetCumulativeReward()
         {
-            return m_CumulativeReward;
+            return cumulativeReward;
         }
 
         /// <summary>
@@ -476,7 +478,7 @@ namespace MLAgents
         /// </summary>
         public void Done()
         {
-            m_Done = true;
+            done = true;
         }
 
         /// <summary>
@@ -484,7 +486,7 @@ namespace MLAgents
         /// </summary>
         public void RequestDecision()
         {
-            m_RequestDecision = true;
+            requestDecision = true;
             RequestAction();
         }
 
@@ -493,7 +495,7 @@ namespace MLAgents
         /// </summary>
         public void RequestAction()
         {
-            m_RequestAction = true;
+            requestAction = true;
         }
 
         /// <summary>
@@ -504,7 +506,7 @@ namespace MLAgents
         /// </returns>
         public bool IsMaxStepReached()
         {
-            return m_MaxStepReached;
+            return maxStepReached;
         }
 
         /// <summary>
@@ -515,7 +517,7 @@ namespace MLAgents
         /// </returns>
         public bool IsDone()
         {
-            return m_Done;
+            return done;
         }
 
         /// Helper function that resets all the data structures associated with
@@ -528,41 +530,41 @@ namespace MLAgents
                 return;
             }
 
-            var param = brain.brainParameters;
-            m_ActionMasker = new ActionMasker(param);
+            BrainParameters param = brain.brainParameters;
+            actionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
             // should stay the previous action before the Done(), so that it is properly recorded.
-            if (m_Action.vectorActions == null)
+            if (action.vectorActions == null)
             {
-                if (param.vectorActionSpaceType == SpaceType.Continuous)
+                if (param.vectorActionSpaceType == SpaceType.continuous)
                 {
-                    m_Action.vectorActions = new float[param.vectorActionSize[0]];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize[0]];
+                    action.vectorActions = new float[param.vectorActionSize[0]];
+                    info.storedVectorActions = new float[param.vectorActionSize[0]];
                 }
                 else
                 {
-                    m_Action.vectorActions = new float[param.vectorActionSize.Length];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
+                    action.vectorActions = new float[param.vectorActionSize.Length];
+                    info.storedVectorActions = new float[param.vectorActionSize.Length];
                 }
             }
 
-            if (m_Info.textObservation == null)
-                m_Info.textObservation = "";
-            m_Action.textActions = "";
-            m_Info.memories = new List<float>();
-            m_Action.memories = new List<float>();
-            m_Info.vectorObservation =
+            if (info.textObservation == null)
+                info.textObservation = "";
+            action.textActions = "";
+            info.memories = new List<float>();
+            action.memories = new List<float>();
+            info.vectorObservation =
                 new List<float>(param.vectorObservationSize);
-            m_Info.stackedVectorObservation =
+            info.stackedVectorObservation =
                 new List<float>(param.vectorObservationSize
-                    * brain.brainParameters.numStackedVectorObservations);
-            m_Info.stackedVectorObservation.AddRange(
+                                * brain.brainParameters.numStackedVectorObservations);
+            info.stackedVectorObservation.AddRange(
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
 
-            m_Info.visualObservations = new List<Texture2D>();
-            m_Info.customObservation = null;
+            info.visualObservations = new List<Texture2D>();
+            info.customObservation = null;
         }
 
         /// <summary>
@@ -588,16 +590,16 @@ namespace MLAgents
                 return;
             }
 
-            m_Info.memories = m_Action.memories;
-            m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.storedTextActions = m_Action.textActions;
-            m_Info.vectorObservation.Clear();
-            m_ActionMasker.ResetMask();
+            info.memories = action.memories;
+            info.storedVectorActions = action.vectorActions;
+            info.storedTextActions = action.textActions;
+            info.vectorObservation.Clear();
+            actionMasker.ResetMask();
             CollectObservations();
-            m_Info.actionMasks = m_ActionMasker.GetMask();
+            info.actionMasks = actionMasker.GetMask();
 
-            var param = brain.brainParameters;
-            if (m_Info.vectorObservation.Count != param.vectorObservationSize)
+            BrainParameters param = brain.brainParameters;
+            if (info.vectorObservation.Count != param.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(
                     "Vector Observation size mismatch between continuous " +
@@ -605,15 +607,15 @@ namespace MLAgents
                     "Was Expecting {2} but received {3}. ",
                     gameObject.name, brain.name,
                     brain.brainParameters.vectorObservationSize,
-                    m_Info.vectorObservation.Count));
+                    info.vectorObservation.Count));
             }
 
-            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
-            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
-                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
+            Utilities.ShiftLeft(info.stackedVectorObservation, param.vectorObservationSize);
+            Utilities.ReplaceRange(info.stackedVectorObservation, info.vectorObservation,
+                                    info.stackedVectorObservation.Count - info.vectorObservation.Count);
 
-            m_Info.visualObservations.Clear();
-            var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
+            info.visualObservations.Clear();
+            var visualObservationCount = agentParameters.agentCameras.Count+agentParameters.agentRenderTextures.Count;
             if (param.cameraResolutions.Length > visualObservationCount)
             {
                 throw new UnityAgentsException(string.Format(
@@ -625,39 +627,39 @@ namespace MLAgents
             }
 
             //First add all cameras
-            for (var i = 0; i < agentParameters.agentCameras.Count; i++)
+            for (int i = 0; i < agentParameters.agentCameras.Count; i++)
             {
                 var obsTexture = ObservationToTexture(
                     agentParameters.agentCameras[i],
                     param.cameraResolutions[i].width,
                     param.cameraResolutions[i].height);
-                m_Info.visualObservations.Add(obsTexture);
+                info.visualObservations.Add(obsTexture);
             }
 
             //Then add all renderTextures
             var camCount = agentParameters.agentCameras.Count;
-            for (var i = 0; i < agentParameters.agentRenderTextures.Count; i++)
+            for (int i = 0; i < agentParameters.agentRenderTextures.Count; i++)
             {
                 var obsTexture = ObservationToTexture(
                     agentParameters.agentRenderTextures[i],
-                    param.cameraResolutions[camCount + i].width,
-                    param.cameraResolutions[camCount + i].height);
-                m_Info.visualObservations.Add(obsTexture);
+                    param.cameraResolutions[camCount+i].width,
+                    param.cameraResolutions[camCount+i].height);
+                info.visualObservations.Add(obsTexture);
             }
 
-            m_Info.reward = m_Reward;
-            m_Info.done = m_Done;
-            m_Info.maxStepReached = m_MaxStepReached;
-            m_Info.id = m_Id;
+            info.reward = reward;
+            info.done = done;
+            info.maxStepReached = maxStepReached;
+            info.id = id;
 
-            brain.SendState(this, m_Info);
+            brain.SendState(this, info);
 
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            if (recorder != null && recorder.record && Application.isEditor)
             {
-                m_Recorder.WriteExperience(m_Info);
+                recorder.WriteExperience(info);
             }
 
-            m_Info.textObservation = "";
+            info.textObservation = "";
         }
 
         /// <summary>
@@ -676,12 +678,8 @@ namespace MLAgents
         ///     - <see cref="AddVectorObs(float)"/>
         ///     - <see cref="AddVectorObs(Vector3)"/>
         ///     - <see cref="AddVectorObs(Vector2)"/>
-        ///     - <see>
-        ///         <cref>AddVectorObs(float[])</cref>
-        ///       </see>
-        ///     - <see>
-        ///         <cref>AddVectorObs(List{float})</cref>
-        ///      </see>
+        ///     - <see cref="AddVectorObs(float[])"/>
+        ///     - <see cref="AddVectorObs(List{float})"/>
         ///     - <see cref="AddVectorObs(Quaternion)"/>
         ///     - <see cref="AddVectorObs(bool)"/>
         ///     - <see cref="AddVectorObs(int, int)"/>
@@ -707,7 +705,7 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
         protected void SetActionMask(IEnumerable<int> actionIndices)
         {
-            m_ActionMasker.SetActionMask(0, actionIndices);
+            actionMasker.SetActionMask(0, actionIndices);
         }
 
         /// <summary>
@@ -719,7 +717,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         protected void SetActionMask(int actionIndex)
         {
-            m_ActionMasker.SetActionMask(0, new[] { actionIndex });
+            actionMasker.SetActionMask(0, new int[1] { actionIndex });
         }
 
         /// <summary>
@@ -732,7 +730,7 @@ namespace MLAgents
         /// <param name="actionIndex">The index of the masked action</param>
         protected void SetActionMask(int branch, int actionIndex)
         {
-            m_ActionMasker.SetActionMask(branch, new[] { actionIndex });
+            actionMasker.SetActionMask(branch, new int[1] { actionIndex });
         }
 
         /// <summary>
@@ -745,8 +743,9 @@ namespace MLAgents
         /// <param name="actionIndices">The indices of the masked actions</param>
         protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
-            m_ActionMasker.SetActionMask(branch, actionIndices);
+            actionMasker.SetActionMask(branch, actionIndices);
         }
+
 
         /// <summary>
         /// Adds a float observation to the vector observations of the agent.
@@ -755,7 +754,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            info.vectorObservation.Add(observation);
         }
 
         /// <summary>
@@ -765,7 +764,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            info.vectorObservation.Add(observation);
         }
 
         /// <summary>
@@ -775,9 +774,9 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
+            info.vectorObservation.Add(observation.x);
+            info.vectorObservation.Add(observation.y);
+            info.vectorObservation.Add(observation.z);
         }
 
         /// <summary>
@@ -787,8 +786,8 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
+            info.vectorObservation.Add(observation.x);
+            info.vectorObservation.Add(observation.y);
         }
 
         /// <summary>
@@ -798,7 +797,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            m_Info.vectorObservation.AddRange(observation);
+            info.vectorObservation.AddRange(observation);
         }
 
         /// <summary>
@@ -808,10 +807,10 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
-            m_Info.vectorObservation.Add(observation.w);
+            info.vectorObservation.Add(observation.x);
+            info.vectorObservation.Add(observation.y);
+            info.vectorObservation.Add(observation.z);
+            info.vectorObservation.Add(observation.w);
         }
 
         /// <summary>
@@ -821,14 +820,14 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            m_Info.vectorObservation.Add(observation ? 1f : 0f);
+            info.vectorObservation.Add(observation ? 1f : 0f);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            var oneHotVector = new float[range];
+            float[] oneHotVector = new float[range];
             oneHotVector[observation] = 1;
-            m_Info.vectorObservation.AddRange(oneHotVector);
+            info.vectorObservation.AddRange(oneHotVector);
         }
 
         /// <summary>
@@ -837,7 +836,7 @@ namespace MLAgents
         /// <param name="textObservation">The text observation.</param>
         public void SetTextObs(string textObservation)
         {
-            m_Info.textObservation = textObservation;
+            info.textObservation = textObservation;
         }
 
         /// <summary>
@@ -863,10 +862,10 @@ namespace MLAgents
         /// </param>
         /// <param name="textAction">Text action.</param>
         /// <param name="customAction">
-        /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
+        /// A custom action, defined by the user as custom protobuffer message. Useful if the action is hard to encode
         /// as either a flat vector or a single string.
         /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CustomAction customAction)
+        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomAction customAction)
         {
             // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
             AgentAction(vectorAction, textAction);
@@ -897,7 +896,7 @@ namespace MLAgents
         void _AgentReset()
         {
             ResetData();
-            m_StepCount = 0;
+            stepCount = 0;
             AgentReset();
         }
 
@@ -907,7 +906,7 @@ namespace MLAgents
         /// <param name="vectorActions">Vector actions.</param>
         public void UpdateVectorAction(float[] vectorActions)
         {
-            m_Action.vectorActions = vectorActions;
+            action.vectorActions = vectorActions;
         }
 
         /// <summary>
@@ -916,17 +915,17 @@ namespace MLAgents
         /// <param name="memories">Memories.</param>
         public void UpdateMemoriesAction(List<float> memories)
         {
-            m_Action.memories = memories;
+            action.memories = memories;
         }
 
         public void AppendMemoriesAction(List<float> memories)
         {
-            m_Action.memories.AddRange(memories);
+            action.memories.AddRange(memories);
         }
 
         public List<float> GetMemoriesAction()
         {
-            return m_Action.memories;
+            return action.memories;
         }
 
         /// <summary>
@@ -935,33 +934,34 @@ namespace MLAgents
         /// <param name="textActions">Text actions.</param>
         public void UpdateTextAction(string textActions)
         {
-            m_Action.textActions = textActions;
+            action.textActions = textActions;
         }
 
         /// <summary>
         /// Updates the custom action.
         /// </summary>
         /// <param name="customAction">Custom action.</param>
-        public void UpdateCustomAction(CustomAction customAction)
+        public void UpdateCustomAction(CommunicatorObjects.CustomAction customAction)
         {
-            m_Action.customAction = customAction;
+            action.customAction = customAction;
         }
 
         /// <summary>
         /// Updates the value of the agent.
         /// </summary>
+        /// <param name="textActions">Text actions.</param>
         public void UpdateValueAction(float value)
         {
-            m_Action.value = value;
+            action.value = value;
         }
 
         protected float GetValueEstimate()
         {
-            return m_Action.value;
+            return action.value;
         }
 
         /// <summary>
-        /// Scales continuous action from [-1, 1] to arbitrary range.
+        /// Scales continous action from [-1, 1] to arbitrary range.
         /// </summary>
         /// <param name="rawAction"></param>
         /// <param name="min"></param>
@@ -992,15 +992,15 @@ namespace MLAgents
             MakeRequests(academyStepCounter);
             if (academyMaxStep)
             {
-                m_MaxStepReached = true;
+                maxStepReached = true;
             }
 
             // If the Academy needs to reset, the agent should reset
-            // even if it reset recently.
+            // even if it reseted recently.
             if (academyDone)
             {
                 Done();
-                m_HasAlreadyReset = false;
+                hasAlreadyReset = false;
             }
         }
 
@@ -1015,24 +1015,24 @@ namespace MLAgents
                 {
                     if (agentParameters.onDemandDecision)
                     {
-                        if (!m_HasAlreadyReset)
+                        if (!hasAlreadyReset)
                         {
                             // If event based, the agent can reset as soon
                             // as it is done
                             _AgentReset();
-                            m_HasAlreadyReset = true;
+                            hasAlreadyReset = true;
                         }
                     }
-                    else if (m_RequestDecision)
+                    else if (requestDecision)
                     {
                         // If not event based, the agent must wait to request a
-                        // decision before resetting to keep multiple agents in sync.
+                        // decsion before reseting to keep multiple agents in sync.
                         _AgentReset();
                     }
                 }
                 else
                 {
-                    m_Terminate = true;
+                    terminate = true;
                     RequestDecision();
                 }
             }
@@ -1043,49 +1043,49 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            if (requestDecision)
             {
                 SendInfoToBrain();
                 ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
+                done = false;
+                maxStepReached = false;
+                requestDecision = false;
 
-                m_HasAlreadyReset = false;
+                hasAlreadyReset = false;
             }
         }
 
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if (m_Terminate)
+            if (terminate)
             {
-                m_Terminate = false;
+                terminate = false;
                 ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
-                m_RequestAction = false;
+                done = false;
+                maxStepReached = false;
+                requestDecision = false;
+                requestAction = false;
 
-                m_HasAlreadyReset = false;
+                hasAlreadyReset = false;
                 OnDisable();
                 AgentOnDone();
             }
 
-            if ((m_RequestAction) && (brain != null))
+            if ((requestAction) && (brain != null))
             {
-                m_RequestAction = false;
-                AgentAction(m_Action.vectorActions, m_Action.textActions, m_Action.customAction);
+                requestAction = false;
+                AgentAction(action.vectorActions, action.textActions, action.customAction);
             }
 
-            if ((m_StepCount >= agentParameters.maxStep)
+            if ((stepCount >= agentParameters.maxStep)
                 && (agentParameters.maxStep > 0))
             {
-                m_MaxStepReached = true;
+                maxStepReached = true;
                 Done();
             }
 
-            m_StepCount += 1;
+            stepCount += 1;
         }
 
         /// <summary>
@@ -1108,40 +1108,40 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Converts a camera and corresponding resolution to a 2D texture.
+        /// Converts a camera and correspinding resolution to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
+        /// <param name="texture2D">Texture2D to render to.</param>
         public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
         {
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-            var oldRec = obsCamera.rect;
+            Rect oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
             var depth = 24;
             var format = RenderTextureFormat.Default;
             var readWrite = RenderTextureReadWrite.Default;
 
-            var tempRt =
+            var tempRT =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
 
-            var prevActiveRt = RenderTexture.active;
-            var prevCameraRt = obsCamera.targetTexture;
+            var prevActiveRT = RenderTexture.active;
+            var prevCameraRT = obsCamera.targetTexture;
 
             // render to offscreen texture (readonly from CPU side)
-            RenderTexture.active = tempRt;
-            obsCamera.targetTexture = tempRt;
+            RenderTexture.active = tempRT;
+            obsCamera.targetTexture = tempRT;
 
             obsCamera.Render();
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
 
-            obsCamera.targetTexture = prevCameraRt;
+            obsCamera.targetTexture = prevCameraRT;
             obsCamera.rect = oldRec;
-            RenderTexture.active = prevActiveRt;
-            RenderTexture.ReleaseTemporary(tempRt);
+            RenderTexture.active = prevActiveRT;
+            RenderTexture.ReleaseTemporary(tempRT);
             return texture2D;
         }
 
@@ -1152,7 +1152,7 @@ namespace MLAgents
         /// <param name="obsTexture">RenderTexture.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
+        /// <param name="texture2D">Texture2D to render to.</param>
         public static Texture2D ObservationToTexture(RenderTexture obsTexture, int width, int height)
         {
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
@@ -1162,19 +1162,19 @@ namespace MLAgents
                 texture2D.Resize(width, height);
             }
 
-            if (width != obsTexture.width || height != obsTexture.height)
+            if(width != obsTexture.width || height != obsTexture.height)
             {
                 throw new UnityAgentsException(string.Format(
                     "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",
                     obsTexture.name, obsTexture.width, obsTexture.height, width, height));
             }
 
-            var prevActiveRt = RenderTexture.active;
+            var prevActiveRT = RenderTexture.active;
             RenderTexture.active = obsTexture;
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
             texture2D.Apply();
-            RenderTexture.active = prevActiveRt;
+            RenderTexture.active = prevActiveRT;
             return texture2D;
         }
 
@@ -1184,7 +1184,7 @@ namespace MLAgents
         /// <param name="customObservation">New value of the agent's custom observation.</param>
         public void SetCustomObservation(CustomObservation customObservation)
         {
-            m_Info.customObservation = customObservation;
+            info.customObservation = customObservation;
         }
     }
 }

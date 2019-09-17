@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace MLAgents
@@ -11,38 +11,39 @@ namespace MLAgents
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
     {
+
         public override void OnInspectorGUI()
         {
-            var serializedAgent = serializedObject;
+            SerializedObject serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            var brain = serializedAgent.FindProperty("brain");
-            var actionsPerDecision = serializedAgent.FindProperty(
+            SerializedProperty brain = serializedAgent.FindProperty("brain");
+            SerializedProperty actionsPerDecision = serializedAgent.FindProperty(
                 "agentParameters.numberOfActionsBetweenDecisions");
-            var maxSteps = serializedAgent.FindProperty(
+            SerializedProperty maxSteps = serializedAgent.FindProperty(
                 "agentParameters.maxStep");
-            var isResetOnDone = serializedAgent.FindProperty(
+            SerializedProperty isResetOnDone = serializedAgent.FindProperty(
                 "agentParameters.resetOnDone");
-            var isOdd = serializedAgent.FindProperty(
+            SerializedProperty isODD = serializedAgent.FindProperty(
                 "agentParameters.onDemandDecision");
-            var cameras = serializedAgent.FindProperty(
+            SerializedProperty cameras = serializedAgent.FindProperty(
                 "agentParameters.agentCameras");
-            var renderTextures = serializedAgent.FindProperty(
+            SerializedProperty renderTextures = serializedAgent.FindProperty(
                 "agentParameters.agentRenderTextures");
 
             EditorGUILayout.PropertyField(brain);
 
             if (cameras.arraySize > 0 && renderTextures.arraySize > 0)
             {
-                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);
+                EditorGUILayout.HelpBox("Brain visual observations created by first getting all cameras then all render textures.", MessageType.Info);    
             }
-
+            
             EditorGUILayout.LabelField("Agent Cameras");
-            for (var i = 0; i < cameras.arraySize; i++)
+            for (int i = 0; i < cameras.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     cameras.GetArrayElementAtIndex(i),
-                    new GUIContent("Camera " + (i + 1) + ": "));
+                    new GUIContent("Camera " + (i + 1).ToString() + ": "));
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -57,13 +58,13 @@ namespace MLAgents
             }
 
             EditorGUILayout.EndHorizontal();
-
+            
             EditorGUILayout.LabelField("Agent RenderTextures");
-            for (var i = 0; i < renderTextures.arraySize; i++)
+            for (int i = 0; i < renderTextures.arraySize; i++)
             {
                 EditorGUILayout.PropertyField(
                     renderTextures.GetArrayElementAtIndex(i),
-                    new GUIContent("RenderTexture " + (i + 1) + ": "));
+                    new GUIContent("RenderTexture " + (i + 1).ToString() + ": "));
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -90,11 +91,11 @@ namespace MLAgents
                     "Reset On Done",
                     "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
             EditorGUILayout.PropertyField(
-                isOdd,
+                isODD,
                 new GUIContent(
                     "On Demand Decisions",
                     "If checked, you must manually request decisions."));
-            if (!isOdd.boolValue)
+            if (!isODD.boolValue)
             {
                 EditorGUILayout.PropertyField(
                     actionsPerDecision,

@@ -1,3 +1,5 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PyramidSwitch : MonoBehaviour
@@ -5,27 +7,27 @@ public class PyramidSwitch : MonoBehaviour
     public Material onMaterial;
     public Material offMaterial;
     public GameObject myButton;
-    private bool m_State;
-    private GameObject m_Area;
-    private PyramidArea m_AreaComponent;
-    private int m_PyramidIndex;
+    private bool state;
+    private GameObject area;
+    private PyramidArea areaComponent;
+    private int pyramidIndex;
 
     public bool GetState()
     {
-        return m_State;
+        return state;
     }
 
     private void Start()
     {
-        m_Area = gameObject.transform.parent.gameObject;
-        m_AreaComponent = m_Area.GetComponent<PyramidArea>();
+        area = gameObject.transform.parent.gameObject;
+        areaComponent = area.GetComponent<PyramidArea>();
     }
 
     public void ResetSwitch(int spawnAreaIndex, int pyramidSpawnIndex)
     {
-        m_AreaComponent.PlaceObject(gameObject, spawnAreaIndex);
-        m_State = false;
-        m_PyramidIndex = pyramidSpawnIndex;
+        areaComponent.PlaceObject(gameObject, spawnAreaIndex);
+        state = false;
+        pyramidIndex = pyramidSpawnIndex;
         tag = "switchOff";
         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         myButton.GetComponent<Renderer>().material = offMaterial;
@@ -33,12 +35,13 @@ public class PyramidSwitch : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("agent") && m_State == false)
+        if (other.gameObject.CompareTag("agent") && state == false)
         {
             myButton.GetComponent<Renderer>().material = onMaterial;
-            m_State = true;
-            m_AreaComponent.CreatePyramid(1, m_PyramidIndex);
+            state = true;
+            areaComponent.CreatePyramid(1, pyramidIndex);
             tag = "switchOn";
         }
     }
+
 }

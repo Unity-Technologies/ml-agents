@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
@@ -21,18 +21,18 @@ namespace MLAgents.InferenceBrain
             FloatingPoint
         };
 
-        private static readonly Dictionary<TensorType, Type> k_TypeMap =
+        private static readonly Dictionary<TensorType, Type> _typeMap =
             new Dictionary<TensorType, Type>()
-        {
-            {TensorType.FloatingPoint, typeof(float)},
-            {TensorType.Integer, typeof(int)}
-        };
+            {
+                {TensorType.FloatingPoint, typeof(float)},
+                {TensorType.Integer, typeof(int)}
+            };
 
         public string name;
         public TensorType valueType;
 
         // Since Type is not serializable, we use the DisplayType for the Inspector
-        public Type DataType => k_TypeMap[valueType];
+        public Type DataType => _typeMap[valueType];
         public long[] shape;
         public Tensor data;
     }
@@ -55,16 +55,16 @@ namespace MLAgents.InferenceBrain
                 tensor.data = allocator.Alloc(
                     new TensorShape(
                         batch,
-                        (int)tensor.shape[1],
-                        (int)tensor.shape[2],
-                        (int)tensor.shape[3]));
+                        (int) tensor.shape[1],
+                        (int) tensor.shape[2],
+                        (int) tensor.shape[3]));
             }
             else
             {
                 tensor.data = allocator.Alloc(
                     new TensorShape(
                         batch,
-                        (int)tensor.shape[tensor.shape.Length - 1]));
+                        (int) tensor.shape[tensor.shape.Length - 1]));
             }
         }
 
@@ -116,7 +116,7 @@ namespace MLAgents.InferenceBrain
 
             for (var i = 0; i < tensorProxy.data.length; i++)
             {
-                tensorProxy.data[i] = (float)randomNormal.NextDouble();
+                tensorProxy.data[i] = (float) randomNormal.NextDouble();
             }
         }
     }

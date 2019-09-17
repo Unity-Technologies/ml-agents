@@ -1,22 +1,11 @@
 # Training with Proximal Policy Optimization
 
-ML-Agents provides an implementation of a reinforcement learning algorithm called
+ML-Agents uses a reinforcement learning technique called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
 PPO uses a neural network to approximate the ideal function that maps an agent's
 observations to the best action an agent can take in a given state. The
 ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
 Python process (communicating with the running Unity application over a socket).
-
-ML-Agents also provides an implementation of
-[Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/). SAC tends
-to be more _sample-efficient_, i.e. require fewer environment steps,
-than PPO, but may spend more time performing model updates. This can produce a large
-speedup on heavy or slow environments. Check out how to train with
-SAC [here](Training-SAC.md).
-
-To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
-for the available reward signals and the corresponding hyperparameters.
 
 See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
 training program, `learn.py`.
@@ -29,10 +18,11 @@ If you are using curriculum training to pace the difficulty of the learning task
 presented to an agent, see [Training with Curriculum
 Learning](Training-Curriculum-Learning.md).
 
-For information about imitation learning from demonstrations, see
+For information about imitation learning, which uses a different training
+algorithm, see
 [Training with Imitation Learning](Training-Imitation-Learning.md).
 
-## Best Practices Training with PPO
+## Best Practices when training with PPO
 
 Successfully training a Reinforcement Learning model often involves tuning the
 training hyperparameters. This guide contains some best practices for tuning the
@@ -41,19 +31,15 @@ of performance you would like.
 
 ## Hyperparameters
 
-### Reward Signals
+### Gamma
 
-In reinforcement learning, the goal is to learn a Policy that maximizes reward.
-At a base level, the reward is given by the environment. However, we could imagine
-rewarding the agent for various different behaviors. For instance, we could reward
-the agent for exploring new states, rather than just when an explicit reward is given.
-Furthermore, we could mix reward signals to help the learning process.
+`gamma` corresponds to the discount factor for future rewards. This can be
+thought of as how far into the future the agent should care about possible
+rewards. In situations when the agent should be acting in the present in order
+to prepare for rewards in the distant future, this value should be large. In
+cases when rewards are more immediate, it can be smaller.
 
-Using `reward_signals` allows you to define [reward signals.](Reward-Signals.md)
-The ML-Agents toolkit provides three reward signals by default, the Extrinsic (environment)
-reward signal, the Curiosity reward signal, which can be used to encourage exploration in
-sparse extrinsic reward environments, and the GAIL reward signal. Please see [Reward Signals](Reward-Signals.md)
-for additional details.
+Typical Range: `0.8` - `0.995`
 
 ### Lambda
 
@@ -105,19 +91,6 @@ step. This should typically be decreased if training is unstable, and the reward
 does not consistently increase.
 
 Typical Range: `1e-5` - `1e-3`
-
-### (Optional) Learning Rate Schedule
-
-`learning_rate_schedule` corresponds to how the learning rate is changed over time.
-For PPO, we recommend decaying learning rate until `max_steps` so learning converges
-more stably. However, for some cases (e.g. training for an unknown amount of time)
-this feature can be disabled.
-
-Options:
-* `linear` (default): Decay `learning_rate` linearly, reaching 0 at `max_steps`.
-* `constant`: Keep learning rate constant for the entire training run.
-
-Options: `linear`, `constant`
 
 ### Time Horizon
 
@@ -187,19 +160,6 @@ variables, this should be larger.
 
 Typical Range: `32` - `512`
 
-### (Optional) Visual Encoder Type
-
-`vis_encode_type` corresponds to the encoder type for encoding visual observations.
-Valid options include:
-* `simple` (default): a simple encoder which consists of two convolutional layers
-* `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236),
-consisting of three convolutional layers
-* `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
-consisting of three stacked layers, each with two residual blocks, making a
-much larger network than the other two.
-
-Options: `simple`, `nature_cnn`, `resnet`
-
 ## (Optional) Recurrent Neural Network Hyperparameters
 
 The below hyperparameters are only used when `use_recurrent` is set to true.
@@ -224,72 +184,29 @@ the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
 
-## (Optional) Pretraining Using Demonstrations
+## (Optional) Intrinsic Curiosity Module Hyperparameters
 
-In some cases, you might want to bootstrap the agent's policy using behavior recorded
-from a player. This can help guide the agent towards the reward. Pretraining adds
-training operations that mimic a demonstration rather than attempting to maximize reward.
-It is essentially equivalent to running [behavioral cloning](Training-Behavioral-Cloning.md)
-in-line with PPO.
+The below hyperparameters are only used when `use_curiosity` is set to true.
 
-To use pretraining, add a `pretraining` section to the trainer_config. For instance:
+### Curiosity Encoding Size
 
-```
-    pretraining:
-        demo_path: ./demos/ExpertPyramid.demo
-        strength: 0.5
-        steps: 10000
-```
+`curiosity_enc_size` corresponds to the size of the hidden layer used to encode
+the observations within the intrinsic curiosity module. This value should be
+small enough to encourage the curiosity module to compress the original
+observation, but also not too small to prevent it from learning the dynamics of
+the environment.
 
-Below are the avaliable hyperparameters for pretraining.
+Typical Range: `64` - `256`
 
-### Strength
+### Curiosity Strength
 
-`strength` corresponds to the learning rate of the imitation relative to the learning
-rate of PPO, and roughly corresponds to how strongly we allow the behavioral cloning
-to influence the policy.
+`curiosity_strength` corresponds to the magnitude of the intrinsic reward
+generated by the intrinsic curiosity module. This should be scaled in order to
+ensure it is large enough to not be overwhelmed by extrinsic reward signals in
+the environment. Likewise it should not be too large to overwhelm the extrinsic
+reward signal.
 
-Typical Range: `0.1` - `0.5`
-
-### Demo Path
-
-`demo_path` is the path to your `.demo` file or directory of `.demo` files.
-See the [imitation learning guide](Training-Imitation-Learning.md) for more on `.demo` files.
-
-### Steps
-
-During pretraining, it is often desirable to stop using demonstrations after the agent has
-"seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
-outside of the provided demonstrations. `steps` corresponds to the training steps over which
-pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set
-the steps to 0 for constant imitation over the entire training run.
-
-### (Optional) Batch Size
-
-`batch_size` is the number of demonstration experiences used for one iteration of a gradient
-descent update. If not specified, it will default to the `batch_size` defined for PPO.
-
-Typical Range (Continuous): `512` - `5120`
-
-Typical Range (Discrete): `32` - `512`
-
-### (Optional) Number of Epochs
-
-`num_epoch` is the number of passes through the experience buffer during
-gradient descent. If not specified, it will default to the number of epochs set for PPO.
-
-Typical Range: `3` - `10`
-
-### (Optional) Samples Per Update
-
-`samples_per_update` is the maximum number of samples
-to use during each imitation update. You may want to lower this if your demonstration
-dataset is very large to avoid overfitting the policy on demonstrations. Set to 0
-to train over all of the demonstrations at each update step.
-
-Default Value: `0` (all)
-
-Typical Range: Approximately equal to PPO's `buffer_size`
+Typical Range: `0.1` - `0.001`
 
 ## Training Statistics
 
@@ -312,8 +229,7 @@ consistently decrease during training. If it decreases too soon or not at all,
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule by default, unless `learning_rate_schedule`
-is set to `constant`.
+This will decrease over time on a linear schedule.
 
 ### Policy Loss
 

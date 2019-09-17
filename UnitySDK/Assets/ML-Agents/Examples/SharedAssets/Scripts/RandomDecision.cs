@@ -1,10 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using MLAgents;
 
 namespace MLAgents
 {
+
     public class RandomDecision : Decision
     {
+
         public override float[] Decide(
             List<float> vectorObs,
             List<Texture2D> visualObs,
@@ -12,11 +15,11 @@ namespace MLAgents
             bool done,
             List<float> memory)
         {
-            if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                var act = new List<float>();
+                List<float> act = new List<float>();
 
-                for (var i = 0; i < brainParameters.vectorActionSize[0]; i++)
+                for (int i = 0; i < brainParameters.vectorActionSize[0]; i++)
                 {
                     act.Add(2 * Random.value - 1);
                 }
@@ -25,10 +28,10 @@ namespace MLAgents
             }
             else
             {
-                var act = new float[brainParameters.vectorActionSize.Length];
-                for (var i = 0; i < brainParameters.vectorActionSize.Length; i++)
+                float[] act = new float[brainParameters.vectorActionSize.Length];
+                for (int i = 0; i < brainParameters.vectorActionSize.Length; i++)
                 {
-                    act[i] = Random.Range(0, brainParameters.vectorActionSize[i]);
+                    act[i]=Random.Range(0, brainParameters.vectorActionSize[i]);
                 }
                 return act;
             }

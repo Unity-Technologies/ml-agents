@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -29,7 +30,7 @@ namespace MLAgents
             public int index;
             public float value;
         }
-
+        
         [System.Serializable]
         public struct AxisContinuousPlayerAction
         {
@@ -38,41 +39,41 @@ namespace MLAgents
             public float scale;
         }
 
-        /// Contains the mapping from input to continuous actions
         [SerializeField]
         [FormerlySerializedAs("continuousPlayerActions")]
         [Tooltip("The list of keys and the value they correspond to for continuous control.")]
-        public KeyContinuousPlayerAction[] keyContinuousPlayerActions;
-
         /// Contains the mapping from input to continuous actions
+        public KeyContinuousPlayerAction[] keyContinuousPlayerActions;
+        
         [SerializeField]
         [Tooltip("The list of axis actions.")]
+        /// Contains the mapping from input to continuous actions
         public AxisContinuousPlayerAction[] axisContinuousPlayerActions;
-
-        /// Contains the mapping from input to discrete actions
+        
         [SerializeField]
         [Tooltip("The list of keys and the value they correspond to for discrete control.")]
+        /// Contains the mapping from input to discrete actions
         public DiscretePlayerAction[] discretePlayerActions;
 
-        protected override void Initialize() {}
-
-        /// Uses the continuous inputs or dicrete inputs of the player to
+        protected override void Initialize(){ }
+        
+        /// Uses the continuous inputs or dicrete inputs of the player to 
         /// decide action
         protected override void DecideAction()
         {
-            if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+            if (brainParameters.vectorActionSpaceType == SpaceType.continuous)
             {
-                foreach (var agent in m_AgentInfos.Keys)
+                foreach (Agent agent in agentInfos.Keys)
                 {
                     var action = new float[brainParameters.vectorActionSize[0]];
-                    foreach (var cha in keyContinuousPlayerActions)
+                    foreach (KeyContinuousPlayerAction cha in keyContinuousPlayerActions)
                     {
                         if (Input.GetKey(cha.key))
                         {
                             action[cha.index] = cha.value;
                         }
                     }
-                    foreach (var axisAction in axisContinuousPlayerActions)
+                    foreach (AxisContinuousPlayerAction axisAction in axisContinuousPlayerActions)
                     {
                         var axisValue = Input.GetAxis(axisAction.axis);
                         axisValue *= axisAction.scale;
@@ -82,24 +83,24 @@ namespace MLAgents
                         }
                     }
                     agent.UpdateVectorAction(action);
-                }
+                } 
             }
             else
             {
-                foreach (var agent in m_AgentInfos.Keys)
+                foreach (Agent agent in agentInfos.Keys)
                 {
                     var action = new float[brainParameters.vectorActionSize.Length];
-                    foreach (var dha in discretePlayerActions)
+                    foreach (DiscretePlayerAction dha in discretePlayerActions)
                     {
                         if (Input.GetKey(dha.key))
                         {
-                            action[dha.branchIndex] = dha.value;
+                            action[dha.branchIndex] = (float) dha.value;
                         }
                     }
                     agent.UpdateVectorAction(action);
                 }
             }
-            m_AgentInfos.Clear();
+            agentInfos.Clear();
         }
     }
 }
