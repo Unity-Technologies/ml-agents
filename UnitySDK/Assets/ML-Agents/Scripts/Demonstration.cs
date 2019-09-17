@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
@@ -14,14 +14,14 @@ namespace MLAgents
         public DemonstrationMetaData metaData;
         public BrainParameters brainParameters;
 
-        public void Initialize(BrainParameters brainParameters, 
+        public void Initialize(BrainParameters brainParams,
             DemonstrationMetaData demonstrationMetaData)
         {
-            this.brainParameters = brainParameters;
+            brainParameters = brainParams;
             metaData = demonstrationMetaData;
         }
     }
-    
+
     /// <summary>
     /// Demonstration meta-data.
     /// Kept in a struct for easy serialization and deserialization.
@@ -43,7 +43,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Initialize metadata values based on proto object. 
+        /// Initialize metadata values based on proto object.
         /// </summary>
         public DemonstrationMetaData(DemonstrationMetaProto demoProto)
         {

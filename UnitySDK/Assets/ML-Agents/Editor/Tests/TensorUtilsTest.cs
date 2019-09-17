@@ -46,7 +46,7 @@ namespace MLAgents.Tests
 
             TensorUtils.FillTensorWithRandomNormal(t, rn);
 
-            var reference = new []
+            var reference = new[]
             {
                 -0.4315872f,
                 -1.11074f,

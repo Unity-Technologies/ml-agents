@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
 public class TemplateDecision : Decision
 {
-
     public override float[] Decide(
         List<float> vectorObs,
         List<Texture2D> visualObs,

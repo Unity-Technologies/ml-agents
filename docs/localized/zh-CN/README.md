@@ -1,6 +1,6 @@
 <img src="docs/images/unity-wide.png" align="middle" width="3000"/>
 
-# Unity ML-Agents 工具包(Beta)
+# Unity ML-Agents 工具包(Beta) v0.3.1
 
 **注意:** 本文档为v0.3版本文档的部分翻译版，目前并不会随着英文版文档更新而更新。若要查看更新更全的英文版文档，请查看[这里](https://github.com/Unity-Technologies/ml-agents)。
 

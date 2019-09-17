@@ -1,0 +1,1 @@
+from .signal import CuriosityRewardSignal

@@ -675,7 +675,11 @@ MonoBehaviour:
     timeScale: 2
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    resetParameters:
+    - key: ball_scale
+      value: 7.5
+    - key: gravity
+      value: 9.81
   brainStriker: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
   brainGoalie: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
   redMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}

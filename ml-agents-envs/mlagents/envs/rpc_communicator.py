@@ -63,7 +63,7 @@ class RpcCommunicator(Communicator):
             self.server.add_insecure_port("[::]:" + str(self.port))
             self.server.start()
             self.is_open = True
-        except:
+        except Exception:
             raise UnityWorkerInUseException(self.worker_id)
 
     def check_port(self, port):

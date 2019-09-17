@@ -54,7 +54,7 @@ class MockCommunicator(Communicator):
             is_training=True,
         )
         rl_init = UnityRLInitializationOutput(
-            name="RealFakeAcademy", version="API-8", log_path="", brain_parameters=[bp]
+            name="RealFakeAcademy", version="API-9", log_path="", brain_parameters=[bp]
         )
         return UnityOutput(rl_initialization_output=rl_init)
 
@@ -91,7 +91,7 @@ class MockCommunicator(Communicator):
         try:
             fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
             global_done = fake_brain.value[0].vector_actions[0] == -1
-        except:
+        except Exception:
             pass
         result = UnityRLOutput(global_done=global_done, agentInfos=dict_agent_info)
         return UnityOutput(rl_output=result)

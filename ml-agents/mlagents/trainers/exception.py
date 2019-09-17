@@ -23,3 +23,5 @@ class MetaCurriculumError(TrainerError):
     """
     Any error related to the configuration of a metacurriculum.
     """
+
+    pass

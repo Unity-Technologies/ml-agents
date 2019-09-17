@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// Ray 2D perception component. Attach this to agents to enable "local perception"
-    /// via the use of ray casts directed outward from the agent. 
+    /// via the use of ray casts directed outward from the agent.
     /// </summary>
     public class RayPerception2D : RayPerception
     {
-        Vector2 endPosition;
-        RaycastHit2D hit;
+        Vector2 m_EndPosition;
+        RaycastHit2D m_Hit;
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
@@ -30,31 +29,31 @@ namespace MLAgents
         /// <param name="rayAngles">Angles of rays (starting from (1,0) on unit circle).</param>
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         public List<float> Perceive(float rayDistance,
-            float[] rayAngles, string[] detectableObjects)					   
+            float[] rayAngles, string[] detectableObjects)
         {
-            perceptionBuffer.Clear();
+            m_PerceptionBuffer.Clear();
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
-            foreach (float angle in rayAngles)
+            foreach (var angle in rayAngles)
             {
-                endPosition = transform.TransformDirection(
-                    PolarToCartesian(rayDistance, angle));						  
+                m_EndPosition = transform.TransformDirection(
+                    PolarToCartesian(rayDistance, angle));
                 if (Application.isEditor)
                 {
                     Debug.DrawRay(transform.position,
-                        endPosition, Color.black, 0.01f, true);
+                        m_EndPosition, Color.black, 0.01f, true);
                 }
 
-                float[] subList = new float[detectableObjects.Length + 2];
-                hit = Physics2D.CircleCast(transform.position, 0.5f, endPosition, rayDistance);
-                if (hit)
+                var subList = new float[detectableObjects.Length + 2];
+                m_Hit = Physics2D.CircleCast(transform.position, 0.5f, m_EndPosition, rayDistance);
+                if (m_Hit)
                 {
-                    for (int i = 0; i < detectableObjects.Length; i++)
+                    for (var i = 0; i < detectableObjects.Length; i++)
                     {
-                        if (hit.collider.gameObject.CompareTag(detectableObjects[i]))
+                        if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
                         {
                             subList[i] = 1;
-                            subList[detectableObjects.Length + 1] = hit.distance / rayDistance;
+                            subList[detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
                             break;
                         }
                     }
@@ -64,10 +63,10 @@ namespace MLAgents
                     subList[detectableObjects.Length] = 1f;
                 }
 
-                perceptionBuffer.AddRange(subList);
+                m_PerceptionBuffer.AddRange(subList);
             }
 
-            return perceptionBuffer;
+            return m_PerceptionBuffer;
         }
 
         /// <summary>
@@ -75,10 +74,9 @@ namespace MLAgents
         /// </summary>
         public static Vector2 PolarToCartesian(float radius, float angle)
         {
-            float x = radius * Mathf.Cos(DegreeToRadian(angle));
-            float y = radius * Mathf.Sin(DegreeToRadian(angle));
+            var x = radius * Mathf.Cos(DegreeToRadian(angle));
+            var y = radius * Mathf.Sin(DegreeToRadian(angle));
             return new Vector2(x, y);
         }
-
     }
 }

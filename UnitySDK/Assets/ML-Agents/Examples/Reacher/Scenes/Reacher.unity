@@ -1337,8 +1337,12 @@ MonoBehaviour:
       value: 5
     - key: goal_speed
       value: 1
-  goalSize: 5
-  goalSpeed: 1
+    - key: gravity
+      value: 9.81
+    - key: deviation
+      value: 0
+    - key: deviation_freq
+      value: 0
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0
