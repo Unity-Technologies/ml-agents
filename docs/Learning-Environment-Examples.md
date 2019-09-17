@@ -64,7 +64,7 @@ If you would like to contribute environments, please see our
     * `gravity`: Magnitude of gravity  
       * Default: 9.81
       * Recommended Minimum: 4
-      * Recommended Maximum: 105
+      * Recommended Maximum: 20
     * `mass`: Specifies mass of the ball
       * Default: 1
       * Recommended Minimum: 0.1
@@ -427,8 +427,8 @@ If you would like to contribute environments, please see our
 * Reset Parameters:
     * `gravity`: Magnitude of gravity
         * Default: 9.81
-        * Recommended Minimum:
-        * Recommended Maximum:
+        * Recommended Minimum: 4
+        * Recommended Maximum: 20
     * `hip_mass`: Mass of the hip component of the walker
         * Default: 15
         * Recommended Minimum: 7
