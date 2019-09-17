@@ -32,6 +32,8 @@ TagManager:
   - symbol_X
   - symbol_O_Goal
   - symbol_X_Goal
+  - food
+  - badFood
   layers:
   - Default
   - TransparentFX
