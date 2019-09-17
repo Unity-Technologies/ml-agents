@@ -59,7 +59,7 @@ LightmapSettings:
     m_BakeResolution: 40
     m_TextureWidth: 1024
     m_TextureHeight: 1024
-    m_AO: 1
+    m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
@@ -780,23 +780,22 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
     - {fileID: 11400000, guid: dff7429d656234fed84c4fac2a7a683c, type: 2}
-    _brainsToControl:
-    - {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
-  maxSteps: 4000
-  trainingConfiguration:
+    m_BrainsToControl: []
+  m_MaxSteps: 4000
+  m_TrainingConfiguration:
     width: 500
     height: 500
     qualityLevel: 0
     timeScale: 15
     targetFrameRate: -1
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1920
     height: 1080
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters:
+    m_ResetParameters:
     - key: laser_length
       value: 1
     - key: agent_scale

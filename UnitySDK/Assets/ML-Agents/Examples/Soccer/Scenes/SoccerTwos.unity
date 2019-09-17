@@ -660,24 +660,24 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
     - {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
-    _brainsToControl: []
-  maxSteps: 0
-  trainingConfiguration:
+    m_BrainsToControl: []
+  m_MaxSteps: 0
+  m_TrainingConfiguration:
     width: 800
     height: 500
     qualityLevel: 0
     timeScale: 10
     targetFrameRate: 60
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 2
     targetFrameRate: 60
   resetParameters:
-    resetParameters:
+    m_ResetParameters:
     - key: ball_scale
-      value: 7.5
+      value: 0.015
     - key: gravity
       value: 9.81
   brainStriker: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}

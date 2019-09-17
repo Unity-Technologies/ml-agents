@@ -591,22 +591,23 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: e8b2d719f6a324b1abb68d8cf2859f5c, type: 2}
     - {fileID: 11400000, guid: dd07b1953eac4411b81fba032f394726, type: 2}
-    _brainsToControl: []
-  maxSteps: 0
-  trainingConfiguration:
+    m_BrainsToControl:
+    - {fileID: 11400000, guid: e8b2d719f6a324b1abb68d8cf2859f5c, type: 2}
+  m_MaxSteps: 0
+  m_TrainingConfiguration:
     width: 1280
     height: 720
     qualityLevel: 0
     timeScale: 15
     targetFrameRate: 60
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters:
+    m_ResetParameters:
     - key: dynamic_friction
       value: 0
     - key: static_friction

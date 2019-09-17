@@ -574,7 +574,7 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c4e1ad4f2224d34bb09d20f26b3207, type: 2}
   m_IsPrefabParent: 0
---- !u!1001 &1236747006
+--- !u!1001 &1251814367
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -838,24 +838,24 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 573920e3a672d40038169c7ffdbdca05, type: 2}
-    _brainsToControl: []
-  maxSteps: 0
-  trainingConfiguration:
+    m_BrainsToControl: []
+  m_MaxSteps: 0
+  m_TrainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
     timeScale: 100
     targetFrameRate: -1
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters:
-    - key: banana_scale
-      value: 150
+    m_ResetParameters:
+    - key: target_scale
+      value: 1
   gravityMultiplier: 2
 --- !u!4 &1453982295
 Transform:

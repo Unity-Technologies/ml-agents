@@ -297,7 +297,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1537121661968964, guid: 5889392e3f05b448a8a06c5def6c2dec, type: 2}
       propertyPath: m_Name
-      value: Directional Light (1)
+      value: Directional Light
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5889392e3f05b448a8a06c5def6c2dec, type: 2}
@@ -609,22 +609,23 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
-    _brainsToControl: []
-  maxSteps: 0
-  trainingConfiguration:
+    m_BrainsToControl:
+    - {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
+  m_MaxSteps: 0
+  m_TrainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
     timeScale: 100
     targetFrameRate: -1
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    m_ResetParameters: []
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0

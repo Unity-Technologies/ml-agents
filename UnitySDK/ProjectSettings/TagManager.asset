@@ -28,6 +28,10 @@ TagManager:
   - stone
   - walkableSurface
   - target
+  - symbol_O
+  - symbol_X
+  - symbol_O_Goal
+  - symbol_X_Goal
   layers:
   - Default
   - TransparentFX

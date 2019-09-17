@@ -59,7 +59,7 @@ LightmapSettings:
     m_BakeResolution: 40
     m_TextureWidth: 1024
     m_TextureHeight: 1024
-    m_AO: 1
+    m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
@@ -420,7 +420,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4578508892121362, guid: 1e08c0ed2d5cf40f5a338189676f9712, type: 2}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1376899319483352, guid: 1e08c0ed2d5cf40f5a338189676f9712, type: 2}
       propertyPath: m_IsActive
@@ -568,52 +568,6 @@ RectTransform:
   m_AnchoredPosition: {x: -1000, y: -239.57645}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1001 &1112967315
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4080826207296418, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1046655284760374, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: c3c891301ff221f42bcfb4242107b361, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1001 &1232021009
 Prefab:
   m_ObjectHideFlags: 0
@@ -690,23 +644,22 @@ MonoBehaviour:
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
-    _brainsToControl:
-    - {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
-  maxSteps: 1500
-  trainingConfiguration:
+    m_BrainsToControl: []
+  m_MaxSteps: 1500
+  m_TrainingConfiguration:
     width: 500
     height: 500
     qualityLevel: 0
     timeScale: 15
     targetFrameRate: -1
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    m_ResetParameters: []
   agents: []
   listArea: []
   totalScore: 0

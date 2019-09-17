@@ -244,8 +244,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1cf16abc39fb4d6ca81222fc73d1bb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recordKey: 114
-  resetKey: 99
 --- !u!1 &1009000883
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,23 +340,23 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576, type: 2}
     - {fileID: 11400000, guid: d60466fdbfb194c56bdaf78887f2afc8, type: 2}
-    _brainsToControl:
+    m_BrainsToControl:
     - {fileID: 11400000, guid: 7b7715ed1d436417db67026a47f17576, type: 2}
-  maxSteps: 0
-  trainingConfiguration:
+  m_MaxSteps: 0
+  m_TrainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
     timeScale: 100
     targetFrameRate: -1
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    m_ResetParameters: []
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0

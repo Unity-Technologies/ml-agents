@@ -344,22 +344,28 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: 1674996276be448c2ad51fb139e21e05, type: 2}
     - {fileID: 11400000, guid: 6bf6a586a645b471bb9bd1194ae0e229, type: 2}
-    _brainsToControl: []
-  maxSteps: 25000
-  trainingConfiguration:
+    m_BrainsToControl: []
+  m_MaxSteps: 25000
+  m_TrainingConfiguration:
     width: 300
     height: 200
     qualityLevel: 0
     timeScale: 100
     targetFrameRate: 60
-  inferenceConfiguration:
+  m_InferenceConfiguration:
     width: 1280
     height: 720
     qualityLevel: 5
     timeScale: 1
     targetFrameRate: 60
   resetParameters:
-    resetParameters: []
+    m_ResetParameters:
+    - key: angle
+      value: 55
+    - key: scale
+      value: 1
+    - key: gravity
+      value: 9.81
 --- !u!1 &1184319689
 GameObject:
   m_ObjectHideFlags: 0

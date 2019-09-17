@@ -1256,7 +1256,7 @@ Transform:
   m_GameObject: {fileID: 1682753582128710}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.009999998, z: 0.009999998}
+  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
   m_Children: []
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 0
@@ -3596,7 +3596,7 @@ MonoBehaviour:
   redGoalie: {fileID: 114284769194328828}
   blueGoalie: {fileID: 114698199869072806}
   ball: {fileID: 1682753582128710}
-  ballRB: {fileID: 0}
+  ballRb: {fileID: 0}
   ground: {fileID: 1475025089682726}
   centerPitch: {fileID: 1526808285443624}
   playerStates: []

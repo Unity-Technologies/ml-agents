@@ -64,7 +64,7 @@ public class AgentSoccer : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRenderer = GetComponent<Renderer>();
+        m_AgentRenderer = GetComponentInChildren<Renderer>();
         m_RayPer = GetComponent<RayPerception>();
         m_Academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();

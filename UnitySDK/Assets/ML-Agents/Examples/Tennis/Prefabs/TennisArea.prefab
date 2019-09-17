@@ -402,7 +402,7 @@ Transform:
   m_GameObject: {fileID: 1273406647218856}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.020000458, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4172342666475122}
   m_RootOrder: 0
@@ -457,8 +457,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1170495812642400}
   m_LocalRotation: {x: -0.30070576, y: -0.953717, z: -0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: -7, y: -6.5, z: -3.19}
-  m_LocalScale: {x: 0.010000004, y: 0.010000002, z: 0.010000011}
+  m_LocalPosition: {x: -7, y: -6.5, z: -3.5}
+  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
   m_Children:
   - {fileID: 4370649305674928}
   - {fileID: 4715306824276108}
@@ -537,8 +537,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1882383181950958}
   m_LocalRotation: {x: 0.30070576, y: -0.953717, z: 0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: 7, y: -6.5, z: -3.19}
-  m_LocalScale: {x: 0.010000004, y: 0.010000002, z: 0.010000011}
+  m_LocalPosition: {x: 7, y: -6.5, z: -3.5}
+  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
   m_Children:
   - {fileID: 4116541575334976}
   - {fileID: 4937969699028734}
@@ -585,7 +585,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 4966adfdada0a6d41be257fc7a84654d, type: 2}
+  - {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -653,7 +653,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 35a922ce344ce82449415d72985ecfce, type: 2}
+  - {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1200,6 +1200,8 @@ MonoBehaviour:
   invertX: 1
   score: 0
   myArea: {fileID: 1541947554534326}
+  angle: 0
+  scale: 0
 --- !u!114 &114864720926204124
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1236,6 +1238,8 @@ MonoBehaviour:
   invertX: 0
   score: 0
   myArea: {fileID: 1541947554534326}
+  angle: 0
+  scale: 0
 --- !u!114 &114965703901356864
 MonoBehaviour:
   m_ObjectHideFlags: 1

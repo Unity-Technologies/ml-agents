@@ -1,7 +1,7 @@
 using UnityEngine;
 using MLAgents;
 
-public class BouncerBanana : MonoBehaviour
+public class BouncerTarget : MonoBehaviour
 {
     // Update is called once per frame
     void FixedUpdate()

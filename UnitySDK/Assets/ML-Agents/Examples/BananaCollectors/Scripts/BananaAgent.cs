@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using MLAgents;
 
 public class BananaAgent : Agent
@@ -181,7 +181,7 @@ public class BananaAgent : Agent
         gameObject.tag = "frozenAgent";
         m_Frozen = true;
         m_FrozenTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = frozenMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = frozenMaterial;
     }
 
     void Unfreeze()
@@ -195,26 +195,26 @@ public class BananaAgent : Agent
     {
         m_Poisoned = true;
         m_EffectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = badMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = badMaterial;
     }
 
     void Unpoison()
     {
         m_Poisoned = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     void Satiate()
     {
         m_Satiated = true;
         m_EffectTime = Time.time;
-        gameObject.GetComponent<Renderer>().material = goodMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = goodMaterial;
     }
 
     void Unsatiate()
     {
         m_Satiated = false;
-        gameObject.GetComponent<Renderer>().material = normalMaterial;
+        gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
