@@ -54,6 +54,7 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
+        self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
@@ -245,6 +246,17 @@ class TFPolicy(Policy):
         for n in nodes:
             logger.info("\t" + n)
         return nodes
+
+    def update_normalization(self, vector_obs: np.ndarray) -> None:
+        """
+        If this policy normalizes vector observations, this will update the norm values in the graph.
+        :param vector_obs: The vector observations to add to the running estimate of the distribution.
+        """
+        if self.use_vec_obs and self.normalize:
+            self.sess.run(
+                self.model.update_normalization,
+                feed_dict={self.model.vector_in: vector_obs},
+            )
 
     @property
     def vis_obs_size(self):
