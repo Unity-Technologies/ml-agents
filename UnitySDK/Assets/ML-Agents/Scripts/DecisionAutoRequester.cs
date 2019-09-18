@@ -24,7 +24,7 @@ namespace MLAgents
             m_Academy.AgentSetStatus -= SetStatus;
         }
 
-        void SetStatus(bool academyMaxStep, bool academyDone, int academyStepCounter)
+        void SetStatus(int academyStepCounter)
         {
             if (academyStepCounter % DecisionPeriod == 0)
             {
