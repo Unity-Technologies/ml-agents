@@ -10,7 +10,7 @@ from mlagents.trainers.bc.models import BehavioralCloningModel
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.bc.offline_trainer import BCTrainer
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
 

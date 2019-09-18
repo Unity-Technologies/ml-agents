@@ -10,7 +10,8 @@ from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.rl_trainer import AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
-from mlagents.envs import UnityEnvironment, BrainParameters
+from mlagents.envs.brain import BrainParameters
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 
 

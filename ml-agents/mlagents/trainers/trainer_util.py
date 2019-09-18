@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from mlagents.trainers import MetaCurriculum
+from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers import Trainer
+from mlagents.trainers.trainer import Trainer
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer

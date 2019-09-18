@@ -8,7 +8,7 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs import AllBrainInfo
+from mlagents.envs.brain import AllBrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput

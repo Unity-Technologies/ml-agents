@@ -11,8 +11,8 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal
-from mlagents.trainers.components.bc import BCModule
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 

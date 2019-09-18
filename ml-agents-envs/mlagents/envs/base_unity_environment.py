@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from mlagents.envs import AllBrainInfo, BrainParameters
+from mlagents.envs.brain import AllBrainInfo, BrainParameters
 
 
 class BaseUnityEnvironment(ABC):

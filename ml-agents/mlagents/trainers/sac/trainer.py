@@ -10,7 +10,7 @@ import os
 
 import numpy as np
 
-from mlagents.envs import AllBrainInfo
+from mlagents.envs.brain import AllBrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.buffer import Buffer

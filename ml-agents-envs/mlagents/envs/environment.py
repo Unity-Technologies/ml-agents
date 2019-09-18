@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import os
 import subprocess
-from typing import *
+from typing import Dict, List, Optional
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
@@ -24,8 +24,6 @@ from .communicator_objects import (
     UnityRLInitializationInput,
     UnityRLInitializationOutput,
     UnityInput,
-    UnityOutput,
-    CustomResetParameters,
     CustomAction,
 )
 
@@ -70,7 +68,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-9"
+        self._version_ = "API-8"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded

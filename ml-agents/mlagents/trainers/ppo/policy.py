@@ -4,7 +4,7 @@ from typing import Any, Dict
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy

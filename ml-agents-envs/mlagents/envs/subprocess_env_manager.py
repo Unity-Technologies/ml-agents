@@ -1,7 +1,7 @@
-from typing import *
+from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityCommunicationException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
@@ -15,7 +15,8 @@ from mlagents.envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
+from mlagents.envs.brain import AllBrainInfo, BrainParameters
+from mlagents.envs.action_info import ActionInfo
 
 
 class EnvironmentCommand(NamedTuple):

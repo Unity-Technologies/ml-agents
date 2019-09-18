@@ -8,7 +8,7 @@ import tensorflow as tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 
