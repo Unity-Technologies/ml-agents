@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 import yaml
 from docopt import docopt
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, List, NamedTuple
 
 
 from mlagents.trainers.trainer_controller import TrainerController
@@ -23,91 +23,130 @@ from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
 
+class CommandLineOptions(NamedTuple):
+    debug: bool
+    num_runs: int
+    seed: int
+    env_path: str
+    run_id: str
+    load_model: bool
+    train_model: bool
+    save_freq: int
+    keep_checkpoints: int
+    base_port: int
+    num_envs: int
+    curriculum_folder: Optional[str]
+    lesson: int
+    fast_simulation: bool
+    no_graphics: bool
+    multi_gpu: bool  # ?
+    trainer_config_path: str
+    sampler_file_path: Optional[str]
+    docker_target_name: Optional[str]
+
+    @staticmethod
+    def from_docopt(run_options: Dict[str, Any]) -> "CommandLineOptions":
+        return CommandLineOptions(
+            debug=run_options["--debug"],
+            num_runs=int(run_options["--num-runs"]),
+            seed=int(run_options["--seed"]),
+            env_path=run_options["--env"] if run_options["--env"] != "None" else None,
+            run_id=run_options["--run-id"],
+            load_model=run_options["--load"],
+            train_model=run_options["--train"],
+            save_freq=int(run_options["--save-freq"]),
+            keep_checkpoints=int(run_options["--keep-checkpoints"]),
+            base_port=int(run_options["--base-port"]),
+            num_envs=int(run_options["--num-envs"]),
+            curriculum_folder=(
+                run_options["--curriculum"]
+                if run_options["--curriculum"] != "None"
+                else None
+            ),
+            lesson=int(run_options["--lesson"]),
+            fast_simulation=not bool(run_options["--slow"]),
+            no_graphics=run_options["--no-graphics"],
+            multi_gpu=run_options["--multi-gpu"],
+            trainer_config_path=run_options["<trainer-config-path>"],
+            sampler_file_path=(
+                run_options["--sampler"] if run_options["--sampler"] != "None" else None
+            ),
+            docker_target_name=(
+                run_options["--docker-target-name"]
+                if run_options["--docker-target-name"] != "None"
+                else None
+            ),
+        )
+
+
 def run_training(
-    sub_id: int, run_seed: int, run_options: Dict[str, Any], process_queue: Queue
+    sub_id: int, run_seed: int, options: CommandLineOptions, process_queue: Queue
 ) -> None:
     """
     Launches training session.
     :param process_queue: Queue used to send signal back to main.
     :param sub_id: Unique id for training session.
+    :param options: parsed command line arguments
     :param run_seed: Random seed used for training.
     :param run_options: Command line arguments for training.
     """
     # Docker Parameters
-    docker_target_name = (
-        run_options["--docker-target-name"]
-        if run_options["--docker-target-name"] != "None"
-        else None
-    )
-
-    # General parameters
-    env_path = run_options["--env"] if run_options["--env"] != "None" else None
-    run_id = run_options["--run-id"]
-    load_model = run_options["--load"]
-    train_model = run_options["--train"]
-    save_freq = int(run_options["--save-freq"])
-    keep_checkpoints = int(run_options["--keep-checkpoints"])
-    base_port = int(run_options["--base-port"])
-    num_envs = int(run_options["--num-envs"])
-    curriculum_folder = (
-        run_options["--curriculum"] if run_options["--curriculum"] != "None" else None
-    )
-    lesson = int(run_options["--lesson"])
-    fast_simulation = not bool(run_options["--slow"])
-    no_graphics = run_options["--no-graphics"]
-    multi_gpu = run_options["--multi-gpu"]
-    trainer_config_path = run_options["<trainer-config-path>"]
-    sampler_file_path = (
-        run_options["--sampler"] if run_options["--sampler"] != "None" else None
-    )
+    trainer_config_path = options.trainer_config_path
+    curriculum_folder = options.curriculum_folder
 
     # Recognize and use docker volume if one is passed as an argument
-    if not docker_target_name:
-        model_path = "./models/{run_id}-{sub_id}".format(run_id=run_id, sub_id=sub_id)
+    if not options.docker_target_name:
+        model_path = "./models/{run_id}-{sub_id}".format(
+            run_id=options.run_id, sub_id=sub_id
+        )
         summaries_dir = "./summaries"
     else:
         trainer_config_path = "/{docker_target_name}/{trainer_config_path}".format(
-            docker_target_name=docker_target_name,
+            docker_target_name=options.docker_target_name,
             trainer_config_path=trainer_config_path,
         )
         if curriculum_folder is not None:
             curriculum_folder = "/{docker_target_name}/{curriculum_folder}".format(
-                docker_target_name=docker_target_name,
+                docker_target_name=options.docker_target_name,
                 curriculum_folder=curriculum_folder,
             )
         model_path = "/{docker_target_name}/models/{run_id}-{sub_id}".format(
-            docker_target_name=docker_target_name, run_id=run_id, sub_id=sub_id
+            docker_target_name=options.docker_target_name,
+            run_id=options.run_id,
+            sub_id=sub_id,
         )
         summaries_dir = "/{docker_target_name}/summaries".format(
-            docker_target_name=docker_target_name
+            docker_target_name=options.docker_target_name
         )
 
     trainer_config = load_config(trainer_config_path)
     env_factory = create_environment_factory(
-        env_path,
-        docker_target_name,
-        no_graphics,
+        options.env_path,
+        options.docker_target_name,
+        options.no_graphics,
         run_seed,
-        base_port + (sub_id * num_envs),
+        options.base_port + (sub_id * options.num_envs),
     )
-    env = SubprocessEnvManager(env_factory, num_envs)
-    maybe_meta_curriculum = try_create_meta_curriculum(curriculum_folder, env, lesson)
+    env = SubprocessEnvManager(env_factory, options.num_envs)
+    maybe_meta_curriculum = try_create_meta_curriculum(
+        curriculum_folder, env, options.lesson
+    )
     sampler_manager, resampling_interval = create_sampler_manager(
-        sampler_file_path, env.reset_parameters, run_seed
+        options.sampler_file_path, env.reset_parameters, run_seed
     )
 
     trainers = initialize_trainers(
         trainer_config,
         env.external_brains,
         summaries_dir,
-        run_id,
+        options.run_id,
         model_path,
-        keep_checkpoints,
-        train_model,
-        load_model,
+        options.keep_checkpoints,
+        options.train_model,
+        options.load_model,
         run_seed,
         maybe_meta_curriculum,
-        multi_gpu,
+        options.multi_gpu,
     )
 
     # Create controller and begin training.
@@ -115,12 +154,12 @@ def run_training(
         trainers,
         model_path,
         summaries_dir,
-        run_id + "-" + str(sub_id),
-        save_freq,
+        options.run_id + "-" + str(sub_id),
+        options.save_freq,
         maybe_meta_curriculum,
-        train_model,
+        options.train_model,
         run_seed,
-        fast_simulation,
+        options.fast_simulation,
         sampler_manager,
         resampling_interval,
     )
@@ -218,7 +257,7 @@ def load_config(trainer_config_path: str) -> Dict[str, Any]:
 
 def create_environment_factory(
     env_path: str,
-    docker_target_name: str,
+    docker_target_name: Optional[str],
     no_graphics: bool,
     seed: Optional[int],
     start_port: int,
@@ -262,29 +301,7 @@ def create_environment_factory(
     return create_unity_environment
 
 
-def main():
-    try:
-        print(
-            """
-
-                        ▄▄▄▓▓▓▓
-                   ╓▓▓▓▓▓▓█▓▓▓▓▓
-              ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
-            ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
-          ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
-        ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
-        ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
-          ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
-            '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
-               ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
-                   `▀█▓▓▓▓▓▓▓▓▓▌
-                        ¬`▀▀▀█▓
-
-        """
-        )
-    except Exception:
-        print("\n\n\tUnity Technologies\n")
-
+def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     _USAGE = """
     Usage:
       mlagents-learn <trainer-config-path> [options]
@@ -312,32 +329,57 @@ def main():
                                   [default: False].
     """
 
-    options = docopt(_USAGE)
+    doc_options = docopt(_USAGE, argv)
+    return CommandLineOptions.from_docopt(doc_options)
+
+
+def main():
+    try:
+        print(
+            """
+
+                        ▄▄▄▓▓▓▓
+                   ╓▓▓▓▓▓▓█▓▓▓▓▓
+              ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
+            ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
+          ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
+        ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
+        ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
+          ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
+            '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
+               ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
+                   `▀█▓▓▓▓▓▓▓▓▓▌
+                        ¬`▀▀▀█▓
+
+        """
+        )
+    except Exception:
+        print("\n\n\tUnity Technologies\n")
+
+    options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents.envs")
     trainer_logger.info(options)
-    if options["--debug"]:
+    if options.debug:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
-    num_runs = int(options["--num-runs"])
-    seed = int(options["--seed"])
 
-    if options["--env"] == "None" and num_runs > 1:
+    if options.env_path is None and options.num_runs > 1:
         raise TrainerError(
             "It is not possible to launch more than one concurrent training session "
             "when training from the editor."
         )
 
     jobs = []
-    run_seed = seed
+    run_seed = options.seed
 
-    if num_runs == 1:
-        if seed == -1:
+    if options.num_runs == 1:
+        if options.seed == -1:
             run_seed = np.random.randint(0, 10000)
         run_training(0, run_seed, options, Queue())
     else:
-        for i in range(num_runs):
-            if seed == -1:
+        for i in range(options.num_runs):
+            if options.seed == -1:
                 run_seed = np.random.randint(0, 10000)
             process_queue = Queue()
             p = Process(target=run_training, args=(i, run_seed, options, process_queue))
