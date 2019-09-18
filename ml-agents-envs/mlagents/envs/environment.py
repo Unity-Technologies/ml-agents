@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
@@ -41,7 +41,7 @@ logger = logging.getLogger("mlagents.envs")
 class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    SINGLE_BRAIN_TEXT_TYPES = (str, list, np.ndarray)
+    SINGLE_BRAIN_TEXT_TYPES = list
 
     def __init__(
         self,
@@ -309,7 +309,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         )
 
     def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
+        self,
+        config: Dict = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
@@ -355,11 +358,11 @@ class UnityEnvironment(BaseUnityEnvironment):
     @timed
     def step(
         self,
-        vector_action=None,
-        memory=None,
-        text_action=None,
-        value=None,
-        custom_action=None,
+        vector_action: Dict[str, np.ndarray] = None,
+        memory: Optional[Dict[str, np.ndarray]] = None,
+        text_action: Optional[Dict[str, List[str]]] = None,
+        value: Optional[Dict[str, np.ndarray]] = None,
+        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
@@ -495,8 +498,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                 else:
                     if text_action[brain_name] is None:
                         text_action[brain_name] = [""] * n_agent
-                    if isinstance(text_action[brain_name], str):
-                        text_action[brain_name] = [text_action[brain_name]] * n_agent
                 if brain_name not in custom_action:
                     custom_action[brain_name] = [None] * n_agent
                 else:
@@ -585,7 +586,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             self.proc1.kill()
 
     @classmethod
-    def _flatten(cls, arr) -> List[float]:
+    def _flatten(cls, arr: Any) -> List[float]:
         """
         Converts arrays to list.
         :param arr: numpy vector.
@@ -619,7 +620,12 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     @timed
     def _generate_step_input(
-        self, vector_action, memory, text_action, value, custom_action
+        self,
+        vector_action: Dict[str, np.ndarray],
+        memory: Dict[str, np.ndarray],
+        text_action: Dict[str, list],
+        value: Dict[str, np.ndarray],
+        custom_action: Dict[str, list],
     ) -> UnityInput:
         rl_in = UnityRLInput()
         for b in vector_action:
@@ -643,7 +649,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(
-        self, training, config, custom_reset_parameters
+        self, training: bool, config: Dict, custom_reset_parameters: Any
     ) -> UnityInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training
