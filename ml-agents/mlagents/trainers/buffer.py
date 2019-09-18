@@ -1,6 +1,3 @@
-import random
-from collections import defaultdict
-
 import numpy as np
 import h5py
 

@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import os
 import subprocess
-from typing import *
+from typing import Dict, List, Optional
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
@@ -16,18 +16,20 @@ from .exception import (
     UnityTimeOutException,
 )
 
-from .communicator_objects import (
-    UnityRLInput,
-    UnityRLOutput,
-    AgentActionProto,
+from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInput
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
+from mlagents.envs.communicator_objects.agent_action_proto_pb2 import AgentActionProto
+from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
     EnvironmentParametersProto,
-    UnityRLInitializationInput,
-    UnityRLInitializationOutput,
-    UnityInput,
-    UnityOutput,
-    CustomResetParameters,
-    CustomAction,
 )
+from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
+    UnityRLInitializationInput,
+)
+from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
+    UnityRLInitializationOutput,
+)
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform

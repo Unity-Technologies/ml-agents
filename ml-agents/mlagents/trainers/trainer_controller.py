@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from typing import *
+from typing import Dict, List, Optional
 
 import numpy as np
 import tensorflow as tf
@@ -19,7 +19,7 @@ from mlagents.envs.exception import (
 )
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers import Trainer, TrainerMetrics
+from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 
 

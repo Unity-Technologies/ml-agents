@@ -1,13 +1,15 @@
 from .communicator import Communicator
-from .communicator_objects import (
-    UnityOutput,
-    UnityInput,
-    ResolutionProto,
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
+from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
     BrainParametersProto,
-    UnityRLInitializationOutput,
-    AgentInfoProto,
-    UnityRLOutput,
 )
+from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
+    UnityRLInitializationOutput,
+)
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
+from mlagents.envs.communicator_objects.resolution_proto_pb2 import ResolutionProto
+from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
 
 
 class MockCommunicator(Communicator):

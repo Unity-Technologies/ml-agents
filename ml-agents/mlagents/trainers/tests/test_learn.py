@@ -1,6 +1,7 @@
 import pytest
-from unittest.mock import *
-from mlagents.trainers import learn, TrainerController
+from unittest.mock import MagicMock, patch
+from mlagents.trainers import learn
+from mlagents.trainers.trainer_controller import TrainerController
 
 
 @pytest.fixture

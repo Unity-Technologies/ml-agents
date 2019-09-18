@@ -9,8 +9,8 @@ from typing import Any, Dict
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects import AgentInfoProto
+from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
+from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
 

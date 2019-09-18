@@ -1,14 +1,10 @@
 import unittest.mock as mock
 import pytest
 
-import numpy as np
 import tensorflow as tf
 import yaml
 
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
-from mlagents.envs import UnityEnvironment, BrainParameters
-from mlagents.envs.mock_communicator import MockCommunicator
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy
 from mlagents.trainers.tests.mock_brain import create_mock_brainparams
 
 

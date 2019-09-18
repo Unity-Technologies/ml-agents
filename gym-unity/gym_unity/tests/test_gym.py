@@ -6,7 +6,7 @@ from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
 
 
-@mock.patch("gym_unity.envs.unity_env.UnityEnvironment")
+@mock.patch("gym_unity.envs.UnityEnvironment")
 def test_gym_wrapper(mock_env):
     mock_brain = create_mock_brainparams()
     mock_braininfo = create_mock_vector_braininfo()
@@ -24,7 +24,7 @@ def test_gym_wrapper(mock_env):
     assert isinstance(info, dict)
 
 
-@mock.patch("gym_unity.envs.unity_env.UnityEnvironment")
+@mock.patch("gym_unity.envs.UnityEnvironment")
 def test_multi_agent(mock_env):
     mock_brain = create_mock_brainparams()
     mock_braininfo = create_mock_vector_braininfo(num_agents=2)
@@ -43,7 +43,7 @@ def test_multi_agent(mock_env):
     assert isinstance(info, dict)
 
 
-@mock.patch("gym_unity.envs.unity_env.UnityEnvironment")
+@mock.patch("gym_unity.envs.UnityEnvironment")
 def test_branched_flatten(mock_env):
     mock_brain = create_mock_brainparams(
         vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
