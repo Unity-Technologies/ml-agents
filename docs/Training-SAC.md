@@ -137,6 +137,18 @@ does not consistently increase.
 
 Typical Range: `1e-5` - `1e-3`
 
+### (Optional) Learning Rate Schedule
+
+`learning_rate_schedule` corresponds to how the learning rate is changed over time.
+For SAC, we recommend holding learning rate constant so that the agent can continue to
+learn until its Q function converges naturally.
+
+Options:
+* `linear`: Decay `learning_rate` linearly, reaching 0 at `max_steps`.
+* `constant` (default): Keep learning rate constant for the entire training run.
+
+Options: `linear`, `constant`
+
 ### Time Horizon
 
 `time_horizon` corresponds to how many steps of experience to collect per-agent
@@ -309,7 +321,8 @@ If it decreases too soon or takes too long to decrease, `init_entcoef` should be
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule.
+This will stay a constant value by default, unless `learning_rate_schedule`
+is set to `linear`.
 
 ### Policy Loss
 

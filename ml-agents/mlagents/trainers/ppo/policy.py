@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from mlagents.envs.timers import timed
 from mlagents.trainers import BrainInfo, ActionInfo
-from mlagents.trainers.models import EncoderType
+from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -74,6 +74,9 @@ class PPOPolicy(TFPolicy):
             self.model = PPOModel(
                 brain=brain,
                 lr=float(trainer_params["learning_rate"]),
+                lr_schedule=LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "linear")
+                ),
                 h_size=int(trainer_params["hidden_units"]),
                 epsilon=float(trainer_params["epsilon"]),
                 beta=float(trainer_params["beta"]),

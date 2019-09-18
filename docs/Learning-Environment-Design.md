@@ -28,9 +28,8 @@ Step-by-step procedures for running the training process are provided in the
 
 Training and simulation proceed in steps orchestrated by the ML-Agents Academy
 class. The Academy works with Agent objects in the scene to step
-through the simulation. When either the Academy has reached its maximum number
-of steps or all Agents in the scene are _done_, one training episode is
-finished.
+through the simulation. When all Agents in the scene are _done_,
+one training episode is finished.
 
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
@@ -54,8 +53,6 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
    Step` count or has otherwise marked itself as `done`. Optionally, you can set
    an Agent to restart if it finishes before the end of an episode. In this
    case, the Academy calls the `AgentReset()` function.
-8. When the Academy reaches its own `Max Step` count, it starts the next episode
-   again by calling your Academy subclass's `AcademyReset()` function.
 
 To create a training environment, extend the Academy and Agent classes to
 implement the above methods. The `Agent.CollectObservations()` and
@@ -100,12 +97,6 @@ following methods (all are optional):
   objects in the scene before the Agents take their actions. Note that the
   Agents have already collected their observations and chosen an action before
   the Academy invokes this method.
-
-The base Academy classes also defines several important properties that you can
-set in the Unity Editor Inspector. For training, the most important of these
-properties is `Max Steps`, which determines how long each training episode
-lasts. Once the Academy's step counter reaches this value, it calls the
-`AcademyReset()` function to start the next episode.
 
 See [Academy](Learning-Environment-Design-Academy.md) for a complete list of
 the Academy properties and their uses.
@@ -160,8 +151,7 @@ You must also determine how an Agent finishes its task or times out. You can
 manually set an Agent to done in your `AgentAction()` function when the Agent
 has finished (or irrevocably failed) its task by calling the `Done()` function. 
 You can also set the Agent's `Max Steps` property to a positive value and the 
-Agent will consider itself done after it has taken that many steps. When the 
-Academy reaches its own `Max Steps` count, it starts the next episode. If you 
+Agent will consider itself done after it has taken that many steps. If you 
 set an Agent's `ResetOnDone` property to true, then the Agent can attempt its 
 task several times in one episode. (Use the `Agent.AgentReset()` function to 
 prepare the Agent to start again.)
@@ -185,13 +175,7 @@ to control the agent decision making process. The Academy defines several
 properties that can be set differently for a training scene versus a regular
 scene. The Academy's **Configuration** properties control rendering and time
 scale. You can set the **Training Configuration** to minimize the time Unity
-spends rendering graphics in order to speed up training. You may need to adjust
-the other functional, Academy settings as well. For example, `Max Steps` should
-be as short as possible for training — just long enough for the agent to
-accomplish its task, with some extra time for "wandering" while it learns. In
-regular scenes, you often do not want the Academy to reset the scene at all; if
-so, `Max Steps` should be set to zero.
-
+spends rendering graphics in order to speed up training. 
 When you create a training environment in Unity, you must set up the scene so
 that it can be controlled by the external training process. Considerations
 include:

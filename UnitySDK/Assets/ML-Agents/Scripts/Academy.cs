@@ -37,10 +37,12 @@ namespace MLAgents
         [Tooltip("Height of the environment window in pixels.")]
         public int height;
 
-        [Tooltip("Rendering quality of environment. (Higher is better quality.)")][Range(0, 5)]
+        [Tooltip("Rendering quality of environment. (Higher is better quality.)")]
+        [Range(0, 5)]
         public int qualityLevel;
 
-        [Tooltip("Speed at which environment is run. (Higher is faster.)")][Range(1f, 100f)]
+        [Tooltip("Speed at which environment is run. (Higher is faster.)")]
+        [Range(1f, 100f)]
         public float timeScale;
 
         [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
@@ -113,14 +115,6 @@ namespace MLAgents
 
         [FormerlySerializedAs("maxSteps")]
         [SerializeField]
-        [Tooltip("Total number of steps per global episode.\nNon-positive " +
-            "values correspond to episodes without a maximum number of \n" +
-            "steps. Once the step counter reaches this maximum value, the " +
-            "environment will reset.")]
-        int m_MaxSteps;
-
-        [FormerlySerializedAs("trainingConfiguration")]
-        [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
             "quality and engine speed during Training.")]
         EnvironmentConfiguration m_TrainingConfiguration =
@@ -166,15 +160,6 @@ namespace MLAgents
         /// or absence of a communicator. Furthermore, it can be modified by an
         /// external Brain during reset via <see cref="SetIsInference"/>.
         bool m_IsInference = true;
-
-        /// The done flag of the academy. When set to true, the academy will
-        /// call <see cref="AcademyReset"/> instead of <see cref="AcademyStep"/>
-        /// at step time. If true, all agents done flags will be set to true.
-        bool m_Done;
-
-        /// Whether the academy has reached the maximum number of steps for the
-        /// current episode.
-        bool m_MaxStepReached;
 
         /// The number of episodes completed by the environment. Incremented
         /// each time the environment is reset.
@@ -224,7 +209,7 @@ namespace MLAgents
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
-        public event System.Action<bool, bool, int> AgentSetStatus;
+        public event System.Action<int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can reset
         // if their flag has been set to done (assuming the agent has requested a
@@ -364,13 +349,14 @@ namespace MLAgents
             // in inference mode.
             m_IsInference = !m_IsCommunicatorOn;
 
-            BrainDecideAction += () => {};
-            DestroyAction += () => {};
-            AgentSetStatus += (m, d, i) => {};
-            AgentResetIfDone += () => {};
-            AgentSendState += () => {};
-            AgentAct += () => {};
-            AgentForceReset += () => {};
+            BrainDecideAction += () => { };
+            DestroyAction += () => { };
+            AgentSetStatus += (i) => { };
+            AgentResetIfDone += () => { };
+            AgentSendState += () => { };
+            AgentAct += () => { };
+            AgentForceReset += () => { };
+
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
@@ -527,25 +513,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the done flag to true.
-        /// </summary>
-        public void Done()
-        {
-            m_Done = true;
-        }
-
-        /// <summary>
-        /// Returns whether or not the academy is done.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if academy is done, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsDone()
-        {
-            return m_Done;
-        }
-
-        /// <summary>
         /// Returns whether or not the communicator is on.
         /// </summary>
         /// <returns>
@@ -610,20 +577,7 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            if ((m_StepCount >= m_MaxSteps) && m_MaxSteps > 0)
-            {
-                m_MaxStepReached = true;
-                Done();
-            }
-
-            AgentSetStatus(m_MaxStepReached, m_Done, m_StepCount);
-
-            m_BrainBatcher.RegisterAcademyDoneFlag(m_Done);
-
-            if (m_Done)
-            {
-                EnvironmentReset();
-            }
+            AgentSetStatus(m_StepCount);
 
             AgentResetIfDone();
 
@@ -646,8 +600,6 @@ namespace MLAgents
         {
             m_StepCount = 0;
             m_EpisodeCount++;
-            m_Done = false;
-            m_MaxStepReached = false;
             AcademyReset();
         }
 
