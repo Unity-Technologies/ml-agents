@@ -1332,13 +1332,15 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
     - {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-    m_BrainsToControl: []
+    m_BrainsToControl:
+    - {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
+    - {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
   m_MaxSteps: 0
   m_TrainingConfiguration:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 100
+    timeScale: 10
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280
