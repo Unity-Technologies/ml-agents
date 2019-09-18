@@ -192,6 +192,17 @@ namespace MLAgents
         /// </remarks>
         public bool resetOnDone = true;
 
+        /// <summary>
+        /// Whether to enable On Demand Decisions or make a decision at
+        /// every step.
+        /// </summary>
+        public bool onDemandDecision;
+
+        /// <summary>
+        /// Number of actions between decisions (used when On Demand Decisions
+        /// is turned off).
+        /// </summary>
+        public int numberOfActionsBetweenDecisions;
     }
 
 
@@ -359,6 +370,12 @@ namespace MLAgents
                         "The Agent component attached to the " +
                         "GameObject {0} was initialized without a brain.",
                         gameObject.name));
+            }
+
+            // TODO this doesn't handle ODD changes on the fly.
+            if (!agentParameters.onDemandDecision)
+            {
+                academy.AgentSetStatus += DecisionAutoRequest;
             }
 
             InitializeAgent();
@@ -989,6 +1006,22 @@ namespace MLAgents
             {
                 Done();
                 m_HasAlreadyReset = false;
+            }
+        }
+
+        void DecisionAutoRequest(bool academyMaxStep, bool academyDone, int academyStepCounter)
+        {
+            var decisionPeriod = Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
+            // TODO we could use m_StepCount instead of academyStepCounter
+            if (academyStepCounter % decisionPeriod == 0)
+            {
+                RequestDecision();
+            }
+
+            var repeatAction = false; // TODO Where did this come from again?
+            if (repeatAction)
+            {
+                RequestAction();
             }
         }
 
