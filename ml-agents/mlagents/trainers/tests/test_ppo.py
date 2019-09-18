@@ -46,8 +46,8 @@ def dummy_config():
     )
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -69,8 +69,8 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -107,8 +107,8 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -139,8 +139,8 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -173,8 +173,8 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -206,8 +206,8 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -237,8 +237,8 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -274,8 +274,8 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:

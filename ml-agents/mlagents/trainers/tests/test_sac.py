@@ -73,7 +73,7 @@ def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_vi
     return env, policy
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_sac_cc_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -95,7 +95,7 @@ def test_sac_cc_policy(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_sac_update_reward_signals(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -120,7 +120,7 @@ def test_sac_update_reward_signals(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_sac_dc_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -142,7 +142,7 @@ def test_sac_dc_policy(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_sac_visual_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -164,7 +164,7 @@ def test_sac_visual_policy(mock_env, dummy_config):
     assert type(run_out) is dict
 
 
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_sac_rnn_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -184,8 +184,8 @@ def test_sac_rnn_policy(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_cc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -209,8 +209,8 @@ def test_sac_model_cc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_cc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -236,8 +236,8 @@ def test_sac_model_cc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_dc_visual(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -263,8 +263,8 @@ def test_sac_model_dc_visual(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_dc_vector(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -288,8 +288,8 @@ def test_sac_model_dc_vector(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_dc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:
@@ -325,8 +325,8 @@ def test_sac_model_dc_vector_rnn(mock_communicator, mock_launcher):
             env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
     tf.reset_default_graph()
     with tf.Session() as sess:

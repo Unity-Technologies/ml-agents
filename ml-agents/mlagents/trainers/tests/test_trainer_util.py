@@ -144,7 +144,7 @@ def dummy_bad_config():
     )
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -190,7 +190,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         assert isinstance(trainers["testbrain"], OfflineBCTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_online_bc_trainer(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -233,7 +233,7 @@ def test_initialize_online_bc_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], OnlineBCTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     external_brains = {"testbrain": BrainParametersMock()}
@@ -289,7 +289,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"

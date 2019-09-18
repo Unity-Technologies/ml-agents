@@ -145,7 +145,7 @@ def reward_signal_update(env, policy, reward_signal_name):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_cc(mock_env, trainer_config, gail_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, gail_dummy_config, False, False, False
@@ -157,7 +157,7 @@ def test_gail_cc(mock_env, trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_dc_visual(mock_env, trainer_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
@@ -172,7 +172,7 @@ def test_gail_dc_visual(mock_env, trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_gail_rnn(mock_env, trainer_config, gail_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, gail_dummy_config, True, False, False
@@ -184,7 +184,7 @@ def test_gail_rnn(mock_env, trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_cc(mock_env, trainer_config, curiosity_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, curiosity_dummy_config, False, False, False
@@ -196,7 +196,7 @@ def test_curiosity_cc(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_dc(mock_env, trainer_config, curiosity_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, curiosity_dummy_config, False, True, False
@@ -208,7 +208,7 @@ def test_curiosity_dc(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_visual(mock_env, trainer_config, curiosity_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, curiosity_dummy_config, False, False, True
@@ -220,7 +220,7 @@ def test_curiosity_visual(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_curiosity_rnn(mock_env, trainer_config, curiosity_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, curiosity_dummy_config, True, False, False
@@ -232,7 +232,7 @@ def test_curiosity_rnn(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_extrinsic(mock_env, trainer_config, curiosity_dummy_config):
     env, policy = create_policy_mock(
         mock_env, trainer_config, curiosity_dummy_config, False, False, False

@@ -68,7 +68,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-8"
+        self._version_ = "API-9"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
