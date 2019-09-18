@@ -23,7 +23,9 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    [Header("Joint Settings")] [Space(10)] JointDriveController m_JdController;
+    [Header("Joint Settings")]
+    [Space(10)]
+    JointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
