@@ -21,8 +21,7 @@ class UniformSampler(Sampler):
         min_value: Union[int, float],
         max_value: Union[int, float],
         seed: Optional[int] = None,
-        **kwargs
-    ) -> None:
+    ):
         """
         :param min_value: minimum value of the range to be sampled uniformly from
         :param max_value: maximum value of the range to be sampled uniformly from
@@ -49,11 +48,8 @@ class MultiRangeUniformSampler(Sampler):
     """
 
     def __init__(
-        self,
-        intervals: List[List[Union[int, float]]],
-        seed: Optional[int] = None,
-        **kwargs
-    ) -> None:
+        self, intervals: List[List[Union[int, float]]], seed: Optional[int] = None
+    ):
         """
         :param intervals: List of intervals to draw uniform samples from
         :param seed: Random seed used for making uniform draws from the specified intervals
@@ -88,8 +84,7 @@ class GaussianSampler(Sampler):
         mean: Union[float, int],
         st_dev: Union[float, int],
         seed: Optional[int] = None,
-        **kwargs
-    ) -> None:
+    ):
         """
         :param mean: Specifies the mean of the gaussian distribution to draw from
         :param st_dev: Specifies the standard devation of the gaussian distribution to draw from

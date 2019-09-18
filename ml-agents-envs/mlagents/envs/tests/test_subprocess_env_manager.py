@@ -11,7 +11,7 @@ from mlagents.envs.subprocess_env_manager import (
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 
 
-def mock_env_factory(worker_id: int):
+def mock_env_factory(worker_id):
     return mock.create_autospec(spec=BaseUnityEnvironment)
 
 

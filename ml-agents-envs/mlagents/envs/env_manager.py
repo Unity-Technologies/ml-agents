@@ -23,7 +23,9 @@ class EnvManager(ABC):
         pass
 
     @abstractmethod
-    def reset(self, config=None, train_mode=True) -> List[EnvironmentStep]:
+    def reset(
+        self, config: Dict = None, train_mode: bool = True
+    ) -> List[EnvironmentStep]:
         pass
 
     @property

@@ -15,8 +15,7 @@ repos:
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
-        # TODO get disallow-incomplete-defs working
-        args: [--ignore-missing-imports, --follow-imports=silent]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
     -   id: mypy
         name: mypy-gym-unity
         files: "gym-unity/.*"

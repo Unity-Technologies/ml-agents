@@ -44,7 +44,7 @@ class UnityEnvWorker:
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 
-    def send(self, name: str, payload=None):
+    def send(self, name: str, payload: Any = None) -> None:
         try:
             cmd = EnvironmentCommand(name, payload)
             self.conn.send(cmd)
@@ -68,7 +68,7 @@ class UnityEnvWorker:
 
 def worker(
     parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
-):
+) -> None:
     env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
         pickled_env_factory
     )
@@ -183,7 +183,10 @@ class SubprocessEnvManager(EnvManager):
         return step_infos
 
     def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
+        self,
+        config: Optional[Dict] = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
         while any([ew.waiting for ew in self.env_workers]):
             if not self.step_queue.empty():
