@@ -56,6 +56,10 @@ namespace MLAgents.InferenceBrain
                     {
                         runner.AddInput(m_graph[input.Name][0], (int)data);
                     }
+                    else if (input.DataType == typeof(bool))
+                    {
+                        runner.AddInput(m_graph[input.Name][0], (bool)data);
+                    }
                     else
                     {
                         runner.AddInput(m_graph[input.Name][0], (float)data);
@@ -178,6 +182,9 @@ namespace MLAgents.InferenceBrain
             {
                 case TFDataType.Float:
                     placeholder_type = TensorProxy.TensorType.FloatingPoint;
+                    break;
+                case TFDataType.Bool:
+                    placeholder_type = TensorProxy.TensorType.Boolean;
                     break;
                 case TFDataType.Int32:
                     placeholder_type = TensorProxy.TensorType.Integer;
