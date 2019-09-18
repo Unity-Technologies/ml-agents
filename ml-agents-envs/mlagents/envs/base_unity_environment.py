@@ -8,7 +8,7 @@ class BaseUnityEnvironment(ABC):
     @abstractmethod
     def step(
         self,
-        vector_action: Dict,
+        vector_action: Optional[Dict] = None,
         memory: Optional[Dict] = None,
         text_action: Optional[Dict] = None,
         value: Optional[Dict] = None,

@@ -41,7 +41,7 @@ logger = logging.getLogger("mlagents.envs")
 class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    SINGLE_BRAIN_TEXT_TYPES = (str, list, np.ndarray)
+    SINGLE_BRAIN_TEXT_TYPES = list
 
     def __init__(
         self,
@@ -358,11 +358,11 @@ class UnityEnvironment(BaseUnityEnvironment):
     @timed
     def step(
         self,
-        vector_action: Dict,
-        memory: Optional[Dict] = None,
-        text_action: Optional[Dict] = None,
-        value: Optional[Dict] = None,
-        custom_action: Any = None,
+        vector_action: Dict[str, np.ndarray] = None,
+        memory: Optional[Dict[str, np.ndarray]] = None,
+        text_action: Optional[Dict[str, List[str]]] = None,
+        value: Optional[Dict[str, np.ndarray]] = None,
+        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
@@ -498,8 +498,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                 else:
                     if text_action[brain_name] is None:
                         text_action[brain_name] = [""] * n_agent
-                    if isinstance(text_action[brain_name], str):
-                        text_action[brain_name] = [text_action[brain_name]] * n_agent
                 if brain_name not in custom_action:
                     custom_action[brain_name] = [None] * n_agent
                 else:
