@@ -259,17 +259,17 @@ If you would like to contribute environments, please see our
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
-## [Banana Collector](https://youtu.be/heVMs3t9qSk)
+## [Food Collector](https://youtu.be/heVMs3t9qSk)
 
-![Banana](images/banana.png)
+![Collector](images/foodCollector.png)
 
-* Set-up: A multi-agent environment where agents compete to collect bananas.
-* Goal: The agents must learn to move to as many yellow bananas as possible
-  while avoiding blue bananas.
+* Set-up: A multi-agent environment where agents compete to collect food.
+* Goal: The agents must learn to collect as many green food spheres as possible
+  while avoiding red spheres.
 * Agents: The environment contains 5 agents linked to a single Brain.
 * Agent Reward Function (independent):
-  * +1 for interaction with yellow banana
-  * -1 for interaction with blue banana.
+  * +1 for interaction with green spheres
+  * -1 for interaction with red spheres
 * Brains: One Brain with the following observation/action space.
   * Vector Observation space: 53 corresponding to velocity of agent (2), whether
     agent is frozen and/or shot its laser (2), plus ray-based perception of
@@ -281,7 +281,7 @@ If you would like to contribute environments, please see our
     * Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     * Laser (2 possible actions: Laser, No Action)
   * Visual Observations (Optional): First-person camera per-agent. Use
-    `VisualBanana` scene. __The visual observation version of
+    `VisualFoodCollector` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
 * Reset Parameters: Two
@@ -294,7 +294,7 @@ If you would like to contribute environments, please see our
     * Recommended Minimum: 0.5
     * Recommended Maximum: 5
 * Benchmark Mean Reward: 10
-* Optional Imitation Learning scene: `BananaIL`.
+* Optional Imitation Learning scene: `FoodCollectorIL`.
 
 ## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
@@ -329,20 +329,20 @@ If you would like to contribute environments, please see our
 
 * Set-up: Environment where the agent needs on-demand decision making. The agent
   must decide how perform its next bounce only when it touches the ground.
-* Goal: Catch the floating banana. Only has a limited number of jumps.
+* Goal: Catch the floating green cube. Only has a limited number of jumps.
 * Agents: The environment contains one agent linked to a single Brain.
 * Agent Reward Function (independent):
-  * +1 For catching the banana.
+  * +1 For catching the green cube.
   * -1 For bouncing out of bounds.
   * -0.05 Times the action squared. Energy expenditure penalty.
 * Brains: One Brain with the following observation/action space:
   * Vector Observation space: 6 corresponding to local position of agent and
-    banana.
+    green cube.
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
   * Visual Observations: None
 * Reset Parameters: Two
-    * banana_scale: The scale of the banana in the 3 dimensions
+    * target_scale: The scale of the green cube in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
         * Recommended Maximum: 250

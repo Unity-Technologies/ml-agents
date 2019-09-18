@@ -59,7 +59,7 @@ inside Unity. In this section, we will use the pre-trained model for the
 9. Click the **Play** button and you will see the platforms balance the balls
    using the pre-trained model.
 
-   ![Running a pre-trained model](images/running-a-pretrained-model.gif)
+   ![Running a pre-trained model](images/balance.png)
 
 ## Using the Basics Jupyter Notebook
 
