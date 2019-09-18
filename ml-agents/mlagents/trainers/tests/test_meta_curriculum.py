@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, call, Mock
+from unittest.mock import patch, call
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import MetaCurriculumError

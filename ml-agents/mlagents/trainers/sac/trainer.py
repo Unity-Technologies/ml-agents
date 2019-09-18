@@ -4,21 +4,18 @@
 # and implemented in https://github.com/hill-a/stable-baselines
 
 import logging
-from collections import deque, defaultdict
-from typing import List, Any, Dict
+from collections import defaultdict
+from typing import List, Dict
 import os
 
 import numpy as np
-import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs import AllBrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.envs.timers import timed, hierarchical_timer
+from mlagents.envs.timers import timed
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
-from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 
 LOGGER = logging.getLogger("mlagents.trainers")

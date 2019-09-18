@@ -1,14 +1,11 @@
 import unittest.mock as mock
 from unittest.mock import Mock, MagicMock
 import unittest
-import cloudpickle
 from queue import Empty as EmptyQueue
 
 from mlagents.envs.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
-    EnvironmentCommand,
-    worker,
     StepResponse,
 )
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment

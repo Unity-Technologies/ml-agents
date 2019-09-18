@@ -1,7 +1,5 @@
 import numpy as np
-from typing import *
-from functools import *
-from collections import OrderedDict
+from typing import Union, Optional, Type, List, Dict, Any
 from abc import ABC, abstractmethod
 
 from .exception import SamplerException

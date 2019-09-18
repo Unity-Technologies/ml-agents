@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
@@ -10,7 +9,6 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.bc.module import BCModule
 
 # Variable scope in which created variables will be placed under
 TOWER_SCOPE_NAME = "tower"

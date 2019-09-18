@@ -5,7 +5,6 @@
 import logging
 
 import numpy as np
-import tensorflow as tf
 
 from mlagents.envs import AllBrainInfo
 from mlagents.trainers import ActionInfoOutputs

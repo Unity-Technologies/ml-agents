@@ -1,10 +1,10 @@
 import logging
-from typing import Dict, List, Any
+from typing import Dict, Any
 import numpy as np
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
+from mlagents.envs.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy

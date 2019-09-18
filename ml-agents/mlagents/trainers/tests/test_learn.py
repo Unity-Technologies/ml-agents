@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import *
+from unittest.mock import MagicMock, patch
 from mlagents.trainers import learn, TrainerController
 
 

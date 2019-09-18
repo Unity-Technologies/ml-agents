@@ -1,5 +1,3 @@
-import unittest.mock as mock
-import pytest
 import os
 
 from mlagents.trainers.demo_loader import load_demonstration, make_demo_buffer

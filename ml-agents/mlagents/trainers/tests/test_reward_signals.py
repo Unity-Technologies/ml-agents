@@ -1,19 +1,10 @@
 import unittest.mock as mock
 import pytest
-import mlagents.trainers.tests.mock_brain as mb
-
-import numpy as np
-import tensorflow as tf
 import yaml
 import os
-
-from mlagents.trainers.ppo.models import PPOModel
-from mlagents.trainers.ppo.trainer import discount_rewards
+import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.demo_loader import make_demo_buffer
-from mlagents.envs import UnityEnvironment
-from mlagents.envs.mock_communicator import MockCommunicator
 
 
 def ppo_dummy_config():

@@ -1,8 +1,6 @@
 import unittest.mock as mock
 import pytest
-import tempfile
 import yaml
-import math
 
 import numpy as np
 import tensorflow as tf
@@ -10,15 +8,8 @@ import tensorflow as tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.tests.test_simple_rl import Simple1DEnvironment, SimpleEnvManager
-from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
-from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects import AgentInfoProto
-from mlagents.envs.sampler_class import SamplerManager
 from mlagents.trainers.tests import mock_brain as mb
 
 
