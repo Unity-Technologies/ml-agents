@@ -20,13 +20,15 @@ namespace MLAgents.InferenceBrain
 		public enum TensorType
 		{
 			Integer,
-			FloatingPoint
+			FloatingPoint,
+            Boolean
 		};
 
 		private static Dictionary<TensorType, Type> m_typeMap = new Dictionary<TensorType, Type>()
 		{
-			{ TensorType.FloatingPoint, typeof(float)},
-			{TensorType.Integer, typeof(int)}
+			{ TensorType.FloatingPoint, typeof(float) },
+			{ TensorType.Integer, typeof(int) },
+            { TensorType.Boolean, typeof(bool) }
 		};
 
 		public string Name;
