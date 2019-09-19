@@ -150,6 +150,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         help="Setting this flag enables the use of multiple GPU's (if available) during training",
     )
 
+     # TODO --env-args=<string>         Arguments of the Unity executable [default: None].
+    
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
 
@@ -166,6 +168,7 @@ def run_training(
     :param run_options: Command line arguments for training.
     """
     # Docker Parameters
+
     trainer_config_path = options.trainer_config_path
     curriculum_folder = options.curriculum_folder
 
@@ -201,6 +204,7 @@ def run_training(
         options.no_graphics,
         run_seed,
         options.base_port + (sub_id * options.num_envs),
+        # TODO options.env_args,
     )
     env = SubprocessEnvManager(env_factory, options.num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(
@@ -336,6 +340,7 @@ def create_environment_factory(
     no_graphics: bool,
     seed: Optional[int],
     start_port: int,
+    env_args: [],
 ) -> Callable[[int], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
@@ -371,6 +376,7 @@ def create_environment_factory(
             docker_training=docker_training,
             no_graphics=no_graphics,
             base_port=start_port,
+            args=env_args,
         )
 
     return create_unity_environment

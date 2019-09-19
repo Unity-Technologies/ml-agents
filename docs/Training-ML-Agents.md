@@ -98,6 +98,7 @@ environment, you can set the following command line options when invoking
 `mlagents-learn`:
 
 * `--env=<env>`: Specify an executable environment to train.
+* `--env-args=<string>`: Specify arguments for the executable environment. Be aware that the standalone build will also process these as [Unity Command Line Arguments](https://docs.unity3d.com/Manual/CommandLineArguments.html). You should choose different argument names if you want to create environment-specific arguments.
 * `--curriculum=<file>`: Specify a curriculum JSON file for defining the
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
