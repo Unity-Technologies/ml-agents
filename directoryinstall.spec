@@ -3,13 +3,17 @@
 block_cipher = None
 
 from PyInstaller.utils.hooks import collect_submodules
+import os, importlib
+
+package_imports = [['tensorboard', ['webfiles.zip']]]
+
+added_files = [( 'config', 'config' ),( 'demos', 'demos' )]
+
+for package, files in package_imports:
+    proot = os.path.dirname(importlib.import_module(package).__file__)
+    added_files.extend((os.path.join(proot, f), package) for f in files)
 
 hidden_imports = collect_submodules('tensorflow.contrib')
-
-added_files = [
-         ( 'config', 'config' ),
-         ( 'demos', 'demos' ),
-         ]
 
 a = Analysis(['ml-agents/mlagents/trainers/learn.py'],
              pathex=['/Users/ervin/Development/ml-agents-develop'],
@@ -42,4 +46,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='testonedir')
+               name='mlagents-dir')

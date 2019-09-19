@@ -10,6 +10,7 @@ import glob
 import shutil
 import numpy as np
 import yaml
+import importlib
 from docopt import docopt
 from typing import Any, Callable, Dict, Optional
 
@@ -139,14 +140,18 @@ def run_training(
     tc.start_learning(env)
 
 
+def get_tensorboard_file_provider():
+    root_dir = os.path.dirname(importlib.import_module("tensorboard").__file__)
+    filename = os.path.join(root_dir, "webfiles.zip")
+    return open(filename, "rb")
+
+
 def launch_tensorboard(summary_path):
     log = logging.getLogger("werkzeug")  # Disable webserver logs
     log.setLevel(logging.ERROR)
     log = logging.getLogger("tensorboard")  # Disable tensorboard logs
     log.setLevel(logging.ERROR)
-    tb = program.TensorBoard(
-        default.get_plugins(), program.get_default_assets_zip_provider()
-    )
+    tb = program.TensorBoard(default.get_plugins(), get_tensorboard_file_provider)
     tb.configure(argv=[None, "--logdir", "./summaries/"])
     url = tb.launch()
     print("---------------------------------\n")
