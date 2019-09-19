@@ -285,8 +285,6 @@ def create_environment_factory(
 
 
 def main():
-    # Enable multiprocessing's freeze support
-    multiprocessing.freeze_support()
     try:
         print(
             """
@@ -382,4 +380,7 @@ def main():
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
+    # Enable multiprocessing's freeze support
+    multiprocessing.freeze_support()
+    # Run code
     main()
