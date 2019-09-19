@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 
 import logging
+import argparse
 
 from multiprocessing import Process, Queue
 import os
@@ -77,6 +78,163 @@ class CommandLineOptions(NamedTuple):
                 else None
             ),
         )
+
+    @staticmethod
+    def from_argparse(args: Any) -> "CommandLineOptions":
+        print(args)
+        print(vars(args))
+        return CommandLineOptions(**vars(args))
+
+
+def parse_command_line(
+    argv: Optional[List[str]] = None, use_old_parse: bool = False
+) -> CommandLineOptions:
+    if use_old_parse:
+        return _parse_command_line_docopt(argv)
+    else:
+        return _parse_command_line_argparse(argv)
+
+
+def _parse_command_line_argparse(
+    argv: Optional[List[str]] = None
+) -> CommandLineOptions:
+
+    # TODO ADD HELP STRINGS
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument("trainer_config_path")
+    parser.add_argument(
+        "--env", default=None, dest="env_path", help="Name of the Unity executable "
+    )
+    parser.add_argument(
+        "--curriculum",
+        default=None,
+        dest="curriculum_folder",
+        help="Curriculum json directory for environment",
+    )
+    parser.add_argument(
+        "--sampler",
+        default=None,
+        dest="sampler_file_path",
+        help="Reset parameter yaml file for environment",
+    )
+    parser.add_argument(
+        "--keep-checkpoints",
+        default=5,
+        type=int,
+        help="How many model checkpoints to keep",
+    )
+    parser.add_argument(
+        "--lesson", default=0, type=int, help="Start learning from this lesson"
+    )
+    parser.add_argument(
+        "--load",
+        default=False,
+        dest="load_model",
+        action="store_true",
+        help="Whether to load the model or randomly initialize",
+    )
+    parser.add_argument(
+        "--run-id",
+        default="ppo",
+        help="The directory name for model and summary statistics",
+    )
+    parser.add_argument(
+        "--num-runs", default=1, type=int, help="Number of concurrent training sessions"
+    )
+    parser.add_argument(
+        "--save-freq", default=50000, type=int, help="Frequency at which to save model"
+    )
+    parser.add_argument(
+        "--seed", default=-1, type=int, help="Random seed used for training"
+    )
+    # passing --slow sets fast_simulation to False
+    parser.add_argument(
+        "--slow",
+        default=True,
+        dest="fast_simulation",
+        action="store_false",
+        help="Whether to run the game at training speed",
+    )
+    parser.add_argument(
+        "--train",
+        default=False,
+        dest="train_model",
+        action="store_true",
+        help="Whether to train model, or only run inference",
+    )
+    parser.add_argument(
+        "--base-port",
+        default=5005,
+        type=int,
+        help="Base port for environment communication",
+    )
+    parser.add_argument(
+        "--num-envs",
+        default=1,
+        type=int,
+        help="Number of parallel environments to use for training",
+    )
+    parser.add_argument(
+        "--docker-target-name",
+        default=None,
+        dest="docker_target_name",
+        help="Docker volume to store training-specific files",
+    )
+    parser.add_argument(
+        "--no-graphics",
+        default=False,
+        action="store_true",
+        help="Whether to run the environment in no-graphics mode",
+    )
+    parser.add_argument(
+        "--debug",
+        default=False,
+        action="store_true",
+        help="Whether to run ML-Agents in debug mode with detailed logging",
+    )
+    parser.add_argument(
+        "--multi-gpu",
+        default=False,
+        action="store_true",
+        help="Setting this flag enables the use of multiple GPU's (if available) during training",
+    )
+
+    args = parser.parse_args(argv)
+    return CommandLineOptions.from_argparse(args)
+
+
+def _parse_command_line_docopt(argv: Optional[List[str]] = None) -> CommandLineOptions:
+    _USAGE = """
+    Usage:
+      mlagents-learn <trainer-config-path> [options]
+      mlagents-learn --help
+
+    Options:
+      --env=<file>                Name of the Unity executable [default: None].
+      --curriculum=<directory>    Curriculum json directory for environment [default: None].
+      --sampler=<file>            Reset parameter yaml file for environment [default: None].
+      --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
+      --lesson=<n>                Start learning from this lesson [default: 0].
+      --load                      Whether to load the model or randomly initialize [default: False].
+      --run-id=<path>             The directory name for model and summary statistics [default: ppo].
+      --num-runs=<n>              Number of concurrent training sessions [default: 1].
+      --save-freq=<n>             Frequency at which to save model [default: 50000].
+      --seed=<n>                  Random seed used for training [default: -1].
+      --slow                      Whether to run the game at training speed [default: False].
+      --train                     Whether to train model, or only run inference [default: False].
+      --base-port=<n>             Base port for environment communication [default: 5005].
+      --num-envs=<n>              Number of parallel environments to use for training [default: 1]
+      --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
+      --no-graphics               Whether to run the environment in no-graphics mode [default: False].
+      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
+      --multi-gpu                 Setting this flag enables the use of multiple GPU's (if available) during training
+                                  [default: False].
+    """
+
+    doc_options = docopt(_USAGE, argv)
+    return CommandLineOptions.from_docopt(doc_options)
 
 
 def run_training(
@@ -299,38 +457,6 @@ def create_environment_factory(
         )
 
     return create_unity_environment
-
-
-def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
-    _USAGE = """
-    Usage:
-      mlagents-learn <trainer-config-path> [options]
-      mlagents-learn --help
-
-    Options:
-      --env=<file>                Name of the Unity executable [default: None].
-      --curriculum=<directory>    Curriculum json directory for environment [default: None].
-      --sampler=<file>            Reset parameter yaml file for environment [default: None].
-      --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
-      --lesson=<n>                Start learning from this lesson [default: 0].
-      --load                      Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>             The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>              Number of concurrent training sessions [default: 1].
-      --save-freq=<n>             Frequency at which to save model [default: 50000].
-      --seed=<n>                  Random seed used for training [default: -1].
-      --slow                      Whether to run the game at training speed [default: False].
-      --train                     Whether to train model, or only run inference [default: False].
-      --base-port=<n>             Base port for environment communication [default: 5005].
-      --num-envs=<n>              Number of parallel environments to use for training [default: 1]
-      --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
-      --no-graphics               Whether to run the environment in no-graphics mode [default: False].
-      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
-      --multi-gpu                 Setting this flag enables the use of multiple GPU's (if available) during training
-                                  [default: False].
-    """
-
-    doc_options = docopt(_USAGE, argv)
-    return CommandLineOptions.from_docopt(doc_options)
 
 
 def main():

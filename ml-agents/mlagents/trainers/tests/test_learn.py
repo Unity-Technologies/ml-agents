@@ -93,13 +93,15 @@ def test_docker_target_path(
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
 
 
-def test_commandline_args():
+@pytest.mark.parametrize("use_docopt", [True, False])
+def test_commandline_args(use_docopt):
+
     # No args raises
-    with pytest.raises(DocoptExit):
-        opt = parse_command_line([])
+    with pytest.raises((DocoptExit, SystemExit)):
+        parse_command_line([], use_old_parse=use_docopt)
 
     # Test with defaults
-    opt = parse_command_line(["mytrainerpath"])
+    opt = parse_command_line(["mytrainerpath"], use_old_parse=use_docopt)
     assert opt.trainer_config_path == "mytrainerpath"
     assert opt.env_path is None
     assert opt.curriculum_folder is None
@@ -141,7 +143,7 @@ def test_commandline_args():
         "--multi-gpu",
     ]
 
-    opt = parse_command_line(full_args)
+    opt = parse_command_line(full_args, use_old_parse=use_docopt)
     assert opt.trainer_config_path == "mytrainerpath"
     assert opt.env_path == "./myenvfile"
     assert opt.curriculum_folder == "./mycurriculum"
