@@ -37,12 +37,16 @@ class CommandLineOptions(NamedTuple):
     num_envs: int
     curriculum_folder: Optional[str]
     lesson: int
-    fast_simulation: bool
+    slow: bool
     no_graphics: bool
     multi_gpu: bool  # ?
     trainer_config_path: str
     sampler_file_path: Optional[str]
     docker_target_name: Optional[str]
+
+    @property
+    def fast_simulation(self) -> bool:
+        return not self.slow
 
     @staticmethod
     def from_argparse(args: Any) -> "CommandLineOptions":
@@ -99,13 +103,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     parser.add_argument(
         "--seed", default=-1, type=int, help="Random seed used for training"
     )
-    # passing --slow sets fast_simulation to False
     parser.add_argument(
-        "--slow",
-        default=True,
-        dest="fast_simulation",
-        action="store_false",
-        help="Whether to run the game at training speed",
+        "--slow", action="store_true", help="Whether to run the game at training speed"
     )
     parser.add_argument(
         "--train",
