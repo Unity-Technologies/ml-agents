@@ -43,6 +43,7 @@ class CommandLineOptions(NamedTuple):
     trainer_config_path: str
     sampler_file_path: Optional[str]
     docker_target_name: Optional[str]
+    env_args: Optional[str]
 
     @property
     def fast_simulation(self) -> bool:
@@ -148,6 +149,12 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         default=False,
         action="store_true",
         help="Setting this flag enables the use of multiple GPU's (if available) during training",
+    )
+    parser.add_argument(
+        "--env-args",
+        default=None,
+        nargs=argparse.REMAINDER,
+        help="Additional arguments that will be passed when the environment is started.",
     )
 
     args = parser.parse_args(argv)
