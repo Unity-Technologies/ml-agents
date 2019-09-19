@@ -50,6 +50,7 @@
 *.exe
 *.x86_64
 *.x86
+*/dist/*
 
 # Tensorflow Sharp Files
 /UnitySDK/Assets/ML-Agents/Plugins/Android*
