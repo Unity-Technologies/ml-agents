@@ -3,7 +3,8 @@ from typing import Any, Dict, List
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import timed
-from mlagents.envs import ActionInfo, BrainParameters
+from mlagents.envs.action_info import ActionInfo
+from mlagents.envs.brain import BrainParameters
 
 
 class SimpleEnvManager(EnvManager):

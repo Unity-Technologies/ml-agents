@@ -67,7 +67,9 @@ class TimerNode:
         self.total += elapsed
         self.count += 1
 
-    def merge(self, other: "TimerNode", root_name: str = None, is_parallel=True):
+    def merge(
+        self, other: "TimerNode", root_name: str = None, is_parallel: bool = True
+    ) -> None:
         """
         Add the other node to this node, then do the same recursively on its children.
         :param other: The other node to merge
@@ -101,7 +103,7 @@ class GaugeNode:
         self.max_value = value
         self.count = 1
 
-    def update(self, new_value: float):
+    def update(self, new_value: float) -> None:
         self.min_value = min(self.min_value, new_value)
         self.max_value = max(self.max_value, new_value)
         self.value = new_value

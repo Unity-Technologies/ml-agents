@@ -1,33 +1,30 @@
 import pytest
-from unittest.mock import *
-from mlagents.trainers import learn, TrainerController
-from mlagents.trainers.learn import CommandLineOptions
+from unittest.mock import MagicMock, patch
+from mlagents.trainers import learn
+from mlagents.trainers.trainer_controller import TrainerController
 
 
 @pytest.fixture
 def basic_options():
-    # TODO replace this with actual objects
-    CommandLineOptions.from_docopt(
-        {
-            "--docker-target-name": "None",
-            "--env": "None",
-            "--run-id": "ppo",
-            "--load": False,
-            "--train": False,
-            "--save-freq": "50000",
-            "--keep-checkpoints": "5",
-            "--base-port": "5005",
-            "--num-envs": "1",
-            "--curriculum": "None",
-            "--lesson": "0",
-            "--slow": False,
-            "--no-graphics": False,
-            "<trainer-config-path>": "basic_path",
-            "--debug": False,
-            "--multi-gpu": False,
-            "--sampler": None,
-        }
-    )
+    return {
+        "--docker-target-name": "None",
+        "--env": "None",
+        "--run-id": "ppo",
+        "--load": False,
+        "--train": False,
+        "--save-freq": "50000",
+        "--keep-checkpoints": "5",
+        "--base-port": "5005",
+        "--num-envs": "1",
+        "--curriculum": "None",
+        "--lesson": "0",
+        "--slow": False,
+        "--no-graphics": False,
+        "<trainer-config-path>": "basic_path",
+        "--debug": False,
+        "--multi-gpu": False,
+        "--sampler": None,
+    }
 
 
 @patch("mlagents.trainers.learn.SamplerManager")

@@ -1,18 +1,18 @@
 import logging
-from typing import Dict, List, Any
+from typing import Dict, Any
 import numpy as np
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
+from mlagents.envs.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal
-from mlagents.trainers.components.bc import BCModule
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -135,13 +135,6 @@ class SACPolicy(TFPolicy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
-        if (
-            is_training
-            and self.use_vec_obs
-            and trainer_params["normalize"]
-            and not load
-        ):
-            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.update_dict.update(
             {

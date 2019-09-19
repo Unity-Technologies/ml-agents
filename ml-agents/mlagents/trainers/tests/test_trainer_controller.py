@@ -1,4 +1,4 @@
-from unittest.mock import *
+from unittest.mock import MagicMock, Mock, patch
 
 import yaml
 import pytest

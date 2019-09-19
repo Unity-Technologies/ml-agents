@@ -100,7 +100,7 @@ def create_policy_with_bc_mock(
 
 
 # Test default values
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_defaults(mock_env):
     # See if default values match
     mock_brain = mb.create_mock_3dball_brain()
@@ -126,7 +126,7 @@ def test_bcmodule_defaults(mock_env):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
     env, policy = create_policy_with_bc_mock(
@@ -142,7 +142,7 @@ def test_bcmodule_update(mock_env, trainer_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_rnn_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
     env, policy = create_policy_with_bc_mock(
@@ -158,7 +158,7 @@ def test_bcmodule_rnn_update(mock_env, trainer_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_dc_visual_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_banana_brain()
     env, policy = create_policy_with_bc_mock(
@@ -174,7 +174,7 @@ def test_bcmodule_dc_visual_update(mock_env, trainer_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents.envs.UnityEnvironment")
+@mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_rnn_dc_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_banana_brain()
     env, policy = create_policy_with_bc_mock(

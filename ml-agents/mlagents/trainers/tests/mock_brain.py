@@ -1,5 +1,4 @@
 import unittest.mock as mock
-import pytest
 import numpy as np
 
 from mlagents.trainers.buffer import Buffer

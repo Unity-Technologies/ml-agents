@@ -1,17 +1,13 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, List, Deque, Any, Optional, NamedTuple
-import os
-import tensorflow as tf
+from typing import Dict, List, Any, NamedTuple
 import numpy as np
-from collections import deque, defaultdict
 
-from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
+from mlagents.envs.brain import AllBrainInfo, BrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.tf_policy import Policy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignalResult
-from mlagents.envs import BrainParameters
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
