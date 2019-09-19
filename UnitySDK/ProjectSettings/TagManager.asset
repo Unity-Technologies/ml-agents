@@ -30,6 +30,8 @@ TagManager:
   - symbol_O
   - symbol_X_Goal
   - symbol_O_Goal
+  - purpleAgent
+  - purpleGoal
   layers:
   - Default
   - TransparentFX

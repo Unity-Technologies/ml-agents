@@ -90,8 +90,8 @@ GameObject:
   - component: {fileID: 114492261207303438}
   - component: {fileID: 114692966630797794}
   m_Layer: 13
-  m_Name: RedStriker
-  m_TagString: redAgent
+  m_Name: PurpleStriker
+  m_TagString: purpleAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -111,8 +111,8 @@ GameObject:
   - component: {fileID: 65974650177247600}
   - component: {fileID: 65269913502125968}
   m_Layer: 0
-  m_Name: GoalNetRed
-  m_TagString: redGoal
+  m_Name: GoalNetPurple
+  m_TagString: purpleGoal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
@@ -560,7 +560,7 @@ GameObject:
   - component: {fileID: 65386314051285766}
   - component: {fileID: 23413248401199264}
   m_Layer: 0
-  m_Name: GoalAreaRed
+  m_Name: GoalAreaPurple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -577,8 +577,8 @@ GameObject:
   - component: {fileID: 33126869764191840}
   - component: {fileID: 23986196238647164}
   m_Layer: 0
-  m_Name: GoalNetRedOuter
-  m_TagString: redGoal
+  m_Name: GoalNetPurpleOuter
+  m_TagString: purpleGoal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
@@ -764,8 +764,8 @@ GameObject:
   - component: {fileID: 114284769194328828}
   - component: {fileID: 114724674330921748}
   m_Layer: 11
-  m_Name: RedGoalie
-  m_TagString: redAgent
+  m_Name: PurpleGoalie
+  m_TagString: purpleAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -872,8 +872,8 @@ GameObject:
   - component: {fileID: 23941816170183106}
   - component: {fileID: 65779051553495090}
   m_Layer: 0
-  m_Name: GoalRed
-  m_TagString: redGoal
+  m_Name: GoalPurple
+  m_TagString: purpleGoal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
@@ -3519,7 +3519,7 @@ MonoBehaviour:
   area: {fileID: 0}
   lastTouchedBy: {fileID: 0}
   agentTag: agent
-  redGoalTag: redGoal
+  purpleGoalTag: purpleGoal
   blueGoalTag: blueGoal
 --- !u!114 &114284769194328828
 MonoBehaviour:
@@ -3589,28 +3589,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efd705d0a5b1e405eb1869b7cbe47dda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  redGoal: {fileID: 4307067024525734}
-  blueGoal: {fileID: 4422946662457316}
-  redStriker: {fileID: 114492261207303438}
-  blueStriker: {fileID: 114850431417842684}
-  redGoalie: {fileID: 114284769194328828}
-  blueGoalie: {fileID: 114698199869072806}
   ball: {fileID: 1682753582128710}
   ballRb: {fileID: 0}
   ground: {fileID: 1475025089682726}
   centerPitch: {fileID: 1526808285443624}
   playerStates: []
   ballStartingPos: {x: 0, y: 0, z: 0}
-  drawSpawnAreaGizmo: 0
-  goalScoreByTeamReward: 0
-  goalScoreAgainstTeamReward: 0
   goalTextUI: {fileID: 0}
-  totalPlayers: 0
   canResetBall: 0
-  useSpawnPoint: 0
-  spawnPoint: {fileID: 0}
-  blueBallPosReward: 0
-  redBallPosReward: 0
 --- !u!114 &114692966630797794
 MonoBehaviour:
   m_ObjectHideFlags: 1
