@@ -40,19 +40,18 @@ If you would like to contribute environments, please see our
 
 ![3D Balance Ball](images/balance.png)
 
-* Set-up: A balance-ball task, where the agent controls the platform.
-* Goal: The agent must balance the platform in order to keep the ball on it for
-  as long as possible.
+* Set-up: A balance-ball task, where the agent balances the ball on it's head.
+* Goal: The agent must balance the ball on it's head for as long as possible.
 * Agents: The environment contains 12 agents of the same kind, all linked to a
   single Brain.
 * Agent Reward Function:
-  * +0.1 for every step the ball remains on the platform.
-  * -1.0 if the ball falls from the platform.
+  * +0.1 for every step the ball remains on it's head.
+  * -1.0 if the ball falls off.
 * Brains: One Brain with the following observation/action space.
-  * Vector Observation space: 8 variables corresponding to rotation of platform,
+  * Vector Observation space: 8 variables corresponding to rotation of the agent cube,
     and position and velocity of ball.
   * Vector Observation space (Hard Version): 5 variables corresponding to
-    rotation of platform and position of ball.
+    rotation of the agent cube and position of ball.
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
