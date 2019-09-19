@@ -6,6 +6,7 @@ from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoPro
 from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
     BrainParametersProto,
 )
+from mlagents.envs.timers import hierarchical_timer
 from typing import Dict, List, Optional
 from PIL import Image
 
@@ -161,8 +162,9 @@ class BrainInfo:
         :param image_bytes: input byte array corresponding to image
         :return: processed numpy array of observation from environment
         """
-        image_bytearray = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(image_bytearray))
+        with hierarchical_timer("image_decompress"):
+            image_bytearray = bytearray(image_bytes)
+            image = Image.open(io.BytesIO(image_bytearray))
         s = np.array(image) / 255.0
         if gray_scale:
             s = np.mean(s, axis=2)
