@@ -4,6 +4,7 @@ import logging
 
 from multiprocessing import Process, Queue
 import os
+import sys
 import glob
 import shutil
 import numpy as np
@@ -11,6 +12,8 @@ import yaml
 from docopt import docopt
 from typing import Any, Callable, Dict, Optional
 
+from tensorboard import default
+from tensorboard import program
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
@@ -128,8 +131,26 @@ def run_training(
     # Signal that environment has been launched.
     process_queue.put(True)
 
+    # Launch TensorBoard
+    launch_tensorboard("./summaries/")
+
     # Begin training
     tc.start_learning(env)
+
+
+def launch_tensorboard(summary_path):
+    log = logging.getLogger("werkzeug")  # Disable webserver logs
+    log.setLevel(logging.ERROR)
+    log = logging.getLogger("tensorboard")  # Disable tensorboard logs
+    log.setLevel(logging.ERROR)
+    tb = program.TensorBoard(
+        default.get_plugins(), program.get_default_assets_zip_provider()
+    )
+    tb.configure(argv=[None, "--logdir", "./summaries/"])
+    url = tb.launch()
+    print("---------------------------------\n")
+    print("View your training progress by opening a browser at: %s \n" % url)
+    print("---------------------------------\n")
 
 
 def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
