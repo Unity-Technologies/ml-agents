@@ -2,6 +2,7 @@
 
 import logging
 
+import multiprocessing
 from multiprocessing import Process, Queue
 import os
 import sys
@@ -284,6 +285,8 @@ def create_environment_factory(
 
 
 def main():
+    # Enable multiprocessing's freeze support
+    multiprocessing.freeze_support()
     try:
         print(
             """
