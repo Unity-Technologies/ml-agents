@@ -2,37 +2,16 @@ import pytest
 from unittest.mock import MagicMock, patch
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.learn import CommandLineOptions, parse_command_line
-
-from docopt import DocoptExit
+from mlagents.trainers.learn import parse_command_line
 
 
 @pytest.fixture
 def basic_options(extra_args=None):
     extra_args = extra_args or {}
-    basic_args = {
-        "--docker-target-name": "None",
-        "--env": "None",
-        "--run-id": "ppo",
-        "--load": False,
-        "--train": False,
-        "--save-freq": "50000",
-        "--keep-checkpoints": "5",
-        "--base-port": "5005",
-        "--num-envs": "1",
-        "--curriculum": "None",
-        "--lesson": "0",
-        "--slow": False,
-        "--no-graphics": False,
-        "<trainer-config-path>": "basic_path",
-        "--debug": False,
-        "--multi-gpu": False,
-        "--sampler": None,
-        # Default options from docopt string
-        "--num-runs": 1,
-        "--seed": -1,
-    }
-    return CommandLineOptions.from_docopt({**basic_args, **extra_args})
+    args = ["basic_path"]
+    if extra_args:
+        args += [f"{k}={v}" for k, v in extra_args.items()]
+    return parse_command_line(args)
 
 
 @patch("mlagents.trainers.learn.SamplerManager")
@@ -93,15 +72,14 @@ def test_docker_target_path(
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
 
 
-@pytest.mark.parametrize("use_docopt", [True, False])
-def test_commandline_args(use_docopt):
+def test_commandline_args():
 
     # No args raises
-    with pytest.raises((DocoptExit, SystemExit)):
-        parse_command_line([], use_old_parse=use_docopt)
+    with pytest.raises(SystemExit):
+        parse_command_line([])
 
     # Test with defaults
-    opt = parse_command_line(["mytrainerpath"], use_old_parse=use_docopt)
+    opt = parse_command_line(["mytrainerpath"])
     assert opt.trainer_config_path == "mytrainerpath"
     assert opt.env_path is None
     assert opt.curriculum_folder is None
@@ -143,7 +121,7 @@ def test_commandline_args(use_docopt):
         "--multi-gpu",
     ]
 
-    opt = parse_command_line(full_args, use_old_parse=use_docopt)
+    opt = parse_command_line(full_args)
     assert opt.trainer_config_path == "mytrainerpath"
     assert opt.env_path == "./myenvfile"
     assert opt.curriculum_folder == "./mycurriculum"

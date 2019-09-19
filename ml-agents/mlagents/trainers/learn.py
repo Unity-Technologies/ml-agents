@@ -9,7 +9,6 @@ import glob
 import shutil
 import numpy as np
 import yaml
-from docopt import docopt
 from typing import Any, Callable, Dict, Optional, List, NamedTuple
 
 
@@ -46,60 +45,11 @@ class CommandLineOptions(NamedTuple):
     docker_target_name: Optional[str]
 
     @staticmethod
-    def from_docopt(run_options: Dict[str, Any]) -> "CommandLineOptions":
-        return CommandLineOptions(
-            debug=run_options["--debug"],
-            num_runs=int(run_options["--num-runs"]),
-            seed=int(run_options["--seed"]),
-            env_path=run_options["--env"] if run_options["--env"] != "None" else None,
-            run_id=run_options["--run-id"],
-            load_model=run_options["--load"],
-            train_model=run_options["--train"],
-            save_freq=int(run_options["--save-freq"]),
-            keep_checkpoints=int(run_options["--keep-checkpoints"]),
-            base_port=int(run_options["--base-port"]),
-            num_envs=int(run_options["--num-envs"]),
-            curriculum_folder=(
-                run_options["--curriculum"]
-                if run_options["--curriculum"] != "None"
-                else None
-            ),
-            lesson=int(run_options["--lesson"]),
-            fast_simulation=not bool(run_options["--slow"]),
-            no_graphics=run_options["--no-graphics"],
-            multi_gpu=run_options["--multi-gpu"],
-            trainer_config_path=run_options["<trainer-config-path>"],
-            sampler_file_path=(
-                run_options["--sampler"] if run_options["--sampler"] != "None" else None
-            ),
-            docker_target_name=(
-                run_options["--docker-target-name"]
-                if run_options["--docker-target-name"] != "None"
-                else None
-            ),
-        )
-
-    @staticmethod
     def from_argparse(args: Any) -> "CommandLineOptions":
-        print(args)
-        print(vars(args))
         return CommandLineOptions(**vars(args))
 
 
-def parse_command_line(
-    argv: Optional[List[str]] = None, use_old_parse: bool = False
-) -> CommandLineOptions:
-    if use_old_parse:
-        return _parse_command_line_docopt(argv)
-    else:
-        return _parse_command_line_argparse(argv)
-
-
-def _parse_command_line_argparse(
-    argv: Optional[List[str]] = None
-) -> CommandLineOptions:
-
-    # TODO ADD HELP STRINGS
+def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -203,38 +153,6 @@ def _parse_command_line_argparse(
 
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
-
-
-def _parse_command_line_docopt(argv: Optional[List[str]] = None) -> CommandLineOptions:
-    _USAGE = """
-    Usage:
-      mlagents-learn <trainer-config-path> [options]
-      mlagents-learn --help
-
-    Options:
-      --env=<file>                Name of the Unity executable [default: None].
-      --curriculum=<directory>    Curriculum json directory for environment [default: None].
-      --sampler=<file>            Reset parameter yaml file for environment [default: None].
-      --keep-checkpoints=<n>      How many model checkpoints to keep [default: 5].
-      --lesson=<n>                Start learning from this lesson [default: 0].
-      --load                      Whether to load the model or randomly initialize [default: False].
-      --run-id=<path>             The directory name for model and summary statistics [default: ppo].
-      --num-runs=<n>              Number of concurrent training sessions [default: 1].
-      --save-freq=<n>             Frequency at which to save model [default: 50000].
-      --seed=<n>                  Random seed used for training [default: -1].
-      --slow                      Whether to run the game at training speed [default: False].
-      --train                     Whether to train model, or only run inference [default: False].
-      --base-port=<n>             Base port for environment communication [default: 5005].
-      --num-envs=<n>              Number of parallel environments to use for training [default: 1]
-      --docker-target-name=<dt>   Docker volume to store training-specific files [default: None].
-      --no-graphics               Whether to run the environment in no-graphics mode [default: False].
-      --debug                     Whether to run ML-Agents in debug mode with detailed logging [default: False].
-      --multi-gpu                 Setting this flag enables the use of multiple GPU's (if available) during training
-                                  [default: False].
-    """
-
-    doc_options = docopt(_USAGE, argv)
-    return CommandLineOptions.from_docopt(doc_options)
 
 
 def run_training(
