@@ -2,11 +2,13 @@ import pytest
 from unittest.mock import MagicMock, patch
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.learn import CommandLineOptions
 
 
 @pytest.fixture
-def basic_options():
-    return {
+def basic_options(extra_args=None):
+    extra_args = extra_args or {}
+    basic_args = {
         "--docker-target-name": "None",
         "--env": "None",
         "--run-id": "ppo",
@@ -24,7 +26,11 @@ def basic_options():
         "--debug": False,
         "--multi-gpu": False,
         "--sampler": None,
+        # Default options from docopt string
+        "--num-runs": 1,
+        "--seed": -1,
     }
+    return CommandLineOptions.from_docopt({**basic_args, **extra_args})
 
 
 @patch("mlagents.trainers.learn.SamplerManager")
@@ -74,8 +80,7 @@ def test_docker_target_path(
     trainer_config_mock = MagicMock()
     load_config.return_value = trainer_config_mock
 
-    options_with_docker_target = basic_options()
-    options_with_docker_target["--docker-target-name"] = "dockertarget"
+    options_with_docker_target = basic_options({"--docker-target-name": "dockertarget"})
 
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
