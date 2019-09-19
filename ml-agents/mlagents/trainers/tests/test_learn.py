@@ -2,7 +2,9 @@ import pytest
 from unittest.mock import MagicMock, patch
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.learn import CommandLineOptions
+from mlagents.trainers.learn import CommandLineOptions, parse_command_line
+
+from docopt import DocoptExit
 
 
 @pytest.fixture
@@ -89,3 +91,72 @@ def test_docker_target_path(
             mock_init.assert_called_once()
             assert mock_init.call_args[0][1] == "/dockertarget/models/ppo-0"
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
+
+
+def test_commandline_args():
+    # No args raises
+    with pytest.raises(DocoptExit):
+        opt = parse_command_line([])
+
+    # Test with defaults
+    opt = parse_command_line(["mytrainerpath"])
+    assert opt.trainer_config_path == "mytrainerpath"
+    assert opt.env_path is None
+    assert opt.curriculum_folder is None
+    assert opt.sampler_file_path is None
+    assert opt.keep_checkpoints == 5
+    assert opt.lesson == 0
+    assert opt.load_model is False
+    assert opt.run_id == "ppo"
+    assert opt.save_freq == 50000
+    assert opt.seed == -1
+    assert opt.fast_simulation is True
+    assert opt.train_model is False
+    assert opt.base_port == 5005
+    assert opt.num_envs == 1
+    assert opt.docker_target_name is None
+    assert opt.no_graphics is False
+    assert opt.debug is False
+    assert opt.multi_gpu is False
+
+    full_args = [
+        "mytrainerpath",
+        "--env=./myenvfile",
+        "--curriculum=./mycurriculum",
+        "--sampler=./mysample",
+        "--keep-checkpoints=42",
+        "--lesson=3",
+        "--load",
+        "--run-id=myawesomerun",
+        "--num-runs=3",
+        "--save-freq=123456",
+        "--seed=7890",
+        "--slow",
+        "--train",
+        "--base-port=4004",
+        "--num-envs=2",
+        "--docker-target-name=mydockertarget",
+        "--no-graphics",
+        "--debug",
+        "--multi-gpu",
+    ]
+
+    opt = parse_command_line(full_args)
+    assert opt.trainer_config_path == "mytrainerpath"
+    assert opt.env_path == "./myenvfile"
+    assert opt.curriculum_folder == "./mycurriculum"
+    assert opt.sampler_file_path == "./mysample"
+    assert opt.keep_checkpoints == 42
+    assert opt.lesson == 3
+    assert opt.load_model is True
+    assert opt.run_id == "myawesomerun"
+    assert opt.save_freq == 123456
+    assert opt.seed == 7890
+    assert opt.fast_simulation is False
+    assert opt.train_model is True
+    assert opt.base_port == 4004
+    assert opt.num_envs == 2
+    assert opt.docker_target_name == "mydockertarget"
+    assert opt.no_graphics is True
+    assert opt.debug is True
+    assert opt.multi_gpu is True
