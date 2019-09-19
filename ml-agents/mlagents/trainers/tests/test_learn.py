@@ -98,6 +98,7 @@ def test_commandline_args():
     assert opt.no_graphics is False
     assert opt.debug is False
     assert opt.multi_gpu is False
+    assert opt.env_args is None
 
     full_args = [
         "mytrainerpath",
@@ -140,3 +141,18 @@ def test_commandline_args():
     assert opt.no_graphics is True
     assert opt.debug is True
     assert opt.multi_gpu is True
+
+
+def test_env_args():
+    full_args = [
+        "mytrainerpath",
+        "--env=./myenvfile",
+        "--env-args",  # Everything after here will be grouped in a list
+        "--foo=bar",
+        "--blah",
+        "baz",
+        "100",
+    ]
+
+    opt = parse_command_line(full_args)
+    assert opt.env_args == ["--foo=bar", "--blah", "baz", "100"]

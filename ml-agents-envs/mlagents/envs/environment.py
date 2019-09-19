@@ -52,7 +52,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 30,
-        args: list = [],
+        args: Optional[List[str]] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -68,7 +68,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         :list args: Addition Unity command line arguments
         """
-
+        args = args or []
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
