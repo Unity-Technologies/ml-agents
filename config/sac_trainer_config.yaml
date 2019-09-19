@@ -110,7 +110,7 @@ PyramidsLearning:
             gamma: 0.99
             encoding_size: 128
             use_actions: true
-            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertPyramid.demo
+            demo_path: ./UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/Pyramids.demo
 
 VisualPyramidsLearning:
     time_horizon: 128
@@ -132,7 +132,7 @@ VisualPyramidsLearning:
             gamma: 0.99
             encoding_size: 128
             use_actions: true
-            demo_path: ./UnitySDK/Assets/Demonstrations/ExpertPyramid.demo
+            demo_path: ./UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/Pyramids.demo
 
 3DBallLearning:
     normalize: true
