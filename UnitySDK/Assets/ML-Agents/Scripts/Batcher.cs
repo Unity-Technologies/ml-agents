@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
-using Google.Protobuf;
 
 namespace MLAgents
 {
@@ -21,49 +21,46 @@ namespace MLAgents
     public class Batcher
     {
         /// The default number of agents in the scene
-        private const int NumAgents = 32;
+        private const int k_NumAgents = 32;
 
         /// Keeps track of which brains have data to send on the current step
-        Dictionary<string, bool> m_hasData =
+        Dictionary<string, bool> m_HasData =
             new Dictionary<string, bool>();
 
         /// Keeps track of which brains queried the batcher on the current step
-        Dictionary<string, bool> m_hasQueried =
+        Dictionary<string, bool> m_HasQueried =
             new Dictionary<string, bool>();
 
         /// Keeps track of the agents of each brain on the current step
-        Dictionary<string, List<Agent>> m_currentAgents =
+        Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
 
         /// The Communicator of the batcher, sends a message at most once per step
-        Communicator m_communicator;
+        ICommunicator m_Communicator;
 
         /// The current UnityRLOutput to be sent when all the brains queried the batcher
-        CommunicatorObjects.UnityRLOutput m_currentUnityRLOutput =
+        CommunicatorObjects.UnityRLOutput m_CurrentUnityRlOutput =
             new CommunicatorObjects.UnityRLOutput();
 
-        /// Keeps track of the done flag of the Academy
-        bool m_academyDone;
-
         /// Keeps track of last CommandProto sent by External
-        CommunicatorObjects.CommandProto m_command;
+        CommunicatorObjects.CommandProto m_Command;
 
         /// Keeps track of last EnvironmentParametersProto sent by External
-        CommunicatorObjects.EnvironmentParametersProto m_environmentParameters;
+        CommunicatorObjects.EnvironmentParametersProto m_EnvironmentParameters;
 
         /// Keeps track of last training mode sent by External
-        bool m_isTraining;
+        bool m_IsTraining;
 
         /// Keeps track of the number of messages received
-        private ulong m_messagesReceived;
+        private ulong m_MessagesReceived;
 
         /// <summary>
         /// Initializes a new instance of the Batcher class.
         /// </summary>
         /// <param name="communicator">The communicator to be used by the batcher.</param>
-        public Batcher(Communicator communicator)
+        public Batcher(ICommunicator communicator)
         {
-            this.m_communicator = communicator;
+            m_Communicator = communicator;
         }
 
         /// <summary>
@@ -79,7 +76,7 @@ namespace MLAgents
             var initializationInput = new CommunicatorObjects.UnityInput();
             try
             {
-                initializationInput = m_communicator.Initialize(
+                initializationInput = m_Communicator.Initialize(
                     new CommunicatorObjects.UnityOutput
                     {
                         RlInitializationOutput = academyParameters
@@ -88,27 +85,25 @@ namespace MLAgents
             }
             catch
             {
-                throw new UnityAgentsException(
-                    "The Communicator was unable to connect. Please make sure the External " +
-                    "process is ready to accept communication with Unity.");
+                var exceptionMessage = "The Communicator was unable to connect. Please make sure the External " +
+                                       "process is ready to accept communication with Unity.";
+
+                // Check for common error condition and add details to the exception message.
+                var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
+                var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
+                if (httpProxy != null || httpsProxy != null)
+                {
+                    exceptionMessage += " Try removing HTTP_PROXY and HTTPS_PROXY from the" +
+                                        "environment variables and try again.";
+                }
+                throw new UnityAgentsException(exceptionMessage);
             }
 
             var firstRlInput = input.RlInput;
-            m_command = firstRlInput.Command;
-            m_environmentParameters = firstRlInput.EnvironmentParameters;
-            m_isTraining = firstRlInput.IsTraining;
+            m_Command = firstRlInput.Command;
+            m_EnvironmentParameters = firstRlInput.EnvironmentParameters;
+            m_IsTraining = firstRlInput.IsTraining;
             return initializationInput.RlInitializationInput;
-        }
-
-        /// <summary>
-        /// Registers the done flag of the academy to the next output to be sent
-        /// to the communicator.
-        /// </summary>
-        /// <param name="done">If set to <c>true</c>
-        /// The academy done state will be sent to External at the next Exchange.</param>
-        public void RegisterAcademyDoneFlag(bool done)
-        {
-            m_academyDone = done;
         }
 
         /// <summary>
@@ -117,7 +112,7 @@ namespace MLAgents
         /// <returns>The current command.</returns>
         public CommunicatorObjects.CommandProto GetCommand()
         {
-            return m_command;
+            return m_Command;
         }
 
         /// <summary>
@@ -126,7 +121,7 @@ namespace MLAgents
         /// <returns>The number of messages received since start of the simulation</returns>
         public ulong GetNumberMessageReceived()
         {
-            return m_messagesReceived;
+            return m_MessagesReceived;
         }
 
         /// <summary>
@@ -136,7 +131,7 @@ namespace MLAgents
         /// <returns>The environment parameters.</returns>
         public CommunicatorObjects.EnvironmentParametersProto GetEnvironmentParameters()
         {
-            return m_environmentParameters;
+            return m_EnvironmentParameters;
         }
 
         /// <summary>
@@ -145,7 +140,7 @@ namespace MLAgents
         /// <returns><c>true</c>, if training mode is requested, <c>false</c> otherwise.</returns>
         public bool GetIsTraining()
         {
-            return m_isTraining;
+            return m_IsTraining;
         }
 
         /// <summary>
@@ -154,10 +149,10 @@ namespace MLAgents
         /// <param name="brainKey">Brain key.</param>
         public void SubscribeBrain(string brainKey)
         {
-            m_hasQueried[brainKey] = false;
-            m_hasData[brainKey] = false;
-            m_currentAgents[brainKey] = new List<Agent>(NumAgents);
-            m_currentUnityRLOutput.AgentInfos.Add(
+            m_HasQueried[brainKey] = false;
+            m_HasData[brainKey] = false;
+            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
+            m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto());
         }
@@ -176,91 +171,90 @@ namespace MLAgents
         {
             // If no communicator is initialized, the Batcher will not transmit
             // BrainInfo
-            if (m_communicator == null)
+            if (m_Communicator == null)
             {
                 return;
             }
 
             // The brain tried called GiveBrainInfo, update m_hasQueried
-            m_hasQueried[brainKey] = true;
+            m_HasQueried[brainKey] = true;
             // Populate the currentAgents dictionary
-            m_currentAgents[brainKey].Clear();
-            foreach (Agent agent in agentInfo.Keys)
+            m_CurrentAgents[brainKey].Clear();
+            foreach (var agent in agentInfo.Keys)
             {
-                m_currentAgents[brainKey].Add(agent);
+                m_CurrentAgents[brainKey].Add(agent);
             }
 
             // If at least one agent has data to send, then append data to
             // the message and update hasSentState
-            if (m_currentAgents[brainKey].Count > 0)
+            if (m_CurrentAgents[brainKey].Count > 0)
             {
-                foreach (Agent agent in m_currentAgents[brainKey])
+                foreach (var agent in m_CurrentAgents[brainKey])
                 {
-                    CommunicatorObjects.AgentInfoProto agentInfoProto = agentInfo[agent].ToProto();
-                    m_currentUnityRLOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                    var agentInfoProto = agentInfo[agent].ToProto();
+                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                     // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
                     // e.g. after recording them to demo and using them for inference.
                     agentInfo[agent].ClearVisualObs();
                 }
 
-                m_hasData[brainKey] = true;
+                m_HasData[brainKey] = true;
             }
 
             // If any agent needs to send data, then the whole message
             // must be sent
-            if (m_hasQueried.Values.All(x => x))
+            if (m_HasQueried.Values.All(x => x))
             {
-                if (m_hasData.Values.Any(x => x) || m_academyDone)
+                if (m_HasData.Values.Any(x => x))
                 {
-                    m_currentUnityRLOutput.GlobalDone = m_academyDone;
                     SendBatchedMessageHelper();
                 }
 
                 // The message was just sent so we must reset hasSentState and
                 // triedSendState
-                foreach (string k in m_currentAgents.Keys)
+                foreach (var k in m_CurrentAgents.Keys)
                 {
-                    m_hasData[k] = false;
-                    m_hasQueried[k] = false;
+                    m_HasData[k] = false;
+                    m_HasQueried[k] = false;
                 }
             }
         }
 
         /// <summary>
-        /// Helper method that sends the curent UnityRLOutput, receives the next UnityInput and
+        /// Helper method that sends the current UnityRLOutput, receives the next UnityInput and
         /// Applies the appropriate AgentAction to the agents.
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var input = m_communicator.Exchange(
+            var input = m_Communicator.Exchange(
                 new CommunicatorObjects.UnityOutput
                 {
-                    RlOutput = m_currentUnityRLOutput
+                    RlOutput = m_CurrentUnityRlOutput
                 });
-            m_messagesReceived += 1;
+            m_MessagesReceived += 1;
 
-            foreach (string k in m_currentUnityRLOutput.AgentInfos.Keys)
+            foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
-                m_currentUnityRLOutput.AgentInfos[k].Value.Clear();
+                m_CurrentUnityRlOutput.AgentInfos[k].Value.Clear();
             }
 
             if (input == null)
             {
-                m_command = CommunicatorObjects.CommandProto.Quit;
+                m_Command = CommunicatorObjects.CommandProto.Quit;
                 return;
             }
 
-            CommunicatorObjects.UnityRLInput rlInput = input.RlInput;
+            var rlInput = input.RlInput;
 
             if (rlInput == null)
             {
-                m_command = CommunicatorObjects.CommandProto.Quit;
+                m_Command = CommunicatorObjects.CommandProto.Quit;
                 return;
             }
 
-            m_command = rlInput.Command;
-            m_environmentParameters = rlInput.EnvironmentParameters;
-            m_isTraining = rlInput.IsTraining;
+            m_Command = rlInput.Command;
+            m_EnvironmentParameters = rlInput.EnvironmentParameters;
+            m_IsTraining = rlInput.IsTraining;
 
             if (rlInput.AgentActions == null)
             {
@@ -269,7 +263,7 @@ namespace MLAgents
 
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_currentAgents[brainName].Any())
+                if (!m_CurrentAgents[brainName].Any())
                 {
                     continue;
                 }
@@ -279,9 +273,9 @@ namespace MLAgents
                     continue;
                 }
 
-                for (var i = 0; i < m_currentAgents[brainName].Count; i++)
+                for (var i = 0; i < m_CurrentAgents[brainName].Count; i++)
                 {
-                    var agent = m_currentAgents[brainName][i];
+                    var agent = m_CurrentAgents[brainName][i];
                     var action = rlInput.AgentActions[brainName].Value[i];
                     agent.UpdateVectorAction(action.VectorActions.ToArray());
                     agent.UpdateMemoriesAction(action.Memories.ToList());

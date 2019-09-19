@@ -1,11 +1,18 @@
 # Training with Proximal Policy Optimization
 
-ML-Agents uses a reinforcement learning technique called
+ML-Agents provides an implementation of a reinforcement learning algorithm called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
 PPO uses a neural network to approximate the ideal function that maps an agent's
 observations to the best action an agent can take in a given state. The
 ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
 Python process (communicating with the running Unity application over a socket).
+
+ML-Agents also provides an implementation of
+[Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/). SAC tends
+to be more _sample-efficient_, i.e. require fewer environment steps,
+than PPO, but may spend more time performing model updates. This can produce a large
+speedup on heavy or slow environments. Check out how to train with
+SAC [here](Training-SAC.md).
 
 To train an agent, you will need to provide the agent one or more reward signals which
 the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
@@ -98,6 +105,19 @@ step. This should typically be decreased if training is unstable, and the reward
 does not consistently increase.
 
 Typical Range: `1e-5` - `1e-3`
+
+### (Optional) Learning Rate Schedule
+
+`learning_rate_schedule` corresponds to how the learning rate is changed over time.
+For PPO, we recommend decaying learning rate until `max_steps` so learning converges
+more stably. However, for some cases (e.g. training for an unknown amount of time)
+this feature can be disabled.
+
+Options:
+* `linear` (default): Decay `learning_rate` linearly, reaching 0 at `max_steps`.
+* `constant`: Keep learning rate constant for the entire training run.
+
+Options: `linear`, `constant`
 
 ### Time Horizon
 
@@ -292,7 +312,8 @@ consistently decrease during training. If it decreases too soon or not at all,
 
 ### Learning Rate
 
-This will decrease over time on a linear schedule.
+This will decrease over time on a linear schedule by default, unless `learning_rate_schedule`
+is set to `constant`.
 
 ### Policy Loss
 

@@ -1,16 +1,14 @@
 import logging
-import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from mlagents.envs.timers import timed
-from mlagents.trainers.models import EncoderType
+from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.bc.module import BCModule
 
 # Variable scope in which created variables will be placed under
 TOWER_SCOPE_NAME = "tower"
@@ -50,6 +48,11 @@ class MultiGpuPPOPolicy(PPOPolicy):
                             PPOModel(
                                 brain=brain,
                                 lr=float(trainer_params["learning_rate"]),
+                                lr_schedule=LearningRateSchedule(
+                                    trainer_params.get(
+                                        "learning_rate_schedule", "linear"
+                                    )
+                                ),
                                 h_size=int(trainer_params["hidden_units"]),
                                 epsilon=float(trainer_params["epsilon"]),
                                 beta=float(trainer_params["beta"]),

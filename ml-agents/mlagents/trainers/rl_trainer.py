@@ -1,17 +1,13 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, List, Deque, Any, Optional, NamedTuple
-import os
-import tensorflow as tf
+from typing import Dict, List, Any, NamedTuple
 import numpy as np
-from collections import deque, defaultdict
 
-from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
+from mlagents.envs.brain import AllBrainInfo, BrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.tf_policy import Policy
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignalResult
-from mlagents.envs import BrainParameters
+from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -36,7 +32,6 @@ class RLTrainer(Trainer):
 
     def __init__(self, *args, **kwargs):
         super(RLTrainer, self).__init__(*args, **kwargs)
-        self.step = 0
         # Make sure we have at least one reward_signal
         if not self.trainer_parameters["reward_signals"]:
             raise UnityTrainerException(
@@ -59,7 +54,7 @@ class RLTrainer(Trainer):
         :return: curr_info: Reconstructed BrainInfo to match agents of next_info.
         """
         visual_observations: List[List[Any]] = [
-            []
+            [] for _ in next_info.visual_observations
         ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
@@ -100,7 +95,8 @@ class RLTrainer(Trainer):
                 agent_brain_info.previous_text_actions[agent_index]
             )
             action_masks.append(agent_brain_info.action_masks[agent_index])
-        if self.policy.use_recurrent:
+        # Check if memories exists (i.e. next_info is not empty) before attempting vstack
+        if self.policy.use_recurrent and memories:
             memories = np.vstack(memories)
         curr_info = BrainInfo(
             visual_observations,

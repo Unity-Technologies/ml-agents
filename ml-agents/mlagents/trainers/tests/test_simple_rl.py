@@ -9,8 +9,8 @@ from typing import Any, Dict
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import initialize_trainers
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects import AgentInfoProto
+from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
+from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
 
@@ -38,7 +38,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         super().__init__()
         self.discrete = use_discrete
         self._brains: Dict[str, BrainParameters] = {}
-        self._brains[BRAIN_NAME] = BrainParameters(
+        brain_params = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
             num_stacked_vector_observations=1,
@@ -47,12 +47,13 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             vector_action_descriptions=["moveDirection"],
             vector_action_space_type=0 if use_discrete else 1,
         )
+        self._brains[BRAIN_NAME] = brain_params
 
         # state
         self.position = 0.0
         self.step_count = 0
-        self.random = random.Random(str(self._brains))
-        self.goal = random.choice([-1, 1])
+        self.random = random.Random(str(brain_params))
+        self.goal = self.random.choice([-1, 1])
 
     def step(
         self,
@@ -94,7 +95,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     def _reset_agent(self):
         self.position = 0.0
         self.step_count = 0
-        self.goal = random.choice([-1, 1])
+        self.goal = self.random.choice([-1, 1])
 
     def reset(
         self,
@@ -116,10 +117,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         }
 
     @property
-    def global_done(self):
-        return False
-
-    @property
     def external_brains(self) -> Dict[str, BrainParameters]:
         return self._brains
 
@@ -131,31 +128,62 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         pass
 
 
-def _check_environment_trains(env):
-    config = """
-        default:
-            trainer: ppo
-            batch_size: 16
-            beta: 5.0e-3
-            buffer_size: 64
-            epsilon: 0.2
-            hidden_units: 128
-            lambd: 0.95
-            learning_rate: 5.0e-3
-            max_steps: 2500
-            memory_size: 256
-            normalize: false
-            num_epoch: 3
-            num_layers: 2
-            time_horizon: 64
-            sequence_length: 64
-            summary_freq: 500
-            use_recurrent: false
-            reward_signals:
-                extrinsic:
-                    strength: 1.0
-                    gamma: 0.99
+PPO_CONFIG = """
+    default:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 5.0e-3
+        max_steps: 2500
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
     """
+
+SAC_CONFIG = """
+    default:
+        trainer: sac
+        batch_size: 32
+        buffer_size: 10240
+        buffer_init_steps: 1000
+        hidden_units: 64
+        init_entcoef: 0.01
+        learning_rate: 5.0e-3
+        max_steps: 2000
+        memory_size: 256
+        normalize: false
+        num_update: 1
+        train_interval: 1
+        num_layers: 1
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        tau: 0.005
+        use_recurrent: false
+        curiosity_enc_size: 128
+        demo_path: None
+        vis_encode_type: simple
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+    """
+
+
+def _check_environment_trains(env, config):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -177,7 +205,6 @@ def _check_environment_trains(env):
             meta_curriculum=None,
             multi_gpu=False,
         )
-        print(trainers)
 
         tc = TrainerController(
             trainers=trainers,
@@ -202,6 +229,12 @@ def _check_environment_trains(env):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_rl(use_discrete):
+def test_simple_ppo(use_discrete):
     env = Simple1DEnvironment(use_discrete=use_discrete)
-    _check_environment_trains(env)
+    _check_environment_trains(env, PPO_CONFIG)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_sac(use_discrete):
+    env = Simple1DEnvironment(use_discrete=use_discrete)
+    _check_environment_trains(env, SAC_CONFIG)

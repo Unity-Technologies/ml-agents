@@ -9,7 +9,7 @@ message UnityRLOutput {
     message ListAgentInfoProto {
         repeated AgentInfoProto value = 1;
     }
-    bool global_done = 1;
+    reserved 1; // deprecated bool global_done field
     map<string, ListAgentInfoProto> agentInfos = 2;
 }
 

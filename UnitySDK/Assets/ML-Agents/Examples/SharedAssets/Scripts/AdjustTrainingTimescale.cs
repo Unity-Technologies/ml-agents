@@ -1,18 +1,14 @@
-﻿//This script lets you change time scale during training. It is not a required script for this demo to function
+//This script lets you change time scale during training. It is not a required script for this demo to function
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace  MLAgents
 {
-    
-    public class AdjustTrainingTimescale : MonoBehaviour {
-        
+    public class AdjustTrainingTimescale : MonoBehaviour
+    {
         // Update is called once per frame
-        void Update ()
+        void Update()
         {
-            
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 Time.timeScale = 1f;

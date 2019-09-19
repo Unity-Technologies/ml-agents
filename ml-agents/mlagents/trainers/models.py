@@ -6,6 +6,8 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
+from mlagents.trainers.trainer import UnityTrainerException
+
 logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
@@ -17,6 +19,11 @@ class EncoderType(Enum):
     SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
     RESNET = "resnet"
+
+
+class LearningRateSchedule(Enum):
+    CONSTANT = "constant"
+    LINEAR = "linear"
 
 
 class LearningModel(object):
@@ -89,6 +96,25 @@ class LearningModel(object):
         )
         increment_step = tf.assign(global_step, tf.add(global_step, steps_to_increment))
         return global_step, increment_step, steps_to_increment
+
+    @staticmethod
+    def create_learning_rate(
+        lr_schedule: LearningRateSchedule,
+        lr: float,
+        global_step: tf.Tensor,
+        max_step: int,
+    ) -> tf.Tensor:
+        if lr_schedule == LearningRateSchedule.CONSTANT:
+            learning_rate = tf.Variable(lr)
+        elif lr_schedule == LearningRateSchedule.LINEAR:
+            learning_rate = tf.train.polynomial_decay(
+                lr, global_step, max_step, 1e-10, power=1.0
+            )
+        else:
+            raise UnityTrainerException(
+                "The learning rate schedule {} is invalid.".format(lr_schedule)
+            )
+        return learning_rate
 
     @staticmethod
     def scaled_init(scale):

@@ -3,36 +3,31 @@ import pytest
 
 import numpy as np
 
-from mlagents.envs import (
-    UnityEnvironment,
-    UnityEnvironmentException,
-    UnityActionException,
-    BrainInfo,
-)
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.exception import UnityEnvironmentException, UnityActionException
+from mlagents.envs.brain import BrainInfo
 from mlagents.envs.mock_communicator import MockCommunicator
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_handles_bad_filename(get_communicator):
     with pytest.raises(UnityEnvironmentException):
         UnityEnvironment(" ")
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    with pytest.raises(UnityActionException):
-        env.step([0])
     assert env.brain_names[0] == "RealFakeBrain"
     env.close()
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -41,7 +36,6 @@ def test_reset(mock_communicator, mock_launcher):
     brain = env.brains["RealFakeBrain"]
     brain_info = env.reset()
     env.close()
-    assert not env.global_done
     assert isinstance(brain_info, dict)
     assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
     assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
@@ -59,15 +53,15 @@ def test_reset(mock_communicator, mock_launcher):
     )
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_step(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
     brain = env.brains["RealFakeBrain"]
-    brain_info = env.reset()
+    brain_info = env.step()
     brain_info = env.step(
         [0]
         * brain.vector_action_space_size[0]
@@ -80,14 +74,7 @@ def test_step(mock_communicator, mock_launcher):
         * brain.vector_action_space_size[0]
         * len(brain_info["RealFakeBrain"].agents)
     )
-    with pytest.raises(UnityActionException):
-        env.step(
-            [0]
-            * brain.vector_action_space_size[0]
-            * len(brain_info["RealFakeBrain"].agents)
-        )
     env.close()
-    assert env.global_done
     assert isinstance(brain_info, dict)
     assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
     assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
@@ -109,8 +96,8 @@ def test_step(mock_communicator, mock_launcher):
     assert brain_info["RealFakeBrain"].local_done[2]
 
 
-@mock.patch("mlagents.envs.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.UnityEnvironment.get_communicator")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_close(mock_communicator, mock_launcher):
     comm = MockCommunicator(discrete_action=False, visual_inputs=0)
     mock_communicator.return_value = comm
