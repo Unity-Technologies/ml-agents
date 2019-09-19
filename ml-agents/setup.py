@@ -31,7 +31,6 @@ setup(
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
-        "docopt",
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
         "jupyter",
