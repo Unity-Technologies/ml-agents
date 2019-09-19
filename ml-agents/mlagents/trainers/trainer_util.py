@@ -1,4 +1,5 @@
-from typing import Any, Dict
+import yaml
+from typing import Any, Dict, TextIO
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
@@ -108,3 +109,26 @@ def initialize_trainers(
                 "brain {}".format(brain_name)
             )
     return trainers
+
+
+def load_config(trainer_config_path: str) -> Dict[str, Any]:
+    try:
+        with open(trainer_config_path) as data_file:
+            return _load_config(data_file)
+    except IOError:
+        raise UnityEnvironmentException(
+            "Parameter file could not be found " "at {}.".format(trainer_config_path)
+        )
+    except UnicodeDecodeError:
+        raise UnityEnvironmentException(
+            "There was an error decoding "
+            "Trainer Config from this path : {}".format(trainer_config_path)
+        )
+
+
+def _load_config(fp: TextIO) -> Dict[str, Any]:
+    try:
+        return yaml.safe_load(fp)
+    except yaml.parser.ParserError:
+        # TODO better message
+        raise UnityEnvironmentException("Error parsing yaml file. ")

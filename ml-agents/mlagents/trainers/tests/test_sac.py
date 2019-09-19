@@ -15,7 +15,7 @@ from mlagents.trainers.tests import mock_brain as mb
 
 @pytest.fixture
 def dummy_config():
-    return yaml.load(
+    return yaml.safe_load(
         """
         trainer: sac
         batch_size: 32
