@@ -4,7 +4,9 @@ import struct
 from typing import Optional
 
 from .communicator import Communicator
-from .communicator_objects import UnityMessage, UnityOutput, UnityInput
+from mlagents.envs.communicator_objects.unity_message_pb2 import UnityMessage
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
 from .exception import UnityTimeOutException
 
 

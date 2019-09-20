@@ -36,6 +36,7 @@
 
 * [Training ML-Agents](Training-ML-Agents.md)
 * [Training with Proximal Policy Optimization](Training-PPO.md)
+* [Training with Soft Actor-Critic](Training-SAC.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 * [Training with LSTM](Feature-Memory.md)

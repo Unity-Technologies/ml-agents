@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+using System;
+using UnityEngine;
 using System.Linq;
 
 namespace MLAgents
 {
     public enum SpaceType
     {
-        discrete,
-        continuous
+        Discrete,
+        Continuous
     };
 
     /// <summary>
@@ -15,56 +16,62 @@ namespace MLAgents
     /// The height defines the number of pixels on the verical axis.
     /// blackAndWhite defines whether or not the image is grayscale.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public struct Resolution
     {
+        /// <summary>The width of the observation in pixels </summary>
         public int width;
 
-        /**< \brief The width of the observation in pixels */
+        /// <summary>The height of the observation in pixels</summary>
         public int height;
 
-        /**< \brief The height of the observation in pixels */
+        /// <summary>
+        /// If true, the image will be in black and white.
+        /// If false, it will be in colors RGB
+        /// </summary>
         public bool blackAndWhite;
-        /**< \brief If true, the image will be in black and white. 
-         * If false, it will be in colors RGB */
     }
 
     /// <summary>
     /// Holds information about the Brain. It defines what are the inputs and outputs of the
     /// decision process.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class BrainParameters
     {
+        /// <summary>
+        /// If continuous : The length of the float vector that represents
+        /// the state
+        /// If discrete : The number of possible values the state can take
+        /// </summary>
         public int vectorObservationSize = 1;
-        /**< \brief If continuous : The length of the float vector that represents 
-         * the state
-         * <br> If discrete : The number of possible values the state can take*/
 
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
-        public int[] vectorActionSize = new int[1]{1};
-        /**< \brief If continuous : The length of the float vector that represents
-         * the action
-         * <br> If discrete : The number of possible values the action can take*/
+        /// <summary>
+        /// If continuous : The length of the float vector that represents
+        /// the action
+        /// If discrete : The number of possible values the action can take*/
+        /// </summary>
+        public int[] vectorActionSize = new[] {1};
 
+        /// <summary> The list of observation resolutions for the brain</summary>
         public Resolution[] cameraResolutions;
-        /**<\brief  The list of observation resolutions for the brain */
 
+        /// <summary></summary>The list of strings describing what the actions correpond to */
         public string[] vectorActionDescriptions;
-        /**< \brief The list of strings describing what the actions correpond to */
 
-        public SpaceType vectorActionSpaceType = SpaceType.discrete;
-        /**< \brief Defines if the action is discrete or continuous */
-        
+        /// <summary>Defines if the action is discrete or continuous</summary>
+        public SpaceType vectorActionSpaceType = SpaceType.Discrete;
+
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public CommunicatorObjects.BrainParametersProto 
-            ToProto(string name, bool isTraining)
+        public CommunicatorObjects.BrainParametersProto
+        ToProto(string name, bool isTraining)
         {
             var brainParametersProto = new CommunicatorObjects.BrainParametersProto
             {
@@ -77,7 +84,7 @@ namespace MLAgents
                 IsTraining = isTraining
             };
             brainParametersProto.VectorActionDescriptions.AddRange(vectorActionDescriptions);
-            foreach (Resolution res in cameraResolutions)
+            foreach (var res in cameraResolutions)
             {
                 brainParametersProto.CameraResolutions.Add(
                     new CommunicatorObjects.ResolutionProto
@@ -87,17 +94,40 @@ namespace MLAgents
                         GrayScale = res.blackAndWhite
                     });
             }
+
             return brainParametersProto;
         }
 
         public BrainParameters()
         {
-            
+        }
+
+        /// <summary>
+        /// Converts Resolution protobuf array to C# Resolution array.
+        /// </summary>
+        private static Resolution[] ResolutionProtoToNative(
+            CommunicatorObjects.ResolutionProto[] resolutionProtos)
+        {
+            var localCameraResolutions = new Resolution[resolutionProtos.Length];
+            for (var i = 0; i < resolutionProtos.Length; i++)
+            {
+                localCameraResolutions[i] = new Resolution
+                {
+                    height = resolutionProtos[i].Height,
+                    width = resolutionProtos[i].Width,
+                    blackAndWhite = resolutionProtos[i].GrayScale
+                };
+            }
+
+            return localCameraResolutions;
         }
 
         public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
         {
             vectorObservationSize = brainParametersProto.VectorObservationSize;
+            cameraResolutions = ResolutionProtoToNative(
+                brainParametersProto.CameraResolutions.ToArray()
+            );
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
@@ -112,12 +142,12 @@ namespace MLAgents
         {
             return new BrainParameters()
             {
-                vectorObservationSize = this.vectorObservationSize,
-                numStackedVectorObservations = this.numStackedVectorObservations,
-                vectorActionSize = (int[]) this.vectorActionSize.Clone(),
-                cameraResolutions = (Resolution[]) this.cameraResolutions.Clone(),
-                vectorActionDescriptions = (string[]) this.vectorActionDescriptions.Clone(),
-                vectorActionSpaceType = this.vectorActionSpaceType
+                vectorObservationSize = vectorObservationSize,
+                numStackedVectorObservations = numStackedVectorObservations,
+                vectorActionSize = (int[])vectorActionSize.Clone(),
+                cameraResolutions = (Resolution[])cameraResolutions.Clone(),
+                vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
+                vectorActionSpaceType = vectorActionSpaceType
             };
         }
     }

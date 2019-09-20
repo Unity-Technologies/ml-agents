@@ -4,8 +4,8 @@ from typing import Any, Dict
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo
-from mlagents.trainers.models import EncoderType
+from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -74,6 +74,9 @@ class PPOPolicy(TFPolicy):
             self.model = PPOModel(
                 brain=brain,
                 lr=float(trainer_params["learning_rate"]),
+                lr_schedule=LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "linear")
+                ),
                 h_size=int(trainer_params["hidden_units"]),
                 epsilon=float(trainer_params["epsilon"]),
                 beta=float(trainer_params["beta"]),
@@ -104,13 +107,6 @@ class PPOPolicy(TFPolicy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
-        if (
-            is_training
-            and self.use_vec_obs
-            and trainer_params["normalize"]
-            and not load
-        ):
-            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.total_policy_loss = self.model.abs_policy_loss
         self.update_dict.update(

@@ -1,5 +1,3 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -13,14 +11,14 @@ namespace MLAgents
     public class TargetContact : MonoBehaviour
     {
         [Header("Detect Targets")] public bool touchingTarget;
-        private const string Target = "target"; // Tag on target object.
+        private const string k_Target = "target"; // Tag on target object.
 
         /// <summary>
         /// Check for collision with a target.
         /// </summary>
         void OnCollisionEnter(Collision col)
         {
-            if (col.transform.CompareTag(Target))
+            if (col.transform.CompareTag(k_Target))
             {
                 touchingTarget = true;
             }
@@ -31,7 +29,7 @@ namespace MLAgents
         /// </summary>
         void OnCollisionExit(Collision other)
         {
-            if (other.transform.CompareTag(Target))
+            if (other.transform.CompareTag(k_Target))
             {
                 touchingTarget = false;
             }

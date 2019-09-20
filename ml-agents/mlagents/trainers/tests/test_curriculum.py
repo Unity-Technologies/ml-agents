@@ -1,9 +1,8 @@
 import pytest
-import json
 from unittest.mock import patch, mock_open
 
 from mlagents.trainers.exception import CurriculumError
-from mlagents.trainers import Curriculum
+from mlagents.trainers.curriculum import Curriculum
 
 
 dummy_curriculum_json_str = """

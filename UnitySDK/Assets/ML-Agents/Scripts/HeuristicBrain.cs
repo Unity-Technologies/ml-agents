@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,30 +22,31 @@ namespace MLAgents
         [HideInInspector]
         public MonoScript decisionScript;
 #endif
+        [FormerlySerializedAs("c_decision")]
         [SerializeField]
         [HideInInspector]
-        public string c_decision;
+        public string cDecision;
 
         public void OnValidate()
         {
 #if UNITY_EDITOR
             if (decisionScript != null)
             {
-                c_decision = decisionScript.GetClass().Name;
+                cDecision = decisionScript.GetClass().Name;
             }
             else
             {
-                c_decision = "";
+                cDecision = "";
             }
 #endif
         }
-        
+
         /// <inheritdoc/>
         protected override void Initialize()
         {
-            if ((c_decision != null) && decision == null)
+            if ((cDecision != null) && decision == null)
             {
-                decision = CreateInstance(c_decision) as Decision;
+                decision = CreateInstance(cDecision) as Decision;
                 decision.brainParameters = brainParameters;
             }
         }
@@ -60,26 +59,25 @@ namespace MLAgents
                 throw new UnityAgentsException(
                     "The Brain is set to Heuristic, but no decision script attached to it");
             }
-            foreach (Agent agent in agentInfos.Keys)
+            foreach (var agent in m_AgentInfos.Keys)
             {
                 agent.UpdateVectorAction(decision.Decide(
-                    agentInfos[agent].stackedVectorObservation,
-                    agentInfos[agent].visualObservations,
-                    agentInfos[agent].reward,
-                    agentInfos[agent].done,
-                    agentInfos[agent].memories));
-
+                    m_AgentInfos[agent].stackedVectorObservation,
+                    m_AgentInfos[agent].visualObservations,
+                    m_AgentInfos[agent].reward,
+                    m_AgentInfos[agent].done,
+                    m_AgentInfos[agent].memories));
             }
-            foreach (Agent agent in agentInfos.Keys)
+            foreach (var agent in m_AgentInfos.Keys)
             {
                 agent.UpdateMemoriesAction(decision.MakeMemory(
-                    agentInfos[agent].stackedVectorObservation,
-                    agentInfos[agent].visualObservations,
-                    agentInfos[agent].reward,
-                    agentInfos[agent].done,
-                    agentInfos[agent].memories));
+                    m_AgentInfos[agent].stackedVectorObservation,
+                    m_AgentInfos[agent].visualObservations,
+                    m_AgentInfos[agent].reward,
+                    m_AgentInfos[agent].done,
+                    m_AgentInfos[agent].memories));
             }
-            agentInfos.Clear();
+            m_AgentInfos.Clear();
         }
     }
 }

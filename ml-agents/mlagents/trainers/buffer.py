@@ -1,6 +1,3 @@
-import random
-from collections import defaultdict
-
 import numpy as np
 import h5py
 
@@ -214,10 +211,10 @@ class Buffer(dict):
             mini_batch = Buffer.AgentBuffer()
             buff_len = len(next(iter(self.values())))
             num_sequences_in_buffer = buff_len // sequence_length
-            start_idxes = [
-                random.randint(0, num_sequences_in_buffer - 1) * sequence_length
-                for _ in range(num_seq_to_sample)
-            ]  # Sample random sequence starts
+            start_idxes = (
+                np.random.randint(num_sequences_in_buffer, size=num_seq_to_sample)
+                * sequence_length
+            )  # Sample random sequence starts
             for i in start_idxes:
                 for key in self:
                     mini_batch[key].extend(self[key][i : i + sequence_length])

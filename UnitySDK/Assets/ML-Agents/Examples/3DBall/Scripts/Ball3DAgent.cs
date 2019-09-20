@@ -1,5 +1,3 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
 
@@ -7,14 +5,14 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
-    private Rigidbody ballRb;
-    private ResetParameters resetParams;
+    private Rigidbody m_BallRb;
+    private ResetParameters m_ResetParams;
 
     public override void InitializeAgent()
     {
-        ballRb = ball.GetComponent<Rigidbody>();
-        var academy = Object.FindObjectOfType<Academy>() as Academy;
-        resetParams = academy.resetParameters;
+        m_BallRb = ball.GetComponent<Rigidbody>();
+        var academy = FindObjectOfType<Academy>();
+        m_ResetParams = academy.resetParameters;
         SetResetParameters();
     }
 
@@ -23,13 +21,12 @@ public class Ball3DAgent : Agent
         AddVectorObs(gameObject.transform.rotation.z);
         AddVectorObs(gameObject.transform.rotation.x);
         AddVectorObs(ball.transform.position - gameObject.transform.position);
-        AddVectorObs(ballRb.velocity);
+        AddVectorObs(m_BallRb.velocity);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+        if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
         {
             var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
             var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -64,9 +61,9 @@ public class Ball3DAgent : Agent
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
-        ballRb.velocity = new Vector3(0f, 0f, 0f);
+        m_BallRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f))
-                                      + gameObject.transform.position;
+            + gameObject.transform.position;
         //Reset the parameters when the Agent is reset.
         SetResetParameters();
     }
@@ -74,8 +71,8 @@ public class Ball3DAgent : Agent
     public void SetBall()
     {
         //Set the attributes of the ball by fetching the information from the academy
-        ballRb.mass = resetParams["mass"];
-        var scale = resetParams["scale"];
+        m_BallRb.mass = m_ResetParams["mass"];
+        var scale = m_ResetParams["scale"];
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

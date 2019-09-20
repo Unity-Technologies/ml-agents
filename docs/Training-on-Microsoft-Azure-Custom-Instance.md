@@ -85,7 +85,6 @@ This page contains instructions for setting up a custom Virtual Machine on Micro
     ```sh
     pip3 install pillow
     pip3 install numpy
-    pip3 install docopt
     ```
 
 13. You can now return to the
