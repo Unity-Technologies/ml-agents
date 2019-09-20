@@ -2204,7 +2204,7 @@ MonoBehaviour:
   ground: {fileID: 4684408634944056}
   detectTargets: 1
   respawnTargetWhenTouched: 1
-  targetSpawnRadius: 50
+  targetSpawnRadius: 40
   body: {fileID: 4331762859142564}
   leg0Upper: {fileID: 4517589631116000}
   leg0Lower: {fileID: 4141542975685024}
