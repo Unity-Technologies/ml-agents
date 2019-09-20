@@ -32,11 +32,6 @@ namespace MLAgents
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
-#if ENABLE_TENSORFLOW
-        public TextAsset model;
-        private ModelParamLoader _modelParamLoader;
-        private TFSharpInferenceEngine _engine;
-#else
         public NNModel model;
         private Model m_BarracudaModel;
         private IWorker m_Engine;
@@ -44,7 +39,6 @@ namespace MLAgents
 
         private BarracudaModelParamLoader m_ModelParamLoader;
         private string[] m_OutputNames;
-#endif
 
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
             "(This field is not applicable for training).")]
@@ -84,27 +78,11 @@ namespace MLAgents
             if (m_TensorAllocator == null)
                 m_TensorAllocator = new TensorCachingAllocator();
 
-#if ENABLE_TENSORFLOW
             if (model != null)
             {
-                _engine = new TFSharpInferenceEngine();
-                _engine.PrepareModel(model.bytes);
-            }
-            else
-            {
-                _engine = null;
-            }
-            _modelParamLoader = ModelParamLoader.GetLoaderAndCheck(_engine, brainParameters);
-            _inferenceInputs = _modelParamLoader.GetInputTensors();
-            _inferenceOutputs = _modelParamLoader.GetOutputTensors();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed, _tensorAllocator);
-            _tensorApplier = new TensorApplier(brainParameters, seed, _tensorAllocator);
-#else
-            if (model != null)
-            {
-                #if BARRACUDA_VERBOSE
+#if BARRACUDA_VERBOSE
                 _verbose = true;
-                #endif
+#endif
 
                 D.logEnabled = m_Verbose;
 
@@ -130,7 +108,6 @@ namespace MLAgents
             m_OutputNames = m_ModelParamLoader.GetOutputNames();
             m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
             m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
-#endif
         }
 
         /// <summary>
@@ -143,11 +120,7 @@ namespace MLAgents
         /// Brain Parameters</returns>
         public IEnumerable<string> GetModelFailedChecks()
         {
-#if ENABLE_TENSORFLOW
-            return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
-#else
             return (m_ModelParamLoader != null) ? m_ModelParamLoader.GetChecks() : new List<string>();
-#endif
         }
 
         /// <inheritdoc />
@@ -165,27 +138,6 @@ namespace MLAgents
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");
-
-#if ENABLE_TENSORFLOW
-            if (_engine == null)
-            {
-                Debug.LogError($"No model was present for the Brain {name}.");
-                return;
-            }
-            // Prepare the input tensors to be feed into the engine
-            _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
-
-            // Prepare the output tensors to be feed into the engine
-            _tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
-
-            // Execute the Model
-            Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
-            _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
-            Profiler.EndSample();
-
-            // Update the outputs
-            _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
-#else
             if (m_Engine == null)
             {
                 Debug.LogError($"No model was present for the Brain {name}.");
@@ -214,12 +166,11 @@ namespace MLAgents
             // Update the outputs
             m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_AgentInfos);
             Profiler.EndSample();
-#endif
+
             m_AgentInfos.Clear();
             Profiler.EndSample();
         }
 
-#if !ENABLE_TENSORFLOW
         protected Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
@@ -243,13 +194,9 @@ namespace MLAgents
             return outputs;
         }
 
-#endif
-
         public void OnDisable()
         {
-#if !ENABLE_TENSORFLOW
             m_Engine?.Dispose();
-#endif
             m_TensorAllocator?.Reset(false);
         }
     }

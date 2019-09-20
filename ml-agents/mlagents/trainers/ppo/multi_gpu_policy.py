@@ -41,7 +41,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
         self.devices = get_devices()
         self.towers = []
         with self.graph.as_default():
-            with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
+            with tf.variable_scope("", reuse=tf.AUTO_REUSE):
                 for device in self.devices:
                     with tf.device(device):
                         self.towers.append(
@@ -70,7 +70,6 @@ class MultiGpuPPOPolicy(PPOPolicy):
                         )
                         self.towers[-1].create_ppo_optimizer()
             self.model = self.towers[0]
-
             avg_grads = self.average_gradients([t.grads for t in self.towers])
             update_batch = self.model.optimizer.apply_gradients(avg_grads)
 
