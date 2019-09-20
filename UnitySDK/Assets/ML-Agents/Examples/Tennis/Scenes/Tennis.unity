@@ -739,7 +739,7 @@ MonoBehaviour:
     width: 300
     height: 200
     qualityLevel: 0
-    timeScale: 100
+    timeScale: 10
     targetFrameRate: 60
   m_InferenceConfiguration:
     width: 1280

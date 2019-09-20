@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 23145288717831496}
   m_Layer: 0
   m_Name: Symbol_O
-  m_TagString: Untagged
+  m_TagString: symbol_O_Goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 23697396264494084}
   m_Layer: 0
   m_Name: Symbol_X
-  m_TagString: symbol_X
+  m_TagString: symbol_X_Goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
