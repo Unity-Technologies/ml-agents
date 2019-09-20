@@ -281,7 +281,7 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-
+        GetRandomTargetPos();
         m_IsNewDecisionStep = true;
         m_CurrentDecisionStep = 1;
     }
