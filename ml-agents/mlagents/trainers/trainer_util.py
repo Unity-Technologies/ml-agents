@@ -117,18 +117,23 @@ def load_config(trainer_config_path: str) -> Dict[str, Any]:
             return _load_config(data_file)
     except IOError:
         raise UnityEnvironmentException(
-            "Parameter file could not be found " "at {}.".format(trainer_config_path)
+            f"Config file could not be found at {trainer_config_path}."
         )
     except UnicodeDecodeError:
         raise UnityEnvironmentException(
-            "There was an error decoding "
-            "Trainer Config from this path : {}".format(trainer_config_path)
+            f"There was an error decoding Config file from {trainer_config_path}. "
+            f"Make sure your file is save using UTF-8"
         )
 
 
 def _load_config(fp: TextIO) -> Dict[str, Any]:
+    """
+    Load the yaml config from the file-like object.
+    """
     try:
         return yaml.safe_load(fp)
-    except yaml.parser.ParserError:
-        # TODO better message
-        raise UnityEnvironmentException("Error parsing yaml file. ")
+    except yaml.parser.ParserError as e:
+        raise UnityEnvironmentException(
+            "Error parsing yaml file. Please check for formatting errors. "
+            "A tool such as http://www.yamllint.com/ can be helpful with this."
+        ) from e

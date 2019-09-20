@@ -2,7 +2,6 @@ import pytest
 import yaml
 import os
 import io
-import tempfile
 from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
@@ -343,15 +342,3 @@ you:
     with pytest.raises(UnityEnvironmentException):
         fp = io.StringIO(file_contents)
         _load_config(fp)
-
-
-def test_load_config_unicode_yaml():
-    file_contents = """
-thís:
-  - 😡
-    """
-    fp = io.StringIO(file_contents)
-    res = _load_config(fp)
-    assert res == {"thís": ["😡"]}
-
-    with tempfile.mktemp("unit")
