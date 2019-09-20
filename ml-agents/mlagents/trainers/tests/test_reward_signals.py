@@ -76,6 +76,7 @@ def gail_dummy_config():
             "strength": 0.1,
             "gamma": 0.9,
             "encoding_size": 128,
+            "use_vail": True,
             "demo_path": os.path.dirname(os.path.abspath(__file__)) + "/test.demo",
         }
     }
