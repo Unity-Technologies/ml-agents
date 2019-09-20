@@ -6,7 +6,7 @@ from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoPro
 from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
     BrainParametersProto,
 )
-from mlagents.envs.timers import hierarchical_timer
+from mlagents.envs.timers import hierarchical_timer, timed
 from typing import Dict, List, Optional
 from PIL import Image
 
@@ -154,6 +154,7 @@ class BrainInfo:
         return np.append(m1, m2, axis=0)
 
     @staticmethod
+    @timed
     def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         """
         Converts byte array observation image into numpy array, re-sizes it,
@@ -165,6 +166,8 @@ class BrainInfo:
         with hierarchical_timer("image_decompress"):
             image_bytearray = bytearray(image_bytes)
             image = Image.open(io.BytesIO(image_bytearray))
+            # Normally Image loads lazily, this forces it to do loading in the timer scope.
+            image.load()
         s = np.array(image) / 255.0
         if gray_scale:
             s = np.mean(s, axis=2)
