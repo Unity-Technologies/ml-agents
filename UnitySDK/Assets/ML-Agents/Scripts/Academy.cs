@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Profiling;
 using UnityEngine.Serialization;
+using System.Runtime.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -75,161 +76,183 @@ namespace MLAgents
         }
     }
 
+    [DataContract]
     public class TimerNode
     {
-        static string separator = ".";
-        string fullName;
-        private Dictionary<string, TimerNode> children;
-        public CustomSampler sampler;
+        static string s_Separator = ".";
 
-        private long totalNanoseconds = 0;
-        private int totalCalls = 0;
+        [DataMember]
+        string m_FullName;
+
+        [DataMember]
+        Dictionary<string, TimerNode> m_Children;
+
+        public CustomSampler m_Sampler;
+
+        [DataMember]
+        long m_RecorderTotalNanoseconds = 0;
+
+        [DataMember]
+        int m_RecorderTotalCalls = 0;
 
         // "Raw" times and counts, independent of Recorder
-        private long rawTicks = 0;
-        private long tickStart = 0;
-        private int rawCalls = 0;
+        [DataMember]
+        long m_RawTicks = 0;
 
+        [DataMember]
+        long m_TickStart = 0;
+
+        [DataMember]
+        int m_RawCalls = 0;
 
         public TimerNode(string name)
         {
-            fullName = name;
-            sampler = CustomSampler.Create (fullName);
-            sampler.GetRecorder().enabled = true;
+            m_FullName = name;
+            m_Sampler = CustomSampler.Create(m_FullName);
+            m_Sampler.GetRecorder().enabled = true;
 
             // TODO Don't create child dict until needed?
-            children = new Dictionary<string, TimerNode> ();
-
+            m_Children = new Dictionary<string, TimerNode>();
         }
 
         public void Begin()
         {
-            sampler.Begin();
-            tickStart = System.DateTime.Now.Ticks;
+            m_Sampler.Begin();
+            m_TickStart = System.DateTime.Now.Ticks;
         }
 
         public void End()
         {
-            long elapsed = System.DateTime.Now.Ticks - tickStart;
-            rawTicks += elapsed;
-            tickStart = 0;
-            rawCalls++;
-            sampler.End ();
+            var elapsed = System.DateTime.Now.Ticks - m_TickStart;
+            m_RawTicks += elapsed;
+            m_TickStart = 0;
+            m_RawCalls++;
+            m_Sampler.End();
         }
 
-        public TimerNode GetChild(string name) {
-            if (!children.ContainsKey(name)) {
-                string childFullName = fullName + separator + name;
-                TimerNode newChild = new TimerNode(childFullName);
-                children[name] = newChild;
+        public TimerNode GetChild(string name)
+        {
+            if (!m_Children.ContainsKey(name))
+            {
+                var childFullName = m_FullName + s_Separator + name;
+                var newChild = new TimerNode(childFullName);
+                m_Children[name] = newChild;
                 return newChild;
             }
-            return children [name];
+
+            return m_Children[name];
         }
 
         public void Update()
         {
-            var recorder = sampler.GetRecorder ();
-            totalNanoseconds += recorder.elapsedNanoseconds;
-            totalCalls += recorder.sampleBlockCount;
+            var recorder = m_Sampler.GetRecorder();
+            m_RecorderTotalNanoseconds += recorder.elapsedNanoseconds;
+            m_RecorderTotalCalls += recorder.sampleBlockCount;
 
-            // Update children too
-            foreach (TimerNode c in children.Values) {
-                c.Update ();
+            // Update m_Children too
+            foreach (TimerNode c in m_Children.Values)
+            {
+                c.Update();
             }
         }
 
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
-            string indent = new string (' ', 2 * level); // TODO generalize
-            double totalSeconds = totalNanoseconds / 1000000000.0;
-            double totalRawSeconds = rawTicks / 10000000.0; // 100 ns per tick
-            string shortName = (level == 0) ? fullName : fullName.Replace (parentName + separator, "");
-            string timerString = $"{indent}{shortName}\t{totalSeconds}s\t({totalCalls} calls)\t\traw={totalRawSeconds}  rawCount={rawCalls}\n";
-            // TODO stringbuilder? overkill?
-            foreach (TimerNode c in children.Values)
+            string indent = new string(' ', 2 * level); // TODO generalize
+            double totalSeconds = m_RecorderTotalNanoseconds / 1000000000.0;
+            double totalRawSeconds = m_RawTicks / 10000000.0; // 100 ns per tick
+            string shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
+            string timerString = "";
+            if (level == 0)
             {
-                timerString += c.DebugGetTimerString(fullName, level + 1);
+                timerString = $"{shortName}(root)\n";
             }
-            return timerString;
+            else
+            {
+                timerString = $"{indent}{shortName}\t{totalSeconds}s\t({m_RecorderTotalCalls} calls)\t\traw={totalRawSeconds}  rawCount={m_RawCalls}\n";
+            }
 
+            // TODO stringbuilder? overkill?
+            foreach (TimerNode c in m_Children.Values)
+            {
+                timerString += c.DebugGetTimerString(m_FullName, level + 1);
+            }
+
+            return timerString;
         }
     }
 
     public class TimerStack
     {
         // TODO make this a proper singleton
-        public static TimerStack sInstance = new TimerStack("MLAgents");
+        public static TimerStack s_Instance = new TimerStack("MLAgents");
 
-        private Stack<TimerNode> stack;
-        private TimerNode rootNode;
+        Stack<TimerNode> m_Stack;
+        public TimerNode m_RootNode;
 
         public TimerStack(string rootName)
         {
-//            var profilePath = Path.GetFullPath (".") + "/profiler.log";
-//            Profiler.logFile = profilePath;
-//            Profiler.enableBinaryLog = true;
-//
             Profiler.enabled = true;
-            stack = new Stack<TimerNode> ();
-            rootNode = new TimerNode (rootName);
-            stack.Push (rootNode);
+            m_Stack = new Stack<TimerNode>();
+            m_RootNode = new TimerNode(rootName);
+            m_Stack.Push(m_RootNode);
         }
 
         public TimerNode Push(string name)
         {
-            TimerNode current = stack.Peek ();
-            TimerNode next = current.GetChild (name);
-            stack.Push (next);
+            TimerNode current = m_Stack.Peek();
+            TimerNode next = current.GetChild(name);
+            m_Stack.Push(next);
             return next;
         }
 
         public void Pop()
         {
-            stack.Pop ();
+            m_Stack.Pop();
         }
 
-        public class Helper : System.IDisposable {
-            private TimerStack stack;
-            private TimerNode node;
+        public class Helper : System.IDisposable
+        {
+            TimerStack m_Stack;
+            TimerNode m_Node;
+
             //private string debug_name;
 
             public Helper(TimerStack _stack, string name)
             {
-                //Debug.Log($"starting {name}");
-                stack = _stack;
-                node = stack.Push(name);
-                node.Begin();
-                //debug_name = name;
+                m_Stack = _stack;
+                m_Node = m_Stack.Push(name);
+                m_Node.Begin();
             }
 
             public void Dispose()
             {
-                node.End ();
-                stack.Pop ();
-                // TODO return Node from Pop(), then we don't need to store the node here.
-                //Debug.Log($"done with {debug_name}, total = {node.TotalSeconds()}");
+                m_Node.End();
+                m_Stack.Pop();
+
+                // TODO return Node from Pop(), then we don't need to store the m_Node here.
+                //Debug.Log($"done with {debug_name}, total = {m_Node.TotalSeconds()}");
             }
         }
 
         public static Helper Scoped(string name)
         {
-            Helper h = new Helper (sInstance, name);
-            return h;
+            // TODO don't new here, keep a pool/stack of them.
+            return new Helper(s_Instance, name);
         }
 
         public void Update()
         {
-            rootNode.Update ();
+            m_RootNode.Update();
         }
 
-        public string DebugGetTimerString(int totalStepCount) {
-            Recorder rootRec = rootNode.sampler.GetRecorder ();
-            string header = $"frame={Time.frameCount}  Academy.totalStepCount={totalStepCount}  Profiler.enabled={Profiler.enabled}  rootRec.isValid={rootRec.isValid}  rootRed.enabled={rootRec.enabled}\n";
-            return header + rootNode.DebugGetTimerString ();
+        public string DebugGetTimerString(int totalStepCount)
+        {
+            Recorder rootRec = m_RootNode.m_Sampler.GetRecorder();
+            var header = $"frame={Time.frameCount}  Academy.totalStepCount={totalStepCount}  Profiler.enabled={Profiler.enabled}  rootRec.isValid={rootRec.isValid}  rootRed.enabled={rootRec.enabled}\n";
+            return header + m_RootNode.DebugGetTimerString();
         }
     }
-
 
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors. More
@@ -434,6 +457,7 @@ namespace MLAgents
                         port = ReadArgs()
                     });
             }
+
             // If it fails, we check if there are any external brains in the scene
             // If there are : Launch the communicator on the default port
             // If there arn't, there is no need for a communicator and it is set
@@ -472,6 +496,7 @@ namespace MLAgents
                     academyParameters.BrainParameters.Add(
                         bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
                 }
+
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
                 foreach (var key in resetParameters.Keys)
@@ -498,7 +523,6 @@ namespace MLAgents
             AgentAct += () => { };
             AgentForceReset += () => { };
 
-
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
             SetIsInference(!m_BrainBatcher.GetIsTraining());
@@ -514,6 +538,7 @@ namespace MLAgents
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
+
                 customResetParameters = newResetParameters.CustomResetParameters;
             }
         }
@@ -708,32 +733,33 @@ namespace MLAgents
 
             AgentSetStatus(m_StepCount);
 
-            using (TimerStack.Scoped ("AgentResetIfDone")) {
+            using (TimerStack.Scoped("AgentResetIfDone"))
+            {
                 AgentResetIfDone();
             }
 
-            using (TimerStack.Scoped ("AgentSendState")) {
-                AgentSendState ();
+            using (TimerStack.Scoped("AgentSendState"))
+            {
+                AgentSendState();
             }
 
-            using (TimerStack.Scoped ("BrainDecideAction")) {
-                BrainDecideAction ();
+            using (TimerStack.Scoped("BrainDecideAction"))
+            {
+                BrainDecideAction();
             }
 
-            using (TimerStack.Scoped ("AcademyStep")) {
-                AcademyStep ();
+            using (TimerStack.Scoped("AcademyStep"))
+            {
+                AcademyStep();
             }
 
-            using (TimerStack.Scoped ("AgentAct")) {
-                AgentAct ();
+            using (TimerStack.Scoped("AgentAct"))
+            {
+                AgentAct();
             }
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
-
-            // TODO need a better way to udpate the singleton
-            TimerStack.sInstance.Update ();
-            Debug.Log (TimerStack.sInstance.DebugGetTimerString (m_TotalStepCount));
         }
 
         /// <summary>
@@ -755,13 +781,11 @@ namespace MLAgents
         }
 
         void Update()
-        //void OnPreRender()
         {
             // TODO need a better way to udpate the singleton
-            //TimerStack.sInstance.Update ();
-            //Debug.Log (TimerStack.sInstance.DebugGetTimerString (totalStepCount));
+            TimerStack.s_Instance.Update();
+            Debug.Log(TimerStack.s_Instance.DebugGetTimerString(m_TotalStepCount));
         }
-
 
         /// <summary>
         /// Cleanup function
@@ -771,6 +795,19 @@ namespace MLAgents
             Physics.gravity = m_OriginalGravity;
             Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
+
+            //
+            //
+            // Create a stream to serialize the object to.
+//            var ms = new MemoryStream();
+//
+//            // Serializer the User object to the stream.
+//            var ser = new DataContractJsonSerializer(typeof(User));
+//            ser.WriteObject(ms, user);
+//            byte[] json = ms.ToArray();
+//            ms.Close();
+//
+//            TimerStack.s_Instance.m_RootNode
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
