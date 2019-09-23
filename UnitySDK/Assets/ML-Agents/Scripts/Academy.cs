@@ -91,24 +91,12 @@ namespace MLAgents
 
         public CustomSampler m_Sampler;
 
-        long m_RecorderTotalNanoseconds = 0;
-
-        [DataMember(Name="RecorderTotalCalls")]
-        int m_RecorderTotalCalls = 0;
-
         // "Raw" times and counts, independent of Recorder
         long m_RawTicks = 0;
         long m_TickStart = 0;
 
         [DataMember(Name="RawTotalCalls")]
         int m_RawCalls = 0;
-
-        [DataMember]
-        public float RecorderTotalSeconds
-        {
-            get { return m_RecorderTotalNanoseconds / 1000000000.0f; }
-            set { } // Serialization needs these, but unused.
-        }
 
         [DataMember]
         public float RawTotalSeconds
@@ -121,7 +109,6 @@ namespace MLAgents
         {
             m_FullName = name;
             m_Sampler = CustomSampler.Create(m_FullName);
-            m_Sampler.GetRecorder().enabled = true;
 
             // TODO Don't create child dict until needed?
             m_Children = new Dictionary<string, TimerNode>();
@@ -155,23 +142,9 @@ namespace MLAgents
             return m_Children[name];
         }
 
-        public void Update()
-        {
-            var recorder = m_Sampler.GetRecorder();
-            m_RecorderTotalNanoseconds += recorder.elapsedNanoseconds;
-            m_RecorderTotalCalls += recorder.sampleBlockCount;
-
-            // Update m_Children too
-            foreach (TimerNode c in m_Children.Values)
-            {
-                c.Update();
-            }
-        }
-
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
             string indent = new string(' ', 2 * level); // TODO generalize
-            double totalSeconds = m_RecorderTotalNanoseconds / 1000000000.0;
             double totalRawSeconds = m_RawTicks / 10000000.0; // 100 ns per tick
             string shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
             string timerString = "";
@@ -181,7 +154,7 @@ namespace MLAgents
             }
             else
             {
-                timerString = $"{indent}{shortName}\t{totalSeconds}s\t({m_RecorderTotalCalls} calls)\t\traw={totalRawSeconds}  rawCount={m_RawCalls}\n";
+                timerString = $"{indent}{shortName}\t\traw={totalRawSeconds}  rawCount={m_RawCalls}\n";
             }
 
             // TODO stringbuilder? overkill?
@@ -250,12 +223,8 @@ namespace MLAgents
         public static Helper Scoped(string name)
         {
             // TODO don't new here, keep a pool/stack of them.
+            // TODO or better yet, implement IDisposable and return self
             return new Helper(s_Instance, name);
-        }
-
-        public void Update()
-        {
-            m_RootNode.Update();
         }
 
         public string DebugGetTimerString(int totalStepCount)
@@ -267,9 +236,8 @@ namespace MLAgents
 
         public void SaveJsonTimers(string name)
         {
-            //
-            //
             // Create a stream to serialize the object to.
+            // TODO better interface - pass stream in?
             var fullpath = Path.GetFullPath(".");
             var fs = new FileStream($"{fullpath}/csharp_{name}_timers.json", FileMode.Create, FileAccess.Write);
             var jsonSettings = new DataContractJsonSerializerSettings();
@@ -816,7 +784,6 @@ namespace MLAgents
         void Update()
         {
             // TODO need a better way to update the singleton
-            TimerStack.s_Instance.Update();
             Debug.Log(TimerStack.s_Instance.DebugGetTimerString(m_TotalStepCount));
         }
 
