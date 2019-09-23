@@ -28,7 +28,7 @@ public class AgentSoccer : Agent
 
     float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
     string[] m_DetectableObjectsPurple = { "ball", "purpleGoal", "blueGoal",
-                                        "wall", "purpleAgent", "blueAgent" };
+                                           "wall", "purpleAgent", "blueAgent" };
     string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "purpleGoal",
                                          "wall", "blueAgent", "purpleAgent" };
 

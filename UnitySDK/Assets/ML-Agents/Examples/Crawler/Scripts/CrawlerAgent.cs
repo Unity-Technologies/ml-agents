@@ -282,7 +282,7 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-        if(!targetIsStatic)
+        if (!targetIsStatic)
         {
             GetRandomTargetPos();
         }

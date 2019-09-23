@@ -79,7 +79,7 @@ namespace MLAgents
                 NumStackedVectorObservations = numStackedVectorObservations,
                 VectorActionSize = {vectorActionSize},
                 VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto) vectorActionSpaceType,
+                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
@@ -131,7 +131,7 @@ namespace MLAgents
             numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
             vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
             vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType) brainParametersProto.VectorActionSpaceType;
+            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
         }
 
         /// <summary>
