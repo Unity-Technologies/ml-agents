@@ -1,9 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine.Profiling;
 using UnityEngine.Serialization;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using NUnit.Framework;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -40,11 +43,11 @@ namespace MLAgents
         public int height;
 
         [Tooltip("Rendering quality of environment. (Higher is better quality.)")]
-        [Range(0, 5)]
+        [UnityEngine.Range(0, 5)]
         public int qualityLevel;
 
         [Tooltip("Speed at which environment is run. (Higher is faster.)")]
-        [Range(1f, 100f)]
+        [UnityEngine.Range(1f, 100f)]
         public float timeScale;
 
         [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
@@ -81,29 +84,38 @@ namespace MLAgents
     {
         static string s_Separator = ".";
 
-        [DataMember]
         string m_FullName;
 
-        [DataMember]
+        [DataMember(Name="Children", Order=999)]
         Dictionary<string, TimerNode> m_Children;
 
         public CustomSampler m_Sampler;
 
-        [DataMember]
         long m_RecorderTotalNanoseconds = 0;
 
-        [DataMember]
+        [DataMember(Name="RecorderTotalCalls")]
         int m_RecorderTotalCalls = 0;
 
         // "Raw" times and counts, independent of Recorder
-        [DataMember]
         long m_RawTicks = 0;
-
-        [DataMember]
         long m_TickStart = 0;
 
-        [DataMember]
+        [DataMember(Name="RawTotalCalls")]
         int m_RawCalls = 0;
+
+        [DataMember]
+        public float RecorderTotalSeconds
+        {
+            get { return m_RecorderTotalNanoseconds / 1000000000.0f; }
+            set { } // Serialization needs these, but unused.
+        }
+
+        [DataMember]
+        public float RawTotalSeconds
+        {
+            get { return m_RawTicks / 10000000.0f; } // 100 ns per tick
+            set { } // Serialization needs these, but unused.
+        }
 
         public TimerNode(string name)
         {
@@ -799,15 +811,13 @@ namespace MLAgents
             //
             //
             // Create a stream to serialize the object to.
-//            var ms = new MemoryStream();
-//
-//            // Serializer the User object to the stream.
-//            var ser = new DataContractJsonSerializer(typeof(User));
-//            ser.WriteObject(ms, user);
-//            byte[] json = ms.ToArray();
-//            ms.Close();
-//
-//            TimerStack.s_Instance.m_RootNode
+            var fs = new FileStream($"{gameObject.name}_timers.json", FileMode.Create, FileAccess.Write);
+            var jsonSettings = new DataContractJsonSerializerSettings();
+            jsonSettings.UseSimpleDictionaryFormat = true;
+            var ser = new DataContractJsonSerializer(typeof(TimerNode), jsonSettings);
+            ser.WriteObject(fs, TimerStack.s_Instance.m_RootNode);
+            fs.Close();
+
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
