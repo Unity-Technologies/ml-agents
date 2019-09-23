@@ -1821,6 +1821,7 @@ MonoBehaviour:
   target: {fileID: 4749909135913778}
   ground: {fileID: 4856650706546504}
   detectTargets: 0
+  targetIsStatic: 1
   respawnTargetWhenTouched: 0
   targetSpawnRadius: 0
   body: {fileID: 4484619683682530}
