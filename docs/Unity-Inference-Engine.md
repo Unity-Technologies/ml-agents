@@ -33,5 +33,5 @@ Uncheck the `Control` checkbox for the corresponding **Brain** in the
 Select the **Inference Device** : CPU or GPU you want to use for Inference.
 
 **Note:** For most of the models generated with the ML-Agents toolkit, CPU will be faster than GPU.
-You should use the GPU only if you have a large number of agents using visual observations or use the 
-ResNet visual encoder.
+You should use the GPU only if you use the 
+ResNet visual encoder or have a large number of agents with visual observations.
