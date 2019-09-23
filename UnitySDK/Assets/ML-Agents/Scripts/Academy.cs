@@ -6,7 +6,7 @@ using UnityEngine.Profiling;
 using UnityEngine.Serialization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using NUnit.Framework;
+using System.Threading;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -263,6 +263,20 @@ namespace MLAgents
             Recorder rootRec = m_RootNode.m_Sampler.GetRecorder();
             var header = $"frame={Time.frameCount}  Academy.totalStepCount={totalStepCount}  Profiler.enabled={Profiler.enabled}  rootRec.isValid={rootRec.isValid}  rootRed.enabled={rootRec.enabled}\n";
             return header + m_RootNode.DebugGetTimerString();
+        }
+
+        public void SaveJsonTimers(string name)
+        {
+            //
+            //
+            // Create a stream to serialize the object to.
+            var fullpath = Path.GetFullPath(".");
+            var fs = new FileStream($"{fullpath}/csharp_{name}_timers.json", FileMode.Create, FileAccess.Write);
+            var jsonSettings = new DataContractJsonSerializerSettings();
+            jsonSettings.UseSimpleDictionaryFormat = true;
+            var ser = new DataContractJsonSerializer(typeof(TimerNode), jsonSettings);
+            ser.WriteObject(fs, m_RootNode);
+            fs.Close();
         }
     }
 
@@ -772,6 +786,13 @@ namespace MLAgents
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
+
+            if (m_TotalStepCount % 100 == 0)
+            {
+                // TODO better place to hook this in?
+                // TODO append environment ID so multiple envs don't overwrite each other
+                TimerStack.s_Instance.SaveJsonTimers(gameObject.name);
+            }
         }
 
         /// <summary>
@@ -794,7 +815,7 @@ namespace MLAgents
 
         void Update()
         {
-            // TODO need a better way to udpate the singleton
+            // TODO need a better way to update the singleton
             TimerStack.s_Instance.Update();
             Debug.Log(TimerStack.s_Instance.DebugGetTimerString(m_TotalStepCount));
         }
@@ -807,16 +828,6 @@ namespace MLAgents
             Physics.gravity = m_OriginalGravity;
             Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
-
-            //
-            //
-            // Create a stream to serialize the object to.
-            var fs = new FileStream($"{gameObject.name}_timers.json", FileMode.Create, FileAccess.Write);
-            var jsonSettings = new DataContractJsonSerializerSettings();
-            jsonSettings.UseSimpleDictionaryFormat = true;
-            var ser = new DataContractJsonSerializer(typeof(TimerNode), jsonSettings);
-            ser.WriteObject(fs, TimerStack.s_Instance.m_RootNode);
-            fs.Close();
 
 
             // Signal to listeners that the academy is being destroyed now
