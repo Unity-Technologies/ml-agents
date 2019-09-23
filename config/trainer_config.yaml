@@ -32,7 +32,7 @@ FoodCollectorLearning:
 
 BouncerLearning:
     normalize: true
-    max_steps: 5.0e5
+    max_steps: 1.0e6
     num_layers: 2
     hidden_units: 64
 
