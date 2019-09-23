@@ -111,17 +111,17 @@ def initialize_trainers(
     return trainers
 
 
-def load_config(trainer_config_path: str) -> Dict[str, Any]:
+def load_config(config_path: str) -> Dict[str, Any]:
     try:
-        with open(trainer_config_path) as data_file:
+        with open(config_path) as data_file:
             return _load_config(data_file)
     except IOError:
         raise UnityEnvironmentException(
-            f"Config file could not be found at {trainer_config_path}."
+            f"Config file could not be found at {config_path}."
         )
     except UnicodeDecodeError:
         raise UnityEnvironmentException(
-            f"There was an error decoding Config file from {trainer_config_path}. "
+            f"There was an error decoding Config file from {config_path}. "
             f"Make sure your file is save using UTF-8"
         )
 
