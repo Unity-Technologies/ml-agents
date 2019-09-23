@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using MLAgents;
 
 public class FoodCollectorAgent : Agent
