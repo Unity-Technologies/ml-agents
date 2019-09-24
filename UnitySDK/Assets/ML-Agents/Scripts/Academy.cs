@@ -1,12 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine.Profiling;
 using UnityEngine.Serialization;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Threading;
 #if UNITY_EDITOR
 using UnityEditor;
 
@@ -43,11 +37,11 @@ namespace MLAgents
         public int height;
 
         [Tooltip("Rendering quality of environment. (Higher is better quality.)")]
-        [UnityEngine.Range(0, 5)]
+        [Range(0, 5)]
         public int qualityLevel;
 
         [Tooltip("Speed at which environment is run. (Higher is faster.)")]
-        [UnityEngine.Range(1f, 100f)]
+        [Range(1f, 100f)]
         public float timeScale;
 
         [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
@@ -368,7 +362,6 @@ namespace MLAgents
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
-
                 customResetParameters = newResetParameters.CustomResetParameters;
             }
         }
@@ -631,7 +624,6 @@ namespace MLAgents
             Physics.gravity = m_OriginalGravity;
             Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
-
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
