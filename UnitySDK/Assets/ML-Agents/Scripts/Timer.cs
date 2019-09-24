@@ -17,6 +17,7 @@ namespace MLAgents
     public class TimerNode
     {
         static string s_Separator = ".";
+        static double s_TicksToSeconds = 1.0 / 10000000.0; // 100 ns per tick
 
         string m_FullName;
 
@@ -32,9 +33,9 @@ namespace MLAgents
         int m_RawCalls = 0;
 
         [DataMember]
-        public float RawTotalSeconds
+        public double RawTotalSeconds
         {
-            get { return m_RawTicks / 10000000.0f; } // 100 ns per tick
+            get { return m_RawTicks * s_TicksToSeconds; }
             set { } // Serialization needs these, but unused.
         }
 
@@ -78,7 +79,6 @@ namespace MLAgents
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
             string indent = new string(' ', 2 * level); // TODO generalize
-            double totalRawSeconds = m_RawTicks / 10000000.0; // 100 ns per tick
             string shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
             string timerString = "";
             if (level == 0)
@@ -87,7 +87,7 @@ namespace MLAgents
             }
             else
             {
-                timerString = $"{indent}{shortName}\t\traw={totalRawSeconds}  rawCount={m_RawCalls}\n";
+                timerString = $"{indent}{shortName}\t\traw={RawTotalSeconds}  rawCount={m_RawCalls}\n";
             }
 
             // TODO stringbuilder? overkill?
@@ -100,7 +100,7 @@ namespace MLAgents
         }
     }
 
-    public class TimerStack
+    public class TimerStack : System.IDisposable
     {
         Stack<TimerNode> m_Stack;
         public TimerNode m_RootNode;
@@ -126,35 +126,22 @@ namespace MLAgents
             return m_Stack.Pop();
         }
 
-        public class Helper : System.IDisposable
+        /// <summary>
+        /// Start a scoped timer. This should be used with the "using" directive
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public TimerStack Scoped(string name)
         {
-            TimerStack m_Stack;
-            TimerNode m_Node;
-
-            //private string debug_name;
-
-            public Helper(TimerStack _stack, string name)
-            {
-                m_Stack = _stack;
-                m_Node = m_Stack.Push(name);
-                m_Node.Begin();
-            }
-
-            public void Dispose()
-            {
-                m_Node.End();
-                m_Stack.Pop();
-
-                // TODO return Node from Pop(), then we don't need to store the m_Node here.
-                //Debug.Log($"done with {debug_name}, total = {m_Node.TotalSeconds()}");
-            }
+            var node = Push(name);
+            node.Begin();
+            return this;
         }
 
-        public Helper Scoped(string name)
+        public void Dispose()
         {
-            // TODO don't new here, keep a pool/stack of them.
-            // TODO or better yet, implement IDisposable and return self
-            return new Helper(this, name);
+            var node = Pop();
+            node.End();
         }
 
         public string DebugGetTimerString()
