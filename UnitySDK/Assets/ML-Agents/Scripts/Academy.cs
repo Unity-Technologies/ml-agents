@@ -583,13 +583,6 @@ namespace MLAgents
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
-
-            if (m_TotalStepCount % 100 == 0)
-            {
-                // TODO better place to hook this in?
-                // TODO append environment ID so multiple envs don't overwrite each other
-                m_Timer.SaveJsonTimers(gameObject.name);
-            }
         }
 
         /// <summary>
@@ -610,12 +603,6 @@ namespace MLAgents
             EnvironmentStep();
         }
 
-        void Update()
-        {
-            // TODO toggle this? Off by default
-            Debug.Log(m_Timer.DebugGetTimerString());
-        }
-
         /// <summary>
         /// Cleanup function
         /// </summary>
@@ -627,6 +614,9 @@ namespace MLAgents
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
+
+            m_Timer.SaveJsonTimers();
+
         }
     }
 }

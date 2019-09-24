@@ -27,7 +27,7 @@ namespace MLAgents
         /// <summary>
         /// Child nodes, indexed by name.
         /// </summary>
-        [DataMember(Name="Children", Order=999)]
+        [DataMember(Name="children", Order=999)]
         Dictionary<string, TimerNode> m_Children;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace MLAgents
         /// <summary>
         /// Number of total ticks elapsed for this node.
         /// </summary>
-        long m_RawTicks = 0;
+        long m_TotalTicks = 0;
 
         /// <summary>
         /// If the node is currently running, the time (in ticks) when the node was started.
@@ -49,17 +49,40 @@ namespace MLAgents
         /// <summary>
         /// Number of times the corresponding code block has been called.
         /// </summary>
-        [DataMember(Name="RawTotalCalls")]
-        int m_RawCalls = 0;
+        [DataMember(Name="count")]
+        int m_NumCalls = 0;
 
         /// <summary>
         /// Total elapsed seconds.
         /// </summary>
-        [DataMember]
-        public double RawTotalSeconds
+        [DataMember(Name="total")]
+        public double TotalSeconds
         {
-            get { return m_RawTicks * s_TicksToSeconds; }
-            set { } // Serialization needs these, but unused.
+            get { return m_TotalTicks * s_TicksToSeconds; }
+            set { } // Serialization needs this, but unused.
+        }
+
+        /// <summary>
+        /// Total seconds spent in this block, excluding it's children.
+        /// </summary>
+        [DataMember(Name="self")]
+        public double SelfSeconds
+        {
+            get
+            {
+                long totalChildTicks = 0;
+                if (m_Children != null)
+                {
+                    foreach(var child in m_Children.Values)
+                    {
+                        totalChildTicks += child.m_TotalTicks;
+                    }
+                }
+
+                var selfTicks = Mathf.Max(0, m_TotalTicks - totalChildTicks);
+                return selfTicks * s_TicksToSeconds;
+            }
+            set { } // Serialization needs this, but unused.
         }
 
         public TimerNode(string name)
@@ -83,9 +106,9 @@ namespace MLAgents
         public void End()
         {
             var elapsed = System.DateTime.Now.Ticks - m_TickStart;
-            m_RawTicks += elapsed;
+            m_TotalTicks += elapsed;
             m_TickStart = 0;
-            m_RawCalls++;
+            m_NumCalls++;
             m_Sampler.End();
         }
 
@@ -133,7 +156,7 @@ namespace MLAgents
             }
             else
             {
-                timerString = $"{indent}{shortName}\t\traw={RawTotalSeconds}  rawCount={m_RawCalls}\n";
+                timerString = $"{indent}{shortName}\t\traw={TotalSeconds}  rawCount={m_NumCalls}\n";
             }
 
             // TODO stringbuilder? overkill?
@@ -177,13 +200,12 @@ namespace MLAgents
             m_Stack.Push(m_RootNode);
         }
 
-        private TimerNode Push(string name)
+        private void Push(string name)
         {
             TimerNode current = m_Stack.Peek();
             TimerNode next = current.GetChild(name);
             m_Stack.Push(next);
             next.Begin();
-            return next;
         }
 
         private void Pop()
