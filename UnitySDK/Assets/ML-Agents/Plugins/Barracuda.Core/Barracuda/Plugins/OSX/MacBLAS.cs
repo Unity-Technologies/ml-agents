@@ -16,7 +16,7 @@ public class MacBLAS : BLASPlugin
 
     public bool IsCurrentPlatformSupported()
     {
-        return Application.platform == RuntimePlatform.OSXEditor || 
+        return Application.platform == RuntimePlatform.OSXEditor ||
             Application.platform == RuntimePlatform.OSXPlayer;
     }
 

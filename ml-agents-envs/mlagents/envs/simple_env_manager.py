@@ -3,7 +3,8 @@ from typing import Any, Dict, List
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import timed
-from mlagents.envs import ActionInfo, BrainParameters
+from mlagents.envs.action_info import ActionInfo
+from mlagents.envs.brain import BrainParameters
 
 
 class SimpleEnvManager(EnvManager):
@@ -23,19 +24,16 @@ class SimpleEnvManager(EnvManager):
         all_action_info = self._take_step(self.previous_step)
         self.previous_all_action_info = all_action_info
 
-        if self.env.global_done:
-            all_brain_info = self.env.reset()
-        else:
-            actions = {}
-            memories = {}
-            texts = {}
-            values = {}
-            for brain_name, action_info in all_action_info.items():
-                actions[brain_name] = action_info.action
-                memories[brain_name] = action_info.memory
-                texts[brain_name] = action_info.text
-                values[brain_name] = action_info.value
-            all_brain_info = self.env.step(actions, memories, texts, values)
+        actions = {}
+        memories = {}
+        texts = {}
+        values = {}
+        for brain_name, action_info in all_action_info.items():
+            actions[brain_name] = action_info.action
+            memories[brain_name] = action_info.memory
+            texts[brain_name] = action_info.text
+            values[brain_name] = action_info.value
+        all_brain_info = self.env.step(actions, memories, texts, values)
         step_brain_info = all_brain_info
 
         step_info = EnvironmentStep(

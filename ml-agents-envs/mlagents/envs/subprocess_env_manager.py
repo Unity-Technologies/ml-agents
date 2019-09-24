@@ -1,7 +1,8 @@
-from typing import *
+import logging
+from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityCommunicationException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
@@ -15,7 +16,10 @@ from mlagents.envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.envs import AllBrainInfo, BrainParameters, ActionInfo
+from mlagents.envs.brain import AllBrainInfo, BrainParameters
+from mlagents.envs.action_info import ActionInfo
+
+logger = logging.getLogger("mlagents.envs")
 
 
 class EnvironmentCommand(NamedTuple):
@@ -43,7 +47,7 @@ class UnityEnvWorker:
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 
-    def send(self, name: str, payload=None):
+    def send(self, name: str, payload: Any = None) -> None:
         try:
             cmd = EnvironmentCommand(name, payload)
             self.conn.send(cmd)
@@ -61,13 +65,17 @@ class UnityEnvWorker:
         try:
             self.conn.send(EnvironmentCommand("close"))
         except (BrokenPipeError, EOFError):
+            logger.debug(
+                f"UnityEnvWorker {self.worker_id} got exception trying to close."
+            )
             pass
+        logger.debug(f"UnityEnvWorker {self.worker_id} joining process.")
         self.process.join()
 
 
 def worker(
     parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
-):
+) -> None:
     env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
         pickled_env_factory
     )
@@ -81,21 +89,16 @@ def worker(
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
-                # When an environment is "global_done" it means automatic agent reset won't occur, so we need
-                # to perform an academy reset.
-                if env.global_done:
-                    all_brain_info = env.reset()
-                else:
-                    actions = {}
-                    memories = {}
-                    texts = {}
-                    values = {}
-                    for brain_name, action_info in all_action_info.items():
-                        actions[brain_name] = action_info.action
-                        memories[brain_name] = action_info.memory
-                        texts[brain_name] = action_info.text
-                        values[brain_name] = action_info.value
-                    all_brain_info = env.step(actions, memories, texts, values)
+                actions = {}
+                memories = {}
+                texts = {}
+                values = {}
+                for brain_name, action_info in all_action_info.items():
+                    actions[brain_name] = action_info.action
+                    memories[brain_name] = action_info.memory
+                    texts[brain_name] = action_info.text
+                    values[brain_name] = action_info.value
+                all_brain_info = env.step(actions, memories, texts, values)
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -113,16 +116,21 @@ def worker(
                     cmd.payload[0], cmd.payload[1], cmd.payload[2]
                 )
                 _send_response("reset", all_brain_info)
-            elif cmd.name == "global_done":
-                _send_response("global_done", env.global_done)
             elif cmd.name == "close":
                 break
     except (KeyboardInterrupt, UnityCommunicationException):
         print("UnityEnvironment worker: environment stopping.")
         step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:
+        # If this worker has put an item in the step queue that hasn't been processed by the EnvManager, the process
+        # will hang until the item is processed. We avoid this behavior by using Queue.cancel_join_thread()
+        # See https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue.cancel_join_thread for
+        # more info.
+        logger.debug(f"Worker {worker_id} closing.")
+        step_queue.cancel_join_thread()
         step_queue.close()
         env.close()
+        logger.debug(f"Worker {worker_id} done.")
 
 
 class SubprocessEnvManager(EnvManager):
@@ -189,7 +197,10 @@ class SubprocessEnvManager(EnvManager):
         return step_infos
 
     def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
+        self,
+        config: Optional[Dict] = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
         while any([ew.waiting for ew in self.env_workers]):
             if not self.step_queue.empty():
@@ -214,6 +225,7 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
+        logger.debug(f"SubprocessEnvManager closing.")
         self.step_queue.close()
         self.step_queue.join_thread()
         for env_worker in self.env_workers:

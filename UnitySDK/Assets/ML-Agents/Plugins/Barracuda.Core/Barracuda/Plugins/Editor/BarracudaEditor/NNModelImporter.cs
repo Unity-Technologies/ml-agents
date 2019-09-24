@@ -9,7 +9,7 @@ namespace Barracuda
     /// Asset Importer of barracuda models.
     /// </summary>
     [ScriptedImporter(1, new[] {"nn"})]
-    public class NnModelImporter : ScriptedImporter
+    public class NNModelImporter : ScriptedImporter
     {
         private const string k_IconName = "NNModelIcon";
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
 
 namespace MLAgents
@@ -40,9 +41,6 @@ namespace MLAgents
         /// The current UnityRLOutput to be sent when all the brains queried the batcher
         CommunicatorObjects.UnityRLOutput m_CurrentUnityRlOutput =
             new CommunicatorObjects.UnityRLOutput();
-
-        /// Keeps track of the done flag of the Academy
-        bool m_AcademyDone;
 
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_Command;
@@ -87,9 +85,18 @@ namespace MLAgents
             }
             catch
             {
-                throw new UnityAgentsException(
-                    "The Communicator was unable to connect. Please make sure the External " +
-                    "process is ready to accept communication with Unity.");
+                var exceptionMessage = "The Communicator was unable to connect. Please make sure the External " +
+                                       "process is ready to accept communication with Unity.";
+
+                // Check for common error condition and add details to the exception message.
+                var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
+                var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
+                if (httpProxy != null || httpsProxy != null)
+                {
+                    exceptionMessage += " Try removing HTTP_PROXY and HTTPS_PROXY from the" +
+                                        "environment variables and try again.";
+                }
+                throw new UnityAgentsException(exceptionMessage);
             }
 
             var firstRlInput = input.RlInput;
@@ -97,17 +104,6 @@ namespace MLAgents
             m_EnvironmentParameters = firstRlInput.EnvironmentParameters;
             m_IsTraining = firstRlInput.IsTraining;
             return initializationInput.RlInitializationInput;
-        }
-
-        /// <summary>
-        /// Registers the done flag of the academy to the next output to be sent
-        /// to the communicator.
-        /// </summary>
-        /// <param name="done">If set to <c>true</c>
-        /// The academy done state will be sent to External at the next Exchange.</param>
-        public void RegisterAcademyDoneFlag(bool done)
-        {
-            m_AcademyDone = done;
         }
 
         /// <summary>
@@ -209,9 +205,8 @@ namespace MLAgents
             // must be sent
             if (m_HasQueried.Values.All(x => x))
             {
-                if (m_HasData.Values.Any(x => x) || m_AcademyDone)
+                if (m_HasData.Values.Any(x => x))
                 {
-                    m_CurrentUnityRlOutput.GlobalDone = m_AcademyDone;
                     SendBatchedMessageHelper();
                 }
 
@@ -226,7 +221,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Helper method that sends the curent UnityRLOutput, receives the next UnityInput and
+        /// Helper method that sends the current UnityRLOutput, receives the next UnityInput and
         /// Applies the appropriate AgentAction to the agents.
         /// </summary>
         void SendBatchedMessageHelper()

@@ -9,6 +9,7 @@ public class CrawlerAgent : Agent
 
     public Transform ground;
     public bool detectTargets;
+    public bool targetIsStatic = false;
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
@@ -281,7 +282,10 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-
+        if (!targetIsStatic)
+        {
+            GetRandomTargetPos();
+        }
         m_IsNewDecisionStep = true;
         m_CurrentDecisionStep = 1;
     }

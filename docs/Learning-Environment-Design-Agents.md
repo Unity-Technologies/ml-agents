@@ -255,7 +255,7 @@ observations and debugging. To update the RenderTexture, the Camera must be aske
 render every time a decision is requested within the game code. When using Cameras 
 as observations directly, this is done automatically by the Agent.
 
-![Agent RenderTexture Debug](images/visual-observation-debug.png)
+![Agent RenderTexture Debug](images/gridworld.png)
 
 ## Vector Actions
 

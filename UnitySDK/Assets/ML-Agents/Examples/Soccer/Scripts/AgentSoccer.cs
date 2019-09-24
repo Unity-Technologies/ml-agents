@@ -5,7 +5,7 @@ public class AgentSoccer : Agent
 {
     public enum Team
     {
-        Red,
+        Purple,
         Blue
     }
     public enum AgentRole
@@ -27,17 +27,17 @@ public class AgentSoccer : Agent
     RayPerception m_RayPer;
 
     float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] m_DetectableObjectsRed = { "ball", "redGoal", "blueGoal",
-                                        "wall", "redAgent", "blueAgent" };
-    string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "redGoal",
-                                         "wall", "blueAgent", "redAgent" };
+    string[] m_DetectableObjectsPurple = { "ball", "purpleGoal", "blueGoal",
+                                           "wall", "purpleAgent", "blueAgent" };
+    string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "purpleGoal",
+                                         "wall", "blueAgent", "purpleAgent" };
 
     public void ChooseRandomTeam()
     {
         team = (Team)Random.Range(0, 2);
-        if (team == Team.Red)
+        if (team == Team.Purple)
         {
-            JoinRedTeam(agentRole);
+            JoinPurpleTeam(agentRole);
         }
         else
         {
@@ -45,12 +45,12 @@ public class AgentSoccer : Agent
         }
     }
 
-    public void JoinRedTeam(AgentRole role)
+    public void JoinPurpleTeam(AgentRole role)
     {
         agentRole = role;
-        team = Team.Red;
-        m_AgentRenderer.material = m_Academy.redMaterial;
-        tag = "redAgent";
+        team = Team.Purple;
+        m_AgentRenderer.material = m_Academy.purpleMaterial;
+        tag = "purpleAgent";
     }
 
     public void JoinBlueTeam(AgentRole role)
@@ -64,7 +64,7 @@ public class AgentSoccer : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_AgentRenderer = GetComponent<Renderer>();
+        m_AgentRenderer = GetComponentInChildren<Renderer>();
         m_RayPer = GetComponent<RayPerception>();
         m_Academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();
@@ -85,9 +85,9 @@ public class AgentSoccer : Agent
     {
         var rayDistance = 20f;
         string[] detectableObjects;
-        if (team == Team.Red)
+        if (team == Team.Purple)
         {
-            detectableObjects = m_DetectableObjectsRed;
+            detectableObjects = m_DetectableObjectsPurple;
         }
         else
         {
@@ -192,9 +192,9 @@ public class AgentSoccer : Agent
             ChooseRandomTeam();
         }
 
-        if (team == Team.Red)
+        if (team == Team.Purple)
         {
-            JoinRedTeam(agentRole);
+            JoinPurpleTeam(agentRole);
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
         }
         else

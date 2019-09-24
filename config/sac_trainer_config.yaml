@@ -24,7 +24,7 @@ default:
             strength: 1.0
             gamma: 0.99
 
-BananaLearning:
+FoodCollectorLearning:
     normalize: false
     batch_size: 256
     buffer_size: 500000

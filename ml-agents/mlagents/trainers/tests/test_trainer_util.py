@@ -1,9 +1,11 @@
 import pytest
 import yaml
 import os
+import io
 from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
+from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -144,7 +146,7 @@ def dummy_bad_config():
     )
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -190,7 +192,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         assert isinstance(trainers["testbrain"], OfflineBCTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_online_bc_trainer(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -233,7 +235,7 @@ def test_initialize_online_bc_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], OnlineBCTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     external_brains = {"testbrain": BrainParametersMock()}
@@ -289,7 +291,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.BrainParameters")
+@patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -313,3 +315,30 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
             load_model=load_model,
             seed=seed,
         )
+
+
+def test_load_config_missing_file():
+    with pytest.raises(UnityEnvironmentException):
+        load_config("thisFileDefinitelyDoesNotExist.yaml")
+
+
+def test_load_config_valid_yaml():
+    file_contents = """
+this:
+  - is fine
+    """
+    fp = io.StringIO(file_contents)
+    res = _load_config(fp)
+    assert res == {"this": ["is fine"]}
+
+
+def test_load_config_invalid_yaml():
+    file_contents = """
+you:
+  - will
+- not
+  - parse
+    """
+    with pytest.raises(UnityEnvironmentException):
+        fp = io.StringIO(file_contents)
+        _load_config(fp)

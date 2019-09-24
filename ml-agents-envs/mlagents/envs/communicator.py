@@ -1,7 +1,8 @@
 import logging
 from typing import Optional
 
-from .communicator_objects import UnityOutput, UnityInput
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
 
 logger = logging.getLogger("mlagents.envs")
 

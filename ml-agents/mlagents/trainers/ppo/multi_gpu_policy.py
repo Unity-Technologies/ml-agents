@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
@@ -10,7 +9,6 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.bc.module import BCModule
 
 # Variable scope in which created variables will be placed under
 TOWER_SCOPE_NAME = "tower"
@@ -43,7 +41,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
         self.devices = get_devices()
         self.towers = []
         with self.graph.as_default():
-            with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
+            with tf.variable_scope("", reuse=tf.AUTO_REUSE):
                 for device in self.devices:
                     with tf.device(device):
                         self.towers.append(
@@ -72,7 +70,6 @@ class MultiGpuPPOPolicy(PPOPolicy):
                         )
                         self.towers[-1].create_ppo_optimizer()
             self.model = self.towers[0]
-
             avg_grads = self.average_gradients([t.grads for t in self.towers])
             update_batch = self.model.optimizer.apply_gradients(avg_grads)
 

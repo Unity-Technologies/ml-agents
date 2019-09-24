@@ -1,4 +1,4 @@
-from unittest.mock import *
+from unittest.mock import MagicMock, Mock, patch
 
 import yaml
 import pytest
@@ -165,7 +165,6 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     env_mock = MagicMock()
     env_mock.step.return_value = [new_step_info]
     env_mock.reset.return_value = [old_step_info]
-    env_mock.global_done = False
 
     tc.advance(env_mock)
     env_mock.reset.assert_not_called()

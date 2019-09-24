@@ -1,7 +1,7 @@
 import pytest
 
-from mlagents.envs import RpcCommunicator
-from mlagents.envs import UnityWorkerInUseException
+from mlagents.envs.rpc_communicator import RpcCommunicator
+from mlagents.envs.exception import UnityWorkerInUseException
 
 
 def test_rpc_communicator_checks_port_on_create():

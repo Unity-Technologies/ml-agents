@@ -2,7 +2,7 @@ import os
 import json
 import math
 
-from .exception import CurriculumError
+from .exception import CurriculumConfigError, CurriculumLoadingError
 
 import logging
 
@@ -23,14 +23,8 @@ class Curriculum(object):
         # The name of the brain should be the basename of the file without the
         # extension.
         self._brain_name = os.path.basename(location).split(".")[0]
+        self.data = Curriculum.load_curriculum_file(location)
 
-        try:
-            with open(location) as data_file:
-                self.data = json.load(data_file)
-        except IOError:
-            raise CurriculumError("The file {0} could not be found.".format(location))
-        except UnicodeDecodeError:
-            raise CurriculumError("There was an error decoding {}".format(location))
         self.smoothing_value = 0
         for key in [
             "parameters",
@@ -40,7 +34,7 @@ class Curriculum(object):
             "signal_smoothing",
         ]:
             if key not in self.data:
-                raise CurriculumError(
+                raise CurriculumConfigError(
                     "{0} does not contain a " "{1} field.".format(location, key)
                 )
         self.smoothing_value = 0
@@ -51,12 +45,12 @@ class Curriculum(object):
         parameters = self.data["parameters"]
         for key in parameters:
             if key not in default_reset_parameters:
-                raise CurriculumError(
+                raise CurriculumConfigError(
                     "The parameter {0} in Curriculum {1} is not present in "
                     "the Environment".format(key, location)
                 )
             if len(parameters[key]) != self.max_lesson_num + 1:
-                raise CurriculumError(
+                raise CurriculumConfigError(
                     "The parameter {0} in Curriculum {1} must have {2} values "
                     "but {3} were found".format(
                         key, location, self.max_lesson_num + 1, len(parameters[key])
@@ -117,3 +111,27 @@ class Curriculum(object):
         for key in parameters:
             config[key] = parameters[key][lesson]
         return config
+
+    @staticmethod
+    def load_curriculum_file(location):
+        try:
+            with open(location) as data_file:
+                return Curriculum._load_curriculum(data_file)
+        except IOError:
+            raise CurriculumLoadingError(
+                "The file {0} could not be found.".format(location)
+            )
+        except UnicodeDecodeError:
+            raise CurriculumLoadingError(
+                "There was an error decoding {}".format(location)
+            )
+
+    @staticmethod
+    def _load_curriculum(fp):
+        try:
+            return json.load(fp)
+        except json.decoder.JSONDecodeError as e:
+            raise CurriculumLoadingError(
+                "Error parsing JSON file. Please check for formatting errors. "
+                "A tool such as https://jsonlint.com/ can be helpful with this."
+            ) from e

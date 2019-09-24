@@ -4,11 +4,13 @@ from typing import Any, Dict
 import numpy as np
 import tensorflow as tf
 
-from mlagents.trainers import UnityException
-from mlagents.envs import Policy, ActionInfo
-from tensorflow.python.tools import freeze_graph
+from mlagents.envs.exception import UnityException
+from mlagents.envs.policy import Policy
+from mlagents.envs.action_info import ActionInfo
+from tensorflow.python.platform import gfile
+from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.envs import BrainInfo
+from mlagents.envs.brain import BrainInfo
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -54,6 +56,7 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
+        self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
@@ -217,22 +220,15 @@ class TFPolicy(Policy):
 
         with self.graph.as_default():
             target_nodes = ",".join(self._process_graph())
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
-            freeze_graph.freeze_graph(
-                input_graph=self.model_path + "/raw_graph_def.pb",
-                input_binary=True,
-                input_checkpoint=ckpt.model_checkpoint_path,
-                output_node_names=target_nodes,
-                output_graph=(self.model_path + "/frozen_graph_def.pb"),
-                clear_devices=True,
-                initializer_nodes="",
-                input_saver="",
-                restore_op_name="save/restore_all",
-                filename_tensor_name="save/Const:0",
+            graph_def = self.graph.as_graph_def()
+            output_graph_def = graph_util.convert_variables_to_constants(
+                self.sess, graph_def, target_nodes.replace(" ", "").split(",")
             )
-
-        tf2bc.convert(self.model_path + "/frozen_graph_def.pb", self.model_path + ".nn")
-        logger.info("Exported " + self.model_path + ".nn file")
+            frozen_graph_def_path = self.model_path + "/frozen_graph_def.pb"
+            with gfile.GFile(frozen_graph_def_path, "wb") as f:
+                f.write(output_graph_def.SerializeToString())
+            tf2bc.convert(frozen_graph_def_path, self.model_path + ".nn")
+            logger.info("Exported " + self.model_path + ".nn file")
 
     def _process_graph(self):
         """
@@ -245,6 +241,17 @@ class TFPolicy(Policy):
         for n in nodes:
             logger.info("\t" + n)
         return nodes
+
+    def update_normalization(self, vector_obs: np.ndarray) -> None:
+        """
+        If this policy normalizes vector observations, this will update the norm values in the graph.
+        :param vector_obs: The vector observations to add to the running estimate of the distribution.
+        """
+        if self.use_vec_obs and self.normalize:
+            self.sess.run(
+                self.model.update_normalization,
+                feed_dict={self.model.vector_in: vector_obs},
+            )
 
     @property
     def vis_obs_size(self):

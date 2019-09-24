@@ -30,7 +30,6 @@ namespace MLAgents.Tests
             var rayPer2D = go.AddComponent<RayPerception2D>();
             var result = rayPer2D.Perceive(1f, angles,
                 tags);
-            Debug.Log(result.Count);
             Assert.IsTrue(result.Count == angles.Length * (tags.Length + 2));
         }
     }
