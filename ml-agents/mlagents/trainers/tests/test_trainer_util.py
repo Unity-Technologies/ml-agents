@@ -1,9 +1,11 @@
 import pytest
 import yaml
 import os
+import io
 from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
+from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -313,3 +315,30 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
             load_model=load_model,
             seed=seed,
         )
+
+
+def test_load_config_missing_file():
+    with pytest.raises(UnityEnvironmentException):
+        load_config("thisFileDefinitelyDoesNotExist.yaml")
+
+
+def test_load_config_valid_yaml():
+    file_contents = """
+this:
+  - is fine
+    """
+    fp = io.StringIO(file_contents)
+    res = _load_config(fp)
+    assert res == {"this": ["is fine"]}
+
+
+def test_load_config_invalid_yaml():
+    file_contents = """
+you:
+  - will
+- not
+  - parse
+    """
+    with pytest.raises(UnityEnvironmentException):
+        fp = io.StringIO(file_contents)
+        _load_config(fp)

@@ -19,6 +19,22 @@ class CurriculumError(TrainerError):
     pass
 
 
+class CurriculumLoadingError(CurriculumError):
+    """
+    Any error related to loading the Curriculum config file.
+    """
+
+    pass
+
+
+class CurriculumConfigError(CurriculumError):
+    """
+    Any error related to processing the Curriculum config file.
+    """
+
+    pass
+
+
 class MetaCurriculumError(TrainerError):
     """
     Any error related to the configuration of a metacurriculum.

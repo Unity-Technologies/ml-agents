@@ -8,17 +8,17 @@ import os
 import glob
 import shutil
 import numpy as np
-import yaml
-from typing import Any, Callable, Dict, Optional, List, NamedTuple
+
+from typing import Any, Callable, Optional, List, NamedTuple
 
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculumError, MetaCurriculum
-from mlagents.trainers.trainer_util import initialize_trainers
+from mlagents.trainers.trainer_util import initialize_trainers, load_config
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import UnityEnvironmentException, SamplerException
+from mlagents.envs.exception import SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 
@@ -321,22 +321,6 @@ def prepare_for_docker_run(docker_target_name, env_path):
                 logging.getLogger("mlagents.trainers").info(e)
     env_path = "/ml-agents/{env_path}".format(env_path=env_path)
     return env_path
-
-
-def load_config(trainer_config_path: str) -> Dict[str, Any]:
-    try:
-        with open(trainer_config_path) as data_file:
-            trainer_config = yaml.safe_load(data_file)
-            return trainer_config
-    except IOError:
-        raise UnityEnvironmentException(
-            "Parameter file could not be found " "at {}.".format(trainer_config_path)
-        )
-    except UnicodeDecodeError:
-        raise UnityEnvironmentException(
-            "There was an error decoding "
-            "Trainer Config from this path : {}".format(trainer_config_path)
-        )
 
 
 def create_environment_factory(
