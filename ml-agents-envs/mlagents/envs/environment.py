@@ -583,7 +583,15 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._loaded = False
         self.communicator.close()
         if self.proc1 is not None:
-            self.proc1.kill()
+            # Wait a few seconds for the process to shutdown, but kill it if it takes too long
+            try:
+                self.proc1.wait(timeout=5.0)
+                logger.info(
+                    f"Environment shut down cleanly with return code {self.proc1.returncode}"
+                )
+            except subprocess.TimeoutExpired:
+                logger.info("Environment timed out shutting down. Killing...")
+                self.proc1.kill()
 
     @classmethod
     def _flatten(cls, arr: Any) -> List[float]:
