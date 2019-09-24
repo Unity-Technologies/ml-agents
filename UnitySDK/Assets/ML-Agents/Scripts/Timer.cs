@@ -113,7 +113,7 @@ namespace MLAgents
             m_Stack.Push(m_RootNode);
         }
 
-        public TimerNode Push(string name)
+        private TimerNode Push(string name)
         {
             TimerNode current = m_Stack.Peek();
             TimerNode next = current.GetChild(name);
@@ -121,9 +121,9 @@ namespace MLAgents
             return next;
         }
 
-        public void Pop()
+        private TimerNode Pop()
         {
-            m_Stack.Pop();
+            return m_Stack.Pop();
         }
 
         public class Helper : System.IDisposable
