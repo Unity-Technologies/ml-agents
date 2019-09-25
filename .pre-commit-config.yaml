@@ -32,7 +32,8 @@ repos:
         exclude: >
             (?x)^(
                 .*cs.meta|
-                .*.css
+                .*.css|
+                .*.meta
             )$
         args: [--fix=lf]
     -   id: flake8

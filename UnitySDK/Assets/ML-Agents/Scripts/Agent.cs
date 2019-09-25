@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
@@ -84,43 +83,6 @@ namespace MLAgents
         /// to an action in addition to a scalar reward.
         /// </summary>
         public CustomObservation customObservation;
-
-        /// <summary>
-        /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
-        /// </summary>
-        /// <returns>The protobuf version of the AgentInfo.</returns>
-        public AgentInfoProto ToProto()
-        {
-            var agentInfoProto = new AgentInfoProto
-            {
-                StackedVectorObservation = { stackedVectorObservation },
-                StoredVectorActions = { storedVectorActions },
-                StoredTextActions = storedTextActions,
-                TextObservation = textObservation,
-                Reward = reward,
-                MaxStepReached = maxStepReached,
-                Done = done,
-                Id = id,
-                CustomObservation = customObservation
-            };
-            if (memories != null)
-            {
-                agentInfoProto.Memories.Add(memories);
-            }
-
-            if (actionMasks != null)
-            {
-                agentInfoProto.ActionMask.AddRange(actionMasks);
-            }
-
-            foreach (var obs in visualObservations)
-            {
-                agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToPNG())
-                );
-            }
-            return agentInfoProto;
-        }
 
         /// <summary>
         /// Remove the visual observations from memory. Call at each timestep
