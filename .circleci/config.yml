@@ -120,6 +120,54 @@ jobs:
           command: |
             . venv/bin/activate
             pre-commit run --hook-stage manual markdown-link-check --all-files
+  
+  protobuf_generation_check:
+    docker:
+      - image: circleci/python:3.7.3
+    working_directory: ~/repo/
+
+    steps:
+      - checkout
+      - run:
+          name: Combine proto files for caching
+          command: cat protobuf-definitions/proto/mlagents/envs/communicator_objects/*.proto > /tmp/proto_deps.txt
+
+      - restore_cache:
+          keys:
+          - v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
+          - v1-protobuf-gen-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get install nuget
+            nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory protobuf-definitions/
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install grpcio-tools==1.13.0  --progress-bar=off
+            pip install mypy-protobuf --progress-bar=off
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
+
+      - run:
+          name: Generate protobufs
+          command: |
+            . venv/bin/activate
+            cd protobuf-definitions
+            chmod +x Grpc.Tools.1.14.1/tools/linux_x64/protoc
+            chmod +x Grpc.Tools.1.14.1/tools/linux_x64/grpc_csharp_plugin
+            COMPILER=Grpc.Tools.1.14.1/tools/linux_x64 ./make.sh
+            git diff --exit-code --quiet -- :/ ':(exclude,top)UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects/*.meta' \
+              || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
+              echo "Apply the patch with the command: git apply proto.patch"; \
+              git diff -- :/ ':(exclude,top)UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects/*.meta' > /tmp/proto.patch; \
+              exit $GIT_ERR; }
+      - store_artifacts:
+            path: /tmp/proto.patch
+            destination: proto.patch
 
 workflows:
   workflow:
@@ -137,3 +185,4 @@ workflows:
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_version.txt
       - markdown_link_check
+      - protobuf_generation_check
