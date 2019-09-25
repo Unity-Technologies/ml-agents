@@ -78,7 +78,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLInput(UnityRLInput other) : this() {
       agentActions_ = other.agentActions_.Clone();
-      environmentParameters_ = other.environmentParameters_ != null ? other.environmentParameters_.Clone() : null;
+      EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
       isTraining_ = other.isTraining_;
       command_ = other.command_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -217,7 +217,7 @@ namespace MLAgents.CommunicatorObjects {
       agentActions_.Add(other.agentActions_);
       if (other.environmentParameters_ != null) {
         if (environmentParameters_ == null) {
-          EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+          environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
         }
         EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
       }
@@ -244,9 +244,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 18: {
             if (environmentParameters_ == null) {
-              EnvironmentParameters = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
+              environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
             }
-            input.ReadMessage(EnvironmentParameters);
+            input.ReadMessage(environmentParameters_);
             break;
           }
           case 24: {
@@ -254,7 +254,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 32: {
-            Command = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
+            command_ = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
             break;
           }
         }

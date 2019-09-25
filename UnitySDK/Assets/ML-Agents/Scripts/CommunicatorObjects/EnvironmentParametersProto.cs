@@ -71,7 +71,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public EnvironmentParametersProto(EnvironmentParametersProto other) : this() {
       floatParameters_ = other.floatParameters_.Clone();
-      customResetParameters_ = other.customResetParameters_ != null ? other.customResetParameters_.Clone() : null;
+      CustomResetParameters = other.customResetParameters_ != null ? other.CustomResetParameters.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -168,7 +168,7 @@ namespace MLAgents.CommunicatorObjects {
       floatParameters_.Add(other.floatParameters_);
       if (other.customResetParameters_ != null) {
         if (customResetParameters_ == null) {
-          CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+          customResetParameters_ = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
         }
         CustomResetParameters.MergeFrom(other.CustomResetParameters);
       }
@@ -189,9 +189,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 18: {
             if (customResetParameters_ == null) {
-              CustomResetParameters = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
+              customResetParameters_ = new global::MLAgents.CommunicatorObjects.CustomResetParameters();
             }
-            input.ReadMessage(CustomResetParameters);
+            input.ReadMessage(customResetParameters_);
             break;
           }
         }

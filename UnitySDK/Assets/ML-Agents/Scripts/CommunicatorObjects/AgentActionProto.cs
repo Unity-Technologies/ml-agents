@@ -71,7 +71,7 @@ namespace MLAgents.CommunicatorObjects {
       textActions_ = other.textActions_;
       memories_ = other.memories_.Clone();
       value_ = other.value_;
-      customAction_ = other.customAction_ != null ? other.customAction_.Clone() : null;
+      CustomAction = other.customAction_ != null ? other.CustomAction.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -229,7 +229,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.customAction_ != null) {
         if (customAction_ == null) {
-          CustomAction = new global::MLAgents.CommunicatorObjects.CustomAction();
+          customAction_ = new global::MLAgents.CommunicatorObjects.CustomAction();
         }
         CustomAction.MergeFrom(other.CustomAction);
       }
@@ -264,9 +264,9 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 42: {
             if (customAction_ == null) {
-              CustomAction = new global::MLAgents.CommunicatorObjects.CustomAction();
+              customAction_ = new global::MLAgents.CommunicatorObjects.CustomAction();
             }
-            input.ReadMessage(CustomAction);
+            input.ReadMessage(customAction_);
             break;
           }
         }
