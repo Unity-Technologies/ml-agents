@@ -602,6 +602,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
                 self.proc1.kill()
+            self.proc1 = None
 
     @classmethod
     def _flatten(cls, arr: Any) -> List[float]:
