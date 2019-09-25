@@ -7,7 +7,7 @@ rem set COMPILER=Grpc.Tools.1.14.1\tools\windows_x64
 rem set COMPILER=[DIRECTORY]
 
 set SRC_DIR=proto\mlagents\envs\communicator_objects
-set DST_DIR_C=..\UnitySDK\Assets\ML-Agents\Scripts\CommunicatorObjects
+set DST_DIR_C=..\UnitySDK\Assets\ML-Agents\Scripts\Grpc\CommunicatorObjects
 set DST_DIR_P=..\ml-agents-envs
 set PROTO_PATH=proto
 
