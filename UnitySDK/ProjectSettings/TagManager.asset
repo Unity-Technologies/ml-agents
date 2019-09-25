@@ -6,26 +6,29 @@ TagManager:
   tags:
   - agent
   - iWall
-  - banana
   - wall
-  - badBanana
   - pit
   - frozenAgent
   - ball
-  - redGoal
   - blueGoal
   - blueAgent
-  - redAgent
-  - redBlock
   - goal
   - ground
-  - orangeBlock
   - block
-  - orangeGoal
   - switchOff
   - pyramid
   - switchOn
   - stone
+  - target
+  - badFood
+  - food
+  - walkableSurface
+  - symbol_X
+  - symbol_O
+  - symbol_X_Goal
+  - symbol_O_Goal
+  - purpleAgent
+  - purpleGoal
   layers:
   - Default
   - TransparentFX

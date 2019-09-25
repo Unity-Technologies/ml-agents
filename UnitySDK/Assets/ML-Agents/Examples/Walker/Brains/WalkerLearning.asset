@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainParameters:
     vectorObservationSize: 212
-    numStackedVectorObservations: 5
+    numStackedVectorObservations: 1
     vectorActionSize: 27000000
     cameraResolutions: []
     vectorActionDescriptions:
@@ -57,4 +57,5 @@ MonoBehaviour:
     - 
     - 
     vectorActionSpaceType: 1
-  model: {fileID: 11400000, guid: 097040deda0de41ddb3050c60d8cfc67, type: 3}
+  model: {fileID: 11400000, guid: 693a2a44fd7c64d3ca80d7444f782520, type: 3}
+  inferenceDevice: 0

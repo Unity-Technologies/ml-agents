@@ -16,12 +16,6 @@ public class PlayerState
 
 public class SoccerFieldArea : MonoBehaviour
 {
-    public Transform redGoal;
-    public Transform blueGoal;
-    public AgentSoccer redStriker;
-    public AgentSoccer blueStriker;
-    public AgentSoccer redGoalie;
-    public AgentSoccer blueGoalie;
     public GameObject ball;
     [FormerlySerializedAs("ballRB")]
     [HideInInspector]
@@ -32,21 +26,12 @@ public class SoccerFieldArea : MonoBehaviour
     public List<PlayerState> playerStates = new List<PlayerState>();
     [HideInInspector]
     public Vector3 ballStartingPos;
-    public bool drawSpawnAreaGizmo;
-    Vector3 m_SpawnAreaSize;
-    public float goalScoreByTeamReward;
-    public float goalScoreAgainstTeamReward;
     public GameObject goalTextUI;
-    public float totalPlayers;
     [HideInInspector]
     public bool canResetBall;
-    public bool useSpawnPoint;
-    public Transform spawnPoint;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
     SoccerAcademy m_Academy;
-    public float blueBallPosReward;
-    public float redBallPosReward;
 
     public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
@@ -107,9 +92,9 @@ public class SoccerFieldArea : MonoBehaviour
                 ps.agentScript.ChooseRandomTeam();
             }
 
-            if (scoredTeam == AgentSoccer.Team.Red)
+            if (scoredTeam == AgentSoccer.Team.Purple)
             {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.redMaterial, 1));
+                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.purpleMaterial, 1));
             }
             else
             {

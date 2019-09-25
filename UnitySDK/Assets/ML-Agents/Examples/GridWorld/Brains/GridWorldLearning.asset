@@ -22,4 +22,5 @@ MonoBehaviour:
     vectorActionDescriptions:
     - 
     vectorActionSpaceType: 0
-  model: {fileID: 11400000, guid: 86e6c88c11c2a4a72bbe56a71c20bfff, type: 3}
+  model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
+  inferenceDevice: 0
