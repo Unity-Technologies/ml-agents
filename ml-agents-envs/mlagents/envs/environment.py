@@ -33,6 +33,7 @@ from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
+import signal
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
@@ -79,6 +80,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         self.proc1 = (
             None
         )  # The process that is started. If None, no process was started
+        self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
 
@@ -249,7 +251,14 @@ class UnityEnvironment(BaseUnityEnvironment):
                 subprocess_args += ["--port", str(self.port)]
                 subprocess_args += args
                 try:
-                    self.proc1 = subprocess.Popen(subprocess_args)
+                    self.proc1 = subprocess.Popen(
+                        subprocess_args,
+                        # start_new_session=True means that signals to the parent python process
+                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process.
+                        # This is generally good since we want the environment to have a chance to shutdown,
+                        # but may be undesirable in come cases.
+                        start_new_session=True,
+                    )
                 except PermissionError as perm:
                     # This is likely due to missing read or execute permissions on file.
                     raise UnityEnvironmentException(
@@ -583,12 +592,13 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._loaded = False
         self.communicator.close()
         if self.proc1 is not None:
-            # Wait a few seconds for the process to shutdown, but kill it if it takes too long
+            # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self.proc1.wait(timeout=5.0)
-                logger.info(
-                    f"Environment shut down cleanly with return code {self.proc1.returncode}"
-                )
+                self.proc1.wait(timeout=self.timeout_wait)
+                signal_name = self.returncode_to_signal_name(self.proc1.returncode)
+                signal_name = f" ({signal_name})" if signal_name else ""
+                return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."
+                logger.info(return_info)
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
                 self.proc1.kill()
@@ -683,3 +693,17 @@ class UnityEnvironment(BaseUnityEnvironment):
         result = UnityInput()
         result.rl_input.CopyFrom(rl_input)
         return result
+
+    @staticmethod
+    def returncode_to_signal_name(returncode: int) -> Optional[str]:
+        """
+        Try to convert return codes into their corresponding signal name.
+        E.g. returncode_to_signal_name(-2) -> "SIGINT"
+        """
+        try:
+            # A negative value -N indicates that the child was terminated by signal N (POSIX only).
+            s = signal.Signals(-returncode)
+            return s.name
+        except Exception:
+            # Should generally be a ValueError, but catch everything just in case.
+            return None
