@@ -254,9 +254,10 @@ class UnityEnvironment(BaseUnityEnvironment):
                     self.proc1 = subprocess.Popen(
                         subprocess_args,
                         # start_new_session=True means that signals to the parent python process
-                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process.
+                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
                         # This is generally good since we want the environment to have a chance to shutdown,
-                        # but may be undesirable in come cases.
+                        # but may be undesirable in come cases; if so, we'll add a command-line toggle.
+                        # Note that on Windows, the CTRL_C signal will still be sent.
                         start_new_session=True,
                     )
                 except PermissionError as perm:
@@ -602,6 +603,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
                 self.proc1.kill()
+            # Set to None so we don't try to close multiple times.
             self.proc1 = None
 
     @classmethod
