@@ -96,7 +96,7 @@ namespace MLAgents
         /// <summary>
         /// Initialize metadata values based on proto object.
         /// </summary>
-        public static DemonstrationMetaData FromProto(this DemonstrationMetaProto demoProto)
+        public static DemonstrationMetaData ToDemonstrationMetaData(this DemonstrationMetaProto demoProto)
         {
             var dm = new DemonstrationMetaData
             {
