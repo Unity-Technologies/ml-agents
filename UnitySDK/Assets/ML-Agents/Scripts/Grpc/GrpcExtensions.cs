@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 using UnityEngine;
@@ -110,6 +112,41 @@ namespace MLAgents
                 throw new Exception("API versions of demonstration are incompatible.");
             }
             return dm;
+        }
+
+        /// <summary>
+        /// Converts Resolution protobuf array to C# Resolution array.
+        /// </summary>
+        private static Resolution[] ResolutionProtoToNative(IReadOnlyList<ResolutionProto> resolutionProtos)
+        {
+            var localCameraResolutions = new Resolution[resolutionProtos.Count];
+            for (var i = 0; i < resolutionProtos.Count; i++)
+            {
+                localCameraResolutions[i] = new Resolution
+                {
+                    height = resolutionProtos[i].Height,
+                    width = resolutionProtos[i].Width,
+                    blackAndWhite = resolutionProtos[i].GrayScale
+                };
+            }
+
+            return localCameraResolutions;
+        }
+
+        public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
+        {
+            var bp = new BrainParameters
+            {
+                vectorObservationSize = bpp.VectorObservationSize,
+                cameraResolutions = ResolutionProtoToNative(
+                    bpp.CameraResolutions
+                ),
+                numStackedVectorObservations = bpp.NumStackedVectorObservations,
+                vectorActionSize = bpp.VectorActionSize.ToArray(),
+                vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
+                vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+            };
+            return bp;
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using System.Linq;
 
 namespace MLAgents
 {
@@ -8,7 +7,7 @@ namespace MLAgents
     {
         Discrete,
         Continuous
-    };
+    }
 
     /// <summary>
     /// The resolution of a camera used by an agent.
@@ -63,50 +62,14 @@ namespace MLAgents
 
         /// <summary>Defines if the action is discrete or continuous</summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
-
-        public BrainParameters()
-        {
-        }
-
-        /// <summary>
-        /// Converts Resolution protobuf array to C# Resolution array.
-        /// </summary>
-        private static Resolution[] ResolutionProtoToNative(
-            CommunicatorObjects.ResolutionProto[] resolutionProtos)
-        {
-            var localCameraResolutions = new Resolution[resolutionProtos.Length];
-            for (var i = 0; i < resolutionProtos.Length; i++)
-            {
-                localCameraResolutions[i] = new Resolution
-                {
-                    height = resolutionProtos[i].Height,
-                    width = resolutionProtos[i].Width,
-                    blackAndWhite = resolutionProtos[i].GrayScale
-                };
-            }
-
-            return localCameraResolutions;
-        }
-
-        public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
-        {
-            vectorObservationSize = brainParametersProto.VectorObservationSize;
-            cameraResolutions = ResolutionProtoToNative(
-                brainParametersProto.CameraResolutions.ToArray()
-            );
-            numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
-            vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
-            vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
-        }
-
+        
         /// <summary>
         /// Deep clones the BrainParameter object
         /// </summary>
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()
         {
-            return new BrainParameters()
+            return new BrainParameters
             {
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,
