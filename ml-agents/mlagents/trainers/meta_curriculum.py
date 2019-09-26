@@ -29,7 +29,10 @@ class MetaCurriculum(object):
         self._brains_to_curriculums = {}
 
         try:
-            for curriculum_filename in os.listdir(curriculum_folder):
+            for curriculum_filename in\
+            [fn for fn in os.listdir(curriculum_folder)\
+             if not fn.endswith('.meta')]:
+                
                 brain_name = curriculum_filename.split(".")[0]
                 curriculum_filepath = os.path.join(
                     curriculum_folder, curriculum_filename
