@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
     /// <summary>
-    /// Brain receive data from Agents through calls to SendState. The brain then updates the
+    /// Brain receive data from Agents through calls to SubscribeAgentForDecision. The brain then updates the
     /// actions of the agents at each FixedUpdate.
     /// The Brain encapsulates the decision making process. Every Agent must be assigned a Brain,
     /// but you can use the same Brain with more than one Agent. You can also create several
@@ -18,21 +19,35 @@ namespace MLAgents
     {
         [SerializeField] public BrainParameters brainParameters;
 
-        protected Dictionary<Agent, AgentInfo> m_AgentInfos =
-            new Dictionary<Agent, AgentInfo>(1024);
+        /// <summary>
+        /// List of agents subscribed for decisions.
+        /// </summary>
+        protected List<Agent> m_Agents = new List<Agent>(1024);
 
-        [System.NonSerialized]
+        protected ICommunicator m_Communicator;
+
+        [NonSerialized]
         private bool m_IsInitialized;
 
         /// <summary>
-        /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
+        /// Sets the Batcher of the Brain. The brain will call the communicator at every step and give
+        /// it the agent's data using PutObservations at each DecideAction call.
+        /// </summary>
+        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
+        public void SetCommunicator(ICommunicator communicator)
+        {
+            m_Communicator = communicator;
+            LazyInitialize();
+        }
+
+        /// <summary>
+        /// Registers an agent to current batch so it will be processed in DecideAction.
         /// </summary>
         /// <param name="agent"></param>
-        /// <param name="info"></param>
-        public void SendState(Agent agent, AgentInfo info)
+        public void SubscribeAgentForDecision(Agent agent)
         {
             LazyInitialize();
-            m_AgentInfos[agent] = info;
+            m_Agents.Add(agent);
         }
 
         /// <summary>
@@ -62,7 +77,7 @@ namespace MLAgents
         {
             if (m_IsInitialized)
             {
-                m_AgentInfos.Clear();
+                m_Agents.Clear();
                 m_IsInitialized = false;
             }
         }
@@ -72,7 +87,10 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
+            m_Communicator?.PutObservations(name, m_Agents);
             DecideAction();
+            // Clear the agent Decision subscription collection for the next update cycle.
+            m_Agents.Clear();
         }
 
         /// <summary>

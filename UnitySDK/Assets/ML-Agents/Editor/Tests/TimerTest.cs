@@ -5,7 +5,6 @@ namespace MLAgents.Tests
 {
     public class TimerTests
     {
-
         [Test]
         public void TestNested()
         {
