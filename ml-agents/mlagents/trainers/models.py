@@ -3,7 +3,11 @@ from enum import Enum
 from typing import Any, Callable, Dict, List
 
 import numpy as np
-import tensorflow as tf
+
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
 from mlagents.trainers.trainer import UnityTrainerException

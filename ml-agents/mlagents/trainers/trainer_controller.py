@@ -8,7 +8,11 @@ import logging
 from typing import Dict, List, Optional
 
 import numpy as np
-import tensorflow as tf
+
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
 from time import time
 
 from mlagents.envs.env_manager import EnvironmentStep

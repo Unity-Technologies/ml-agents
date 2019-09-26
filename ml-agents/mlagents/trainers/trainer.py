@@ -2,7 +2,11 @@
 import logging
 from typing import Dict, List, Deque, Any
 import os
-import tensorflow as tf
+
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
 import numpy as np
 from collections import deque, defaultdict
 
