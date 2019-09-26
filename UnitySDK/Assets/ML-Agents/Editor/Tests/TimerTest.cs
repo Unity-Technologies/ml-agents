@@ -20,15 +20,13 @@ namespace MLAgents.Tests
                 }
             }
 
-            var rootChildren = myTimer.m_RootNode.m_Children;
+            var rootChildren = myTimer.RootNode.Children;
             Assert.That(rootChildren, Contains.Key("foo"));
-            Assert.AreEqual(rootChildren["foo"].m_NumCalls, 1);
+            Assert.AreEqual(rootChildren["foo"].NumCalls, 1);
 
-            var fooChildren = rootChildren["foo"].m_Children;
+            var fooChildren = rootChildren["foo"].Children;
             Assert.That(fooChildren, Contains.Key("bar"));
-            Assert.AreEqual(fooChildren["bar"].m_NumCalls, 5);
+            Assert.AreEqual(fooChildren["bar"].NumCalls, 5);
         }
-
-
     }
 }

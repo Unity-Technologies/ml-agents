@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
@@ -83,6 +84,16 @@ namespace MLAgents
                 return selfTicks * s_TicksToSeconds;
             }
             set { } // Serialization needs this, but unused.
+        }
+
+        public IReadOnlyDictionary<string, TimerNode> Children
+        {
+            get => m_Children;
+        }
+
+        public int NumCalls
+        {
+            get => m_NumCalls;
         }
 
         public TimerNode(string name)
@@ -191,7 +202,12 @@ namespace MLAgents
     public class TimerStack : System.IDisposable
     {
         Stack<TimerNode> m_Stack;
-        public TimerNode m_RootNode;
+        TimerNode m_RootNode;
+
+        public TimerNode RootNode
+        {
+            get => m_RootNode;
+        }
 
         public TimerStack(string rootName = "root")
         {
