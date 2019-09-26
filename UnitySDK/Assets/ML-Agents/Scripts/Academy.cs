@@ -262,7 +262,8 @@ namespace MLAgents
             var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();
             var controlledBrains = broadcastHub.broadcastingBrains.Where(
                 x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
-            foreach (var brain1 in controlledBrains)
+            var enumerableBrains = controlledBrains as Brain[] ?? controlledBrains.ToArray();
+            foreach (var brain1 in enumerableBrains)
             {
                 var brain = (LearningBrain)brain1;
                 brain.SetToControlledExternally();
@@ -284,7 +285,7 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                if (controlledBrains.ToList().Count > 0)
+                if (enumerableBrains.Length > 0)
                 {
                     communicator = new RpcCommunicator(
                         new CommunicatorParameters
@@ -304,27 +305,12 @@ namespace MLAgents
             if (communicator != null)
             {
                 m_IsCommunicatorOn = true;
-
-                var academyParameters =
-                    new CommunicatorObjects.UnityRLInitializationOutputProto();
-                academyParameters.Name = gameObject.name;
-                academyParameters.Version = k_ApiVersion;
-                foreach (var brain in exposedBrains)
-                {
-                    var bp = brain.brainParameters;
-                    academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
-                }
-                academyParameters.EnvironmentParameters =
-                    new CommunicatorObjects.EnvironmentParametersProto();
-                foreach (var key in resetParameters.Keys)
-                {
-                    academyParameters.EnvironmentParameters.FloatParameters.Add(
-                        key, resetParameters[key]
-                    );
-                }
-
-                var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
+                var pythonParameters = m_BrainBatcher.SendAcademyParameters(
+                    k_KApiVersion, 
+                    gameObject.name,
+                    broadcastHub,
+                    enumerableBrains,
+                    resetParameters);
                 Random.InitState(pythonParameters.Seed);
             }
 
@@ -576,7 +562,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Monobehavior function that dictates each environment step.
+        /// MonoBehaviour function that dictates each environment step.
         /// </summary>
         void FixedUpdate()
         {

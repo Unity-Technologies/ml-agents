@@ -5,8 +5,8 @@ using UnityEngine.Serialization;
 namespace MLAgents
 {
     /// <summary>
-    /// BroadcastHub holds reference to brains and keeps track wether or not the brain be
-    /// remotely controlled.
+    /// BroadcastHub holds reference to brains and keeps track whether or not the brain is
+    /// being remotely controlled.
     /// </summary>
     [System.Serializable]
     public class BroadcastHub
@@ -28,7 +28,7 @@ namespace MLAgents
         /// <summary>
         /// Checks that a given Brain is set to be remote controlled.
         /// </summary>
-        /// <param name="brain"> The Brain that is beeing checked</param>
+        /// <param name="brain"> The Brain that is being checked</param>
         /// <returns>true if the Brain is set to Controlled and false otherwise. Will return
         /// false if the Brain is not present in the Hub.</returns>
         public bool IsControlled(Brain brain)
