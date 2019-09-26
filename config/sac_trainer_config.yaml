@@ -165,8 +165,8 @@ CrawlerStaticLearning:
     max_steps: 5e5
     summary_freq: 3000
     init_entcoef: 1.0
-    num_layers: 2
-    hidden_units: 256
+    num_layers: 3
+    hidden_units: 512
     reward_signals:
         extrinsic:
             strength: 1.0
@@ -179,9 +179,9 @@ CrawlerDynamicLearning:
     buffer_size: 500000
     summary_freq: 3000
     train_interval: 2
-    num_layers: 2
+    num_layers: 3
     max_steps: 1e6
-    hidden_units: 256
+    hidden_units: 512
     reward_signals:
         extrinsic:
             strength: 1.0
