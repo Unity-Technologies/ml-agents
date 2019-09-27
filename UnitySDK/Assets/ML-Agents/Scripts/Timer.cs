@@ -229,10 +229,7 @@ namespace MLAgents
 
         public static TimerStack Instance
         {
-            get
-            {
-                return instance;
-            }
+            get { return instance; }
         }
 
         public TimerNode RootNode
