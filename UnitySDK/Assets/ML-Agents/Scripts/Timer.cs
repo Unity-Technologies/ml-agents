@@ -88,12 +88,12 @@ namespace MLAgents
 
         public IReadOnlyDictionary<string, TimerNode> Children
         {
-            get => m_Children;
+            get { return m_Children; }
         }
 
         public int NumCalls
         {
-            get => m_NumCalls;
+            get { return m_NumCalls; }
         }
 
         public TimerNode(string name)
@@ -206,7 +206,7 @@ namespace MLAgents
 
         public TimerNode RootNode
         {
-            get => m_RootNode;
+            get { return m_RootNode; }
         }
 
         public TimerStack(string rootName = "root")
