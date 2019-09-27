@@ -9,7 +9,9 @@ namespace MLAgents.Tests
         [Test]
         public void TestNested()
         {
-            TimerStack myTimer = new TimerStack();
+            TimerStack myTimer = TimerStack.Instance;
+            myTimer.Reset();
+
             using (myTimer.Scoped("foo"))
             {
                 for (int i = 0; i < 5; i++)
@@ -27,6 +29,9 @@ namespace MLAgents.Tests
             var fooChildren = rootChildren["foo"].Children;
             Assert.That(fooChildren, Contains.Key("bar"));
             Assert.AreEqual(fooChildren["bar"].NumCalls, 5);
+
+            myTimer.Reset();
+            Assert.AreEqual(myTimer.RootNode.Children, null);
         }
     }
 }

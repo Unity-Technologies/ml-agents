@@ -37,13 +37,16 @@ namespace MLAgents
 
             foreach (var obs in ai.visualObservations)
             {
-                agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToPNG())
-                );
+                using (TimerStack.Instance.Scoped("encodeVisualObs"))
+                {
+                    agentInfoProto.VisualObservations.Add(
+                        ByteString.CopyFrom(obs.EncodeToPNG())
+                    );
+                }
             }
             return agentInfoProto;
         }
-        
+
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
@@ -92,7 +95,7 @@ namespace MLAgents
             };
             return demoProto;
         }
-        
+
         /// <summary>
         /// Initialize metadata values based on proto object.
         /// </summary>

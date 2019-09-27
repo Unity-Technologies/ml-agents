@@ -186,8 +186,7 @@ namespace MLAgents
     /// A "stack" of timers that allows for lightweight hierarchical profiling of long-running processes.
     /// Example usage:
     ///
-    /// var myTimer = TimerStack("root");
-    /// using(myTimer.Scoped("foo"))
+    /// using(TimerStack.Instance.Scoped("foo"))
     /// {
     ///     doSomeWork();
     ///     for (int i=0; i<5; i++)
@@ -199,21 +198,46 @@ namespace MLAgents
     ///     }
     /// }
     /// </summary>
+    /// <remarks>
+    /// This implements the Singleton pattern (solution 4) as described in
+    /// https://csharpindepth.com/articles/singleton
+    /// </remarks>
     public class TimerStack : System.IDisposable
     {
+        private static readonly TimerStack instance = new TimerStack();
+
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
+
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit
+        static TimerStack()
+        {
+        }
+
+        private TimerStack()
+        {
+            Reset();
+        }
+
+        public void Reset(string name="root")
+        {
+            m_Stack = new Stack<TimerNode>();
+            m_RootNode = new TimerNode(name);
+            m_Stack.Push(m_RootNode);
+        }
+
+        public static TimerStack Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
 
         public TimerNode RootNode
         {
             get { return m_RootNode; }
-        }
-
-        public TimerStack(string rootName = "root")
-        {
-            m_Stack = new Stack<TimerNode>();
-            m_RootNode = new TimerNode(rootName);
-            m_Stack.Push(m_RootNode);
         }
 
         private void Push(string name)
@@ -291,5 +315,4 @@ namespace MLAgents
             ser.WriteObject(stream, m_RootNode);
         }
     }
-
 }

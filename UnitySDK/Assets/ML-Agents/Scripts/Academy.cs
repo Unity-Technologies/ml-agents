@@ -178,9 +178,6 @@ namespace MLAgents
         /// engine settings at the next environment step.
         bool m_ModeSwitched;
 
-        // Internal timer tracking
-        TimerStack m_Timer;
-
         /// Pointer to the batcher currently in use by the Academy.
         Batcher m_BrainBatcher;
 
@@ -257,8 +254,6 @@ namespace MLAgents
             m_OriginalGravity = Physics.gravity;
             m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
-
-            m_Timer = new TimerStack("MLAgents");
 
             InitializeAcademy();
             ICommunicator communicator;
@@ -556,27 +551,27 @@ namespace MLAgents
 
             AgentSetStatus(m_StepCount);
 
-            using (m_Timer.Scoped("AgentResetIfDone"))
+            using (TimerStack.Instance.Scoped("AgentResetIfDone"))
             {
                 AgentResetIfDone();
             }
 
-            using (m_Timer.Scoped("AgentSendState"))
+            using (TimerStack.Instance.Scoped("AgentSendState"))
             {
                 AgentSendState();
             }
 
-            using (m_Timer.Scoped("BrainDecideAction"))
+            using (TimerStack.Instance.Scoped("BrainDecideAction"))
             {
                 BrainDecideAction();
             }
 
-            using (m_Timer.Scoped("AcademyStep"))
+            using (TimerStack.Instance.Scoped("AcademyStep"))
             {
                 AcademyStep();
             }
 
-            using (m_Timer.Scoped("AgentAct"))
+            using (TimerStack.Instance.Scoped("AgentAct"))
             {
                 AgentAct();
             }
@@ -615,7 +610,7 @@ namespace MLAgents
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
 
-            m_Timer.SaveJsonTimers();
+            TimerStack.Instance.SaveJsonTimers();
 
         }
     }
