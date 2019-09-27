@@ -27,5 +27,7 @@ class SpaceTypeProto(int):
     def values(cls) -> typing___List[SpaceTypeProto]: ...
     @classmethod
     def items(cls) -> typing___List[typing___Tuple[str, SpaceTypeProto]]: ...
+    discrete = typing___cast(SpaceTypeProto, 0)
+    continuous = typing___cast(SpaceTypeProto, 1)
 discrete = typing___cast(SpaceTypeProto, 0)
 continuous = typing___cast(SpaceTypeProto, 1)

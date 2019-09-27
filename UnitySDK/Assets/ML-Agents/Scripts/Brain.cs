@@ -53,7 +53,7 @@ namespace MLAgents
         public void SendState(Agent agent, AgentInfo info)
         {
             LazyInitialize();
-            m_AgentInfos.Add(agent, info);
+            m_AgentInfos[agent] = info;
         }
 
         /// <summary>

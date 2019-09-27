@@ -64,40 +64,6 @@ namespace MLAgents
         /// <summary>Defines if the action is discrete or continuous</summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
-        /// <summary>
-        /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
-        /// </summary>
-        /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="name">The name of the brain.</param>
-        /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public CommunicatorObjects.BrainParametersProto
-        ToProto(string name, bool isTraining)
-        {
-            var brainParametersProto = new CommunicatorObjects.BrainParametersProto
-            {
-                VectorObservationSize = vectorObservationSize,
-                NumStackedVectorObservations = numStackedVectorObservations,
-                VectorActionSize = {vectorActionSize},
-                VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
-                BrainName = name,
-                IsTraining = isTraining
-            };
-            brainParametersProto.VectorActionDescriptions.AddRange(vectorActionDescriptions);
-            foreach (var res in cameraResolutions)
-            {
-                brainParametersProto.CameraResolutions.Add(
-                    new CommunicatorObjects.ResolutionProto
-                    {
-                        Width = res.width,
-                        Height = res.height,
-                        GrayScale = res.blackAndWhite
-                    });
-            }
-
-            return brainParametersProto;
-        }
-
         public BrainParameters()
         {
         }

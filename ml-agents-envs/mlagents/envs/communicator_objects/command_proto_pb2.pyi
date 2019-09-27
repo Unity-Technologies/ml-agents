@@ -27,6 +27,9 @@ class CommandProto(int):
     def values(cls) -> typing___List[CommandProto]: ...
     @classmethod
     def items(cls) -> typing___List[typing___Tuple[str, CommandProto]]: ...
+    STEP = typing___cast(CommandProto, 0)
+    RESET = typing___cast(CommandProto, 1)
+    QUIT = typing___cast(CommandProto, 2)
 STEP = typing___cast(CommandProto, 0)
 RESET = typing___cast(CommandProto, 1)
 QUIT = typing___cast(CommandProto, 2)
