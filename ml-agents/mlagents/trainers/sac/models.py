@@ -195,10 +195,6 @@ class SACNetwork(LearningModel):
 
             all_probs = tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
 
-            self.entropy = tf.reduce_sum(
-                self.log_sigma_sq + 0.5 * np.log(2.0 * np.pi * np.e), axis=-1
-            )
-
             # Squash probabilities
             # Keep deterministic around in case we want to use it.
             self.deterministic_output = tf.tanh(mu)
@@ -212,6 +208,10 @@ class SACNetwork(LearningModel):
             )
 
             self.all_log_probs = all_probs
+
+            # log probability as a measure of entropy. Used by target entropy adjustment.
+            self.entropy = all_probs
+
             self.selected_actions = tf.stop_gradient(self.output_pre)
 
             self.action_probs = all_probs
