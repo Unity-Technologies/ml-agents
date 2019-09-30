@@ -41,7 +41,7 @@ def initialize_trainers(
     :param multi_gpu: Whether to use multi-GPU training
     :return:
     """
-    trainers = {}
+    trainers: Dict[str, Trainer] = {}
     trainer_parameters_dict = {}
     for brain_name in external_brains:
         trainer_parameters = trainer_config["default"].copy()

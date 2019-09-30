@@ -108,5 +108,11 @@ def test_close(mock_communicator, mock_launcher):
     assert comm.has_been_closed
 
 
+def test_returncode_to_signal_name():
+    assert UnityEnvironment.returncode_to_signal_name(-2) == "SIGINT"
+    assert UnityEnvironment.returncode_to_signal_name(42) is None
+    assert UnityEnvironment.returncode_to_signal_name("SIGINT") is None
+
+
 if __name__ == "__main__":
     pytest.main()

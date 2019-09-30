@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import numpy as np
 import tensorflow as tf
 
@@ -58,6 +58,7 @@ class SACPolicy(TFPolicy):
 
         with self.graph.as_default():
             # Create pretrainer if needed
+            self.bc_module: Optional[BCModule] = None
             if "pretraining" in trainer_params:
                 BCModule.check_config(trainer_params["pretraining"])
                 self.bc_module = BCModule(
@@ -74,8 +75,6 @@ class SACPolicy(TFPolicy):
                         "Pretraining: Samples Per Update is not a valid setting for SAC."
                     )
                     self.bc_module.samples_per_update = 1
-            else:
-                self.bc_module = None
 
         if load:
             self._load_graph()
