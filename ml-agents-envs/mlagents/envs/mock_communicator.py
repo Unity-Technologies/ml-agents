@@ -1,8 +1,6 @@
 from .communicator import Communicator
 from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
-from mlagents.envs.communicator_objects.brain_parameters_pb2 import (
-    BrainParametersProto,
-)
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
     UnityRLInitializationOutputProto,
 )
