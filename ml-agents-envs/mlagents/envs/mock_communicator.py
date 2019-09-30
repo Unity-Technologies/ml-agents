@@ -58,7 +58,7 @@ class MockCommunicator(Communicator):
         rl_init = UnityRLInitializationOutputProto(
             name="RealFakeAcademy", version="API-9", log_path="", brain_parameters=[bp]
         )
-        return UnityOutput(rl_initialization_output=rl_init)
+        return UnityOutputProto(rl_initialization_output=rl_init)
 
     def exchange(self, inputs: UnityInputProto) -> UnityOutputProto:
         dict_agent_info = {}
