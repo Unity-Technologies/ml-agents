@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEditor;
-using System.Linq;
 
 namespace MLAgents
 {
@@ -18,19 +15,19 @@ namespace MLAgents
     [CustomEditor(typeof(PlayerBrain))]
     public class PlayerBrainEditor : BrainEditor
     {
-        private const string KeyContinuousPropName = "keyContinuousPlayerActions";
-        private const string KeyDiscretePropName = "discretePlayerActions";
-        private const string AxisContinuousPropName = "axisContinuousPlayerActions";
-        
+        private const string k_KeyContinuousPropName = "keyContinuousPlayerActions";
+        private const string k_KeyDiscretePropName = "discretePlayerActions";
+        private const string k_AxisContinuousPropName = "axisContinuousPlayerActions";
+
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Player Brain", EditorStyles.boldLabel);
-            var brain = (PlayerBrain) target;
+            var brain = (PlayerBrain)target;
             var serializedBrain = serializedObject;
             base.OnInspectorGUI();
-            
+
             serializedBrain.Update();
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+            if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
             {
                 DrawContinuousKeyMapping(serializedBrain, brain);
             }
@@ -39,7 +36,7 @@ namespace MLAgents
                 DrawDiscreteKeyMapping(serializedBrain);
             }
             serializedBrain.ApplyModifiedProperties();
-        } 
+        }
 
         /// <summary>
         /// Draws the UI for continuous control key mapping to actions.
@@ -50,8 +47,8 @@ namespace MLAgents
             SerializedObject serializedBrain, PlayerBrain brain)
         {
             GUILayout.Label("Edit the continuous inputs for your actions", EditorStyles.boldLabel);
-            var keyActionsProp = serializedBrain.FindProperty(KeyContinuousPropName);
-            var axisActionsProp = serializedBrain.FindProperty(AxisContinuousPropName);
+            var keyActionsProp = serializedBrain.FindProperty(k_KeyContinuousPropName);
+            var axisActionsProp = serializedBrain.FindProperty(k_AxisContinuousPropName);
             EditorGUILayout.PropertyField(keyActionsProp , true);
             EditorGUILayout.PropertyField(axisActionsProp, true);
             var keyContinuous = brain.keyContinuousPlayerActions;
@@ -72,7 +69,7 @@ namespace MLAgents
                     EditorGUILayout.HelpBox(
                         $"Key {action.key.ToString()} is assigned to index " +
                         $"{action.index.ToString()} but the action size is only of size " +
-                        $"{brainParams.vectorActionSize.ToString()}", 
+                        $"{brainParams.vectorActionSize}",
                         MessageType.Error);
                 }
             }
@@ -82,12 +79,12 @@ namespace MLAgents
                 {
                     EditorGUILayout.HelpBox(
                         $"Axis {action.axis} is assigned to index {action.index.ToString()} " +
-                        $"but the action size is only of size {brainParams.vectorActionSize}", 
+                        $"but the action size is only of size {brainParams.vectorActionSize}",
                         MessageType.Error);
                 }
             }
-            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input", 
-                EditorStyles.helpBox );
+            GUILayout.Label("You can change axis settings from Edit->Project Settings->Input",
+                EditorStyles.helpBox);
         }
 
         /// <summary>
@@ -96,9 +93,9 @@ namespace MLAgents
         /// <param name="serializedBrain"> The SerializedObject corresponding to the brain. </param>
         private static void DrawDiscreteKeyMapping(SerializedObject serializedBrain)
         {
-            GUILayout.Label("Edit the discrete inputs for your actions", 
+            GUILayout.Label("Edit the discrete inputs for your actions",
                 EditorStyles.boldLabel);
-            var dhas = serializedBrain.FindProperty(KeyDiscretePropName);
+            var dhas = serializedBrain.FindProperty(k_KeyDiscretePropName);
             serializedBrain.Update();
             EditorGUILayout.PropertyField(dhas, true);
         }

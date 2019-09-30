@@ -1,13 +1,15 @@
 from .communicator import Communicator
-from .communicator_objects import (
-    UnityOutput,
-    UnityInput,
-    ResolutionProto,
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
+from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
     BrainParametersProto,
-    UnityRLInitializationOutput,
-    AgentInfoProto,
-    UnityRLOutput,
 )
+from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
+    UnityRLInitializationOutput,
+)
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
+from mlagents.envs.communicator_objects.resolution_proto_pb2 import ResolutionProto
+from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
 
 
 class MockCommunicator(Communicator):
@@ -54,7 +56,7 @@ class MockCommunicator(Communicator):
             is_training=True,
         )
         rl_init = UnityRLInitializationOutput(
-            name="RealFakeAcademy", version="API-9", log_path="", brain_parameters=[bp]
+            name="RealFakeAcademy", version="API-10", log_path="", brain_parameters=[bp]
         )
         return UnityOutput(rl_initialization_output=rl_init)
 
@@ -87,13 +89,7 @@ class MockCommunicator(Communicator):
         dict_agent_info["RealFakeBrain"] = UnityRLOutput.ListAgentInfoProto(
             value=list_agent_info
         )
-        global_done = False
-        try:
-            fake_brain = inputs.rl_input.agent_actions["RealFakeBrain"]
-            global_done = fake_brain.value[0].vector_actions[0] == -1
-        except Exception:
-            pass
-        result = UnityRLOutput(global_done=global_done, agentInfos=dict_agent_info)
+        result = UnityRLOutput(agentInfos=dict_agent_info)
         return UnityOutput(rl_output=result)
 
     def close(self):

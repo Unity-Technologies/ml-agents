@@ -8,7 +8,7 @@ of training a medic NPC. Instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
-from a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
+a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
 
 Imitation learning can also be used to help reinforcement learning. Especially in
 environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
@@ -30,7 +30,7 @@ See PreTraining + GAIL + Curiosity + RL below.
 The ML-Agents toolkit provides several ways to learn from demonstrations.
 
 * To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
-  [GAIL reward signal](Reward-Signals.md#the-gail-reward-signal). GAIL can be
+  [GAIL reward signal](Reward-Signals.md#gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
 * To help bootstrap reinforcement learning, you can enable

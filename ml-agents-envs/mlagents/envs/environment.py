@@ -4,7 +4,7 @@ import logging
 import numpy as np
 import os
 import subprocess
-from typing import *
+from typing import Dict, List, Optional, Any
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
@@ -16,18 +16,20 @@ from .exception import (
     UnityTimeOutException,
 )
 
-from .communicator_objects import (
-    UnityRLInput,
-    UnityRLOutput,
-    AgentActionProto,
+from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInput
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
+from mlagents.envs.communicator_objects.agent_action_proto_pb2 import AgentActionProto
+from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
     EnvironmentParametersProto,
-    UnityRLInitializationInput,
-    UnityRLInitializationOutput,
-    UnityInput,
-    UnityOutput,
-    CustomResetParameters,
-    CustomAction,
 )
+from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
+    UnityRLInitializationInput,
+)
+from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
+    UnityRLInitializationOutput,
+)
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -39,7 +41,7 @@ logger = logging.getLogger("mlagents.envs")
 class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    SINGLE_BRAIN_TEXT_TYPES = (str, list, np.ndarray)
+    SINGLE_BRAIN_TEXT_TYPES = list
 
     def __init__(
         self,
@@ -50,7 +52,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 30,
-        args: list = [],
+        args: Optional[List[str]] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -66,11 +68,11 @@ class UnityEnvironment(BaseUnityEnvironment):
         :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         :list args: Addition Unity command line arguments
         """
-
+        args = args or []
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-9"
+        self._version_ = "API-10"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
@@ -112,7 +114,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "of ML-Agents.".format(self._version_, self._unity_version)
             )
         self._n_agents: Dict[str, int] = {}
-        self._global_done: Optional[bool] = None
+        self._is_first_message = True
         self._academy_name = aca_params.name
         self._log_path = aca_params.log_path
         self._brains: Dict[str, BrainParameters] = {}
@@ -144,10 +146,6 @@ class UnityEnvironment(BaseUnityEnvironment):
     @property
     def brains(self):
         return self._brains
-
-    @property
-    def global_done(self):
-        return self._global_done
 
     @property
     def academy_name(self):
@@ -245,21 +243,21 @@ class UnityEnvironment(BaseUnityEnvironment):
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             if not docker_training:
+                subprocess_args = [launch_string]
                 if no_graphics:
-                    self.proc1 = subprocess.Popen(
-                        [
-                            launch_string,
-                            "-nographics",
-                            "-batchmode",
-                            "--port",
-                            str(self.port),
-                        ]
-                        + args
-                    )
-                else:
-                    self.proc1 = subprocess.Popen(
-                        [launch_string, "--port", str(self.port)] + args
-                    )
+                    subprocess_args += ["-nographics", "-batchmode"]
+                subprocess_args += ["--port", str(self.port)]
+                subprocess_args += args
+                try:
+                    self.proc1 = subprocess.Popen(subprocess_args)
+                except PermissionError as perm:
+                    # This is likely due to missing read or execute permissions on file.
+                    raise UnityEnvironmentException(
+                        f"Error when trying to launch environment - make sure "
+                        f"permissions are set correctly. For example "
+                        f'"chmod -R 755 {launch_string}"'
+                    ) from perm
+
             else:
                 """
                 Comments for future maintenance:
@@ -311,7 +309,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         )
 
     def reset(
-        self, config=None, train_mode=True, custom_reset_parameters=None
+        self,
+        config: Dict = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
@@ -347,21 +348,21 @@ class UnityEnvironment(BaseUnityEnvironment):
                 raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
-            self._global_done = s[1]
             for _b in self._external_brain_names:
-                self._n_agents[_b] = len(s[0][_b].agents)
-            return s[0]
+                self._n_agents[_b] = len(s[_b].agents)
+            self._is_first_message = False
+            return s
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
     @timed
     def step(
         self,
-        vector_action=None,
-        memory=None,
-        text_action=None,
-        value=None,
-        custom_action=None,
+        vector_action: Dict[str, np.ndarray] = None,
+        memory: Optional[Dict[str, np.ndarray]] = None,
+        text_action: Optional[Dict[str, List[str]]] = None,
+        value: Optional[Dict[str, np.ndarray]] = None,
+        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
@@ -373,6 +374,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
+        if self._is_first_message:
+            return self.reset()
         vector_action = {} if vector_action is None else vector_action
         memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action
@@ -382,15 +385,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         # Check that environment is loaded, and episode is currently running.
         if not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
-        elif self._global_done:
-            raise UnityActionException(
-                "The episode is completed. Reset the environment with 'reset()'"
-            )
-        elif self.global_done is None:
-            raise UnityActionException(
-                "You cannot conduct step without first calling reset. "
-                "Reset the environment with 'reset()'"
-            )
         else:
             if isinstance(vector_action, self.SINGLE_BRAIN_ACTION_TYPES):
                 if self._num_external_brains == 1:
@@ -504,8 +498,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                 else:
                     if text_action[brain_name] is None:
                         text_action[brain_name] = [""] * n_agent
-                    if isinstance(text_action[brain_name], str):
-                        text_action[brain_name] = [text_action[brain_name]] * n_agent
                 if brain_name not in custom_action:
                     custom_action[brain_name] = [None] * n_agent
                 else:
@@ -574,10 +566,9 @@ class UnityEnvironment(BaseUnityEnvironment):
                 raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
-            self._global_done = state[1]
             for _b in self._external_brain_names:
-                self._n_agents[_b] = len(state[0][_b].agents)
-            return state[0]
+                self._n_agents[_b] = len(state[_b].agents)
+            return state
 
     def close(self):
         """
@@ -595,7 +586,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             self.proc1.kill()
 
     @classmethod
-    def _flatten(cls, arr) -> List[float]:
+    def _flatten(cls, arr: Any) -> List[float]:
         """
         Converts arrays to list.
         :param arr: numpy vector.
@@ -614,23 +605,27 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityRLOutput) -> Tuple[AllBrainInfo, bool]:
+    def _get_state(self, output: UnityRLOutput) -> AllBrainInfo:
         """
         Collects experience information from all external brains in environment at current step.
         :return: a dictionary of BrainInfo objects.
         """
         _data = {}
-        global_done = output.global_done
         for brain_name in output.agentInfos:
             agent_info_list = output.agentInfos[brain_name].value
             _data[brain_name] = BrainInfo.from_agent_proto(
                 self.worker_id, agent_info_list, self.brains[brain_name]
             )
-        return _data, global_done
+        return _data
 
     @timed
     def _generate_step_input(
-        self, vector_action, memory, text_action, value, custom_action
+        self,
+        vector_action: Dict[str, np.ndarray],
+        memory: Dict[str, np.ndarray],
+        text_action: Dict[str, list],
+        value: Dict[str, np.ndarray],
+        custom_action: Dict[str, list],
     ) -> UnityInput:
         rl_in = UnityRLInput()
         for b in vector_action:
@@ -654,7 +649,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(
-        self, training, config, custom_reset_parameters
+        self, training: bool, config: Dict, custom_reset_parameters: Any
     ) -> UnityInput:
         rl_in = UnityRLInput()
         rl_in.is_training = training

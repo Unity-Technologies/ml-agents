@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Name: PushBlockLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 70
+    vectorObservationSize: 0
     numStackedVectorObservations: 3
     vectorActionSize: 07000000
-    cameraResolutions: []
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
     vectorActionDescriptions:
     - 
     vectorActionSpaceType: 0
-  model: {fileID: 11400000, guid: 16027726448534f92916ae237e0ba315, type: 3}
+  model: {fileID: 11400000, guid: c60a63ad5dc0c4a029d7360054667457, type: 3}
+  inferenceDevice: 0

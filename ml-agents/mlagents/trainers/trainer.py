@@ -6,12 +6,12 @@ import tensorflow as tf
 import numpy as np
 from collections import deque, defaultdict
 
-from mlagents.envs import UnityException, AllBrainInfo, ActionInfoOutputs, BrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
-from mlagents.trainers import TrainerMetrics
-from mlagents.trainers.buffer import Buffer
-from mlagents.trainers.tf_policy import Policy
-from mlagents.envs import BrainParameters
+from mlagents.trainers.trainer_metrics import TrainerMetrics
+from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.envs.brain import BrainParameters, AllBrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -32,7 +32,7 @@ class Trainer(object):
         brain: BrainParameters,
         trainer_parameters: dict,
         training: bool,
-        run_id: int,
+        run_id: str,
         reward_buff_cap: int = 1,
     ):
         """
@@ -40,7 +40,7 @@ class Trainer(object):
         :BrainParameters brain: Brain to be trained.
         :dict trainer_parameters: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
-        :int run_id: The identifier of the current run
+        :str run_id: The identifier of the current run
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []
@@ -58,7 +58,7 @@ class Trainer(object):
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: Policy = None
+        self.policy: TFPolicy = None
         self.step: int = 0
 
     def check_param_keys(self):

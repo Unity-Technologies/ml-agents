@@ -24,4 +24,4 @@ HallwayLearning:
     use_recurrent: true
     memory_size: 256
     sequence_length: 32
-    demo_path: ./UnitySDK/Assets/Demonstrations/Hallway.demo
+    demo_path: ./demos/ExpertHallway.demo

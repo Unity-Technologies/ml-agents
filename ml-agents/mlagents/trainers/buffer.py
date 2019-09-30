@@ -1,6 +1,3 @@
-import random
-from collections import defaultdict
-
 import numpy as np
 import h5py
 
@@ -98,11 +95,13 @@ class Buffer(dict):
                     if batch_size * training_length > len(self):
                         padding = np.array(self[-1]) * self.padding_value
                         return np.array(
-                            [padding] * (training_length - leftover) + self[:]
+                            [padding] * (training_length - leftover) + self[:],
+                            dtype=np.float32,
                         )
                     else:
                         return np.array(
-                            self[len(self) - batch_size * training_length :]
+                            self[len(self) - batch_size * training_length :],
+                            dtype=np.float32,
                         )
                 else:
                     # The sequences will have overlapping elements
@@ -119,7 +118,7 @@ class Buffer(dict):
                     tmp_list = []
                     for end in range(len(self) - batch_size + 1, len(self) + 1):
                         tmp_list += self[end - training_length : end]
-                    return np.array(tmp_list)
+                    return np.array(tmp_list, dtype=np.float32)
 
             def reset_field(self):
                 """
@@ -212,10 +211,10 @@ class Buffer(dict):
             mini_batch = Buffer.AgentBuffer()
             buff_len = len(next(iter(self.values())))
             num_sequences_in_buffer = buff_len // sequence_length
-            start_idxes = [
-                random.randint(0, num_sequences_in_buffer - 1) * sequence_length
-                for _ in range(num_seq_to_sample)
-            ]  # Sample random sequence starts
+            start_idxes = (
+                np.random.randint(num_sequences_in_buffer, size=num_seq_to_sample)
+                * sequence_length
+            )  # Sample random sequence starts
             for i in start_idxes:
                 for key in self:
                     mini_batch[key].extend(self[key][i : i + sequence_length])

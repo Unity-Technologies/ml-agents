@@ -51,7 +51,7 @@ class GAILModel(object):
         new_beta = tf.maximum(
             self.beta + self.alpha * (self.kl_loss - self.mutual_information), EPSILON
         )
-        with tf.control_dependencies(self.update_batch):
+        with tf.control_dependencies([self.update_batch]):
             self.update_beta = tf.assign(self.beta, new_beta)
 
     def make_inputs(self) -> None:

@@ -13,11 +13,11 @@ default:
     sequence_length: 32
     memory_size: 256
 
-BananaLearning:
+FoodCollectorLearning:
     trainer: online_bc
     max_steps: 10000
     summary_freq: 1000
-    brain_to_imitate: BananaPlayer
+    brain_to_imitate: FoodCollectorPlayer
     batch_size: 16
     batches_per_epoch: 5
     num_layers: 4

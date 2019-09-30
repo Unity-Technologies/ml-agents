@@ -1,4 +1,3 @@
-from math import isclose
 import pytest
 
 from mlagents.envs.sampler_class import SamplerManager

@@ -1,12 +1,9 @@
 using UnityEngine;
-using System.Collections;
 
 namespace MLAgents
 {
-
     public class FlyCamera : MonoBehaviour
     {
-
         /*
         wasd : basic movement
         shift : Makes camera accelerate
@@ -21,11 +18,11 @@ namespace MLAgents
         public bool movementStaysFlat = true;
 
         private Vector3
-            lastMouse =
-                new Vector3(255, 255,
-                    255); // kind of in the middle of the screen, rather than at the top (play)
+            m_LastMouse =
+            new Vector3(255, 255,
+                255);     // kind of in the middle of the screen, rather than at the top (play)
 
-        private float totalRun = 1.0f;
+        private float m_TotalRun = 1.0f;
 
         void Awake()
         {
@@ -37,45 +34,43 @@ namespace MLAgents
             transform.rotation = Quaternion.Euler(25, 0, 0);
         }
 
-
         void Update()
         {
-
             if (Input.GetMouseButtonDown(1))
             {
-                lastMouse = Input.mousePosition; // $CTK reset when we begin
+                m_LastMouse = Input.mousePosition; // $CTK reset when we begin
             }
 
             if (!rotateOnlyIfMousedown ||
                 (rotateOnlyIfMousedown && Input.GetMouseButton(1)))
             {
-                lastMouse = Input.mousePosition - lastMouse;
-                lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
-                lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x,
-                    transform.eulerAngles.y + lastMouse.y, 0);
-                transform.eulerAngles = lastMouse;
-                lastMouse = Input.mousePosition;
-                // Mouse  camera angle done.  
+                m_LastMouse = Input.mousePosition - m_LastMouse;
+                m_LastMouse = new Vector3(-m_LastMouse.y * camSens, m_LastMouse.x * camSens, 0);
+                m_LastMouse = new Vector3(transform.eulerAngles.x + m_LastMouse.x,
+                    transform.eulerAngles.y + m_LastMouse.y, 0);
+                transform.eulerAngles = m_LastMouse;
+                m_LastMouse = Input.mousePosition;
+                // Mouse  camera angle done.
             }
 
             // Keyboard commands
-            Vector3 p = GetBaseInput();
+            var p = GetBaseInput();
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                totalRun += Time.deltaTime;
-                p = p * totalRun * shiftAdd;
+                m_TotalRun += Time.deltaTime;
+                p = shiftAdd * m_TotalRun * p;
                 p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
                 p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
                 p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
             }
             else
             {
-                totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, 1000f);
+                m_TotalRun = Mathf.Clamp(m_TotalRun * 0.5f, 1f, 1000f);
                 p = p * mainSpeed;
             }
 
             p = p * Time.deltaTime;
-            Vector3 newPosition = transform.position;
+            var newPosition = transform.position;
             if (Input.GetKey(KeyCode.Space)
                 || (movementStaysFlat && !(rotateOnlyIfMousedown && Input.GetMouseButton(1))))
             {
@@ -89,34 +84,33 @@ namespace MLAgents
             {
                 transform.Translate(p);
             }
-
         }
 
         private Vector3 GetBaseInput()
         {
             // returns the basic values, if it's 0 than it's not active.
-            Vector3 p_Velocity = new Vector3();
+            var pVelocity = new Vector3();
             if (Input.GetKey(KeyCode.W))
             {
-                p_Velocity += new Vector3(0, 0, 1);
+                pVelocity += new Vector3(0, 0, 1);
             }
 
             if (Input.GetKey(KeyCode.S))
             {
-                p_Velocity += new Vector3(0, 0, -1);
+                pVelocity += new Vector3(0, 0, -1);
             }
 
             if (Input.GetKey(KeyCode.A))
             {
-                p_Velocity += new Vector3(-1, 0, 0);
+                pVelocity += new Vector3(-1, 0, 0);
             }
 
             if (Input.GetKey(KeyCode.D))
             {
-                p_Velocity += new Vector3(1, 0, 0);
+                pVelocity += new Vector3(1, 0, 0);
             }
 
-            return p_Velocity;
+            return pVelocity;
         }
     }
 }
