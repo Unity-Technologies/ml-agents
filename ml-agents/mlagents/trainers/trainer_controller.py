@@ -161,10 +161,7 @@ class TrainerController(object):
         )
 
     def _not_done_training(self) -> bool:
-        return (
-            any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
-            or not self.train_model
-        )
+        return any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
 
     def write_to_tensorboard(self, global_step: int) -> None:
         for brain_name, trainer in self.trainers.items():
