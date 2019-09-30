@@ -470,7 +470,7 @@ class LearningModel(object):
         num_layers: int,
         vis_encode_type: EncoderType = EncoderType.SIMPLE,
         stream_scopes: List[str] = None,
-    ) -> tf.Tensor:
+    ) -> List[tf.Tensor]:
         """
         Creates encoding stream for observations.
         :param num_streams: Number of streams to create.
@@ -491,6 +491,7 @@ class LearningModel(object):
             self.visual_in.append(visual_input)
         vector_observation_input = self.create_vector_input()
 
+        # Pick the encoder function based on the EncoderType
         create_encoder_func = LearningModel.create_visual_observation_encoder
         if vis_encode_type == EncoderType.RESNET:
             create_encoder_func = LearningModel.create_resnet_visual_observation_encoder
@@ -511,8 +512,8 @@ class LearningModel(object):
                         h_size,
                         activation_fn,
                         num_layers,
-                        _scope_add + "main_graph_{}_encoder{}".format(i, j),
-                        False,
+                        scope=f"{_scope_add}main_graph_{i}_encoder{j}",
+                        reuse=False,
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
@@ -522,8 +523,8 @@ class LearningModel(object):
                     h_size,
                     activation_fn,
                     num_layers,
-                    _scope_add + "main_graph_{}".format(i),
-                    False,
+                    scope=f"{_scope_add}main_graph_{i}",
+                    reuse=False,
                 )
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
