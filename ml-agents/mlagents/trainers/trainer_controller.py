@@ -160,8 +160,13 @@ class TrainerController(object):
             global_step % self.save_freq == 0 and global_step != 0 and self.train_model
         )
 
-    def _not_done_training(self) -> bool:
-        return any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
+    def _not_done_training(self, steps_since_start: int) -> bool:
+        return any(
+            [
+                t.get_step <= t.get_max_steps and steps_since_start <= t.get_max_steps
+                for k, t in self.trainers.items()
+            ]
+        )
 
     def write_to_tensorboard(self, global_step: int) -> None:
         for brain_name, trainer in self.trainers.items():
@@ -195,7 +200,7 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 env_manager.set_policy(brain_name, trainer.policy)
             self._reset_env(env_manager)
-            while self._not_done_training():
+            while self._not_done_training(steps_since_start=global_step):
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
