@@ -19,15 +19,15 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/custom_action.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n6mlagents/envs/communicator_objects/custom_action.proto\x12\x14\x63ommunicator_objects\"\x0e\n\x0c\x43ustomActionB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n6mlagents/envs/communicator_objects/custom_action.proto\x12\x14\x63ommunicator_objects\"\x13\n\x11\x43ustomActionProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_CUSTOMACTION = _descriptor.Descriptor(
-  name='CustomAction',
-  full_name='communicator_objects.CustomAction',
+_CUSTOMACTIONPROTO = _descriptor.Descriptor(
+  name='CustomActionProto',
+  full_name='communicator_objects.CustomActionProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -45,18 +45,18 @@ _CUSTOMACTION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=80,
-  serialized_end=94,
+  serialized_end=99,
 )
 
-DESCRIPTOR.message_types_by_name['CustomAction'] = _CUSTOMACTION
+DESCRIPTOR.message_types_by_name['CustomActionProto'] = _CUSTOMACTIONPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-CustomAction = _reflection.GeneratedProtocolMessageType('CustomAction', (_message.Message,), dict(
-  DESCRIPTOR = _CUSTOMACTION,
+CustomActionProto = _reflection.GeneratedProtocolMessageType('CustomActionProto', (_message.Message,), dict(
+  DESCRIPTOR = _CUSTOMACTIONPROTO,
   __module__ = 'mlagents.envs.communicator_objects.custom_action_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.CustomAction)
+  # @@protoc_insertion_point(class_scope:communicator_objects.CustomActionProto)
   ))
-_sym_db.RegisterMessage(CustomAction)
+_sym_db.RegisterMessage(CustomActionProto)
 
 
 DESCRIPTOR.has_options = True

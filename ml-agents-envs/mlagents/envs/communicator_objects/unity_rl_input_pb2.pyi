@@ -12,16 +12,16 @@ from google.protobuf.message import (
     Message as google___protobuf___message___Message,
 )
 
-from mlagents.envs.communicator_objects.agent_action_proto_pb2 import (
-    AgentActionProto as mlagents___envs___communicator_objects___agent_action_proto_pb2___AgentActionProto,
+from mlagents.envs.communicator_objects.agent_action_pb2 import (
+    AgentActionProto as mlagents___envs___communicator_objects___agent_action_pb2___AgentActionProto,
 )
 
-from mlagents.envs.communicator_objects.command_proto_pb2 import (
-    CommandProto as mlagents___envs___communicator_objects___command_proto_pb2___CommandProto,
+from mlagents.envs.communicator_objects.command_pb2 import (
+    CommandProto as mlagents___envs___communicator_objects___command_pb2___CommandProto,
 )
 
-from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
-    EnvironmentParametersProto as mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto,
+from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
+    EnvironmentParametersProto as mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto,
 )
 
 from typing import (
@@ -37,20 +37,20 @@ from typing_extensions import (
 )
 
 
-class UnityRLInput(google___protobuf___message___Message):
+class UnityRLInputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     class ListAgentActionProto(google___protobuf___message___Message):
         DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
         @property
-        def value(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___agent_action_proto_pb2___AgentActionProto]: ...
+        def value(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___agent_action_pb2___AgentActionProto]: ...
 
         def __init__(self,
             *,
-            value : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___agent_action_proto_pb2___AgentActionProto]] = None,
+            value : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___agent_action_pb2___AgentActionProto]] = None,
             ) -> None: ...
         @classmethod
-        def FromString(cls, s: bytes) -> UnityRLInput.ListAgentActionProto: ...
+        def FromString(cls, s: bytes) -> UnityRLInputProto.ListAgentActionProto: ...
         def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
         def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
         if sys.version_info >= (3,):
@@ -63,15 +63,15 @@ class UnityRLInput(google___protobuf___message___Message):
         key = ... # type: typing___Text
 
         @property
-        def value(self) -> UnityRLInput.ListAgentActionProto: ...
+        def value(self) -> UnityRLInputProto.ListAgentActionProto: ...
 
         def __init__(self,
             *,
             key : typing___Optional[typing___Text] = None,
-            value : typing___Optional[UnityRLInput.ListAgentActionProto] = None,
+            value : typing___Optional[UnityRLInputProto.ListAgentActionProto] = None,
             ) -> None: ...
         @classmethod
-        def FromString(cls, s: bytes) -> UnityRLInput.AgentActionsEntry: ...
+        def FromString(cls, s: bytes) -> UnityRLInputProto.AgentActionsEntry: ...
         def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
         def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
         if sys.version_info >= (3,):
@@ -82,23 +82,23 @@ class UnityRLInput(google___protobuf___message___Message):
             def ClearField(self, field_name: typing_extensions___Literal[u"key",b"key",u"value",b"value"]) -> None: ...
 
     is_training = ... # type: bool
-    command = ... # type: mlagents___envs___communicator_objects___command_proto_pb2___CommandProto
+    command = ... # type: mlagents___envs___communicator_objects___command_pb2___CommandProto
 
     @property
-    def agent_actions(self) -> typing___MutableMapping[typing___Text, UnityRLInput.ListAgentActionProto]: ...
+    def agent_actions(self) -> typing___MutableMapping[typing___Text, UnityRLInputProto.ListAgentActionProto]: ...
 
     @property
-    def environment_parameters(self) -> mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto: ...
+    def environment_parameters(self) -> mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto: ...
 
     def __init__(self,
         *,
-        agent_actions : typing___Optional[typing___Mapping[typing___Text, UnityRLInput.ListAgentActionProto]] = None,
-        environment_parameters : typing___Optional[mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto] = None,
+        agent_actions : typing___Optional[typing___Mapping[typing___Text, UnityRLInputProto.ListAgentActionProto]] = None,
+        environment_parameters : typing___Optional[mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto] = None,
         is_training : typing___Optional[bool] = None,
-        command : typing___Optional[mlagents___envs___communicator_objects___command_proto_pb2___CommandProto] = None,
+        command : typing___Optional[mlagents___envs___communicator_objects___command_pb2___CommandProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> UnityRLInput: ...
+    def FromString(cls, s: bytes) -> UnityRLInputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

@@ -25,24 +25,24 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjttbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2N1c3RvbV9v",
-            "YnNlcnZhdGlvbi5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiEwoRQ3Vz",
-            "dG9tT2JzZXJ2YXRpb25CH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVj",
-            "dHNiBnByb3RvMw=="));
+            "YnNlcnZhdGlvbi5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiGAoWQ3Vz",
+            "dG9tT2JzZXJ2YXRpb25Qcm90b0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9y",
+            "T2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomObservation), global::MLAgents.CommunicatorObjects.CustomObservation.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomObservationProto), global::MLAgents.CommunicatorObjects.CustomObservationProto.Parser, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class CustomObservation : pb::IMessage<CustomObservation> {
-    private static readonly pb::MessageParser<CustomObservation> _parser = new pb::MessageParser<CustomObservation>(() => new CustomObservation());
+  public sealed partial class CustomObservationProto : pb::IMessage<CustomObservationProto> {
+    private static readonly pb::MessageParser<CustomObservationProto> _parser = new pb::MessageParser<CustomObservationProto>(() => new CustomObservationProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<CustomObservation> Parser { get { return _parser; } }
+    public static pb::MessageParser<CustomObservationProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -55,29 +55,29 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomObservation() {
+    public CustomObservationProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomObservation(CustomObservation other) : this() {
+    public CustomObservationProto(CustomObservationProto other) : this() {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomObservation Clone() {
-      return new CustomObservation(this);
+    public CustomObservationProto Clone() {
+      return new CustomObservationProto(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as CustomObservation);
+      return Equals(other as CustomObservationProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(CustomObservation other) {
+    public bool Equals(CustomObservationProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -118,7 +118,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(CustomObservation other) {
+    public void MergeFrom(CustomObservationProto other) {
       if (other == null) {
         return;
       }

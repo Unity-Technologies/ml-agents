@@ -19,21 +19,21 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/unity_rl_initialization_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nFmlagents/envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"*\n\x1aUnityRLInitializationInput\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\nFmlagents/envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"/\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_UNITYRLINITIALIZATIONINPUT = _descriptor.Descriptor(
-  name='UnityRLInitializationInput',
-  full_name='communicator_objects.UnityRLInitializationInput',
+_UNITYRLINITIALIZATIONINPUTPROTO = _descriptor.Descriptor(
+  name='UnityRLInitializationInputProto',
+  full_name='communicator_objects.UnityRLInitializationInputProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='seed', full_name='communicator_objects.UnityRLInitializationInput.seed', index=0,
+      name='seed', full_name='communicator_objects.UnityRLInitializationInputProto.seed', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -52,18 +52,18 @@ _UNITYRLINITIALIZATIONINPUT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=96,
-  serialized_end=138,
+  serialized_end=143,
 )
 
-DESCRIPTOR.message_types_by_name['UnityRLInitializationInput'] = _UNITYRLINITIALIZATIONINPUT
+DESCRIPTOR.message_types_by_name['UnityRLInitializationInputProto'] = _UNITYRLINITIALIZATIONINPUTPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-UnityRLInitializationInput = _reflection.GeneratedProtocolMessageType('UnityRLInitializationInput', (_message.Message,), dict(
-  DESCRIPTOR = _UNITYRLINITIALIZATIONINPUT,
+UnityRLInitializationInputProto = _reflection.GeneratedProtocolMessageType('UnityRLInitializationInputProto', (_message.Message,), dict(
+  DESCRIPTOR = _UNITYRLINITIALIZATIONINPUTPROTO,
   __module__ = 'mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.UnityRLInitializationInput)
+  # @@protoc_insertion_point(class_scope:communicator_objects.UnityRLInitializationInputProto)
   ))
-_sym_db.RegisterMessage(UnityRLInitializationInput)
+_sym_db.RegisterMessage(UnityRLInitializationInputProto)
 
 
 DESCRIPTOR.has_options = True

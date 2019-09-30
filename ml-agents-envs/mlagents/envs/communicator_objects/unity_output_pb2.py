@@ -21,29 +21,29 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/unity_output.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n5mlagents/envs/communicator_objects/unity_output.proto\x12\x14\x63ommunicator_objects\x1a\x38mlagents/envs/communicator_objects/unity_rl_output.proto\x1aGmlagents/envs/communicator_objects/unity_rl_initialization_output.proto\"\x9a\x01\n\x0bUnityOutput\x12\x36\n\trl_output\x18\x01 \x01(\x0b\x32#.communicator_objects.UnityRLOutput\x12S\n\x18rl_initialization_output\x18\x02 \x01(\x0b\x32\x31.communicator_objects.UnityRLInitializationOutputB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n5mlagents/envs/communicator_objects/unity_output.proto\x12\x14\x63ommunicator_objects\x1a\x38mlagents/envs/communicator_objects/unity_rl_output.proto\x1aGmlagents/envs/communicator_objects/unity_rl_initialization_output.proto\"\xa9\x01\n\x10UnityOutputProto\x12;\n\trl_output\x18\x01 \x01(\x0b\x32(.communicator_objects.UnityRLOutputProto\x12X\n\x18rl_initialization_output\x18\x02 \x01(\x0b\x32\x36.communicator_objects.UnityRLInitializationOutputProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__output__pb2.DESCRIPTOR,mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__initialization__output__pb2.DESCRIPTOR,])
 
 
 
 
-_UNITYOUTPUT = _descriptor.Descriptor(
-  name='UnityOutput',
-  full_name='communicator_objects.UnityOutput',
+_UNITYOUTPUTPROTO = _descriptor.Descriptor(
+  name='UnityOutputProto',
+  full_name='communicator_objects.UnityOutputProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='rl_output', full_name='communicator_objects.UnityOutput.rl_output', index=0,
+      name='rl_output', full_name='communicator_objects.UnityOutputProto.rl_output', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='rl_initialization_output', full_name='communicator_objects.UnityOutput.rl_initialization_output', index=1,
+      name='rl_initialization_output', full_name='communicator_objects.UnityOutputProto.rl_initialization_output', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -62,20 +62,20 @@ _UNITYOUTPUT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=211,
-  serialized_end=365,
+  serialized_end=380,
 )
 
-_UNITYOUTPUT.fields_by_name['rl_output'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__output__pb2._UNITYRLOUTPUT
-_UNITYOUTPUT.fields_by_name['rl_initialization_output'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__initialization__output__pb2._UNITYRLINITIALIZATIONOUTPUT
-DESCRIPTOR.message_types_by_name['UnityOutput'] = _UNITYOUTPUT
+_UNITYOUTPUTPROTO.fields_by_name['rl_output'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__output__pb2._UNITYRLOUTPUTPROTO
+_UNITYOUTPUTPROTO.fields_by_name['rl_initialization_output'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_unity__rl__initialization__output__pb2._UNITYRLINITIALIZATIONOUTPUTPROTO
+DESCRIPTOR.message_types_by_name['UnityOutputProto'] = _UNITYOUTPUTPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-UnityOutput = _reflection.GeneratedProtocolMessageType('UnityOutput', (_message.Message,), dict(
-  DESCRIPTOR = _UNITYOUTPUT,
+UnityOutputProto = _reflection.GeneratedProtocolMessageType('UnityOutputProto', (_message.Message,), dict(
+  DESCRIPTOR = _UNITYOUTPUTPROTO,
   __module__ = 'mlagents.envs.communicator_objects.unity_output_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.UnityOutput)
+  # @@protoc_insertion_point(class_scope:communicator_objects.UnityOutputProto)
   ))
-_sym_db.RegisterMessage(UnityOutput)
+_sym_db.RegisterMessage(UnityOutputProto)
 
 
 DESCRIPTOR.has_options = True

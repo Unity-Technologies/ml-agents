@@ -16,20 +16,20 @@ from .exception import (
     UnityTimeOutException,
 )
 
-from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInput
-from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
-from mlagents.envs.communicator_objects.agent_action_proto_pb2 import AgentActionProto
-from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
+from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
+from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
+from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
     EnvironmentParametersProto,
 )
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
-    UnityRLInitializationInput,
+    UnityRLInitializationInputProto,
 )
 from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
-    UnityRLInitializationOutput,
+    UnityRLInitializationOutputProto,
 )
-from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
-from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
+from mlagents.envs.communicator_objects.custom_action_pb2 import CustomActionProto
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -100,7 +100,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         self._loaded = True
 
-        rl_init_parameters_in = UnityRLInitializationInput(seed=seed)
+        rl_init_parameters_in = UnityRLInitializationInputProto(seed=seed)
         try:
             aca_params = self.send_academy_parameters(rl_init_parameters_in)
         except UnityTimeOutException:
@@ -454,7 +454,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a value input"
                     )
 
-            if isinstance(custom_action, CustomAction):
+            if isinstance(custom_action, CustomActionProto):
                 if self._num_external_brains == 1:
                     custom_action = {self._external_brain_names[0]: custom_action}
                 elif self._num_external_brains > 1:
@@ -513,7 +513,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 else:
                     if custom_action[brain_name] is None:
                         custom_action[brain_name] = [None] * n_agent
-                    if isinstance(custom_action[brain_name], CustomAction):
+                    if isinstance(custom_action[brain_name], CustomActionProto):
                         custom_action[brain_name] = [
                             custom_action[brain_name]
                         ] * n_agent
@@ -626,7 +626,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityRLOutput) -> AllBrainInfo:
+    def _get_state(self, output: UnityRLOutputProto) -> AllBrainInfo:
         """
         Collects experience information from all external brains in environment at current step.
         :return: a dictionary of BrainInfo objects.
@@ -647,8 +647,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         text_action: Dict[str, list],
         value: Dict[str, np.ndarray],
         custom_action: Dict[str, list],
-    ) -> UnityInput:
-        rl_in = UnityRLInput()
+    ) -> UnityInputProto:
+        rl_in = UnityRLInputProto()
         for b in vector_action:
             n_agents = self._n_agents[b]
             if n_agents == 0:
@@ -671,8 +671,8 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def _generate_reset_input(
         self, training: bool, config: Dict, custom_reset_parameters: Any
-    ) -> UnityInput:
-        rl_in = UnityRLInput()
+    ) -> UnityInputProto:
+        rl_in = UnityRLInputProto()
         rl_in.is_training = training
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
@@ -685,15 +685,15 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
-        self, init_parameters: UnityRLInitializationInput
-    ) -> UnityRLInitializationOutput:
-        inputs = UnityInput()
+        self, init_parameters: UnityRLInitializationInputProto
+    ) -> UnityRLInitializationOutputProto:
+        inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
         return self.communicator.initialize(inputs).rl_initialization_output
 
     @staticmethod
-    def wrap_unity_input(rl_input: UnityRLInput) -> UnityInput:
-        result = UnityInput()
+    def wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
+        result = UnityInputProto()
         result.rl_input.CopyFrom(rl_input)
         return result
 

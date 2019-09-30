@@ -4,6 +4,6 @@ option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 
-message UnityRLInitializationInput {
+message UnityRLInitializationInputProto {
     int32 seed = 1;
 }

@@ -27,10 +27,10 @@ namespace MLAgents.CommunicatorObjects {
             "CjptbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Rv",
             "X2V4dGVybmFsLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cxo2bWxhZ2Vu",
             "dHMvZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy91bml0eV9tZXNzYWdlLnBy",
-            "b3RvMmcKD1VuaXR5VG9FeHRlcm5hbBJUCghFeGNoYW5nZRIiLmNvbW11bmlj",
-            "YXRvcl9vYmplY3RzLlVuaXR5TWVzc2FnZRoiLmNvbW11bmljYXRvcl9vYmpl",
-            "Y3RzLlVuaXR5TWVzc2FnZSIAQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JP",
-            "YmplY3RzYgZwcm90bzM="));
+            "b3RvMnYKFFVuaXR5VG9FeHRlcm5hbFByb3RvEl4KCEV4Y2hhbmdlEicuY29t",
+            "bXVuaWNhdG9yX29iamVjdHMuVW5pdHlNZXNzYWdlUHJvdG8aJy5jb21tdW5p",
+            "Y2F0b3Jfb2JqZWN0cy5Vbml0eU1lc3NhZ2VQcm90byIAQh+qAhxNTEFnZW50",
+            "cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.UnityMessageReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null));

@@ -53,15 +53,15 @@ namespace MLAgents
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
-        UnityInput Initialize(UnityOutput unityOutput,
-            out UnityInput unityInput);
+        UnityInputProto Initialize(UnityOutputProto unityOutput,
+            out UnityInputProto unityInput);
 
         /// <summary>
         /// Send a UnityOutput and receives a UnityInput.
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        UnityInput Exchange(UnityOutput unityOutput);
+        UnityInputProto Exchange(UnityOutputProto unityOutput);
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.

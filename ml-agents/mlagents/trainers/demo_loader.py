@@ -4,11 +4,9 @@ import os
 from typing import List, Tuple
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
-from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
-    BrainParametersProto,
-)
-from mlagents.envs.communicator_objects.demonstration_meta_proto_pb2 import (
+from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents.envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore

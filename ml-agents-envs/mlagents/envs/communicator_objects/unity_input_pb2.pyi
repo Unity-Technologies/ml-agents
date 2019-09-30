@@ -9,11 +9,11 @@ from google.protobuf.message import (
 )
 
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
-    UnityRLInitializationInput as mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInput,
+    UnityRLInitializationInputProto as mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto,
 )
 
 from mlagents.envs.communicator_objects.unity_rl_input_pb2 import (
-    UnityRLInput as mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInput,
+    UnityRLInputProto as mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto,
 )
 
 from typing import (
@@ -25,22 +25,22 @@ from typing_extensions import (
 )
 
 
-class UnityInput(google___protobuf___message___Message):
+class UnityInputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
     @property
-    def rl_input(self) -> mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInput: ...
+    def rl_input(self) -> mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto: ...
 
     @property
-    def rl_initialization_input(self) -> mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInput: ...
+    def rl_initialization_input(self) -> mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto: ...
 
     def __init__(self,
         *,
-        rl_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInput] = None,
-        rl_initialization_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInput] = None,
+        rl_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto] = None,
+        rl_initialization_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> UnityInput: ...
+    def FromString(cls, s: bytes) -> UnityInputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

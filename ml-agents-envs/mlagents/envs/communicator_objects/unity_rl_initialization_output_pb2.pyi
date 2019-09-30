@@ -12,12 +12,12 @@ from google.protobuf.message import (
     Message as google___protobuf___message___Message,
 )
 
-from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
-    BrainParametersProto as mlagents___envs___communicator_objects___brain_parameters_proto_pb2___BrainParametersProto,
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import (
+    BrainParametersProto as mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto,
 )
 
-from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
-    EnvironmentParametersProto as mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto,
+from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
+    EnvironmentParametersProto as mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto,
 )
 
 from typing import (
@@ -31,28 +31,28 @@ from typing_extensions import (
 )
 
 
-class UnityRLInitializationOutput(google___protobuf___message___Message):
+class UnityRLInitializationOutputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     name = ... # type: typing___Text
     version = ... # type: typing___Text
     log_path = ... # type: typing___Text
 
     @property
-    def brain_parameters(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___brain_parameters_proto_pb2___BrainParametersProto]: ...
+    def brain_parameters(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]: ...
 
     @property
-    def environment_parameters(self) -> mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto: ...
+    def environment_parameters(self) -> mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto: ...
 
     def __init__(self,
         *,
         name : typing___Optional[typing___Text] = None,
         version : typing___Optional[typing___Text] = None,
         log_path : typing___Optional[typing___Text] = None,
-        brain_parameters : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___brain_parameters_proto_pb2___BrainParametersProto]] = None,
-        environment_parameters : typing___Optional[mlagents___envs___communicator_objects___environment_parameters_proto_pb2___EnvironmentParametersProto] = None,
+        brain_parameters : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]] = None,
+        environment_parameters : typing___Optional[mlagents___envs___communicator_objects___environment_parameters_pb2___EnvironmentParametersProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> UnityRLInitializationOutput: ...
+    def FromString(cls, s: bytes) -> UnityRLInitializationOutputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

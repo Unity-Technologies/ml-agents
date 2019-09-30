@@ -32,8 +32,8 @@ namespace MLAgents
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
-        public UnityInput Initialize(UnityOutput unityOutput,
-            out UnityInput unityInput)
+        public UnityInputProto Initialize(UnityOutputProto unityOutput,
+            out UnityInputProto unityInput)
         {
             m_Sender = new Socket(
                 AddressFamily.InterNetwork,
@@ -42,11 +42,11 @@ namespace MLAgents
             m_Sender.Connect("localhost", m_CommunicatorParameters.port);
 
             var initializationInput =
-                UnityMessage.Parser.ParseFrom(Receive());
+                UnityMessageProto.Parser.ParseFrom(Receive());
 
             Send(WrapMessage(unityOutput, 200).ToByteArray());
 
-            unityInput = UnityMessage.Parser.ParseFrom(Receive()).UnityInput;
+            unityInput = UnityMessageProto.Parser.ParseFrom(Receive()).UnityInput;
 #if UNITY_EDITOR
 #if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
@@ -104,7 +104,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        public UnityInput Exchange(UnityOutput unityOutput)
+        public UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
             Send(WrapMessage(unityOutput, 200).ToByteArray());
             byte[] received = null;
@@ -115,7 +115,7 @@ namespace MLAgents
                     "The communicator took too long to respond.");
             }
 
-            var message = UnityMessage.Parser.ParseFrom(received);
+            var message = UnityMessageProto.Parser.ParseFrom(received);
 
             if (message.Header.Status != 200)
             {
@@ -130,11 +130,11 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        private static UnityMessage WrapMessage(UnityOutput content, int status)
+        private static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
         {
-            return new UnityMessage
+            return new UnityMessageProto
             {
-                Header = new Header { Status = status },
+                Header = new HeaderProto { Status = status },
                 UnityOutput = content
             };
         }

@@ -19,28 +19,28 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/header.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n/mlagents/envs/communicator_objects/header.proto\x12\x14\x63ommunicator_objects\")\n\x06Header\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n/mlagents/envs/communicator_objects/header.proto\x12\x14\x63ommunicator_objects\".\n\x0bHeaderProto\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_HEADER = _descriptor.Descriptor(
-  name='Header',
-  full_name='communicator_objects.Header',
+_HEADERPROTO = _descriptor.Descriptor(
+  name='HeaderProto',
+  full_name='communicator_objects.HeaderProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='status', full_name='communicator_objects.Header.status', index=0,
+      name='status', full_name='communicator_objects.HeaderProto.status', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='message', full_name='communicator_objects.Header.message', index=1,
+      name='message', full_name='communicator_objects.HeaderProto.message', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,18 +59,18 @@ _HEADER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=73,
-  serialized_end=114,
+  serialized_end=119,
 )
 
-DESCRIPTOR.message_types_by_name['Header'] = _HEADER
+DESCRIPTOR.message_types_by_name['HeaderProto'] = _HEADERPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Header = _reflection.GeneratedProtocolMessageType('Header', (_message.Message,), dict(
-  DESCRIPTOR = _HEADER,
+HeaderProto = _reflection.GeneratedProtocolMessageType('HeaderProto', (_message.Message,), dict(
+  DESCRIPTOR = _HEADERPROTO,
   __module__ = 'mlagents.envs.communicator_objects.header_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.Header)
+  # @@protoc_insertion_point(class_scope:communicator_objects.HeaderProto)
   ))
-_sym_db.RegisterMessage(Header)
+_sym_db.RegisterMessage(HeaderProto)
 
 
 DESCRIPTOR.has_options = True

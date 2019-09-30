@@ -19,15 +19,15 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/custom_observation.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n;mlagents/envs/communicator_objects/custom_observation.proto\x12\x14\x63ommunicator_objects\"\x13\n\x11\x43ustomObservationB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n;mlagents/envs/communicator_objects/custom_observation.proto\x12\x14\x63ommunicator_objects\"\x18\n\x16\x43ustomObservationProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_CUSTOMOBSERVATION = _descriptor.Descriptor(
-  name='CustomObservation',
-  full_name='communicator_objects.CustomObservation',
+_CUSTOMOBSERVATIONPROTO = _descriptor.Descriptor(
+  name='CustomObservationProto',
+  full_name='communicator_objects.CustomObservationProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -45,18 +45,18 @@ _CUSTOMOBSERVATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=85,
-  serialized_end=104,
+  serialized_end=109,
 )
 
-DESCRIPTOR.message_types_by_name['CustomObservation'] = _CUSTOMOBSERVATION
+DESCRIPTOR.message_types_by_name['CustomObservationProto'] = _CUSTOMOBSERVATIONPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-CustomObservation = _reflection.GeneratedProtocolMessageType('CustomObservation', (_message.Message,), dict(
-  DESCRIPTOR = _CUSTOMOBSERVATION,
+CustomObservationProto = _reflection.GeneratedProtocolMessageType('CustomObservationProto', (_message.Message,), dict(
+  DESCRIPTOR = _CUSTOMOBSERVATIONPROTO,
   __module__ = 'mlagents.envs.communicator_objects.custom_observation_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.CustomObservation)
+  # @@protoc_insertion_point(class_scope:communicator_objects.CustomObservationProto)
   ))
-_sym_db.RegisterMessage(CustomObservation)
+_sym_db.RegisterMessage(CustomObservationProto)
 
 
 DESCRIPTOR.has_options = True

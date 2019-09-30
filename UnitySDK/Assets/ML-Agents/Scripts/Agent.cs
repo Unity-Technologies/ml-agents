@@ -82,7 +82,7 @@ namespace MLAgents
         /// User-customizable object for sending structured output from Unity to Python in response
         /// to an action in addition to a scalar reward.
         /// </summary>
-        public CustomObservation customObservation;
+        public CustomObservationProto customObservation;
 
         /// <summary>
         /// Remove the visual observations from memory. Call at each timestep
@@ -108,7 +108,7 @@ namespace MLAgents
         public string textActions;
         public List<float> memories;
         public float value;
-        public CustomAction customAction;
+        public CustomActionProto customAction;
     }
 
     /// <summary>
@@ -828,7 +828,7 @@ namespace MLAgents
         /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
         /// as either a flat vector or a single string.
         /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CustomAction customAction)
+        public virtual void AgentAction(float[] vectorAction, string textAction, CustomActionProto customAction)
         {
             // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
             AgentAction(vectorAction, textAction);
@@ -915,7 +915,7 @@ namespace MLAgents
         /// Updates the custom action.
         /// </summary>
         /// <param name="customAction">Custom action.</param>
-        public void UpdateCustomAction(CustomAction customAction)
+        public void UpdateCustomAction(CustomActionProto customAction)
         {
             m_Action.customAction = customAction;
         }
@@ -1135,7 +1135,7 @@ namespace MLAgents
         /// Sets the custom observation for the agent for this episode.
         /// </summary>
         /// <param name="customObservation">New value of the agent's custom observation.</param>
-        public void SetCustomObservation(CustomObservation customObservation)
+        public void SetCustomObservation(CustomObservationProto customObservation)
         {
             m_Info.customObservation = customObservation;
         }

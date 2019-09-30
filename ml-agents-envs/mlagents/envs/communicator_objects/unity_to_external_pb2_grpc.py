@@ -4,7 +4,7 @@ import grpc
 from mlagents.envs.communicator_objects import unity_message_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2
 
 
-class UnityToExternalStub(object):
+class UnityToExternalProtoStub(object):
   # missing associated documentation comment in .proto file
   pass
 
@@ -15,13 +15,13 @@ class UnityToExternalStub(object):
       channel: A grpc.Channel.
     """
     self.Exchange = channel.unary_unary(
-        '/communicator_objects.UnityToExternal/Exchange',
-        request_serializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessage.SerializeToString,
-        response_deserializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessage.FromString,
+        '/communicator_objects.UnityToExternalProto/Exchange',
+        request_serializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessageProto.SerializeToString,
+        response_deserializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessageProto.FromString,
         )
 
 
-class UnityToExternalServicer(object):
+class UnityToExternalProtoServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
@@ -33,14 +33,14 @@ class UnityToExternalServicer(object):
     raise NotImplementedError('Method not implemented!')
 
 
-def add_UnityToExternalServicer_to_server(servicer, server):
+def add_UnityToExternalProtoServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'Exchange': grpc.unary_unary_rpc_method_handler(
           servicer.Exchange,
-          request_deserializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessage.FromString,
-          response_serializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessage.SerializeToString,
+          request_deserializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessageProto.FromString,
+          response_serializer=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.UnityMessageProto.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'communicator_objects.UnityToExternal', rpc_method_handlers)
+      'communicator_objects.UnityToExternalProto', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))
