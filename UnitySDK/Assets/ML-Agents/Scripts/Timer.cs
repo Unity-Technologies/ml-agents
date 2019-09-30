@@ -54,12 +54,30 @@ namespace MLAgents
         int m_NumCalls = 0;
 
         /// <summary>
+        /// The total recorded ticks for the timer node, plus the currently elapsed ticks
+        /// if the timer is still running (i.e. if m_TickStart is non-zero).
+        /// </summary>
+        public long CurrentTicks
+        {
+            get
+            {
+                long currentTicks = m_TotalTicks;
+                if (m_TickStart != 0)
+                {
+                    currentTicks += (System.DateTime.Now.Ticks - m_TickStart);
+                }
+
+                return currentTicks;
+            }
+        }
+
+        /// <summary>
         /// Total elapsed seconds.
         /// </summary>
         [DataMember(Name="total")]
         public double TotalSeconds
         {
-            get { return m_TotalTicks * s_TicksToSeconds; }
+            get { return CurrentTicks * s_TicksToSeconds; }
             set { } // Serialization needs this, but unused.
         }
 
@@ -80,7 +98,7 @@ namespace MLAgents
                     }
                 }
 
-                var selfTicks = Mathf.Max(0, m_TotalTicks - totalChildTicks);
+                var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
             set { } // Serialization needs this, but unused.
@@ -96,10 +114,21 @@ namespace MLAgents
             get { return m_NumCalls; }
         }
 
-        public TimerNode(string name)
+        public TimerNode(string name, bool isRoot=false)
         {
             m_FullName = name;
-            m_Sampler = CustomSampler.Create(m_FullName);
+            if (isRoot)
+            {
+                // The root node is considered always running. This means that when we output stats, it'll
+                // have a sensible value for total time (the running time since reset).
+                // The root node doesn't have a sampler since that could interfere with the profiler.
+                m_NumCalls = 1;
+                m_TickStart = System.DateTime.Now.Ticks;
+            }
+            else
+            {
+                m_Sampler = CustomSampler.Create(m_FullName);
+            }
         }
 
         /// <summary>
@@ -107,7 +136,7 @@ namespace MLAgents
         /// </summary>
         public void Begin()
         {
-            m_Sampler.Begin();
+            m_Sampler?.Begin();
             m_TickStart = System.DateTime.Now.Ticks;
         }
 
@@ -120,7 +149,7 @@ namespace MLAgents
             m_TotalTicks += elapsed;
             m_TickStart = 0;
             m_NumCalls++;
-            m_Sampler.End();
+            m_Sampler?.End();
         }
 
         /// <summary>
@@ -223,7 +252,7 @@ namespace MLAgents
         public void Reset(string name="root")
         {
             m_Stack = new Stack<TimerNode>();
-            m_RootNode = new TimerNode(name);
+            m_RootNode = new TimerNode(name, true);
             m_Stack.Push(m_RootNode);
         }
 
