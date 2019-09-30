@@ -17,12 +17,12 @@ namespace MLAgents
         int m_ComPort;
         Socket m_Sender;
         byte[] m_LengthHolder = new byte[4];
-        CommunicatorParameters m_CommunicatorParameters;
+        CommunicatorInitParameters m_CommunicatorInitParameters;
 
 
-        public SocketCommunicator(CommunicatorParameters communicatorParameters)
+        public SocketCommunicator(CommunicatorInitParameters communicatorInitParameters)
         {
-            m_CommunicatorParameters = communicatorParameters;
+            m_CommunicatorInitParameters = communicatorInitParameters;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace MLAgents
                 AddressFamily.InterNetwork,
                 SocketType.Stream,
                 ProtocolType.Tcp);
-            m_Sender.Connect("localhost", m_CommunicatorParameters.port);
+            m_Sender.Connect("localhost", m_CommunicatorInitParameters.port);
 
             var initializationInput =
                 UnityMessageProto.Parser.ParseFrom(Receive());

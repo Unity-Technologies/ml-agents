@@ -273,7 +273,7 @@ namespace MLAgents
             try
             {
                 communicator = new RpcCommunicator(
-                    new CommunicatorParameters
+                    new CommunicatorInitParameters
                     {
                         port = ReadArgs()
                     });
@@ -288,7 +288,7 @@ namespace MLAgents
                 if (enumerableBrains.Length > 0)
                 {
                     communicator = new RpcCommunicator(
-                        new CommunicatorParameters
+                        new CommunicatorInitParameters
                         {
                             port = 5005
                         });
@@ -305,13 +305,13 @@ namespace MLAgents
             if (communicator != null)
             {
                 m_IsCommunicatorOn = true;
-                var pythonParameters = m_BrainBatcher.SendAcademyParameters(
+                var inputParameters = m_BrainBatcher.SendAcademyParameters(
                     k_KApiVersion, 
                     gameObject.name,
                     broadcastHub,
                     enumerableBrains,
                     resetParameters);
-                Random.InitState(pythonParameters.Seed);
+                Random.InitState(inputParameters.Seed);
             }
 
             // If a communicator is enabled/provided, then we assume we are in

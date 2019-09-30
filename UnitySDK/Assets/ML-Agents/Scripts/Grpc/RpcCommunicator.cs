@@ -20,15 +20,15 @@ namespace MLAgents
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
 #endif
         /// The communicator parameters sent at construction
-        CommunicatorParameters m_CommunicatorParameters;
+        CommunicatorInitParameters m_CommunicatorInitParameters;
         
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
-        /// <param name="communicatorParameters">Communicator parameters.</param>
-        public RpcCommunicator(CommunicatorParameters communicatorParameters)
+        /// <param name="communicatorInitParameters">Communicator parameters.</param>
+        public RpcCommunicator(CommunicatorInitParameters communicatorInitParameters)
         {
-            m_CommunicatorParameters = communicatorParameters;
+            m_CommunicatorInitParameters = communicatorInitParameters;
         }
         /// <summary>
         /// Initialize the communicator by sending the first UnityOutput and receiving the
@@ -43,7 +43,7 @@ namespace MLAgents
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
             var channel = new Channel(
-                "localhost:" + m_CommunicatorParameters.port,
+                "localhost:" + m_CommunicatorInitParameters.port,
                 ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);

@@ -1,12 +1,33 @@
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
-    public struct CommunicatorParameters
+    public struct CommunicatorInitParameters
     {
+        /// <summary>
+        /// Port to listen for connections on.
+        /// </summary>
         public int port;
+        /// <summary>
+        /// The name of the environment.
+        /// </summary>
+        public string name;
+        /// <summary>
+        /// The version of the Unity SDK.
+        /// </summary>
+        public string version;
+        /// <summary>
+        /// The list of brains parameters used for training.
+        /// </summary>
+        public IEnumerable<BrainParameters> brainParameters;
+        /// <summary>
+        /// The set of reset parameters defined by the user that will be sent to the communicator.
+        /// </summary>
+        public ResetParameters resetParameters;
     }
+    
 
     /**
     This is the interface of the Communicators.
