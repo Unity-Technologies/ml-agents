@@ -13,7 +13,6 @@ import numpy as np
 from mlagents.envs.brain import AllBrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
-from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 
@@ -121,7 +120,7 @@ class SACTrainer(RLTrainer):
         with open(filename, "wb") as file_object:
             self.training_buffer.update_buffer.save_to_file(file_object)
 
-    def load_replay_buffer(self) -> Buffer:
+    def load_replay_buffer(self) -> None:
         """
         Loads the last saved replay buffer from a file.
         """
