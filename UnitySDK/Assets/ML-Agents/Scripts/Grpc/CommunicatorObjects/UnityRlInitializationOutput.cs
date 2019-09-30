@@ -26,20 +26,20 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkdtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX291dHB1dC5wcm90bxIUY29tbXVuaWNhdG9yX29i",
-            "amVjdHMaP21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYnJh",
-            "aW5fcGFyYW1ldGVyc19wcm90by5wcm90bxpFbWxhZ2VudHMvZW52cy9jb21t",
-            "dW5pY2F0b3Jfb2JqZWN0cy9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzX3Byb3Rv",
-            "LnByb3RvIuYBChtVbml0eVJMSW5pdGlhbGl6YXRpb25PdXRwdXQSDAoEbmFt",
-            "ZRgBIAEoCRIPCgd2ZXJzaW9uGAIgASgJEhAKCGxvZ19wYXRoGAMgASgJEkQK",
-            "EGJyYWluX3BhcmFtZXRlcnMYBSADKAsyKi5jb21tdW5pY2F0b3Jfb2JqZWN0",
-            "cy5CcmFpblBhcmFtZXRlcnNQcm90bxJQChZlbnZpcm9ubWVudF9wYXJhbWV0",
-            "ZXJzGAYgASgLMjAuY29tbXVuaWNhdG9yX29iamVjdHMuRW52aXJvbm1lbnRQ",
-            "YXJhbWV0ZXJzUHJvdG9CH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVj",
-            "dHNiBnByb3RvMw=="));
+            "amVjdHMaOW1sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYnJh",
+            "aW5fcGFyYW1ldGVycy5wcm90bxo/bWxhZ2VudHMvZW52cy9jb21tdW5pY2F0",
+            "b3Jfb2JqZWN0cy9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzLnByb3RvIusBCiBV",
+            "bml0eVJMSW5pdGlhbGl6YXRpb25PdXRwdXRQcm90bxIMCgRuYW1lGAEgASgJ",
+            "Eg8KB3ZlcnNpb24YAiABKAkSEAoIbG9nX3BhdGgYAyABKAkSRAoQYnJhaW5f",
+            "cGFyYW1ldGVycxgFIAMoCzIqLmNvbW11bmljYXRvcl9vYmplY3RzLkJyYWlu",
+            "UGFyYW1ldGVyc1Byb3RvElAKFmVudmlyb25tZW50X3BhcmFtZXRlcnMYBiAB",
+            "KAsyMC5jb21tdW5pY2F0b3Jfb2JqZWN0cy5FbnZpcm9ubWVudFBhcmFtZXRl",
+            "cnNQcm90b0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.BrainParametersProtoReflection.Descriptor, global::MLAgents.CommunicatorObjects.EnvironmentParametersProtoReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, global::MLAgents.CommunicatorObjects.EnvironmentParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutput.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters", "EnvironmentParameters" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters", "EnvironmentParameters" }, null, null, null)
           }));
     }
     #endregion
@@ -49,11 +49,11 @@ namespace MLAgents.CommunicatorObjects {
   /// <summary>
   /// The request message containing the academy's parameters.
   /// </summary>
-  public sealed partial class UnityRLInitializationOutput : pb::IMessage<UnityRLInitializationOutput> {
-    private static readonly pb::MessageParser<UnityRLInitializationOutput> _parser = new pb::MessageParser<UnityRLInitializationOutput>(() => new UnityRLInitializationOutput());
+  public sealed partial class UnityRLInitializationOutputProto : pb::IMessage<UnityRLInitializationOutputProto> {
+    private static readonly pb::MessageParser<UnityRLInitializationOutputProto> _parser = new pb::MessageParser<UnityRLInitializationOutputProto>(() => new UnityRLInitializationOutputProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<UnityRLInitializationOutput> Parser { get { return _parser; } }
+    public static pb::MessageParser<UnityRLInitializationOutputProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -66,14 +66,14 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationOutput() {
+    public UnityRLInitializationOutputProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationOutput(UnityRLInitializationOutput other) : this() {
+    public UnityRLInitializationOutputProto(UnityRLInitializationOutputProto other) : this() {
       name_ = other.name_;
       version_ = other.version_;
       logPath_ = other.logPath_;
@@ -83,8 +83,8 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationOutput Clone() {
-      return new UnityRLInitializationOutput(this);
+    public UnityRLInitializationOutputProto Clone() {
+      return new UnityRLInitializationOutputProto(this);
     }
 
     /// <summary>Field number for the "name" field.</summary>
@@ -143,11 +143,11 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as UnityRLInitializationOutput);
+      return Equals(other as UnityRLInitializationOutputProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(UnityRLInitializationOutput other) {
+    public bool Equals(UnityRLInitializationOutputProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -228,7 +228,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(UnityRLInitializationOutput other) {
+    public void MergeFrom(UnityRLInitializationOutputProto other) {
       if (other == null) {
         return;
       }

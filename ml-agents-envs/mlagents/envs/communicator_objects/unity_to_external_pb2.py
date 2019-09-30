@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/unity_to_external.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n:mlagents/envs/communicator_objects/unity_to_external.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents/envs/communicator_objects/unity_message.proto2g\n\x0fUnityToExternal\x12T\n\x08\x45xchange\x12\".communicator_objects.UnityMessage\x1a\".communicator_objects.UnityMessage\"\x00\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n:mlagents/envs/communicator_objects/unity_to_external.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents/envs/communicator_objects/unity_message.proto2v\n\x14UnityToExternalProto\x12^\n\x08\x45xchange\x12\'.communicator_objects.UnityMessageProto\x1a\'.communicator_objects.UnityMessageProto\"\x00\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2.DESCRIPTOR,])
 
@@ -32,27 +32,27 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
 
-_UNITYTOEXTERNAL = _descriptor.ServiceDescriptor(
-  name='UnityToExternal',
-  full_name='communicator_objects.UnityToExternal',
+_UNITYTOEXTERNALPROTO = _descriptor.ServiceDescriptor(
+  name='UnityToExternalProto',
+  full_name='communicator_objects.UnityToExternalProto',
   file=DESCRIPTOR,
   index=0,
   options=None,
   serialized_start=140,
-  serialized_end=243,
+  serialized_end=258,
   methods=[
   _descriptor.MethodDescriptor(
     name='Exchange',
-    full_name='communicator_objects.UnityToExternal.Exchange',
+    full_name='communicator_objects.UnityToExternalProto.Exchange',
     index=0,
     containing_service=None,
-    input_type=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2._UNITYMESSAGE,
-    output_type=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2._UNITYMESSAGE,
+    input_type=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2._UNITYMESSAGEPROTO,
+    output_type=mlagents_dot_envs_dot_communicator__objects_dot_unity__message__pb2._UNITYMESSAGEPROTO,
     options=None,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_UNITYTOEXTERNAL)
+_sym_db.RegisterServiceDescriptor(_UNITYTOEXTERNALPROTO)
 
-DESCRIPTOR.services_by_name['UnityToExternal'] = _UNITYTOEXTERNAL
+DESCRIPTOR.services_by_name['UnityToExternalProto'] = _UNITYTOEXTERNALPROTO
 
 # @@protoc_insertion_point(module_scope)

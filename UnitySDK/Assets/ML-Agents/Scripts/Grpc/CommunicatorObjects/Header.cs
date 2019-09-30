@@ -25,24 +25,24 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ci9tbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2hlYWRlci5w",
-            "cm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiKQoGSGVhZGVyEg4KBnN0YXR1",
-            "cxgBIAEoBRIPCgdtZXNzYWdlGAIgASgJQh+qAhxNTEFnZW50cy5Db21tdW5p",
-            "Y2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "cm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiLgoLSGVhZGVyUHJvdG8SDgoG",
+            "c3RhdHVzGAEgASgFEg8KB21lc3NhZ2UYAiABKAlCH6oCHE1MQWdlbnRzLkNv",
+            "bW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.Header), global::MLAgents.CommunicatorObjects.Header.Parser, new[]{ "Status", "Message" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.HeaderProto), global::MLAgents.CommunicatorObjects.HeaderProto.Parser, new[]{ "Status", "Message" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class Header : pb::IMessage<Header> {
-    private static readonly pb::MessageParser<Header> _parser = new pb::MessageParser<Header>(() => new Header());
+  public sealed partial class HeaderProto : pb::IMessage<HeaderProto> {
+    private static readonly pb::MessageParser<HeaderProto> _parser = new pb::MessageParser<HeaderProto>(() => new HeaderProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<Header> Parser { get { return _parser; } }
+    public static pb::MessageParser<HeaderProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -55,22 +55,22 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Header() {
+    public HeaderProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Header(Header other) : this() {
+    public HeaderProto(HeaderProto other) : this() {
       status_ = other.status_;
       message_ = other.message_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Header Clone() {
-      return new Header(this);
+    public HeaderProto Clone() {
+      return new HeaderProto(this);
     }
 
     /// <summary>Field number for the "status" field.</summary>
@@ -97,11 +97,11 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as Header);
+      return Equals(other as HeaderProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Header other) {
+    public bool Equals(HeaderProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -160,7 +160,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Header other) {
+    public void MergeFrom(HeaderProto other) {
       if (other == null) {
         return;
       }

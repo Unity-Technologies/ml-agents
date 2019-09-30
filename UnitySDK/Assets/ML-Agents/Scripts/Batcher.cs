@@ -39,8 +39,8 @@ namespace MLAgents
         ICommunicator m_Communicator;
 
         /// The current UnityRLOutput to be sent when all the brains queried the batcher
-        CommunicatorObjects.UnityRLOutput m_CurrentUnityRlOutput =
-            new CommunicatorObjects.UnityRLOutput();
+        CommunicatorObjects.UnityRLOutputProto m_CurrentUnityRlOutput =
+            new CommunicatorObjects.UnityRLOutputProto();
 
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_Command;
@@ -69,15 +69,15 @@ namespace MLAgents
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
         /// <param name="academyParameters">The Unity Initialization Parameters to be sent.</param>
-        public CommunicatorObjects.UnityRLInitializationInput SendAcademyParameters(
-            CommunicatorObjects.UnityRLInitializationOutput academyParameters)
+        public CommunicatorObjects.UnityRLInitializationInputProto SendAcademyParameters(
+            CommunicatorObjects.UnityRLInitializationOutputProto academyParameters)
         {
-            CommunicatorObjects.UnityInput input;
-            var initializationInput = new CommunicatorObjects.UnityInput();
+            CommunicatorObjects.UnityInputProto input;
+            var initializationInput = new CommunicatorObjects.UnityInputProto();
             try
             {
                 initializationInput = m_Communicator.Initialize(
-                    new CommunicatorObjects.UnityOutput
+                    new CommunicatorObjects.UnityOutputProto
                     {
                         RlInitializationOutput = academyParameters
                     },
@@ -154,7 +154,7 @@ namespace MLAgents
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
-                new CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto());
+                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
         }
 
         /// <summary>
@@ -227,11 +227,13 @@ namespace MLAgents
         void SendBatchedMessageHelper()
         {
             var input = m_Communicator.Exchange(
-                new CommunicatorObjects.UnityOutput
+                new CommunicatorObjects.UnityOutputProto
                 {
                     RlOutput = m_CurrentUnityRlOutput
                 });
             m_MessagesReceived += 1;
+
+			
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {

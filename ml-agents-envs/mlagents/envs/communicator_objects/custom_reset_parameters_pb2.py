@@ -19,15 +19,15 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/custom_reset_parameters.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n@mlagents/envs/communicator_objects/custom_reset_parameters.proto\x12\x14\x63ommunicator_objects\"\x17\n\x15\x43ustomResetParametersB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n@mlagents/envs/communicator_objects/custom_reset_parameters.proto\x12\x14\x63ommunicator_objects\"\x1c\n\x1a\x43ustomResetParametersProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_CUSTOMRESETPARAMETERS = _descriptor.Descriptor(
-  name='CustomResetParameters',
-  full_name='communicator_objects.CustomResetParameters',
+_CUSTOMRESETPARAMETERSPROTO = _descriptor.Descriptor(
+  name='CustomResetParametersProto',
+  full_name='communicator_objects.CustomResetParametersProto',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -45,18 +45,18 @@ _CUSTOMRESETPARAMETERS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=90,
-  serialized_end=113,
+  serialized_end=118,
 )
 
-DESCRIPTOR.message_types_by_name['CustomResetParameters'] = _CUSTOMRESETPARAMETERS
+DESCRIPTOR.message_types_by_name['CustomResetParametersProto'] = _CUSTOMRESETPARAMETERSPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-CustomResetParameters = _reflection.GeneratedProtocolMessageType('CustomResetParameters', (_message.Message,), dict(
-  DESCRIPTOR = _CUSTOMRESETPARAMETERS,
+CustomResetParametersProto = _reflection.GeneratedProtocolMessageType('CustomResetParametersProto', (_message.Message,), dict(
+  DESCRIPTOR = _CUSTOMRESETPARAMETERSPROTO,
   __module__ = 'mlagents.envs.communicator_objects.custom_reset_parameters_pb2'
-  # @@protoc_insertion_point(class_scope:communicator_objects.CustomResetParameters)
+  # @@protoc_insertion_point(class_scope:communicator_objects.CustomResetParametersProto)
   ))
-_sym_db.RegisterMessage(CustomResetParameters)
+_sym_db.RegisterMessage(CustomResetParametersProto)
 
 
 DESCRIPTOR.has_options = True

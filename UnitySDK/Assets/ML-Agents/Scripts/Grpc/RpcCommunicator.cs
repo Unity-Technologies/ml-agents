@@ -17,11 +17,11 @@ namespace MLAgents
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
-        UnityToExternal.UnityToExternalClient m_Client;
+        UnityToExternalProto.UnityToExternalProtoClient m_Client;
 #endif
         /// The communicator parameters sent at construction
         CommunicatorParameters m_CommunicatorParameters;
-
+        
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
@@ -30,7 +30,6 @@ namespace MLAgents
         {
             m_CommunicatorParameters = communicatorParameters;
         }
-
         /// <summary>
         /// Initialize the communicator by sending the first UnityOutput and receiving the
         /// first UnityInput. The second UnityInput is stored in the unityInput argument.
@@ -38,8 +37,8 @@ namespace MLAgents
         /// <returns>The first Unity Input.</returns>
         /// <param name="unityOutput">The first Unity Output.</param>
         /// <param name="unityInput">The second Unity input.</param>
-        public UnityInput Initialize(UnityOutput unityOutput,
-            out UnityInput unityInput)
+        public UnityInputProto Initialize(UnityOutputProto unityOutput,
+            out UnityInputProto unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
@@ -47,7 +46,7 @@ namespace MLAgents
                 "localhost:" + m_CommunicatorParameters.port,
                 ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternal.UnityToExternalClient(channel);
+            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
             unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
@@ -95,7 +94,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        public UnityInput Exchange(UnityOutput unityOutput)
+        public UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -132,11 +131,11 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        private static UnityMessage WrapMessage(UnityOutput content, int status)
+        private static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
         {
-            return new UnityMessage
+            return new UnityMessageProto
             {
-                Header = new Header { Status = status },
+                Header = new HeaderProto { Status = status },
                 UnityOutput = content
             };
         }

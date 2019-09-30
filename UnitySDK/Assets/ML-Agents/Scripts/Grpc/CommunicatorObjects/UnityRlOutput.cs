@@ -25,20 +25,20 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjhtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
-            "X291dHB1dC5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMaOW1sYWdlbnRz",
-            "L2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYWdlbnRfaW5mb19wcm90by5w",
-            "cm90byKUAgoNVW5pdHlSTE91dHB1dBJHCgphZ2VudEluZm9zGAIgAygLMjMu",
-            "Y29tbXVuaWNhdG9yX29iamVjdHMuVW5pdHlSTE91dHB1dC5BZ2VudEluZm9z",
-            "RW50cnkaSQoSTGlzdEFnZW50SW5mb1Byb3RvEjMKBXZhbHVlGAEgAygLMiQu",
-            "Y29tbXVuaWNhdG9yX29iamVjdHMuQWdlbnRJbmZvUHJvdG8aaQoPQWdlbnRJ",
-            "bmZvc0VudHJ5EgsKA2tleRgBIAEoCRJFCgV2YWx1ZRgCIAEoCzI2LmNvbW11",
-            "bmljYXRvcl9vYmplY3RzLlVuaXR5UkxPdXRwdXQuTGlzdEFnZW50SW5mb1By",
-            "b3RvOgI4AUoECAEQAkIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0",
-            "c2IGcHJvdG8z"));
+            "X291dHB1dC5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMaM21sYWdlbnRz",
+            "L2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYWdlbnRfaW5mby5wcm90byKj",
+            "AgoSVW5pdHlSTE91dHB1dFByb3RvEkwKCmFnZW50SW5mb3MYAiADKAsyOC5j",
+            "b21tdW5pY2F0b3Jfb2JqZWN0cy5Vbml0eVJMT3V0cHV0UHJvdG8uQWdlbnRJ",
+            "bmZvc0VudHJ5GkkKEkxpc3RBZ2VudEluZm9Qcm90bxIzCgV2YWx1ZRgBIAMo",
+            "CzIkLmNvbW11bmljYXRvcl9vYmplY3RzLkFnZW50SW5mb1Byb3RvGm4KD0Fn",
+            "ZW50SW5mb3NFbnRyeRILCgNrZXkYASABKAkSSgoFdmFsdWUYAiABKAsyOy5j",
+            "b21tdW5pY2F0b3Jfb2JqZWN0cy5Vbml0eVJMT3V0cHV0UHJvdG8uTGlzdEFn",
+            "ZW50SW5mb1Byb3RvOgI4AUoECAEQAkIfqgIcTUxBZ2VudHMuQ29tbXVuaWNh",
+            "dG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentInfoProtoReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutput), global::MLAgents.CommunicatorObjects.UnityRLOutput.Parser, new[]{ "AgentInfos" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto), global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto.Parser, new[]{ "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutputProto), global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Parser, new[]{ "AgentInfos" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto), global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser, new[]{ "Value" }, null, null, null),
             null, })
           }));
     }
@@ -46,11 +46,11 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class UnityRLOutput : pb::IMessage<UnityRLOutput> {
-    private static readonly pb::MessageParser<UnityRLOutput> _parser = new pb::MessageParser<UnityRLOutput>(() => new UnityRLOutput());
+  public sealed partial class UnityRLOutputProto : pb::IMessage<UnityRLOutputProto> {
+    private static readonly pb::MessageParser<UnityRLOutputProto> _parser = new pb::MessageParser<UnityRLOutputProto>(() => new UnityRLOutputProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<UnityRLOutput> Parser { get { return _parser; } }
+    public static pb::MessageParser<UnityRLOutputProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -63,40 +63,40 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLOutput() {
+    public UnityRLOutputProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLOutput(UnityRLOutput other) : this() {
+    public UnityRLOutputProto(UnityRLOutputProto other) : this() {
       agentInfos_ = other.agentInfos_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLOutput Clone() {
-      return new UnityRLOutput(this);
+    public UnityRLOutputProto Clone() {
+      return new UnityRLOutputProto(this);
     }
 
     /// <summary>Field number for the "agentInfos" field.</summary>
     public const int AgentInfosFieldNumber = 2;
-    private static readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto>.Codec _map_agentInfos_codec
-        = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto.Parser), 18);
-    private readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto> agentInfos_ = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto>();
+    private static readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec _map_agentInfos_codec
+        = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser), 18);
+    private readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> agentInfos_ = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutput.Types.ListAgentInfoProto> AgentInfos {
+    public pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> AgentInfos {
       get { return agentInfos_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as UnityRLOutput);
+      return Equals(other as UnityRLOutputProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(UnityRLOutput other) {
+    public bool Equals(UnityRLOutputProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -141,7 +141,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(UnityRLOutput other) {
+    public void MergeFrom(UnityRLOutputProto other) {
       if (other == null) {
         return;
       }
@@ -166,7 +166,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     #region Nested types
-    /// <summary>Container for nested types declared in the UnityRLOutput message type.</summary>
+    /// <summary>Container for nested types declared in the UnityRLOutputProto message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static partial class Types {
       public sealed partial class ListAgentInfoProto : pb::IMessage<ListAgentInfoProto> {
@@ -177,7 +177,7 @@ namespace MLAgents.CommunicatorObjects {
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::MLAgents.CommunicatorObjects.UnityRLOutput.Descriptor.NestedTypes[0]; }
+          get { return global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Descriptor.NestedTypes[0]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

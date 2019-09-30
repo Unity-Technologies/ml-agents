@@ -25,23 +25,24 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjZtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2N1c3RvbV9h",
-            "Y3Rpb24ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIg4KDEN1c3RvbUFj",
-            "dGlvbkIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "Y3Rpb24ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIhMKEUN1c3RvbUFj",
+            "dGlvblByb3RvQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomAction), global::MLAgents.CommunicatorObjects.CustomAction.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomActionProto), global::MLAgents.CommunicatorObjects.CustomActionProto.Parser, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class CustomAction : pb::IMessage<CustomAction> {
-    private static readonly pb::MessageParser<CustomAction> _parser = new pb::MessageParser<CustomAction>(() => new CustomAction());
+  public sealed partial class CustomActionProto : pb::IMessage<CustomActionProto> {
+    private static readonly pb::MessageParser<CustomActionProto> _parser = new pb::MessageParser<CustomActionProto>(() => new CustomActionProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<CustomAction> Parser { get { return _parser; } }
+    public static pb::MessageParser<CustomActionProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -54,29 +55,29 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomAction() {
+    public CustomActionProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomAction(CustomAction other) : this() {
+    public CustomActionProto(CustomActionProto other) : this() {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomAction Clone() {
-      return new CustomAction(this);
+    public CustomActionProto Clone() {
+      return new CustomActionProto(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as CustomAction);
+      return Equals(other as CustomActionProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(CustomAction other) {
+    public bool Equals(CustomActionProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -117,7 +118,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(CustomAction other) {
+    public void MergeFrom(CustomActionProto other) {
       if (other == null) {
         return;
       }

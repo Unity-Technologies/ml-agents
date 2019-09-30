@@ -25,24 +25,24 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CkBtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2N1c3RvbV9y",
-            "ZXNldF9wYXJhbWV0ZXJzLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyIX",
-            "ChVDdXN0b21SZXNldFBhcmFtZXRlcnNCH6oCHE1MQWdlbnRzLkNvbW11bmlj",
-            "YXRvck9iamVjdHNiBnByb3RvMw=="));
+            "ZXNldF9wYXJhbWV0ZXJzLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyIc",
+            "ChpDdXN0b21SZXNldFBhcmFtZXRlcnNQcm90b0IfqgIcTUxBZ2VudHMuQ29t",
+            "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomResetParameters), global::MLAgents.CommunicatorObjects.CustomResetParameters.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CustomResetParametersProto), global::MLAgents.CommunicatorObjects.CustomResetParametersProto.Parser, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class CustomResetParameters : pb::IMessage<CustomResetParameters> {
-    private static readonly pb::MessageParser<CustomResetParameters> _parser = new pb::MessageParser<CustomResetParameters>(() => new CustomResetParameters());
+  public sealed partial class CustomResetParametersProto : pb::IMessage<CustomResetParametersProto> {
+    private static readonly pb::MessageParser<CustomResetParametersProto> _parser = new pb::MessageParser<CustomResetParametersProto>(() => new CustomResetParametersProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<CustomResetParameters> Parser { get { return _parser; } }
+    public static pb::MessageParser<CustomResetParametersProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -55,29 +55,29 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomResetParameters() {
+    public CustomResetParametersProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomResetParameters(CustomResetParameters other) : this() {
+    public CustomResetParametersProto(CustomResetParametersProto other) : this() {
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public CustomResetParameters Clone() {
-      return new CustomResetParameters(this);
+    public CustomResetParametersProto Clone() {
+      return new CustomResetParametersProto(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as CustomResetParameters);
+      return Equals(other as CustomResetParametersProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(CustomResetParameters other) {
+    public bool Equals(CustomResetParametersProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -118,7 +118,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(CustomResetParameters other) {
+    public void MergeFrom(CustomResetParametersProto other) {
       if (other == null) {
         return;
       }

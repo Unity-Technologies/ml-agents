@@ -26,23 +26,24 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkZtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX2lucHV0LnByb3RvEhRjb21tdW5pY2F0b3Jfb2Jq",
-            "ZWN0cyIqChpVbml0eVJMSW5pdGlhbGl6YXRpb25JbnB1dBIMCgRzZWVkGAEg",
-            "ASgFQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "ZWN0cyIvCh9Vbml0eVJMSW5pdGlhbGl6YXRpb25JbnB1dFByb3RvEgwKBHNl",
+            "ZWQYASABKAVCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInput), global::MLAgents.CommunicatorObjects.UnityRLInitializationInput.Parser, new[]{ "Seed" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class UnityRLInitializationInput : pb::IMessage<UnityRLInitializationInput> {
-    private static readonly pb::MessageParser<UnityRLInitializationInput> _parser = new pb::MessageParser<UnityRLInitializationInput>(() => new UnityRLInitializationInput());
+  public sealed partial class UnityRLInitializationInputProto : pb::IMessage<UnityRLInitializationInputProto> {
+    private static readonly pb::MessageParser<UnityRLInitializationInputProto> _parser = new pb::MessageParser<UnityRLInitializationInputProto>(() => new UnityRLInitializationInputProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<UnityRLInitializationInput> Parser { get { return _parser; } }
+    public static pb::MessageParser<UnityRLInitializationInputProto> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -55,21 +56,21 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationInput() {
+    public UnityRLInitializationInputProto() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationInput(UnityRLInitializationInput other) : this() {
+    public UnityRLInitializationInputProto(UnityRLInitializationInputProto other) : this() {
       seed_ = other.seed_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public UnityRLInitializationInput Clone() {
-      return new UnityRLInitializationInput(this);
+    public UnityRLInitializationInputProto Clone() {
+      return new UnityRLInitializationInputProto(this);
     }
 
     /// <summary>Field number for the "seed" field.</summary>
@@ -85,11 +86,11 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as UnityRLInitializationInput);
+      return Equals(other as UnityRLInitializationInputProto);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(UnityRLInitializationInput other) {
+    public bool Equals(UnityRLInitializationInputProto other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -139,7 +140,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(UnityRLInitializationInput other) {
+    public void MergeFrom(UnityRLInitializationInputProto other) {
       if (other == null) {
         return;
       }

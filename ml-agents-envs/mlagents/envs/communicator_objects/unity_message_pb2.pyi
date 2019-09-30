@@ -9,15 +9,15 @@ from google.protobuf.message import (
 )
 
 from mlagents.envs.communicator_objects.header_pb2 import (
-    Header as mlagents___envs___communicator_objects___header_pb2___Header,
+    HeaderProto as mlagents___envs___communicator_objects___header_pb2___HeaderProto,
 )
 
 from mlagents.envs.communicator_objects.unity_input_pb2 import (
-    UnityInput as mlagents___envs___communicator_objects___unity_input_pb2___UnityInput,
+    UnityInputProto as mlagents___envs___communicator_objects___unity_input_pb2___UnityInputProto,
 )
 
 from mlagents.envs.communicator_objects.unity_output_pb2 import (
-    UnityOutput as mlagents___envs___communicator_objects___unity_output_pb2___UnityOutput,
+    UnityOutputProto as mlagents___envs___communicator_objects___unity_output_pb2___UnityOutputProto,
 )
 
 from typing import (
@@ -29,26 +29,26 @@ from typing_extensions import (
 )
 
 
-class UnityMessage(google___protobuf___message___Message):
+class UnityMessageProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
     @property
-    def header(self) -> mlagents___envs___communicator_objects___header_pb2___Header: ...
+    def header(self) -> mlagents___envs___communicator_objects___header_pb2___HeaderProto: ...
 
     @property
-    def unity_output(self) -> mlagents___envs___communicator_objects___unity_output_pb2___UnityOutput: ...
+    def unity_output(self) -> mlagents___envs___communicator_objects___unity_output_pb2___UnityOutputProto: ...
 
     @property
-    def unity_input(self) -> mlagents___envs___communicator_objects___unity_input_pb2___UnityInput: ...
+    def unity_input(self) -> mlagents___envs___communicator_objects___unity_input_pb2___UnityInputProto: ...
 
     def __init__(self,
         *,
-        header : typing___Optional[mlagents___envs___communicator_objects___header_pb2___Header] = None,
-        unity_output : typing___Optional[mlagents___envs___communicator_objects___unity_output_pb2___UnityOutput] = None,
-        unity_input : typing___Optional[mlagents___envs___communicator_objects___unity_input_pb2___UnityInput] = None,
+        header : typing___Optional[mlagents___envs___communicator_objects___header_pb2___HeaderProto] = None,
+        unity_output : typing___Optional[mlagents___envs___communicator_objects___unity_output_pb2___UnityOutputProto] = None,
+        unity_input : typing___Optional[mlagents___envs___communicator_objects___unity_input_pb2___UnityInputProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> UnityMessage: ...
+    def FromString(cls, s: bytes) -> UnityMessageProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
