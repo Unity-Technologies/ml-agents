@@ -18,7 +18,7 @@ namespace MLAgents
     public class TimerNode
     {
         static string s_Separator = ".";
-        static double s_TicksToSeconds = 1.0 / 10000000.0; // 100 ns per tick
+        static double s_TicksToSeconds = 1e-7; // 100 ns per tick
 
         /// <summary>
         ///  Full name of the node. This is the node's parents full name concatenated with this node's name
@@ -170,7 +170,7 @@ namespace MLAgents
                 timerString = $"{indent}{shortName}\t\traw={TotalSeconds}  rawCount={m_NumCalls}\n";
             }
 
-            // TODO stringbuilder? overkill?
+            // TODO use stringbuilder? might be overkill since this is only debugging code?
             if (m_Children != null)
             {
                 foreach (TimerNode c in m_Children.Values)

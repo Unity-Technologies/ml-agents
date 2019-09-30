@@ -610,8 +610,9 @@ namespace MLAgents
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
 
+            // TODO - Pass worker ID or some other identifier,
+            // so that multiple envs won't overwrite each others stats.
             TimerStack.Instance.SaveJsonTimers();
-
         }
     }
 }
