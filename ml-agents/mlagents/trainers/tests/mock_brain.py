@@ -1,6 +1,7 @@
 import unittest.mock as mock
 import numpy as np
 
+from mlagents.envs.brain import CameraResolution
 from mlagents.trainers.buffer import Buffer
 
 
@@ -26,7 +27,7 @@ def create_mock_brainparams(
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size
     )
-    camrez = {"blackAndWhite": False, "height": 84, "width": 84}
+    camrez = CameraResolution(height=84, width=84, gray_scale=False)
     mock_brain.return_value.camera_resolutions = [camrez] * number_visual_observations
     mock_brain.return_value.vector_action_space_size = vector_action_space_size
     mock_brain.return_value.brain_name = "MockBrain"

@@ -1,12 +1,13 @@
 import logging
 from enum import Enum
-from typing import Any, Callable, Dict, List
+from typing import Callable, List
 
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
 from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.envs.brain import CameraResolution
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -126,21 +127,18 @@ class LearningModel(object):
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
     @staticmethod
-    def create_visual_input(camera_parameters: Dict[str, Any], name: str) -> tf.Tensor:
+    def create_visual_input(
+        camera_parameters: CameraResolution, name: str
+    ) -> tf.Tensor:
         """
         Creates image input op.
         :param camera_parameters: Parameters for visual observation from BrainInfo.
         :param name: Desired name of input op.
         :return: input op.
         """
-        o_size_h = camera_parameters["height"]
-        o_size_w = camera_parameters["width"]
-        bw = camera_parameters["blackAndWhite"]
-
-        if bw:
-            c_channels = 1
-        else:
-            c_channels = 3
+        o_size_h = camera_parameters.height
+        o_size_w = camera_parameters.width
+        c_channels = camera_parameters.num_channels
 
         visual_in = tf.placeholder(
             shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name
