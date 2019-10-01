@@ -36,7 +36,7 @@ You may need to change `max_steps` in your config as appropriate as well.
 ## Migrating from ML-Agents toolkit v0.7 to v0.8
 
 ### Important Changes
-* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`.
+* We have split the Python packages into two separate packages `ml-agents` and `ml-agents-envs`.
 * `--worker-id` option of `learn.py` has been removed, use `--base-port` instead if you'd like to run multiple instances of `learn.py`.
 
 #### Steps to Migrate
