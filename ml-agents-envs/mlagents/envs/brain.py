@@ -230,26 +230,30 @@ class BrainInfo:
                 "An agent had a NaN observation for brain " + brain_params.brain_name
             )
 
-        stacked_size = brain_params.vector_observation_space_size * brain_params.num_stacked_vector_observations
+        stacked_size = (
+            brain_params.vector_observation_space_size
+            * brain_params.num_stacked_vector_observations
+        )
         if len(agent_info_list) == 0:
-            vector_obs = np.zeros(
-                (
-                    0,
-                    stacked_size,
-                )
-            )
+            vector_obs = np.zeros((0, stacked_size))
         else:
             # TODO check to make sure len(stacked_vector_observation) < num_stacked_vector_observations
-            print(f"vector_observation_space_size={brain_params.vector_observation_space_size}  len(stacked_vector_observation)={len(agent_info_list[i].stacked_vector_observation)}")
+            print(
+                f"vector_observation_space_size={brain_params.vector_observation_space_size}  len(stacked_vector_observation)={len(agent_info_list[i].stacked_vector_observation)}"
+            )
             vector_obs = np.nan_to_num(
-                np.array([x.stacked_vector_observation[0:stacked_size] for x in agent_info_list])
+                np.array(
+                    [
+                        x.stacked_vector_observation[0:stacked_size]
+                        for x in agent_info_list
+                    ]
+                )
             )
 
         # "extra" obs get converted to visuals
         extra_obs = []
         for agent_info in agent_info_list:
             float_obs = agent_info.stacked_vector_observation[stacked_size:]
-
 
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         print(f"vector_obs.shape = {vector_obs.shape}")
