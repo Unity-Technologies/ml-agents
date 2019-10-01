@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from typing import List
 
-from mlagents.envs import BrainInfo
+from mlagents.envs import AllBrainInfo, BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.trainer import UnityTrainerException
@@ -50,6 +50,24 @@ class GhostTrainer(PPOTrainer):
         :return: True if not ghost else False
         """
         return False
+
+    
+    def add_experiences(
+        self,
+        curr_all_info: AllBrainInfo,
+        next_all_info: AllBrainInfo,
+        take_action_outputs,
+    ):
+        """
+        No need to collect experiences since we don't update the ghost brain
+        """
+        pass
+
+    def process_experiences(self, current_info: AllBrainInfo, new_info: AllBrainInfo):
+        """
+        No need to collect experiences since we don't update the ghost brain
+        """
+        pass
 
     def get_elo_rating(self):
         return np.mean([policy.get_elo_rating() for policy in self.agent_policies.values()])
