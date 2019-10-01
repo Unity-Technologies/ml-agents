@@ -16,12 +16,8 @@ Build Support_ component when installing Unity.
        width="500" border="10" />
 </p>
 
-## Windows Users
-For setting up your environment on Windows, we have created a [detailed
-guide](Installation-Windows.md) to setting up your env. For Mac and Linux,
-continue with this guide.
-
-## Mac and Unix Users
+## Environment Setup
+For setting up your environment follow this [guide](Using-Virtual-Environment.md).
 
 ### Clone the ML-Agents Toolkit Repository
 
@@ -94,12 +90,7 @@ pip3 install -e ./
 Running pip with the `-e` flag will let you make changes to the Python files directly and have those
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
 `mlagents` package depends on `mlagents_envs`, and installing it in the other 
-order will download `mlagents_envs` from PyPi. 
-
-## Docker-based Installation
-
-If you'd like to use Docker for ML-Agents, please follow
-[this guide](Using-Docker.md).
+order will download `mlagents_envs` from PyPi.
 
 ## Next Steps
 

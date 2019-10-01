@@ -430,10 +430,6 @@ training process.
   the broadcasting feature
   [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
-- **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
-  installing Python or TensorFlow directly, we provide a
-  [guide](Using-Docker.md) on how to create and run a Docker container.
-
 - **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
   Amazon Web Services (AWS) machines, we provide a
   [guide](Training-on-Amazon-Web-Service.md) on how to set-up EC2 instances in
