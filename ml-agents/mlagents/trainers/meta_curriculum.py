@@ -30,6 +30,11 @@ class MetaCurriculum(object):
 
         try:
             for curriculum_filename in os.listdir(curriculum_folder):
+                
+                # This process requires JSON files
+                if not curriculum_filename.lower().endswith('.json'):
+                    continue
+
                 brain_name = curriculum_filename.split(".")[0]
                 curriculum_filepath = os.path.join(
                     curriculum_folder, curriculum_filename
