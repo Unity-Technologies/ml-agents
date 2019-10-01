@@ -240,6 +240,8 @@ namespace MLAgents
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
 
+        bool m_hackFloatVisuals = true;
+
         /// Represents the reward the agent accumulated during the current step.
         /// It is reset to 0 at the beginning of every step.
         /// Should be set to a positive value when the agent performs a "good"
@@ -509,18 +511,20 @@ namespace MLAgents
                 }
             }
 
+            var numVisualFloats = GetVisualFloatSize();
+
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
             m_Action.textActions = "";
             m_Info.memories = new List<float>();
             m_Action.memories = new List<float>();
             m_Info.vectorObservation =
-                new List<float>(param.vectorObservationSize);
+                new List<float>(param.vectorObservationSize + numVisualFloats);
             m_Info.stackedVectorObservation =
-                new List<float>(param.vectorObservationSize
+                new List<float>((param.vectorObservationSize + numVisualFloats)
                     * brain.brainParameters.numStackedVectorObservations);
             m_Info.stackedVectorObservation.AddRange(
-                new float[param.vectorObservationSize
+                new float[(param.vectorObservationSize + numVisualFloats)
                           * param.numStackedVectorObservations]);
 
             m_Info.visualObservations = new List<Texture2D>();
@@ -559,20 +563,6 @@ namespace MLAgents
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
             var param = brain.brainParameters;
-            if (m_Info.vectorObservation.Count != param.vectorObservationSize)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "Vector Observation size mismatch between continuous " +
-                    "agent {0} and brain {1}. " +
-                    "Was Expecting {2} but received {3}. ",
-                    gameObject.name, brain.name,
-                    brain.brainParameters.vectorObservationSize,
-                    m_Info.vectorObservation.Count));
-            }
-
-            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
-            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
-                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
 
             m_Info.visualObservations.Clear();
             var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
@@ -607,6 +597,27 @@ namespace MLAgents
                 m_Info.visualObservations.Add(obsTexture);
             }
 
+            int visualFloatSize = 0;
+            if (m_hackFloatVisuals)
+            {
+                visualFloatSize = WriteVisualObsAsFloat();
+            }
+
+            if ((m_Info.vectorObservation.Count != param.vectorObservationSize + visualFloatSize))
+            {
+                throw new UnityAgentsException(string.Format(
+                    "Vector Observation size mismatch between continuous " +
+                    "agent {0} and brain {1}. " +
+                    "Was Expecting {2} but received {3}. ",
+                    gameObject.name, brain.name,
+                    brain.brainParameters.vectorObservationSize,
+                    m_Info.vectorObservation.Count));
+            }
+
+            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize + visualFloatSize);
+            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
+                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
+
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -620,6 +631,31 @@ namespace MLAgents
             }
 
             m_Info.textObservation = "";
+        }
+
+        int WriteVisualObsAsFloat()
+        {
+            int floatsAdded = 0;
+            for (int i = 0; i < m_Info.visualObservations.Count; i++)
+            {
+                var res = brain.brainParameters.cameraResolutions[i];
+                Debug.Log($"Writing {res.height} x {res.width} x {res.blackAndWhite ? 1 : 3} ");
+                AddVisualObservation(m_Info.visualObservations[i], res);
+                floatsAdded += res.height * res.width * (res.blackAndWhite ? 1 : 3);
+            }
+            Debug.Log($"Wrote {floatsAdded} vector obs for visual obs");
+            return floatsAdded;
+        }
+
+        int GetVisualFloatSize()
+        {
+            int floatCount = 0;
+            for (int i = 0; i < brain.brainParameters.cameraResolutions.Length; i++)
+            {
+                var res = brain.brainParameters.cameraResolutions[i];
+                floatCount += res.height * res.width * (res.blackAndWhite ? 1 : 3);
+            }
+            return floatCount;
         }
 
         /// <summary>
@@ -793,6 +829,29 @@ namespace MLAgents
             m_Info.vectorObservation.AddRange(oneHotVector);
         }
 
+        protected void AddVisualObservation(Texture2D obs, Resolution res)
+        {
+            var texturePixels = obs.GetPixels32();
+            for (var h = res.height - 1; h >= 0; h--)
+            {
+                for (var w = 0; w < res.width; w++)
+                {
+                    var currentPixel = texturePixels[(res.height - h - 1) * res.width + w];
+                    if (res.blackAndWhite)
+                    {
+                        m_Info.vectorObservation.Add(currentPixel.r + currentPixel.g + currentPixel.b / 3f / 255.0f);
+                    }
+                    else
+                    {
+                        // For Color32, the r, g and b values are between 0 and 255.
+                        m_Info.vectorObservation.Add(currentPixel.r / 255.0f);
+                        m_Info.vectorObservation.Add(currentPixel.g / 255.0f);
+                        m_Info.vectorObservation.Add(currentPixel.b / 255.0f);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Sets the text observation.
         /// </summary>
@@ -948,7 +1007,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the status of the agent. Will request decisions or actions according 
+        /// Sets the status of the agent. Will request decisions or actions according
         /// to the Academy's stepcount.
         /// </summary>
         /// <param name="academyStepCounter">Number of current steps in episode</param>
