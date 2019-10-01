@@ -97,7 +97,7 @@ namespace MLAgents
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
-        private const string k_KApiVersion = "API-10";
+        private const string k_ApiVersion = "API-10";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
@@ -308,7 +308,7 @@ namespace MLAgents
                 var academyParameters =
                     new CommunicatorObjects.UnityRLInitializationOutputProto();
                 academyParameters.Name = gameObject.name;
-                academyParameters.Version = k_KApiVersion;
+                academyParameters.Version = k_ApiVersion;
                 foreach (var brain in exposedBrains)
                 {
                     var bp = brain.brainParameters;
