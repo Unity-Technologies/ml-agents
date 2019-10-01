@@ -29,7 +29,7 @@ See PreTraining + GAIL + Curiosity + RL below.
 
 The ML-Agents toolkit provides several ways to learn from demonstrations.
 
-* To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
+* To train using GAIL (Generative Adversarial Imitation Learning) you can add the
   [GAIL reward signal](Reward-Signals.md#gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.

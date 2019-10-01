@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, call, Mock
+from unittest.mock import patch, call
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import MetaCurriculumError
@@ -34,8 +34,8 @@ def reward_buff_sizes():
     return {"Brain1": 7, "Brain2": 8}
 
 
-@patch("mlagents.trainers.Curriculum.get_config", return_value={})
-@patch("mlagents.trainers.Curriculum.__init__", return_value=None)
+@patch("mlagents.trainers.curriculum.Curriculum.get_config", return_value={})
+@patch("mlagents.trainers.curriculum.Curriculum.__init__", return_value=None)
 @patch("os.listdir", return_value=["Brain1.json", "Brain2.json"])
 def test_init_meta_curriculum_happy_path(
     listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
@@ -61,8 +61,8 @@ def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
         MetaCurriculum("test/", default_reset_parameters)
 
 
-@patch("mlagents.trainers.Curriculum")
-@patch("mlagents.trainers.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
 def test_set_lesson_nums(curriculum_a, curriculum_b):
     meta_curriculum = MetaCurriculumTest(
         {"Brain1": curriculum_a, "Brain2": curriculum_b}
@@ -74,8 +74,8 @@ def test_set_lesson_nums(curriculum_a, curriculum_b):
     assert curriculum_b.lesson_num == 3
 
 
-@patch("mlagents.trainers.Curriculum")
-@patch("mlagents.trainers.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
 def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):
     meta_curriculum = MetaCurriculumTest(
         {"Brain1": curriculum_a, "Brain2": curriculum_b}
@@ -87,8 +87,8 @@ def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):
     curriculum_b.increment_lesson.assert_called_with(0.3)
 
 
-@patch("mlagents.trainers.Curriculum")
-@patch("mlagents.trainers.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
 def test_increment_lessons_with_reward_buff_sizes(
     curriculum_a, curriculum_b, measure_vals, reward_buff_sizes
 ):
@@ -104,8 +104,8 @@ def test_increment_lessons_with_reward_buff_sizes(
     curriculum_b.increment_lesson.assert_not_called()
 
 
-@patch("mlagents.trainers.Curriculum")
-@patch("mlagents.trainers.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
 def test_set_all_curriculums_to_lesson_num(curriculum_a, curriculum_b):
     meta_curriculum = MetaCurriculumTest(
         {"Brain1": curriculum_a, "Brain2": curriculum_b}
@@ -117,8 +117,8 @@ def test_set_all_curriculums_to_lesson_num(curriculum_a, curriculum_b):
     assert curriculum_b.lesson_num == 2
 
 
-@patch("mlagents.trainers.Curriculum")
-@patch("mlagents.trainers.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
+@patch("mlagents.trainers.curriculum.Curriculum")
 def test_get_config(
     curriculum_a, curriculum_b, default_reset_parameters, more_reset_parameters
 ):

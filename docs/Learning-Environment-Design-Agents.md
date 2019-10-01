@@ -249,13 +249,13 @@ adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent'
 ![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
 
 The [GridWorld environment](Learning-Environment-Examples.md#gridworld) 
-is an example on how to use a RenderTexure for both debugging and observation. Note 
+is an example on how to use a RenderTexture for both debugging and observation. Note 
 that in this example, a Camera is rendered to a RenderTexture, which is then used for 
 observations and debugging. To update the RenderTexture, the Camera must be asked to 
 render every time a decision is requested within the game code. When using Cameras 
 as observations directly, this is done automatically by the Agent.
 
-![Agent RenderTexture Debug](images/visual-observation-debug.png)
+![Agent RenderTexture Debug](images/gridworld.png)
 
 ## Vector Actions
 

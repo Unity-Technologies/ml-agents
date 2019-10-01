@@ -6,6 +6,7 @@ default:
     hidden_units: 128
     init_entcoef: 1.0
     learning_rate: 3.0e-4
+    learning_rate_schedule: constant
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
@@ -17,26 +18,19 @@ default:
     summary_freq: 1000
     tau: 0.005
     use_recurrent: false
-    vis_encode_type: default
+    vis_encode_type: simple
     reward_signals:
         extrinsic:
             strength: 1.0
             gamma: 0.99
 
-BananaLearning:
+FoodCollectorLearning:
     normalize: false
     batch_size: 256
     buffer_size: 500000
     max_steps: 1.0e5
     init_entcoef: 0.05
     train_interval: 1
-
-VisualBananaLearning:
-    beta: 1.0e-2
-    gamma: 0.99
-    num_epoch: 1
-    max_steps: 5.0e5
-    summary_freq: 1000
 
 BouncerLearning:
     normalize: true
@@ -149,16 +143,15 @@ VisualPyramidsLearning:
     time_horizon: 1000
     hidden_units: 64
     init_entcoef: 0.5
-    max_steps: 5.0e5
 
 3DBallHardLearning:
     normalize: true
     batch_size: 256
     summary_freq: 1000
     time_horizon: 1000
-    max_steps: 5.0e5
 
 TennisLearning:
+    buffer_size: 500000
     normalize: true
     max_steps: 2e5
 
@@ -166,7 +159,7 @@ CrawlerStaticLearning:
     normalize: true
     time_horizon: 1000
     batch_size: 256
-    train_interval: 3
+    train_interval: 2
     buffer_size: 500000
     buffer_init_steps: 2000
     max_steps: 5e5
@@ -174,6 +167,10 @@ CrawlerStaticLearning:
     init_entcoef: 1.0
     num_layers: 3
     hidden_units: 512
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 CrawlerDynamicLearning:
     normalize: true
@@ -181,10 +178,14 @@ CrawlerDynamicLearning:
     batch_size: 256
     buffer_size: 500000
     summary_freq: 3000
-    train_interval: 3
+    train_interval: 2
     num_layers: 3
-    max_steps: 5e5
+    max_steps: 1e6
     hidden_units: 512
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.995
 
 WalkerLearning:
     normalize: true
@@ -193,8 +194,8 @@ WalkerLearning:
     buffer_size: 500000
     max_steps: 2e6
     summary_freq: 3000
-    num_layers: 3
-    train_interval: 3
+    num_layers: 4
+    train_interval: 2
     hidden_units: 512
     reward_signals:
         extrinsic:
@@ -206,7 +207,7 @@ ReacherLearning:
     time_horizon: 1000
     batch_size: 128
     buffer_size: 500000
-    max_steps: 1e6
+    max_steps: 2e5
     summary_freq: 3000
 
 HallwayLearning:

@@ -120,12 +120,6 @@ environment, you can set the following command line options when invoking
   do not improve learning performance.
 * `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to 
   collect experiences from when training. Defaults to 1.
-* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance 
-  will get assigned a port sequentially, starting from the `base-port`. Each instance 
-  will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs 
-  given to each instance from 0 to `num_envs - 1`. Default is 5005.
-* `--docker-target-name=<dt>`: The Docker Volume on which to store curriculum,
-  executable and model files. See [Using Docker](Using-Docker.md).
 * `--run-id=<path>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
   summary statistics are saved as well as the saved model itself. The default id
@@ -136,6 +130,17 @@ environment, you can set the following command line options when invoking
   training. Defaults to 50000.
 * `--seed=<n>`: Specifies a number to use as a seed for the random number
   generator used by the training code.
+* `--env-args=<string>`: Specify arguments for the executable environment. Be aware that
+  the standalone build will also process these as
+  [Unity Command Line Arguments](https://docs.unity3d.com/Manual/CommandLineArguments.html).
+  You should choose different argument names if you want to create environment-specific arguments.
+  All arguments after this flag will be passed to the executable. For example, setting
+  `mlagents-learn config/trainer_config.yaml --env-args --num-orcs 42` would result in
+   ` --num-orcs 42` passed to the executable.
+* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance 
+  will get assigned a port sequentially, starting from the `base-port`. Each instance 
+  will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs 
+  given to each instance from 0 to `num_envs - 1`. Default is 5005.
 * `--slow`: Specify this option to run the Unity environment at normal, game
   speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
   specified in the Academy's **Inference Configuration**. By default, training
@@ -156,6 +161,8 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
+
+
 
 ### Training Config File
 

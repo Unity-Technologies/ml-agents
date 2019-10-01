@@ -48,34 +48,7 @@ class UnityTimeOutException(UnityException):
     Related to errors with communication timeouts.
     """
 
-    def __init__(self, message, log_file_path=None):
-        if log_file_path is not None:
-            try:
-                with open(log_file_path, "r") as f:
-                    printing = False
-                    unity_error = "\n"
-                    for line in f:
-                        line = line.strip()
-                        if (line == "Exception") or (line == "Error"):
-                            printing = True
-                            unity_error += "----------------------\n"
-                        if line == "":
-                            printing = False
-                        if printing:
-                            unity_error += line + "\n"
-                    logger.info(unity_error)
-                    logger.error(
-                        "An error might have occured in the environment. "
-                        "You can check the logfile for more information at {}".format(
-                            log_file_path
-                        )
-                    )
-            except Exception:
-                logger.error(
-                    "An error might have occured in the environment. "
-                    "No UnitySDK.log file could be found."
-                )
-        super(UnityTimeOutException, self).__init__(message)
+    pass
 
 
 class UnityWorkerInUseException(UnityException):

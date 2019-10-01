@@ -4,7 +4,6 @@ import numpy as np
 import tensorflow as tf
 
 from mlagents.envs.brain import BrainInfo
-from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel

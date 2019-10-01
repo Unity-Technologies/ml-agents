@@ -2,15 +2,15 @@
 
 One of the challenges of training and testing agents on the same
 environment is that the agents tend to overfit. The result is that the
-agents are unable to generalize to any tweaks or variations in the enviornment.
-This is analgous to a model being trained and tested on an identical dataset
+agents are unable to generalize to any tweaks or variations in the environment.
+This is analogous to a model being trained and tested on an identical dataset
 in supervised learning. This becomes problematic in cases where environments
 are randomly instantiated with varying objects or properties. 
 
 To make agents robust and generalizable to different environments, the agent
-should be trained over multiple variations of the enviornment. Using this approach
+should be trained over multiple variations of the environment. Using this approach
 for training, the agent will be better suited to adapt (with higher performance)
-to future unseen variations of the enviornment
+to future unseen variations of the environment
 
 _Example of variations of the 3D Ball environment._
 

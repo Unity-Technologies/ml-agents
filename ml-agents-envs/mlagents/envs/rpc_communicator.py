@@ -7,17 +7,19 @@ from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
 
 from .communicator import Communicator
-from .communicator_objects import (
-    UnityToExternalServicer,
-    add_UnityToExternalServicer_to_server,
+from mlagents.envs.communicator_objects.unity_to_external_pb2_grpc import (
+    UnityToExternalProtoServicer,
+    add_UnityToExternalProtoServicer_to_server,
 )
-from .communicator_objects import UnityMessage, UnityInput, UnityOutput
+from mlagents.envs.communicator_objects.unity_message_pb2 import UnityMessageProto
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from .exception import UnityTimeOutException, UnityWorkerInUseException
 
 logger = logging.getLogger("mlagents.envs")
 
 
-class UnityToExternalServicerImplementation(UnityToExternalServicer):
+class UnityToExternalServicerImplementation(UnityToExternalProtoServicer):
     def __init__(self):
         self.parent_conn, self.child_conn = Pipe()
 
@@ -57,7 +59,9 @@ class RpcCommunicator(Communicator):
             # Establish communication grpc
             self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
             self.unity_to_external = UnityToExternalServicerImplementation()
-            add_UnityToExternalServicer_to_server(self.unity_to_external, self.server)
+            add_UnityToExternalProtoServicer_to_server(
+                self.unity_to_external, self.server
+            )
             # Using unspecified address, which means that grpc is communicating on all IPs
             # This is so that the docker container can connect.
             self.server.add_insecure_port("[::]:" + str(self.port))
@@ -78,7 +82,7 @@ class RpcCommunicator(Communicator):
         finally:
             s.close()
 
-    def initialize(self, inputs: UnityInput) -> UnityOutput:
+    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         if not self.unity_to_external.parent_conn.poll(self.timeout_wait):
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
@@ -88,15 +92,15 @@ class RpcCommunicator(Communicator):
                 "\t The environment and the Python interface have compatible versions."
             )
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
-        message = UnityMessage()
+        message = UnityMessageProto()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self.unity_to_external.parent_conn.send(message)
         self.unity_to_external.parent_conn.recv()
         return aca_param
 
-    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
-        message = UnityMessage()
+    def exchange(self, inputs: UnityInputProto) -> Optional[UnityOutputProto]:
+        message = UnityMessageProto()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self.unity_to_external.parent_conn.send(message)
@@ -110,7 +114,7 @@ class RpcCommunicator(Communicator):
         Sends a shutdown signal to the unity environment, and closes the grpc connection.
         """
         if self.is_open:
-            message_input = UnityMessage()
+            message_input = UnityMessageProto()
             message_input.header.status = 400
             self.unity_to_external.parent_conn.send(message_input)
             self.unity_to_external.parent_conn.close()

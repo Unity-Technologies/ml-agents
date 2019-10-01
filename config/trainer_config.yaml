@@ -7,6 +7,7 @@ default:
     hidden_units: 128
     lambd: 0.95
     learning_rate: 3.0e-4
+    learning_rate_schedule: linear
     max_steps: 5.0e4
     memory_size: 256
     normalize: false
@@ -17,12 +18,12 @@ default:
     summary_freq: 1000
     use_recurrent: false
     vis_encode_type: simple
-    reward_signals: 
+    reward_signals:
         extrinsic:
             strength: 1.0
             gamma: 0.99
 
-BananaLearning:
+FoodCollectorLearning:
     normalize: false
     beta: 5.0e-3
     batch_size: 1024
@@ -31,7 +32,7 @@ BananaLearning:
 
 BouncerLearning:
     normalize: true
-    max_steps: 5.0e5
+    max_steps: 1.0e6
     num_layers: 2
     hidden_units: 64
 

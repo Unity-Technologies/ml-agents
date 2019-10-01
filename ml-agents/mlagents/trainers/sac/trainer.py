@@ -4,21 +4,17 @@
 # and implemented in https://github.com/hill-a/stable-baselines
 
 import logging
-from collections import deque, defaultdict
-from typing import List, Any, Dict
+from collections import defaultdict
+from typing import List, Dict
 import os
 
 import numpy as np
-import tensorflow as tf
 
-from mlagents.envs import AllBrainInfo, BrainInfo
+from mlagents.envs.brain import AllBrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.envs.timers import timed, hierarchical_timer
-from mlagents.trainers.buffer import Buffer
+from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
-from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -124,7 +120,7 @@ class SACTrainer(RLTrainer):
         with open(filename, "wb") as file_object:
             self.training_buffer.update_buffer.save_to_file(file_object)
 
-    def load_replay_buffer(self) -> Buffer:
+    def load_replay_buffer(self) -> None:
         """
         Loads the last saved replay buffer from a file.
         """
@@ -171,6 +167,8 @@ class SACTrainer(RLTrainer):
         :param new_info: Dictionary of all next brains and corresponding BrainInfo.
         """
         info = new_info[self.brain_name]
+        if self.is_training:
+            self.policy.update_normalization(info.vector_observations)
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
             if (

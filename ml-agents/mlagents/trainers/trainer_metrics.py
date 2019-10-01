@@ -102,19 +102,12 @@ class TrainerMetrics:
             self.delta_policy_update = 0
         delta_train_start = time() - self.time_training_start
         LOGGER.debug(
-            " Policy Update Training Metrics for {}: "
-            "\n\t\tTime to update Policy: {:0.3f} s \n"
-            "\t\tTime elapsed since training: {:0.3f} s \n"
-            "\t\tTime for experience collection: {:0.3f} s \n"
-            "\t\tBuffer Length: {} \n"
-            "\t\tReturns : {:0.3f}\n".format(
-                self.brain_name,
-                self.delta_policy_update,
-                delta_train_start,
-                self.delta_last_experience_collection,
-                self.last_buffer_length,
-                self.last_mean_return,
-            )
+            f" Policy Update Training Metrics for {self.brain_name}: "
+            f"\n\t\tTime to update Policy: {self.delta_policy_update:0.3f} s \n"
+            f"\t\tTime elapsed since training: {delta_train_start:0.3f} s \n"
+            f"\t\tTime for experience collection: {(self.delta_last_experience_collection or 0):0.3f} s \n"
+            f"\t\tBuffer Length: {self.last_buffer_length or 0} \n"
+            f"\t\tReturns : {(self.last_mean_return or 0):0.3f}\n"
         )
         self._add_row(delta_train_start)
 

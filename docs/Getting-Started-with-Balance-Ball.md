@@ -14,12 +14,12 @@ and build the example environments.
 ![3D Balance Ball](images/balance.png)
 
 This walk-through uses the **3D Balance Ball** environment. 3D Balance Ball
-contains a number of platforms and balls (which are all copies of each other).
-Each platform tries to keep its ball from falling by rotating either
-horizontally or vertically. In this environment, a platform is an **Agent** that
+contains a number of agent cubes and balls (which are all copies of each other).
+Each agent cube tries to keep its ball from falling by rotating either
+horizontally or vertically. In this environment, an agent cube is an **Agent** that
 receives a reward for every step that it balances the ball. An agent is also
 penalized with a negative reward for dropping the ball. The goal of the training
-process is to have the platforms learn to never drop the ball.
+process is to have the agents learn to balance the ball on their head.
 
 Let's get started!
 
@@ -44,7 +44,7 @@ a GameObject, select the GameObject in the Scene window, and open the Inspector
 window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
-it contains not one, but several platforms.  Each platform in the scene is an
+it contains not one, but several agent cubes.  Each agent cube in the scene is an
 independent agent, but they all share the same Brain. 3D Balance Ball does this
 to speed up training since all twelve agents contribute to training in parallel.
 
@@ -116,7 +116,7 @@ contain relevant information for the agent to make decisions.
 The Brain instance used in the 3D Balance Ball example uses the **Continuous**
 vector observation space with a **State Size** of 8. This means that the feature
 vector containing the Agent's observations contains eight elements: the `x` and
-`z` components of the platform's rotation and the `x`, `y`, and `z` components
+`z` components of the agent cube's rotation and the `x`, `y`, and `z` components
 of the ball's relative position and velocity. (The observation values are
 defined in the Agent's `CollectObservations()` function.)
 
@@ -141,7 +141,7 @@ action space and 2 when using continuous.)
 
 The Agent is the actor that observes and takes actions in the environment. In
 the 3D Balance Ball environment, the Agent components are placed on the twelve
-Platform GameObjects. The base Agent object has a few properties that affect its
+"Agent" GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
 * **Brain** — Every Agent must have a Brain. The Brain determines how an Agent
@@ -161,8 +161,8 @@ The Ball3DAgent subclass defines the following methods:
 
 * agent.AgentReset() — Called when the Agent resets, including at the beginning
   of a session. The Ball3DAgent class uses the reset function to reset the
-  platform and ball. The function randomizes the reset values so that the
-  training generalizes to more than a specific starting position and platform
+  agent cube and ball. The function randomizes the reset values so that the
+  training generalizes to more than a specific starting position and agent cube
   attitude.
 * agent.CollectObservations() — Called every simulation step. Responsible for
   collecting the Agent's observations of the environment. Since the Brain
@@ -173,9 +173,9 @@ The Ball3DAgent subclass defines the following methods:
   by the Brain. The Ball3DAgent example handles both the continuous and the
   discrete action space types. There isn't actually much difference between the
   two state types in this environment — both vector action spaces result in a
-  small change in platform rotation at each step. The `AgentAction()` function
+  small change in the agent cube's rotation at each step. The `AgentAction()` function
   assigns a reward to the Agent; in this example, an Agent receives a small
-  positive reward for each step it keeps the ball on the platform and a larger,
+  positive reward for each step it keeps the ball on the agent cube's head and a larger,
   negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.

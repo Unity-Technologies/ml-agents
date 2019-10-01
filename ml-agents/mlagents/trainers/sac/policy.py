@@ -1,17 +1,18 @@
 import logging
-from typing import Dict, List, Any
+from typing import Dict, Any, Optional
 import numpy as np
 import tensorflow as tf
 
 from mlagents.envs.timers import timed
-from mlagents.trainers import BrainInfo, ActionInfo, BrainParameters
+from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.components.reward_signals.reward_signal import RewardSignal
-from mlagents.trainers.components.bc import BCModule
+from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -57,6 +58,7 @@ class SACPolicy(TFPolicy):
 
         with self.graph.as_default():
             # Create pretrainer if needed
+            self.bc_module: Optional[BCModule] = None
             if "pretraining" in trainer_params:
                 BCModule.check_config(trainer_params["pretraining"])
                 self.bc_module = BCModule(
@@ -73,8 +75,6 @@ class SACPolicy(TFPolicy):
                         "Pretraining: Samples Per Update is not a valid setting for SAC."
                     )
                     self.bc_module.samples_per_update = 1
-            else:
-                self.bc_module = None
 
         if load:
             self._load_graph()
@@ -100,6 +100,9 @@ class SACPolicy(TFPolicy):
             self.model = SACModel(
                 brain,
                 lr=float(trainer_params["learning_rate"]),
+                lr_schedule=LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "constant")
+                ),
                 h_size=int(trainer_params["hidden_units"]),
                 init_entcoef=float(trainer_params["init_entcoef"]),
                 max_step=float(trainer_params["max_steps"]),
@@ -111,7 +114,9 @@ class SACPolicy(TFPolicy):
                 stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
                 gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
-                vis_encode_type=trainer_params["vis_encode_type"],
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
             )
             self.model.create_sac_optimizers()
 
@@ -129,13 +134,6 @@ class SACPolicy(TFPolicy):
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
-        if (
-            is_training
-            and self.use_vec_obs
-            and trainer_params["normalize"]
-            and not load
-        ):
-            self.inference_dict["update_mean"] = self.model.update_normalization
 
         self.update_dict.update(
             {

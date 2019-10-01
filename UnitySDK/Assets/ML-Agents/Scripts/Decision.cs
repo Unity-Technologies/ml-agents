@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -12,9 +12,9 @@ namespace MLAgents
     public abstract class Decision : ScriptableObject
     {
         public BrainParameters brainParameters;
-        
+
         /// <summary>
-        /// Defines the decision-making logic of the agent. Given the information 
+        /// Defines the decision-making logic of the agent. Given the information
         /// about the agent, returns a vector of actions.
         /// </summary>
         /// <returns>Vector action vector.</returns>
@@ -23,12 +23,12 @@ namespace MLAgents
         /// <param name="reward">The reward the agent received at the previous step.</param>
         /// <param name="done">Whether or not the agent is done.</param>
         /// <param name="memory">
-        /// The memories stored from the previous step with 
+        /// The memories stored from the previous step with
         /// <see cref="MakeMemory(List{float}, List{Texture2D}, float, bool, List{float})"/>
         /// </param>
         public abstract float[] Decide(
             List<float>
-                vectorObs,
+            vectorObs,
             List<Texture2D> visualObs,
             float reward,
             bool done,

@@ -1,10 +1,10 @@
-from unittest.mock import *
+from unittest.mock import MagicMock, Mock, patch
 
 import yaml
 import pytest
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.envs.subprocess_env_manager import StepInfo
+from mlagents.envs.subprocess_env_manager import EnvironmentStep
 from mlagents.envs.sampler_class import SamplerManager
 
 
@@ -158,14 +158,13 @@ def trainer_controller_with_take_step_mocks():
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
-    old_step_info = StepInfo(Mock(), Mock(), MagicMock())
-    new_step_info = StepInfo(Mock(), Mock(), MagicMock())
+    old_step_info = EnvironmentStep(Mock(), Mock(), MagicMock())
+    new_step_info = EnvironmentStep(Mock(), Mock(), MagicMock())
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
     env_mock.step.return_value = [new_step_info]
     env_mock.reset.return_value = [old_step_info]
-    env_mock.global_done = False
 
     tc.advance(env_mock)
     env_mock.reset.assert_not_called()

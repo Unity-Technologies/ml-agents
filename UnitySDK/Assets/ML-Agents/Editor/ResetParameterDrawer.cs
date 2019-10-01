@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace MLAgents
 {
@@ -13,11 +14,11 @@ namespace MLAgents
     [CustomPropertyDrawer(typeof(ResetParameters))]
     public class ResetParameterDrawer : PropertyDrawer
     {
-        private ResetParameters _parameters;
+        private ResetParameters m_Parameters;
         // The height of a line in the Unity Inspectors
-        private const float LineHeight = 17f;
+        private const float k_LineHeight = 17f;
         // This is the prefix for the key when you add a reset parameter
-        private const string NewKeyPrefix = "Param-";
+        private const string k_NewKeyPrefix = "Param-";
 
         /// <summary>
         /// Computes the height of the Drawer depending on the property it is showing
@@ -27,28 +28,28 @@ namespace MLAgents
         /// <returns>The vertical space needed to draw the property.</returns>
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            LazyInitializeParameters(property, label);
-            return (_parameters.Count + 2) * LineHeight;
+            LazyInitializeParameters(property);
+            return (m_Parameters.Count + 2) * k_LineHeight;
         }
 
         /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            LazyInitializeParameters(property, label);
-            position.height = LineHeight;
+            LazyInitializeParameters(property);
+            position.height = k_LineHeight;
             EditorGUI.LabelField(position, label);
-            position.y += LineHeight;
+            position.y += k_LineHeight;
             var width = position.width / 2 - 24;
             var keyRect = new Rect(position.x + 20, position.y, width, position.height);
             var valueRect = new Rect(position.x + width + 30, position.y, width, position.height);
             DrawAddRemoveButtons(keyRect, valueRect);
             EditorGUI.BeginProperty(position, label, property);
-            foreach (var parameter in _parameters)
+            foreach (var parameter in m_Parameters)
             {
                 var key = parameter.Key;
                 var value = parameter.Value;
-                keyRect.y += LineHeight;
-                valueRect.y += LineHeight;
+                keyRect.y += k_LineHeight;
+                valueRect.y += k_LineHeight;
                 EditorGUI.BeginChangeCheck();
                 var newKey = EditorGUI.TextField(keyRect, key);
                 if (EditorGUI.EndChangeCheck())
@@ -56,8 +57,8 @@ namespace MLAgents
                     MarkSceneAsDirty();
                     try
                     {
-                        _parameters.Remove(key);
-                        _parameters.Add(newKey, value);
+                        m_Parameters.Remove(key);
+                        m_Parameters.Add(newKey, value);
                     }
                     catch (Exception e)
                     {
@@ -71,7 +72,7 @@ namespace MLAgents
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkSceneAsDirty();
-                    _parameters[key] = value;
+                    m_Parameters[key] = value;
                     break;
                 }
             }
@@ -86,27 +87,27 @@ namespace MLAgents
         private void DrawAddRemoveButtons(Rect addRect, Rect removeRect)
         {
             // This is the Add button
-            if (_parameters.Count == 0)
+            if (m_Parameters.Count == 0)
             {
                 addRect.width *= 2;
             }
             if (GUI.Button(addRect,
-                new GUIContent("Add New", "Add a new item to the default reset parameters"), 
+                new GUIContent("Add New", "Add a new item to the default reset parameters"),
                 EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
                 AddParameter();
             }
-            
+
             // If there are no items in the ResetParameters, Hide the Remove button
-            if (_parameters.Count == 0)
+            if (m_Parameters.Count == 0)
             {
                 return;
             }
             // This is the Remove button
-            if (GUI.Button(removeRect, 
+            if (GUI.Button(removeRect,
                 new GUIContent(
-                    "Remove Last", "Remove the last item from the default reset parameters"), 
+                    "Remove Last", "Remove the last item from the default reset parameters"),
                 EditorStyles.miniButton))
             {
                 MarkSceneAsDirty();
@@ -122,7 +123,7 @@ namespace MLAgents
         {
             if (!EditorApplication.isPlaying)
             {
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
         }
 
@@ -131,19 +132,18 @@ namespace MLAgents
         /// </summary>
         /// <param name="property">The SerializedProperty of the ResetParameters
         /// to make the custom GUI for.</param>
-        /// <param name="label">The label of this property.</param>
-        private void LazyInitializeParameters(SerializedProperty property, GUIContent label)
+        private void LazyInitializeParameters(SerializedProperty property)
         {
-            if (_parameters != null)
+            if (m_Parameters != null)
             {
                 return;
             }
             var target = property.serializedObject.targetObject;
-            _parameters = fieldInfo.GetValue(target) as ResetParameters;
-            if (_parameters == null)
+            m_Parameters = fieldInfo.GetValue(target) as ResetParameters;
+            if (m_Parameters == null)
             {
-                _parameters = new ResetParameters();
-                fieldInfo.SetValue(target, _parameters);
+                m_Parameters = new ResetParameters();
+                fieldInfo.SetValue(target, m_Parameters);
             }
         }
 
@@ -152,10 +152,10 @@ namespace MLAgents
         /// </summary>
         private void RemoveLastParameter()
         {
-            if (_parameters.Count > 0)
+            if (m_Parameters.Count > 0)
             {
-                string key = _parameters.Keys.ToList()[_parameters.Count - 1];
-                _parameters.Remove(key);
+                var key = m_Parameters.Keys.ToList()[m_Parameters.Count - 1];
+                m_Parameters.Remove(key);
             }
         }
 
@@ -164,11 +164,11 @@ namespace MLAgents
         /// </summary>
         private void AddParameter()
         {
-            string key = NewKeyPrefix + _parameters.Count;
+            var key = k_NewKeyPrefix + m_Parameters.Count;
             var value = default(float);
             try
             {
-                _parameters.Add(key, value);
+                m_Parameters.Add(key, value);
             }
             catch (Exception e)
             {

@@ -1,8 +1,9 @@
-from typing import Any, Dict
+import yaml
+from typing import Any, Dict, TextIO
 
-from mlagents.trainers import MetaCurriculum
+from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers import Trainer
+from mlagents.trainers.trainer import Trainer
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
@@ -40,7 +41,7 @@ def initialize_trainers(
     :param multi_gpu: Whether to use multi-GPU training
     :return:
     """
-    trainers = {}
+    trainers: Dict[str, Trainer] = {}
     trainer_parameters_dict = {}
     for brain_name in external_brains:
         trainer_parameters = trainer_config["default"].copy()
@@ -108,3 +109,31 @@ def initialize_trainers(
                 "brain {}".format(brain_name)
             )
     return trainers
+
+
+def load_config(config_path: str) -> Dict[str, Any]:
+    try:
+        with open(config_path) as data_file:
+            return _load_config(data_file)
+    except IOError:
+        raise UnityEnvironmentException(
+            f"Config file could not be found at {config_path}."
+        )
+    except UnicodeDecodeError:
+        raise UnityEnvironmentException(
+            f"There was an error decoding Config file from {config_path}. "
+            f"Make sure your file is save using UTF-8"
+        )
+
+
+def _load_config(fp: TextIO) -> Dict[str, Any]:
+    """
+    Load the yaml config from the file-like object.
+    """
+    try:
+        return yaml.safe_load(fp)
+    except yaml.parser.ParserError as e:
+        raise UnityEnvironmentException(
+            "Error parsing yaml file. Please check for formatting errors. "
+            "A tool such as http://www.yamllint.com/ can be helpful with this."
+        ) from e

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace MLAgents
         CPU = 0,
         GPU = 1
     }
-    
+
     /// <summary>
     /// The Learning Brain works differently if you are training it or not.
     /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
@@ -29,32 +29,26 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
-        private ITensorAllocator _tensorAllocator;
-        private TensorGenerator _tensorGenerator;
-        private TensorApplier _tensorApplier;
-#if ENABLE_TENSORFLOW
-        public TextAsset model;
-        private ModelParamLoader _modelParamLoader;
-        private TFSharpInferenceEngine _engine;
-#else 
+        private ITensorAllocator m_TensorAllocator;
+        private TensorGenerator m_TensorGenerator;
+        private TensorApplier m_TensorApplier;
         public NNModel model;
-        private Model _barracudaModel;
-        private IWorker _engine;
-        private bool _verbose = false;
-        
-        private BarracudaModelParamLoader _modelParamLoader;
-        private string[] _outputNames;
-#endif
-        
+        private Model m_BarracudaModel;
+        private IWorker m_Engine;
+        private bool m_Verbose = false;
+
+        private BarracudaModelParamLoader m_ModelParamLoader;
+        private string[] m_OutputNames;
+
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
-                 "(This field is not applicable for training).")]
+            "(This field is not applicable for training).")]
         public InferenceDevice inferenceDevice = InferenceDevice.CPU;
-        
-        private IReadOnlyList<TensorProxy> _inferenceInputs;
-        private IReadOnlyList<TensorProxy> _inferenceOutputs;
+
+        private IReadOnlyList<TensorProxy> m_InferenceInputs;
+        private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
         [NonSerialized]
-        private bool _isControlled;
+        private bool m_IsControlled;
 
         /// <summary>
         /// When Called, the brain will be controlled externally. It will not use the
@@ -62,15 +56,15 @@ namespace MLAgents
         /// </summary>
         public void SetToControlledExternally()
         {
-            _isControlled = true;
+            m_IsControlled = true;
         }
-        
+
         /// <inheritdoc />
         protected override void Initialize()
         {
             ReloadModel();
         }
-        
+
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
@@ -81,58 +75,41 @@ namespace MLAgents
         /// </exception>
         public void ReloadModel(int seed = 0)
         {
-            if (_tensorAllocator == null)
-                _tensorAllocator = new TensorCachingAllocator();
-            
-#if ENABLE_TENSORFLOW
-            if (model != null)
-            {
-                _engine = new TFSharpInferenceEngine();
-                _engine.PrepareModel(model.bytes);
-            }
-            else
-            {
-                _engine = null;
-            }
-            _modelParamLoader = ModelParamLoader.GetLoaderAndCheck(_engine, brainParameters);
-            _inferenceInputs = _modelParamLoader.GetInputTensors();
-            _inferenceOutputs = _modelParamLoader.GetOutputTensors();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed, _tensorAllocator);
-            _tensorApplier = new TensorApplier(brainParameters, seed, _tensorAllocator);
-#else
-            if (model != null)
-            {
-                #if BARRACUDA_VERBOSE
-                _verbose = true;
-                #endif
+            if (m_TensorAllocator == null)
+                m_TensorAllocator = new TensorCachingAllocator();
 
-                D.logEnabled = _verbose;
-                
+            if (model != null)
+            {
+#if BARRACUDA_VERBOSE
+                _verbose = true;
+#endif
+
+                D.logEnabled = m_Verbose;
+
                 // Cleanup previous instance
-                if (_engine != null)
-                    _engine.Dispose();
-                
-                _barracudaModel = ModelLoader.Load(model.Value);
+                if (m_Engine != null)
+                    m_Engine.Dispose();
+
+                m_BarracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
                     ? BarracudaWorkerFactory.Type.ComputePrecompiled
                     : BarracudaWorkerFactory.Type.CSharp;
-                                       
-                _engine = BarracudaWorkerFactory.CreateWorker(executionDevice, _barracudaModel, _verbose);
+
+                m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, m_BarracudaModel, m_Verbose);
             }
             else
             {
-                _barracudaModel = null;
-                _engine = null;
+                m_BarracudaModel = null;
+                m_Engine = null;
             }
 
-            _modelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(_engine, _barracudaModel, brainParameters);
-            _inferenceInputs = _modelParamLoader.GetInputTensors();
-            _outputNames = _modelParamLoader.GetOutputNames();
-            _tensorGenerator = new TensorGenerator(brainParameters, seed, _tensorAllocator, _barracudaModel);
-            _tensorApplier = new TensorApplier(brainParameters, seed, _tensorAllocator, _barracudaModel);
-#endif
+            m_ModelParamLoader = BarracudaModelParamLoader.GetLoaderAndCheck(m_Engine, m_BarracudaModel, brainParameters);
+            m_InferenceInputs = m_ModelParamLoader.GetInputTensors();
+            m_OutputNames = m_ModelParamLoader.GetOutputNames();
+            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
+            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
         }
-        
+
         /// <summary>
         /// Return a list of failed checks corresponding to the failed compatibility checks
         /// between the Model and the BrainParameters. Note : This does not reload the model.
@@ -143,90 +120,63 @@ namespace MLAgents
         /// Brain Parameters</returns>
         public IEnumerable<string> GetModelFailedChecks()
         {
-
-#if ENABLE_TENSORFLOW
-            return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
-#else
-            return (_modelParamLoader != null) ? _modelParamLoader.GetChecks() : new List<string>();
-#endif
+            return (m_ModelParamLoader != null) ? m_ModelParamLoader.GetChecks() : new List<string>();
         }
 
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            if (_isControlled)
+            if (m_IsControlled)
             {
-                agentInfos.Clear();
+                m_AgentInfos.Clear();
                 return;
             }
-            var currentBatchSize = agentInfos.Count();
+            var currentBatchSize = m_AgentInfos.Count();
             if (currentBatchSize == 0)
             {
                 return;
             }
-            
+
             Profiler.BeginSample("LearningBrain.DecideAction");
-            
-#if ENABLE_TENSORFLOW
-            if (_engine == null)
+            if (m_Engine == null)
             {
                 Debug.LogError($"No model was present for the Brain {name}.");
                 return;
             }
-            // Prepare the input tensors to be feed into the engine
-            _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
-            
-            // Prepare the output tensors to be feed into the engine
-            _tensorGenerator.GenerateTensors(_inferenceOutputs, currentBatchSize, agentInfos);
 
-            // Execute the Model
-            Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
-            _engine.ExecuteGraph(_inferenceInputs, _inferenceOutputs);
-            Profiler.EndSample();
-
-            // Update the outputs
-            _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
-#else
-            if (_engine == null)
-            {
-                Debug.LogError($"No model was present for the Brain {name}.");
-                return;
-            }
-            
             Profiler.BeginSample($"MLAgents.{name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            _tensorGenerator.GenerateTensors(_inferenceInputs, currentBatchSize, agentInfos);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_AgentInfos);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{name}.PrepareBarracudaInputs");
-            var inputs = PrepareBarracudaInputs(_inferenceInputs);
+            var inputs = PrepareBarracudaInputs(m_InferenceInputs);
             Profiler.EndSample();
 
             // Execute the Model
             Profiler.BeginSample($"MLAgents.{name}.ExecuteGraph");
-            _engine.Execute(inputs);
+            m_Engine.Execute(inputs);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{name}.FetchBarracudaOutputs");
-            _inferenceOutputs = FetchBarracudaOutputs(_outputNames);
+            m_InferenceOutputs = FetchBarracudaOutputs(m_OutputNames);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{name}.ApplyTensors");
             // Update the outputs
-            _tensorApplier.ApplyTensors(_inferenceOutputs, agentInfos);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_AgentInfos);
             Profiler.EndSample();
-#endif
-            agentInfos.Clear();
+
+            m_AgentInfos.Clear();
             Profiler.EndSample();
         }
-        
-#if !ENABLE_TENSORFLOW
+
         protected Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
-            foreach (var inp in _inferenceInputs)
-            {        
-                inputs[inp.Name] = inp.Data;
+            foreach (var inp in m_InferenceInputs)
+            {
+                inputs[inp.name] = inp.data;
             }
 
             return inputs;
@@ -235,23 +185,19 @@ namespace MLAgents
         protected List<TensorProxy> FetchBarracudaOutputs(string[] names)
         {
             var outputs = new List<TensorProxy>();
-            foreach (var name in names)
+            foreach (var n in names)
             {
-                var outp = _engine.Peek(name);
-                outputs.Add(TensorUtils.TensorProxyFromBarracuda(outp, name));
+                var output = m_Engine.Peek(n);
+                outputs.Add(TensorUtils.TensorProxyFromBarracuda(output, n));
             }
 
             return outputs;
         }
-#endif
-        
+
         public void OnDisable()
         {
-#if !ENABLE_TENSORFLOW
-            _engine?.Dispose();
-#endif
-            _tensorAllocator?.Reset(false);
+            m_Engine?.Dispose();
+            m_TensorAllocator?.Reset(false);
         }
-
     }
 }
