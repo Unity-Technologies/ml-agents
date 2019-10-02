@@ -230,7 +230,8 @@ class PPOTrainer(RLTrainer):
         )
         self.cumulative_returns_since_policy_update = []
 
-        # Make sure batch_size is a multiple of sequence length
+        # Make sure batch_size is a multiple of sequence length. During training, we
+        # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
             self.trainer_parameters["batch_size"]
             - self.trainer_parameters["batch_size"] % self.policy.sequence_length
