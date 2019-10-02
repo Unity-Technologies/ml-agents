@@ -64,10 +64,10 @@ namespace MLAgents
             m_Communicator = communicator;
         }
 
-        public UnityRLInitializationInput SendAcademyParameters(CommunicatorInitParameters initParameters,
+        public UnityRLInitializationInputProto SendAcademyParameters(CommunicatorInitParameters initParameters,
             BroadcastHub broadcastHub)
         {
-            var academyParameters = new UnityRLInitializationOutput
+            var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
                 Version = initParameters.version

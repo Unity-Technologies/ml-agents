@@ -308,7 +308,7 @@ namespace MLAgents
                 var inputParameters = m_BrainBatcher.SendAcademyParameters(
                     new CommunicatorInitParameters
                     {
-                        version = k_KApiVersion,
+                        version = k_ApiVersion,
                         name = gameObject.name,
                         brains = enumerableBrains,
                         environmentResetParameters = new EnvironmentResetParameters

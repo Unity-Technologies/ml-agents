@@ -19,7 +19,7 @@ namespace MLAgents
         /// that is left in our code.  We need to decide how to handle this
         /// moving forward.
         /// </summary>
-        public CustomResetParameters customResetParameters;
+        public CustomResetParametersProto customResetParameters;
     }
     public struct CommunicatorInitParameters
     {
