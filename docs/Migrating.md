@@ -1,9 +1,18 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.10 to v0.11
+
+### Important Changes
+* The definition of the gRPC service has changed.
+
+#### Steps to Migrate
+* In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
+
 ## Migrating from ML-Agents toolkit v0.9 to v0.10
 
 ### Important Changes
 * We have updated the C# code in our repository to be in line with Unity Coding Conventions.  This has changed the name of some public facing classes and enums.
+* The example environments have been updated. If you were using these environments to benchmark your training, please note that the resulting rewards may be slightly different in v0.10.
 
 #### Steps to Migrate
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
@@ -35,7 +44,7 @@ You may need to change `max_steps` in your config as appropriate as well.
 ## Migrating from ML-Agents toolkit v0.7 to v0.8
 
 ### Important Changes
-* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`.
+* We have split the Python packages into two separate packages `ml-agents` and `ml-agents-envs`.
 * `--worker-id` option of `learn.py` has been removed, use `--base-port` instead if you'd like to run multiple instances of `learn.py`.
 
 #### Steps to Migrate

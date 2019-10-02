@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="mlagents",
-    version="0.9.3",
+    version="0.10.0",
     description="Unity Machine Learning Agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,7 +35,7 @@ setup(
         "h5py>=2.9.0",
         "jupyter",
         "matplotlib",
-        "mlagents_envs==0.9.3",
+        "mlagents_envs==0.10.0",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
