@@ -94,6 +94,8 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
+        public bool trainInEditor;
+
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
@@ -259,12 +261,15 @@ namespace MLAgents
             InitializeAcademy();
             ICommunicator communicator;
 
-            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();
-            var controlledBrains = broadcastHub.broadcastingBrains.Where(
-                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
-            foreach (var brain1 in controlledBrains)
+            var controlledBrains = broadcastHub.brainsToControl.Where(x => x != null).ToList();
+#if UNITY_EDITOR
+            if (!trainInEditor)
             {
-                var brain = (LearningBrain)brain1;
+                controlledBrains.Clear();
+            }
+#endif
+            foreach (var brain in controlledBrains)
+            {
                 brain.SetToControlledExternally();
             }
 
@@ -284,7 +289,8 @@ namespace MLAgents
             catch
             {
                 communicator = null;
-                if (controlledBrains.ToList().Count > 0)
+#if UNITY_EDITOR
+                if (controlledBrains.ToList().Count > 0 && trainInEditor)
                 {
                     communicator = new RpcCommunicator(
                         new CommunicatorParameters
@@ -292,11 +298,12 @@ namespace MLAgents
                             port = 5005
                         });
                 }
+#endif
             }
 
             m_BrainBatcher = new Batcher(communicator);
 
-            foreach (var trainingBrain in exposedBrains)
+            foreach (var trainingBrain in controlledBrains)
             {
                 trainingBrain.SetBatcher(m_BrainBatcher);
             }
@@ -309,11 +316,11 @@ namespace MLAgents
                     new CommunicatorObjects.UnityRLInitializationOutputProto();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = k_ApiVersion;
-                foreach (var brain in exposedBrains)
+                foreach (var brain in controlledBrains)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
+                        bp.ToProto(brain.name, true));
                 }
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
