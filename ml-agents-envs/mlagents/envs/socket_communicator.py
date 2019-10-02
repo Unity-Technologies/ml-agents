@@ -4,9 +4,9 @@ import struct
 from typing import Optional
 
 from .communicator import Communicator
-from mlagents.envs.communicator_objects.unity_message_pb2 import UnityMessage
-from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
-from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.unity_message_pb2 import UnityMessageProto
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from .exception import UnityTimeOutException
 
 
@@ -28,7 +28,7 @@ class SocketCommunicator(Communicator):
         self._socket = None
         self._conn = None
 
-    def initialize(self, inputs: UnityInput) -> UnityOutput:
+    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         try:
             # Establish communication socket
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -53,11 +53,11 @@ class SocketCommunicator(Communicator):
                 "\t The Agents are linked to the appropriate Brains\n"
                 "\t The environment and the Python interface have compatible versions."
             )
-        message = UnityMessage()
+        message = UnityMessageProto()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self._communicator_send(message.SerializeToString())
-        initialization_output = UnityMessage()
+        initialization_output = UnityMessageProto()
         initialization_output.ParseFromString(self._communicator_receive())
         return initialization_output.unity_output
 
@@ -75,12 +75,12 @@ class SocketCommunicator(Communicator):
     def _communicator_send(self, message):
         self._conn.send(struct.pack("I", len(message)) + message)
 
-    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
-        message = UnityMessage()
+    def exchange(self, inputs: UnityInputProto) -> Optional[UnityOutputProto]:
+        message = UnityMessageProto()
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self._communicator_send(message.SerializeToString())
-        outputs = UnityMessage()
+        outputs = UnityMessageProto()
         outputs.ParseFromString(self._communicator_receive())
         if outputs.header.status != 200:
             return None
@@ -91,7 +91,7 @@ class SocketCommunicator(Communicator):
         Sends a shutdown signal to the unity environment, and closes the socket connection.
         """
         if self._socket is not None and self._conn is not None:
-            message_input = UnityMessage()
+            message_input = UnityMessageProto()
             message_input.header.status = 400
             self._communicator_send(message_input.SerializeToString())
         if self._socket is not None:

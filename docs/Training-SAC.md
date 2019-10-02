@@ -256,7 +256,7 @@ To use pretraining, add a `pretraining` section to the trainer_config. For insta
         steps: 10000
 ```
 
-Below are the avaliable hyperparameters for pretraining.
+Below are the available hyperparameters for pretraining.
 
 ### Strength
 
@@ -316,7 +316,7 @@ long to decrease, `init_entcoef` should be adjusted.
 This corresponds to how random the decisions of a Brain are. This should
 initially increase during training, reach a peak, and should decline along
 with the Entropy Coefficient. This is because in the beginning, the agent is
-incentivised to be more random for exploration due to a high entropy coefficient.
+incentivized to be more random for exploration due to a high entropy coefficient.
 If it decreases too soon or takes too long to decrease, `init_entcoef` should be adjusted.
 
 ### Learning Rate
@@ -326,7 +326,7 @@ is set to `linear`.
 
 ### Policy Loss
 
-These values may increase as the agent explores, but should decrease longterm
+These values may increase as the agent explores, but should decrease long-term
 as the agent learns how to solve the task.
 
 ### Value Estimate

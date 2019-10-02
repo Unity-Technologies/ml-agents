@@ -4,6 +4,7 @@
 
 ### Important Changes
 * We have updated the C# code in our repository to be in line with Unity Coding Conventions.  This has changed the name of some public facing classes and enums.
+* The example environments have been updated. If you were using these environments to benchmark your training, please note that the resulting rewards may be slightly different in v0.10.
 
 #### Steps to Migrate
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.

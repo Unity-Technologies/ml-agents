@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-import "mlagents/envs/communicator_objects/agent_info_proto.proto";
+import "mlagents/envs/communicator_objects/agent_info.proto";
 
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
-message UnityRLOutput {
+message UnityRLOutputProto {
     message ListAgentInfoProto {
         repeated AgentInfoProto value = 1;
     }

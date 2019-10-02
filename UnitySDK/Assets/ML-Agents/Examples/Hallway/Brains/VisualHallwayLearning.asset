@@ -12,19 +12,15 @@ MonoBehaviour:
   m_Name: VisualHallwayLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 1
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 01000000
-    cameraResolutions: []
+    vectorActionSize: 05000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
     vectorActionDescriptions:
     - 
     vectorActionSpaceType: 0
-  graphModel: {fileID: 0}
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
+  model: {fileID: 0}
+  inferenceDevice: 0

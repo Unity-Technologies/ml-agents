@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 
-from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutput
-from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
 logger = logging.getLogger("mlagents.envs")
 
@@ -16,14 +16,14 @@ class Communicator(object):
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
 
-    def initialize(self, inputs: UnityInput) -> UnityOutput:
+    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         """
         Used to exchange initialization parameters between Python and the Environment
         :param inputs: The initialization input that will be sent to the environment.
         :return: UnityOutput: The initialization output sent by Unity
         """
 
-    def exchange(self, inputs: UnityInput) -> Optional[UnityOutput]:
+    def exchange(self, inputs: UnityInputProto) -> Optional[UnityOutputProto]:
         """
         Used to send an input and receive an output from the Environment
         :param inputs: The UnityInput that needs to be sent the Environment

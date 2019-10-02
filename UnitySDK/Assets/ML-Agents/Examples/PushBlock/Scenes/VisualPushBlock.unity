@@ -161,6 +161,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
@@ -332,6 +338,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
@@ -447,6 +459,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
@@ -602,7 +620,6 @@ MonoBehaviour:
     broadcastingBrains:
     - {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f, type: 2}
     m_BrainsToControl: []
-  m_MaxSteps: 0
   m_TrainingConfiguration:
     width: 1280
     height: 720
@@ -691,6 +708,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
@@ -741,6 +764,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
@@ -783,6 +812,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0

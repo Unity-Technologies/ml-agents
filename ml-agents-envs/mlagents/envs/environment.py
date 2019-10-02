@@ -16,23 +16,24 @@ from .exception import (
     UnityTimeOutException,
 )
 
-from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInput
-from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutput
-from mlagents.envs.communicator_objects.agent_action_proto_pb2 import AgentActionProto
-from mlagents.envs.communicator_objects.environment_parameters_proto_pb2 import (
+from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
+from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
+from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
+from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
     EnvironmentParametersProto,
 )
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
-    UnityRLInitializationInput,
+    UnityRLInitializationInputProto,
 )
 from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
-    UnityRLInitializationOutput,
+    UnityRLInitializationOutputProto,
 )
-from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInput
-from mlagents.envs.communicator_objects.custom_action_pb2 import CustomAction
+from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
+from mlagents.envs.communicator_objects.custom_action_pb2 import CustomActionProto
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
+import signal
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
@@ -72,13 +73,14 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-9"
+        self._version_ = "API-10"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
         self.proc1 = (
             None
         )  # The process that is started. If None, no process was started
+        self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
 
@@ -98,7 +100,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         self._loaded = True
 
-        rl_init_parameters_in = UnityRLInitializationInput(seed=seed)
+        rl_init_parameters_in = UnityRLInitializationInputProto(seed=seed)
         try:
             aca_params = self.send_academy_parameters(rl_init_parameters_in)
         except UnityTimeOutException:
@@ -249,7 +251,15 @@ class UnityEnvironment(BaseUnityEnvironment):
                 subprocess_args += ["--port", str(self.port)]
                 subprocess_args += args
                 try:
-                    self.proc1 = subprocess.Popen(subprocess_args)
+                    self.proc1 = subprocess.Popen(
+                        subprocess_args,
+                        # start_new_session=True means that signals to the parent python process
+                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
+                        # This is generally good since we want the environment to have a chance to shutdown,
+                        # but may be undesirable in come cases; if so, we'll add a command-line toggle.
+                        # Note that on Windows, the CTRL_C signal will still be sent.
+                        start_new_session=True,
+                    )
                 except PermissionError as perm:
                     # This is likely due to missing read or execute permissions on file.
                     raise UnityEnvironmentException(
@@ -444,7 +454,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a value input"
                     )
 
-            if isinstance(custom_action, CustomAction):
+            if isinstance(custom_action, CustomActionProto):
                 if self._num_external_brains == 1:
                     custom_action = {self._external_brain_names[0]: custom_action}
                 elif self._num_external_brains > 1:
@@ -503,7 +513,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 else:
                     if custom_action[brain_name] is None:
                         custom_action[brain_name] = [None] * n_agent
-                    if isinstance(custom_action[brain_name], CustomAction):
+                    if isinstance(custom_action[brain_name], CustomActionProto):
                         custom_action[brain_name] = [
                             custom_action[brain_name]
                         ] * n_agent
@@ -583,7 +593,18 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._loaded = False
         self.communicator.close()
         if self.proc1 is not None:
-            self.proc1.kill()
+            # Wait a bit for the process to shutdown, but kill it if it takes too long
+            try:
+                self.proc1.wait(timeout=self.timeout_wait)
+                signal_name = self.returncode_to_signal_name(self.proc1.returncode)
+                signal_name = f" ({signal_name})" if signal_name else ""
+                return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."
+                logger.info(return_info)
+            except subprocess.TimeoutExpired:
+                logger.info("Environment timed out shutting down. Killing...")
+                self.proc1.kill()
+            # Set to None so we don't try to close multiple times.
+            self.proc1 = None
 
     @classmethod
     def _flatten(cls, arr: Any) -> List[float]:
@@ -605,7 +626,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
-    def _get_state(self, output: UnityRLOutput) -> AllBrainInfo:
+    def _get_state(self, output: UnityRLOutputProto) -> AllBrainInfo:
         """
         Collects experience information from all external brains in environment at current step.
         :return: a dictionary of BrainInfo objects.
@@ -626,8 +647,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         text_action: Dict[str, list],
         value: Dict[str, np.ndarray],
         custom_action: Dict[str, list],
-    ) -> UnityInput:
-        rl_in = UnityRLInput()
+    ) -> UnityInputProto:
+        rl_in = UnityRLInputProto()
         for b in vector_action:
             n_agents = self._n_agents[b]
             if n_agents == 0:
@@ -650,8 +671,8 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def _generate_reset_input(
         self, training: bool, config: Dict, custom_reset_parameters: Any
-    ) -> UnityInput:
-        rl_in = UnityRLInput()
+    ) -> UnityInputProto:
+        rl_in = UnityRLInputProto()
         rl_in.is_training = training
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         for key in config:
@@ -664,14 +685,28 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
-        self, init_parameters: UnityRLInitializationInput
-    ) -> UnityRLInitializationOutput:
-        inputs = UnityInput()
+        self, init_parameters: UnityRLInitializationInputProto
+    ) -> UnityRLInitializationOutputProto:
+        inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
         return self.communicator.initialize(inputs).rl_initialization_output
 
     @staticmethod
-    def wrap_unity_input(rl_input: UnityRLInput) -> UnityInput:
-        result = UnityInput()
+    def wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
+        result = UnityInputProto()
         result.rl_input.CopyFrom(rl_input)
         return result
+
+    @staticmethod
+    def returncode_to_signal_name(returncode: int) -> Optional[str]:
+        """
+        Try to convert return codes into their corresponding signal name.
+        E.g. returncode_to_signal_name(-2) -> "SIGINT"
+        """
+        try:
+            # A negative value -N indicates that the child was terminated by signal N (POSIX only).
+            s = signal.Signals(-returncode)
+            return s.name
+        except Exception:
+            # Should generally be a ValueError, but catch everything just in case.
+            return None

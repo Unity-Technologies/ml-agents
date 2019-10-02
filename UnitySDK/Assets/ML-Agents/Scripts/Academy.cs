@@ -97,7 +97,7 @@ namespace MLAgents
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
-        private const string k_KApiVersion = "API-9";
+        private const string k_KApiVersion = "API-10";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
@@ -141,7 +141,7 @@ namespace MLAgents
         [Tooltip("List of custom parameters that can be changed in the " +
             "environment when it resets.")]
         public ResetParameters resetParameters;
-        public CommunicatorObjects.CustomResetParameters customResetParameters;
+        public CommunicatorObjects.CustomResetParametersProto customResetParameters;
 
         // Fields not provided in the Inspector.
 
@@ -306,7 +306,7 @@ namespace MLAgents
                 m_IsCommunicatorOn = true;
 
                 var academyParameters =
-                    new CommunicatorObjects.UnityRLInitializationOutput();
+                    new CommunicatorObjects.UnityRLInitializationOutputProto();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = k_KApiVersion;
                 foreach (var brain in exposedBrains)
@@ -360,7 +360,7 @@ namespace MLAgents
                 customResetParameters = newResetParameters.CustomResetParameters;
             }
         }
-        
+
         /// <summary>
         /// Configures the environment settings depending on the training/inference
         /// mode and the corresponding parameters passed in the Editor.

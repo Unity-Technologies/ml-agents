@@ -99,10 +99,10 @@ variable named `env` in this example, can be used in the following way:
 - **Print : `print(str(env))`**  
   Prints all parameters relevant to the loaded environment and the 
   Brains.  
-- **Reset : `env.reset(train_model=True, config=None)`**  
+- **Reset : `env.reset(train_mode=True, config=None)`**  
   Send a reset signal to the environment, and provides a dictionary mapping
   Brain names to BrainInfo objects.  
-  - `train_model` indicates whether to run the environment in train (`True`) or
+  - `train_mode` indicates whether to run the environment in train (`True`) or
     test (`False`) mode.
   - `config` is an optional dictionary of configuration flags specific to the
     environment. For generic environments, `config` can be ignored. `config` is

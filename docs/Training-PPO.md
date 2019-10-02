@@ -241,7 +241,7 @@ To use pretraining, add a `pretraining` section to the trainer_config. For insta
         steps: 10000
 ```
 
-Below are the avaliable hyperparameters for pretraining.
+Below are the available hyperparameters for pretraining.
 
 ### Strength
 
