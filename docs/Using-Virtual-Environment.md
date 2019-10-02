@@ -28,7 +28,7 @@ python3-distutils needs to be installed. Install python3-distutils using `sudo a
 
 ## Mac OS X Setup
 
-1. Create a folder where the virtual environments will reside `$ mkdir ~/python-venvs`
+1. Create a folder where the virtual environments will reside `$ mkdir ~/python-envs`
 1. To create a new environment named `sample-env` execute `$ python3 -m venv ~/python-envs/sample-env`  
 1. To activate the environment execute `$ source ~/python-envs/sample-env/bin/activate`
 1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to 
@@ -43,7 +43,7 @@ the latest pip version using `pip3 install --upgrade pip`
 
 ## Windows Setup
 
-1. Create a folder where the virtual environments will reside `$ md python-venvs`
+1. Create a folder where the virtual environments will reside `$ md python-envs`
 1. To create a new environment named `sample-env` execute `$ python3 -m venv python-envs\sample-env`  
 1. To activate the environment execute `$ python-envs\sample-env\Scripts\activate`
 1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to 
