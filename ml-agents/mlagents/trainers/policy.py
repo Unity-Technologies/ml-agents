@@ -82,7 +82,8 @@ class Policy(object):
 
     def load_graph(self, checkpoint_path=None):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
+            if not self.saver:
+                self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             logger.info("Loading Model for brain {}".format(self.brain.brain_name))
             if checkpoint_path is None:
                 ckpt = tf.train.get_checkpoint_state(self.model_path)
