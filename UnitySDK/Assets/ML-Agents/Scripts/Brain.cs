@@ -21,29 +21,8 @@ namespace MLAgents
         protected Dictionary<Agent, AgentInfo> m_AgentInfos =
             new Dictionary<Agent, AgentInfo>(1024);
 
-        protected Batcher m_BrainBatcher;
-
         [System.NonSerialized]
         private bool m_IsInitialized;
-
-        /// <summary>
-        /// Sets the Batcher of the Brain. The brain will call the batcher at every step and give
-        /// it the agent's data using SendBrainInfo at each DecideAction call.
-        /// </summary>
-        /// <param name="batcher"> The Batcher the brain will use for the current session</param>
-        public void SetBatcher(Batcher batcher)
-        {
-            if (batcher == null)
-            {
-                m_BrainBatcher = null;
-            }
-            else
-            {
-                m_BrainBatcher = batcher;
-                m_BrainBatcher.SubscribeBrain(name);
-            }
-            LazyInitialize();
-        }
 
         /// <summary>
         /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
@@ -84,7 +63,6 @@ namespace MLAgents
             if (m_IsInitialized)
             {
                 m_AgentInfos.Clear();
-
                 m_IsInitialized = false;
             }
         }
@@ -94,12 +72,11 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
-            m_BrainBatcher?.SendBrainInfo(name, m_AgentInfos);
             DecideAction();
         }
 
         /// <summary>
-        /// Is called only once at the begening of the training or inference session.
+        /// Is called only once at the begining of the training or inference session.
         /// </summary>
         protected abstract void Initialize();
 

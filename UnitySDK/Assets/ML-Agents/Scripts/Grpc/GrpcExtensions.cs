@@ -43,24 +43,24 @@ namespace MLAgents
             }
             return agentInfoProto;
         }
-        
+
         /// <summary>
         /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
+        public static BrainParametersProto ToProto(this BrainParameters bp, string name)
         {
             var brainParametersProto = new BrainParametersProto
             {
                 VectorObservationSize = bp.vectorObservationSize,
                 NumStackedVectorObservations = bp.numStackedVectorObservations,
-                VectorActionSize = {bp.vectorActionSize},
+                VectorActionSize = { bp.vectorActionSize },
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
                 BrainName = name,
-                IsTraining = isTraining
+                IsTraining = true
             };
             brainParametersProto.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
             foreach (var res in bp.cameraResolutions)
@@ -92,7 +92,7 @@ namespace MLAgents
             };
             return demoProto;
         }
-        
+
         /// <summary>
         /// Initialize metadata values based on proto object.
         /// </summary>

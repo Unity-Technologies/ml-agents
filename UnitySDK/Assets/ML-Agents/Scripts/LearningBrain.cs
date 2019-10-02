@@ -29,6 +29,7 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
+        private Batcher m_Batcher;
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
@@ -47,16 +48,14 @@ namespace MLAgents
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
-        [NonSerialized]
-        private bool m_IsControlled;
-
         /// <summary>
         /// When Called, the brain will be controlled externally. It will not use the
         /// model to decide on actions.
         /// </summary>
-        public void SetToControlledExternally()
+        public void SetBatcher(Batcher batcher)
         {
-            m_IsControlled = true;
+            m_Batcher = batcher;
+            m_Batcher?.SubscribeBrain(name);
         }
 
         /// <inheritdoc />
@@ -126,7 +125,8 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            if (m_IsControlled)
+            m_Batcher?.SendBrainInfo(name, m_AgentInfos);
+            if (m_Batcher != null)
             {
                 m_AgentInfos.Clear();
                 return;

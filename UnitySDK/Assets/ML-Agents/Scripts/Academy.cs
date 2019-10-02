@@ -268,10 +268,6 @@ namespace MLAgents
                 controlledBrains.Clear();
             }
 #endif
-            foreach (var brain in controlledBrains)
-            {
-                brain.SetToControlledExternally();
-            }
 
             // Try to launch the communicator by usig the arguments passed at launch
             try
@@ -320,7 +316,7 @@ namespace MLAgents
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name, true));
+                        bp.ToProto(brain.name));
                 }
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
