@@ -21,6 +21,4 @@ issues:
   exemptLabels:
     - bug
     - request
-    - request/roadmap
-    - request/contributions-welcome
     - help-wanted
