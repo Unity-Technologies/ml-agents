@@ -22,7 +22,7 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.brain_names[0] == "RealFakeBrain"
+    assert env.external_brain_names[0] == "RealFakeBrain"
     env.close()
 
 
