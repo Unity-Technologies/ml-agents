@@ -316,7 +316,7 @@ namespace MLAgents
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name));
+                        bp.ToProto(brain.name, true));
                 }
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();

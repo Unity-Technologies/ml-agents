@@ -50,7 +50,7 @@ namespace MLAgents
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public static BrainParametersProto ToProto(this BrainParameters bp, string name)
+        public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
             var brainParametersProto = new BrainParametersProto
             {
@@ -60,7 +60,7 @@ namespace MLAgents
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
                 BrainName = name,
-                IsTraining = true
+                IsTraining = isTraining
             };
             brainParametersProto.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
             foreach (var res in bp.cameraResolutions)
