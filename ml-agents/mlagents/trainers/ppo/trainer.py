@@ -229,7 +229,15 @@ class PPOTrainer(RLTrainer):
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
         self.cumulative_returns_since_policy_update = []
-        batch_size = self.trainer_parameters["batch_size"]
+
+        # Make sure batch_size is a multiple of sequence length
+        batch_size = (
+            self.trainer_parameters["batch_size"]
+            - self.trainer_parameters["batch_size"] % self.policy.sequence_length
+        )
+        # Make sure there is at least one sequence
+        batch_size = max(batch_size, self.policy.sequence_length)
+
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
