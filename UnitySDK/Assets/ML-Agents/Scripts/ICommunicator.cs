@@ -4,6 +4,23 @@ using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
+
+    public struct EnvironmentResetParameters
+    {
+        /// <summary>
+        /// Mapping of string : float which defines which parameters can be
+        /// reset from python.
+        /// </summary>
+        public ResetParameters resetParameters;
+
+        /// <summary>
+        /// The protobuf for custom reset parameters.
+        /// NOTE: This is the last remaining relic of gRPC protocol
+        /// that is left in our code.  We need to decide how to handle this
+        /// moving forward.
+        /// </summary>
+        public CustomResetParameters customResetParameters;
+    }
     public struct CommunicatorInitParameters
     {
         /// <summary>
@@ -21,14 +38,26 @@ namespace MLAgents
         /// <summary>
         /// The list of brains parameters used for training.
         /// </summary>
-        public IEnumerable<BrainParameters> brainParameters;
+        public IEnumerable<Brain> brains;
         /// <summary>
-        /// The set of reset parameters defined by the user that will be sent to the communicator.
+        /// The set of environment parameters defined by the user that will be sent to the communicator.
         /// </summary>
-        public ResetParameters resetParameters;
+        public EnvironmentResetParameters environmentResetParameters;
     }
-    
-
+    public struct UnityRLInitParameters
+    {
+        /// <summary>
+        /// An RNG seed sent from the python process to Unity.
+        /// </summary>
+        int seed;
+    }
+    public struct UnityRLInputParameters
+    {
+        /// <summary>
+        /// Boolean sent back from python to indicate whether or not training is happening.
+        /// </summary>
+        bool isTraining;
+    }
     /**
     This is the interface of the Communicators.
     This does not need to be modified nor implemented to create a Unity environment.

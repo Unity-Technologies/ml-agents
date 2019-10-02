@@ -306,11 +306,17 @@ namespace MLAgents
             {
                 m_IsCommunicatorOn = true;
                 var inputParameters = m_BrainBatcher.SendAcademyParameters(
-                    k_KApiVersion, 
-                    gameObject.name,
-                    broadcastHub,
-                    enumerableBrains,
-                    resetParameters);
+                    new CommunicatorInitParameters
+                    {
+                        version = k_KApiVersion,
+                        name = gameObject.name,
+                        brains = enumerableBrains,
+                        environmentResetParameters = new EnvironmentResetParameters
+                        {
+                            resetParameters = resetParameters,
+                            customResetParameters = customResetParameters
+                        }
+                    }, broadcastHub);
                 Random.InitState(inputParameters.Seed);
             }
 

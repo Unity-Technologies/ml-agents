@@ -64,26 +64,22 @@ namespace MLAgents
             m_Communicator = communicator;
         }
 
-        public UnityRLInitializationInput SendAcademyParameters(
-            string apiVersion,
-            string academyName,
-            BroadcastHub broadcastHub,
-            IEnumerable<Brain> exposedBrains,
-            ResetParameters resetParameters)
+        public UnityRLInitializationInput SendAcademyParameters(CommunicatorInitParameters initParameters,
+            BroadcastHub broadcastHub)
         {
             var academyParameters = new UnityRLInitializationOutput
             {
-                Name = academyName,
-                Version = apiVersion
+                Name = initParameters.name,
+                Version = initParameters.version
             };
-            foreach (var brain in exposedBrains)
+            foreach (var brain in initParameters.brains)
             {
-                var bp = brain.brainParameters;
                 academyParameters.BrainParameters.Add(
-                    bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
+                    brain.brainParameters.ToProto(brain.name, broadcastHub.IsControlled(brain)));
             }
             academyParameters.EnvironmentParameters =
                 new EnvironmentParametersProto();
+            ResetParameters resetParameters = initParameters.environmentResetParameters.resetParameters;
             foreach (var key in resetParameters.Keys)
             {
                 academyParameters.EnvironmentParameters.FloatParameters.Add(

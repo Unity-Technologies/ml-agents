@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
 
@@ -81,8 +80,9 @@ namespace MLAgents
         /// <summary>
         /// User-customizable object for sending structured output from Unity to Python in response
         /// to an action in addition to a scalar reward.
+        /// TODO(cgoy): All references to protobuf objects should be removed.
         /// </summary>
-        public CustomObservationProto customObservation;
+        public CommunicatorObjects.CustomObservationProto customObservation;
 
         /// <summary>
         /// Remove the visual observations from memory. Call at each timestep
@@ -108,7 +108,8 @@ namespace MLAgents
         public string textActions;
         public List<float> memories;
         public float value;
-        public CustomActionProto customAction;
+        /// TODO(cgoy): All references to protobuf objects should be removed.
+        public CommunicatorObjects.CustomActionProto customAction;
     }
 
     /// <summary>
@@ -828,7 +829,7 @@ namespace MLAgents
         /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
         /// as either a flat vector or a single string.
         /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CustomActionProto customAction)
+        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomActionProto customAction)
         {
             // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
             AgentAction(vectorAction, textAction);
@@ -915,7 +916,7 @@ namespace MLAgents
         /// Updates the custom action.
         /// </summary>
         /// <param name="customAction">Custom action.</param>
-        public void UpdateCustomAction(CustomActionProto customAction)
+        public void UpdateCustomAction(CommunicatorObjects.CustomActionProto customAction)
         {
             m_Action.customAction = customAction;
         }
@@ -1135,7 +1136,7 @@ namespace MLAgents
         /// Sets the custom observation for the agent for this episode.
         /// </summary>
         /// <param name="customObservation">New value of the agent's custom observation.</param>
-        public void SetCustomObservation(CustomObservationProto customObservation)
+        public void SetCustomObservation(CommunicatorObjects.CustomObservationProto customObservation)
         {
             m_Info.customObservation = customObservation;
         }
