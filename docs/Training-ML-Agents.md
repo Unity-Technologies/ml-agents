@@ -164,9 +164,9 @@ environment, you can set the following command line options when invoking
 ### Training Config File
 
 The training config files `config/trainer_config.yaml`, `config/sac_trainer_config.yaml`,
-`config/gail_config.yaml`, `config/online_bc_config.yaml` and `config/offline_bc_config.yaml`
+`config/gail_config.yaml` and `config/offline_bc_config.yaml`
 specifies the training method, the hyperparameters, and a few additional values to use when
-training with PPO, SAC, GAIL (with PPO), and online and offline BC. These files are divided into sections.
+training with PPO, SAC, GAIL (with PPO), and offline BC. These files are divided into sections.
 The **default** section defines the default values for all the available
 settings. You can also add new sections to override these defaults to train
 specific Brains. Name each of these override sections after the GameObject
@@ -179,7 +179,6 @@ environments are included in the provided config file.
 | batch_size           | The number of experiences in each iteration of gradient descent.                                                                                                                        | PPO, SAC, BC                  |
 | batches_per_epoch    | In imitation learning, the number of batches of training examples to collect before training the model.                                                                                 | BC                       |
 | beta                 | The strength of entropy regularization.                                                                                                                                                 | PPO                      |
-| brain\_to\_imitate   | For online imitation learning, the name of the GameObject containing the Brain component to imitate.                                                                                    | (online)BC               |
 | demo_path            | For offline imitation learning, the file path of the recorded demonstration file                                                                                                        | (offline)BC              |
 | buffer_size          | The number of experiences to collect before updating the policy model. In SAC, the max size of the experience buffer.                                                                   | PPO, SAC                      |
 | buffer_init_steps          | The number of experiences to collect into the buffer before updating the policy model.                                                                                            | SAC                      |
@@ -199,8 +198,8 @@ environments are included in the provided config file.
 | sequence_length      | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, SAC, BC                  |
 | summary_freq         | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, SAC, BC                  |
 | tau                  | How aggressively to update the target network used for bootstrapping value estimation in SAC.                                                                                            | SAC                          |
-| time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC, (online)BC          |
-| trainer              | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                                                  | PPO, SAC, BC                  |
+| time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC        |
+| trainer              | The type of training to perform: "ppo", "sac" or "offline_bc".                                                                                                                                  | PPO, SAC, BC                  |
 | train_interval              | How often to update the agent.                                                                                                                                                    | SAC                  |
 | num_update           | Number of mini-batches to update the agent with during each update.                                                                                       | SAC                  |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC, BC                  |
