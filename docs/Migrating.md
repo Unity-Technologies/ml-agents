@@ -1,5 +1,13 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.10 to v0.11
+
+### Important Changes
+* The definition of the gRPC service has changed.
+
+#### Steps to Migrate
+* In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
+
 ## Migrating from ML-Agents toolkit v0.9 to v0.10
 
 ### Important Changes
@@ -36,7 +44,7 @@ You may need to change `max_steps` in your config as appropriate as well.
 ## Migrating from ML-Agents toolkit v0.7 to v0.8
 
 ### Important Changes
-* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`.
+* We have split the Python packages into two separate packages `ml-agents` and `ml-agents-envs`.
 * `--worker-id` option of `learn.py` has been removed, use `--base-port` instead if you'd like to run multiple instances of `learn.py`.
 
 #### Steps to Migrate
