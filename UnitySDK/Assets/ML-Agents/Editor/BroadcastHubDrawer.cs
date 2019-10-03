@@ -17,7 +17,6 @@ namespace MLAgents
         private const float k_LineHeight = 17f;
         // The vertical space left below the BroadcastHub UI.
         private const float k_ExtraSpaceBelow = 10f;
-        // The horizontal size of the Control checkbox
 
         /// <summary>
         /// Computes the height of the Drawer depending on the property it is showing
@@ -108,10 +107,9 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Draws the Brain and Control checkbox for the brains contained in the BroadCastHub.
+        /// Draws the Brain  contained in the BroadcastHub.
         /// </summary>
         /// <param name="brainRect">The Rect to draw the Brains.</param>
-        /// <param name="controlRect">The Rect to draw the control checkbox.</param>
         private void DrawBrains(Rect brainRect)
         {
             for (var index = 0; index < m_Hub.Count; index++)

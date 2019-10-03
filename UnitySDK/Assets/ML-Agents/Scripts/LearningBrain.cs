@@ -16,9 +16,11 @@ namespace MLAgents
 
     /// <summary>
     /// The Learning Brain works differently if you are training it or not.
-    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
-    /// the checkbox Control. When using a pretrained model, just drag the Model file into the
+    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub.
+    ///  When using a pretrained model, just drag the Model file into the
     /// Model property of the Learning Brain.
+    /// The training will start automatically if Python is ready to train and there is at
+    /// least one LearningBrain in the BroadcastHub.
     /// The property model corresponds to the Model currently attached to the Brain. Before
     /// being used, a call to ReloadModel is required.
     /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
