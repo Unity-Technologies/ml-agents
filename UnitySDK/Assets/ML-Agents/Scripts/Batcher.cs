@@ -42,6 +42,8 @@ namespace MLAgents
         CommunicatorObjects.UnityRLOutputProto m_CurrentUnityRlOutput =
             new CommunicatorObjects.UnityRLOutputProto();
 
+        private CommunicatorObjects.UnityRLInitializationOutputProto m_CurrentUnityRlInitializationOutput;
+
         /// Keeps track of last CommandProto sent by External
         CommunicatorObjects.CommandProto m_Command;
 
@@ -147,7 +149,7 @@ namespace MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
-        public void SubscribeBrain(string brainKey)
+        public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
             m_HasQueried[brainKey] = false;
             m_HasData[brainKey] = false;
@@ -155,6 +157,10 @@ namespace MLAgents
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
+            if (m_CurrentUnityRlInitializationOutput == null){
+                m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
+            }
+            m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
         }
 
         /// <summary>
@@ -226,14 +232,18 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var input = m_Communicator.Exchange(
-                new CommunicatorObjects.UnityOutputProto
-                {
-                    RlOutput = m_CurrentUnityRlOutput
-                });
-            m_MessagesReceived += 1;
+            var message = new CommunicatorObjects.UnityOutputProto
+            {
+                RlOutput = m_CurrentUnityRlOutput,
+            };
+            if (m_CurrentUnityRlInitializationOutput != null)
+            {
+                message.RlInitializationOutput = m_CurrentUnityRlInitializationOutput;
+            }
 
-			
+            var input = m_Communicator.Exchange(message);
+            m_CurrentUnityRlInitializationOutput = null;
+            m_MessagesReceived += 1;
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {

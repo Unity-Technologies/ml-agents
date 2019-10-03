@@ -54,16 +54,18 @@ namespace MLAgents
         /// When Called, the brain will be controlled externally. It will not use the
         /// model to decide on actions.
         /// </summary>
-        public void SetBatcher(Batcher batcher)
+        private void SetBatcher(Batcher batcher)
         {
             m_Batcher = batcher;
-            m_Batcher?.SubscribeBrain(name);
+            m_Batcher?.SubscribeBrain(name, brainParameters);
         }
 
         /// <inheritdoc />
         protected override void Initialize()
         {
             ReloadModel();
+            var batcher = FindObjectOfType<Academy>()?.BrainBatcher;
+            SetBatcher(batcher);
         }
 
         /// <summary>
