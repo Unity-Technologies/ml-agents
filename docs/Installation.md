@@ -17,7 +17,9 @@ Build Support_ component when installing Unity.
 </p>
 
 ## Environment Setup
-For setting up your environment follow this [guide](Using-Virtual-Environment.md).
+We now support a single mechanism for installing ML-Agents on Mac/Windows/Linux using Virtual
+Environments. For more information on Virtual Environments and installation instructions, 
+follow this [guide](Using-Virtual-Environment.md).
 
 ### Clone the ML-Agents Toolkit Repository
 

@@ -1,5 +1,8 @@
 # Training on Microsoft Azure (works with ML-Agents toolkit v0.3)
 
+Note: We no longer use this guide ourselves and so it may not work correctly. We've 
+decided to keep it up just in case it is helpful to you.
+
 This page contains instructions for setting up training on Microsoft Azure
 through either
 [Azure Container Instances](https://azure.microsoft.com/services/container-instances/)

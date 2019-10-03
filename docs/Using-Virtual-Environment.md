@@ -2,10 +2,11 @@
 
 ## What is a Virtual Environment?
 A Virtual Environment is a self contained directory tree that contains a Python installation 
-for a particular version of Python, plus a number of additional packages.  
+for a particular version of Python, plus a number of additional packages. To learn more about 
+Virtual Environments see [here](https://docs.python.org/3/library/venv.html)
 
 ## Why should I use a Virtual Environment?
-A Virtual Environment keeps all dependencies for the project separate from dependencies 
+A Virtual Environment keeps all dependencies for the Python project separate from dependencies 
 of other projects. This has a few advantages:
 1. It makes dependency management for the project easy.
 1. It enables using and testing of different library versions by quickly 
