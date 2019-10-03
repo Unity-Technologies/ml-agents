@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+<!--
+Prevents Managed code stripping from removing code necessary for training.
+You may wish to disable this preservation (that is, re-enable code stripping) to
+reduce code size if you no longer need training. 
+See also https://docs.unity3d.com/Manual/ManagedCodeStripping.html
+-->
+    <assembly fullname="Grpc.Core" preserve="all"/>
+</linker>
