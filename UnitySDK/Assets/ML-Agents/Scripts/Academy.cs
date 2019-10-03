@@ -271,8 +271,9 @@ namespace MLAgents
                     });
             }
             // If it fails, we check if there are any external brains in the scene
+            // and if Unity is in Editor mode 
             // If there are : Launch the communicator on the default port
-            // If there arn't, there is no need for a communicator and it is set
+            // If there are not, there is no need for a communicator and it is set
             // to null
             catch
             {
@@ -316,6 +317,9 @@ namespace MLAgents
                         key, resetParameters[key]
                     );
                 }
+                // We try to exchange the first message with Python. If this fails, it means
+                // no Python Process is ready to train the environment. In this case, the
+                //environment must use Inference.
                 try
                 {
                     var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
@@ -324,6 +328,7 @@ namespace MLAgents
                 catch
                 {
                     communicator = null;
+                    m_BrainBatcher = new Batcher(null);
                     m_IsCommunicatorOn = false;
                     foreach (var trainingBrain in controlledBrains)
                     {
