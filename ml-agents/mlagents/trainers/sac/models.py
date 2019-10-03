@@ -1,18 +1,9 @@
 import logging
 import numpy as np
 
-from mlagents.trainers import tf
+from mlagents.trainers import tf, tf_variance_scaling
 
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
-
-if True:  # TODO TF2
-    tf_variance_scaling = tf.initializers.variance_scaling
-    tf_flatten = tf.layers.flatten
-else:
-    import tensorflow.contrib.layers as c_layers
-
-    tf_variance_scaling = c_layers.variance_scaling_initializer
-    tf_flatten = c_layers.flatten
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20

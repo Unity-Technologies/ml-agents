@@ -3,18 +3,7 @@ from enum import Enum
 from typing import Callable, List
 
 import numpy as np
-from mlagents.trainers import tf
-
-if True:  # TODO TF2
-    tf_variance_scaling = tf.initializers.variance_scaling
-    tf_flatten = tf.layers.flatten
-    tf_rnn = tf.nn.rnn_cell
-else:
-    import tensorflow.contrib.layers as c_layers
-
-    tf_variance_scaling = c_layers.variance_scaling_initializer
-    tf_flatten = c_layers.flatten
-    tf_rnn = tf.contrib.rnn
+from mlagents.trainers import tf, tf_variance_scaling, tf_rnn, tf_flatten
 
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.envs.brain import CameraResolution
