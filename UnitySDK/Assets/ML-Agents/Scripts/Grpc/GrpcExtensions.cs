@@ -56,7 +56,7 @@ namespace MLAgents
             {
                 VectorObservationSize = bp.vectorObservationSize,
                 NumStackedVectorObservations = bp.numStackedVectorObservations,
-                VectorActionSize = { bp.vectorActionSize },
+                VectorActionSize = {bp.vectorActionSize},
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
                 BrainName = name,
