@@ -314,13 +314,13 @@ For example, instead of training the medic by setting up its reward function,
 this mode allows providing real examples from a game controller on how the medic
 should behave. More specifically, in this mode, the Brain type during training
 is set to Player and all the actions performed with the controller (in addition
-to the agent observations) will be recorded and sent to the Python API. The
+to the agent observations) will be recorded. The
 imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
 The toolkit provides a way to learn directly from demonstrations, as well as use them
-to help speed up reward-based training (RL).  We include two algorithms called
+to help speed up reward-based training (RL). We include two algorithms called
 Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
 [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
 features in more depth.

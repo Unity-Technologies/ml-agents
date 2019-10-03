@@ -4,6 +4,7 @@
 
 ### Important Changes
 * The definition of the gRPC service has changed.
+* The online BC training feature has been removed. 
 
 #### Steps to Migrate
 * In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
