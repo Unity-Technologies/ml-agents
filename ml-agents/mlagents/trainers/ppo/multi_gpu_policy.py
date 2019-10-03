@@ -1,9 +1,6 @@
 import logging
 
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
 from tensorflow.python.client import device_lib
 from mlagents.envs.timers import timed

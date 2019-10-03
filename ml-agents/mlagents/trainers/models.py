@@ -3,17 +3,15 @@ from enum import Enum
 from typing import Callable, List
 
 import numpy as np
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
-if True: # TODO TF2
+if True:  # TODO TF2
     tf_variance_scaling = tf.initializers.variance_scaling
     tf_flatten = tf.layers.flatten
     tf_rnn = tf.nn.rnn_cell
 else:
     import tensorflow.contrib.layers as c_layers
+
     tf_variance_scaling = c_layers.variance_scaling_initializer
     tf_flatten = c_layers.flatten
     tf_rnn = tf.contrib.rnn

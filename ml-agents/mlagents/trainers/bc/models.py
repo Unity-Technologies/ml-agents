@@ -1,13 +1,11 @@
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
-if True: # TODO TF2
+if True:  # TODO TF2
     tf_variance_scaling = tf.initializers.variance_scaling
     tf_flatten = tf.layers.flatten
 else:
     import tensorflow.contrib.layers as c_layers
+
     tf_variance_scaling = c_layers.variance_scaling_initializer
     tf_flatten = c_layers.flatten
 
@@ -55,9 +53,7 @@ class BehavioralCloningModel(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=tf_variance_scaling(
-                            0.01
-                        ),
+                        kernel_initializer=tf_variance_scaling(0.01),
                     )
                 )
             self.action_probs = tf.concat(

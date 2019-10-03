@@ -1,10 +1,7 @@
 from typing import Any, Dict, List
 import logging
 import numpy as np
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult

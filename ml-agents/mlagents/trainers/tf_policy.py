@@ -2,10 +2,7 @@ import logging
 from typing import Any, Dict
 
 import numpy as np
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
 from mlagents.envs.exception import UnityException
 from mlagents.envs.policy import Policy

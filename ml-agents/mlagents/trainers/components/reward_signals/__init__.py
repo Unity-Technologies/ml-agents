@@ -4,10 +4,7 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException

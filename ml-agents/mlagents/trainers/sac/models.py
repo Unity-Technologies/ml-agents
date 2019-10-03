@@ -1,18 +1,16 @@
 import logging
 import numpy as np
 
-try:
-    import tensorflow.compat.v1 as tf
-except ImportError:
-    import tensorflow as tf
+from mlagents.trainers import tf
 
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
 
-if True: # TODO TF2
+if True:  # TODO TF2
     tf_variance_scaling = tf.initializers.variance_scaling
     tf_flatten = tf.layers.flatten
 else:
     import tensorflow.contrib.layers as c_layers
+
     tf_variance_scaling = c_layers.variance_scaling_initializer
     tf_flatten = c_layers.flatten
 
@@ -286,9 +284,7 @@ class SACNetwork(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=tf_variance_scaling(
-                            0.01
-                        ),
+                        kernel_initializer=tf_variance_scaling(0.01),
                     )
                 )
             all_logits = tf.concat(
