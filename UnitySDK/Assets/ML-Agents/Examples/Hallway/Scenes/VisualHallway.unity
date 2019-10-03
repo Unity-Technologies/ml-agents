@@ -809,7 +809,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40db664a3061b46a0a0628f90b2264f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trainInEditor: 0
   broadcastHub:
     brainsToControl:
     - {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2, type: 2}

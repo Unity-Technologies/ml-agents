@@ -282,7 +282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19276d4dc78ee49f1ba258293f17636c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trainInEditor: 0
   broadcastHub:
     brainsToControl:
     - {fileID: 11400000, guid: e5cf0e35e16264ea483f8863e5115c3c, type: 2}
