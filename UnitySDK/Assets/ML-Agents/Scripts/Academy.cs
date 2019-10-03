@@ -94,8 +94,6 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        public bool trainInEditor;
-
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
@@ -262,14 +260,8 @@ namespace MLAgents
             ICommunicator communicator;
 
             var controlledBrains = broadcastHub.brainsToControl.Where(x => x != null).ToList();
-#if UNITY_EDITOR
-            if (!trainInEditor)
-            {
-                controlledBrains.Clear();
-            }
-#endif
 
-            // Try to launch the communicator by usig the arguments passed at launch
+            // Try to launch the communicator by using the arguments passed at launch
             try
             {
                 communicator = new RpcCommunicator(
@@ -286,7 +278,7 @@ namespace MLAgents
             {
                 communicator = null;
 #if UNITY_EDITOR
-                if (controlledBrains.ToList().Count > 0 && trainInEditor)
+                if (controlledBrains.ToList().Count > 0)
                 {
                     communicator = new RpcCommunicator(
                         new CommunicatorParameters
@@ -296,16 +288,14 @@ namespace MLAgents
                 }
 #endif
             }
-
             m_BrainBatcher = new Batcher(communicator);
-
-            foreach (var trainingBrain in controlledBrains)
-            {
-                trainingBrain.SetBatcher(m_BrainBatcher);
-            }
-
             if (communicator != null)
             {
+
+                foreach (var trainingBrain in controlledBrains)
+                {
+                    trainingBrain.SetBatcher(m_BrainBatcher);
+                }
                 m_IsCommunicatorOn = true;
 
                 var academyParameters =
@@ -326,9 +316,20 @@ namespace MLAgents
                         key, resetParameters[key]
                     );
                 }
-
-                var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
-                Random.InitState(pythonParameters.Seed);
+                try
+                {
+                    var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
+                    Random.InitState(pythonParameters.Seed);
+                }
+                catch
+                {
+                    communicator = null;
+                    m_IsCommunicatorOn = false;
+                    foreach (var trainingBrain in controlledBrains)
+                    {
+                        trainingBrain.SetBatcher(null);
+                    }
+                }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
@@ -353,7 +354,7 @@ namespace MLAgents
 
         private void UpdateResetParameters()
         {
-            var newResetParameters = m_BrainBatcher.GetEnvironmentParameters();
+            var newResetParameters = m_BrainBatcher?.GetEnvironmentParameters();
             if (newResetParameters != null)
             {
                 foreach (var kv in newResetParameters.FloatParameters)
