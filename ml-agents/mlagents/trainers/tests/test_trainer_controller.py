@@ -1,5 +1,10 @@
 from unittest.mock import MagicMock, Mock, patch
 
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
+
 import yaml
 import pytest
 
@@ -56,7 +61,7 @@ def basic_trainer_controller():
 
 
 @patch("numpy.random.seed")
-@patch("tensorflow.set_random_seed")
+@patch.object(tf, "set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
     TrainerController(
@@ -102,7 +107,7 @@ def trainer_controller_with_start_learning_mocks():
     return tc, trainer_mock
 
 
-@patch("tensorflow.reset_default_graph")
+@patch.object(tf, "reset_default_graph")
 def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
     tc, trainer_mock = trainer_controller_with_start_learning_mocks()
     tc.train_model = False
@@ -123,7 +128,7 @@ def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
     env_mock.close.assert_called_once()
 
 
-@patch("tensorflow.reset_default_graph")
+@patch.object(tf, "reset_default_graph")
 def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     tc, trainer_mock = trainer_controller_with_start_learning_mocks()
     tf_reset_graph.return_value = None

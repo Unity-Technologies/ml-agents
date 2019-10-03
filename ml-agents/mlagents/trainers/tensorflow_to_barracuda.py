@@ -1,7 +1,10 @@
 from __future__ import print_function
 import numpy as np
 import struct  # convert from Python values and C structs
-import tensorflow as tf
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
 import re
 
 # import barracuda

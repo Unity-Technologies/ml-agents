@@ -2,7 +2,11 @@ import unittest.mock as mock
 import pytest
 
 import numpy as np
-import tensorflow as tf
+try:
+    import tensorflow.compat.v1 as tf
+except ImportError:
+    import tensorflow as tf
+
 import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
