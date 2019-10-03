@@ -132,18 +132,14 @@ class UnityEnv(gym.Env):
         high = np.array([np.inf] * brain.vector_observation_space_size)
         self.action_meanings = brain.vector_action_descriptions
         if self.use_visual:
-            if brain.camera_resolutions[0]["blackAndWhite"]:
-                depth = 1
-            else:
-                depth = 3
             self._observation_space = spaces.Box(
                 0,
                 1,
                 dtype=np.float32,
                 shape=(
-                    brain.camera_resolutions[0]["height"],
-                    brain.camera_resolutions[0]["width"],
-                    depth,
+                    brain.camera_resolutions.height,
+                    brain.camera_resolutions.width,
+                    brain.camera_resolutions.num_channels,
                 ),
             )
         else:
