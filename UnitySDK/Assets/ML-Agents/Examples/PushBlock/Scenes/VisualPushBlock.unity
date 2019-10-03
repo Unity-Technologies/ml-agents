@@ -616,10 +616,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2ca406dad5ec4ede8184998f4f9067d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trainInEditor: 0
   broadcastHub:
-    broadcastingBrains:
+    brainsToControl:
     - {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f, type: 2}
-    m_BrainsToControl: []
   m_TrainingConfiguration:
     width: 1280
     height: 720
