@@ -446,7 +446,9 @@ class UnityEnvironment(BaseUnityEnvironment):
                 elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and CustomAction instances as values".format(self._num_external_brains)
+                        "and CustomAction instances as values".format(
+                                self._num_external_brains
+                            )
                     )
                 else:
                     raise UnityActionException(
