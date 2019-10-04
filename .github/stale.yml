@@ -9,8 +9,7 @@ only: issues
 
 # Issue specific configuration
 issues:
-  # TODO: Raise the limitPerRun once we are satisfied with the bot's performance
-  limitPerRun: 1
+  limitPerRun: 5
   daysUntilStale: 14
   daysUntilClose: 14
   markComment: >
