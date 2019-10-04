@@ -208,7 +208,9 @@ def run_training(
         options.docker_target_name,
         options.no_graphics,
         run_seed,
-        options.base_port + (sub_id * options.num_envs) + int(options.env_path is not None),
+        options.base_port
+        + (sub_id * options.num_envs)
+        + int(options.env_path is not None),
         options.env_args,
     )
     env = SubprocessEnvManager(env_factory, options.num_envs)
