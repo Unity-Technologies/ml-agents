@@ -62,22 +62,6 @@ def test_step(mock_communicator, mock_launcher):
     env = UnityEnvironment(" ")
     brain = env.brains["RealFakeBrain"]
     brain_info = env.step()
-    print(
-        """
-    
-
-        IMPORTANT
-
-
-
-
-    """,
-        env.external_brain_names,
-        env.number_external_brains,
-        env.brains,
-        env.external_brains,
-        env._num_external_brains,
-    )
     brain_info = env.step(
         [0]
         * brain.vector_action_space_size[0]
