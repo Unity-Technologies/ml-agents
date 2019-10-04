@@ -6,7 +6,7 @@ using MLAgents;
 public class GridAgent : Agent
 {
     [Header("Specific to GridWorld")]
-    private GridAcademy m_Academy;
+    private GridAcademy m_GridAcademy;
     public float timeBetweenDecisionsAtInference;
     private float m_TimeSinceDecision;
 
@@ -27,7 +27,7 @@ public class GridAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
+        m_GridAcademy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
     }
 
     public override void CollectObservations()
@@ -50,7 +50,7 @@ public class GridAgent : Agent
         // Prevents the agent from picking an action that would make it collide with a wall
         var positionX = (int)transform.position.x;
         var positionZ = (int)transform.position.z;
-        var maxPosition = m_Academy.gridSize - 1;
+        var maxPosition = m_GridAcademy.gridSize - 1;
 
         if (positionX == 0)
         {
@@ -123,7 +123,7 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentReset()
     {
-        m_Academy.AcademyReset();
+        m_GridAcademy.AcademyReset();
     }
 
     public void FixedUpdate()
@@ -133,12 +133,16 @@ public class GridAgent : Agent
 
     private void WaitTimeInference()
     {
+        if (m_GridAcademy == null)
+        {
+            m_GridAcademy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
+        }
         if (renderCamera != null)
         {
             renderCamera.Render();
         }
 
-        if (!m_Academy.GetIsInference())
+        if (!m_GridAcademy.GetIsInference())
         {
             RequestDecision();
         }

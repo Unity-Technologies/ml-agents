@@ -221,6 +221,9 @@ namespace MLAgents
     [System.Serializable]
     public abstract class Agent : MonoBehaviour
     {
+        // hack
+        Academy m_Academy;
+
         /// <summary>
         /// The Brain attached to this agent. A brain can be attached either
         /// directly from the Editor through AgentEditor or
@@ -239,8 +242,6 @@ namespace MLAgents
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
-
-        bool m_hackFloatVisuals = true;
 
         /// Represents the reward the agent accumulated during the current step.
         /// It is reset to 0 at the beginning of every step.
@@ -302,6 +303,7 @@ namespace MLAgents
             OnEnableHelper(academy);
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
+            m_Academy =  academy;
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
@@ -487,6 +489,11 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
+            if (m_Academy == null)
+            {
+                var academy = FindObjectOfType<Academy>();
+                m_Academy = academy;
+            }
             if (brain == null)
             {
                 return;
@@ -511,7 +518,9 @@ namespace MLAgents
                 }
             }
 
-            var numVisualFloats = GetVisualFloatSize();
+            var numVisualFloats = 0;
+            if (m_Academy.hackFloatVisualObs)
+                numVisualFloats += GetVisualFloatSize();
 
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
@@ -598,9 +607,10 @@ namespace MLAgents
             }
 
             int visualFloatSize = 0;
-            if (m_hackFloatVisuals)
+            if (m_Academy.hackFloatVisualObs)
             {
                 visualFloatSize = WriteVisualObsAsFloat();
+                m_Info.visualObservations.Clear();
             }
 
             if ((m_Info.vectorObservation.Count != param.vectorObservationSize + visualFloatSize))
@@ -639,11 +649,11 @@ namespace MLAgents
             for (int i = 0; i < m_Info.visualObservations.Count; i++)
             {
                 var res = brain.brainParameters.cameraResolutions[i];
-                Debug.Log($"Writing {res.height} x {res.width} x {res.blackAndWhite ? 1 : 3} ");
+                //Debug.Log($"Writing {res.height} x {res.width} x {res.blackAndWhite ? 1 : 3} ");
                 AddVisualObservation(m_Info.visualObservations[i], res);
                 floatsAdded += res.height * res.width * (res.blackAndWhite ? 1 : 3);
             }
-            Debug.Log($"Wrote {floatsAdded} vector obs for visual obs");
+            //Debug.Log($"Wrote {floatsAdded} vector obs for visual obs");
             return floatsAdded;
         }
 

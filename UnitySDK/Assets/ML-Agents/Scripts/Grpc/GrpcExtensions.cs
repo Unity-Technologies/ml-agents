@@ -35,12 +35,12 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-//            foreach (var obs in ai.visualObservations)
-//            {
-//                agentInfoProto.VisualObservations.Add(
-//                    ByteString.CopyFrom(obs.EncodeToPNG())
-//                );
-//            }
+            foreach (var obs in ai.visualObservations)
+            {
+                agentInfoProto.VisualObservations.Add(
+                    ByteString.CopyFrom(obs.EncodeToPNG())
+                );
+            }
             return agentInfoProto;
         }
 

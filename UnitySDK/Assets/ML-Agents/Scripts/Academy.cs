@@ -94,6 +94,8 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
+        public bool hackFloatVisualObs = false;
+
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
@@ -235,7 +237,22 @@ namespace MLAgents
         private int ReadArgs()
         {
             var args = System.Environment.GetCommandLineArgs();
+
+#if !UNITY_EDITOR
+            hackFloatVisualObs = false;
+            var hackFloatVisualObsStr = $"{hackFloatVisualObs}";
+            for (var i = 0; i < args.Length; i++)
+            {
+
+                if (args[i] == "--hack-vis-obs")
+                {
+                    hackFloatVisualObsStr = args[i + 1];
+                }
+            }
+            hackFloatVisualObs = bool.Parse(hackFloatVisualObsStr);
+#endif
             var inputPort = "";
+
             for (var i = 0; i < args.Length; i++)
             {
                 if (args[i] == "--port")
@@ -346,6 +363,8 @@ namespace MLAgents
             // the developer in the Editor.
             SetIsInference(!m_BrainBatcher.GetIsTraining());
             ConfigureEnvironment();
+
+            Debug.Log($"{hackFloatVisualObs?"":"Not "}using hacked visual obs");
         }
 
         private void UpdateResetParameters()

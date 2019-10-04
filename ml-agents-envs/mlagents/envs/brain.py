@@ -202,20 +202,32 @@ class BrainInfo:
         """
         Converts list of agent infos to BrainInfo.
         """
-        # vis_obs: List[np.ndarray] = []
-        # for i in range(brain_params.number_visual_observations):
-        #     obs = []
-        #     for j, x in enumerate(agent_info_list):
-        #         dump_name = "original.png" if i==0 and j == 0 else ""
-        #         obs.append(
-        #             BrainInfo.process_pixels(
-        #                 x.visual_observations[i],
-        #                 brain_params.camera_resolutions[i].gray_scale,
-        #                 dump_name
-        #             )
-        #         )
-        #
-        #     vis_obs += [obs]
+        stacked_size = (
+            brain_params.vector_observation_space_size
+            * brain_params.num_stacked_vector_observations
+        )
+
+        # HACK - check if we're using float visuals by checking the actual vs declared number of floats
+        using_float_visuals = False
+        info0 = agent_info_list[0]
+        if len(info0.stacked_vector_observation) > stacked_size:
+            using_float_visuals = True
+
+        vis_obs: List[np.ndarray] = []
+        if not using_float_visuals:
+            for i in range(brain_params.number_visual_observations):
+                obs = []
+                for j, x in enumerate(agent_info_list):
+                    dump_name = "original.png" if i==0 and j == 0 else ""
+                    obs.append(
+                        BrainInfo.process_pixels(
+                            x.visual_observations[i],
+                            brain_params.camera_resolutions[i].gray_scale,
+                            dump_name
+                        )
+                    )
+
+                vis_obs += [obs]
         if len(agent_info_list) == 0:
             memory_size = 0
         else:
@@ -246,10 +258,7 @@ class BrainInfo:
                 "An agent had a NaN observation for brain " + brain_params.brain_name
             )
 
-        stacked_size = (
-            brain_params.vector_observation_space_size
-            * brain_params.num_stacked_vector_observations
-        )
+
         if len(agent_info_list) == 0:
             vector_obs = np.zeros((0, stacked_size))
         else:
@@ -267,33 +276,34 @@ class BrainInfo:
             )
 
         # "extra" obs get converted to visuals
-        extra_obs = []
-        for j, agent_info in enumerate(agent_info_list):
-            # TODO THIS WON'T WORK WITH MULTIPLE OBSERVATIONS
-            # Note: visual obs were scaled by 1/255 on C#, so don't need to do here.
-            float_obs = agent_info.stacked_vector_observation[stacked_size:]
-            camera_res = brain_params.camera_resolutions[0]
-            np_obs = np.reshape(float_obs, [camera_res.height, camera_res.width, camera_res.num_channels])
+        float_vis_obs = []
+        if using_float_visuals:
+            for j, agent_info in enumerate(agent_info_list):
+                # TODO THIS WON'T WORK WITH MULTIPLE OBSERVATIONS
+                # Note: visual obs were scaled by 1/255 on C#, so don't need to do here.
+                float_obs = agent_info.stacked_vector_observation[stacked_size:]
+                camera_res = brain_params.camera_resolutions[0]
+                np_obs = np.reshape(float_obs, [camera_res.height, camera_res.width, camera_res.num_channels])
 
-            if dump_image_and_quit and j == 0:
-                rescaled = np_obs * 255.0
-                new_im = Image.fromarray(rescaled.astype('uint8'))
-                new_im.save("float.png")
-                global step_num
-                if step_num == 10:
-                    raise RuntimeError()
-                step_num += 1
-            if False:
-                # Check L2 difference
-                delta = np_obs - vis_obs[0][0]
-                delta = delta * delta
-                print(f"|delta| = {np.sum(delta)}")
-            extra_obs.append([np_obs])
+                if dump_image_and_quit and j == 0:
+                    rescaled = np_obs * 255.0
+                    new_im = Image.fromarray(rescaled.astype('uint8'))
+                    new_im.save("float.png")
+                    global step_num
+                    if step_num == 10:
+                        raise RuntimeError()
+                    step_num += 1
+                if False:
+                    # Check L2 difference
+                    delta = np_obs - vis_obs[0][0]
+                    delta = delta * delta
+                    print(f"|delta| = {np.sum(delta)}")
+                float_vis_obs.append([np_obs])
 
 
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
-            visual_observation=extra_obs,
+            visual_observation=float_vis_obs if using_float_visuals else vis_obs,
             vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
             memory=memory,
