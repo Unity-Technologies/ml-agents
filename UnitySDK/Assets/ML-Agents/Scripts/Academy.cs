@@ -259,16 +259,9 @@ namespace MLAgents
             InitializeAcademy();
             ICommunicator communicator;
 
-            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();
-            var controlledBrains = broadcastHub.broadcastingBrains.Where(
-                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
-            foreach (var brain1 in controlledBrains)
-            {
-                var brain = (LearningBrain)brain1;
-                brain.SetToControlledExternally();
-            }
+            var controlledBrains = broadcastHub.brainsToControl.Where(x => x != null).ToList();
 
-            // Try to launch the communicator by usig the arguments passed at launch
+            // Try to launch the communicator by using the arguments passed at launch
             try
             {
                 communicator = new RpcCommunicator(
@@ -278,12 +271,14 @@ namespace MLAgents
                     });
             }
             // If it fails, we check if there are any external brains in the scene
+            // and if Unity is in Editor mode 
             // If there are : Launch the communicator on the default port
-            // If there arn't, there is no need for a communicator and it is set
+            // If there are not, there is no need for a communicator and it is set
             // to null
             catch
             {
                 communicator = null;
+#if UNITY_EDITOR
                 if (controlledBrains.ToList().Count > 0)
                 {
                     communicator = new RpcCommunicator(
@@ -292,28 +287,27 @@ namespace MLAgents
                             port = 5005
                         });
                 }
+#endif
             }
-
             m_BrainBatcher = new Batcher(communicator);
-
-            foreach (var trainingBrain in exposedBrains)
-            {
-                trainingBrain.SetBatcher(m_BrainBatcher);
-            }
-
             if (communicator != null)
             {
+
+                foreach (var trainingBrain in controlledBrains)
+                {
+                    trainingBrain.SetBatcher(m_BrainBatcher);
+                }
                 m_IsCommunicatorOn = true;
 
                 var academyParameters =
                     new CommunicatorObjects.UnityRLInitializationOutputProto();
                 academyParameters.Name = gameObject.name;
                 academyParameters.Version = k_ApiVersion;
-                foreach (var brain in exposedBrains)
+                foreach (var brain in controlledBrains)
                 {
                     var bp = brain.brainParameters;
                     academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
+                        bp.ToProto(brain.name, true));
                 }
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
@@ -323,9 +317,24 @@ namespace MLAgents
                         key, resetParameters[key]
                     );
                 }
-
-                var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
-                Random.InitState(pythonParameters.Seed);
+                // We try to exchange the first message with Python. If this fails, it means
+                // no Python Process is ready to train the environment. In this case, the
+                //environment must use Inference.
+                try
+                {
+                    var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
+                    Random.InitState(pythonParameters.Seed);
+                }
+                catch
+                {
+                    communicator = null;
+                    m_BrainBatcher = new Batcher(null);
+                    m_IsCommunicatorOn = false;
+                    foreach (var trainingBrain in controlledBrains)
+                    {
+                        trainingBrain.SetBatcher(null);
+                    }
+                }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
@@ -350,7 +359,7 @@ namespace MLAgents
 
         private void UpdateResetParameters()
         {
-            var newResetParameters = m_BrainBatcher.GetEnvironmentParameters();
+            var newResetParameters = m_BrainBatcher?.GetEnvironmentParameters();
             if (newResetParameters != null)
             {
                 foreach (var kv in newResetParameters.FloatParameters)

@@ -16,9 +16,11 @@ namespace MLAgents
 
     /// <summary>
     /// The Learning Brain works differently if you are training it or not.
-    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
-    /// the checkbox Control. When using a pretrained model, just drag the Model file into the
+    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub.
+    ///  When using a pretrained model, just drag the Model file into the
     /// Model property of the Learning Brain.
+    /// The training will start automatically if Python is ready to train and there is at
+    /// least one LearningBrain in the BroadcastHub.
     /// The property model corresponds to the Model currently attached to the Brain. Before
     /// being used, a call to ReloadModel is required.
     /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
@@ -29,6 +31,7 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
+        private Batcher m_Batcher;
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
@@ -47,16 +50,14 @@ namespace MLAgents
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
-        [NonSerialized]
-        private bool m_IsControlled;
-
         /// <summary>
         /// When Called, the brain will be controlled externally. It will not use the
         /// model to decide on actions.
         /// </summary>
-        public void SetToControlledExternally()
+        public void SetBatcher(Batcher batcher)
         {
-            m_IsControlled = true;
+            m_Batcher = batcher;
+            m_Batcher?.SubscribeBrain(name);
         }
 
         /// <inheritdoc />
@@ -126,7 +127,8 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            if (m_IsControlled)
+            m_Batcher?.SendBrainInfo(name, m_AgentInfos);
+            if (m_Batcher != null)
             {
                 m_AgentInfos.Clear();
                 return;

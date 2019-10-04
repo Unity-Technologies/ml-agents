@@ -33,11 +33,10 @@ These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
 To communicate with an Agent in a Unity environment from a Python program, the
-Agent must either use a Brain present in the Academy's `Broadcast Hub`.
+Agent mus use a LearningBrain present in the Academy's `Broadcast Hub`.
 Your code is expected to return
-actions for Agents with Brains with the `Control` checkbox of the
-Academy's `Broadcast Hub` checked, but can only observe broadcasting
-Brains (the information you receive for an Agent is the same in both cases).
+actions for Agents with Brains in the
+Academy's `Broadcast Hub`..
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -130,8 +129,7 @@ variable named `env` in this example, can be used in the following way:
     observations = brainInfo.vector_observations
     ```
 
-    Note that if you have more than one Brain in the Academy's `Broadcast Hub` with
-    the `Control` checkbox checked, you
+    Note that if you have more than one Brain in the Academy's `Broadcast Hub`, you
     must provide dictionaries from Brain names to arrays for `action`, `memory`
     and `value`. For example: If you have two Learning Brains named `brain1` and
     `brain2` each with one Agent taking two continuous actions, then you can

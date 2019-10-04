@@ -30,7 +30,7 @@ environment:
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the Brain
 controlling the Agents to be a **Learning Brain** and drag it into the
-Academy's `Broadcast Hub` with the `Control` checkbox checked. In the 3DBall
+Academy's `Broadcast Hub`. In the 3DBall
 scene, this can be done in the Platform GameObject within the Game prefab in 
 `Assets/ML-Agents/Examples/3DBall/Prefabs/`, or in each instance of the 
 Platform in the Scene.
