@@ -32,10 +32,18 @@ def dummy_config():
     )
 
 
-def create_bc_trainer(dummy_config):
+def create_bc_trainer(dummy_config, is_discrete=False):
     mock_env = mock.Mock()
-    mock_brain = mb.create_mock_3dball_brain()
-    mock_braininfo = mb.create_mock_braininfo(num_agents=12, num_vector_observations=8)
+    if is_discrete:
+        mock_brain = mb.create_mock_pushblock_brain()
+        mock_braininfo = mb.create_mock_braininfo(
+            num_agents=12, num_vector_observations=70
+        )
+    else:
+        mock_brain = mb.create_mock_3dball_brain()
+        mock_braininfo = mb.create_mock_braininfo(
+            num_agents=12, num_vector_observations=8
+        )
     mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
     env = mock_env()
 
