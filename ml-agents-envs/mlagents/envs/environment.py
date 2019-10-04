@@ -620,8 +620,8 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         return _data
 
-    def _update_brain_parameters(self, init_output: UnityRLInitializationOutputProto):
-        if init_output != None:
+    def _update_brain_parameters(self, init_output: UnityRLInitializationOutputProto) -> None:
+        if init_output is not None:
             for brain_param in init_output.brain_parameters:
                 self._brains[brain_param.brain_name] = BrainParameters.from_proto(
                     brain_param

@@ -50,9 +50,9 @@ class TrainerController(object):
         :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
-        self.trainers = {}
+        self.trainers : Dict[str, Trainer] = {}
         self.trainer_factory = trainer_factory
-        self.last_brain_names = []
+        self.last_brain_names : List[str] = []
         self.model_path = model_path
         self.summaries_dir = summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
@@ -183,7 +183,7 @@ class TrainerController(object):
             else:
                 trainer.write_summary(global_step, delta_train_start)
 
-    def start_trainer(self, trainer: Trainer, env_manager: EnvManager):
+    def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
         self.trainers[trainer.brain_name] = trainer
         self.logger.info(trainer)
         if self.train_model:
