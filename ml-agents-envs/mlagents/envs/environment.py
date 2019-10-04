@@ -626,8 +626,8 @@ class UnityEnvironment(BaseUnityEnvironment):
                 self._brains[brain_param.brain_name] = BrainParameters.from_proto(
                     brain_param
                 )
-                self._external_brain_names += [brain_param.brain_name]
-            self._num_external_brains += len(self._external_brain_names)
+            self._external_brain_names = list(self._brains.keys())
+            self._num_external_brains = len(self._external_brain_names)
 
     @timed
     def _generate_step_input(

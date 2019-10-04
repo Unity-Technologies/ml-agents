@@ -133,6 +133,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     expected_config["normalize"] = False
 
     brain_params_mock = BrainParametersMock()
+    BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": brain_params_mock}
 
     def mock_constructor(self, brain, trainer_parameters, training, load, seed, run_id):
@@ -144,9 +145,8 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         assert run_id == run_id
 
     with patch.object(OfflineBCTrainer, "__init__", mock_constructor):
-        trainers = trainer_util.initialize_trainers(
+        trainer_factory = trainer_util.TrainerFactory(
             trainer_config=base_config,
-            external_brains=external_brains,
             summaries_dir=summaries_dir,
             run_id=run_id,
             model_path=model_path,
@@ -155,6 +155,9 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
             load_model=load_model,
             seed=seed,
         )
+        trainers = {}
+        for _, brain_parameters in external_brains.items():
+            trainers["testbrain"] = trainer_factory.generate(brain_parameters)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], OfflineBCTrainer)
 
@@ -162,6 +165,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
 @patch("mlagents.envs.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
+    BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -200,9 +204,8 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         assert multi_gpu == multi_gpu
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
-        trainers = trainer_util.initialize_trainers(
+        trainer_factory = trainer_util.TrainerFactory(
             trainer_config=base_config,
-            external_brains=external_brains,
             summaries_dir=summaries_dir,
             run_id=run_id,
             model_path=model_path,
@@ -211,6 +214,9 @@ def test_initialize_ppo_trainer(BrainParametersMock):
             load_model=load_model,
             seed=seed,
         )
+        trainers = {}
+        for brain_name, brain_parameters in external_brains.items():
+            trainers[brain_name] = trainer_factory.generate(brain_parameters)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
@@ -225,12 +231,12 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     load_model = False
     seed = 11
     bad_config = dummy_bad_config()
+    BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
 
     with pytest.raises(UnityEnvironmentException):
-        trainer_util.initialize_trainers(
+        trainer_factory = trainer_util.TrainerFactory(
             trainer_config=bad_config,
-            external_brains=external_brains,
             summaries_dir=summaries_dir,
             run_id=run_id,
             model_path=model_path,
@@ -239,6 +245,9 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
             load_model=load_model,
             seed=seed,
         )
+        trainers = {}
+        for brain_name, brain_parameters in external_brains.items():
+            trainers[brain_name] = trainer_factory.generate(brain_parameters)
 
 
 def test_load_config_missing_file():
