@@ -76,7 +76,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Is called only once at the begining of the training or inference session.
+        /// Is called only once at the beginning of the training or inference session.
         /// </summary>
         protected abstract void Initialize();
 
