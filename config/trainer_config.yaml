@@ -264,8 +264,8 @@ GridWorldLearning:
     hidden_units: 256
     beta: 5.0e-3
     buffer_size: 256
-    max_steps: 5.0e5
-    summary_freq: 2000
+    max_steps: 2500
+    summary_freq: 500
     time_horizon: 5
     reward_signals:
         extrinsic:

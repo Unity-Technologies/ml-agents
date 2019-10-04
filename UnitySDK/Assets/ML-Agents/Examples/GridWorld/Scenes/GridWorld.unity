@@ -141,11 +141,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 506d4052eefa14ec9bbb356e3669043d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hackFloatVisualObs: 0
+  hackFloatVisualObs: 1
   broadcastHub:
     broadcastingBrains:
     - {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468, type: 2}
-    m_BrainsToControl: []
+    m_BrainsToControl:
+    - {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468, type: 2}
   m_TrainingConfiguration:
     width: 84
     height: 84
@@ -1151,6 +1152,11 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
+    - target: {fileID: 114143683117020968, guid: 628960e910f094ad1909ecc88cc8016d,
+        type: 2}
+      propertyPath: timeBetweenDecisionsAtInference
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 628960e910f094ad1909ecc88cc8016d, type: 2}
   m_IsPrefabParent: 0
