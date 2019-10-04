@@ -1,8 +1,8 @@
 # Player Brain
 
 The **Player Brain** allows you to control an Agent using keyboard
-commands. You can use Player Brains to control a "teacher" Agent that trains
-other Agents during [imitation learning](Training-Imitation-Learning.md). You
+commands. You can use Player Brains to record demonstrations in order to train
+other Agents with [imitation learning](Training-Imitation-Learning.md). You
 can also use Player Brains to test your Agents and environment before replacing them by **Learning Brains** and running the training process.
 
 ## Player Brain properties

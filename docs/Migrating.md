@@ -4,6 +4,9 @@
 
 ### Important Changes
 * The definition of the gRPC service has changed.
+* The online BC training feature has been removed. 
+* The BroadcastHub of the Academy no longer has a `Control` checkbox. All Learning Brains in the BroadcastHub will be considered as trainable (although the training will only be launched if the Python Process is ready and will use inference otherwise)
+* The broadcast feature has been deprecated. Only LearningBrains can communicate with Python. 
 
 #### Steps to Migrate
 * In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.

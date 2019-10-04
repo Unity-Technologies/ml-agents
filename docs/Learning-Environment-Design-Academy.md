@@ -52,8 +52,7 @@ logic for creating them in the `AcademyStep()` function.
 ![Academy Inspector](images/academy.png)
 * `Broadcast Hub` - Gathers the Brains that will communicate with the external 
   process. Any Brain added to the Broadcast Hub will be visible from the external
-  process. In addition, if the checkbox `Control` is checked, the Brain will be 
-  controllable from the external process and will thus be trainable.
+  process and controllable from the external process and will thus be trainable.
 * `Configuration` - The engine-level settings which correspond to rendering
   quality and engine speed.
   * `Width` - Width of the environment window in pixels.

@@ -37,9 +37,12 @@ namespace MLAgents
 
             foreach (var obs in ai.visualObservations)
             {
-                agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToPNG())
-                );
+                using (TimerStack.Instance.Scoped("encodeVisualObs"))
+                {
+                    agentInfoProto.VisualObservations.Add(
+                        ByteString.CopyFrom(obs.EncodeToPNG())
+                    );
+                }
             }
             return agentInfoProto;
         }

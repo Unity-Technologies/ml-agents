@@ -568,7 +568,10 @@ namespace MLAgents
             m_Info.storedTextActions = m_Action.textActions;
             m_Info.vectorObservation.Clear();
             m_ActionMasker.ResetMask();
-            CollectObservations();
+            using (TimerStack.Instance.Scoped("CollectObservations"))
+            {
+                CollectObservations();
+            }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
             var param = brain.brainParameters;
