@@ -127,11 +127,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         logger.info(
             "\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self))
         )
-        if self._num_external_brains == 0:
-            logger.warning(
-                " No Learning Brains set to train found in the Unity Environment. "
-                "You will not be able to pass actions to your agent(s)."
-            )
 
     @property
     def logfile_path(self):

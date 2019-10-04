@@ -307,7 +307,6 @@ namespace MLAgents
                     communicator = null;
                     BrainBatcher = null;
                     m_IsCommunicatorOn = false;
-                    Debug.Log("AN ERROR OCCURED");
                 }
             }
 

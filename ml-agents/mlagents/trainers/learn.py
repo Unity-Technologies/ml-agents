@@ -15,7 +15,7 @@ from typing import Any, Callable, Optional, List, NamedTuple
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculumError, MetaCurriculum
-from mlagents.trainers.trainer_util import initialize_trainers, load_config
+from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import SamplerException
@@ -208,7 +208,7 @@ def run_training(
         options.docker_target_name,
         options.no_graphics,
         run_seed,
-        options.base_port + (sub_id * options.num_envs),
+        options.base_port + (sub_id * options.num_envs) + int(options.env_path!=None),
         options.env_args,
     )
     env = SubprocessEnvManager(env_factory, options.num_envs)
@@ -219,9 +219,8 @@ def run_training(
         options.sampler_file_path, env.reset_parameters, run_seed
     )
 
-    trainers = initialize_trainers(
+    trainer_factory = TrainerFactory(
         trainer_config,
-        env.external_brains,
         summaries_dir,
         options.run_id,
         model_path,
@@ -235,7 +234,7 @@ def run_training(
 
     # Create controller and begin training.
     tc = TrainerController(
-        trainers,
+        trainer_factory,
         model_path,
         summaries_dir,
         options.run_id + "-" + str(sub_id),
