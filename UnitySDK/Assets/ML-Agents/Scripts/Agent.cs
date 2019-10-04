@@ -832,7 +832,10 @@ namespace MLAgents
         protected void AddVisualObservation(Texture2D obs, Resolution res)
         {
             var texturePixels = obs.GetPixels32();
-            for (var h = res.height - 1; h >= 0; h--)
+            // NOTE the order here differs from how TextureToTensorProxy does it, but was necessary to get
+            // agreement with the transmitted PNG files.
+            // TODO make sure inference handles this correctly.
+            for (var h = 0; h<res.height; h++)
             {
                 for (var w = 0; w < res.width; w++)
                 {
