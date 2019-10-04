@@ -15,8 +15,7 @@ There are 3 kinds of Brains you can use:
    **PlayerBrain** to map keyboard keys to Agent actions, which can be 
    useful to test your Agent code.
 
-During training, use a **Learning Brain** 
-and drag it into the Academy's `Broadcast Hub`.
+During training, use a **Learning Brain**.
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain**.
 

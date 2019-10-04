@@ -186,8 +186,7 @@ range of training and inference scenarios:
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
   determine the action for each Agent. You can train a **Learning Brain**
-  by dragging it into the Academy's `Broadcast Hub` and launching the game with 
-  the Python training process.
+  by launching the game with the Python training process.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
   and rewards collected by the Brain are not used to control the Agent.
@@ -198,13 +197,6 @@ range of training and inference scenarios:
   trained a Brain for the medics we could assign a medic on one team to the
   trained Brain and assign the medic on the other team a Heuristic Brain with
   hard-coded behaviors. We can then evaluate which medic is more effective.
-
-As currently described, it may seem that the External Communicator and Python
-API are only leveraged by the Learning Brain. This is not true. It is possible
-to configure the Learning, Player and Heuristic Brains to also send the
-observations, rewards and actions to the Python API through the External
-Communicator (a feature called _broadcasting_). As we will see shortly, this
-enables additional training modes.
 
 <p align="center">
   <img src="images/learning_environment.png"
@@ -255,8 +247,7 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 In the previous mode, the Learning Brain was used for training to generate
 a TensorFlow model that the Learning Brain can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for
-training. In this case, the Brain type would be set to Learning and be linked
-to the BroadcastHub
+training. In this case, the Brain type would be set to Learning
 and the behaviors of all the Agents in the scene will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
 

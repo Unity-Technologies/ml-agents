@@ -70,8 +70,6 @@ Within `Basics`, be sure to set `env_name` to the name of the Unity executable
 if you want to [use an executable](Learning-Environment-Executable.md) or to
 `None` if you want to interact with the current scene in the Unity Editor.
 
-Before building the environment or interacting with it in the editor, select `Ball3DAcademy` in the **Hierarchy** window of the Unity editor and make sure the `3DBallLearningBrain` is in the Broadcast Hub of the `Ball3DAcademy` component. 
-
 More information and documentation is provided in the
 [Python API](Python-API.md) page.
 
@@ -91,8 +89,8 @@ a `Learning Brain`.
 3. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Brains` folder and drag the **3DBallLearning** Brain to the `Brains` property under `Braodcast Hub` in the `Ball3DAcademy` object in the **Inspector** window.
 
    **Note:** Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
-the agent) means that the Brain will be making decision for that agent. Whereas dragging
-a Brain into the Broadcast Hub means that the Brain will be exposed to the Python process.
+the agent) means that the Brain will be making decision for that agent. If the Agent uses a
+LearningBrain either Python controls the Brain or the model on the Brain does.
 
    ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
 

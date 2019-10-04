@@ -110,8 +110,7 @@ or by selecting all the agents you want to attach the Brain to using the
 search bar on top of the Scene Hierarchy window.
 
 To Create a Brain, go to `Assets -> Create -> Ml-Agents` and select the 
-type of Brain you want to use. During training, use a **Learning Brain** 
-and drag it into the Academy's `Broadcast Hub`.
+type of Brain you want to use. During training, use a **Learning Brain** .
 When you want to use the trained model, import the model file into the Unity
 project, add it to the **Model** property of the **Learning Brain**. 
 If the Python process is not active, the **Learning Brain** will not train but
@@ -183,7 +182,6 @@ include:
 
 * The training scene must start automatically when your Unity application is
   launched by the training process.
-* The scene must include an Academy with at least one Brain in the `Broadcast Hub`.
 * The Academy must reset the scene to a valid starting point for each episode of
   training.
 * A training episode must have a definite end — either using `Max Steps` or by
