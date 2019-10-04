@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.IO;
 using System.Linq;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
@@ -270,6 +269,7 @@ namespace MLAgents
                         port = ReadArgs()
                     });
             }
+
             // If it fails, we check if there are any external brains in the scene
             // and if Unity is in Editor mode 
             // If there are : Launch the communicator on the default port
@@ -309,6 +309,7 @@ namespace MLAgents
                     academyParameters.BrainParameters.Add(
                         bp.ToProto(brain.name, true));
                 }
+
                 academyParameters.EnvironmentParameters =
                     new CommunicatorObjects.EnvironmentParametersProto();
                 foreach (var key in resetParameters.Keys)
@@ -349,7 +350,6 @@ namespace MLAgents
             AgentSendState += () => { };
             AgentAct += () => { };
             AgentForceReset += () => { };
-
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
@@ -560,15 +560,30 @@ namespace MLAgents
 
             AgentSetStatus(m_StepCount);
 
-            AgentResetIfDone();
+            using (TimerStack.Instance.Scoped("AgentResetIfDone"))
+            {
+                AgentResetIfDone();
+            }
 
-            AgentSendState();
+            using (TimerStack.Instance.Scoped("AgentSendState"))
+            {
+                AgentSendState();
+            }
 
-            BrainDecideAction();
+            using (TimerStack.Instance.Scoped("BrainDecideAction"))
+            {
+                BrainDecideAction();
+            }
 
-            AcademyStep();
+            using (TimerStack.Instance.Scoped("AcademyStep"))
+            {
+                AcademyStep();
+            }
 
-            AgentAct();
+            using (TimerStack.Instance.Scoped("AgentAct"))
+            {
+                AgentAct();
+            }
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
@@ -603,6 +618,10 @@ namespace MLAgents
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
+
+            // TODO - Pass worker ID or some other identifier,
+            // so that multiple envs won't overwrite each others stats.
+            TimerStack.Instance.SaveJsonTimers();
         }
     }
 }
