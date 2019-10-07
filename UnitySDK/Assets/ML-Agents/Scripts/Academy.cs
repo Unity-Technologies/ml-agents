@@ -95,6 +95,8 @@ namespace MLAgents
     {
         public bool hackFloatVisualObs = false;
 
+        string timerPathOut = null;
+
         [SerializeField]
         public BroadcastHub broadcastHub = new BroadcastHub();
 
@@ -242,11 +244,16 @@ namespace MLAgents
             var hackFloatVisualObsStr = $"{hackFloatVisualObs}";
             for (var i = 0; i < args.Length; i++)
             {
-
                 if (args[i] == "--hack-vis-obs")
                 {
                     hackFloatVisualObsStr = args[i + 1];
                 }
+
+                if (args[i] == "--timer-path")
+                {
+                    timerPathOut = args[i + 1];
+                }
+
             }
             hackFloatVisualObs = bool.Parse(hackFloatVisualObsStr);
 #endif
@@ -288,7 +295,7 @@ namespace MLAgents
             }
 
             // If it fails, we check if there are any external brains in the scene
-            // and if Unity is in Editor mode 
+            // and if Unity is in Editor mode
             // If there are : Launch the communicator on the default port
             // If there are not, there is no need for a communicator and it is set
             // to null
@@ -640,7 +647,7 @@ namespace MLAgents
 
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.
-            TimerStack.Instance.SaveJsonTimers();
+            TimerStack.Instance.SaveJsonTimers(timerPathOut);
         }
     }
 }

@@ -591,29 +591,38 @@ namespace MLAgents
             //First add all cameras
             for (var i = 0; i < agentParameters.agentCameras.Count; i++)
             {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentCameras[i],
-                    param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height);
-                m_Info.visualObservations.Add(obsTexture);
+                using (TimerStack.Instance.Scoped("CameraObservationToTexture"))
+                {
+                    var obsTexture = ObservationToTexture(
+                        agentParameters.agentCameras[i],
+                        param.cameraResolutions[i].width,
+                        param.cameraResolutions[i].height);
+                    m_Info.visualObservations.Add(obsTexture);
+                }
             }
 
             //Then add all renderTextures
             var camCount = agentParameters.agentCameras.Count;
             for (var i = 0; i < agentParameters.agentRenderTextures.Count; i++)
             {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentRenderTextures[i],
-                    param.cameraResolutions[camCount + i].width,
-                    param.cameraResolutions[camCount + i].height);
-                m_Info.visualObservations.Add(obsTexture);
+                using (TimerStack.Instance.Scoped("RenderTextureObservationToTexture"))
+                {
+                    var obsTexture = ObservationToTexture(
+                        agentParameters.agentRenderTextures[i],
+                        param.cameraResolutions[camCount + i].width,
+                        param.cameraResolutions[camCount + i].height);
+                    m_Info.visualObservations.Add(obsTexture);
+                }
             }
 
             int visualFloatSize = 0;
             if (m_Academy.hackFloatVisualObs)
             {
-                visualFloatSize = WriteVisualObsAsFloat();
-                m_Info.visualObservations.Clear();
+                using (TimerStack.Instance.Scoped("WriteVisualObsAsFloat"))
+                {
+                    visualFloatSize = WriteVisualObsAsFloat();
+                    m_Info.visualObservations.Clear();
+                }
             }
 
             if ((m_Info.vectorObservation.Count != param.vectorObservationSize + visualFloatSize))

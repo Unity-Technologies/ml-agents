@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UnityEngine;
+using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
@@ -226,14 +227,18 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var input = m_Communicator.Exchange(
-                new CommunicatorObjects.UnityOutputProto
-                {
-                    RlOutput = m_CurrentUnityRlOutput
-                });
+            UnityInputProto input = null;
+            using (TimerStack.Instance.Scoped("Communicator.Exchange"))
+            {
+                input = m_Communicator.Exchange(
+                    new CommunicatorObjects.UnityOutputProto
+                    {
+                        RlOutput = m_CurrentUnityRlOutput
+                    });
+            }
             m_MessagesReceived += 1;
 
-			
+
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
