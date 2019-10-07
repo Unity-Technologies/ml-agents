@@ -7,11 +7,11 @@ Service for training ML-Agents environments.
 
 We've prepared a pre-configured AMI for you with the ID: `ami-016ff5559334f8619` in the
 `us-east-1` region. It was created as a modification of [Deep Learning AMI
-(Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been 
-tested with p2.xlarge instance. Furthermore, if you want to train without 
-headless mode, you need to enable X Server. 
+(Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been
+tested with p2.xlarge instance. Furthermore, if you want to train without
+headless mode, you need to enable X Server.
 
-After launching your EC2 instance using the ami and ssh into it, run the 
+After launching your EC2 instance using the ami and ssh into it, run the
 following commands to enable it:
 
 ```sh
@@ -102,14 +102,14 @@ linux executables which use visual observations.
 
     # Remove the Section "Files" from the /etc/X11/xorg.conf file
     # And remove two lines that contain Section "Files" and EndSection
-    $ sudo vim /etc/X11/xorg.conf 
+    $ sudo vim /etc/X11/xorg.conf
     ```
 
 #### Update and setup Nvidia driver:
 
     ```sh
     # Download and install the latest Nvidia driver for ubuntu
-    # Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt     
+    # Please refer to http://download.nvidia.com/XFree86/Linux-#x86_64/latest.txt
     $ wget http://download.nvidia.com/XFree86/Linux-x86_64/390.87/NVIDIA-Linux-x86_64-390.87.run
     $ sudo /bin/bash ./NVIDIA-Linux-x86_64-390.67.run --accept-license --no-questions --ui=none
 
@@ -138,7 +138,7 @@ linux executables which use visual observations.
    # You will have a list of processes running on the GPU, Xorg should not be in
    # the list, as shown below.
    $ nvidia-smi
-   
+
    # Thu Jun 14 20:21:11 2018
    # +-----------------------------------------------------------------------------+
    # | NVIDIA-SMI 390.67                 Driver Version: 390.67                    |
@@ -156,7 +156,7 @@ linux executables which use visual observations.
    # |=============================================================================|
    # |  No running processes found                                                 |
    # +-----------------------------------------------------------------------------+
-   
+
    ```
 
 #### Start X Server and make the ubuntu use X Server for display:
@@ -179,13 +179,13 @@ linux executables which use visual observations.
     # For more information on glxgears, see ftp://www.x.org/pub/X11R6.8.1/doc/glxgears.1.html.
     $ glxgears
     # If Xorg is configured correctly, you should see the following message
-    
+
     # Running synchronized to the vertical refresh.  The framerate should be
     # approximately the same as the monitor refresh rate.
     # 137296 frames in 5.0 seconds = 27459.053 FPS
     # 141674 frames in 5.0 seconds = 28334.779 FPS
     # 141490 frames in 5.0 seconds = 28297.875 FPS
-    
+
     ```
 
 ## Training on EC2 instance
@@ -193,7 +193,7 @@ linux executables which use visual observations.
 1. In the Unity Editor, load a project containing an ML-Agents environment (you
    can use one of the example environments if you have not created your own).
 2. Open the Build Settings window (menu: File > Build Settings).
-3. Select Linux as the Target Platform, and x86_64 as the target architecture 
+3. Select Linux as the Target Platform, and x86_64 as the target architecture
 (the default x86 currently does not work).
 4. Check Headless Mode if you have not setup the X Server. (If you do not use
 Headless Mode, you have to setup the X Server to enable training.)
@@ -220,7 +220,7 @@ Headless Mode, you have to setup the X Server to enable training.)
 9. Test the instance setup from Python using:
 
     ```python
-    from mlagents.envs import UnityEnvironment
+    from mlagents.envs.environment import UnityEnvironment
 
     env = UnityEnvironment(<your_env>)
     ```
@@ -233,12 +233,12 @@ Headless Mode, you have to setup the X Server to enable training.)
     ```console
     mlagents-learn <trainer-config-file> --env=<your_env> --train
     ```
-    
+
 ## FAQ
 
 ### The <Executable_Name>_Data folder hasn't been copied cover
 
-If you've built your Linux executable, but forget to copy over the corresponding <Executable_Name>_Data folder, you will see error message like the following: 
+If you've built your Linux executable, but forget to copy over the corresponding <Executable_Name>_Data folder, you will see error message like the following:
 
 ```sh
 Set current directory to /home/ubuntu/ml-agents/ml-agents
@@ -269,7 +269,7 @@ mlagents.envs.exception.UnityTimeOutException: The Unity environment took too lo
          The environment and the Python interface have compatible versions.
 ```
 
-It would be also really helpful to check your /home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with your Unity environment. 
+It would be also really helpful to check your /home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with your Unity environment.
 
 ### Could not launch X Server
 
@@ -310,4 +310,4 @@ You might see something like:
 ```sh
 NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 ```
-This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information. 
+This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information.

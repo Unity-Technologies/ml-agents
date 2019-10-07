@@ -45,7 +45,7 @@ To verify that all steps worked correctly:
 7. Test the instance setup from Python using:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 
 env = UnityEnvironment(<your_env>)
 ```
@@ -79,9 +79,9 @@ the GPU is being used by running `nvidia-smi` from the command line.
 ## Monitoring your Training Run with TensorBoard
 
 Once you have started training, you can [use TensorBoard to observe the
-training](Using-Tensorboard.md).  
+training](Using-Tensorboard.md).
 
-1. Start by [opening the appropriate port for web traffic to connect to your VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal).  
+1. Start by [opening the appropriate port for web traffic to connect to your VM](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/nsg-quickstart-portal).
 
     * Note that you don't need to generate a new `Network Security Group` but
       instead, go to the **Networking** tab under **Settings** for your VM.

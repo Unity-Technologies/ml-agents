@@ -16,7 +16,7 @@ imitation learning.
 The ML-Agents Toolkit provides a Python API for controlling the Agent simulation
 loop of an environment or game built with Unity. This API is used by the
 training algorithms inside the ML-Agent Toolkit, but you can also write your own
-Python programs using this API. Go [here](../notebooks/getting-started.ipynb) 
+Python programs using this API. Go [here](../notebooks/getting-started.ipynb)
 for a Jupyter Notebook walking through the functionality of the API.
 
 The key objects in the Python API include:
@@ -52,7 +52,7 @@ file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 
@@ -94,14 +94,14 @@ A BrainInfo object contains the following fields:
   `(batch size, number of branches)` if the vector action space is discrete.
 
 Once loaded, you can use your UnityEnvironment object, which referenced by a
-variable named `env` in this example, can be used in the following way:  
+variable named `env` in this example, can be used in the following way:
 
-- **Print : `print(str(env))`**  
-  Prints all parameters relevant to the loaded environment and the 
-  Brains.  
-- **Reset : `env.reset(train_model=True, config=None)`**  
+- **Print : `print(str(env))`**
+  Prints all parameters relevant to the loaded environment and the
+  Brains.
+- **Reset : `env.reset(train_model=True, config=None)`**
   Send a reset signal to the environment, and provides a dictionary mapping
-  Brain names to BrainInfo objects.  
+  Brain names to BrainInfo objects.
   - `train_model` indicates whether to run the environment in train (`True`) or
     test (`False`) mode.
   - `config` is an optional dictionary of configuration flags specific to the
@@ -110,7 +110,7 @@ variable named `env` in this example, can be used in the following way:
     `resetParameters` and the values are their corresponding float values.
     Define the reset parameters on the Academy Inspector window in the Unity
     Editor.
-- **Step : `env.step(action, memory=None, text_action=None)`**  
+- **Step : `env.step(action, memory=None, text_action=None)`**
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
     multiple Agents per Brain.
@@ -141,7 +141,7 @@ variable named `env` in this example, can be used in the following way:
     action = {'brain1':[1.0, 2.0], 'brain2':[3.0,4.0]}
     ```
 
-    Returns a dictionary mapping Brain names to BrainInfo objects.  
+    Returns a dictionary mapping Brain names to BrainInfo objects.
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
