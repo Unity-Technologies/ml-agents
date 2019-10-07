@@ -127,7 +127,6 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            Debug.Log("rlInput.Command: " + rlInput.Command);
             SendRLInputReceivedEvent(rlInput.IsTraining);
             SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
         }
