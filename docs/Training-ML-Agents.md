@@ -167,23 +167,23 @@ environment, you can set the following command line options when invoking
 ### Training Config File
 
 The training config files `config/trainer_config.yaml`, `config/sac_trainer_config.yaml`,
-`config/gail_config.yaml`, `config/online_bc_config.yaml` and `config/offline_bc_config.yaml`
-specifies the training method, the hyperparameters, and a few additional values to use when
-training with Proximal Policy Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial 
-Imitation Learning) with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files are 
-divided into sections. The **default** section defines the default values for all the available
-settings. You can also add new sections to override these defaults to train
-specific Brains. Name each of these override sections after the GameObject
-containing the Brain component that should use these settings. (This GameObject
-will be a child of the Academy in your scene.) Sections for the example
-environments are included in the provided config file.
+`config/gail_config.yaml` and `config/offline_bc_config.yaml` specifies the training method,
+the hyperparameters, and a few additional values to use when training with Proximal Policy 
+Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial Imitation Learning) 
+with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files are divided 
+into sections. The **default** section defines the default values for all the available
+training with PPO, SAC, GAIL (with PPO), and offline BC. These files are divided into sections.
+The **default** section defines the default values for all the available settings. You can 
+also add new sections to override these defaults to train specific Brains. Name each of these
+override sections after the GameObject containing the Brain component that should use these 
+settings. (This GameObject will be a child of the Academy in your scene.) Sections for the 
+example environments are included in the provided config file.
 
 |     **Setting**      |                                                                                     **Description**                                                                                     | **Applies To Trainer\*** |
 | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- |
 | batch_size           | The number of experiences in each iteration of gradient descent.                                                                                                                        | PPO, SAC, BC             |
 | batches_per_epoch    | In imitation learning, the number of batches of training examples to collect before training the model.                                                                                 | BC                       |
 | beta                 | The strength of entropy regularization.                                                                                                                                                 | PPO                      |
-| brain\_to\_imitate   | For online imitation learning, the name of the GameObject containing the Brain component to imitate.                                                                                    | (online)BC               |
 | demo_path            | For offline imitation learning, the file path of the recorded demonstration file                                                                                                        | (offline)BC              |
 | buffer_size          | The number of experiences to collect before updating the policy model. In SAC, the max size of the experience buffer.                                                                   | PPO, SAC                 |
 | buffer_init_steps    | The number of experiences to collect into the buffer before updating the policy model.                                                                                                  | SAC                      |
@@ -196,6 +196,7 @@ environments are included in the provided config file.
 | memory_size          | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC, BC             |
 | normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                 |
 | num_epoch            | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
+<<<<<<< HEAD
 | num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, SAC, BC             |
 | pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                           | PPO, SAC                 |
 | reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                         | PPO, SAC, BC             |
@@ -209,6 +210,7 @@ environments are included in the provided config file.
 | num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC, BC             |
 
+\*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation)
 
 For specific advice on setting hyperparameters based on the type of training you
 are conducting, see:

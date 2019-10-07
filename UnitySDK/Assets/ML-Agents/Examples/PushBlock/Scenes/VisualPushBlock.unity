@@ -617,9 +617,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   broadcastHub:
-    broadcastingBrains:
+    brainsToControl:
     - {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f, type: 2}
-    m_BrainsToControl: []
   m_TrainingConfiguration:
     width: 1280
     height: 720

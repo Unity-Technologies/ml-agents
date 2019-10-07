@@ -11,50 +11,27 @@ namespace MLAgents
     [System.Serializable]
     public class BroadcastHub
     {
-        [SerializeField]
-        public List<Brain> broadcastingBrains = new List<Brain>();
         [FormerlySerializedAs("_brainsToControl")]
         [SerializeField]
-        private List<Brain> m_BrainsToControl = new List<Brain>();
+        public List<LearningBrain> brainsToControl = new List<LearningBrain>();
 
         /// <summary>
         /// The number of Brains inside the BroadcastingHub.
         /// </summary>
         public int Count
         {
-            get { return broadcastingBrains.Count; }
-        }
-
-        /// <summary>
-        /// Checks that a given Brain is set to be remote controlled.
-        /// </summary>
-        /// <param name="brain"> The Brain that is beeing checked</param>
-        /// <returns>true if the Brain is set to Controlled and false otherwise. Will return
-        /// false if the Brain is not present in the Hub.</returns>
-        public bool IsControlled(Brain brain)
-        {
-            return m_BrainsToControl.Contains(brain);
+            get { return brainsToControl.Count; }
         }
 
         /// <summary>
         /// Sets a brain to controlled.
         /// </summary>
         /// <param name="brain"> The Brain that is being set to controlled</param>
-        /// <param name="controlled"> if true, the Brain will be set to remote controlled. Otherwise
-        /// the brain will be set to broadcast only.</param>
-        public void SetControlled(Brain brain, bool controlled)
+        public void SetControlled(LearningBrain brain)
         {
-            if (broadcastingBrains.Contains(brain))
+            if (!brainsToControl.Contains(brain))
             {
-                if (controlled && !m_BrainsToControl.Contains(brain))
-                {
-                    m_BrainsToControl.Add(brain);
-                }
-
-                if (!controlled && m_BrainsToControl.Contains(brain))
-                {
-                    m_BrainsToControl.Remove(brain);
-                }
+                brainsToControl.Add(brain);
             }
         }
 
@@ -63,8 +40,7 @@ namespace MLAgents
         /// </summary>
         public void Clear()
         {
-            broadcastingBrains.Clear();
-            m_BrainsToControl.Clear();
+            brainsToControl.Clear();
         }
     }
 }

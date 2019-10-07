@@ -1,4 +1,4 @@
-﻿# Example Learning Environments
+# Example Learning Environments
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
@@ -130,7 +130,6 @@ If you would like to contribute environments, please see our
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
 * Benchmark Mean Reward: 2.5
-* Optional Imitation Learning scene: `TennisIL`.
 
 ## [Push Block](https://youtu.be/jKdw216ZgoE)
 
@@ -170,7 +169,6 @@ If you would like to contribute environments, please see our
         * Recommended Minimum: 0
         * Recommended Maximum: 2000
 * Benchmark Mean Reward: 4.5
-* Optional Imitation Learning scene: `PushBlockIL`.
 
 ## [Wall Jump](https://youtu.be/NITLug2DIWQ)
 
@@ -293,7 +291,6 @@ If you would like to contribute environments, please see our
     * Recommended Minimum: 0.5
     * Recommended Maximum: 5
 * Benchmark Mean Reward: 10
-* Optional Imitation Learning scene: `FoodCollectorIL`.
 
 ## [Hallway](https://youtu.be/53GyfpPQRUQ)
 
@@ -320,7 +317,6 @@ If you would like to contribute environments, please see our
 * Reset Parameters: None
 * Benchmark Mean Reward: 0.7
   * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
-* Optional Imitation Learning scene: `HallwayIL`.
 
 ## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
 
@@ -450,5 +446,4 @@ If you would like to contribute environments, please see our
      this environment does not train with the provided default
      training parameters.__
 * Reset Parameters: None
-* Optional Imitation Learning scene: `PyramidsIL`.
 * Benchmark Mean Reward: 1.75

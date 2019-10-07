@@ -32,10 +32,18 @@ def dummy_config():
     )
 
 
-def create_bc_trainer(dummy_config):
+def create_bc_trainer(dummy_config, is_discrete=False):
     mock_env = mock.Mock()
-    mock_brain = mb.create_mock_3dball_brain()
-    mock_braininfo = mb.create_mock_braininfo(num_agents=12, num_vector_observations=8)
+    if is_discrete:
+        mock_brain = mb.create_mock_pushblock_brain()
+        mock_braininfo = mb.create_mock_braininfo(
+            num_agents=12, num_vector_observations=70
+        )
+    else:
+        mock_brain = mb.create_mock_3dball_brain()
+        mock_braininfo = mb.create_mock_braininfo(
+            num_agents=12, num_vector_observations=8
+        )
     mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
     env = mock_env()
 
@@ -106,13 +114,15 @@ def test_bc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = BCPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, False)
+    policy = BCPolicy(
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False
+    )
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
 
