@@ -294,7 +294,7 @@ namespace MLAgents
             if (m_Communicator != null)
             {
                 m_Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                m_Communicator.ResetCommandReceived += UpdateResetParameters;
+                m_Communicator.ResetCommandReceived += OnResetCommand;
                 m_Communicator.RLInputReceived += OnRLInputReceived;
 
 
@@ -349,6 +349,12 @@ namespace MLAgents
             EditorApplication.isPlaying = false;
 #endif
             Application.Quit();
+        }
+
+        private void OnResetCommand(EnvironmentResetParameters newResetParameters)
+        {
+            UpdateResetParameters(newResetParameters);
+            ForcedFullReset();
         }
 
         void OnRLInputReceived(UnityRLInputParameters inputParams)

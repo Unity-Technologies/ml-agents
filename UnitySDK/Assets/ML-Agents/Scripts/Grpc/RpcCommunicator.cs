@@ -125,10 +125,11 @@ namespace MLAgents
             return initializationInput.RlInitializationInput.ToUnityRLInitParameters();
         }
 
-        void UpdateEnvironmentWithInput(UnityRLInputProto firstRlInput)
+        void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SendRLInputReceivedEvent(firstRlInput.IsTraining);
-            SendCommandEvent(firstRlInput.Command, firstRlInput.EnvironmentParameters);
+            Debug.Log("rlInput.Command: " + rlInput.Command);
+            SendRLInputReceivedEvent(rlInput.IsTraining);
+            SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
         }
 
         private UnityInputProto Initialize(UnityOutputProto unityOutput,
