@@ -81,8 +81,9 @@ namespace MLAgents
 
             foreach (var brain in initParameters.brains)
             {
-                academyParameters.BrainParameters.Add(brain.brainParameters.ToProto(brain.name,
-                    true));
+                academyParameters.BrainParameters.Add(brain.brainParameters.ToProto(
+                    brain.name, true));
+                SubscribeBrain(brain.name);
             }
 
             academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
@@ -245,11 +246,6 @@ namespace MLAgents
         public void PutObservations(
             string brainKey, IEnumerable<Agent> agents)
         {
-            if (!m_CurrentAgents.ContainsKey(brainKey))
-            {
-                SubscribeBrain(brainKey);
-            }
-
             // The brain tried called GiveBrainInfo, update m_hasQueried
             m_HasQueried[brainKey] = true;
             // Populate the currentAgents dictionary
@@ -373,6 +369,10 @@ namespace MLAgents
                 }
 
                 m_IsOpen = false;
+                // Not sure if the quit command is actually sent when a
+                // non 200 message is received.  Notify that we are indeed
+                // quitting.
+                QuitCommandReceived?.Invoke();
                 return message.UnityInput;
             }
             catch

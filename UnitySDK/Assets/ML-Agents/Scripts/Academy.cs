@@ -330,7 +330,7 @@ namespace MLAgents
             // If a communicator is enabled/provided, then we assume we are in
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
-            m_IsInference = !IsCommunicatorOn;
+            SetIsInference(!IsCommunicatorOn);
 
             BrainDecideAction += () => {};
             DestroyAction += () => {};
