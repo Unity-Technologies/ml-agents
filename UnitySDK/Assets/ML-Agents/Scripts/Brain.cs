@@ -24,21 +24,8 @@ namespace MLAgents
         /// </summary>
         protected List<Agent> m_Agents = new List<Agent>(1024);
 
-        protected ICommunicator m_Communicator;
-
         [NonSerialized]
         private bool m_IsInitialized;
-
-        /// <summary>
-        /// Sets the Batcher of the Brain. The brain will call the communicator at every step and give
-        /// it the agent's data using PutObservations at each DecideAction call.
-        /// </summary>
-        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
-        public void SetCommunicator(ICommunicator communicator)
-        {
-            m_Communicator = communicator;
-            LazyInitialize();
-        }
 
         /// <summary>
         /// Registers an agent to current batch so it will be processed in DecideAction.
@@ -54,7 +41,7 @@ namespace MLAgents
         /// If the Brain is not initialized, it subscribes to the Academy's DecideAction Event and
         /// calls the Initialize method to be implemented by child classes.
         /// </summary>
-        private void LazyInitialize()
+        protected void LazyInitialize()
         {
             if (!m_IsInitialized)
             {
@@ -87,7 +74,6 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
-            m_Communicator?.PutObservations(name, m_Agents);
             DecideAction();
             // Clear the agent Decision subscription collection for the next update cycle.
             m_Agents.Clear();

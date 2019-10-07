@@ -49,6 +49,19 @@ namespace MLAgents
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
+        protected ICommunicator m_Communicator;
+
+        /// <summary>
+        /// Sets the Batcher of the Brain. The brain will call the communicator at every step and give
+        /// it the agent's data using PutObservations at each DecideAction call.
+        /// </summary>
+        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
+        public void SetCommunicator(ICommunicator communicator)
+        {
+            m_Communicator = communicator;
+            LazyInitialize();
+        }
+
         /// <inheritdoc />
         protected override void Initialize()
         {
@@ -118,6 +131,7 @@ namespace MLAgents
         {
             if (m_Communicator != null)
             {
+                m_Communicator?.PutObservations(name, m_Agents);
                 return;
             }
             var currentBatchSize = m_Agents.Count;
