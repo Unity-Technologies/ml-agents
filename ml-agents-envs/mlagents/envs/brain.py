@@ -187,7 +187,7 @@ class BrainInfo:
             image.load()
 
         s = np.array(image)
-        if dump_filename:
+        if dump_image_and_quit and dump_filename:
             new_im = Image.fromarray(s)
             new_im.save(dump_filename)
         s = s / 255.0
