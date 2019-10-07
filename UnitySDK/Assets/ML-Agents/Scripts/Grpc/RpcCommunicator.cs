@@ -166,7 +166,6 @@ namespace MLAgents
         /// </summary>
         ~RpcCommunicator()
         {
-            Console.WriteLine("Destructor of RpcCommunicator");
             Close();
         }
 
@@ -378,6 +377,7 @@ namespace MLAgents
             catch
             {
                 m_IsOpen = false;
+                QuitCommandReceived?.Invoke();
                 return null;
             }
 #else
