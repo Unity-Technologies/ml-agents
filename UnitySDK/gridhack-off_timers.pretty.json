@@ -1,0 +1,63 @@
+{
+    "count": 1,
+    "self": 1.9439879999999998,
+    "total": 22.242015,
+    "children": {
+        "AgentResetIfDone": {
+            "count": 2510,
+            "self": 0.027756,
+            "total": 0.027756,
+            "children": null
+        },
+        "AgentSendState": {
+            "count": 2510,
+            "self": 0.08804999999999999,
+            "total": 3.546979,
+            "children": {
+                "CollectObservations": {
+                    "count": 2509,
+                    "self": 0.017355,
+                    "total": 0.017355,
+                    "children": null
+                },
+                "RenderTextureObservationToTexture": {
+                    "count": 2509,
+                    "self": 3.4415739999999997,
+                    "total": 3.4415739999999997,
+                    "children": null
+                }
+            }
+        },
+        "BrainDecideAction": {
+            "count": 2510,
+            "self": 0.178399,
+            "total": 16.658704,
+            "children": {
+                "encodeVisualObs": {
+                    "count": 2509,
+                    "self": 0.631583,
+                    "total": 0.631583,
+                    "children": null
+                },
+                "Communicator.Exchange": {
+                    "count": 2509,
+                    "self": 15.8487216,
+                    "total": 15.848721999999999,
+                    "children": null
+                }
+            }
+        },
+        "AcademyStep": {
+            "count": 2510,
+            "self": 0.011439,
+            "total": 0.011439,
+            "children": null
+        },
+        "AgentAct": {
+            "count": 2510,
+            "self": 0.051445,
+            "total": 0.051445,
+            "children": null
+        }
+    }
+}
