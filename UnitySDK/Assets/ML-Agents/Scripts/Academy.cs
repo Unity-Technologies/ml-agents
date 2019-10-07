@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.IO;
 using System.Linq;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
@@ -265,7 +264,6 @@ namespace MLAgents
                         port = ReadArgs()
                     });
             }
-            // If it fails, Launch the communicator on the default port
             catch
             {
                 communicator = null;
@@ -278,6 +276,7 @@ namespace MLAgents
 #endif
             }
             BrainBatcher = new Batcher(communicator);
+
             if (communicator != null)
             {
                 m_IsCommunicatorOn = true;
@@ -322,7 +321,6 @@ namespace MLAgents
             AgentSendState += () => { };
             AgentAct += () => { };
             AgentForceReset += () => { };
-
 
             // Configure the environment using the configurations provided by
             // the developer in the Editor.
@@ -535,15 +533,30 @@ namespace MLAgents
 
             AgentSetStatus(m_StepCount);
 
-            AgentResetIfDone();
+            using (TimerStack.Instance.Scoped("AgentResetIfDone"))
+            {
+                AgentResetIfDone();
+            }
 
-            AgentSendState();
+            using (TimerStack.Instance.Scoped("AgentSendState"))
+            {
+                AgentSendState();
+            }
 
-            BrainDecideAction();
+            using (TimerStack.Instance.Scoped("BrainDecideAction"))
+            {
+                BrainDecideAction();
+            }
 
-            AcademyStep();
+            using (TimerStack.Instance.Scoped("AcademyStep"))
+            {
+                AcademyStep();
+            }
 
-            AgentAct();
+            using (TimerStack.Instance.Scoped("AgentAct"))
+            {
+                AgentAct();
+            }
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
@@ -578,6 +591,10 @@ namespace MLAgents
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
+
+            // TODO - Pass worker ID or some other identifier,
+            // so that multiple envs won't overwrite each others stats.
+            TimerStack.Instance.SaveJsonTimers();
         }
     }
 }

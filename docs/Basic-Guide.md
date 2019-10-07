@@ -89,6 +89,7 @@ a `Learning Brain`.
 3. In the **Project** window, go to `Assets/ML-Agents/Examples/3DBall/Brains` folder and drag the **3DBallLearning** Brain to the `Brains` property under `Braodcast Hub` in the `Ball3DAcademy` object in the **Inspector** window.
 
    **Note:** Assigning a Brain to an agent (dragging a Brain into the `Brain` property of 
+
 the agent) means that the Brain will be making decision for that agent. If the Agent uses a
 LearningBrain either Python controls the Brain or the model on the Brain does.
 
