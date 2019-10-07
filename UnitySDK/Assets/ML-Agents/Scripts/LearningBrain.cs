@@ -31,7 +31,6 @@ namespace MLAgents
     [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
     public class LearningBrain : Brain
     {
-        private Batcher m_Batcher;
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
@@ -50,14 +49,17 @@ namespace MLAgents
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
+        protected ICommunicator m_Communicator;
+
         /// <summary>
-        /// When Called, the brain will be controlled externally. It will not use the
-        /// model to decide on actions.
+        /// Sets the Batcher of the Brain. The brain will call the communicator at every step and give
+        /// it the agent's data using PutObservations at each DecideAction call.
         /// </summary>
-        public void SetBatcher(Batcher batcher)
+        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
+        public void SetCommunicator(ICommunicator communicator)
         {
-            m_Batcher = batcher;
-            m_Batcher?.SubscribeBrain(name);
+            m_Communicator = communicator;
+            LazyInitialize();
         }
 
         /// <inheritdoc />
@@ -127,13 +129,12 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            m_Batcher?.SendBrainInfo(name, m_AgentInfos);
-            if (m_Batcher != null)
+            if (m_Communicator != null)
             {
-                m_AgentInfos.Clear();
+                m_Communicator?.PutObservations(name, m_Agents);
                 return;
             }
-            var currentBatchSize = m_AgentInfos.Count();
+            var currentBatchSize = m_Agents.Count;
             if (currentBatchSize == 0)
             {
                 return;
@@ -148,7 +149,7 @@ namespace MLAgents
 
             Profiler.BeginSample($"MLAgents.{name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_AgentInfos);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{name}.PrepareBarracudaInputs");
@@ -166,10 +167,9 @@ namespace MLAgents
 
             Profiler.BeginSample($"MLAgents.{name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_AgentInfos);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
             Profiler.EndSample();
 
-            m_AgentInfos.Clear();
             Profiler.EndSample();
         }
 

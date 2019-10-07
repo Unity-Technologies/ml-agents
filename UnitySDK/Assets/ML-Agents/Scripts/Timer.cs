@@ -13,7 +13,6 @@ using UnityEditor;
 
 namespace MLAgents
 {
-
     [DataContract]
     public class TimerNode
     {
@@ -28,7 +27,7 @@ namespace MLAgents
         /// <summary>
         /// Child nodes, indexed by name.
         /// </summary>
-        [DataMember(Name="children", Order=999)]
+        [DataMember(Name = "children", Order = 999)]
         Dictionary<string, TimerNode> m_Children;
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace MLAgents
         /// <summary>
         /// Number of times the corresponding code block has been called.
         /// </summary>
-        [DataMember(Name="count")]
+        [DataMember(Name = "count")]
         int m_NumCalls = 0;
 
         /// <summary>
@@ -74,17 +73,17 @@ namespace MLAgents
         /// <summary>
         /// Total elapsed seconds.
         /// </summary>
-        [DataMember(Name="total")]
+        [DataMember(Name = "total")]
         public double TotalSeconds
         {
             get { return CurrentTicks * s_TicksToSeconds; }
-            set { } // Serialization needs this, but unused.
+            set {}  // Serialization needs this, but unused.
         }
 
         /// <summary>
         /// Total seconds spent in this block, excluding it's children.
         /// </summary>
-        [DataMember(Name="self")]
+        [DataMember(Name = "self")]
         public double SelfSeconds
         {
             get
@@ -92,7 +91,7 @@ namespace MLAgents
                 long totalChildTicks = 0;
                 if (m_Children != null)
                 {
-                    foreach(var child in m_Children.Values)
+                    foreach (var child in m_Children.Values)
                     {
                         totalChildTicks += child.m_TotalTicks;
                     }
@@ -101,7 +100,7 @@ namespace MLAgents
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
-            set { } // Serialization needs this, but unused.
+            set {}  // Serialization needs this, but unused.
         }
 
         public IReadOnlyDictionary<string, TimerNode> Children
@@ -114,7 +113,7 @@ namespace MLAgents
             get { return m_NumCalls; }
         }
 
-        public TimerNode(string name, bool isRoot=false)
+        public TimerNode(string name, bool isRoot = false)
         {
             m_FullName = name;
             if (isRoot)
@@ -249,7 +248,7 @@ namespace MLAgents
             Reset();
         }
 
-        public void Reset(string name="root")
+        public void Reset(string name = "root")
         {
             m_Stack = new Stack<TimerNode>();
             m_RootNode = new TimerNode(name, true);
@@ -317,7 +316,7 @@ namespace MLAgents
         /// If the filename is null, a default one will be used.
         /// </summary>
         /// <param name="filename"></param>
-        public void SaveJsonTimers(string filename=null)
+        public void SaveJsonTimers(string filename = null)
         {
             if (filename == null)
             {
