@@ -120,7 +120,7 @@ jobs:
           command: |
             . venv/bin/activate
             pre-commit run --hook-stage manual markdown-link-check --all-files
-  
+
   protobuf_generation_check:
     docker:
       - image: circleci/python:3.7.3
@@ -184,6 +184,12 @@ workflows:
           executor: python373
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
-          pip_constraints: test_constraints_max_version.txt
+          pip_constraints: test_constraints_max_tf1_version.txt
+      - build_python:
+          name: python_3.7.3+tf2
+          executor: python373
+          pyversion: 3.7.3
+          # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
