@@ -407,9 +407,19 @@ training process.
   [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
   to learn more about this feature.
 
-- **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
-  installing Python or TensorFlow directly, we provide a
-  [guide](Using-Docker.md) on how to create and run a Docker container.
+- **Broadcasting** - As discussed earlier, a Learning Brain sends the
+  observations for all its Agents to the Python API when dragged into the
+  Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
+  for training and later inference. Broadcasting is a feature which can be
+  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
+  observations and actions are also sent to the Python API (despite the fact
+  that the Agent is **not** controlled by the Python API). This feature is
+  leveraged by Imitation Learning, where the observations and actions for a
+  Player Brain are used to learn the policies of an agent through demonstration.
+  However, this could also be helpful for the Heuristic and Learning Brains,
+  particularly when debugging agent behaviors. You can learn more about using
+  the broadcasting feature
+  [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
 
 - **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
   Amazon Web Services (AWS) machines, we provide a

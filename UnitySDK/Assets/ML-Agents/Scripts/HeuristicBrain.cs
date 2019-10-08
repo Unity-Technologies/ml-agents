@@ -59,25 +59,26 @@ namespace MLAgents
                 throw new UnityAgentsException(
                     "The Brain is set to Heuristic, but no decision script attached to it");
             }
-            foreach (var agent in m_AgentInfos.Keys)
+            foreach (var agent in m_Agents)
             {
+                var info = agent.Info;
                 agent.UpdateVectorAction(decision.Decide(
-                    m_AgentInfos[agent].stackedVectorObservation,
-                    m_AgentInfos[agent].visualObservations,
-                    m_AgentInfos[agent].reward,
-                    m_AgentInfos[agent].done,
-                    m_AgentInfos[agent].memories));
+                    info.stackedVectorObservation,
+                    info.visualObservations,
+                    info.reward,
+                    info.done,
+                    info.memories));
             }
-            foreach (var agent in m_AgentInfos.Keys)
+            foreach (var agent in m_Agents)
             {
+                var info = agent.Info;
                 agent.UpdateMemoriesAction(decision.MakeMemory(
-                    m_AgentInfos[agent].stackedVectorObservation,
-                    m_AgentInfos[agent].visualObservations,
-                    m_AgentInfos[agent].reward,
-                    m_AgentInfos[agent].done,
-                    m_AgentInfos[agent].memories));
+                    info.stackedVectorObservation,
+                    info.visualObservations,
+                    info.reward,
+                    info.done,
+                    info.memories));
             }
-            m_AgentInfos.Clear();
         }
     }
 }
