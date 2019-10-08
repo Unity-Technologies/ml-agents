@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
 
@@ -190,16 +191,20 @@ namespace MLAgents
             // the message and update hasSentState
             if (m_CurrentAgents[brainKey].Count > 0)
             {
-                foreach (var agent in m_CurrentAgents[brainKey])
+                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    var agentInfoProto = agentInfo[agent].ToProto();
-                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                    // e.g. after recording them to demo and using them for inference.
-                    agentInfo[agent].ClearVisualObs();
-                }
+                    foreach (var agent in m_CurrentAgents[brainKey])
+                    {
+                        var agentInfoProto = agentInfo[agent].ToProto();
+                        m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
 
-                m_HasData[brainKey] = true;
+                        // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
+                        // e.g. after recording them to demo and using them for inference.
+                        agentInfo[agent].ClearVisualObs();
+                    }
+
+                    m_HasData[brainKey] = true;
+                }
             }
 
             // If any agent needs to send data, then the whole message

@@ -563,6 +563,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
+            # TODO add gauge for rl_output.ByteSize()
             state = self._get_state(rl_output)
             for _b in self._external_brain_names:
                 self._n_agents[_b] = len(state[_b].agents)
