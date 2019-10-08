@@ -52,7 +52,6 @@ class TrainerController(object):
         """
         self.trainers: Dict[str, Trainer] = {}
         self.trainer_factory = trainer_factory
-        self.last_brain_names: List[str] = []
         self.model_path = model_path
         self.summaries_dir = summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
@@ -196,21 +195,22 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         global_step = 0
+        last_brain_names: List[str] = []
 
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
-                if self.last_brain_names != env_manager.external_brains.keys():
+                if last_brain_names != env_manager.external_brains.keys():
                     for name in [
-                        item
-                        for item in env_manager.external_brains.keys()
-                        if item not in self.last_brain_names
+                        brain_name
+                        for brain_name in env_manager.external_brains.keys()
+                        if brain_name not in last_brain_names
                     ]:
                         trainer = self.trainer_factory.generate(
                             env_manager.external_brains[name]
                         )
                         self.start_trainer(trainer, env_manager)
-                    self.last_brain_names = env_manager.external_brains.keys()
+                    last_brain_names = env_manager.external_brains.keys()
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
