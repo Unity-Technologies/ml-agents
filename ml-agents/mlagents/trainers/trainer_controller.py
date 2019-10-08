@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 import tensorflow as tf
@@ -191,17 +191,14 @@ class TrainerController(object):
 
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
-
         tf.reset_default_graph()
-
         global_step = 0
-        last_brain_names = set()
-
+        last_brain_names: Set[str] = set()
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
                 external_brains = set(env_manager.external_brains.keys())
-                new_brains = external_brains - last_brain_names 
+                new_brains = external_brains - last_brain_names
                 if last_brain_names != env_manager.external_brains.keys():
                     for name in new_brains:
                         trainer = self.trainer_factory.generate(
@@ -255,14 +252,11 @@ class TrainerController(object):
             )
         else:
             lessons_incremented = {}
-
         # If any lessons were incremented or the environment is
         # ready to be reset
         meta_curriculum_reset = any(lessons_incremented.values())
-
         # Check if we are performing generalization training and we have finished the
         # specified number of steps for the lesson
-
         generalization_reset = (
             not self.sampler_manager.is_empty()
             and (steps != 0)
@@ -278,7 +272,6 @@ class TrainerController(object):
             time_start_step = time()
             new_step_infos = env.step()
             delta_time_step = time() - time_start_step
-
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:

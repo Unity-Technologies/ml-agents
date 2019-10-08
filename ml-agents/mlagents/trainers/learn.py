@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-
 import logging
 import argparse
 
@@ -156,7 +155,6 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         nargs=argparse.REMAINDER,
         help="Arguments passed to the Unity executable.",
     )
-
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
 
@@ -173,10 +171,8 @@ def run_training(
     :param run_options: Command line arguments for training.
     """
     # Docker Parameters
-
     trainer_config_path = options.trainer_config_path
     curriculum_folder = options.curriculum_folder
-
     # Recognize and use docker volume if one is passed as an argument
     if not options.docker_target_name:
         model_path = "./models/{run_id}-{sub_id}".format(
@@ -201,7 +197,6 @@ def run_training(
         summaries_dir = "/{docker_target_name}/summaries".format(
             docker_target_name=options.docker_target_name
         )
-
     trainer_config = load_config(trainer_config_path)
     port = options.base_port + (sub_id * options.num_envs)
     if options.env_path is None:
@@ -221,7 +216,6 @@ def run_training(
     sampler_manager, resampling_interval = create_sampler_manager(
         options.sampler_file_path, env.reset_parameters, run_seed
     )
-
     trainer_factory = TrainerFactory(
         trainer_config,
         summaries_dir,
@@ -234,7 +228,6 @@ def run_training(
         maybe_meta_curriculum,
         options.multi_gpu,
     )
-
     # Create controller and begin training.
     tc = TrainerController(
         trainer_factory,
@@ -249,10 +242,8 @@ def run_training(
         sampler_manager,
         resampling_interval,
     )
-
     # Signal that environment has been launched.
     process_queue.put(True)
-
     # Begin training
     tc.start_learning(env)
 
@@ -270,11 +261,13 @@ def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
                     "Specified resampling-interval is not valid. Please provide"
                     " a positive integer value for resampling-interval"
                 )
+
         else:
             raise SamplerException(
                 "Resampling interval was not specified in the sampler file."
                 " Please specify it with the 'resampling-interval' key in the sampler config file."
             )
+
     sampler_manager = SamplerManager(sampler_config, run_seed)
     return sampler_manager, resample_interval
 
@@ -284,6 +277,7 @@ def try_create_meta_curriculum(
 ) -> Optional[MetaCurriculum]:
     if curriculum_folder is None:
         return None
+
     else:
         meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
         # TODO: Should be able to start learning at different lesson numbers
@@ -300,6 +294,7 @@ def try_create_meta_curriculum(
                     "name as the Brain "
                     "whose curriculum it defines."
                 )
+
         return meta_curriculum
 
 
@@ -395,7 +390,6 @@ def main():
         )
     except Exception:
         print("\n\n\tUnity Technologies\n")
-
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents.envs")
@@ -403,7 +397,6 @@ def main():
     if options.debug:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
-
     if options.env_path is None and options.num_runs > 1:
         raise TrainerError(
             "It is not possible to launch more than one concurrent training session "
@@ -412,7 +405,6 @@ def main():
 
     jobs = []
     run_seed = options.seed
-
     if options.num_runs == 1:
         if options.seed == -1:
             run_seed = np.random.randint(0, 10000)
