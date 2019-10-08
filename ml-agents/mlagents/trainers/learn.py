@@ -203,14 +203,15 @@ def run_training(
         )
 
     trainer_config = load_config(trainer_config_path)
+    port = options.base_port + (sub_id * options.num_envs)
+    if options.env_path is None:
+        port = 5004 # This is the in Editor Training Port
     env_factory = create_environment_factory(
         options.env_path,
         options.docker_target_name,
         options.no_graphics,
         run_seed,
-        options.base_port
-        + (sub_id * options.num_envs)
-        + int(options.env_path is not None),
+        port,
         options.env_args,
     )
     env = SubprocessEnvManager(env_factory, options.num_envs)
