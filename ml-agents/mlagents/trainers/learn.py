@@ -205,7 +205,7 @@ def run_training(
     trainer_config = load_config(trainer_config_path)
     port = options.base_port + (sub_id * options.num_envs)
     if options.env_path is None:
-        port = 5004 # This is the in Editor Training Port
+        port = 5004  # This is the in Editor Training Port
     env_factory = create_environment_factory(
         options.env_path,
         options.docker_target_name,

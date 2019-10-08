@@ -195,7 +195,7 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         global_step = 0
-        last_brain_names: set[str] = set()
+        last_brain_names = set()
 
         try:
             self._reset_env(env_manager)
