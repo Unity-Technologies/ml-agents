@@ -195,22 +195,20 @@ class TrainerController(object):
         tf.reset_default_graph()
 
         global_step = 0
-        last_brain_names: List[str] = []
+        last_brain_names: set[str] = set()
 
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
+                external_brains = set(env_manager.external_brains.keys())
+                new_brains = external_brains - last_brain_names 
                 if last_brain_names != env_manager.external_brains.keys():
-                    for name in [
-                        brain_name
-                        for brain_name in env_manager.external_brains.keys()
-                        if brain_name not in last_brain_names
-                    ]:
+                    for name in new_brains:
                         trainer = self.trainer_factory.generate(
                             env_manager.external_brains[name]
                         )
                         self.start_trainer(trainer, env_manager)
-                    last_brain_names = env_manager.external_brains.keys()
+                    last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
