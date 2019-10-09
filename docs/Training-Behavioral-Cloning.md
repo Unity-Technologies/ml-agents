@@ -14,7 +14,7 @@ generated using the `Demonstration Recorder` as the dataset used to train a beha
 1. Choose an agent you would like to learn to imitate some set of demonstrations. 
 2. Record a set of demonstration using the `Demonstration Recorder` (see [here](Training-Imitation-Learning.md)). 
    For illustrative purposes we will refer to this file as `AgentRecording.demo`. 
-3. Build the scene, assigning the agent a Learning Brain, and dragging it in the Broadcast Hub. For more information on Brains, see 
+3. Build the scene, assigning the agent a Learning Brain. For more information on Brains, see 
    [here](Learning-Environment-Design-Brains.md).
 4. Open the `config/offline_bc_config.yaml` file. 
 5. Modify the `demo_path` parameter in the file to reference the path to the 

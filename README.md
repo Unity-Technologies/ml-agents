@@ -29,7 +29,6 @@ developer communities.
 * Support for multiple environment configurations and training scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
-* Broadcasting of agent behavior for supervised learning
 * Built-in support for Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment

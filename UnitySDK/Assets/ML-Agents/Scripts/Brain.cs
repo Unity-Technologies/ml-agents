@@ -48,10 +48,10 @@ namespace MLAgents
                 var academy = FindObjectOfType<Academy>();
                 if (academy)
                 {
+                    m_IsInitialized = true;
                     academy.BrainDecideAction += BrainDecideAction;
                     academy.DestroyAction += Shutdown;
                     Initialize();
-                    m_IsInitialized = true;
                 }
             }
         }

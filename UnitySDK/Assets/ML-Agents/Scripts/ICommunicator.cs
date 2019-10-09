@@ -36,10 +36,6 @@ namespace MLAgents
         /// </summary>
         public string version;
         /// <summary>
-        /// The list of brains parameters used for training.
-        /// </summary>
-        public IEnumerable<Brain> brains;
-        /// <summary>
         /// The set of environment parameters defined by the user that will be sent to the communicator.
         /// </summary>
         public EnvironmentResetParameters environmentResetParameters;
@@ -136,9 +132,14 @@ namespace MLAgents
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        /// <param name="broadcastHub">The BroadcastHub to get the controlled brains.</param>
-        UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters,
-            BroadcastHub broadcastHub);
+        UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters);
+
+        /// <summary>
+        /// Registers a new Brain to the Communicator.
+        /// </summary>
+        /// <param name="name">The name or key uniquely identifying the Brain</param>
+        /// <param name="brainParameters">The Parameters for the Brain being registered</param>
+        void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
         /// Sends the observations. If at least one brain has an agent in need of

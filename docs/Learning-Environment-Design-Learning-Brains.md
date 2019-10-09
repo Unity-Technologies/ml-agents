@@ -8,7 +8,7 @@ pre-trained model.
 ## Training Mode / External Control
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
-one Brain asset must be in the Academy's `Broadcast Hub`. This allows the training 
+one Agent must have a LearningBrain. This allows the training 
 process to collect the observations of Agents using that Brain and give the Agents 
 their actions.
 

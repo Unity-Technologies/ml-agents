@@ -140,7 +140,8 @@ environment, you can set the following command line options when invoking
 * `--base-port`: Specifies the starting port. Each concurrent Unity environment instance 
   will get assigned a port sequentially, starting from the `base-port`. Each instance 
   will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs 
-  given to each instance from 0 to `num_envs - 1`. Default is 5005.
+  given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
+  training using the Editor rather than an executable, the base port will be ignored.
 * `--slow`: Specify this option to run the Unity environment at normal, game
   speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
   specified in the Academy's **Inference Configuration**. By default, training

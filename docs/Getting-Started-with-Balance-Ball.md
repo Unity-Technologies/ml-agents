@@ -53,9 +53,6 @@ to speed up training since all twelve agents contribute to training in parallel.
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
 properties that control how the environment works.
-The **Broadcast Hub** keeps track of which Brains will send data during training.
-If a Brain is added to the hub, the data from this Brain will be sent to the external training
-process. 
 The **Training Configuration** and **Inference Configuration** properties
 set the graphics and timescale properties for the Unity application.
 The Academy uses the **Training Configuration**  during training and the
@@ -96,7 +93,8 @@ an Agent works.
 You can create new Brain assets by selecting `Assets ->
 Create -> ML-Agents -> Brain`. There are 3 types of Brains.
 The **Learning Brain** is a Brain that uses a trained neural network to make decisions.
-When the **Learning Brain** is dragged into the **Broadcast Hub** in the Academy, the external process that is training the neural network will take over decision making for the agents
+When Unity is connected to Python, the external process will be controlling the Brain. 
+The external process that is training the neural network will take over decision making for the agents
 and ultimately generate a trained neural network. You can also use the
 **Learning Brain** with a pre-trained model.
 The **Heuristic** Brain allows you to hand-code the Agent logic by extending
