@@ -1,4 +1,6 @@
-import tensorflow as tf
+# This should be the only place that we import tensorflow directly.
+# Everywhere else is caught by the banned-modules setting for flake8
+import tensorflow as tf  # noqa I201
 from distutils.version import LooseVersion
 
 
