@@ -29,7 +29,7 @@ namespace MLAgents
         Dictionary<string, bool> m_HasData =
             new Dictionary<string, bool>();
 
-        /// Keeps track of which brains queried the batcher on the current step
+        /// Keeps track of which brains queried the communicator on the current step
         Dictionary<string, bool> m_HasQueried =
             new Dictionary<string, bool>();
 
@@ -37,7 +37,7 @@ namespace MLAgents
         Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
 
-        /// The current UnityRLOutput to be sent when all the brains queried the batcher
+        /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
