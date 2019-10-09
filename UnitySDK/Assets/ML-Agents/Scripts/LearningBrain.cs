@@ -52,7 +52,7 @@ namespace MLAgents
         protected ICommunicator m_Communicator;
 
         /// <summary>
-        /// Sets the Communicator of the Brain. The brain will call the communicator at every step and give
+        /// Sets the ICommunicator of the Brain. The brain will call the communicator at every step and give
         /// it the agent's data using PutObservations at each DecideAction call.
         /// </summary>
         /// <param name="communicator"> The Batcher the brain will use for the current session</param>
