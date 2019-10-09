@@ -71,7 +71,6 @@ namespace MLAgents
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        /// <param name="broadcastHub">The BroadcastHub to get the controlled brains.</param>
         public UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters)
         {
             var academyParameters = new UnityRLInitializationOutputProto

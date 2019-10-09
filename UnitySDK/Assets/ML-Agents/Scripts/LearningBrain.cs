@@ -20,7 +20,7 @@ namespace MLAgents
     /// When using a pretrained model, just drag the Model file into the
     /// Model property of the Learning Brain and do not launch the Python training process.
     /// The training will start automatically if Python is ready to train and there is at
-    /// least one LearningBrain in the BroadcastHub.
+    /// least one LearningBrain in the scene.
     /// The property model corresponds to the Model currently attached to the Brain. Before
     /// being used, a call to ReloadModel is required.
     /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
