@@ -90,8 +90,6 @@ Each platform agent needs an assigned `Learning Brain`.  In this example, each p
 the agent) means that the Brain will be making decision for that agent. If the Agent uses a
 LearningBrain either Python controls the Brain or the model on the Brain does.
 
-   ![Set Brain to External](images/mlagents-SetBrainToTrain.png)
-
 ### Training the environment
 
 1. Open a command or terminal window.
