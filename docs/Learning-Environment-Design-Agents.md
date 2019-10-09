@@ -12,8 +12,7 @@ and passes the chosen action back to the agent. Your agent code must execute the
 action, for example, move the agent in one direction or another. In order to
 [train an agent using reinforcement learning](Learning-Environment-Design.md),
 your agent must calculate a reward value at each action. The reward is used to
-discover the optimal decision-making policy. (A reward is not used by already
-trained agents or for imitation learning.)
+discover the optimal decision-making policy.
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its

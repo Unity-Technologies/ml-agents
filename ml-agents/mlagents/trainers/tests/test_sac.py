@@ -66,7 +66,7 @@ def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_vi
     )
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
@@ -82,7 +82,7 @@ def test_sac_cc_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
@@ -129,7 +129,7 @@ def test_sac_dc_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
@@ -151,7 +151,7 @@ def test_sac_visual_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=True
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
@@ -173,7 +173,7 @@ def test_sac_rnn_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=True, use_discrete=True, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 

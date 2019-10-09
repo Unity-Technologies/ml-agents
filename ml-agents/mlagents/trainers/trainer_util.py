@@ -8,7 +8,6 @@ from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
-from mlagents.trainers.bc.online_trainer import OnlineBCTrainer
 
 
 def initialize_trainers(
@@ -61,15 +60,6 @@ def initialize_trainers(
     for brain_name in external_brains:
         if trainer_parameters_dict[brain_name]["trainer"] == "offline_bc":
             trainers[brain_name] = OfflineBCTrainer(
-                external_brains[brain_name],
-                trainer_parameters_dict[brain_name],
-                train_model,
-                load_model,
-                seed,
-                run_id,
-            )
-        elif trainer_parameters_dict[brain_name]["trainer"] == "online_bc":
-            trainers[brain_name] = OnlineBCTrainer(
                 external_brains[brain_name],
                 trainer_parameters_dict[brain_name],
                 train_model,

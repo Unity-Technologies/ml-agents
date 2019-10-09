@@ -40,7 +40,7 @@ class BehavioralCloningModel(LearningModel):
             for size in self.act_size:
                 policy_branches.append(
                     tf.layers.dense(
-                        hidden,
+                        hidden_reg,
                         size,
                         activation=None,
                         use_bias=False,

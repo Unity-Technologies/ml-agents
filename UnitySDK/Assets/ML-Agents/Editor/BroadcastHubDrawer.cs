@@ -17,8 +17,6 @@ namespace MLAgents
         private const float k_LineHeight = 17f;
         // The vertical space left below the BroadcastHub UI.
         private const float k_ExtraSpaceBelow = 10f;
-        // The horizontal size of the Control checkbox
-        private const int k_ControlSize = 80;
 
         /// <summary>
         /// Computes the height of the Drawer depending on the property it is showing
@@ -50,20 +48,15 @@ namespace MLAgents
             position.y += k_LineHeight;
 
             // This is the labels for each columns
-            var brainWidth = position.width - k_ControlSize;
+            var brainWidth = position.width;
             var brainRect = new Rect(
                 position.x, position.y, brainWidth, position.height);
-            var controlRect = new Rect(
-                position.x + brainWidth, position.y, k_ControlSize, position.height);
             if (m_Hub.Count > 0)
             {
                 EditorGUI.LabelField(brainRect, "Brains");
                 brainRect.y += k_LineHeight;
-                EditorGUI.LabelField(controlRect, "Control");
-                controlRect.y += k_LineHeight;
-                controlRect.x += 15;
             }
-            DrawBrains(brainRect, controlRect);
+            DrawBrains(brainRect);
             EditorGUI.indentLevel--;
             EditorGUI.EndProperty();
         }
@@ -114,41 +107,27 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Draws the Brain and Control checkbox for the brains contained in the BroadCastHub.
+        /// Draws the Brain  contained in the BroadcastHub.
         /// </summary>
         /// <param name="brainRect">The Rect to draw the Brains.</param>
-        /// <param name="controlRect">The Rect to draw the control checkbox.</param>
-        private void DrawBrains(Rect brainRect, Rect controlRect)
+        private void DrawBrains(Rect brainRect)
         {
             for (var index = 0; index < m_Hub.Count; index++)
             {
-                var exposedBrains = m_Hub.broadcastingBrains;
-                var brain = exposedBrains[index];
+                var controlledBrains = m_Hub.brainsToControl;
+                var brain = controlledBrains[index];
                 // This is the rectangle for the brain
                 EditorGUI.BeginChangeCheck();
                 var newBrain = EditorGUI.ObjectField(
-                    brainRect, brain, typeof(Brain), true) as Brain;
+                    brainRect, brain, typeof(LearningBrain), true) as LearningBrain;
                 brainRect.y += k_LineHeight;
                 if (EditorGUI.EndChangeCheck())
                 {
                     MarkSceneAsDirty();
-                    m_Hub.broadcastingBrains.RemoveAt(index);
-                    var brainToInsert = exposedBrains.Contains(newBrain) ? null : newBrain;
-                    exposedBrains.Insert(index, brainToInsert);
+                    m_Hub.brainsToControl.RemoveAt(index);
+                    var brainToInsert = controlledBrains.Contains(newBrain) ? null : newBrain;
+                    controlledBrains.Insert(index, brainToInsert);
                     break;
-                }
-                // This is the Rectangle for the control checkbox
-                EditorGUI.BeginChangeCheck();
-                if (brain is LearningBrain)
-                {
-                    var isTraining = m_Hub.IsControlled(brain);
-                    isTraining = EditorGUI.Toggle(controlRect, isTraining);
-                    m_Hub.SetControlled(brain, isTraining);
-                }
-                controlRect.y += k_LineHeight;
-                if (EditorGUI.EndChangeCheck())
-                {
-                    MarkSceneAsDirty();
                 }
             }
         }
@@ -192,7 +171,7 @@ namespace MLAgents
         {
             if (m_Hub.Count > 0)
             {
-                m_Hub.broadcastingBrains.RemoveAt(m_Hub.broadcastingBrains.Count - 1);
+                m_Hub.brainsToControl.RemoveAt(m_Hub.brainsToControl.Count - 1);
             }
         }
 
@@ -201,7 +180,7 @@ namespace MLAgents
         /// </summary>
         private void AddBrain()
         {
-            m_Hub.broadcastingBrains.Add(null);
+            m_Hub.brainsToControl.Add(null);
         }
     }
 }

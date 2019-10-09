@@ -95,7 +95,6 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     mock_env.return_value.academy_name = "MockAcademy"
     mock_env.return_value.brains = {brain_name: mock_brain}
     mock_env.return_value.external_brain_names = [brain_name]
-    mock_env.return_value.brain_names = [brain_name]
     mock_env.return_value.reset.return_value = {brain_name: mock_braininfo}
     mock_env.return_value.step.return_value = {brain_name: mock_braininfo}
 
@@ -103,7 +102,7 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
 def simulate_rollout(env, policy, buffer_init_samples):
     brain_info_list = []
     for i in range(buffer_init_samples):
-        brain_info_list.append(env.step()[env.brain_names[0]])
+        brain_info_list.append(env.step()[env.external_brain_names[0]])
     buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
     return buffer
 
@@ -210,6 +209,16 @@ def create_mock_3dball_brain():
         vector_observation_space_size=8,
     )
     mock_brain.brain_name = "Ball3DBrain"
+    return mock_brain
+
+
+def create_mock_pushblock_brain():
+    mock_brain = create_mock_brainparams(
+        vector_action_space_type="discrete",
+        vector_action_space_size=[7],
+        vector_observation_space_size=70,
+    )
+    mock_brain.brain_name = "PushblockLearning"
     return mock_brain
 
 
