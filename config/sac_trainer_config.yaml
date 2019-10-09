@@ -34,7 +34,6 @@ FoodCollectorLearning:
 
 BouncerLearning:
     normalize: true
-    beta: 0.0
     max_steps: 5.0e5
     num_layers: 2
     hidden_units: 64
@@ -43,7 +42,6 @@ BouncerLearning:
 PushBlockLearning:
     max_steps: 5.0e4
     init_entcoef: 0.05
-    beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 64
@@ -70,7 +68,6 @@ BigWallJumpLearning:
 StrikerLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
-    beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -81,7 +78,6 @@ StrikerLearning:
 GoalieLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3
-    beta: 1.0e-2
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -119,7 +115,6 @@ VisualPyramidsLearning:
     hidden_units: 256
     buffer_init_steps: 1000
     num_layers: 1
-    beta: 1.0e-2
     max_steps: 5.0e5
     buffer_size: 500000
     init_entcoef: 0.01
@@ -216,7 +211,6 @@ HallwayLearning:
     num_layers: 2
     hidden_units: 128
     memory_size: 256
-    beta: 0.0
     init_entcoef: 0.1
     max_steps: 5.0e5
     summary_freq: 1000
@@ -229,7 +223,6 @@ VisualHallwayLearning:
     num_layers: 1
     hidden_units: 128
     memory_size: 256
-    beta: 1.0e-2
     gamma: 0.99
     batch_size: 64
     max_steps: 5.0e5
@@ -243,7 +236,6 @@ VisualPushBlockLearning:
     num_layers: 1
     hidden_units: 128
     memory_size: 256
-    beta: 1.0e-2
     gamma: 0.99
     buffer_size: 1024
     batch_size: 64
