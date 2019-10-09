@@ -366,6 +366,8 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     buffer.update_buffer["extrinsic_returns"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["extrinsic_value_estimates"] = buffer.update_buffer["rewards"]
     trainer.training_buffer = buffer
+    # Make sure trainer_metrics doesn't crash
+    trainer.trainer_metrics.last_mean_return = 0
     trainer.update_policy()
     # Make batch length a larger multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 128
