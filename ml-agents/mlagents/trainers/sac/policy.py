@@ -113,7 +113,7 @@ class SACPolicy(TFPolicy):
                 seed=seed,
                 stream_names=list(reward_signal_configs.keys()),
                 tau=float(trainer_params["tau"]),
-                gammas=list(_val["gamma"] for _val in reward_signal_configs.values()),
+                gammas=[_val["gamma"] for _val in reward_signal_configs.values()],
                 vis_encode_type=EncoderType(
                     trainer_params.get("vis_encode_type", "simple")
                 ),
