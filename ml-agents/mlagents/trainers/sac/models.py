@@ -556,10 +556,13 @@ class SACPolicyNetwork(SACNetwork):
         )
         # We assume m_size is divisible by 4
         # Create the non-Policy inputs
+        # Use a default placeholder here so nothing has to be provided during
+        # Barracuda inference. Note that the default value is just the tiled input
+        # for the policy, which is thrown away.
         three_fourths_m_size = m_size * 3 // 4
-        self.other_memory_in = tf.placeholder(
+        self.other_memory_in = tf.placeholder_with_default(
+            input=tf.tile(self.inference_memory_in, [1, 3]),
             shape=[None, three_fourths_m_size],
-            dtype=tf.float32,
             name="other_recurrent_in",
         )
 

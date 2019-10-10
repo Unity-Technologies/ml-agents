@@ -212,6 +212,16 @@ def create_mock_3dball_brain():
     return mock_brain
 
 
+def create_mock_pushblock_brain():
+    mock_brain = create_mock_brainparams(
+        vector_action_space_type="discrete",
+        vector_action_space_size=[7],
+        vector_observation_space_size=70,
+    )
+    mock_brain.brain_name = "PushblockLearning"
+    return mock_brain
+
+
 def create_mock_banana_brain():
     mock_brain = create_mock_brainparams(
         number_visual_observations=1,
