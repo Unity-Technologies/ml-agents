@@ -3,12 +3,9 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, "..", "VERSION")) as f:
-    version_string = f.read().strip()
-
 setup(
     name="mlagents_envs",
-    version=version_string,
+    version="0.10.1",
     description="Unity Machine Learning Agents Interface",
     url="https://github.com/Unity-Technologies/ml-agents",
     author="Unity Technologies",
