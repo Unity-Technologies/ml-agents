@@ -164,11 +164,8 @@ class TrainerController(object):
     def _not_done_training(self, steps_since_start: int) -> bool:
         return (
             any(
-                [
-                    t.get_step <= t.get_max_steps
-                    and steps_since_start <= t.get_max_steps
-                    for k, t in self.trainers.items()
-                ]
+                t.get_step <= t.get_max_steps and steps_since_start <= t.get_max_steps
+                for k, t in self.trainers.items()
             )
             or len(self.trainers) == 0
         )

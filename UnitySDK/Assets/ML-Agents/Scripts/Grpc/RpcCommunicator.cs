@@ -173,14 +173,6 @@ namespace MLAgents
         #region Destruction
 
         /// <summary>
-        /// Ensure that when this object is destructed, the connection is closed.
-        /// </summary>
-        ~RpcCommunicator()
-        {
-            Close();
-        }
-
-        /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
         public void Close()
