@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
+from os import path
 
-with open("../VERSION") as f:
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, "..", "VERSION")) as f:
     version_string = f.read().strip()
 
 setup(

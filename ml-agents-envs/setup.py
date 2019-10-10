@@ -1,10 +1,10 @@
 from setuptools import setup
 from os import path
 
-with open("../VERSION") as f:
-    version_string = f.read().strip()
-
 here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, "..", "VERSION")) as f:
+    version_string = f.read().strip()
 
 setup(
     name="mlagents_envs",
