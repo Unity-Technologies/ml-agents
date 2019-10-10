@@ -10,7 +10,7 @@ with open(path.join(here, "..", "VERSION")) as f:
 
 setup(
     name="gym_unity",
-    version="0.4.7",
+    version=version_string,
     description="Unity Machine Learning Agents Gym Interface",
     license="Apache License 2.0",
     author="Unity Technologies",
