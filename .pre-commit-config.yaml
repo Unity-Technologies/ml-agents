@@ -42,6 +42,7 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
+        additional_dependencies: [flake8-comprehensions]
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
