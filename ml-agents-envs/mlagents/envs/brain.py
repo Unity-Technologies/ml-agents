@@ -207,7 +207,7 @@ class BrainInfo:
         if len(agent_info_list) == 0:
             memory_size = 0
         else:
-            memory_size = max([len(x.memories) for x in agent_info_list])
+            memory_size = max(len(x.memories) for x in agent_info_list)
         if memory_size == 0:
             memory = np.zeros((0, 0))
         else:
@@ -225,9 +225,13 @@ class BrainInfo:
                         0 if agent_info.action_mask[k] else 1
                         for k in range(total_num_actions)
                     ]
-        if any([np.isnan(x.reward) for x in agent_info_list]):
+        if any(np.isnan(x.reward) for x in agent_info_list):
             logger.warning(
                 "An agent had a NaN reward for brain " + brain_params.brain_name
+            )
+        if any(np.isnan(x.stacked_vector_observation).any() for x in agent_info_list):
+            logger.warning(
+                "An agent had a NaN observation for brain " + brain_params.brain_name
             )
 
         if len(agent_info_list) == 0:
