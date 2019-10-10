@@ -25,10 +25,10 @@ namespace MLAgents.InferenceBrain
             /// </summary>
             /// <param name="tensorProxy"> The tensor the data and shape will be modified</param>
             /// <param name="batchSize"> The number of agents present in the current batch</param>
-            /// <param name="agentInfo"> Dictionary of Agent to AgentInfo containing the
+            /// <param name="agents"> List of Agents containing the
             /// information that will be used to populate the tensor's data</param>
             void Generate(
-                TensorProxy tensorProxy, int batchSize, Dictionary<Agent, AgentInfo> agentInfo);
+                TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents);
         }
 
         private readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
@@ -96,14 +96,14 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensors"> Enumerable of tensors that will be modified.</param>
         /// <param name="currentBatchSize"> The number of agents present in the current batch
         /// </param>
-        /// <param name="agentInfos"> Dictionary of Agent to AgentInfo that contains the
+        /// <param name="agents"> List of Agents that contains the
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
             IEnumerable<TensorProxy> tensors,
             int currentBatchSize,
-            Dictionary<Agent, AgentInfo> agentInfos)
+            IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {
@@ -112,7 +112,7 @@ namespace MLAgents.InferenceBrain
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agentInfos);
+                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents);
             }
         }
     }

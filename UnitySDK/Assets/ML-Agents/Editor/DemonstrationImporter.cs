@@ -33,7 +33,7 @@ namespace MLAgents
 
                 reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
                 var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
-                var brainParameters = new BrainParameters(brainParamsProto);
+                var brainParameters = brainParamsProto.ToBrainParameters();
 
                 reader.Close();
 

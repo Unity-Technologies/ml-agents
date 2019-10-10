@@ -1,16 +1,16 @@
 # Learning Brains
 
 The **Learning Brain** works differently if you are training it or not.
-When training your Agents, drag the **Learning Brain** to the
-Academy's `Broadcast Hub` and check the checkbox `Control`. When using a pre-trained 
-model, just drag the Model file into the `Model` property of the **Learning Brain**.
+When used in an environment connected to Python, the Python process will train 
+the Brain. If no Python Process exists, the **Learning Brain** will use its 
+pre-trained model.
 
 ## Training Mode / External Control
 
 When [running an ML-Agents training algorithm](Training-ML-Agents.md), at least
-one Brain asset must be in the Academy's `Broadcast Hub` with the checkbox `Control`
-checked. This allows the training process to collect the observations of Agents 
-using that Brain and give the Agents their actions.
+one Agent must have a LearningBrain. This allows the training 
+process to collect the observations of Agents using that Brain and give the Agents 
+their actions.
 
 In addition to using a **Learning Brain** for training using the ML-Agents learning
 algorithms, you can use a **Learning Brain** to control Agents in a Unity

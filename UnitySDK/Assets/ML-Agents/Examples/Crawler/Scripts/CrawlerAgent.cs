@@ -9,7 +9,7 @@ public class CrawlerAgent : Agent
 
     public Transform ground;
     public bool detectTargets;
-    public bool targetIsStatic = false;
+    public bool targetIsStatic;
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 

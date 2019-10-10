@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
 {
     /// <summary>
-    /// Brain receive data from Agents through calls to SendState. The brain then updates the
+    /// Brain receive data from Agents through calls to SubscribeAgentForDecision. The brain then updates the
     /// actions of the agents at each FixedUpdate.
     /// The Brain encapsulates the decision making process. Every Agent must be assigned a Brain,
     /// but you can use the same Brain with more than one Agent. You can also create several
@@ -18,59 +19,39 @@ namespace MLAgents
     {
         [SerializeField] public BrainParameters brainParameters;
 
-        protected Dictionary<Agent, AgentInfo> m_AgentInfos =
-            new Dictionary<Agent, AgentInfo>(1024);
+        /// <summary>
+        /// List of agents subscribed for decisions.
+        /// </summary>
+        protected List<Agent> m_Agents = new List<Agent>(1024);
 
-        protected Batcher m_BrainBatcher;
-
-        [System.NonSerialized]
+        [NonSerialized]
         private bool m_IsInitialized;
 
         /// <summary>
-        /// Sets the Batcher of the Brain. The brain will call the batcher at every step and give
-        /// it the agent's data using SendBrainInfo at each DecideAction call.
-        /// </summary>
-        /// <param name="batcher"> The Batcher the brain will use for the current session</param>
-        public void SetBatcher(Batcher batcher)
-        {
-            if (batcher == null)
-            {
-                m_BrainBatcher = null;
-            }
-            else
-            {
-                m_BrainBatcher = batcher;
-                m_BrainBatcher.SubscribeBrain(name);
-            }
-            LazyInitialize();
-        }
-
-        /// <summary>
-        /// Adds the data of an agent to the current batch so it will be processed in DecideAction.
+        /// Registers an agent to current batch so it will be processed in DecideAction.
         /// </summary>
         /// <param name="agent"></param>
-        /// <param name="info"></param>
-        public void SendState(Agent agent, AgentInfo info)
+        public void SubscribeAgentForDecision(Agent agent)
         {
             LazyInitialize();
-            m_AgentInfos[agent] = info;
+            m_Agents.Add(agent);
         }
 
         /// <summary>
         /// If the Brain is not initialized, it subscribes to the Academy's DecideAction Event and
         /// calls the Initialize method to be implemented by child classes.
         /// </summary>
-        private void LazyInitialize()
+        protected void LazyInitialize()
         {
             if (!m_IsInitialized)
             {
                 var academy = FindObjectOfType<Academy>();
                 if (academy)
                 {
+                    m_IsInitialized = true;
                     academy.BrainDecideAction += BrainDecideAction;
                     academy.DestroyAction += Shutdown;
                     Initialize();
-                    m_IsInitialized = true;
                 }
             }
         }
@@ -83,8 +64,7 @@ namespace MLAgents
         {
             if (m_IsInitialized)
             {
-                m_AgentInfos.Clear();
-
+                m_Agents.Clear();
                 m_IsInitialized = false;
             }
         }
@@ -94,12 +74,13 @@ namespace MLAgents
         /// </summary>
         private void BrainDecideAction()
         {
-            m_BrainBatcher?.SendBrainInfo(name, m_AgentInfos);
             DecideAction();
+            // Clear the agent Decision subscription collection for the next update cycle.
+            m_Agents.Clear();
         }
 
         /// <summary>
-        /// Is called only once at the begening of the training or inference session.
+        /// Is called only once at the beginning of the training or inference session.
         /// </summary>
         protected abstract void Initialize();
 

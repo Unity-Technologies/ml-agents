@@ -120,26 +120,13 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._academy_name = aca_params.name
         self._log_path = aca_params.log_path
         self._brains: Dict[str, BrainParameters] = {}
-        self._brain_names: List[str] = []
         self._external_brain_names: List[str] = []
-        for brain_param in aca_params.brain_parameters:
-            self._brain_names += [brain_param.brain_name]
-            self._brains[brain_param.brain_name] = BrainParameters.from_proto(
-                brain_param
-            )
-            if brain_param.is_training:
-                self._external_brain_names += [brain_param.brain_name]
-        self._num_brains = len(self._brain_names)
-        self._num_external_brains = len(self._external_brain_names)
+        self._num_external_brains = 0
+        self._update_brain_parameters(aca_params)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters)
         logger.info(
             "\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self))
         )
-        if self._num_external_brains == 0:
-            logger.warning(
-                " No Learning Brains set to train found in the Unity Environment. "
-                "You will not be able to pass actions to your agent(s)."
-            )
 
     @property
     def logfile_path(self):
@@ -154,16 +141,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         return self._academy_name
 
     @property
-    def number_brains(self):
-        return self._num_brains
-
-    @property
     def number_external_brains(self):
         return self._num_external_brains
-
-    @property
-    def brain_names(self):
-        return self._brain_names
 
     @property
     def external_brain_names(self):
@@ -301,11 +280,9 @@ class UnityEnvironment(BaseUnityEnvironment):
     def __str__(self):
         return (
             """Unity Academy name: {0}
-        Number of Brains: {1}
-        Number of Training Brains : {2}
-        Reset Parameters :\n\t\t{3}""".format(
+        Number of Training Brains : {1}
+        Reset Parameters :\n\t\t{2}""".format(
                 self._academy_name,
-                str(self._num_brains),
                 str(self._num_external_brains),
                 "\n\t\t".join(
                     [
@@ -356,6 +333,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
+            self._update_brain_parameters(outputs.rl_initialization_output)
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -402,7 +380,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names a keys, "
-                        "and vector_actions as values".format(self._num_brains)
+                        "and vector_actions as values".format(self._num_external_brains)
                     )
                 else:
                     raise UnityActionException(
@@ -416,7 +394,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and memories as values".format(self._num_brains)
+                        "and memories as values".format(self._num_external_brains)
                     )
                 else:
                     raise UnityActionException(
@@ -430,7 +408,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and text_actions as values".format(self._num_brains)
+                        "and text_actions as values".format(self._num_external_brains)
                     )
                 else:
                     raise UnityActionException(
@@ -445,7 +423,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
                         "and state/action value estimates as values".format(
-                            self._num_brains
+                            self._num_external_brains
                         )
                     )
                 else:
@@ -460,7 +438,9 @@ class UnityEnvironment(BaseUnityEnvironment):
                 elif self._num_external_brains > 1:
                     raise UnityActionException(
                         "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and CustomAction instances as values".format(self._num_brains)
+                        "and CustomAction instances as values".format(
+                            self._num_external_brains
+                        )
                     )
                 else:
                     raise UnityActionException(
@@ -574,6 +554,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
+            self._update_brain_parameters(outputs.rl_initialization_output)
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -638,6 +619,17 @@ class UnityEnvironment(BaseUnityEnvironment):
                 self.worker_id, agent_info_list, self.brains[brain_name]
             )
         return _data
+
+    def _update_brain_parameters(
+        self, init_output: Optional[UnityRLInitializationOutputProto]
+    ) -> None:
+        if init_output is not None:
+            for brain_param in init_output.brain_parameters:
+                self._brains[brain_param.brain_name] = BrainParameters.from_proto(
+                    brain_param
+                )
+            self._external_brain_names = list(self._brains.keys())
+            self._num_external_brains = len(self._external_brain_names)
 
     @timed
     def _generate_step_input(

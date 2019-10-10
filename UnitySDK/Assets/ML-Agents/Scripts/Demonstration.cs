@@ -33,6 +33,5 @@ namespace MLAgents
         public float meanReward;
         public string demonstrationName;
         public const int ApiVersion = 1;
-
     }
 }

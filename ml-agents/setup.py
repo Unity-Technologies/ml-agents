@@ -4,13 +4,16 @@ from io import open
 
 here = path.abspath(path.dirname(__file__))
 
+with open(path.join(here, "..", "VERSION")) as f:
+    version_string = f.read().strip()
+
 # Get the long description from the README file
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
     name="mlagents",
-    version="0.10.0",
+    version=version_string,
     description="Unity Machine Learning Agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,7 +38,7 @@ setup(
         "h5py>=2.9.0",
         "jupyter",
         "matplotlib",
-        "mlagents_envs==0.10.0",
+        "mlagents_envs=={}".format(version_string),
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",

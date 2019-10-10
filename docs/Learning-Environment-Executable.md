@@ -29,10 +29,9 @@ environment:
 
 Make sure the Brains in the scene have the right type. For example, if you want
 to be able to control your agents from Python, you will need to put the Brain
-controlling the Agents to be a **Learning Brain** and drag it into the
-Academy's `Broadcast Hub` with the `Control` checkbox checked. In the 3DBall
-scene, this can be done in the Platform GameObject within the Game prefab in 
-`Assets/ML-Agents/Examples/3DBall/Prefabs/`, or in each instance of the 
+controlling the Agents to be a **Learning Brain**. In the 3DBall
+scene, this can be done in the Platform GameObject within the Game prefab in
+`Assets/ML-Agents/Examples/3DBall/Prefabs/`, or in each instance of the
 Platform in the Scene.
 
 Next, we want the set up scene to play correctly when the training process
@@ -73,7 +72,7 @@ executable, you can pass the name of the executable with the argument
 'file_name' of the `UnityEnvironment`. For instance:
 
 ```python
-from mlagents.envs import UnityEnvironment
+from mlagents.envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name=<env_name>)
 ```
 
@@ -215,5 +214,4 @@ into your Learning Brain by following the steps below:
 5. Drag the `<brain_name>.nn` file from the Project window of
    the Editor to the **Model** placeholder in the **Ball3DLearning**
    inspector window.
-6. Remove the **Ball3DLearning** from the Academy's `Broadcast Hub`
-7. Press the Play button at the top of the editor.
+6. Press the Play button at the top of the editor.

@@ -13,28 +13,30 @@ namespace MLAgents.Tests
         {
         }
 
-        private Dictionary<Agent, AgentInfo> GetFakeAgentInfos()
+        private static IEnumerable<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();
-            var infoA = new AgentInfo()
+            var infoA = new AgentInfo
             {
-                stackedVectorObservation = (new[] {1f, 2f, 3f}).ToList(),
+                stackedVectorObservation = new[] {1f, 2f, 3f}.ToList(),
                 memories = null,
                 storedVectorActions = new[] {1f, 2f},
-                actionMasks = null,
+                actionMasks = null
             };
             var goB = new GameObject("goB");
             var agentB = goB.AddComponent<TestAgent>();
-            var infoB = new AgentInfo()
+            var infoB = new AgentInfo
             {
-                stackedVectorObservation = (new[] {4f, 5f, 6f}).ToList(),
-                memories = (new[] {1f, 1f, 1f}).ToList(),
+                stackedVectorObservation = new[] {4f, 5f, 6f}.ToList(),
+                memories = new[] {1f, 1f, 1f}.ToList(),
                 storedVectorActions = new[] {3f, 4f},
                 actionMasks = new[] {true, false, false, false, false},
             };
+            agentA.Info = infoA;
+            agentB.Info = infoB;
 
-            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA}, {agentB, infoB}};
+            return new List<Agent> {agentA, agentB};
         }
 
         [Test]
@@ -76,7 +78,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateVectorObservation()
         {
-            var inputTensor = new TensorProxy()
+            var inputTensor = new TensorProxy
             {
                 shape = new long[] {2, 3}
             };
@@ -96,7 +98,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateRecurrentInput()
         {
-            var inputTensor = new TensorProxy()
+            var inputTensor = new TensorProxy
             {
                 shape = new long[] {2, 5}
             };
@@ -116,7 +118,7 @@ namespace MLAgents.Tests
         [Test]
         public void GeneratePreviousActionInput()
         {
-            var inputTensor = new TensorProxy()
+            var inputTensor = new TensorProxy
             {
                 shape = new long[] {2, 2},
                 valueType = TensorProxy.TensorType.Integer
@@ -138,7 +140,7 @@ namespace MLAgents.Tests
         [Test]
         public void GenerateActionMaskInput()
         {
-            var inputTensor = new TensorProxy()
+            var inputTensor = new TensorProxy
             {
                 shape = new long[] {2, 5},
                 valueType = TensorProxy.TensorType.FloatingPoint

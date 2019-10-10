@@ -15,10 +15,14 @@ start TensorBoard:
 3. From the command line run :
 
       ```sh
-      tensorboard --logdir=summaries
+      tensorboard --logdir=summaries --port=6006
       ```
 
 4. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
+
+**Note:** The default port TensorBoard uses is 6006. If there is an existing session
+running on port 6006 a new session can be launched on an open port using the --port 
+option.
 
 **Note:** If you don't assign a `run-id` identifier, `mlagents-learn` uses the
 default string, "ppo". All the statistics will be saved to the same sub-folder

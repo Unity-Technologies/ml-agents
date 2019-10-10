@@ -129,11 +129,12 @@ class BCTrainer(Trainer):
             len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,
             self.batches_per_epoch,
         )
-        for i in range(num_batches):
+
+        batch_size = self.n_sequences * self.policy.sequence_length
+
+        for i in range(0, num_batches * batch_size, batch_size):
             update_buffer = self.demonstration_buffer.update_buffer
-            start = i * self.n_sequences
-            end = (i + 1) * self.n_sequences
-            mini_batch = update_buffer.make_mini_batch(start, end)
+            mini_batch = update_buffer.make_mini_batch(i, i + batch_size)
             run_out = self.policy.update(mini_batch, self.n_sequences)
             loss = run_out["policy_loss"]
             batch_losses.append(loss)
