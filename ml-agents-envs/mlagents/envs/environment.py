@@ -304,6 +304,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             + "\n".join([str(self._brains[b]) for b in self._brains])
         )
 
+    @timed
     def reset(
         self,
         config: Dict = None,
@@ -564,6 +565,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 raise UnityCommunicationException("Communicator has stopped.")
             rl_output = outputs.rl_output
             # TODO add gauge for rl_output.ByteSize()
+            # print(f"rl_output.ByteSize()={rl_output.ByteSize()}")
             state = self._get_state(rl_output)
             for _b in self._external_brain_names:
                 self._n_agents[_b] = len(state[_b].agents)
@@ -615,6 +617,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         arr = [float(x) for x in arr]
         return arr
 
+    @timed
     def _get_state(self, output: UnityRLOutputProto) -> AllBrainInfo:
         """
         Collects experience information from all external brains in environment at current step.

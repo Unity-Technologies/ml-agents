@@ -1,62 +1,69 @@
 {
     "count": 1,
-    "self": 0.42606099999999997,
-    "total": 1.7098719999999998,
+    "self": 1.8216489999999999,
+    "total": 20.868347,
     "children": {
         "AgentResetIfDone": {
-            "count": 183,
-            "self": 0.00208,
-            "total": 0.00208,
+            "count": 2510,
+            "self": 0.025477,
+            "total": 0.025477,
             "children": null
         },
         "AgentSendState": {
-            "count": 183,
-            "self": 0.042596999999999996,
-            "total": 0.337618,
+            "count": 2510,
+            "self": 0.08362499999999999,
+            "total": 3.9886749999999997,
             "children": {
                 "CollectObservations": {
-                    "count": 182,
-                    "self": 0.001522,
-                    "total": 0.001522,
+                    "count": 2509,
+                    "self": 0.016099,
+                    "total": 0.016099,
                     "children": null
                 },
                 "RenderTextureObservationToTexture": {
-                    "count": 182,
-                    "self": 0.293499,
-                    "total": 0.293499,
+                    "count": 2509,
+                    "self": 3.8889511999999997,
+                    "total": 3.8889509999999996,
                     "children": null
                 }
             }
         },
         "BrainDecideAction": {
-            "count": 183,
-            "self": 0.021639,
-            "total": 0.935504,
+            "count": 2510,
+            "self": 0.134274,
+            "total": 14.975741999999999,
             "children": {
-                "encodeVisualObs": {
-                    "count": 182,
-                    "self": 0.047951,
-                    "total": 0.047951,
-                    "children": null
+                "AgentInfo.ToProto": {
+                    "count": 2509,
+                    "self": 0.047746,
+                    "total": 1.559706,
+                    "children": {
+                        "encodeVisualObs": {
+                            "count": 2509,
+                            "self": 1.51196,
+                            "total": 1.51196,
+                            "children": null
+                        }
+                    }
                 },
                 "Communicator.Exchange": {
-                    "count": 182,
-                    "self": 0.865914,
-                    "total": 0.865914,
+                    "count": 2509,
+                    "self": 13.2817616,
+                    "total": 13.281761999999999,
                     "children": null
                 }
             }
         },
         "AcademyStep": {
-            "count": 183,
-            "self": 0.0008719999999999999,
-            "total": 0.0008719999999999999,
+            "count": 2510,
+            "self": 0.010796,
+            "total": 0.010796,
             "children": null
         },
         "AgentAct": {
-            "count": 183,
-            "self": 0.005797,
-            "total": 0.005797,
+            "count": 2510,
+            "self": 0.043739,
+            "total": 0.043739,
             "children": null
         }
     }

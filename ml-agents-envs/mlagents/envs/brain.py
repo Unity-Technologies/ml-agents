@@ -198,6 +198,7 @@ class BrainInfo:
         return s
 
     @staticmethod
+    @timed
     def from_agent_proto(
         worker_id: int,
         agent_info_list: List[AgentInfoProto],
@@ -254,14 +255,23 @@ class BrainInfo:
                         0 if agent_info.action_mask[k] else 1
                         for k in range(total_num_actions)
                     ]
-        if any([np.isnan(x.reward) for x in agent_info_list]):
-            logger.warning(
-                "An agent had a NaN reward for brain " + brain_params.brain_name
-            )
-        if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
-            logger.warning(
-                "An agent had a NaN observation for brain " + brain_params.brain_name
-            )
+        if False:
+            # Temp disable until these get faster or we can be more selective
+            with hierarchical_timer("nan_checks"):
+                if any([np.isnan(x.reward) for x in agent_info_list]):
+                    logger.warning(
+                        "An agent had a NaN reward for brain " + brain_params.brain_name
+                    )
+                if any(
+                    [
+                        np.isnan(x.stacked_vector_observation).any()
+                        for x in agent_info_list
+                    ]
+                ):
+                    logger.warning(
+                        "An agent had a NaN observation for brain "
+                        + brain_params.brain_name
+                    )
 
         if len(agent_info_list) == 0:
             vector_obs = np.zeros((0, stacked_size))
@@ -286,12 +296,18 @@ class BrainInfo:
                 for j, agent_info in enumerate(agent_info_list):
                     # TODO THIS WON'T WORK WITH MULTIPLE OBSERVATIONS
                     # Note: visual obs were scaled by 1/255 on C#, so don't need to do here.
-                    float_obs = agent_info.stacked_vector_observation[stacked_size:]
+                    with hierarchical_timer("pyslice"):
+                        float_obs = agent_info.stacked_vector_observation[stacked_size:]
                     camera_res = brain_params.camera_resolutions[0]
-                    np_obs = np.reshape(
-                        float_obs,
-                        [camera_res.height, camera_res.width, camera_res.num_channels],
-                    )
+                    with hierarchical_timer("reshape"):
+                        np_obs = np.reshape(
+                            float_obs,
+                            [
+                                camera_res.height,
+                                camera_res.width,
+                                camera_res.num_channels,
+                            ],
+                        )
 
                     if dump_image_and_quit and j == 0:
                         rescaled = np_obs * 255.0

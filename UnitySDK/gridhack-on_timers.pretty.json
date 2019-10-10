@@ -1,62 +1,68 @@
 {
     "count": 1,
-    "self": 0.600445,
-    "total": 5.983709999999999,
+    "self": 1.9404139999999999,
+    "total": 32.723380999999996,
     "children": {
         "AgentResetIfDone": {
-            "count": 333,
-            "self": 0.006527,
-            "total": 0.006527,
+            "count": 2510,
+            "self": 0.030185,
+            "total": 0.030185,
             "children": null
         },
         "AgentSendState": {
-            "count": 333,
-            "self": 0.08576099999999999,
-            "total": 0.799805,
+            "count": 2510,
+            "self": 0.435704,
+            "total": 4.46148,
             "children": {
                 "CollectObservations": {
-                    "count": 332,
-                    "self": 0.003237,
-                    "total": 0.003237,
+                    "count": 2509,
+                    "self": 0.016263,
+                    "total": 0.016263,
                     "children": null
                 },
                 "RenderTextureObservationToTexture": {
-                    "count": 332,
-                    "self": 0.625455,
-                    "total": 0.625455,
+                    "count": 2509,
+                    "self": 3.317231,
+                    "total": 3.317231,
                     "children": null
                 },
                 "WriteVisualObsAsFloat": {
-                    "count": 332,
-                    "self": 0.085352,
-                    "total": 0.085352,
+                    "count": 2509,
+                    "self": 0.692282,
+                    "total": 0.692282,
                     "children": null
                 }
             }
         },
         "BrainDecideAction": {
-            "count": 333,
-            "self": 0.03109,
-            "total": 4.563749,
+            "count": 2510,
+            "self": 0.144473,
+            "total": 26.224885999999998,
             "children": {
+                "AgentInfo.ToProto": {
+                    "count": 2509,
+                    "self": 0.064783,
+                    "total": 0.064783,
+                    "children": null
+                },
                 "Communicator.Exchange": {
-                    "count": 332,
-                    "self": 4.5326591999999994,
-                    "total": 4.532659,
+                    "count": 2509,
+                    "self": 26.0156304,
+                    "total": 26.015629999999998,
                     "children": null
                 }
             }
         },
         "AcademyStep": {
-            "count": 333,
-            "self": 0.001292,
-            "total": 0.001292,
+            "count": 2510,
+            "self": 0.011529,
+            "total": 0.011529,
             "children": null
         },
         "AgentAct": {
-            "count": 333,
-            "self": 0.009984,
-            "total": 0.009984,
+            "count": 2510,
+            "self": 0.052322,
+            "total": 0.052322,
             "children": null
         }
     }
