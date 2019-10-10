@@ -1,11 +1,14 @@
 from setuptools import setup
 from os import path
 
+with open("../VERSION") as f:
+    version_string = f.read().strip()
+
 here = path.abspath(path.dirname(__file__))
 
 setup(
     name="mlagents_envs",
-    version="0.10.0",
+    version=version_string,
     description="Unity Machine Learning Agents Interface",
     url="https://github.com/Unity-Technologies/ml-agents",
     author="Unity Technologies",
