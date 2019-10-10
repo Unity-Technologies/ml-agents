@@ -29,7 +29,7 @@ namespace MLAgents
         Dictionary<string, bool> m_HasData =
             new Dictionary<string, bool>();
 
-        /// Keeps track of which brains queried the batcher on the current step
+        /// Keeps track of which brains queried the communicator on the current step
         Dictionary<string, bool> m_HasQueried =
             new Dictionary<string, bool>();
 
@@ -37,12 +37,14 @@ namespace MLAgents
         Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
 
-        /// The current UnityRLOutput to be sent when all the brains queried the batcher
+        /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
         Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
+
+        private UnityRLInitializationOutputProto m_CurrentUnityRlInitializationOutput;
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -69,22 +71,13 @@ namespace MLAgents
         /// </summary>
         /// <returns>The External Initialization Parameters received.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        /// <param name="broadcastHub">The BroadcastHub to get the controlled brains.</param>
-        public UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters,
-            BroadcastHub broadcastHub)
+        public UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters)
         {
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
                 Version = initParameters.version
             };
-
-            foreach (var brain in initParameters.brains)
-            {
-                academyParameters.BrainParameters.Add(brain.brainParameters.ToProto(
-                    brain.name, true));
-                SubscribeBrain(brain.name);
-            }
 
             academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
 
@@ -123,6 +116,24 @@ namespace MLAgents
 
             UpdateEnvironmentWithInput(input.RlInput);
             return initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+        }
+
+        /// <summary>
+        /// Adds the brain to the list of brains which will be sending information to External.
+        /// </summary>
+        /// <param name="brainKey">Brain key.</param>
+        public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
+        {
+            m_HasQueried[brainKey] = false;
+            m_HasData[brainKey] = false;
+            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
+            m_CurrentUnityRlOutput.AgentInfos.Add(
+                brainKey,
+                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
+            if (m_CurrentUnityRlInitializationOutput == null){
+                m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
+            }
+            m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
@@ -228,20 +239,6 @@ namespace MLAgents
 
         #region Sending and retreiving data
 
-        /// <summary>
-        /// Adds the brain to the list of brains which will be sending information to External.
-        /// </summary>
-        /// <param name="brainKey">Brain key.</param>
-        private void SubscribeBrain(string brainKey)
-        {
-            m_HasQueried[brainKey] = false;
-            m_HasData[brainKey] = false;
-            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
-            m_CurrentUnityRlOutput.AgentInfos.Add(
-                brainKey,
-                new UnityRLOutputProto.Types.ListAgentInfoProto());
-        }
-
         public void PutObservations(
             string brainKey, IEnumerable<Agent> agents)
         {
@@ -295,11 +292,17 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var input = Exchange(
-                new UnityOutputProto
-                {
-                    RlOutput = m_CurrentUnityRlOutput
-                });
+            var message = new CommunicatorObjects.UnityOutputProto
+            {
+                RlOutput = m_CurrentUnityRlOutput,
+            };
+            if (m_CurrentUnityRlInitializationOutput != null)
+            {
+                message.RlInitializationOutput = m_CurrentUnityRlInitializationOutput;
+            }
+
+            var input = Exchange(message);
+            m_CurrentUnityRlInitializationOutput = null;
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {

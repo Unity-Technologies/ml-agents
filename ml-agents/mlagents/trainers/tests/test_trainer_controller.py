@@ -43,6 +43,7 @@ def dummy_config():
 @pytest.fixture
 def basic_trainer_controller():
     return TrainerController(
+        trainer_factory=None,
         model_path="test_model_path",
         summaries_dir="test_summaries_dir",
         run_id="test_run_id",
@@ -53,7 +54,6 @@ def basic_trainer_controller():
         fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
-        trainers={},
     )
 
 
@@ -62,6 +62,7 @@ def basic_trainer_controller():
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
     TrainerController(
+        trainer_factory=None,
         model_path="",
         summaries_dir="",
         run_id="1",
@@ -72,7 +73,6 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
-        trainers={},
     )
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)
@@ -160,8 +160,10 @@ def trainer_controller_with_take_step_mocks():
 def test_take_step_adds_experiences_to_trainer_and_trains():
     tc, trainer_mock = trainer_controller_with_take_step_mocks()
 
-    old_step_info = EnvironmentStep(Mock(), Mock(), MagicMock())
-    new_step_info = EnvironmentStep(Mock(), Mock(), MagicMock())
+    action_info_dict = {"testbrain": MagicMock()}
+
+    old_step_info = EnvironmentStep(Mock(), Mock(), action_info_dict)
+    new_step_info = EnvironmentStep(Mock(), Mock(), action_info_dict)
     trainer_mock.is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()

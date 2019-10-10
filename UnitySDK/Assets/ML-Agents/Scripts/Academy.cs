@@ -93,9 +93,6 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        [SerializeField]
-        public BroadcastHub broadcastHub = new BroadcastHub();
-
         private const string k_ApiVersion = "API-10";
 
         /// Temporary storage for global gravity value
@@ -152,7 +149,7 @@ namespace MLAgents
         /// </returns>
         bool IsCommunicatorOn
         {
-            get { return m_Communicator != null; }
+            get { return Communicator != null; }
         }
 
         /// If true, the Academy will use inference settings. This field is
@@ -180,7 +177,7 @@ namespace MLAgents
         bool m_ModeSwitched;
 
         /// Pointer to the communicator currently in use by the Academy.
-        ICommunicator m_Communicator;
+        public ICommunicator Communicator;
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
@@ -258,78 +255,62 @@ namespace MLAgents
 
             InitializeAcademy();
 
-            var controlledBrains = broadcastHub.brainsToControl.Where(x => x != null).ToList();
-
             // Try to launch the communicator by using the arguments passed at launch
             try
             {
-                m_Communicator = new RpcCommunicator(
+                Communicator = new RpcCommunicator(
                     new CommunicatorInitParameters
                     {
                         port = ReadArgs()
                     });
             }
-            // If it fails, we check if there are any external brains in the scene
-            // and if Unity is in Editor mode
-            // If there are : Launch the communicator on the default port
             catch
             {
 #if UNITY_EDITOR
-                m_Communicator = null;
-                if (controlledBrains.Any())
-                {
-                    m_Communicator = new RpcCommunicator(
-                        new CommunicatorInitParameters
-                        {
-                            port = 5005
-                        });
-                }
+                Communicator = new RpcCommunicator(
+                    new CommunicatorInitParameters
+                    {
+                        port = 5004
+                    });
 #endif
             }
-            foreach (var trainingBrain in controlledBrains)
+
+            if (Communicator != null)
             {
-                trainingBrain.SetCommunicator(m_Communicator);
-            }
-
-            if (m_Communicator != null)
-            {
-                m_Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                m_Communicator.ResetCommandReceived += OnResetCommand;
-                m_Communicator.RLInputReceived += OnRLInputReceived;
-
-
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
                 //environment must use Inference.
                 try
                 {
-                    var unityRLInitParameters = m_Communicator.Initialize(
+                    var unityRLInitParameters = Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
                             version = k_ApiVersion,
                             name = gameObject.name,
-                            brains = controlledBrains,
                             environmentResetParameters = new EnvironmentResetParameters
                             {
                                 resetParameters = resetParameters,
                                 customResetParameters = customResetParameters
                             }
-                        }, broadcastHub);
+                        });
                     Random.InitState(unityRLInitParameters.seed);
                 }
                 catch
                 {
-                    m_Communicator = null;
-                    foreach (var brain in controlledBrains)
-                    {
-                        brain.SetCommunicator(null);
-                    }
+                    Communicator = null;
+                }
+
+                if (Communicator != null){
+                    Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                    Communicator.ResetCommandReceived += OnResetCommand;
+                    Communicator.RLInputReceived += OnRLInputReceived;
                 }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
+
             SetIsInference(!IsCommunicatorOn);
 
             BrainDecideAction += () => {};
@@ -520,7 +501,6 @@ namespace MLAgents
                 ConfigureEnvironment();
                 m_ModeSwitched = false;
             }
-
             if (!m_FirstAcademyReset)
             {
                 ForcedFullReset();
