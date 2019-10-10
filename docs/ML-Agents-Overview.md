@@ -186,8 +186,7 @@ range of training and inference scenarios:
   [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
   represents a learned policy and the Brain directly uses this model to
   determine the action for each Agent. You can train a **Learning Brain**
-  by dragging it into the Academy's `Broadcast Hub` with the `Control`
-  checkbox checked.
+  by launching the game with the Python training process.
 - **Player** - where decisions are made using real input from a keyboard or
   controller. Here, a human player is controlling the Agent and the observations
   and rewards collected by the Brain are not used to control the Agent.
@@ -198,13 +197,6 @@ range of training and inference scenarios:
   trained a Brain for the medics we could assign a medic on one team to the
   trained Brain and assign the medic on the other team a Heuristic Brain with
   hard-coded behaviors. We can then evaluate which medic is more effective.
-
-As currently described, it may seem that the External Communicator and Python
-API are only leveraged by the Learning Brain. This is not true. It is possible
-to configure the Learning, Player and Heuristic Brains to also send the
-observations, rewards and actions to the Python API through the External
-Communicator (a feature called _broadcasting_). As we will see shortly, this
-enables additional training modes.
 
 <p align="center">
   <img src="images/learning_environment.png"
@@ -255,8 +247,7 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 In the previous mode, the Learning Brain was used for training to generate
 a TensorFlow model that the Learning Brain can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for
-training. In this case, the Brain type would be set to Learning and be linked
-to the BroadcastHub (with checked `Control` checkbox)
+training. In this case, the Brain type would be set to Learning
 and the behaviors of all the Agents in the scene will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
 
@@ -314,13 +305,13 @@ For example, instead of training the medic by setting up its reward function,
 this mode allows providing real examples from a game controller on how the medic
 should behave. More specifically, in this mode, the Brain type during training
 is set to Player and all the actions performed with the controller (in addition
-to the agent observations) will be recorded and sent to the Python API. The
+to the agent observations) will be recorded. The
 imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
 The toolkit provides a way to learn directly from demonstrations, as well as use them
-to help speed up reward-based training (RL).  We include two algorithms called
+to help speed up reward-based training (RL). We include two algorithms called
 Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
 [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
 features in more depth.
@@ -415,24 +406,6 @@ training process.
   a way to randomly sample Reset Parameters of the environment during training. See
   [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
   to learn more about this feature.
-
-- **Broadcasting** - As discussed earlier, a Learning Brain sends the
-  observations for all its Agents to the Python API when dragged into the
-  Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
-  for training and later inference. Broadcasting is a feature which can be
-  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
-  observations and actions are also sent to the Python API (despite the fact
-  that the Agent is **not** controlled by the Python API). This feature is
-  leveraged by Imitation Learning, where the observations and actions for a
-  Player Brain are used to learn the policies of an agent through demonstration.
-  However, this could also be helpful for the Heuristic and Learning Brains,
-  particularly when debugging agent behaviors. You can learn more about using
-  the broadcasting feature
-  [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-- **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
-  installing Python or TensorFlow directly, we provide a
-  [guide](Using-Docker.md) on how to create and run a Docker container.
 
 - **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
   Amazon Web Services (AWS) machines, we provide a

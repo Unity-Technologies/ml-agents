@@ -3,6 +3,11 @@ repos:
     rev: 19.3b0
     hooks:
     -   id: black
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.720
     hooks:
@@ -27,7 +32,8 @@ repos:
         exclude: >
             (?x)^(
                 .*cs.meta|
-                .*.css
+                .*.css|
+                .*.meta
             )$
         args: [--fix=lf]
     -   id: flake8

@@ -13,11 +13,11 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class ContinuousActionOutputApplier : TensorApplier.IApplier
     {
-        public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
         {
             var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
+            foreach (var agent in agents)
             {
                 var action = new float[actionSize];
                 for (var j = 0; j < actionSize; j++)
@@ -47,10 +47,11 @@ namespace MLAgents.InferenceBrain
             m_Allocator = allocator;
         }
 
-        public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
-            var batchSize = agentInfo.Keys.Count;
+            var agentsArray = agents as List<Agent> ?? agents.ToList();
+            var batchSize = agentsArray.Count;
             var actions = new float[batchSize, m_ActionSize.Length];
             var startActionIndices = Utilities.CumSum(m_ActionSize);
             for (var actionIndex = 0; actionIndex < m_ActionSize.Length; actionIndex++)
@@ -91,7 +92,7 @@ namespace MLAgents.InferenceBrain
                 outputTensor.data.Dispose();
             }
             var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
+            foreach (var agent in agentsArray)
             {
                 var action = new float[m_ActionSize.Length];
                 for (var j = 0; j < m_ActionSize.Length; j++)
@@ -179,12 +180,12 @@ namespace MLAgents.InferenceBrain
             m_MemoryIndex = memoryIndex;
         }
 
-        public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
 
-            foreach (var agent in agentInfo.Keys)
+            foreach (var agent in agents)
             {
                 var memory = agent.GetMemoriesAction();
 
@@ -212,11 +213,11 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class MemoryOutputApplier : TensorApplier.IApplier
     {
-        public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
         {
             var agentIndex = 0;
             var memorySize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            foreach (var agent in agentInfo.Keys)
+            foreach (var agent in agents)
             {
                 var memory = new List<float>();
                 for (var j = 0; j < memorySize; j++)
@@ -236,10 +237,10 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class ValueEstimateApplier : TensorApplier.IApplier
     {
-        public void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
         {
             var agentIndex = 0;
-            foreach (var agent in agentInfo.Keys)
+            foreach (var agent in agents)
             {
                 agent.UpdateValueAction(tensorProxy.data[agentIndex, 0]);
                 agentIndex++;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using System.Reflection;
@@ -20,16 +19,14 @@ namespace MLAgents.Tests
             }
         }
 
-        private Dictionary<Agent, AgentInfo> GetFakeAgentInfos()
+        private List<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();
-            var infoA = new AgentInfo();
             var goB = new GameObject("goB");
             var agentB = goB.AddComponent<TestAgent>();
-            var infoB = new AgentInfo();
 
-            return new Dictionary<Agent, AgentInfo>(){{agentA, infoA}, {agentB, infoB}};
+            return new List<Agent> {agentA, agentB};
         }
 
         [Test]
@@ -54,7 +51,7 @@ namespace MLAgents.Tests
 
             var applier = new ContinuousActionOutputApplier();
             applier.Apply(inputTensor, agentInfos);
-            var agents = agentInfos.Keys.ToList();
+            var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
             Assert.NotNull(agent);
@@ -86,7 +83,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(new[] {2, 3}, 0, alloc);
             applier.Apply(inputTensor, agentInfos);
-            var agents = agentInfos.Keys.ToList();
+            var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
             Assert.NotNull(agent);
@@ -117,7 +114,7 @@ namespace MLAgents.Tests
 
             var applier = new MemoryOutputApplier();
             applier.Apply(inputTensor, agentInfos);
-            var agents = agentInfos.Keys.ToList();
+            var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
             Assert.NotNull(agent);
@@ -144,7 +141,7 @@ namespace MLAgents.Tests
 
             var applier = new ValueEstimateApplier();
             applier.Apply(inputTensor, agentInfos);
-            var agents = agentInfos.Keys.ToList();
+            var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
             Assert.NotNull(agent);

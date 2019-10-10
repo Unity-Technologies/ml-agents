@@ -62,7 +62,7 @@ namespace MLAgents
         {
             if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
             {
-                foreach (var agent in m_AgentInfos.Keys)
+                foreach (var agent in m_Agents)
                 {
                     var action = new float[brainParameters.vectorActionSize[0]];
                     foreach (var cha in keyContinuousPlayerActions)
@@ -86,7 +86,7 @@ namespace MLAgents
             }
             else
             {
-                foreach (var agent in m_AgentInfos.Keys)
+                foreach (var agent in m_Agents)
                 {
                     var action = new float[brainParameters.vectorActionSize.Length];
                     foreach (var dha in discretePlayerActions)
@@ -99,7 +99,6 @@ namespace MLAgents
                     agent.UpdateVectorAction(action);
                 }
             }
-            m_AgentInfos.Clear();
         }
     }
 }

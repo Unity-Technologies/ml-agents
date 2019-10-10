@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using System.Linq;
 
 namespace MLAgents
 {
@@ -8,7 +7,7 @@ namespace MLAgents
     {
         Discrete,
         Continuous
-    };
+    }
 
     /// <summary>
     /// The resolution of a camera used by an agent.
@@ -65,82 +64,12 @@ namespace MLAgents
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
         /// <summary>
-        /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
-        /// </summary>
-        /// <returns>The BrainInfoProto generated.</returns>
-        /// <param name="name">The name of the brain.</param>
-        /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public CommunicatorObjects.BrainParametersProto
-        ToProto(string name, bool isTraining)
-        {
-            var brainParametersProto = new CommunicatorObjects.BrainParametersProto
-            {
-                VectorObservationSize = vectorObservationSize,
-                NumStackedVectorObservations = numStackedVectorObservations,
-                VectorActionSize = {vectorActionSize},
-                VectorActionSpaceType =
-                    (CommunicatorObjects.SpaceTypeProto)vectorActionSpaceType,
-                BrainName = name,
-                IsTraining = isTraining
-            };
-            brainParametersProto.VectorActionDescriptions.AddRange(vectorActionDescriptions);
-            foreach (var res in cameraResolutions)
-            {
-                brainParametersProto.CameraResolutions.Add(
-                    new CommunicatorObjects.ResolutionProto
-                    {
-                        Width = res.width,
-                        Height = res.height,
-                        GrayScale = res.blackAndWhite
-                    });
-            }
-
-            return brainParametersProto;
-        }
-
-        public BrainParameters()
-        {
-        }
-
-        /// <summary>
-        /// Converts Resolution protobuf array to C# Resolution array.
-        /// </summary>
-        private static Resolution[] ResolutionProtoToNative(
-            CommunicatorObjects.ResolutionProto[] resolutionProtos)
-        {
-            var localCameraResolutions = new Resolution[resolutionProtos.Length];
-            for (var i = 0; i < resolutionProtos.Length; i++)
-            {
-                localCameraResolutions[i] = new Resolution
-                {
-                    height = resolutionProtos[i].Height,
-                    width = resolutionProtos[i].Width,
-                    blackAndWhite = resolutionProtos[i].GrayScale
-                };
-            }
-
-            return localCameraResolutions;
-        }
-
-        public BrainParameters(CommunicatorObjects.BrainParametersProto brainParametersProto)
-        {
-            vectorObservationSize = brainParametersProto.VectorObservationSize;
-            cameraResolutions = ResolutionProtoToNative(
-                brainParametersProto.CameraResolutions.ToArray()
-            );
-            numStackedVectorObservations = brainParametersProto.NumStackedVectorObservations;
-            vectorActionSize = brainParametersProto.VectorActionSize.ToArray();
-            vectorActionDescriptions = brainParametersProto.VectorActionDescriptions.ToArray();
-            vectorActionSpaceType = (SpaceType)brainParametersProto.VectorActionSpaceType;
-        }
-
-        /// <summary>
         /// Deep clones the BrainParameter object
         /// </summary>
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()
         {
-            return new BrainParameters()
+            return new BrainParameters
             {
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,

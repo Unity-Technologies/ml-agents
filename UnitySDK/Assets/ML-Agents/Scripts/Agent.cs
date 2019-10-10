@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Google.Protobuf;
-using MLAgents.CommunicatorObjects;
 using UnityEngine;
 
 
@@ -82,45 +80,9 @@ namespace MLAgents
         /// <summary>
         /// User-customizable object for sending structured output from Unity to Python in response
         /// to an action in addition to a scalar reward.
+        /// TODO(cgoy): All references to protobuf objects should be removed.
         /// </summary>
-        public CustomObservation customObservation;
-
-        /// <summary>
-        /// Converts a AgentInfo to a protobuffer generated AgentInfoProto
-        /// </summary>
-        /// <returns>The protobuf version of the AgentInfo.</returns>
-        public AgentInfoProto ToProto()
-        {
-            var agentInfoProto = new AgentInfoProto
-            {
-                StackedVectorObservation = { stackedVectorObservation },
-                StoredVectorActions = { storedVectorActions },
-                StoredTextActions = storedTextActions,
-                TextObservation = textObservation,
-                Reward = reward,
-                MaxStepReached = maxStepReached,
-                Done = done,
-                Id = id,
-                CustomObservation = customObservation
-            };
-            if (memories != null)
-            {
-                agentInfoProto.Memories.Add(memories);
-            }
-
-            if (actionMasks != null)
-            {
-                agentInfoProto.ActionMask.AddRange(actionMasks);
-            }
-
-            foreach (var obs in visualObservations)
-            {
-                agentInfoProto.VisualObservations.Add(
-                    ByteString.CopyFrom(obs.EncodeToPNG())
-                );
-            }
-            return agentInfoProto;
-        }
+        public CommunicatorObjects.CustomObservationProto customObservation;
 
         /// <summary>
         /// Remove the visual observations from memory. Call at each timestep
@@ -146,7 +108,8 @@ namespace MLAgents
         public string textActions;
         public List<float> memories;
         public float value;
-        public CustomAction customAction;
+        /// TODO(cgoy): All references to protobuf objects should be removed.
+        public CommunicatorObjects.CustomActionProto customAction;
     }
 
     /// <summary>
@@ -274,6 +237,11 @@ namespace MLAgents
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
+        public AgentInfo Info
+        {
+            get { return m_Info; }
+            set { m_Info = value;  }
+        }
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
@@ -593,7 +561,10 @@ namespace MLAgents
             m_Info.storedTextActions = m_Action.textActions;
             m_Info.vectorObservation.Clear();
             m_ActionMasker.ResetMask();
-            CollectObservations();
+            using (TimerStack.Instance.Scoped("CollectObservations"))
+            {
+                CollectObservations();
+            }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
             var param = brain.brainParameters;
@@ -650,7 +621,7 @@ namespace MLAgents
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            brain.SendState(this, m_Info);
+            brain.SubscribeAgentForDecision(this);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
@@ -658,6 +629,11 @@ namespace MLAgents
             }
 
             m_Info.textObservation = "";
+        }
+
+        public void ClearVisualObservations()
+        {
+            m_Info.ClearVisualObs();
         }
 
         /// <summary>
@@ -866,7 +842,7 @@ namespace MLAgents
         /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
         /// as either a flat vector or a single string.
         /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CustomAction customAction)
+        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomActionProto customAction)
         {
             // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
             AgentAction(vectorAction, textAction);
@@ -912,6 +888,11 @@ namespace MLAgents
             AgentReset();
         }
 
+        public void UpdateAgentAction(AgentAction action)
+        {
+            m_Action = action;
+        }
+
         /// <summary>
         /// Updates the vector action.
         /// </summary>
@@ -938,24 +919,6 @@ namespace MLAgents
         public List<float> GetMemoriesAction()
         {
             return m_Action.memories;
-        }
-
-        /// <summary>
-        /// Updates the text action.
-        /// </summary>
-        /// <param name="textActions">Text actions.</param>
-        public void UpdateTextAction(string textActions)
-        {
-            m_Action.textActions = textActions;
-        }
-
-        /// <summary>
-        /// Updates the custom action.
-        /// </summary>
-        /// <param name="customAction">Custom action.</param>
-        public void UpdateCustomAction(CustomAction customAction)
-        {
-            m_Action.customAction = customAction;
         }
 
         /// <summary>
@@ -986,7 +949,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the status of the agent. Will request decisions or actions according 
+        /// Sets the status of the agent. Will request decisions or actions according
         /// to the Academy's stepcount.
         /// </summary>
         /// <param name="academyStepCounter">Number of current steps in episode</param>
@@ -1173,7 +1136,7 @@ namespace MLAgents
         /// Sets the custom observation for the agent for this episode.
         /// </summary>
         /// <param name="customObservation">New value of the agent's custom observation.</param>
-        public void SetCustomObservation(CustomObservation customObservation)
+        public void SetCustomObservation(CommunicatorObjects.CustomObservationProto customObservation)
         {
             m_Info.customObservation = customObservation;
         }

@@ -3,5 +3,5 @@ syntax = "proto3";
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
-message CustomObservation {
+message CustomObservationProto {
 }

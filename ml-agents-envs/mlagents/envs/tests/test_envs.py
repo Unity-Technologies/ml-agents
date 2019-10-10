@@ -22,7 +22,7 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.brain_names[0] == "RealFakeBrain"
+    assert env.external_brain_names[0] == "RealFakeBrain"
     env.close()
 
 
@@ -106,6 +106,12 @@ def test_close(mock_communicator, mock_launcher):
     env.close()
     assert not env._loaded
     assert comm.has_been_closed
+
+
+def test_returncode_to_signal_name():
+    assert UnityEnvironment.returncode_to_signal_name(-2) == "SIGINT"
+    assert UnityEnvironment.returncode_to_signal_name(42) is None
+    assert UnityEnvironment.returncode_to_signal_name("SIGINT") is None
 
 
 if __name__ == "__main__":

@@ -16,9 +16,11 @@ namespace MLAgents
 
     /// <summary>
     /// The Learning Brain works differently if you are training it or not.
-    /// When training your Agents, drag the Learning Brain to the Academy's BroadcastHub and check
-    /// the checkbox Control. When using a pretrained model, just drag the Model file into the
-    /// Model property of the Learning Brain.
+    /// When training your Agents, the LearningBrain will be controlled by Python.
+    /// When using a pretrained model, just drag the Model file into the
+    /// Model property of the Learning Brain and do not launch the Python training process.
+    /// The training will start automatically if Python is ready to train and there is at
+    /// least one LearningBrain in the scene.
     /// The property model corresponds to the Model currently attached to the Brain. Before
     /// being used, a call to ReloadModel is required.
     /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
@@ -47,22 +49,27 @@ namespace MLAgents
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
-        [NonSerialized]
-        private bool m_IsControlled;
+        protected ICommunicator m_Communicator;
 
         /// <summary>
-        /// When Called, the brain will be controlled externally. It will not use the
-        /// model to decide on actions.
+        /// Sets the ICommunicator of the Brain. The brain will call the communicator at every step and give
+        /// it the agent's data using PutObservations at each DecideAction call.
         /// </summary>
-        public void SetToControlledExternally()
+        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
+        private void SetCommunicator(ICommunicator communicator)
         {
-            m_IsControlled = true;
+            m_Communicator = communicator;
+            m_Communicator?.SubscribeBrain(name, brainParameters);
+            LazyInitialize();
+
         }
 
         /// <inheritdoc />
         protected override void Initialize()
         {
             ReloadModel();
+            var comm = FindObjectOfType<Academy>()?.Communicator;
+            SetCommunicator(comm);
         }
 
         /// <summary>
@@ -126,12 +133,12 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            if (m_IsControlled)
+            if (m_Communicator != null)
             {
-                m_AgentInfos.Clear();
+                m_Communicator?.PutObservations(name, m_Agents);
                 return;
             }
-            var currentBatchSize = m_AgentInfos.Count();
+            var currentBatchSize = m_Agents.Count;
             if (currentBatchSize == 0)
             {
                 return;
@@ -146,7 +153,7 @@ namespace MLAgents
 
             Profiler.BeginSample($"MLAgents.{name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_AgentInfos);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{name}.PrepareBarracudaInputs");
@@ -164,10 +171,9 @@ namespace MLAgents
 
             Profiler.BeginSample($"MLAgents.{name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_AgentInfos);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
             Profiler.EndSample();
 
-            m_AgentInfos.Clear();
             Profiler.EndSample();
         }
 
