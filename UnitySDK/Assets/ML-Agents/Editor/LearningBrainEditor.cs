@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEditor;
+using Barracuda;
+using System.Collections;
+using UnityEngine.Profiling;
+
 
 namespace MLAgents
 {
@@ -57,12 +61,24 @@ namespace MLAgents
             }
             if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
             {
-                brain.ReloadModel();
                 m_RequireReload = false;
                 m_TimeSinceModelReload = 0;
             }
             // Display all failed checks
-            var failedChecks = brain.GetModelFailedChecks();
+            D.logEnabled = false;
+#if BARRACUDA_VERBOSE
+                _verbose = false;
+#endif
+            Barracuda.Model barracudaModel = null;
+            if (brain.model != null)
+            {
+                barracudaModel = ModelLoader.Load(brain.model.Value);
+                var executionDevice = brain.inferenceDevice == InferenceDevice.GPU
+                        ? BarracudaWorkerFactory.Type.ComputePrecompiled
+                        : BarracudaWorkerFactory.Type.CSharp;
+            }
+            var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
+                barracudaModel, brain.brainParameters);
             foreach (var check in failedChecks)
             {
                 if (check != null)

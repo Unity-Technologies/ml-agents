@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -179,6 +179,9 @@ namespace MLAgents
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
 
+        public List<InferenceBrain.BrainModelRunner> ModelRunners =
+        new List<InferenceBrain.BrainModelRunner>();
+
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
@@ -300,7 +303,8 @@ namespace MLAgents
                     Communicator = null;
                 }
 
-                if (Communicator != null){
+                if (Communicator != null)
+                {
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
@@ -313,13 +317,13 @@ namespace MLAgents
 
             SetIsInference(!IsCommunicatorOn);
 
-            BrainDecideAction += () => {};
-            DestroyAction += () => {};
-            AgentSetStatus += i => {};
-            AgentResetIfDone += () => {};
-            AgentSendState += () => {};
-            AgentAct += () => {};
-            AgentForceReset += () => {};
+            BrainDecideAction += () => { };
+            DestroyAction += () => { };
+            AgentSetStatus += i => { };
+            AgentResetIfDone += () => { };
+            AgentSendState += () => { };
+            AgentAct += () => { };
+            AgentForceReset += () => { };
 
             ConfigureEnvironment();
         }

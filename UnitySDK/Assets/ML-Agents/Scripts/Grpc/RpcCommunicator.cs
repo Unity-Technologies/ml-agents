@@ -130,7 +130,8 @@ namespace MLAgents
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
-            if (m_CurrentUnityRlInitializationOutput == null){
+            if (m_CurrentUnityRlInitializationOutput == null)
+            {
                 m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
             }
             m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
@@ -173,17 +174,9 @@ namespace MLAgents
         #region Destruction
 
         /// <summary>
-        /// Ensure that when this object is destructed, the connection is closed.
-        /// </summary>
-        ~RpcCommunicator()
-        {
-            Close();
-        }
-
-        /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
-        public void Close()
+        public void Dispose()
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -214,19 +207,19 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
+                    {
+                        QuitCommandReceived?.Invoke();
+                        return;
+                    }
                 case CommandProto.Reset:
-                {
-                    ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
-                    return;
-                }
+                    {
+                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -239,6 +232,15 @@ namespace MLAgents
 
         #region Sending and retreiving data
 
+        /// <summary>
+        /// Sends the observations. If at least one brain has an agent in need of
+        /// a decision or if the academy is done, the data is sent via
+        /// Communicator. Else, a new step is realized. The data can only be
+        /// sent once all the brains that were part of initialization have tried
+        /// to send information.
+        /// </summary>
+        /// <param name="key">Batch Key.</param>
+        /// <param name="agents">Agent info.</param>
         public void PutObservations(
             string brainKey, IEnumerable<Agent> agents)
         {
@@ -417,7 +419,7 @@ namespace MLAgents
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                Close();
+                Dispose();
             }
         }
 
