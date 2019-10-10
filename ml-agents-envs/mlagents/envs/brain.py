@@ -2,15 +2,27 @@ import logging
 import numpy as np
 import io
 
-from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
-    BrainParametersProto,
-)
+from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.timers import hierarchical_timer, timed
-from typing import Dict, List, Optional
+from typing import Dict, List, NamedTuple, Optional
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
+
+
+class CameraResolution(NamedTuple):
+    height: int
+    width: int
+    gray_scale: bool
+
+    @property
+    def num_channels(self) -> int:
+        return 1 if self.gray_scale else 3
+
+    @staticmethod
+    def from_proto(p):
+        return CameraResolution(height=p.height, width=p.width, gray_scale=p.gray_scale)
 
 
 class BrainParameters:
@@ -19,7 +31,7 @@ class BrainParameters:
         brain_name: str,
         vector_observation_space_size: int,
         num_stacked_vector_observations: int,
-        camera_resolutions: List[Dict],
+        camera_resolutions: List[CameraResolution],
         vector_action_space_size: List[int],
         vector_action_descriptions: List[str],
         vector_action_space_type: int,
@@ -63,8 +75,7 @@ class BrainParameters:
         :return: BrainParameter object.
         """
         resolution = [
-            {"height": x.height, "width": x.width, "blackAndWhite": x.gray_scale}
-            for x in brain_param_proto.camera_resolutions
+            CameraResolution.from_proto(x) for x in brain_param_proto.camera_resolutions
         ]
         brain_params = BrainParameters(
             brain_param_proto.brain_name,
@@ -188,7 +199,7 @@ class BrainInfo:
             obs = [
                 BrainInfo.process_pixels(
                     x.visual_observations[i],
-                    brain_params.camera_resolutions[i]["blackAndWhite"],
+                    brain_params.camera_resolutions[i].gray_scale,
                 )
                 for x in agent_info_list
             ]

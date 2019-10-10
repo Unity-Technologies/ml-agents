@@ -3,7 +3,7 @@ syntax = "proto3";
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
-message Header {
+message HeaderProto {
 	int32 status = 1;
 	string message = 2;
 }

@@ -29,7 +29,7 @@ See PreTraining + GAIL + Curiosity + RL below.
 
 The ML-Agents toolkit provides several ways to learn from demonstrations.
 
-* To train using GAIL (Generative Adversarial Imitaiton Learning) you can add the
+* To train using GAIL (Generative Adversarial Imitation Learning) you can add the
   [GAIL reward signal](Reward-Signals.md#gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
@@ -38,7 +38,7 @@ The ML-Agents toolkit provides several ways to learn from demonstrations.
   on the PPO trainer, in addition to using a small GAIL reward signal.
 * To train an agent to exactly mimic demonstrations, you can use the
   [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be
-  used offline and online (in-editor), and learns very quickly. However, it usually is ineffective
+  used with demonstrations (in-editor), and learns very quickly. However, it usually is ineffective
   on more complex environments without a large number of demonstrations.
 
 ### How to Choose
@@ -52,8 +52,7 @@ If you want to train purely from demonstrations, GAIL is generally the preferred
 if you have few (<10) episodes of demonstrations. An example of this is provided for the Crawler example
 environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
 
-If you have plenty of demonstrations and/or a very simple environment, Behavioral Cloning
-(online and offline) can be effective and quick. However, it cannot be combined with RL.
+If you have plenty of demonstrations and/or a very simple environment, Offline Behavioral Cloning can be effective and quick. However, it cannot be combined with RL.
 
 ## Recording Demonstrations
 

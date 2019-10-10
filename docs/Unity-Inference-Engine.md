@@ -28,8 +28,6 @@ but we only tested for the following platforms :
 
 When using a **Learning Brain**, drag the `.nn` file into the **Model** field 
 in the Inspector. 
-Uncheck the `Control` checkbox for the corresponding **Brain** in the 
-**BroadcastHub** of the Academy.
 Select the **Inference Device** : CPU or GPU you want to use for Inference.
 
 **Note:** For most of the models generated with the ML-Agents toolkit, CPU will be faster than GPU.

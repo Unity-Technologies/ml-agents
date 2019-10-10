@@ -65,14 +65,14 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
     )
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
@@ -88,14 +88,14 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
     )
     run_out = policy.get_value_estimates(brain_info, 0, done=False)
     for key, val in run_out.items():

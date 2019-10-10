@@ -12,8 +12,7 @@ and passes the chosen action back to the agent. Your agent code must execute the
 action, for example, move the agent in one direction or another. In order to
 [train an agent using reinforcement learning](Learning-Environment-Design.md),
 your agent must calculate a reward value at each action. The reward is used to
-discover the optimal decision-making policy. (A reward is not used by already
-trained agents or for imitation learning.)
+discover the optimal decision-making policy.
 
 The Brain class abstracts out the decision making logic from the Agent itself so
 that you can use the same Brain in multiple Agents. How a Brain makes its
@@ -249,7 +248,7 @@ adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent'
 ![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
 
 The [GridWorld environment](Learning-Environment-Examples.md#gridworld) 
-is an example on how to use a RenderTexure for both debugging and observation. Note 
+is an example on how to use a RenderTexture for both debugging and observation. Note 
 that in this example, a Camera is rendered to a RenderTexture, which is then used for 
 observations and debugging. To update the RenderTexture, the Camera must be asked to 
 render every time a decision is requested within the game code. When using Cameras 

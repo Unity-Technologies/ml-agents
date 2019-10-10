@@ -83,7 +83,7 @@ def create_policy_with_bc_mock(
     mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
     env = mock_env()
 
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_config["model_path"] = model_path
     trainer_config["keep_checkpoints"] = 3
     trainer_config["use_recurrent"] = use_rnn

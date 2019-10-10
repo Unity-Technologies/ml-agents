@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "mlagents/envs/communicator_objects/custom_reset_parameters.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message EnvironmentParametersProto {
+    map<string, float> float_parameters = 1; 
+    CustomResetParametersProto custom_reset_parameters = 2;
+}

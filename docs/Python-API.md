@@ -33,11 +33,9 @@ These classes are all defined in the `ml-agents/mlagents/envs` folder of
 the ML-Agents SDK.
 
 To communicate with an Agent in a Unity environment from a Python program, the
-Agent must either use a Brain present in the Academy's `Broadcast Hub`.
+Agent must use a LearningBrain.
 Your code is expected to return
-actions for Agents with Brains with the `Control` checkbox of the
-Academy's `Broadcast Hub` checked, but can only observe broadcasting
-Brains (the information you receive for an Agent is the same in both cases).
+actions for Agents with LearningBrains.
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -99,10 +97,10 @@ variable named `env` in this example, can be used in the following way:
 - **Print : `print(str(env))`**
   Prints all parameters relevant to the loaded environment and the
   Brains.
-- **Reset : `env.reset(train_model=True, config=None)`**
+- **Reset : `env.reset(train_mode=True, config=None)`**
   Send a reset signal to the environment, and provides a dictionary mapping
   Brain names to BrainInfo objects.
-  - `train_model` indicates whether to run the environment in train (`True`) or
+  - `train_mode` indicates whether to run the environment in train (`True`) or
     test (`False`) mode.
   - `config` is an optional dictionary of configuration flags specific to the
     environment. For generic environments, `config` can be ignored. `config` is
@@ -130,8 +128,7 @@ variable named `env` in this example, can be used in the following way:
     observations = brainInfo.vector_observations
     ```
 
-    Note that if you have more than one Brain in the Academy's `Broadcast Hub` with
-    the `Control` checkbox checked, you
+    Note that if you have more than one LearningBrain in the scene, you
     must provide dictionaries from Brain names to arrays for `action`, `memory`
     and `value`. For example: If you have two Learning Brains named `brain1` and
     `brain2` each with one Agent taking two continuous actions, then you can
