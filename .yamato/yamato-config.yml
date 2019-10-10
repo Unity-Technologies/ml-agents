@@ -1,0 +1,9 @@
+# ./yamato/yamato-config.yml
+
+name: Hello world
+agent:
+    type: Unity::VM
+    image: slough-ops/ubuntu-18.04-base:stable
+    flavor: b1.small
+commands:
+    - echo "Hello world!"
