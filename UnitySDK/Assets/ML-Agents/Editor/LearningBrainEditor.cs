@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEditor;
+using Barracuda;
+
 
 namespace MLAgents
 {
@@ -57,12 +59,18 @@ namespace MLAgents
             }
             if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
             {
-                brain.ReloadModel();
                 m_RequireReload = false;
                 m_TimeSinceModelReload = 0;
             }
             // Display all failed checks
-            var failedChecks = brain.GetModelFailedChecks();
+            D.logEnabled = false;
+            Barracuda.Model barracudaModel = null;
+            if (brain.model != null)
+            {
+                barracudaModel = ModelLoader.Load(brain.model.Value);
+            }
+            var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
+                barracudaModel, brain.brainParameters);
             foreach (var check in failedChecks)
             {
                 if (check != null)

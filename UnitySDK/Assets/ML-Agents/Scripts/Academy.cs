@@ -1,10 +1,11 @@
 using UnityEngine;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
-
 #endif
+using MLAgents.InferenceBrain;
+using Barracuda;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -179,6 +180,8 @@ namespace MLAgents
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
 
+        private List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
+
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
@@ -300,7 +303,8 @@ namespace MLAgents
                     Communicator = null;
                 }
 
-                if (Communicator != null){
+                if (Communicator != null)
+                {
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
@@ -313,13 +317,13 @@ namespace MLAgents
 
             SetIsInference(!IsCommunicatorOn);
 
-            BrainDecideAction += () => {};
-            DestroyAction += () => {};
-            AgentSetStatus += i => {};
-            AgentResetIfDone += () => {};
-            AgentSendState += () => {};
-            AgentAct += () => {};
-            AgentForceReset += () => {};
+            BrainDecideAction += () => { };
+            DestroyAction += () => { };
+            AgentSetStatus += i => { };
+            AgentResetIfDone += () => { };
+            AgentSendState += () => { };
+            AgentAct += () => { };
+            AgentForceReset += () => { };
 
             ConfigureEnvironment();
         }
@@ -553,6 +557,26 @@ namespace MLAgents
         void FixedUpdate()
         {
             EnvironmentStep();
+        }
+
+        /// <summary>
+        /// Creates or retrieves an existing ModelRunner that uses the same NNModel and the InferenceDevice as
+        /// provided.
+        /// </summary>
+        /// <param name="model"> The NNModel the ModelRunner must use </param>
+        /// <param name="brainParameters"> The brainParameters used to create the ModelRunner </param>
+        /// <param name="inferenceDevice"> The inference device (CPU or GPU) the ModelRunner will use </param>
+        /// <returns> The ModelRunner compatible with the input settings</returns>
+        public ModelRunner GetOrCreateModelRunner(NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
+        {
+            var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
+            if (modelRunner == null)
+            {
+                modelRunner = new ModelRunner(
+                    model, brainParameters, inferenceDevice);
+                m_ModelRunners.Add(modelRunner);
+            }
+            return modelRunner;
         }
 
         /// <summary>
