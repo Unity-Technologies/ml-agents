@@ -296,4 +296,7 @@ class TrainerController(object):
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
                     env.set_policy(brain_name, trainer.policy)
+            else:
+                # Avoid memory leak during inference
+                trainer.clear_update_buffer()
         return len(new_step_infos)
