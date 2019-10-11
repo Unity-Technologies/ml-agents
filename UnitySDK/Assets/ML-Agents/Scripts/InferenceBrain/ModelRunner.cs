@@ -20,11 +20,6 @@ namespace MLAgents.InferenceBrain
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
         /// <summary>
-        /// List of agents subscribed for decisions.
-        /// </summary>
-        protected List<Agent> m_Agents = new List<Agent>(1024);
-
-        /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
@@ -108,9 +103,9 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        private void DecideAction()
+        public void PutObservations(string key, ICollection<Agent> agents)
         {
-            var currentBatchSize = m_Agents.Count;
+            var currentBatchSize = agents.Count;
             if (currentBatchSize == 0)
             {
                 return;
@@ -125,7 +120,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -143,17 +138,10 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, agents);
             Profiler.EndSample();
 
             Profiler.EndSample();
-        }
-
-        public void PutObservations(string key, IEnumerable<Agent> agents)
-        {
-            m_Agents.AddRange(agents);
-            DecideAction();
-            m_Agents.Clear();
         }
 
         public bool HasModel(NNModel other)

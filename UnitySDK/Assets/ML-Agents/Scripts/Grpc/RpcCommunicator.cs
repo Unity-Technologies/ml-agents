@@ -241,8 +241,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="key">Batch Key.</param>
         /// <param name="agents">Agent info.</param>
-        public void PutObservations(
-            string brainKey, IEnumerable<Agent> agents)
+        public void PutObservations(string brainKey, ICollection<Agent> agents)
         {
             // The brain tried called GiveBrainInfo, update m_hasQueried
             m_HasQueried[brainKey] = true;

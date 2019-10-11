@@ -152,6 +152,6 @@ namespace MLAgents
 
     public interface IBatchedDecisionMaker : IDisposable
     {
-        void PutObservations(string key, IEnumerable<Agent> agents);
+        void PutObservations(string key, ICollection<Agent> agents);
     }
 }

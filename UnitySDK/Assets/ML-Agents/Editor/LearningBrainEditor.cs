@@ -73,9 +73,6 @@ namespace MLAgents
             if (brain.model != null)
             {
                 barracudaModel = ModelLoader.Load(brain.model.Value);
-                var executionDevice = brain.inferenceDevice == InferenceDevice.GPU
-                        ? BarracudaWorkerFactory.Type.ComputePrecompiled
-                        : BarracudaWorkerFactory.Type.CSharp;
             }
             var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
                 barracudaModel, brain.brainParameters);
