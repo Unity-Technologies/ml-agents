@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using Barracuda;
-using System.Collections;
-using UnityEngine.Profiling;
 
 
 namespace MLAgents
@@ -66,9 +64,6 @@ namespace MLAgents
             }
             // Display all failed checks
             D.logEnabled = false;
-#if BARRACUDA_VERBOSE
-                _verbose = false;
-#endif
             Barracuda.Model barracudaModel = null;
             if (brain.model != null)
             {
