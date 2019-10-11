@@ -45,7 +45,7 @@ namespace MLAgents.InferenceBrain
             if (model != null)
             {
 #if BARRACUDA_VERBOSE
-                _verbose = true;
+                m_Verbose = true;
 #endif
 
                 D.logEnabled = m_Verbose;
