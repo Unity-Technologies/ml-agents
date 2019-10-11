@@ -39,8 +39,7 @@ namespace MLAgents.InferenceBrain
             int seed = 0)
         {
             m_Model = model;
-            if (m_TensorAllocator == null)
-                m_TensorAllocator = new TensorCachingAllocator();
+            m_TensorAllocator = new TensorCachingAllocator();
             if (model != null)
             {
 #if BARRACUDA_VERBOSE
@@ -50,17 +49,13 @@ namespace MLAgents.InferenceBrain
                 D.logEnabled = m_Verbose;
 
                 // Cleanup previous instance
-                if (m_Engine != null)
-                    m_Engine.Dispose();
-
+                m_Engine.Dispose();
 
                 m_BarracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
                     ? BarracudaWorkerFactory.Type.ComputePrecompiled
                     : BarracudaWorkerFactory.Type.CSharp;
-                Profiler.enabled = false;
                 m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, m_BarracudaModel, m_Verbose);
-                Profiler.enabled = true;
             }
             else
             {
