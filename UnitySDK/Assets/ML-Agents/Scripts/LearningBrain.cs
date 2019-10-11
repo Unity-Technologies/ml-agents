@@ -58,13 +58,7 @@ namespace MLAgents
             {
                 return;
             }
-            var modelRunner = aca.ModelRunners.Find(x => x.HasModel(model));
-            if (modelRunner == null)
-            {
-                modelRunner = new BrainModelRunner(
-                    model, brainParameters, inferenceDevice);
-                aca.ModelRunners.Add(modelRunner);
-            }
+            var modelRunner = aca.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_BatchedDecisionMaker = modelRunner;
         }
 

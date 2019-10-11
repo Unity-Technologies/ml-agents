@@ -5,13 +5,14 @@ using UnityEngine.Profiling;
 
 namespace MLAgents.InferenceBrain
 {
-    public class BrainModelRunner : IBatchedDecisionMaker
+    public class ModelRunner : IBatchedDecisionMaker
     {
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
 
         private NNModel m_Model;
+        private InferenceDevice m_InferenceDevice;
         private Model m_BarracudaModel;
         private IWorker m_Engine;
         private bool m_Verbose = false;
@@ -32,13 +33,14 @@ namespace MLAgents.InferenceBrain
         /// and Multinomial objects used when running inference.</param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
-        public BrainModelRunner(
+        public ModelRunner(
             NNModel model,
             BrainParameters brainParameters,
             InferenceDevice inferenceDevice = InferenceDevice.CPU,
             int seed = 0)
         {
             m_Model = model;
+            m_InferenceDevice = inferenceDevice;
             m_TensorAllocator = new TensorCachingAllocator();
             if (model != null)
             {
@@ -47,9 +49,6 @@ namespace MLAgents.InferenceBrain
 #endif
 
                 D.logEnabled = m_Verbose;
-
-                // Cleanup previous instance
-                m_Engine.Dispose();
 
                 m_BarracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
@@ -139,9 +138,9 @@ namespace MLAgents.InferenceBrain
             Profiler.EndSample();
         }
 
-        public bool HasModel(NNModel other)
+        public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
         {
-            return m_Model == other;
+            return m_Model == other && m_InferenceDevice == otherInferenceDevice;
         }
     }
 }
