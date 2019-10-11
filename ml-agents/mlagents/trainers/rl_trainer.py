@@ -244,7 +244,7 @@ class RLTrainer(Trainer):
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
-    def clear_buffer(self) -> None:
+    def clear_update_buffer(self) -> None:
         """
         Clear the buffers that have been built up during inference. If
         we're not training, this should be called instead of update_policy.
