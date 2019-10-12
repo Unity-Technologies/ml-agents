@@ -1,8 +1,9 @@
 using MLAgents.InferenceBrain;
+using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    abstract class SensorBase : ISensor
+    abstract class SensorBase : MonoBehaviour, ISensor
     {
         /// <summary>
         /// Write the observations to the output buffer. This size of the buffer will be product of the sizes returned
