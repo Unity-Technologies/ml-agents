@@ -312,11 +312,19 @@ namespace MLAgents.InferenceBrain
         public void Generate(
             TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
         {
-            var textures = agents.Select(
-                agent => agent.Info.visualObservations[m_Index]).ToList();
+//            var textures = agents.Select(
+//                agent => agent.Info.visualObservations[m_Index]).ToList();
 
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            Utilities.TextureToTensorProxy(textures, tensorProxy, m_GrayScale);
+            //Utilities.TextureToTensorProxy(textures, tensorProxy, m_GrayScale);
+            var agentIndex = 0;
+            foreach (var agent in agents)
+            {
+                agent.m_Sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
+                agentIndex++;
+            }
+
+
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    abstract class SensorBase : MonoBehaviour, ISensor
+    public abstract class SensorBase : MonoBehaviour, ISensor
     {
         /// <summary>
         /// Write the observations to the output buffer. This size of the buffer will be product of the sizes returned
@@ -19,8 +19,8 @@ namespace MLAgents.Sensor
         /// and then writes the results to the TensorProxy.
         /// </summary>
         /// <param name="tensorProxy"></param>
-        /// <param name="index"></param>
-        public void WriteToTensor(TensorProxy tensorProxy, int index)
+        /// <param name="agentIndex"></param>
+        public virtual void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
         {
             // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()
             int[] shape = GetFloatObservationShape();
@@ -35,16 +35,16 @@ namespace MLAgents.Sensor
 
             for (var i = 0; i < numFloats; i++)
             {
-                tensorProxy.data[index, i] = buffer[i];
+                tensorProxy.data[agentIndex, i] = buffer[i];
             }
         }
 
-        public byte[] GetCompressedObservation()
+        public virtual byte[] GetCompressedObservation()
         {
             return null;
         }
 
-        public CompressionType GetCompressionType()
+        public virtual CompressionType GetCompressionType()
         {
             return CompressionType.None;
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class CameraSensor : SensorBase
+    public class CameraSensor : SensorBase
     {
         public Camera camera;
         public int width;
@@ -21,22 +21,21 @@ namespace MLAgents.Sensor
             throw new NotImplementedException("Have to use compression");
         }
 
-        // TODO is "new" right here?
-        public new byte[] GetCompressedObservation()
+        public override byte[] GetCompressedObservation()
         {
-            // TODO move Agent code here
+            // TODO move Agent static methods here
             var texture = Agent.ObservationToTexture(camera, width, height);
             // TODO support more types here, e.g. JPG
             return texture.EncodeToPNG();
         }
 
-        public new void WriteToTensor(TensorProxy tensorProxy, int index)
+        public override void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
         {
             var texture = Agent.ObservationToTexture(camera, width, height);
-            Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, index);
+            Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, agentIndex);
         }
 
-        public new CompressionType GetCompressionType()
+        public override CompressionType GetCompressionType()
         {
             return CompressionType.PNG;
         }

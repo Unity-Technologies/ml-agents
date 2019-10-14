@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents.Sensor;
 
 
 namespace MLAgents
@@ -26,6 +27,11 @@ namespace MLAgents
         /// Most recent agent camera (i.e. texture) observation.
         /// </summary>
         public List<Texture2D> visualObservations;
+
+        /// <summary>
+        /// Most recent compressed observations.
+        /// </summary>
+        public List<CompressedObservation> compressedObservations;
 
         /// <summary>
         /// Most recent text observation.
@@ -95,6 +101,7 @@ namespace MLAgents
                 Object.Destroy(obs);
             }
             visualObservations.Clear();
+            compressedObservations.Clear();
         }
     }
 
@@ -297,6 +304,8 @@ namespace MLAgents
         /// </summary>
         private DemonstrationRecorder m_Recorder;
 
+        public List<ISensor> m_Sensors;
+
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -314,6 +323,12 @@ namespace MLAgents
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
+            m_Sensors = new List<ISensor>();
+
+            // TODO deterministic sorting
+            var attachedSensors = GetComponents<SensorBase>();
+            m_Sensors.AddRange(attachedSensors);
+            //Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
 
             if (academy == null)
             {
@@ -530,6 +545,7 @@ namespace MLAgents
                           * param.numStackedVectorObservations]);
 
             m_Info.visualObservations = new List<Texture2D>();
+            m_Info.compressedObservations = new List<CompressedObservation>();
             m_Info.customObservation = null;
         }
 
@@ -616,6 +632,20 @@ namespace MLAgents
                 m_Info.visualObservations.Add(obsTexture);
             }
 
+            // Generate data for all sensors
+            for (var i = 0; i<m_Sensors.Count; i++)
+            {
+                // TODO separate this from inference time
+                var sensor = m_Sensors[i];
+                var compressedObs = new CompressedObservation
+                {
+                    Data = sensor.GetCompressedObservation(),
+                    Shape = sensor.GetFloatObservationShape(),
+                    CompressionType = sensor.GetCompressionType()
+                };
+                m_Info.compressedObservations.Add(compressedObs);
+            }
+
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -629,6 +659,7 @@ namespace MLAgents
             }
 
             m_Info.textObservation = "";
+            ClearVisualObservations();
         }
 
         public void ClearVisualObservations()

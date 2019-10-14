@@ -21,7 +21,7 @@ namespace MLAgents.Sensor
             throw new NotImplementedException("Have to use compression");
         }
 
-        public new byte[] GetCompressedObservation()
+        public override byte[] GetCompressedObservation()
         {
             // TODO move Agent code here
             var texture = Agent.ObservationToTexture(renderTexture, width, height);
@@ -29,13 +29,13 @@ namespace MLAgents.Sensor
             return texture.EncodeToPNG();
         }
 
-        public new void WriteToTensor(TensorProxy tensorProxy, int index)
+        public override void WriteToTensor(TensorProxy tensorProxy, int index)
         {
             var texture = Agent.ObservationToTexture(renderTexture, width, height);
             Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, index);
         }
 
-        public new CompressionType GetCompressionType()
+        public override CompressionType GetCompressionType()
         {
             return CompressionType.PNG;
         }

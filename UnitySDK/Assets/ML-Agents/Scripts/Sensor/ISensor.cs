@@ -13,7 +13,7 @@ namespace MLAgents.Sensor
     /// Sensor interface for generating observations.
     /// For custom implementations, it is recommended to SensorBase instead.
     /// </summary>
-    interface ISensor {
+    public interface ISensor {
         /// <summary>
         /// Returns the size of the observations that will be generated.
         /// For example, a sensor that observes the velocity of a rigid body (in 3D) would return new {3}.
@@ -28,7 +28,7 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <param name="proxy"></param>
         /// <param name="index"></param>
-        void WriteToTensor(TensorProxy tensorProxy, int index);
+        void WriteToTensor(TensorProxy tensorProxy, int agentIndex);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this sbould generally not be
