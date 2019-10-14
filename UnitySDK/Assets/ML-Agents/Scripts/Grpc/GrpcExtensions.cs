@@ -38,15 +38,12 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            foreach (var obs in ai.visualObservations)
+            foreach (var obs in ai.compressedObservations)
             {
-                using (TimerStack.Instance.Scoped("encodeVisualObs"))
-                {
-                    agentInfoProto.VisualObservations.Add(
-                        ByteString.CopyFrom(obs.EncodeToPNG())
-                    );
-                }
+                // TODO pass compression type and dimensions separately.
+                agentInfoProto.VisualObservations.Add(ByteString.CopyFrom(obs.Data));
             }
+
             return agentInfoProto;
         }
 

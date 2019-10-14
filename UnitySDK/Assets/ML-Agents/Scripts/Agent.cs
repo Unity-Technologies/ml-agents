@@ -328,7 +328,7 @@ namespace MLAgents
             // TODO deterministic sorting
             var attachedSensors = GetComponents<SensorBase>();
             m_Sensors.AddRange(attachedSensors);
-            //Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
+            // Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
 
             if (academy == null)
             {
@@ -611,27 +611,6 @@ namespace MLAgents
                     visualObservationCount));
             }
 
-            //First add all cameras
-            for (var i = 0; i < agentParameters.agentCameras.Count; i++)
-            {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentCameras[i],
-                    param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height);
-                m_Info.visualObservations.Add(obsTexture);
-            }
-
-            //Then add all renderTextures
-            var camCount = agentParameters.agentCameras.Count;
-            for (var i = 0; i < agentParameters.agentRenderTextures.Count; i++)
-            {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentRenderTextures[i],
-                    param.cameraResolutions[camCount + i].width,
-                    param.cameraResolutions[camCount + i].height);
-                m_Info.visualObservations.Add(obsTexture);
-            }
-
             // Generate data for all sensors
             for (var i = 0; i<m_Sensors.Count; i++)
             {
@@ -659,7 +638,6 @@ namespace MLAgents
             }
 
             m_Info.textObservation = "";
-            ClearVisualObservations();
         }
 
         public void ClearVisualObservations()

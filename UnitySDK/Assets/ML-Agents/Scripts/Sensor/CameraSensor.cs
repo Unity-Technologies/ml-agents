@@ -26,13 +26,16 @@ namespace MLAgents.Sensor
             // TODO move Agent static methods here
             var texture = Agent.ObservationToTexture(camera, width, height);
             // TODO support more types here, e.g. JPG
-            return texture.EncodeToPNG();
+            var compressed = texture.EncodeToPNG();
+            Destroy(texture);
+            return compressed;
         }
 
         public override void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
         {
             var texture = Agent.ObservationToTexture(camera, width, height);
             Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, agentIndex);
+            Destroy(texture);
         }
 
         public override CompressionType GetCompressionType()
