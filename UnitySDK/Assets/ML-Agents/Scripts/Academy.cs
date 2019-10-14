@@ -317,13 +317,13 @@ namespace MLAgents
 
             SetIsInference(!IsCommunicatorOn);
 
-            BrainDecideAction += () => { };
-            DestroyAction += () => { };
-            AgentSetStatus += i => { };
-            AgentResetIfDone += () => { };
-            AgentSendState += () => { };
-            AgentAct += () => { };
-            AgentForceReset += () => { };
+            BrainDecideAction += () => {};
+            DestroyAction += () => {};
+            AgentSetStatus += i => {};
+            AgentResetIfDone += () => {};
+            AgentSendState += () => {};
+            AgentAct += () => {};
+            AgentForceReset += () => {};
 
             ConfigureEnvironment();
         }

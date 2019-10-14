@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
 using UnityEngine.Profiling;
@@ -24,9 +24,9 @@ namespace MLAgents.InferenceBrain
         /// the agents
         /// </summary>
         /// <param name="model"> The Barracuda model to load </param>
-        /// <param name="brainParameters"> The parameters of the Brain used to generate the 
+        /// <param name="brainParameters"> The parameters of the Brain used to generate the
         /// placeholder tensors </param>
-        /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest 
+        /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
         /// and Multinomial objects used when running inference.</param>
@@ -78,6 +78,7 @@ namespace MLAgents.InferenceBrain
 
             return inputs;
         }
+
         public void Dispose()
         {
             if (m_Engine != null)

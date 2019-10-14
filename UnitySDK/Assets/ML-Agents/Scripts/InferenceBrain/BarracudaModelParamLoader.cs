@@ -11,7 +11,6 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class BarracudaModelParamLoader
     {
-
         private enum ModelActionType
         {
             Unknown,
@@ -145,16 +144,16 @@ namespace MLAgents.InferenceBrain
             );
             failedModelChecks.AddRange(
                 CheckInputTensorPresence(model, brainParameters, memorySize, isContinuous)
-                );
+            );
             failedModelChecks.AddRange(
                 CheckOutputTensorPresence(model, memorySize))
-                ;
+            ;
             failedModelChecks.AddRange(
                 CheckInputTensorShape(model, brainParameters)
-                );
+            );
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
-                );
+            );
             return failedModelChecks;
         }
 

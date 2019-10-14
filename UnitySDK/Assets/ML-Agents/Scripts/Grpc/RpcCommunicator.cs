@@ -208,19 +208,19 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        QuitCommandReceived?.Invoke();
-                        return;
-                    }
+                {
+                    QuitCommandReceived?.Invoke();
+                    return;
+                }
                 case CommandProto.Reset:
-                    {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
-                        return;
-                    }
+                {
+                    ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 

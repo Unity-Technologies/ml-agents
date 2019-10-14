@@ -1,4 +1,4 @@
-// Compile with: csc CRefTest.cs -doc:Results.xml 
+// Compile with: csc CRefTest.cs -doc:Results.xml
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;

@@ -44,7 +44,6 @@ namespace MLAgents
             m_BatchedDecisionMaker = communicator;
             communicator?.SubscribeBrain(name, brainParameters);
             LazyInitialize();
-
         }
 
         /// <inheritdoc />
