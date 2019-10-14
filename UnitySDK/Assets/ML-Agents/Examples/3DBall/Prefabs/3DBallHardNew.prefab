@@ -608,7 +608,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf26e11cf4ed42eaa3ffb7b91bb4676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 4f74e089fbb75455ebf6f0495e30be6e, type: 2}
+  m_BrainFactoryParameters:
+    behaviorName: MyBehaviorHard
+    brainParameters:
+      vectorObservationSize: 5
+      numStackedVectorObservations: 1
+      vectorActionSize: 02000000
+      cameraResolutions: []
+      vectorActionDescriptions: []
+      vectorActionSpaceType: 1
+    model: {fileID: 0}
+    inferenceDevice: 0
+    useHeuristic: 0
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

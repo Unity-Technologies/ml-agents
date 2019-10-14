@@ -3,17 +3,19 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using Barracuda;
+
 
 public class WallJumpAgent : Agent
 {
     // Depending on this value, the wall will have different height
     int m_Configuration;
     // Brain to use when no wall is present
-    public Brain noWallBrain;
+    public NNModel noWallBrain;
     // Brain to use when a jumpable wall is present
-    public Brain smallWallBrain;
+    public NNModel smallWallBrain;
     // Brain to use when a wall requiring a block to jump over is present
-    public Brain bigWallBrain;
+    public NNModel bigWallBrain;
 
     public GameObject ground;
     public GameObject spawnArea;
@@ -301,7 +303,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["no_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(noWallBrain);
+            GiveModel(noWallBrain, "SmallWallBrain");
         }
         else if (config == 1)
         {
@@ -310,7 +312,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["small_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(smallWallBrain);
+            GiveModel(smallWallBrain, "SmallWallBrain");
         }
         else
         {
@@ -323,7 +325,7 @@ public class WallJumpAgent : Agent
                 height,
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(bigWallBrain);
+            GiveModel(bigWallBrain, "BigWallBrain");
         }
     }
 }

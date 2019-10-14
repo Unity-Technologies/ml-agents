@@ -25,14 +25,6 @@ namespace MLAgents
         /// The default number of agents in the scene
         private const int k_NumAgents = 32;
 
-        /// Keeps track of which brains have data to send on the current step
-        Dictionary<string, bool> m_HasData =
-            new Dictionary<string, bool>();
-
-        /// Keeps track of which brains queried the communicator on the current step
-        Dictionary<string, bool> m_HasQueried =
-            new Dictionary<string, bool>();
-
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
@@ -124,8 +116,10 @@ namespace MLAgents
         /// <param name="brainKey">Brain key.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            m_HasQueried[brainKey] = false;
-            m_HasData[brainKey] = false;
+            if (m_CurrentAgents.ContainsKey(brainKey))
+            {
+                return;
+            }
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
@@ -232,6 +226,33 @@ namespace MLAgents
 
         #region Sending and retreiving data
 
+        public void DecideBatch()
+        {
+            if (m_CurrentAgents.Values.All(l => l.Count == 0))
+            {
+                return;
+            }
+            foreach (var brainKey in m_CurrentAgents.Keys)
+            {
+                if (m_CurrentAgents[brainKey].Count > 0)
+                {
+                    foreach (var agent in m_CurrentAgents[brainKey])
+                    {
+                        var agentInfoProto = agent.Info.ToProto();
+                        m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                        // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
+                        // e.g. after recording them to demo and using them for inference.
+                        agent.ClearVisualObservations();
+                    }
+                }
+            }
+            SendBatchedMessageHelper();
+            foreach (var brainKey in m_CurrentAgents.Keys)
+            {
+                m_CurrentAgents[brainKey].Clear();
+            }
+        }
+
         /// <summary>
         /// Sends the observations. If at least one brain has an agent in need of
         /// a decision or if the academy is done, the data is sent via
@@ -241,50 +262,9 @@ namespace MLAgents
         /// </summary>
         /// <param name="key">Batch Key.</param>
         /// <param name="agents">Agent info.</param>
-        public void PutObservations(string brainKey, ICollection<Agent> agents)
+        public void PutObservations(string brainKey, Agent agent)
         {
-            // The brain tried called GiveBrainInfo, update m_hasQueried
-            m_HasQueried[brainKey] = true;
-            // Populate the currentAgents dictionary
-            m_CurrentAgents[brainKey].Clear();
-            foreach (var agent in agents)
-            {
-                m_CurrentAgents[brainKey].Add(agent);
-            }
-
-            // If at least one agent has data to send, then append data to
-            // the message and update hasSentState
-            if (m_CurrentAgents[brainKey].Count > 0)
-            {
-                foreach (var agent in m_CurrentAgents[brainKey])
-                {
-                    var agentInfoProto = agent.Info.ToProto();
-                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                    // e.g. after recording them to demo and using them for inference.
-                    agent.ClearVisualObservations();
-                }
-
-                m_HasData[brainKey] = true;
-            }
-
-            // If any agent needs to send data, then the whole message
-            // must be sent
-            if (m_HasQueried.Values.All(x => x))
-            {
-                if (m_HasData.Values.Any(x => x))
-                {
-                    SendBatchedMessageHelper();
-                }
-
-                // The message was just sent so we must reset hasSentState and
-                // triedSendState
-                foreach (var k in m_CurrentAgents.Keys)
-                {
-                    m_HasData[k] = false;
-                    m_HasQueried[k] = false;
-                }
-            }
+            m_CurrentAgents[brainKey].Add(agent);
         }
 
         /// <summary>

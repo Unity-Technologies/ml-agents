@@ -24,34 +24,29 @@ namespace MLAgents
     /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
     /// Learning Brain.
     /// </summary>
-    [CreateAssetMenu(fileName = "NewLearningBrain", menuName = "ML-Agents/Learning Brain")]
-    public class LearningBrain : Brain
+    public class LearningBrain : IBrain
     {
-        public NNModel model;
+
+        private string m_BehaviorName;
+
+        private BrainParameters m_BrainParameters;
 
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
             "(This field is not applicable for training).")]
-        public InferenceDevice inferenceDevice = InferenceDevice.CPU;
 
         protected IBatchedDecisionMaker m_BatchedDecisionMaker;
 
-        /// <summary>
-        /// Sets the ICommunicator of the Brain. The brain will call the communicator at every step and give
-        /// it the agent's data using PutObservations at each DecideAction call.
-        /// </summary>
-        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
-        private void SetCommunicator(ICommunicator communicator)
-        {
-            m_BatchedDecisionMaker = communicator;
-            communicator?.SubscribeBrain(name, brainParameters);
-            LazyInitialize();
-
-        }
-
         /// <inheritdoc />
-        protected override void Initialize()
+        public LearningBrain(
+            BrainParameters brainParameters,
+            NNModel model,
+            InferenceDevice inferenceDevice,
+            string behaviorName)
         {
-            var aca = FindObjectOfType<Academy>();
+            m_BrainParameters = brainParameters;
+            m_BehaviorName = behaviorName;
+            var aca = GameObject.FindObjectOfType<Academy>();
+            aca.LazyInitialization();
             var comm = aca?.Communicator;
             SetCommunicator(comm);
             if (aca == null || comm != null)
@@ -62,19 +57,30 @@ namespace MLAgents
             m_BatchedDecisionMaker = modelRunner;
         }
 
-        /// <inheritdoc />
-        protected override void DecideAction()
+        /// <summary>
+        /// Sets the ICommunicator of the Brain. The brain will call the communicator at every step and give
+        /// it the agent's data using PutObservations at each DecideAction call.
+        /// </summary>
+        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
+        private void SetCommunicator(ICommunicator communicator)
         {
-            if (m_BatchedDecisionMaker != null)
-            {
-                m_BatchedDecisionMaker?.PutObservations(name, m_Agents);
-                return;
-            }
+            m_BatchedDecisionMaker = communicator;
+            communicator?.SubscribeBrain(m_BehaviorName, m_BrainParameters);
         }
 
-        public void OnDisable()
+        /// <inheritdoc />
+        public void RequestDecision(Agent agent)
         {
-            m_BatchedDecisionMaker?.Dispose();
+            m_BatchedDecisionMaker?.PutObservations(m_BehaviorName, agent);
+        }
+
+        public void DecideAction()
+        {
+            m_BatchedDecisionMaker?.DecideBatch();
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

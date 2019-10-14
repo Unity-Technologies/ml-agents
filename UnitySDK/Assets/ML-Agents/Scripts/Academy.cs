@@ -180,6 +180,7 @@ namespace MLAgents
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
 
+        private bool m_Initialized;
         private List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
@@ -193,7 +194,7 @@ namespace MLAgents
 
         // Signals to all the Brains at each environment step so they can decide
         // actions for their agents.
-        public event System.Action BrainDecideAction;
+        public event System.Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
         public event System.Action DestroyAction;
@@ -228,7 +229,16 @@ namespace MLAgents
         /// </summary>
         void Awake()
         {
-            InitializeEnvironment();
+            LazyInitialization();
+        }
+
+        public void LazyInitialization()
+        {
+            if (!m_Initialized)
+            {
+                InitializeEnvironment();
+                m_Initialized = true;
+            }
         }
 
         // Used to read Python-provided environment parameters
@@ -317,7 +327,7 @@ namespace MLAgents
 
             SetIsInference(!IsCommunicatorOn);
 
-            BrainDecideAction += () => { };
+            DecideAction += () => { };
             DestroyAction += () => { };
             AgentSetStatus += i => { };
             AgentResetIfDone += () => { };
@@ -524,7 +534,7 @@ namespace MLAgents
 
             using (TimerStack.Instance.Scoped("BrainDecideAction"))
             {
-                BrainDecideAction();
+                DecideAction();
             }
 
             using (TimerStack.Instance.Scoped("AcademyStep"))
@@ -590,6 +600,11 @@ namespace MLAgents
 
             // Signal to listeners that the academy is being destroyed now
             DestroyAction();
+
+            foreach (var mr in m_ModelRunners)
+            {
+                mr.Dispose();
+            }
 
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Barracuda;
 
 
 namespace MLAgents
@@ -222,13 +223,21 @@ namespace MLAgents
     [System.Serializable]
     public abstract class Agent : MonoBehaviour
     {
-        /// <summary>
-        /// The Brain attached to this agent. A brain can be attached either
-        /// directly from the Editor through AgentEditor or
-        /// programmatically through <see cref="GiveBrain"/>. It is OK for an agent
-        /// to not have a brain, as long as no decision is requested.
-        /// </summary>
-        [HideInInspector] public Brain brain;
+        private IBrain m_Brain;
+
+        [HideInInspector] [SerializeField] private BrainFactoryParameters m_BrainFactoryParameters;
+
+        [HideInInspector]
+        public BrainParameters brainParameters
+        {
+            get { return m_BrainFactoryParameters.brainParameters; }
+        }
+
+        [HideInInspector]
+        public string behaviorName
+        {
+            get { return m_BrainFactoryParameters.behaviorName; }
+        }
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -240,7 +249,7 @@ namespace MLAgents
         public AgentInfo Info
         {
             get { return m_Info; }
-            set { m_Info = value;  }
+            set { m_Info = value; }
         }
 
         /// Current Agent action (message sent from Brain).
@@ -303,6 +312,7 @@ namespace MLAgents
         {
             m_Id = gameObject.GetInstanceID();
             var academy = FindObjectOfType<Academy>();
+            academy.LazyInitialization();
             OnEnableHelper(academy);
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
@@ -324,22 +334,23 @@ namespace MLAgents
             academy.AgentSetStatus += SetStatus;
             academy.AgentResetIfDone += ResetIfDone;
             academy.AgentSendState += SendInfo;
+            academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
 
-            if (brain != null)
+            if (m_BrainFactoryParameters.useHeuristic)
             {
-                ResetData();
+                m_Brain = new HeuristicBrain(Heuristic);
             }
             else
             {
-                Debug.Log(
-                    string.Format(
-                        "The Agent component attached to the " +
-                        "GameObject {0} was initialized without a brain.",
-                        gameObject.name));
+                m_Brain = new LearningBrain(
+                    m_BrainFactoryParameters.brainParameters,
+                    m_BrainFactoryParameters.model,
+                    m_BrainFactoryParameters.inferenceDevice,
+                    m_BrainFactoryParameters.behaviorName);
             }
-
+            ResetData();
             InitializeAgent();
         }
 
@@ -353,9 +364,11 @@ namespace MLAgents
                 academy.AgentSetStatus -= SetStatus;
                 academy.AgentResetIfDone -= ResetIfDone;
                 academy.AgentSendState -= SendInfo;
+                academy.DecideAction -= DecideAction;
                 academy.AgentAct -= AgentStep;
                 academy.AgentForceReset -= ForceReset;
             }
+            m_Brain?.Dispose();
         }
 
         /// <summary>
@@ -371,10 +384,15 @@ namespace MLAgents
         /// to another (fighting) brain when it comes into contact with an enemy.
         /// </remarks>
         /// <param name="givenBrain">New brain to subscribe this agent to</param>
-        public void GiveBrain(Brain givenBrain)
+        public void GiveModel(NNModel model, string behaviorName)
         {
-            brain = givenBrain;
-            ResetData();
+            m_BrainFactoryParameters.model = model;
+            m_BrainFactoryParameters.behaviorName = behaviorName;
+            m_Brain = new LearningBrain(
+                m_BrainFactoryParameters.brainParameters,
+                model,
+                m_BrainFactoryParameters.inferenceDevice,
+                behaviorName);
         }
 
         /// <summary>
@@ -491,12 +509,7 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            if (brain == null)
-            {
-                return;
-            }
-
-            var param = brain.brainParameters;
+            var param = m_BrainFactoryParameters.brainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
@@ -524,7 +537,7 @@ namespace MLAgents
                 new List<float>(param.vectorObservationSize);
             m_Info.stackedVectorObservation =
                 new List<float>(param.vectorObservationSize
-                    * brain.brainParameters.numStackedVectorObservations);
+                    * param.numStackedVectorObservations);
             m_Info.stackedVectorObservation.AddRange(
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
@@ -546,12 +559,18 @@ namespace MLAgents
         {
         }
 
+
+        public virtual float[] Heuristic()
+        {
+            return new float[0];
+        }
+
         /// <summary>
         /// Sends the Agent info to the linked Brain.
         /// </summary>
         void SendInfoToBrain()
         {
-            if (brain == null)
+            if (m_Brain == null)
             {
                 return;
             }
@@ -567,15 +586,15 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = brain.brainParameters;
+            var param = m_BrainFactoryParameters.brainParameters;
             if (m_Info.vectorObservation.Count != param.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(
-                    "Vector Observation size mismatch between continuous " +
-                    "agent {0} and brain {1}. " +
+                    "Vector Observation size mismatch in continuous " +
+                    "agent {0}. " +
                     "Was Expecting {2} but received {3}. ",
-                    gameObject.name, brain.name,
-                    brain.brainParameters.vectorObservationSize,
+                    gameObject.name,
+                    param.vectorObservationSize,
                     m_Info.vectorObservation.Count));
             }
 
@@ -588,10 +607,10 @@ namespace MLAgents
             if (param.cameraResolutions.Length > visualObservationCount)
             {
                 throw new UnityAgentsException(string.Format(
-                    "Not enough cameras/renderTextures for agent {0} : Brain {1} expecting at " +
+                    "Not enough cameras/renderTextures for agent {0} : expecting at " +
                     "least {2} cameras/renderTextures but only {3} were present.",
-                    gameObject.name, brain.name,
-                    brain.brainParameters.cameraResolutions.Length,
+                    gameObject.name,
+                    param.cameraResolutions.Length,
                     visualObservationCount));
             }
 
@@ -621,7 +640,7 @@ namespace MLAgents
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            brain.SubscribeAgentForDecision(this);
+            m_Brain.RequestDecision(this);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
@@ -1026,7 +1045,7 @@ namespace MLAgents
                 AgentOnDone();
             }
 
-            if ((m_RequestAction) && (brain != null))
+            if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
                 AgentAction(m_Action.vectorActions, m_Action.textActions, m_Action.customAction);
@@ -1059,6 +1078,11 @@ namespace MLAgents
                     RequestDecision();
                 }
             }
+        }
+
+        void DecideAction()
+        {
+            m_Brain?.DecideAction();
         }
 
         /// <summary>

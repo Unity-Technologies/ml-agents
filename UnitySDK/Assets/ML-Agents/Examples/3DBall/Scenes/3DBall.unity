@@ -156,6 +156,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -306,6 +310,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -351,6 +359,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -398,6 +410,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -408,6 +424,31 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: agentParameters.agentCameras.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.keyContinuousPlayerActions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionSize.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionDescriptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4679453577574622, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -439,6 +480,109 @@ Prefab:
     - target: {fileID: 4679453577574622, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_RootOrder
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[0].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[0].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[1].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[1].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brain
+      value: 
+      objectReference: {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1,
+        type: 2}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.model
+      value: 
+      objectReference: {fileID: 11400000, guid: c60a63ad5dc0c4a029d7360054667457,
+        type: 3}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.inferenceDevice
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[2].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[2].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[3].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[3].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[4].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[4].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionSize.Array.data[1]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionSize.Array.data[2]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[1].blackAndWhite
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[0].blackAndWhite
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.decisionScript
+      value: 
+      objectReference: {fileID: 11500000, guid: ccaa8f43c15264209b137d8dc26a8d63,
+        type: 3}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: m_BrainFactoryParameters.useHeuristic
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -575,6 +719,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -620,6 +768,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -667,6 +819,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -677,6 +833,16 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionDescriptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4679453577574622, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_LocalPosition.x
       value: 9
@@ -712,6 +878,50 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.vectorActionSpaceType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.numStackedVectorObservations
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[0].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[0].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[1].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[1].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[2].width
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 114259948429386406, guid: cfa81c019162c4e3caf6e2999c6fdf48,
+        type: 2}
+      propertyPath: brainFactoryParameters.brainParameters.cameraResolutions.Array.data[2].height
+      value: 84
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -759,6 +969,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -804,6 +1018,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -851,9 +1069,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb15e3c3d55e54abaafb74c635b6a458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    brainsToControl:
-    - {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1, type: 2}
   m_TrainingConfiguration:
     width: 300
     height: 200
@@ -978,6 +1193,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}

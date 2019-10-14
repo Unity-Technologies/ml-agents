@@ -1,0 +1,64 @@
+# # see http://editorconfig.org/ for docs on this file
+# root = true
+# [*]
+# # help with sharing files across os's (i.e. network share or through local vm)
+# end_of_line = lf
+# charset = utf-8
+# trim_trailing_whitespace = true
+# insert_final_newline = true
+# # formattable file extensions (keep in sync with format.ini from unity-meta repo)
+# #
+# # Note: We need to split the formattable files configs into shorter duplicate entries (logically grouped)
+# # due to known issue in VS editorconfig extension where there is a limit of 51 characters (empirically determined).
+# # see: https://github.com/editorconfig/editorconfig-visualstudio/issues/21
+# #
+# ## uncrustify
+# [*.{c,h,cpp,hpp,m,mm,cc,cs}]
+# indent_style = space
+# indent_size = 4
+# ## generic formatter (shaders)
+# [*.{cg,cginc,glslinc,hlsl,shader,y,ypp,yy}]
+# indent_style = space
+# indent_size = 4
+# ## generic formatter (misc)
+# [*.{asm,s,S,pch,pchmm,java,sh,uss}]
+# indent_style = space
+# indent_size = 4
+# ## perltidy
+# [*.{pl,pm,t,it}]
+# indent_style = space
+# indent_size = 4
+# ## unity special
+# [*.{bindings,mem.xml}]
+# indent_style = space
+# indent_size = 4
+# # other filetypes we want to overwrite default configuration to preserve the standard
+# [{Makefile,makefile}]
+# # TAB characters are part of the Makefile format
+# indent_style = tab
+# [*.{md,markdown}]
+# # trailing whitespace is significant in markdown (bad choice, bad!)
+# trim_trailing_whitespace = false
+# [*.{json,asmdef}]
+# indent_style = space
+# # seems to be more common
+# indent_size = 2
+# # keep these and the VS stuff below in sync with .hgeol's CRLF extensions
+# [*.{vcproj,bat,cmd,xaml,tt,t4,ttinclude}]
+# end_of_line = crlf
+# # this VS-specific stuff is based on experiments to see how VS will modify a file after it has been manually edited.
+# # the settings are meant to closely match what VS does to minimize unnecessary diffs. this duplicates some settings in *
+# # but let's be explicit here to be safe (in case someone wants to copy-paste this out to another .editorconfig).
+# [*.{vcxproj,vcxproj.filters,csproj,props,targets}]
+# indent_style = space
+# indent_size = 2
+# end_of_line = crlf
+# charset = utf-8-bom
+# trim_trailing_whitespace = true
+# insert_final_newline = false
+# [*.{sln,sln.template}]
+# indent_style = tab
+# indent_size = 4
+# end_of_line = crlf
+# trim_trailing_whitespace = true
+# insert_final_newline = false

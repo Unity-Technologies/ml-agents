@@ -3,10 +3,10 @@ using UnityEditor;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
-*/
+    /*
+     This code is meant to modify the behavior of the inspector on Brain Components.
+     Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
+    */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
@@ -16,7 +16,6 @@ namespace MLAgents
             var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            var brain = serializedAgent.FindProperty("brain");
             var actionsPerDecision = serializedAgent.FindProperty(
                 "agentParameters.numberOfActionsBetweenDecisions");
             var maxSteps = serializedAgent.FindProperty(
@@ -30,7 +29,23 @@ namespace MLAgents
             var renderTextures = serializedAgent.FindProperty(
                 "agentParameters.agentRenderTextures");
 
-            EditorGUILayout.PropertyField(brain);
+            // Drawing the Brain Factory Parameters
+            var brainFactoryParameters = serializedAgent.FindProperty("m_BrainFactoryParameters");
+            brainFactoryParameters.isExpanded = EditorGUILayout.Foldout(brainFactoryParameters.isExpanded, "Brain Parameter Factory");
+            if (brainFactoryParameters.isExpanded)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.behaviorName"));
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.brainParameters"), true);
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.model"), true);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.inferenceDevice"), true);
+                EditorGUI.indentLevel--;
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.useHeuristic"));
+                EditorGUI.indentLevel--;
+            }
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
 
             if (cameras.arraySize > 0 && renderTextures.arraySize > 0)
             {
@@ -110,5 +125,6 @@ namespace MLAgents
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             base.OnInspectorGUI();
         }
+
     }
 }
