@@ -490,7 +490,7 @@ namespace MLAgents
         void ForcedFullReset()
         {
             EnvironmentReset();
-            AgentForceReset();
+            AgentForceReset?.Invoke();
             m_FirstAcademyReset = true;
         }
 
@@ -510,21 +510,21 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentSetStatus(m_StepCount);
+            AgentSetStatus?.Invoke(m_StepCount);
 
             using (TimerStack.Instance.Scoped("AgentResetIfDone"))
             {
-                AgentResetIfDone();
+                AgentResetIfDone?.Invoke();
             }
 
             using (TimerStack.Instance.Scoped("AgentSendState"))
             {
-                AgentSendState();
+                AgentSendState?.Invoke();
             }
 
             using (TimerStack.Instance.Scoped("BrainDecideAction"))
             {
-                BrainDecideAction();
+                BrainDecideAction?.Invoke();
             }
 
             using (TimerStack.Instance.Scoped("AcademyStep"))
@@ -534,7 +534,7 @@ namespace MLAgents
 
             using (TimerStack.Instance.Scoped("AgentAct"))
             {
-                AgentAct();
+                AgentAct?.Invoke();
             }
 
             m_StepCount += 1;

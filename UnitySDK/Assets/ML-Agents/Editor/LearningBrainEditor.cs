@@ -64,7 +64,7 @@ namespace MLAgents
             }
             // Display all failed checks
             D.logEnabled = false;
-            Barracuda.Model barracudaModel = null;
+            Model barracudaModel = null;
             if (brain.model != null)
             {
                 barracudaModel = ModelLoader.Load(brain.model.Value);

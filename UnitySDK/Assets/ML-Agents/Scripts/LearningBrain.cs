@@ -1,6 +1,5 @@
 using UnityEngine;
 using Barracuda;
-using MLAgents.InferenceBrain;
 
 namespace MLAgents
 {
@@ -52,7 +51,11 @@ namespace MLAgents
         protected override void Initialize()
         {
             var aca = FindObjectOfType<Academy>();
-            var comm = aca?.Communicator;
+            ICommunicator comm = null;
+            if (aca != null)
+            {
+                comm = aca.Communicator;
+            }
             SetCommunicator(comm);
             if (aca == null || comm != null)
             {
@@ -65,11 +68,7 @@ namespace MLAgents
         /// <inheritdoc />
         protected override void DecideAction()
         {
-            if (m_BatchedDecisionMaker != null)
-            {
-                m_BatchedDecisionMaker?.PutObservations(name, m_Agents);
-                return;
-            }
+            m_BatchedDecisionMaker?.PutObservations(name, m_Agents);
         }
 
         public void OnDisable()
