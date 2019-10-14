@@ -141,6 +141,8 @@ namespace MLAgents.InferenceBrain
             Profiler.EndSample();
 
             Profiler.EndSample();
+
+            m_Agents.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
