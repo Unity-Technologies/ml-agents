@@ -152,7 +152,7 @@ namespace MLAgents
 
     public interface IBatchedDecisionMaker : IDisposable
     {
-        void PutObservations(string key, Agent agents);
+        void PutObservations(string key, Agent agent);
         void DecideBatch();
     }
 }
