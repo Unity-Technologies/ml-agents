@@ -5,19 +5,26 @@ using UnityEngine;
 namespace MLAgents
 {
     /// <summary>
-    /// Brain receive data from Agents through calls to SubscribeAgentForDecision. The brain then updates the
-    /// actions of the agents at each FixedUpdate.
-    /// The Brain encapsulates the decision making process. Every Agent must be assigned a Brain,
-    /// but you can use the same Brain with more than one Agent. You can also create several
-    /// Brains, attach each of the Brain to one or more than one Agent.
-    /// Brain assets has several important properties that you can set using the Inspector window.
-    /// These properties must be appropriate for the Agents using the Brain. For example, the
-    /// Vector Observation Space Size property must match the length of the feature
-    /// vector created by an Agent exactly.
+    /// IBrain is connected to a single Agent. Each time the agent needs
+    /// a decision, it will request a decision to the Brain. The decision
+    /// will not be taken immediately but will be taken before or when 
+    /// DecideAction is called.
     /// </summary>
     public interface IBrain : IDisposable
     {
+        /// <summary>
+        /// Signals the Brain that the Agent needs a Decision. The Brain
+        /// will make the decision at a later time to allow possible
+        /// batching of requests.
+        /// </summary>
+        /// <param name="agent"></param>
         void RequestDecision(Agent agent);
+
+        /// <summary>
+        /// Signals the Brain that if the Decision has not been taken yet,
+        /// it must be taken now. The Brain is expected to update the actions
+        /// of the Agents at this point the latest.
+        /// </summary>
         void DecideAction();
     }
 }
