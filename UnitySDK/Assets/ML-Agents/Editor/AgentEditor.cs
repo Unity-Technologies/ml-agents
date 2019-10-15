@@ -30,18 +30,18 @@ namespace MLAgents
                 "agentParameters.agentRenderTextures");
 
             // Drawing the Brain Factory Parameters
-            var brainFactoryParameters = serializedAgent.FindProperty("m_BrainFactoryParameters");
-            brainFactoryParameters.isExpanded = EditorGUILayout.Foldout(brainFactoryParameters.isExpanded, "Brain Parameter Factory");
-            if (brainFactoryParameters.isExpanded)
+            var brainParameters = serializedAgent.FindProperty("m_BrainParameters");
+            brainParameters.isExpanded = EditorGUILayout.Foldout(brainParameters.isExpanded, "Behavior Parameters");
+            if (brainParameters.isExpanded)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.behaviorName"));
-                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.brainParameters"), true);
-                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.model"), true);
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BehaviorName"));
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainParameters"), true);
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_Model"), true);
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.inferenceDevice"), true);
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_InferenceDevice"), true);
                 EditorGUI.indentLevel--;
-                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainFactoryParameters.useHeuristic"));
+                EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_UseHeuristic"));
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);

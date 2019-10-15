@@ -303,7 +303,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["no_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel(noWallBrain, "SmallWallBrain");
+            GiveModel("SmallWallBrain", noWallBrain);
         }
         else if (config == 1)
         {
@@ -312,7 +312,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["small_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel(smallWallBrain, "SmallWallBrain");
+            GiveModel("SmallWallBrain", smallWallBrain);
         }
         else
         {
@@ -325,7 +325,7 @@ public class WallJumpAgent : Agent
                 height,
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel(bigWallBrain, "BigWallBrain");
+            GiveModel("BigWallBrain", bigWallBrain);
         }
     }
 }

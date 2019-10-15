@@ -225,18 +225,22 @@ namespace MLAgents
     {
         private IBrain m_Brain;
 
-        [HideInInspector] [SerializeField] private BrainFactoryParameters m_BrainFactoryParameters;
+        [HideInInspector] [SerializeField] private BrainParameters m_BrainParameters;
+        [HideInInspector] [SerializeField] private NNModel m_Model;
+        [HideInInspector] [SerializeField] private InferenceDevice m_InferenceDevice;
+        [HideInInspector] [SerializeField] private bool m_UseHeuristic;
+        [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
 
         [HideInInspector]
         public BrainParameters brainParameters
         {
-            get { return m_BrainFactoryParameters.brainParameters; }
+            get { return m_BrainParameters; }
         }
 
         [HideInInspector]
         public string behaviorName
         {
-            get { return m_BrainFactoryParameters.behaviorName; }
+            get { return m_BehaviorName; }
         }
 
         /// <summary>
@@ -338,18 +342,14 @@ namespace MLAgents
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
 
-            if (m_BrainFactoryParameters.useHeuristic)
-            {
-                m_Brain = new HeuristicBrain(Heuristic);
-            }
-            else
-            {
-                m_Brain = new LearningBrain(
-                    m_BrainFactoryParameters.brainParameters,
-                    m_BrainFactoryParameters.model,
-                    m_BrainFactoryParameters.inferenceDevice,
-                    m_BrainFactoryParameters.behaviorName);
-            }
+            m_Brain = BrainFactory.GenerateBrain(
+                m_BrainParameters,
+                m_BehaviorName,
+                m_Model,
+                m_UseHeuristic,
+                Heuristic,
+                m_InferenceDevice
+            );
             ResetData();
             InitializeAgent();
         }
@@ -388,20 +388,23 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            if ((m_BrainFactoryParameters.behaviorName == behaviorName) &&
-            (m_BrainFactoryParameters.model = model) &&
-            (m_BrainFactoryParameters.inferenceDevice == inferenceDevice))
+            if ((m_BehaviorName == behaviorName) &&
+            (m_Model = model) &&
+            (m_InferenceDevice == inferenceDevice))
             {
                 return;
             }
-            m_BrainFactoryParameters.model = model;
-            m_BrainFactoryParameters.inferenceDevice = inferenceDevice;
-            m_BrainFactoryParameters.behaviorName = behaviorName;
-            m_Brain = new LearningBrain(
-                m_BrainFactoryParameters.brainParameters,
-                model,
-                inferenceDevice,
-                behaviorName);
+            m_Model = model;
+            m_InferenceDevice = inferenceDevice;
+            m_BehaviorName = behaviorName;
+            m_Brain = BrainFactory.GenerateBrain(
+                m_BrainParameters,
+                m_BehaviorName,
+                m_Model,
+                m_UseHeuristic,
+                Heuristic,
+                m_InferenceDevice
+            );
         }
 
         /// <summary>
@@ -518,7 +521,7 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            var param = m_BrainFactoryParameters.brainParameters;
+            var param = m_BrainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
@@ -595,7 +598,7 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = m_BrainFactoryParameters.brainParameters;
+            var param = m_BrainParameters;
             if (m_Info.vectorObservation.Count != param.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(
