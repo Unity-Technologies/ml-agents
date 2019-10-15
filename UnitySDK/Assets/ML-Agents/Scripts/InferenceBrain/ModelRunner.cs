@@ -68,10 +68,10 @@ namespace MLAgents.InferenceBrain
             m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
         }
 
-        private Dictionary<string, Tensor> PrepareBarracudaInputs()
+        private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
-            foreach (var inp in m_InferenceInputs)
+            foreach (var inp in infInputs)
             {
                 inputs[inp.name] = inp.data;
             }
@@ -119,7 +119,7 @@ namespace MLAgents.InferenceBrain
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
-            var inputs = PrepareBarracudaInputs();
+            var inputs = PrepareBarracudaInputs(m_InferenceInputs);
             Profiler.EndSample();
 
             // Execute the Model
