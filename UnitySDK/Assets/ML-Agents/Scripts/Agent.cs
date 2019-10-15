@@ -372,26 +372,35 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Updates the Brain for the agent. Any brain currently assigned to the
-        /// agent will be replaced with the provided one.
+        /// Updates the Model for the agent. Any model currently assigned to the
+        /// agent will be replaced with the provided one. If the arguments are 
+        /// identical to the current parameters of the agent, the model will
+        /// remain unchanged. 
         /// </summary>
-        /// <remarks>
-        /// The agent unsubscribes from its current brain (if it has one) and
-        /// subscribes to the provided brain. This enables contextual brains, that
-        /// is, updating the behaviour (hence brain) of the agent depending on
-        /// the context of the game. For example, we may utilize one (wandering)
-        /// brain when an agent is randomly exploring an open world, but switch
-        /// to another (fighting) brain when it comes into contact with an enemy.
-        /// </remarks>
-        /// <param name="givenBrain">New brain to subscribe this agent to</param>
-        public void GiveModel(NNModel model, string behaviorName)
+        /// <param name="behaviorName"> The identifier of the behavior. This 
+        /// will categorize the agent when training. 
+        /// </param>
+        /// <param name="model"> The model to use for inference.</param>
+        /// <param name = "inferenceDevide"> Define on what device the model 
+        /// will be run.</param>
+        public void GiveModel(
+            string behaviorName,
+            NNModel model,
+            InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
+            if ((m_BrainFactoryParameters.behaviorName == behaviorName) &&
+            (m_BrainFactoryParameters.model = model) &&
+            (m_BrainFactoryParameters.inferenceDevice == inferenceDevice))
+            {
+                return;
+            }
             m_BrainFactoryParameters.model = model;
+            m_BrainFactoryParameters.inferenceDevice = inferenceDevice;
             m_BrainFactoryParameters.behaviorName = behaviorName;
             m_Brain = new LearningBrain(
                 m_BrainFactoryParameters.brainParameters,
                 model,
-                m_BrainFactoryParameters.inferenceDevice,
+                inferenceDevice,
                 behaviorName);
         }
 
