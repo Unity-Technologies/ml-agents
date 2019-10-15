@@ -19,5 +19,5 @@ message AgentInfoProto {
     int32 id = 10;
     repeated bool action_mask = 11;
     CustomObservationProto custom_observation = 12;
-    repeated CompressedObservation compressed_observations = 13;
+    repeated CompressedObservationProto compressed_observations = 13;
 }
