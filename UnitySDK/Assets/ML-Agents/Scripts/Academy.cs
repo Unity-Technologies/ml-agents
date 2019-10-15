@@ -148,7 +148,7 @@ namespace MLAgents
         /// <returns>
         /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
         /// </returns>
-        bool IsCommunicatorOn
+        public bool IsCommunicatorOn
         {
             get { return Communicator != null; }
         }

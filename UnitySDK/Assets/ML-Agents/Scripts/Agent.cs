@@ -344,6 +344,7 @@ namespace MLAgents
 
             m_Brain = BrainFactory.GenerateBrain(
                 m_BrainParameters,
+                academy.IsCommunicatorOn,
                 m_BehaviorName,
                 m_Model,
                 m_UseHeuristic,
@@ -394,11 +395,14 @@ namespace MLAgents
             {
                 return;
             }
+            var academy = FindObjectOfType<Academy>();
+            academy.LazyInitialization();
             m_Model = model;
             m_InferenceDevice = inferenceDevice;
             m_BehaviorName = behaviorName;
             m_Brain = BrainFactory.GenerateBrain(
                 m_BrainParameters,
+                academy.IsCommunicatorOn,
                 m_BehaviorName,
                 m_Model,
                 m_UseHeuristic,
@@ -604,7 +608,7 @@ namespace MLAgents
                 throw new UnityAgentsException(string.Format(
                     "Vector Observation size mismatch in continuous " +
                     "agent {0}. " +
-                    "Was Expecting {2} but received {3}. ",
+                    "Was Expecting {1} but received {2}. ",
                     gameObject.name,
                     param.vectorObservationSize,
                     m_Info.vectorObservation.Count));
@@ -620,7 +624,7 @@ namespace MLAgents
             {
                 throw new UnityAgentsException(string.Format(
                     "Not enough cameras/renderTextures for agent {0} : expecting at " +
-                    "least {2} cameras/renderTextures but only {3} were present.",
+                    "least {1} cameras/renderTextures but only {2} were present.",
                     gameObject.name,
                     param.cameraResolutions.Length,
                     visualObservationCount));

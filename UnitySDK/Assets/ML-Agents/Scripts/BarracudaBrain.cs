@@ -24,12 +24,8 @@ namespace MLAgents
     /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
     /// Learning Brain.
     /// </summary>
-    public class LearningBrain : IBrain
+    public class BarracudaBrain : IBrain
     {
-
-        private string m_BehaviorName;
-
-        private BrainParameters m_BrainParameters;
 
         [Tooltip("Inference execution device. CPU is the fastest option for most of ML Agents models. " +
             "(This field is not applicable for training).")]
@@ -37,41 +33,21 @@ namespace MLAgents
         protected IBatchedDecisionMaker m_BatchedDecisionMaker;
 
         /// <inheritdoc />
-        public LearningBrain(
+        public BarracudaBrain(
             BrainParameters brainParameters,
             NNModel model,
-            InferenceDevice inferenceDevice,
-            string behaviorName)
+            InferenceDevice inferenceDevice)
         {
-            m_BrainParameters = brainParameters;
-            m_BehaviorName = behaviorName;
             var aca = GameObject.FindObjectOfType<Academy>();
             aca.LazyInitialization();
-            var comm = aca?.Communicator;
-            SetCommunicator(comm);
-            if (aca == null || comm != null)
-            {
-                return;
-            }
             var modelRunner = aca.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_BatchedDecisionMaker = modelRunner;
-        }
-
-        /// <summary>
-        /// Sets the ICommunicator of the Brain. The brain will call the communicator at every step and give
-        /// it the agent's data using PutObservations at each DecideAction call.
-        /// </summary>
-        /// <param name="communicator"> The Batcher the brain will use for the current session</param>
-        private void SetCommunicator(ICommunicator communicator)
-        {
-            m_BatchedDecisionMaker = communicator;
-            communicator?.SubscribeBrain(m_BehaviorName, m_BrainParameters);
         }
 
         /// <inheritdoc />
         public void RequestDecision(Agent agent)
         {
-            m_BatchedDecisionMaker?.PutObservations(m_BehaviorName, agent);
+            m_BatchedDecisionMaker?.PutObservations(null, agent);
         }
 
         public void DecideAction()

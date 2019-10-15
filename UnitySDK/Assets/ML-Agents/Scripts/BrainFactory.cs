@@ -8,6 +8,7 @@ namespace MLAgents
     {
         public static IBrain GenerateBrain(
             BrainParameters brainParameters,
+            bool useRemoteBrain,
             string behaviorName,
             NNModel model,
             bool useHeuristic,
@@ -15,15 +16,17 @@ namespace MLAgents
             InferenceDevice inferenceDevice = InferenceDevice.CPU
         )
         {
+            if (useRemoteBrain)
+            {
+                return new RemoteBrain(brainParameters, behaviorName);
+            }
             if (model == null || useHeuristic)
             {
                 return new HeuristicBrain(heuristic);
-
             }
             else
             {
-                return new LearningBrain(
-                    brainParameters, model, inferenceDevice, behaviorName);
+                return new BarracudaBrain(brainParameters, model, inferenceDevice);
             }
         }
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using Barracuda;
 
 namespace MLAgents
 {
@@ -11,6 +12,12 @@ namespace MLAgents
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
     {
+        private const float k_TimeBetweenModelReloads = 2f;
+        // Time since the last reload of the model
+        private float m_TimeSinceModelReload;
+        // Whether or not the model needs to be reloaded
+        private bool m_RequireReload;
+
         public override void OnInspectorGUI()
         {
             var serializedAgent = serializedObject;
@@ -34,6 +41,7 @@ namespace MLAgents
             brainParameters.isExpanded = EditorGUILayout.Foldout(brainParameters.isExpanded, "Behavior Parameters");
             if (brainParameters.isExpanded)
             {
+                EditorGUI.BeginChangeCheck();
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BehaviorName"));
                 EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_BrainParameters"), true);
@@ -43,6 +51,11 @@ namespace MLAgents
                 EditorGUI.indentLevel--;
                 EditorGUILayout.PropertyField(serializedAgent.FindProperty("m_UseHeuristic"));
                 EditorGUI.indentLevel--;
+                if (EditorGUI.EndChangeCheck())
+                {
+                    m_RequireReload = true;
+                }
+                DisplayFailedChecks();
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -126,5 +139,31 @@ namespace MLAgents
             base.OnInspectorGUI();
         }
 
+        private void DisplayFailedChecks()
+        {
+            if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
+            {
+                m_RequireReload = false;
+                m_TimeSinceModelReload = 0;
+            }
+            // Display all failed checks
+            D.logEnabled = false;
+            Model barracudaModel = null;
+            var model = (NNModel)serializedObject.FindProperty("m_Model").objectReferenceValue;
+            var brainParameters = ((Agent)target).brainParameters;
+            if (model != null)
+            {
+                barracudaModel = ModelLoader.Load(model.Value);
+            }
+            var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
+                barracudaModel, brainParameters);
+            foreach (var check in failedChecks)
+            {
+                if (check != null)
+                {
+                    EditorGUILayout.HelpBox(check, MessageType.Warning);
+                }
+            }
+        }
     }
 }

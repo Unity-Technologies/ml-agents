@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using Barracuda;
 using UnityEngine.Profiling;
 
@@ -111,11 +110,6 @@ namespace MLAgents.InferenceBrain
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");
-            if (m_Engine == null)
-            {
-                Debug.LogError($"No model was present for the Brain {m_Model.name}.");
-                return;
-            }
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine

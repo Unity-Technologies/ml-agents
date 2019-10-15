@@ -1073,7 +1073,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676fca959b8ee45539773905ca71afa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 0}
+  m_BrainParameters:
+    vectorObservationSize: 74
+    numStackedVectorObservations: 6
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: My Behavior
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -1081,9 +1091,9 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  noWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  smallWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  bigWallBrain: {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
+  noWallBrain: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
+  smallWallBrain: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
+  bigWallBrain: {fileID: 11400000, guid: b036370dc05b9481bbcee7db40d40b5d, type: 3}
   ground: {fileID: 1324926338613664}
   spawnArea: {fileID: 1886170194660384}
   goal: {fileID: 1982078136115924}
