@@ -312,9 +312,6 @@ namespace MLAgents.InferenceBrain
         public void Generate(
             TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
         {
-//            var textures = agents.Select(
-//                agent => agent.Info.visualObservations[m_Index]).ToList();
-
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
             //Utilities.TextureToTensorProxy(textures, tensorProxy, m_GrayScale);
             var agentIndex = 0;

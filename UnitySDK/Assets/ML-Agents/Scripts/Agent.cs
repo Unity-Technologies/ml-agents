@@ -24,11 +24,6 @@ namespace MLAgents
         public List<float> stackedVectorObservation;
 
         /// <summary>
-        /// Most recent agent camera (i.e. texture) observation.
-        /// </summary>
-        public List<Texture2D> visualObservations;
-
-        /// <summary>
         /// Most recent compressed observations.
         /// </summary>
         public List<CompressedObservation> compressedObservations;
@@ -96,11 +91,6 @@ namespace MLAgents
         /// </summary>
         public void ClearVisualObs()
         {
-            foreach (var obs in visualObservations)
-            {
-                Object.Destroy(obs);
-            }
-            visualObservations.Clear();
             compressedObservations.Clear();
         }
     }
@@ -544,7 +534,6 @@ namespace MLAgents
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
 
-            m_Info.visualObservations = new List<Texture2D>();
             m_Info.compressedObservations = new List<CompressedObservation>();
             m_Info.customObservation = null;
         }
@@ -599,7 +588,6 @@ namespace MLAgents
             Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
                 m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
 
-            m_Info.visualObservations.Clear();
             var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
             if (param.cameraResolutions.Length > visualObservationCount)
             {
