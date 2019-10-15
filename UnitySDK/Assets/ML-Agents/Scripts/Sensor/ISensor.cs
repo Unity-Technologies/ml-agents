@@ -6,7 +6,6 @@ namespace MLAgents.Sensor
     {
         None,
         PNG,
-        Custom1
     }
 
     /// <summary>

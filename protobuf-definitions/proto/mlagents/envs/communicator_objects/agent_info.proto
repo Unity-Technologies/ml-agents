@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "mlagents/envs/communicator_objects/compressed_observation.proto";
 import "mlagents/envs/communicator_objects/custom_observation.proto";
 
 option csharp_namespace = "MLAgents.CommunicatorObjects";
@@ -18,4 +19,5 @@ message AgentInfoProto {
     int32 id = 10;
     repeated bool action_mask = 11;
     CustomObservationProto custom_observation = 12;
+    repeated CompressedObservation compressed_observations = 13;
 }
