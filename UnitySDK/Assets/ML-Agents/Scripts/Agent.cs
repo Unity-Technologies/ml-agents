@@ -315,11 +315,6 @@ namespace MLAgents
             m_Action = new AgentAction();
             m_Sensors = new List<ISensor>();
 
-            // TODO deterministic sorting
-            var attachedSensors = GetComponents<SensorBase>();
-            m_Sensors.AddRange(attachedSensors);
-            // Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
-
             if (academy == null)
             {
                 throw new UnityAgentsException(
@@ -346,6 +341,7 @@ namespace MLAgents
             }
 
             InitializeAgent();
+            InitializeSensors();
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -552,6 +548,21 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Set up the list of ISensors on the Agent. By default, this will select any
+        /// SensorBase's attached to the Agent. To add custom ISensor implementations that are not attached,
+        /// override this method and add them there.
+        /// </summary>
+        public virtual void InitializeSensors()
+        {
+            // TODO deterministic sorting
+            var attachedSensors = GetComponents<SensorBase>();
+            m_Sensors.Capacity += attachedSensors.Length;
+            m_Sensors.AddRange(attachedSensors);
+            // Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
+
+        }
+
+        /// <summary>
         /// Sends the Agent info to the linked Brain.
         /// </summary>
         void SendInfoToBrain()
@@ -599,20 +610,6 @@ namespace MLAgents
                     visualObservationCount));
             }
 
-            // Generate data for all sensors
-            for (var i = 0; i<m_Sensors.Count; i++)
-            {
-                // TODO separate this from inference time
-                var sensor = m_Sensors[i];
-                var compressedObs = new CompressedObservation
-                {
-                    Data = sensor.GetCompressedObservation(),
-                    Shape = sensor.GetFloatObservationShape(),
-                    CompressionType = sensor.GetCompressionType()
-                };
-                m_Info.compressedObservations.Add(compressedObs);
-            }
-
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -626,6 +623,26 @@ namespace MLAgents
             }
 
             m_Info.textObservation = "";
+        }
+
+        /// <summary>
+        /// Generate data for each sensor and store it on the Agent's AgentInfo
+        /// </summary>
+        public void GenerateSensorData()
+        {
+            // Generate data for all sensors
+            // TODO add bool argument indicating when to compress? For now, we always will compress.
+            for (var i = 0; i<m_Sensors.Count; i++)
+            {
+                var sensor = m_Sensors[i];
+                var compressedObs = new CompressedObservation
+                {
+                    Data = sensor.GetCompressedObservation(),
+                    Shape = sensor.GetFloatObservationShape(),
+                    CompressionType = sensor.GetCompressionType()
+                };
+                m_Info.compressedObservations.Add(compressedObs);
+            }
         }
 
         public void ClearVisualObservations()
@@ -1056,77 +1073,6 @@ namespace MLAgents
                     RequestDecision();
                 }
             }
-        }
-
-        /// <summary>
-        /// Converts a camera and corresponding resolution to a 2D texture.
-        /// </summary>
-        /// <returns>The 2D texture.</returns>
-        /// <param name="obsCamera">Camera.</param>
-        /// <param name="width">Width of resulting 2D texture.</param>
-        /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
-        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
-        {
-            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-            var oldRec = obsCamera.rect;
-            obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
-            var depth = 24;
-            var format = RenderTextureFormat.Default;
-            var readWrite = RenderTextureReadWrite.Default;
-
-            var tempRt =
-                RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-
-            var prevActiveRt = RenderTexture.active;
-            var prevCameraRt = obsCamera.targetTexture;
-
-            // render to offscreen texture (readonly from CPU side)
-            RenderTexture.active = tempRt;
-            obsCamera.targetTexture = tempRt;
-
-            obsCamera.Render();
-
-            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-
-            obsCamera.targetTexture = prevCameraRt;
-            obsCamera.rect = oldRec;
-            RenderTexture.active = prevActiveRt;
-            RenderTexture.ReleaseTemporary(tempRt);
-            return texture2D;
-        }
-
-        /// <summary>
-        /// Converts a RenderTexture and correspinding resolution to a 2D texture.
-        /// </summary>
-        /// <returns>The 2D texture.</returns>
-        /// <param name="obsTexture">RenderTexture.</param>
-        /// <param name="width">Width of resulting 2D texture.</param>
-        /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
-        public static Texture2D ObservationToTexture(RenderTexture obsTexture, int width, int height)
-        {
-            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-
-            if (width != texture2D.width || height != texture2D.height)
-            {
-                texture2D.Resize(width, height);
-            }
-
-            if (width != obsTexture.width || height != obsTexture.height)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",
-                    obsTexture.name, obsTexture.width, obsTexture.height, width, height));
-            }
-
-            var prevActiveRt = RenderTexture.active;
-            RenderTexture.active = obsTexture;
-
-            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-            texture2D.Apply();
-            RenderTexture.active = prevActiveRt;
-            return texture2D;
         }
 
         /// <summary>
