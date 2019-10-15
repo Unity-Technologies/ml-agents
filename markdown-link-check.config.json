@@ -7,10 +7,6 @@
         {
             "pattern": "^https://developer.nvidia.com/compute/machine-learning/cudnn/secure",
             "comment": "Requires login"
-        },
-        {
-            "pattern": "^https?://bair.berkeley.edu",
-            "comment": "Temporary berkeley outage"
         }
     ]
 }
