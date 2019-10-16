@@ -23,7 +23,6 @@ namespace MLAgents
             serializedObject.Update();
 
             // Drawing the Behavior Parameters
-            var brainParameters = serializedObject.FindProperty("m_BrainParameters");
             EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_BehaviorName"));
@@ -33,6 +32,7 @@ namespace MLAgents
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_UseHeuristic"));
+            // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())
             {

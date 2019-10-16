@@ -18,6 +18,8 @@ namespace MLAgents
         [HideInInspector] [SerializeField] private bool m_UseHeuristic;
         [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
 
+        [HideInInspector] [SerializeField] private Heuristic m_Heuristic;
+
         [HideInInspector]
         public BrainParameters brainParameters
         {
@@ -30,13 +32,11 @@ namespace MLAgents
             get { return m_BehaviorName; }
         }
 
-        private Func<float[]> m_heuristic;
-
         public IPolicy GeneratePolicy()
         {
             if (m_Model == null || m_UseHeuristic)
             {
-                return new HeuristicPolicy(m_heuristic);
+                return new HeuristicPolicy(m_Heuristic);
             }
             if (FindObjectOfType<Academy>().IsCommunicatorOn)
             {

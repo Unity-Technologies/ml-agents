@@ -6,6 +6,8 @@ using System;
 namespace MLAgents
 {
 
+    public delegate float[] Heuristic();
+
     /// <summary>
     /// The Heuristic Policy uses a hards coded Heuristic method
     /// to take decisions each time the RequestDecision method is
@@ -13,11 +15,11 @@ namespace MLAgents
     /// </summary>
     public class HeuristicPolicy : IPolicy
     {
-        private Func<float[]> m_Heuristic;
+        private Heuristic m_Heuristic;
         private Agent m_Agent;
 
         /// <inheritdoc />
-        public HeuristicPolicy(Func<float[]> heuristic)
+        public HeuristicPolicy(Heuristic heuristic)
         {
             m_Heuristic = heuristic;
         }
