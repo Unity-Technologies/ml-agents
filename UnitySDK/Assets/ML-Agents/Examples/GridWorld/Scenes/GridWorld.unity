@@ -305,7 +305,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857707f3f352541d5b858efca4479b95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 1
+  m_BehaviorName: My Behavior
   agentParameters:
     agentCameras: []
     agentRenderTextures:
@@ -740,6 +753,11 @@ Prefab:
     - target: {fileID: 1625008366184734, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 2}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114650561397225712, guid: 5c2bd19e4bbda4991b74387ca5d28156,
+        type: 2}
+      propertyPath: m_UseHeuristic
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5c2bd19e4bbda4991b74387ca5d28156, type: 2}

@@ -1188,7 +1188,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 1674996276be448c2ad51fb139e21e05, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 8
+    numStackedVectorObservations: 3
+    vectorActionSize: 02000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: c85010de4f32e4c88bac16d9688aaadc, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Tennis
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -1226,7 +1236,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 1674996276be448c2ad51fb139e21e05, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 8
+    numStackedVectorObservations: 3
+    vectorActionSize: 02000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: c85010de4f32e4c88bac16d9688aaadc, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Tennis
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

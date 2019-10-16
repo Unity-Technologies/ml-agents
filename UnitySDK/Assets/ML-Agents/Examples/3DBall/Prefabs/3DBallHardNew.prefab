@@ -608,18 +608,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf26e11cf4ed42eaa3ffb7b91bb4676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BrainFactoryParameters:
-    behaviorName: MyBehaviorHard
-    brainParameters:
-      vectorObservationSize: 5
-      numStackedVectorObservations: 1
-      vectorActionSize: 02000000
-      cameraResolutions: []
-      vectorActionDescriptions: []
-      vectorActionSpaceType: 1
-    model: {fileID: 0}
-    inferenceDevice: 0
-    useHeuristic: 0
+  m_BrainParameters:
+    vectorObservationSize: 5
+    numStackedVectorObservations: 9
+    vectorActionSize: 02000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: cee7d20369b814d549573de7e76c4a81, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: 3DBallHard
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

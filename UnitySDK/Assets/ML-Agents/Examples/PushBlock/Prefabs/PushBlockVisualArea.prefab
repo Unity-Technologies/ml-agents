@@ -1243,7 +1243,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: cc62140bff6494e0399caaed0b56020d, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 07000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: VisualPushBlock
   agentParameters:
     agentCameras:
     - {fileID: 20961401228419460}

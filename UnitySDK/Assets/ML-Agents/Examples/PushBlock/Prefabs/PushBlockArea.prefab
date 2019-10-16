@@ -955,7 +955,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: e8b2d719f6a324b1abb68d8cf2859f5c, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 70
+    numStackedVectorObservations: 3
+    vectorActionSize: 07000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: c60a63ad5dc0c4a029d7360054667457, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: PushBlock
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

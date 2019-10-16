@@ -3532,7 +3532,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 112
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Goalie
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3566,7 +3576,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 112
+    numStackedVectorObservations: 1
+    vectorActionSize: 07000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Striker
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3619,7 +3639,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 112
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Goalie
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3653,7 +3683,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 112
+    numStackedVectorObservations: 1
+    vectorActionSize: 07000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Striker
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

@@ -553,7 +553,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 220b156e3b142406c8b76d4db981d044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 33
+    numStackedVectorObservations: 1
+    vectorActionSize: 04000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: 0c779bd93060f405cbe4446e1dcbf2a6, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Reacher
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

@@ -1083,7 +1083,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
-  m_BehaviorName: BigWallJumpLearning
+  m_BehaviorName: BigWallJump
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

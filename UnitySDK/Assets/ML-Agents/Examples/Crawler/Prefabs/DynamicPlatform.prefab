@@ -2192,7 +2192,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0e3b44d36c7a047c4addb92457b12be5, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 126
+    numStackedVectorObservations: 1
+    vectorActionSize: 14000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: abc9c8f2180154ed7ba3f116ab0beb90, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: CrawlerDynamic
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -2203,6 +2213,7 @@ MonoBehaviour:
   target: {fileID: 4490950947783742}
   ground: {fileID: 4684408634944056}
   detectTargets: 1
+  targetIsStatic: 0
   respawnTargetWhenTouched: 1
   targetSpawnRadius: 40
   body: {fileID: 4331762859142564}
