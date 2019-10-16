@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
+using UnityEngine.Serialization;
 
 public class GridAgent : Agent
 {
     private Academy m_Academy;
+    [FormerlySerializedAs("m_Area")]
     [Header("Specific to GridWorld")]
-    public GridArea m_Area;
+    public GridArea area;
     public float timeBetweenDecisionsAtInference;
     private float m_TimeSinceDecision;
 
@@ -124,7 +126,7 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void AgentReset()
     {
-        m_Area.AreaReset();
+        area.AreaReset();
     }
 
     public void FixedUpdate()

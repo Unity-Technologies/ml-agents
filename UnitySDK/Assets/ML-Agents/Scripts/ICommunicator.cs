@@ -147,7 +147,6 @@ namespace MLAgents
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
         Dictionary<Agent, AgentAction> GetActions(string key);
-
     }
 
     public interface IBatchedDecisionMaker : IDisposable

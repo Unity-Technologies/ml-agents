@@ -114,6 +114,7 @@ namespace MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
+        /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
             if (m_CurrentAgents.ContainsKey(brainKey))
@@ -126,7 +127,7 @@ namespace MLAgents
                 new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
             if (m_CurrentUnityRlInitializationOutput == null)
             {
-                m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
+                m_CurrentUnityRlInitializationOutput = new UnityRLInitializationOutputProto();
             }
             m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
         }
@@ -269,7 +270,7 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var message = new CommunicatorObjects.UnityOutputProto
+            var message = new UnityOutputProto
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
