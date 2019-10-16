@@ -3677,7 +3677,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 53
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: d32fca21cf4c04536ab7f88eb9de83e0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: FoodCollector
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3723,7 +3733,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 53
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: d32fca21cf4c04536ab7f88eb9de83e0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: FoodCollector
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3738,7 +3758,7 @@ MonoBehaviour:
   badMaterial: {fileID: 2100000, guid: 88b9ae7af2c1748a0a1f63407587a601, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
-  myLaser: {fileID: 1617924810425504}
+  myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 1
 --- !u!114 &114192565006091356
@@ -3763,7 +3783,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 53
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: d32fca21cf4c04536ab7f88eb9de83e0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: FoodCollector
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3778,7 +3808,7 @@ MonoBehaviour:
   badMaterial: {fileID: 2100000, guid: 88b9ae7af2c1748a0a1f63407587a601, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
-  myLaser: {fileID: 1045923826166930}
+  myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 1
 --- !u!114 &114416645532260476
@@ -3803,7 +3833,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 53
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: d32fca21cf4c04536ab7f88eb9de83e0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: FoodCollector
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3818,7 +3858,7 @@ MonoBehaviour:
   badMaterial: {fileID: 2100000, guid: 88b9ae7af2c1748a0a1f63407587a601, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
-  myLaser: {fileID: 1421240237750412}
+  myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 1
 --- !u!114 &114661830999747712
@@ -3843,7 +3883,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 53
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: d32fca21cf4c04536ab7f88eb9de83e0, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: FoodCollector
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -3858,7 +3908,7 @@ MonoBehaviour:
   badMaterial: {fileID: 2100000, guid: 88b9ae7af2c1748a0a1f63407587a601, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
-  myLaser: {fileID: 1941433838307300}
+  myLaser: {fileID: 1081721624670010}
   contribute: 0
   useVectorObs: 1
 --- !u!114 &114762047763154270

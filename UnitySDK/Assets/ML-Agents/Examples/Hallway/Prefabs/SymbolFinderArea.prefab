@@ -1572,7 +1572,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b446afae240924105b36d07e8d17a608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 533f2edd327794ca996d0320901b501c, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 36
+    numStackedVectorObservations: 3
+    vectorActionSize: 05000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: b3f3b601fa5e84185862261041525ea9, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: HallWay
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

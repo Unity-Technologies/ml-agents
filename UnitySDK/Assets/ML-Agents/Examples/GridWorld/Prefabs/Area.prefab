@@ -964,7 +964,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857707f3f352541d5b858efca4479b95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: GridWorld
   agentParameters:
     agentCameras:
     - {fileID: 20743940359151984}

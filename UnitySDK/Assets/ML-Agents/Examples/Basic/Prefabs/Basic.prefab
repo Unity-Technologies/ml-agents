@@ -907,7 +907,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624480a72e46148118ab2e2d89b537de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: e5cf0e35e16264ea483f8863e5115c3c, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 20
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 53fa7c392ce3c492281be273668f6aaf, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Basic
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

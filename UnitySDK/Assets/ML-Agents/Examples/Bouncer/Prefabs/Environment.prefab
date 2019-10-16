@@ -826,7 +826,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f09741cbce2e44bc88d3e92917eea0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 573920e3a672d40038169c7ffdbdca05, type: 2}
+  m_BrainParameters:
+    vectorObservationSize: 6
+    numStackedVectorObservations: 3
+    vectorActionSize: 03000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: f5250a39cb2134db49b833e3c92527a1, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Bouncer
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
