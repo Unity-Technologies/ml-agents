@@ -176,17 +176,15 @@ namespace MLAgents
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
     /// user in <see cref="CollectObservations"/>. On the other hand, actions
-    /// are determined by decisions produced by a linked Brain. Currently, this
+    /// are determined by decisions produced by a Policy. Currently, this
     /// class is expected to be extended to implement the desired agent behavior.
     /// </summary>
     /// <remarks>
     /// Simply speaking, an agent roams through an environment and at each step
     /// of the environment extracts its current observation, sends them to its
-    /// linked brain and in return receives an action from its brain. In practice,
+    /// policy and in return receives an action. In practice,
     /// however, an agent need not send its observation at every step since very
-    /// little may have changed between sucessive steps. Currently, how often an
-    /// agent updates its brain with a fresh observation is determined by the
-    /// Academy.
+    /// little may have changed between successive steps. 
     ///
     /// At any step, an agent may be considered <see cref="m_Done"/>.
     /// This could occur due to a variety of reasons:
@@ -211,8 +209,8 @@ namespace MLAgents
     /// set to a value larger than the academy max steps value, then the academy
     /// value takes precedence (since the agent max step will never be reached).
     ///
-    /// Lastly, note that at any step the brain linked to the agent is allowed to
-    /// change programmatically with <see cref="GiveBrain"/>.
+    /// Lastly, note that at any step the policy to the agent is allowed to
+    /// change model with <see cref="GiveModel"/>.
     ///
     /// Implementation-wise, it is required that this class is extended and the
     /// virtual methods overridden. For sample implementations of agent behavior,
@@ -223,7 +221,7 @@ namespace MLAgents
     [System.Serializable]
     public abstract class Agent : MonoBehaviour
     {
-        private IBrain m_Brain;
+        private IPolicy m_Brain;
 
         [HideInInspector]
         [SerializeField]
@@ -344,13 +342,13 @@ namespace MLAgents
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
 
-            m_Brain = BrainFactory.GenerateBrain(
+            m_Brain = PolicyFactory.GeneratePolicy(
                 m_BrainParameters,
+                m_UseHeuristic,
+                Heuristic,
                 academy.IsCommunicatorOn,
                 m_BehaviorName,
                 m_Model,
-                m_UseHeuristic,
-                Heuristic,
                 m_InferenceDevice
             );
             ResetData();
@@ -402,13 +400,13 @@ namespace MLAgents
             m_Model = model;
             m_InferenceDevice = inferenceDevice;
             m_BehaviorName = behaviorName;
-            m_Brain = BrainFactory.GenerateBrain(
+            m_Brain = PolicyFactory.GeneratePolicy(
                 m_BrainParameters,
+                m_UseHeuristic,
+                Heuristic,
                 academy.IsCommunicatorOn,
                 m_BehaviorName,
                 m_Model,
-                m_UseHeuristic,
-                Heuristic,
                 m_InferenceDevice
             );
         }
@@ -578,6 +576,13 @@ namespace MLAgents
         }
 
 
+        /// <summary>
+        /// When the Agent uses Heuristics, it will call this method every time it
+        /// needs an action. This can be used for debugging or controlling the agent
+        /// with keyboard.
+        /// </summary>
+        /// <returns> A float array corresponding to the next action of the Agent
+        /// </returns>
         public virtual float[] Heuristic()
         {
             return new float[0];

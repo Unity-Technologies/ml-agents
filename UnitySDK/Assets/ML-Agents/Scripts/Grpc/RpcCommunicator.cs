@@ -254,11 +254,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sends the observations. If at least one brain has an agent in need of
-        /// a decision or if the academy is done, the data is sent via
-        /// Communicator. Else, a new step is realized. The data can only be
-        /// sent once all the brains that were part of initialization have tried
-        /// to send information.
+        /// Sends the observations of one Agent. 
         /// </summary>
         /// <param name="key">Batch Key.</param>
         /// <param name="agents">Agent info.</param>

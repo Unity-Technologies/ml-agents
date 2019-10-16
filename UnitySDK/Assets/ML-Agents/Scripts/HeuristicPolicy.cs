@@ -6,13 +6,18 @@ using System;
 namespace MLAgents
 {
 
-    public class HeuristicBrain : IBrain
+    /// <summary>
+    /// The Heuristic Policy uses a hards coded Heuristic method
+    /// to take decisions each time the RequestDecision method is
+    /// called.
+    /// </summary>
+    public class HeuristicPolicy : IPolicy
     {
         private Func<float[]> m_Heuristic;
         private Agent m_Agent;
 
         /// <inheritdoc />
-        public HeuristicBrain(Func<float[]> heuristic)
+        public HeuristicPolicy(Func<float[]> heuristic)
         {
             m_Heuristic = heuristic;
         }
@@ -23,17 +28,18 @@ namespace MLAgents
             m_Agent = agent;
         }
 
-        public void Dispose()
-        {
-
-        }
-
+        /// <inheritdoc />
         public void DecideAction()
         {
             if (m_Agent != null)
             {
                 m_Agent.UpdateVectorAction(m_Heuristic.Invoke());
             }
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }

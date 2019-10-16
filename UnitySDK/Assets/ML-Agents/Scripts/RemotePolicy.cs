@@ -5,20 +5,10 @@ using MLAgents.InferenceBrain;
 namespace MLAgents
 {
     /// <summary>
-    /// The Learning Brain works differently if you are training it or not.
-    /// When training your Agents, the LearningBrain will be controlled by Python.
-    /// When using a pretrained model, just drag the Model file into the
-    /// Model property of the Learning Brain and do not launch the Python training process.
-    /// The training will start automatically if Python is ready to train and there is at
-    /// least one LearningBrain in the scene.
-    /// The property model corresponds to the Model currently attached to the Brain. Before
-    /// being used, a call to ReloadModel is required.
-    /// When the Learning Brain is not training, it uses a TensorFlow model to make decisions.
-    /// The Proximal Policy Optimization (PPO) and Behavioral Cloning algorithms included with
-    /// the ML-Agents SDK produce trained TensorFlow models that you can use with the
-    /// Learning Brain.
+    /// The Remote Policy only works when training.
+    /// When training your Agents, the RemotePolicy will be controlled by Python.
     /// </summary>
-    public class RemoteBrain : IBrain
+    public class RemotePolicy : IPolicy
     {
 
         private string m_BehaviorName;
@@ -29,7 +19,7 @@ namespace MLAgents
         protected IBatchedDecisionMaker m_BatchedDecisionMaker;
 
         /// <inheritdoc />
-        public RemoteBrain(
+        public RemotePolicy(
             BrainParameters brainParameters,
             string behaviorName)
         {
@@ -46,6 +36,7 @@ namespace MLAgents
             m_BatchedDecisionMaker?.PutObservations(m_BehaviorName, agent);
         }
 
+        /// <inheritdoc />
         public void DecideAction()
         {
             m_BatchedDecisionMaker?.DecideBatch();

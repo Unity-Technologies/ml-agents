@@ -5,8 +5,7 @@ using Barracuda;
 namespace MLAgents
 {
     /*
-     This code is meant to modify the behavior of the inspector on Brain Components.
-     Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
+     This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
@@ -36,7 +35,7 @@ namespace MLAgents
             var renderTextures = serializedAgent.FindProperty(
                 "agentParameters.agentRenderTextures");
 
-            // Drawing the Brain Factory Parameters
+            // Drawing the Behavior Parameters
             var brainParameters = serializedAgent.FindProperty("m_BrainParameters");
             brainParameters.isExpanded = EditorGUILayout.Foldout(brainParameters.isExpanded, "Behavior Parameters");
             if (brainParameters.isExpanded)
@@ -55,7 +54,7 @@ namespace MLAgents
                 {
                     m_RequireReload = true;
                 }
-                DisplayFailedChecks();
+                DisplayFailedModelChecks();
             }
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -139,7 +138,10 @@ namespace MLAgents
             base.OnInspectorGUI();
         }
 
-        private void DisplayFailedChecks()
+        /// <summary>
+        /// Must be called within OnEditorGUI()
+        /// </summary>
+        private void DisplayFailedModelChecks()
         {
             if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
             {
