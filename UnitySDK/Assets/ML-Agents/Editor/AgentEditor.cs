@@ -157,13 +157,16 @@ namespace MLAgents
             {
                 barracudaModel = ModelLoader.Load(model.Value);
             }
-            var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
-                barracudaModel, brainParameters);
-            foreach (var check in failedChecks)
+            if (brainParameters != null)
             {
-                if (check != null)
+                var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
+                    barracudaModel, brainParameters);
+                foreach (var check in failedChecks)
                 {
-                    EditorGUILayout.HelpBox(check, MessageType.Warning);
+                    if (check != null)
+                    {
+                        EditorGUILayout.HelpBox(check, MessageType.Warning);
+                    }
                 }
             }
         }
