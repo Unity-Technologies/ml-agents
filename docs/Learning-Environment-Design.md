@@ -33,9 +33,7 @@ one training episode is finished.
 
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
-neural network model. The kind of Brain assigned to an Agent determines whether
-it participates in training or not. The **Learning Brain** can be used to train 
-or execute a TensorFlow model. When training is completed
+neural network model. When training is completed
 successfully, you can add the trained model file to your Unity project for later
 use.
 
