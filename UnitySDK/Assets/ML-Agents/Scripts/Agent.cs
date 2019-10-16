@@ -225,7 +225,9 @@ namespace MLAgents
     {
         private IBrain m_Brain;
 
-        [HideInInspector] [SerializeField] private BrainParameters m_BrainParameters;
+        [HideInInspector]
+        [SerializeField]
+        private BrainParameters m_BrainParameters = new BrainParameters();
         [HideInInspector] [SerializeField] private NNModel m_Model;
         [HideInInspector] [SerializeField] private InferenceDevice m_InferenceDevice;
         [HideInInspector] [SerializeField] private bool m_UseHeuristic;
@@ -620,14 +622,17 @@ namespace MLAgents
 
             m_Info.visualObservations.Clear();
             var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
-            if (param.cameraResolutions.Length > visualObservationCount)
+            if (param.cameraResolutions != null)
             {
-                throw new UnityAgentsException(string.Format(
-                    "Not enough cameras/renderTextures for agent {0} : expecting at " +
-                    "least {1} cameras/renderTextures but only {2} were present.",
-                    gameObject.name,
-                    param.cameraResolutions.Length,
-                    visualObservationCount));
+                if (param.cameraResolutions.Length > visualObservationCount)
+                {
+                    throw new UnityAgentsException(string.Format(
+                        "Not enough cameras/renderTextures for agent {0} : expecting at " +
+                        "least {1} cameras/renderTextures but only {2} were present.",
+                        gameObject.name,
+                        param.cameraResolutions.Length,
+                        visualObservationCount));
+                }
             }
 
             //First add all cameras
