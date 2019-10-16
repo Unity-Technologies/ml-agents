@@ -73,7 +73,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-9"
+        self._version_ = "API-8"
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
@@ -92,12 +92,12 @@ class UnityEnvironment(BaseUnityEnvironment):
                 "If the environment name is None, "
                 "the worker-id must be 0 in order to connect with the Editor."
             )
-        if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics, args)
-        else:
-            logger.info(
-                "Start training by pressing the Play button in the Unity Editor."
-            )
+        # if file_name is not None:
+        #     self.executable_launcher(file_name, docker_training, no_graphics, args)
+        # else:
+        #     logger.info(
+        #         "Start training by pressing the Play button in the Unity Editor."
+        #     )
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInput(seed=seed)
@@ -108,13 +108,6 @@ class UnityEnvironment(BaseUnityEnvironment):
             raise
         # TODO : think of a better way to expose the academyParameters
         self._unity_version = aca_params.version
-        if self._unity_version != self._version_:
-            self._close()
-            raise UnityEnvironmentException(
-                "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
-                "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                "of ML-Agents.".format(self._version_, self._unity_version)
-            )
         self._n_agents: Dict[str, int] = {}
         self._is_first_message = True
         self._academy_name = aca_params.name

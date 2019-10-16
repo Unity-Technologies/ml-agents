@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 import numpy as np
 import tensorflow as tf
+import horovod.tensorflow as hvd
 
 from mlagents.envs.exception import UnityException
 from mlagents.envs.policy import Policy
@@ -60,14 +61,15 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
-        self.graph = tf.Graph()
         config = tf.ConfigProto()
+        config.gpu_options.visible_device_list = str(hvd.local_rank())
         config.gpu_options.allow_growth = True
         # For multi-GPU training, set allow_soft_placement to True to allow
         # placing the operation into an alternative device automatically
         # to prevent from exceptions if the device doesn't suppport the operation
         # or the device does not exist
         config.allow_soft_placement = True
+        self.graph = tf.Graph()
         self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         if self.use_recurrent:
@@ -91,6 +93,7 @@ class TFPolicy(Policy):
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
+            self.sess.run(hvd.broadcast_global_variables(0))
 
     def _load_graph(self):
         with self.graph.as_default():
@@ -206,6 +209,9 @@ class TFPolicy(Policy):
         :param steps: The number of steps the model was trained for
         :return:
         """
+        if hvd.rank() != 0:
+            return
+
         with self.graph.as_default():
             last_checkpoint = self.model_path + "/model-" + str(steps) + ".cptk"
             self.saver.save(self.sess, last_checkpoint)
@@ -217,6 +223,8 @@ class TFPolicy(Policy):
         """
         Exports latest saved model to .nn format for Unity embedding.
         """
+        if hvd.rank() != 0:
+            return
 
         with self.graph.as_default():
             target_nodes = ",".join(self._process_graph())

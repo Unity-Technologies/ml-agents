@@ -1,14 +1,6 @@
-FROM nvidia/cudagl:9.0-devel-ubuntu16.04
+# Based off of python:3.6-slim, except that we are using ubuntu instead of debian.
+FROM ubuntu:16.04
 
-# TensorFlow version is tightly coupled to CUDA and cuDNN so it should be selected carefully
-ENV TENSORFLOW_VERSION=1.12.0
-ENV PYTORCH_VERSION=1.1.0
-ENV TORCHVISION_VERSION=0.2.2.post3
-ENV CUDNN_VERSION=7.4.1.5-1+cuda9.0
-ENV NCCL_VERSION=2.3.7-1+cuda9.0
-
-# Set default shell to /bin/bash
-SHELL ["/bin/bash", "-cu"]
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -96,18 +88,22 @@ RUN cd /usr/local/bin \
 	&& ln -s python3 python \
 	&& ln -s python3-config python-config
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        g++-4.8 \
+        git \
+        curl \
+        vim \
+        wget \
+        ca-certificates \
+        xvfb
+
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.3
 
 RUN set -ex; \
-	\
-	apt-get update; \
-	apt-get install -y --no-install-recommends wget; \
-	rm -rf /var/lib/apt/lists/*; \
-	\
 	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
-	apt-get purge -y --auto-remove wget; \
 	\
 	python get-pip.py \
 		--disable-pip-version-check \
@@ -124,81 +120,10 @@ RUN set -ex; \
 		\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
 
-
-RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
-        build-essential \
-        cmake \
-        g++-4.8 \
-        git \
-        curl \
-        vim \
-        wget \
-        ca-certificates \
-        libcudnn7=${CUDNN_VERSION} \
-        libnccl2=${NCCL_VERSION} \
-        libnccl-dev=${NCCL_VERSION} \
-        libjpeg-dev \
-        libpng-dev \
-        librdmacm1 \
-        libibverbs1 \
-        libibverbs-dev \
-        xvfb
-
-# Install TensorFlow
-RUN pip install future typing
-RUN pip install numpy \
-        tensorflow-gpu==${TENSORFLOW_VERSION} \
-        keras \
-        h5py
-
-# Install Open MPI
-RUN mkdir /tmp/openmpi && \
-    cd /tmp/openmpi && \
-    wget https://www.open-mpi.org/software/ompi/v4.0/downloads/openmpi-4.0.0.tar.gz && \
-    tar zxf openmpi-4.0.0.tar.gz && \
-    cd openmpi-4.0.0 && \
-    ./configure --enable-orterun-prefix-by-default && \
-    make -j $(nproc) all && \
-    make install && \
-    ldconfig && \
-    rm -rf /tmp/openmpi
-
-
-# Install Horovod, temporarily using CUDA stubs
-RUN ldconfig /usr/local/cuda-9.0/targets/x86_64-linux/lib/stubs && \
-    HOROVOD_GPU_ALLREDUCE=NCCL HOROVOD_WITH_TENSORFLOW=1 pip install --no-cache-dir horovod && \
-    ldconfig
-
-# Install OpenSSH for MPI to communicate between containers
-RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
-    mkdir -p /var/run/sshd
-
-# Allow OpenSSH to talk to containers without asking for confirmation
-RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new && \
-    echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
-    mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
-
-# Install ml-agents-envs package locally
-COPY ml-agents-envs /ml-agents-envs
-WORKDIR /ml-agents-envs
-RUN pip install -e .
-
-# Install ml-agents package next
-COPY ml-agents /ml-agents
-WORKDIR /ml-agents
-RUN pip install -e .
-
-# setup google-cloud-sdk, which is used to copy files to gcs after the training is finished
-RUN apt-get install --yes --no-install-recommends \
-    ca-certificates \
-    curl \
-  && echo "deb http://packages.cloud.google.com/apt cloud-sdk-xenial main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
-  && apt-get update \
-  && apt-get install --yes google-cloud-sdk \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 COPY unity-volume /unity-volume
 RUN chmod +x /unity-volume/*.x86_64
 
-CMD ["/bin/bash"]
+# port 5005 is the port used in in Editor training.
+EXPOSE 5005
+
+ENTRYPOINT ["mlagents-learn"]

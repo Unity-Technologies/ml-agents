@@ -21,6 +21,7 @@ from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+import horovod.tensorflow as hvd
 
 
 class CommandLineOptions(NamedTuple):
@@ -219,6 +220,7 @@ def run_training(
         options.sampler_file_path, env.reset_parameters, run_seed
     )
 
+    hvd.init()
     trainers = initialize_trainers(
         trainer_config,
         env.external_brains,
