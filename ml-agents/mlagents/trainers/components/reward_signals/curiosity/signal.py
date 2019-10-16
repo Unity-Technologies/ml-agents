@@ -124,7 +124,10 @@ class CuriosityRewardSignal(RewardSignal):
             policy_model.sequence_length: self.policy.sequence_length,
             policy_model.mask_input: mini_batch["masks"],
         }
-        feed_dict[policy_model.action_holder] = mini_batch["actions"]
+        if self.policy.use_continuous_act:
+            feed_dict[policy_model.selected_actions] = mini_batch["actions"]
+        else:
+            feed_dict[policy_model.action_holder] = mini_batch["actions"]
         if self.policy.use_vec_obs:
             feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]
