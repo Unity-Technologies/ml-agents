@@ -11,5 +11,5 @@ enum CompressionTypeProto {
 message CompressedObservationProto {
     repeated int32 shape = 1;
     CompressionTypeProto compression_type = 2;
-    repeated bytes data = 3;
+    bytes data = 3;
 }
