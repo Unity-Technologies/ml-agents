@@ -256,7 +256,7 @@ From TensorBoard, you will see the summary statistics:
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with compatible Agents (The Agents that generated the model).
+use it with compatible Agents (the Agents that generated the model).
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears.
 Either wait for the training process to close the window or press Ctrl+C at the
 command-line prompt. If you close the window manually, the `.nn` file
