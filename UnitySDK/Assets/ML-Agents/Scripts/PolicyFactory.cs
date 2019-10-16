@@ -1,64 +1,61 @@
 using Barracuda;
 using System;
-
+using UnityEngine;
 
 namespace MLAgents
 {
     /// <summary>
     /// The Factory to generate policies. 
     /// </summary>
-    public static class PolicyFactory
+    public class PolicyFactory : MonoBehaviour
     {
-        /// <summary>
-        /// This method will generate a new IPolicy depending on
-        /// the parameters fed as input. 
-        /// </summary>
-        /// <param name="brainParameters"> 
-        /// The parameters of the Policy. 
-        /// Example : Vector Observation size 
-        /// </param>
-        /// <param name="useHeuristicPolicy">
-        /// If true, the Policy generated will be a HeuristicPolicy.
-        /// </param>
-        /// <param name="heuristic">
-        /// The Heuristic method used by the HeuristicPolicy
-        /// </param>
-        /// <param name="useRemotePolicy">
-        /// If true, (and useHeuristicPolicy is false)
-        ///  the Policy generated will be a RemotePolicy
-        /// </param>
-        /// <param name="behaviorName">
-        /// The name of the Behavior used by the RemotePolicy
-        /// </param>
-        /// <param name="model">
-        /// The Barracuda Model used for the BarracudaPolicy
-        /// </param>
 
-        /// <param name="inferenceDevice">
-        /// The inference device used by the Barracuda Policy</param>
-        /// <returns></returns>
-        public static IPolicy GeneratePolicy(
-            BrainParameters brainParameters,
-            bool useHeuristicPolicy,
-            Func<float[]> heuristic,
-            bool useRemotePolicy,
-            string behaviorName,
-            NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU
-        )
+        [HideInInspector]
+        [SerializeField]
+        private BrainParameters m_BrainParameters = new BrainParameters();
+        [HideInInspector] [SerializeField] private NNModel m_Model;
+        [HideInInspector] [SerializeField] private InferenceDevice m_InferenceDevice;
+        [HideInInspector] [SerializeField] private bool m_UseHeuristic;
+        [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
+
+        [HideInInspector]
+        public BrainParameters brainParameters
         {
-            if (model == null || useHeuristicPolicy)
+            get { return m_BrainParameters; }
+        }
+
+        [HideInInspector]
+        public string behaviorName
+        {
+            get { return m_BehaviorName; }
+        }
+
+        private Func<float[]> m_heuristic;
+
+        public IPolicy GeneratePolicy()
+        {
+            if (m_Model == null || m_UseHeuristic)
             {
-                return new HeuristicPolicy(heuristic);
+                return new HeuristicPolicy(m_heuristic);
             }
-            if (useRemotePolicy)
+            if (FindObjectOfType<Academy>().IsCommunicatorOn)
             {
-                return new RemotePolicy(brainParameters, behaviorName);
+                return new RemotePolicy(m_BrainParameters, m_BehaviorName);
             }
             else
             {
-                return new BarracudaPolicy(brainParameters, model, inferenceDevice);
+                return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
             }
+        }
+
+        public void GiveModel(
+            string behaviorName,
+            NNModel model,
+            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+        {
+            m_Model = model;
+            m_InferenceDevice = inferenceDevice;
+            m_BehaviorName = behaviorName;
         }
     }
 }
