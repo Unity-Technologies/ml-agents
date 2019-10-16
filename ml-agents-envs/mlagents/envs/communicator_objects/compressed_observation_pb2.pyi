@@ -47,13 +47,13 @@ class CompressedObservationProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     shape = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[int]
     compression_type = ... # type: CompressionTypeProto
-    data = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[bytes]
+    data = ... # type: bytes
 
     def __init__(self,
         *,
         shape : typing___Optional[typing___Iterable[int]] = None,
         compression_type : typing___Optional[CompressionTypeProto] = None,
-        data : typing___Optional[typing___Iterable[bytes]] = None,
+        data : typing___Optional[bytes] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: bytes) -> CompressedObservationProto: ...

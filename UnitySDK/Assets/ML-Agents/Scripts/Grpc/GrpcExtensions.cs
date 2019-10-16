@@ -4,6 +4,7 @@ using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents
@@ -40,7 +41,8 @@ namespace MLAgents
 
             foreach (var obs in ai.compressedObservations)
             {
-                // TODO pass compression type and dimensions separately.
+                agentInfoProto.CompressedObservations.Add(obs.ToProto());
+                // TEMPORARY keep passing for now, remove as soon as python using compressed obs
                 agentInfoProto.VisualObservations.Add(ByteString.CopyFrom(obs.Data));
             }
 
@@ -208,6 +210,17 @@ namespace MLAgents
                 agentActions.Add(ap.ToAgentAction());
             }
             return agentActions;
+        }
+
+        public static CompressedObservationProto ToProto(this CompressedObservation obs)
+        {
+            var obsProto = new CompressedObservationProto
+            {
+                Data = ByteString.CopyFrom(obs.Data),
+                CompressionType = (CompressionTypeProto) obs.CompressionType,
+            };
+            obsProto.Shape.AddRange(obs.Shape);
+            return obsProto;
         }
     }
 }

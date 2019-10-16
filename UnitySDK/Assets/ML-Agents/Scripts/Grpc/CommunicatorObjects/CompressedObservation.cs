@@ -28,7 +28,7 @@ namespace MLAgents.CommunicatorObjects {
             "ZWRfb2JzZXJ2YXRpb24ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIn8K",
             "GkNvbXByZXNzZWRPYnNlcnZhdGlvblByb3RvEg0KBXNoYXBlGAEgAygFEkQK",
             "EGNvbXByZXNzaW9uX3R5cGUYAiABKA4yKi5jb21tdW5pY2F0b3Jfb2JqZWN0",
-            "cy5Db21wcmVzc2lvblR5cGVQcm90bxIMCgRkYXRhGAMgAygMKikKFENvbXBy",
+            "cy5Db21wcmVzc2lvblR5cGVQcm90bxIMCgRkYXRhGAMgASgMKikKFENvbXBy",
             "ZXNzaW9uVHlwZVByb3RvEggKBE5PTkUQABIHCgNQTkcQAUIfqgIcTUxBZ2Vu",
             "dHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
@@ -76,7 +76,7 @@ namespace MLAgents.CommunicatorObjects {
     public CompressedObservationProto(CompressedObservationProto other) : this() {
       shape_ = other.shape_.Clone();
       compressionType_ = other.compressionType_;
-      data_ = other.data_.Clone();
+      data_ = other.data_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -108,12 +108,13 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "data" field.</summary>
     public const int DataFieldNumber = 3;
-    private static readonly pb::FieldCodec<pb::ByteString> _repeated_data_codec
-        = pb::FieldCodec.ForBytes(26);
-    private readonly pbc::RepeatedField<pb::ByteString> data_ = new pbc::RepeatedField<pb::ByteString>();
+    private pb::ByteString data_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> Data {
+    public pb::ByteString Data {
       get { return data_; }
+      set {
+        data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -131,7 +132,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       if(!shape_.Equals(other.shape_)) return false;
       if (CompressionType != other.CompressionType) return false;
-      if(!data_.Equals(other.data_)) return false;
+      if (Data != other.Data) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -140,7 +141,7 @@ namespace MLAgents.CommunicatorObjects {
       int hash = 1;
       hash ^= shape_.GetHashCode();
       if (CompressionType != 0) hash ^= CompressionType.GetHashCode();
-      hash ^= data_.GetHashCode();
+      if (Data.Length != 0) hash ^= Data.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -159,7 +160,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(16);
         output.WriteEnum((int) CompressionType);
       }
-      data_.WriteTo(output, _repeated_data_codec);
+      if (Data.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(Data);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -172,7 +176,9 @@ namespace MLAgents.CommunicatorObjects {
       if (CompressionType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) CompressionType);
       }
-      size += data_.CalculateSize(_repeated_data_codec);
+      if (Data.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -188,7 +194,9 @@ namespace MLAgents.CommunicatorObjects {
       if (other.CompressionType != 0) {
         CompressionType = other.CompressionType;
       }
-      data_.Add(other.data_);
+      if (other.Data.Length != 0) {
+        Data = other.Data;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -210,7 +218,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 26: {
-            data_.AddEntriesFrom(input, _repeated_data_codec);
+            Data = input.ReadBytes();
             break;
           }
         }

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/compressed_observation.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n?mlagents/envs/communicator_objects/compressed_observation.proto\x12\x14\x63ommunicator_objects\"\x7f\n\x1a\x43ompressedObservationProto\x12\r\n\x05shape\x18\x01 \x03(\x05\x12\x44\n\x10\x63ompression_type\x18\x02 \x01(\x0e\x32*.communicator_objects.CompressionTypeProto\x12\x0c\n\x04\x64\x61ta\x18\x03 \x03(\x0c*)\n\x14\x43ompressionTypeProto\x12\x08\n\x04NONE\x10\x00\x12\x07\n\x03PNG\x10\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n?mlagents/envs/communicator_objects/compressed_observation.proto\x12\x14\x63ommunicator_objects\"\x7f\n\x1a\x43ompressedObservationProto\x12\r\n\x05shape\x18\x01 \x03(\x05\x12\x44\n\x10\x63ompression_type\x18\x02 \x01(\x0e\x32*.communicator_objects.CompressionTypeProto\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\x0c*)\n\x14\x43ompressionTypeProto\x12\x08\n\x04NONE\x10\x00\x12\x07\n\x03PNG\x10\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 _COMPRESSIONTYPEPROTO = _descriptor.EnumDescriptor(
@@ -74,8 +74,8 @@ _COMPRESSEDOBSERVATIONPROTO = _descriptor.Descriptor(
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data', full_name='communicator_objects.CompressedObservationProto.data', index=2,
-      number=3, type=12, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),

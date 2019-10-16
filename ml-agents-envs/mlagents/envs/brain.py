@@ -4,6 +4,9 @@ import io
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
+    CompressionTypeProto,
+)
 from mlagents.envs.timers import hierarchical_timer, timed
 from typing import Dict, List, NamedTuple, Optional
 from PIL import Image
@@ -196,6 +199,13 @@ class BrainInfo:
         """
         vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
+            for ai in agent_info_list:
+                assert len(ai.visual_observations) == len(ai.compressed_observations)
+                co = ai.compressed_observations[i]
+                assert co.shape[0] == brain_params.camera_resolutions[i].width
+                assert co.shape[1] == brain_params.camera_resolutions[i].height
+                assert co.shape[2] == brain_params.camera_resolutions[i].num_channels
+                assert co.compression_type == CompressionTypeProto.PNG
             obs = [
                 BrainInfo.process_pixels(
                     x.visual_observations[i],
