@@ -26,44 +26,37 @@ from typing_extensions import (
 )
 
 
-builtin___bool = bool
-builtin___bytes = bytes
-builtin___float = float
-builtin___int = int
-builtin___str = str
-
-
-class CompressionTypeProto(builtin___int):
+class CompressionTypeProto(int):
     DESCRIPTOR: google___protobuf___descriptor___EnumDescriptor = ...
     @classmethod
-    def Name(cls, number: builtin___int) -> builtin___str: ...
+    def Name(cls, number: int) -> str: ...
     @classmethod
-    def Value(cls, name: builtin___str) -> 'CompressionTypeProto': ...
+    def Value(cls, name: str) -> CompressionTypeProto: ...
     @classmethod
-    def keys(cls) -> typing___List[builtin___str]: ...
+    def keys(cls) -> typing___List[str]: ...
     @classmethod
-    def values(cls) -> typing___List['CompressionTypeProto']: ...
+    def values(cls) -> typing___List[CompressionTypeProto]: ...
     @classmethod
-    def items(cls) -> typing___List[typing___Tuple[builtin___str, 'CompressionTypeProto']]: ...
-    NONE = typing___cast('CompressionTypeProto', 0)
-    PNG = typing___cast('CompressionTypeProto', 1)
-NONE = typing___cast('CompressionTypeProto', 0)
-PNG = typing___cast('CompressionTypeProto', 1)
+    def items(cls) -> typing___List[typing___Tuple[str, CompressionTypeProto]]: ...
+    NONE = typing___cast(CompressionTypeProto, 0)
+    PNG = typing___cast(CompressionTypeProto, 1)
+NONE = typing___cast(CompressionTypeProto, 0)
+PNG = typing___cast(CompressionTypeProto, 1)
 
 class CompressedObservationProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    shape = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
+    shape = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[int]
     compression_type = ... # type: CompressionTypeProto
-    data = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bytes]
+    data = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[bytes]
 
     def __init__(self,
         *,
-        shape : typing___Optional[typing___Iterable[builtin___int]] = None,
+        shape : typing___Optional[typing___Iterable[int]] = None,
         compression_type : typing___Optional[CompressionTypeProto] = None,
-        data : typing___Optional[typing___Iterable[builtin___bytes]] = None,
+        data : typing___Optional[typing___Iterable[bytes]] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: builtin___bytes) -> CompressedObservationProto: ...
+    def FromString(cls, s: bytes) -> CompressedObservationProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
