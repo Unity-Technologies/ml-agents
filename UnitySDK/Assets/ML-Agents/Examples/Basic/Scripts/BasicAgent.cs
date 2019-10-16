@@ -73,6 +73,19 @@ public class BasicAgent : Agent
         largeGoal.transform.position = new Vector3(m_LargeGoalPosition - 10f, 0f, 0f);
     }
 
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 2 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 1 };
+        }
+        return new float[] { 0 };
+    }
+
     public override void AgentOnDone()
     {
     }

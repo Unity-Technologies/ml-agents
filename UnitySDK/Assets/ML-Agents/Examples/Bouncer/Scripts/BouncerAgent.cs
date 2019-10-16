@@ -104,6 +104,16 @@ public class BouncerAgent : Agent
         }
     }
 
+    public override float[] Heuristic()
+    {
+        var action = new float[3];
+
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        action[2] = Input.GetAxis("Vertical");
+        return action;
+    }
+
     private void Update()
     {
         if (m_LookDir.magnitude > float.Epsilon)
