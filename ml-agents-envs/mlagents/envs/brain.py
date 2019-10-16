@@ -229,10 +229,6 @@ class BrainInfo:
             logger.warning(
                 "An agent had a NaN reward for brain " + brain_params.brain_name
             )
-        if any(np.isnan(x.stacked_vector_observation).any() for x in agent_info_list):
-            logger.warning(
-                "An agent had a NaN observation for brain " + brain_params.brain_name
-            )
 
         if len(agent_info_list) == 0:
             vector_obs = np.zeros(
