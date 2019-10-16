@@ -8,7 +8,8 @@
   lessons which progressively increase in difficulty are presented to the agent
   ([learn more here](Training-Curriculum-Learning.md)).
 * When possible, it is often helpful to ensure that you can complete the task by
-  using a Player Brain to control the agent.
+  using a heuristic to control the agent. To do so, check the `Use Heuristic` 
+  checkbox on the Agent and implement the `Heuristic()` method on the Agent.
 * It is often helpful to make many copies of the agent, and give them the same
   `Behavior Name`. In this way the learning process can get more feedback
   information from all of these agents, which helps it train faster.
