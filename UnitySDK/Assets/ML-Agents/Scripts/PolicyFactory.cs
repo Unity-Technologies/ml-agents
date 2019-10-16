@@ -16,13 +16,13 @@ namespace MLAgents
             InferenceDevice inferenceDevice = InferenceDevice.CPU
         )
         {
-            if (useRemoteBrain)
-            {
-                return new RemoteBrain(brainParameters, behaviorName);
-            }
             if (model == null || useHeuristic)
             {
                 return new HeuristicBrain(heuristic);
+            }
+            if (useRemoteBrain)
+            {
+                return new RemoteBrain(brainParameters, behaviorName);
             }
             else
             {
