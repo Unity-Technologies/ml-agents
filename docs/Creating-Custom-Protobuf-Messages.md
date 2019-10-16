@@ -165,7 +165,7 @@ In Python, the custom field would be accessed like:
 ```python
 ...
 result = env.step(...)
-result[brain_name].custom_observations[0].customField
+result[behavior_name].custom_observations[0].customField
 ```
 
-where `brain_name` is the name of the brain attached to the agent.
+where `behavior_name` is the `Behavior Name` property of the Agent.
