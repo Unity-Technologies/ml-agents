@@ -196,14 +196,14 @@ class BrainInfo:
         """
         vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
-            np_obs = [
+            obs = [
                 BrainInfo.process_pixels(
                     x.visual_observations[i],
                     brain_params.camera_resolutions[i].gray_scale,
                 )
                 for x in agent_info_list
             ]
-            vis_obs += [np_obs]
+            vis_obs += [obs]
         if len(agent_info_list) == 0:
             memory_size = 0
         else:
