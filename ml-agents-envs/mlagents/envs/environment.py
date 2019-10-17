@@ -22,6 +22,7 @@ from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
 from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
     EnvironmentParametersProto,
 )
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
     UnityRLInitializationInputProto,
 )
@@ -122,7 +123,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._brains: Dict[str, BrainParameters] = {}
         self._external_brain_names: List[str] = []
         self._num_external_brains = 0
-        self._update_brain_parameters(aca_params)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters)
         logger.info(
             "\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self))
@@ -333,7 +333,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_brain_parameters(outputs.rl_initialization_output)
+            self._update_brain_parameters(outputs)
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -554,7 +554,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_brain_parameters(outputs.rl_initialization_output)
+            self._update_brain_parameters(outputs)
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -620,16 +620,19 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         return _data
 
-    def _update_brain_parameters(
-        self, init_output: Optional[UnityRLInitializationOutputProto]
-    ) -> None:
-        if init_output is not None:
-            for brain_param in init_output.brain_parameters:
-                self._brains[brain_param.brain_name] = BrainParameters.from_proto(
-                    brain_param
-                )
-            self._external_brain_names = list(self._brains.keys())
-            self._num_external_brains = len(self._external_brain_names)
+    def _update_brain_parameters(self, output: UnityOutputProto) -> None:
+        init_output = output.rl_initialization_output
+
+        for brain_param in init_output.brain_parameters:
+            # Each BrainParameter in the rl_initialization_output should have at least one AgentInfo
+            # Get that agent, because we need some of its observations.
+            agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
+            agent = agent_infos.value[0]
+            self._brains[brain_param.brain_name] = BrainParameters.from_proto(
+                brain_param, agent
+            )
+        self._external_brain_names = list(self._brains.keys())
+        self._num_external_brains = len(self._external_brain_names)
 
     @timed
     def _generate_step_input(

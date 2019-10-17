@@ -96,6 +96,7 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
         )
 
     brain_params = None
+    brain_param_proto = None
     brain_infos = []
     total_expected = 0
     for _file_path in file_paths:
@@ -111,11 +112,15 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
             if obs_decoded == 1:
                 brain_param_proto = BrainParametersProto()
                 brain_param_proto.ParseFromString(data[pos : pos + next_pos])
-                brain_params = BrainParameters.from_proto(brain_param_proto)
+
                 pos += next_pos
             if obs_decoded > 1:
                 agent_info = AgentInfoProto()
                 agent_info.ParseFromString(data[pos : pos + next_pos])
+                if brain_params is None:
+                    brain_params = BrainParameters.from_proto(
+                        brain_param_proto, agent_info
+                    )
                 brain_info = BrainInfo.from_agent_proto(0, [agent_info], brain_params)
                 brain_infos.append(brain_info)
                 if len(brain_infos) == total_expected:

@@ -25,6 +25,7 @@ class CameraResolution(NamedTuple):
 
     @staticmethod
     def from_proto(p):
+        # TODO REMOVE
         return CameraResolution(height=p.height, width=p.width, gray_scale=p.gray_scale)
 
 
@@ -71,20 +72,28 @@ class BrainParameters:
         )
 
     @staticmethod
-    def from_proto(brain_param_proto: BrainParametersProto) -> "BrainParameters":
+    def from_proto(
+        brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
+    ) -> "BrainParameters":
         """
         Converts brain parameter proto to BrainParameter object.
         :param brain_param_proto: protobuf object.
         :return: BrainParameter object.
         """
-        resolution = [
-            CameraResolution.from_proto(x) for x in brain_param_proto.camera_resolutions
+        resolutions = [
+            CameraResolution(
+                x.shape[0],
+                x.shape[1],
+                x.shape[2] == 1,  # is_grayscale  # TODO save num channels
+            )
+            for x in agent_info.compressed_observations
         ]
+
         brain_params = BrainParameters(
             brain_param_proto.brain_name,
             brain_param_proto.vector_observation_size,
             brain_param_proto.num_stacked_vector_observations,
-            resolution,
+            resolutions,
             list(brain_param_proto.vector_action_size),
             list(brain_param_proto.vector_action_descriptions),
             brain_param_proto.vector_action_space_type,
