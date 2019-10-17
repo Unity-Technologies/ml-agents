@@ -44,7 +44,9 @@ namespace MLAgents
         Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
-        private UnityRLInitializationOutputProto m_CurrentUnityRlInitializationOutput;
+        // Brains that we have sent over the communicator with agents.
+        HashSet<string> m_sentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -129,12 +131,10 @@ namespace MLAgents
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
-                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
-            if (m_CurrentUnityRlInitializationOutput == null)
-            {
-                m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
-            }
-            m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto()
+            );
+
+            CacheBrainParameters(brainKey, brainParameters);
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
@@ -299,13 +299,14 @@ namespace MLAgents
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
-            if (m_CurrentUnityRlInitializationOutput != null)
+            var tempUnityRlInitializationOutput = GetTempUnityRlInitializationOutput();
+            if (tempUnityRlInitializationOutput != null)
             {
-                message.RlInitializationOutput = m_CurrentUnityRlInitializationOutput;
+                message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
             var input = Exchange(message);
-            m_CurrentUnityRlInitializationOutput = null;
+            UpdateSentBrainParameters(tempUnityRlInitializationOutput);
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
@@ -422,6 +423,53 @@ namespace MLAgents
             {
                 Dispose();
             }
+        }
+
+        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        {
+            if (m_sentBrainKeys.Contains(brainKey))
+            {
+                return;
+            }
+
+            m_unsentBrainKeys[brainKey] = brainParameters;
+        }
+
+        private CommunicatorObjects.UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        {
+            CommunicatorObjects.UnityRLInitializationOutputProto output = null;
+            //if (m_unsentBrainKeys.Count != 0)
+            foreach(var brainKey in m_unsentBrainKeys.Keys)
+            {
+                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
+                {
+                    if (output == null)
+                    {
+                        output = new CommunicatorObjects.UnityRLInitializationOutputProto();
+                    }
+
+                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+
+                }
+            }
+
+            return output;
+        }
+
+        private void UpdateSentBrainParameters(CommunicatorObjects.UnityRLInitializationOutputProto output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            foreach (var brainProto in output.BrainParameters)
+            {
+                m_sentBrainKeys.Add(brainProto.BrainName);
+                m_unsentBrainKeys.Remove(brainProto.BrainName);
+            }
+
         }
 
 #else
