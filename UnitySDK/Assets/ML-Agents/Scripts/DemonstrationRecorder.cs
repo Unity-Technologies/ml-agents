@@ -42,8 +42,8 @@ namespace MLAgents
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             m_DemoStore.Initialize(
                 demonstrationName,
-                GetComponent<PolicyFactory>().brainParameters,
-                GetComponent<PolicyFactory>().behaviorName);
+                GetComponent<BehaviorParameters>().brainParameters,
+                GetComponent<BehaviorParameters>().behaviorName);
             Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 

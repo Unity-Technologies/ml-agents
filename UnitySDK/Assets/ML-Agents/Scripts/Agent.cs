@@ -219,11 +219,11 @@ namespace MLAgents
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
-    [RequireComponent(typeof(PolicyFactory))]
+    [RequireComponent(typeof(BehaviorParameters))]
     public abstract class Agent : MonoBehaviour
     {
         private IPolicy m_Brain;
-        private PolicyFactory m_PolicyFactory;
+        private BehaviorParameters m_PolicyFactory;
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -323,8 +323,8 @@ namespace MLAgents
             academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
-            m_PolicyFactory = GetComponent<PolicyFactory>();
-            m_Brain = m_PolicyFactory.GeneratePolicy();
+            m_PolicyFactory = GetComponent<BehaviorParameters>();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
         }
@@ -364,7 +364,7 @@ namespace MLAgents
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
-            m_Brain = m_PolicyFactory.GeneratePolicy();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
         /// <summary>
@@ -541,7 +541,10 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            return new float[0];
+            throw new UnityAgentsException(string.Format(
+                    "The Heuristic method was not implemented for the Agent on the " +
+                    "{0} GameObject.",
+                    gameObject.name));
         }
 
         /// <summary>
