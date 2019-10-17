@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 4034807106460652}
   - component: {fileID: 33823710649932060}
   - component: {fileID: 65073501172061214}
+  - component: {fileID: 114935253044749092}
   - component: {fileID: 114650561397225712}
   m_Layer: 8
   m_Name: Agent
@@ -964,20 +965,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857707f3f352541d5b858efca4479b95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 05000000
-    cameraResolutions:
-    - width: 84
-      height: 84
-      blackAndWhite: 0
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
-  m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: GridWorld
   agentParameters:
     agentCameras:
     - {fileID: 20743940359151984}
@@ -986,7 +973,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 1
     numberOfActionsBetweenDecisions: 1
-  m_Area: {fileID: 114704252266302846}
+  area: {fileID: 114704252266302846}
   timeBetweenDecisionsAtInference: 0.15
   renderCamera: {fileID: 0}
   maskActions: 1
@@ -1006,3 +993,28 @@ MonoBehaviour:
   trueAgent: {fileID: 1488387672112076}
   goalPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 2}
   pitPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 2}
+--- !u!114 &114935253044749092
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1488387672112076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: GridWorld

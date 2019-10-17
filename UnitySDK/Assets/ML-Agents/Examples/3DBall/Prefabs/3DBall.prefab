@@ -71,8 +71,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4780098186595842}
   - component: {fileID: 65010516625723872}
-  - component: {fileID: 114678448719600044}
-  - component: {fileID: 114994389035487316}
+  - component: {fileID: 114368073295828880}
+  - component: {fileID: 114715123104194396}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -598,7 +598,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114678448719600044
+--- !u!114 &114368073295828880
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -606,7 +606,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1424713891854676}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e63954c62d854d8db4d94dc41269441, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
@@ -619,8 +619,8 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: a0e8d1fda5a6f41be955d2b30479c2a1, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
-  m_BehaviorName: Ball3D
---- !u!114 &114994389035487316
+  m_BehaviorName: 3DBall
+--- !u!114 &114715123104194396
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -634,7 +634,7 @@ MonoBehaviour:
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
-    maxStep: 1000
+    maxStep: 100
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5

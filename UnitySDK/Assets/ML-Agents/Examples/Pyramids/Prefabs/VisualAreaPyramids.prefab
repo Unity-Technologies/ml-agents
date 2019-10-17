@@ -555,6 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4464253672231148}
   - component: {fileID: 54125904932801864}
+  - component: {fileID: 114722927650955174}
   - component: {fileID: 114741503533626942}
   - component: {fileID: 114027965503222182}
   - component: {fileID: 65882754134362954}
@@ -3185,7 +3186,7 @@ MonoBehaviour:
   - {fileID: 1625610554007742}
   numPyra: 1
   range: 45
---- !u!114 &114741503533626942
+--- !u!114 &114722927650955174
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -3193,7 +3194,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1736680821577442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8db44472779248d3be46895c4d562d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
@@ -3210,6 +3211,17 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: VisualPyramids
+--- !u!114 &114741503533626942
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736680821577442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8db44472779248d3be46895c4d562d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   agentParameters:
     agentCameras:
     - {fileID: 20712684238256298}
