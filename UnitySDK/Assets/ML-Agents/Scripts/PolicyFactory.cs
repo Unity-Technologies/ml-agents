@@ -5,7 +5,6 @@ using UnityEngine;
 namespace MLAgents
 {
 
-    public delegate float[] Heuristic();
     /// <summary>
     /// The Factory to generate policies. 
     /// </summary>
