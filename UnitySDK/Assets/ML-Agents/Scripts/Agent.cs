@@ -364,6 +364,7 @@ namespace MLAgents
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
+            m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
