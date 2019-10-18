@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import numpy as np
 
-from mlagents.envs.brain import CameraResolution
+from mlagents.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import Buffer
 
 
@@ -230,3 +230,26 @@ def create_mock_banana_brain():
         vector_observation_space_size=0,
     )
     return mock_brain
+
+
+def make_brain_parameters(
+    discrete_action: bool = False,
+    visual_inputs: int = 0,
+    stack: bool = True,
+    brain_name: str = "RealFakeBrain",
+    vec_obs_size: int = 3,
+) -> BrainParameters:
+    resolutions = [
+        CameraResolution(width=30, height=40, num_channels=3)
+        for _ in range(visual_inputs)
+    ]
+
+    return BrainParameters(
+        vector_observation_space_size=vec_obs_size,
+        num_stacked_vector_observations=2 if stack else 1,
+        camera_resolutions=resolutions,
+        vector_action_space_size=[2],
+        vector_action_descriptions=["", ""],
+        vector_action_space_type=int(not discrete_action),
+        brain_name=brain_name,
+    )

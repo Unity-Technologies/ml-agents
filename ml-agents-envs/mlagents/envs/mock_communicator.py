@@ -50,9 +50,10 @@ class MockCommunicator(Communicator):
         rl_init = UnityRLInitializationOutputProto(
             name="RealFakeAcademy", version="API-10", log_path="", brain_parameters=[bp]
         )
-        return UnityOutputProto(rl_initialization_output=rl_init)
+        output = UnityRLOutputProto(agentInfos=self._get_agent_infos())
+        return UnityOutputProto(rl_initialization_output=rl_init, rl_output=output)
 
-    def exchange(self, inputs: UnityInputProto) -> UnityOutputProto:
+    def _get_agent_infos(self):
         dict_agent_info = {}
         if self.is_discrete:
             vector_action = [1]
@@ -81,7 +82,10 @@ class MockCommunicator(Communicator):
         dict_agent_info["RealFakeBrain"] = UnityRLOutputProto.ListAgentInfoProto(
             value=list_agent_info
         )
-        result = UnityRLOutputProto(agentInfos=dict_agent_info)
+        return dict_agent_info
+
+    def exchange(self, inputs: UnityInputProto) -> UnityOutputProto:
+        result = UnityRLOutputProto(agentInfos=self._get_agent_infos())
         return UnityOutputProto(rl_output=result)
 
     def close(self):
