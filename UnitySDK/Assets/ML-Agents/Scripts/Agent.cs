@@ -557,9 +557,13 @@ namespace MLAgents
         public virtual void InitializeSensors()
         {
             // TODO deterministic sorting
-            var attachedSensors = GetComponents<SensorBase>();
-            m_Sensors.Capacity += attachedSensors.Length;
-            m_Sensors.AddRange(attachedSensors);
+            var attachedSensorComponents = GetComponents<SensorComponent>();
+            m_Sensors.Capacity += attachedSensorComponents.Length;
+            foreach (var component in attachedSensorComponents)
+            {
+                m_Sensors.Add(component.CreateSensor());
+            }
+            Debug.Log($"Agent {name} made {m_Sensors.Count} sensors");
         }
 
         /// <summary>

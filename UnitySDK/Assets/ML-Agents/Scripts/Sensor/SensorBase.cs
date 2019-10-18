@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    public abstract class SensorBase : MonoBehaviour, ISensor
+    public abstract class SensorBase : ISensor
     {
         /// <summary>
         /// Write the observations to the output buffer. This size of the buffer will be product of the sizes returned

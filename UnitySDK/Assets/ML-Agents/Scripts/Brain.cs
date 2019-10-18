@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Barracuda;
 using UnityEngine;
 
 namespace MLAgents
@@ -24,6 +25,8 @@ namespace MLAgents
         /// </summary>
         protected List<Agent> m_Agents = new List<Agent>(1024);
 
+        List<int[]> m_SensorShapes = new List<int[]>();
+
         [NonSerialized]
         private bool m_IsInitialized;
 
@@ -34,6 +37,30 @@ namespace MLAgents
         public void SubscribeAgentForDecision(Agent agent)
         {
             LazyInitialize();
+            if (m_SensorShapes.Count == 0)
+            {
+                // First agent, save the sensor sizes
+                foreach(var sensor in agent.m_Sensors)
+                {
+                    m_SensorShapes.Add(sensor.GetFloatObservationShape());
+                }
+            }
+            else
+            {
+                // Check for compatibility with the other Agents' sensors
+                // TODO make sure this only checks once per agent
+                Debug.Assert(m_SensorShapes.Count == agent.m_Sensors.Count, $"Number of sensors must match. {m_SensorShapes.Count} != {agent.m_Sensors.Count}");
+                for (var i = 0; i<m_SensorShapes.Count; i++)
+                {
+                    var cachedShape = m_SensorShapes[i];
+                    var sensorShape = agent.m_Sensors[i].GetFloatObservationShape();
+                    Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
+                    for (var j = 0; j < cachedShape.Length; j++)
+                    {
+                        Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes much match.");
+                    }
+                }
+            }
             m_Agents.Add(agent);
         }
 

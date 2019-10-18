@@ -4,40 +4,43 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    public class CameraSensor : SensorBase
+    public class CameraSensor : ISensor
     {
-        public new Camera camera;
-        public int width = 84;
-        public int height = 84;
-        public bool grayscale = false;
+        private Camera camera;
+        private int width;
+        private int height;
+        private bool grayscale;
 
-        public override int[] GetFloatObservationShape()
+        public CameraSensor(Camera camera, int width, int height, bool grayscale)
+        {
+            this.camera = camera;
+            this.width = width;
+            this.height = height;
+            this.grayscale = grayscale;
+        }
+
+        public int[] GetFloatObservationShape()
         {
             return new [] {width, height, grayscale ? 1 : 3};
         }
 
-        public override void WriteObservation(float[] observationsOut)
-        {
-            throw new NotImplementedException("Have to use compression");
-        }
-
-        public override byte[] GetCompressedObservation()
+        public byte[] GetCompressedObservation()
         {
             var texture = ObservationToTexture(camera, width, height);
             // TODO support more types here, e.g. JPG
             var compressed = texture.EncodeToPNG();
-            Destroy(texture);
+            UnityEngine.Object.Destroy(texture);
             return compressed;
         }
 
-        public override void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
+        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
         {
             var texture = ObservationToTexture(camera, width, height);
             Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, agentIndex);
-            Destroy(texture);
+            UnityEngine.Object.Destroy(texture);
         }
 
-        public override CompressionType GetCompressionType()
+        public CompressionType GetCompressionType()
         {
             return CompressionType.PNG;
         }

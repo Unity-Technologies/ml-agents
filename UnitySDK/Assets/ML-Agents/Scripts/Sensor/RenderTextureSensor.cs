@@ -4,40 +4,43 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class RenderTextureSensor : SensorBase
+    class RenderTextureSensor : ISensor
     {
-        public RenderTexture renderTexture;
-        public int width = 84;
-        public int height = 84;
-        public bool grayscale = false;
+        private RenderTexture renderTexture;
+        private int width = 84;
+        private int height = 84;
+        private bool grayscale = false;
 
-        public override int[] GetFloatObservationShape()
+        public RenderTextureSensor(RenderTexture renderTexture, int width, int height, bool grayscale)
+        {
+            this.renderTexture = renderTexture;
+            this.width = width;
+            this.height = height;
+            this.grayscale = grayscale;
+        }
+
+        public int[] GetFloatObservationShape()
         {
             return new [] {width, height, grayscale ? 1 : 3};
         }
 
-        public override void WriteObservation(float[] observationsOut)
-        {
-            throw new NotImplementedException("Have to use compression");
-        }
-
-        public override byte[] GetCompressedObservation()
+        public byte[] GetCompressedObservation()
         {
             var texture = ObservationToTexture(renderTexture, width, height);
             // TODO support more types here, e.g. JPG
             var compressed = texture.EncodeToPNG();
-            Destroy(texture);
+            UnityEngine.Object.Destroy(texture);
             return compressed;
         }
 
-        public override void WriteToTensor(TensorProxy tensorProxy, int index)
+        public void WriteToTensor(TensorProxy tensorProxy, int index)
         {
             var texture = ObservationToTexture(renderTexture, width, height);
             Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, index);
-            Destroy(texture);
+            UnityEngine.Object.Destroy(texture);
         }
 
-        public override CompressionType GetCompressionType()
+        public CompressionType GetCompressionType()
         {
             return CompressionType.PNG;
         }
