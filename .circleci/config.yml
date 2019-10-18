@@ -146,7 +146,7 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install grpcio-tools==1.13.0  --progress-bar=off
-            pip install mypy-protobuf==1.13.0 --progress-bar=off
+            pip install mypy-protobuf==1.16.0 --progress-bar=off
       - save_cache:
           paths:
             - ./venv
