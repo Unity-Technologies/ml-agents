@@ -302,10 +302,9 @@ namespace MLAgents.InferenceBrain
         private readonly ITensorAllocator m_Allocator;
 
         public VisualObservationInputGenerator(
-            int index, bool grayScale, ITensorAllocator allocator)
+            int index, ITensorAllocator allocator)
         {
             m_Index = index;
-            m_GrayScale = grayScale;
             m_Allocator = allocator;
         }
 
@@ -321,8 +320,6 @@ namespace MLAgents.InferenceBrain
                 agent.m_Sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
                 agentIndex++;
             }
-
-
         }
     }
 }

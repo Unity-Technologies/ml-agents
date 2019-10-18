@@ -20,14 +20,16 @@ namespace MLAgents.InferenceBrain
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
+        private bool m_visualObservationsInitialized = false;
+
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
         /// <param name="model"> The Barracuda model to load
-        /// <param name="brainParameters"> The parameters of the Brain used to generate the 
+        /// <param name="brainParameters"> The parameters of the Brain used to generate the
         /// placeholder tensors
-        /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest 
+        /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models.
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
         /// and Multinomial objects used when running inference.</param>
@@ -103,6 +105,19 @@ namespace MLAgents.InferenceBrain
             if (currentBatchSize == 0)
             {
                 return;
+            }
+
+            if (!m_visualObservationsInitialized)
+            {
+                // Just grab the first agent in the collection (any will do).
+                Agent firstAgent = null;
+                foreach (var agent in agents)
+                {
+                    firstAgent = agent;
+                    break;
+                }
+                m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
+                m_visualObservationsInitialized = true;
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");

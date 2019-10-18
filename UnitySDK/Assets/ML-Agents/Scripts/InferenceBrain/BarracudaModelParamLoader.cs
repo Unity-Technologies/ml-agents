@@ -242,18 +242,19 @@ namespace MLAgents.InferenceBrain
             }
             // If there are not enough Visual Observation Input compared to what the
             // Brain Parameters expect.
-            for (var visObsIndex = 0;
-                 visObsIndex < brainParameters.cameraResolutions.Length;
-                 visObsIndex++)
-            {
-                if (!tensorsNames.Contains(
-                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
-                {
-                    failedModelChecks.Add(
-                        "The model does not contain a Visual Observation Placeholder Input " +
-                        "for visual observation " + visObsIndex + ".");
-                }
-            }
+            // TODO figure out how to do this if we move everything to agents
+//            for (var visObsIndex = 0;
+//                 visObsIndex < brainParameters.cameraResolutions.Length;
+//                 visObsIndex++)
+//            {
+//                if (!tensorsNames.Contains(
+//                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
+//                {
+//                    failedModelChecks.Add(
+//                        "The model does not contain a Visual Observation Placeholder Input " +
+//                        "for visual observation " + visObsIndex + ".");
+//                }
+//            }
 
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
@@ -344,12 +345,13 @@ namespace MLAgents.InferenceBrain
                 tensorTester[mem.input] = ((bp, tensor) => null);
             }
 
-            for (var obsIndex = 0; obsIndex < brainParameters.cameraResolutions.Length; obsIndex++)
-            {
-                var index = obsIndex;
-                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + obsIndex] =
-                    (bp, tensor) => CheckVisualObsShape(bp, tensor, index);
-            }
+            // TODO figure out how to check this if we move everything to Agent
+//            for (var obsIndex = 0; obsIndex < brainParameters.cameraResolutions.Length; obsIndex++)
+//            {
+//                var index = obsIndex;
+//                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + obsIndex] =
+//                    (bp, tensor) => CheckVisualObsShape(bp, tensor, index);
+//            }
             // If the model expects an input but it is not in this list
             foreach (var tensor in GetInputTensors(model))
             {
@@ -436,19 +438,19 @@ namespace MLAgents.InferenceBrain
         private static string CheckVisualObsShape(
             BrainParameters brainParameters, TensorProxy tensorProxy, int visObsIndex)
         {
-            var resolutionBp = brainParameters.cameraResolutions[visObsIndex];
-            var widthBp = resolutionBp.width;
-            var heightBp = resolutionBp.height;
-            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
-            var heightT = tensorProxy.shape[1];
-            var widthT = tensorProxy.shape[2];
-            var pixelT = tensorProxy.shape[3];
-            if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
-            {
-                return $"The visual Observation {visObsIndex} of the model does not match. " +
-                    $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
-                    $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
-            }
+//            var resolutionBp = brainParameters.cameraResolutions[visObsIndex];
+//            var widthBp = resolutionBp.width;
+//            var heightBp = resolutionBp.height;
+//            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
+//            var heightT = tensorProxy.shape[1];
+//            var widthT = tensorProxy.shape[2];
+//            var pixelT = tensorProxy.shape[3];
+//            if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
+//            {
+//                return $"The visual Observation {visObsIndex} of the model does not match. " +
+//                    $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
+//                    $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
+//            }
             return null;
         }
 

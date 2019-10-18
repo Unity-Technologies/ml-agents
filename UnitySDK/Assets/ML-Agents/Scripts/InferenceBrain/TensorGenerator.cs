@@ -70,23 +70,24 @@ namespace MLAgents.InferenceBrain
                 new ActionMaskInputGenerator(allocator);
             m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] =
                 new RandomNormalInputGenerator(seed, allocator);
-            if (bp.cameraResolutions != null)
-            {
-                for (var visIndex = 0;
-                     visIndex < bp.cameraResolutions.Length;
-                     visIndex++)
-                {
-                    var index = visIndex;
-                    var bw = bp.cameraResolutions[visIndex].blackAndWhite;
-                    m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
-                        new VisualObservationInputGenerator(index, bw, allocator);
-                }
-            }
+
 
             // Generators for Outputs
             m_Dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
+        }
+
+        public void InitializeVisualObservations(Agent agent, ITensorAllocator allocator)
+        {
+            for (var visIndex = 0; visIndex < agent.m_Sensors.Count; visIndex++)
+            {
+                var sensor = agent.m_Sensors[visIndex];
+                // TODO don't actually need this now
+                // TODO handle non-visual sensors too - need to index better
+                m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
+                    new VisualObservationInputGenerator(visIndex, allocator);
+            }
         }
 
         /// <summary>
