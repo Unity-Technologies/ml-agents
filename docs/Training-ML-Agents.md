@@ -159,7 +159,7 @@ environment, you can set the following command line options when invoking
   All arguments after this flag will be passed to the executable. For example, setting
   `mlagents-learn config/trainer_config.yaml --env-args --num-orcs 42` would result in
    ` --num-orcs 42` passed to the executable.
-
+* `--cpu`: Forces training using CPU only.
 
 ### Training Config File
 
