@@ -157,12 +157,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         nargs=argparse.REMAINDER,
         help="Arguments passed to the Unity executable.",
     )
-    
     parser.add_argument(
-        "--cpu",
-        default=False,
-        action="store_true",
-        help="Run with CPU only",
+        "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
 
     args = parser.parse_args(argv)
