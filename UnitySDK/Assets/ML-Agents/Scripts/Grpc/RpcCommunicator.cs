@@ -131,7 +131,7 @@ namespace MLAgents
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
-                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto()
+                new UnityRLOutputProto.Types.ListAgentInfoProto()
             );
 
             CacheBrainParameters(brainKey, brainParameters);
@@ -295,7 +295,7 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var message = new CommunicatorObjects.UnityOutputProto
+            var message = new UnityOutputProto
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
@@ -432,12 +432,13 @@ namespace MLAgents
                 return;
             }
 
+            // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
             m_unsentBrainKeys[brainKey] = brainParameters;
         }
 
-        private CommunicatorObjects.UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
-            CommunicatorObjects.UnityRLInitializationOutputProto output = null;
+            UnityRLInitializationOutputProto output = null;
             //if (m_unsentBrainKeys.Count != 0)
             foreach(var brainKey in m_unsentBrainKeys.Keys)
             {
@@ -445,19 +446,18 @@ namespace MLAgents
                 {
                     if (output == null)
                     {
-                        output = new CommunicatorObjects.UnityRLInitializationOutputProto();
+                        output = new UnityRLInitializationOutputProto();
                     }
 
                     var brainParameters = m_unsentBrainKeys[brainKey];
                     output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
-
                 }
             }
 
             return output;
         }
 
-        private void UpdateSentBrainParameters(CommunicatorObjects.UnityRLInitializationOutputProto output)
+        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
         {
             if (output == null)
             {
@@ -469,7 +469,6 @@ namespace MLAgents
                 m_sentBrainKeys.Add(brainProto.BrainName);
                 m_unsentBrainKeys.Remove(brainProto.BrainName);
             }
-
         }
 
 #else

@@ -32,11 +32,8 @@ namespace MLAgents
             for (var t = 0; t < numTextures; t++)
             {
                 var texture = textures[t];
-                if (width != texture.width || height != texture.height)
-                {
-                    // TODO throw? We didn't do anything about this before.
-                }
-
+                Debug.Assert(width == texture.width, "All Textures must have the same dimension");
+                Debug.Assert(height == texture.height, "All Textures must have the same dimension");
                 TextureToTensorProxy(texture, tensorProxy, grayScale, t);
             }
         }

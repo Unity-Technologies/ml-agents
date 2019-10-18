@@ -82,8 +82,6 @@ namespace MLAgents.InferenceBrain
         {
             for (var visIndex = 0; visIndex < agent.m_Sensors.Count; visIndex++)
             {
-                var sensor = agent.m_Sensors[visIndex];
-                // TODO don't actually need this now
                 // TODO handle non-visual sensors too - need to index better
                 m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
                     new VisualObservationInputGenerator(visIndex, allocator);

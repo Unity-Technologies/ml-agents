@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Barracuda;
 using UnityEngine.Profiling;
@@ -109,13 +110,8 @@ namespace MLAgents.InferenceBrain
 
             if (!m_visualObservationsInitialized)
             {
-                // Just grab the first agent in the collection (any will do).
-                Agent firstAgent = null;
-                foreach (var agent in agents)
-                {
-                    firstAgent = agent;
-                    break;
-                }
+                // Just grab the first agent in the collection (any will suffice, really).
+                var firstAgent = agents.FirstOrDefault();
                 m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
                 m_visualObservationsInitialized = true;
             }

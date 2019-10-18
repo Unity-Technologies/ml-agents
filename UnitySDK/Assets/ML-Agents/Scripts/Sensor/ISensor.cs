@@ -23,14 +23,14 @@ namespace MLAgents.Sensor
 
         /// <summary>
         /// Write the observation data directly to the TensorProxy.
-        /// This is considered an advanced interface; for a simpler apporach, use SensorBase and override WriteFloats instead.
+        /// This is considered an advanced interface; for a simpler approach, use SensorBase and override WriteFloats instead.
         /// </summary>
-        /// <param name="proxy"></param>
-        /// <param name="index"></param>
+        /// <param name="tensorProxy"></param>
+        /// <param name="agentIndex"></param>
         void WriteToTensor(TensorProxy tensorProxy, int agentIndex);
 
         /// <summary>
-        /// Return a compressed representation of the observation. For small observations, this sbould generally not be
+        /// Return a compressed representation of the observation. For small observations, this should generally not be
         /// implemented. However, compressing large observations (such as visual results) can significantly improve
         /// model training time.
         /// </summary>

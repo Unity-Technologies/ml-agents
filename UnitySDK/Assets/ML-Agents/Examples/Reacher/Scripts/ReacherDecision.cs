@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensor;
 
 public class ReacherDecision : Decision
 {
-    public override float[] Decide(List<float> state, List<MLAgents.Sensor.ISensor> sensors, float reward, bool done, List<float> memory)
+    public override float[] Decide(List<float> state, List<ISensor> sensors, float reward, bool done, List<float> memory)
     {
         var action = new float[4];
         for (var i = 0; i < 4; i++)
@@ -14,7 +15,7 @@ public class ReacherDecision : Decision
         return action;
     }
 
-    public override List<float> MakeMemory(List<float> state, List<MLAgents.Sensor.ISensor> sensors, float reward, bool done, List<float> memory)
+    public override List<float> MakeMemory(List<float> state, List<ISensor> sensors, float reward, bool done, List<float> memory)
     {
         return new List<float>();
     }

@@ -560,8 +560,6 @@ namespace MLAgents
             var attachedSensors = GetComponents<SensorBase>();
             m_Sensors.Capacity += attachedSensors.Length;
             m_Sensors.AddRange(attachedSensors);
-            // Debug.Log($"Found {m_Sensors.Count} sensors for agent {this.name}");
-
         }
 
         /// <summary>

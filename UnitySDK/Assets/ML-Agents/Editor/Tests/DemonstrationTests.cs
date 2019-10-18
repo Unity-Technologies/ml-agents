@@ -46,7 +46,6 @@ namespace MLAgents.Tests
             var agentInfo = new AgentInfo
             {
                 reward = 1f,
-                // visualObservations = new List<Texture2D>(),
                 actionMasks = new[] {false, true},
                 done = true,
                 id = 5,

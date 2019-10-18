@@ -26,7 +26,6 @@ namespace MLAgents
             {
                 return k_LineHeight +
                     GetHeightDrawVectorObservation() +
-                    GetHeightDrawVisualObservation(property) +
                     GetHeightDrawVectorAction(property) +
                     GetHeightDrawVectorActionDescriptions(property);
             }
@@ -49,10 +48,6 @@ namespace MLAgents
                 // Vector Observations
                 DrawVectorObservation(position, property);
                 position.y += GetHeightDrawVectorObservation();
-
-                //Visual Observations
-                DrawVisualObservations(position, property);
-                position.y += GetHeightDrawVisualObservation(property);
 
                 // Vector Action
                 DrawVectorAction(position, property);
@@ -102,38 +97,6 @@ namespace MLAgents
         private static float GetHeightDrawVectorObservation()
         {
             return k_VecObsNumLine * k_LineHeight;
-        }
-
-        /// <summary>
-        /// Draws the Visual Observations parameters for the Brain Parameters
-        /// </summary>
-        /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="property">The SerializedProperty of the BrainParameters
-        /// to make the custom GUI for.</param>
-        private static void DrawVisualObservations(Rect position, SerializedProperty property)
-        {
-            // TODO REMOVE ME
-        }
-
-        /// <summary>
-        /// Draws the buttons to add and remove the visual observations parameters
-        /// </summary>
-        /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="resolutions">The SerializedProperty of the resolution array
-        /// to make the custom GUI for.</param>
-        private static void DrawVisualObsButtons(Rect position, SerializedProperty resolutions)
-        {
-            // TODO REMOVE
-        }
-
-        /// <summary>
-        /// The Height required to draw the Visual Observations parameters
-        /// </summary>
-        /// <returns>The height of the drawer of the Visual Observations </returns>
-        private static float GetHeightDrawVisualObservation(SerializedProperty property)
-        {
-            // TODO REMOVE
-            return 0;
         }
 
         /// <summary>
