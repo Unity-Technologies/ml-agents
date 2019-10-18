@@ -33,7 +33,7 @@ namespace MLAgents
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
-            if (m_Model == null || m_UseHeuristic)
+            if (m_UseHeuristic)
             {
                 return new HeuristicPolicy(heuristic);
             }
@@ -41,9 +41,13 @@ namespace MLAgents
             {
                 return new RemotePolicy(m_BrainParameters, m_BehaviorName);
             }
-            else
+            if (m_Model != null)
             {
                 return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+            }
+            else
+            {
+                return new HeuristicPolicy(heuristic);
             }
         }
 
