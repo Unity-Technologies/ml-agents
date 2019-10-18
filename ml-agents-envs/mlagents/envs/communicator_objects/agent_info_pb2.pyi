@@ -27,45 +27,51 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class AgentInfoProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    stacked_vector_observation = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
-    visual_observations = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[bytes]
+    stacked_vector_observation = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
+    visual_observations = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bytes]
     text_observation = ... # type: typing___Text
-    stored_vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
+    stored_vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
     stored_text_actions = ... # type: typing___Text
-    memories = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
-    reward = ... # type: float
-    done = ... # type: bool
-    max_step_reached = ... # type: bool
-    id = ... # type: int
-    action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[bool]
+    memories = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
+    reward = ... # type: builtin___float
+    done = ... # type: builtin___bool
+    max_step_reached = ... # type: builtin___bool
+    id = ... # type: builtin___int
+    action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
 
     @property
     def custom_observation(self) -> mlagents___envs___communicator_objects___custom_observation_pb2___CustomObservationProto: ...
 
     def __init__(self,
         *,
-        stacked_vector_observation : typing___Optional[typing___Iterable[float]] = None,
-        visual_observations : typing___Optional[typing___Iterable[bytes]] = None,
+        stacked_vector_observation : typing___Optional[typing___Iterable[builtin___float]] = None,
+        visual_observations : typing___Optional[typing___Iterable[builtin___bytes]] = None,
         text_observation : typing___Optional[typing___Text] = None,
-        stored_vector_actions : typing___Optional[typing___Iterable[float]] = None,
+        stored_vector_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
         stored_text_actions : typing___Optional[typing___Text] = None,
-        memories : typing___Optional[typing___Iterable[float]] = None,
-        reward : typing___Optional[float] = None,
-        done : typing___Optional[bool] = None,
-        max_step_reached : typing___Optional[bool] = None,
-        id : typing___Optional[int] = None,
-        action_mask : typing___Optional[typing___Iterable[bool]] = None,
+        memories : typing___Optional[typing___Iterable[builtin___float]] = None,
+        reward : typing___Optional[builtin___float] = None,
+        done : typing___Optional[builtin___bool] = None,
+        max_step_reached : typing___Optional[builtin___bool] = None,
+        id : typing___Optional[builtin___int] = None,
+        action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
         custom_observation : typing___Optional[mlagents___envs___communicator_objects___custom_observation_pb2___CustomObservationProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> AgentInfoProto: ...
+    def FromString(cls, s: builtin___bytes) -> AgentInfoProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation"]) -> bool: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation"]) -> builtin___bool: ...
         def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",u"custom_observation",u"done",u"id",u"max_step_reached",u"memories",u"reward",u"stacked_vector_observation",u"stored_text_actions",u"stored_vector_actions",u"text_observation",u"visual_observations"]) -> None: ...
     else:
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation",b"custom_observation"]) -> bool: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation",b"custom_observation"]) -> builtin___bool: ...
         def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",b"action_mask",u"custom_observation",b"custom_observation",u"done",b"done",u"id",b"id",u"max_step_reached",b"max_step_reached",u"memories",b"memories",u"reward",b"reward",u"stacked_vector_observation",b"stacked_vector_observation",u"stored_text_actions",b"stored_text_actions",u"stored_vector_actions",b"stored_vector_actions",u"text_observation",b"text_observation",u"visual_observations",b"visual_observations"]) -> None: ...

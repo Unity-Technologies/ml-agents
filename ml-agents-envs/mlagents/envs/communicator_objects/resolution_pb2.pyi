@@ -17,20 +17,26 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class ResolutionProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    width = ... # type: int
-    height = ... # type: int
-    gray_scale = ... # type: bool
+    width = ... # type: builtin___int
+    height = ... # type: builtin___int
+    gray_scale = ... # type: builtin___bool
 
     def __init__(self,
         *,
-        width : typing___Optional[int] = None,
-        height : typing___Optional[int] = None,
-        gray_scale : typing___Optional[bool] = None,
+        width : typing___Optional[builtin___int] = None,
+        height : typing___Optional[builtin___int] = None,
+        gray_scale : typing___Optional[builtin___bool] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> ResolutionProto: ...
+    def FromString(cls, s: builtin___bytes) -> ResolutionProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

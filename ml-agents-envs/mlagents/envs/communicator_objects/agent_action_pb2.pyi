@@ -27,31 +27,37 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class AgentActionProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
+    vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
     text_actions = ... # type: typing___Text
-    memories = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
-    value = ... # type: float
+    memories = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
+    value = ... # type: builtin___float
 
     @property
     def custom_action(self) -> mlagents___envs___communicator_objects___custom_action_pb2___CustomActionProto: ...
 
     def __init__(self,
         *,
-        vector_actions : typing___Optional[typing___Iterable[float]] = None,
+        vector_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
         text_actions : typing___Optional[typing___Text] = None,
-        memories : typing___Optional[typing___Iterable[float]] = None,
-        value : typing___Optional[float] = None,
+        memories : typing___Optional[typing___Iterable[builtin___float]] = None,
+        value : typing___Optional[builtin___float] = None,
         custom_action : typing___Optional[mlagents___envs___communicator_objects___custom_action_pb2___CustomActionProto] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> AgentActionProto: ...
+    def FromString(cls, s: builtin___bytes) -> AgentActionProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_action"]) -> bool: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"custom_action"]) -> builtin___bool: ...
         def ClearField(self, field_name: typing_extensions___Literal[u"custom_action",u"memories",u"text_actions",u"value",u"vector_actions"]) -> None: ...
     else:
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_action",b"custom_action"]) -> bool: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"custom_action",b"custom_action"]) -> builtin___bool: ...
         def ClearField(self, field_name: typing_extensions___Literal[u"custom_action",b"custom_action",u"memories",b"memories",u"text_actions",b"text_actions",u"value",b"value",u"vector_actions",b"vector_actions"]) -> None: ...

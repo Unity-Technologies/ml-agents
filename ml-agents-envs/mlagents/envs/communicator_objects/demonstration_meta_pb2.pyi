@@ -18,24 +18,30 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class DemonstrationMetaProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    api_version = ... # type: int
+    api_version = ... # type: builtin___int
     demonstration_name = ... # type: typing___Text
-    number_steps = ... # type: int
-    number_episodes = ... # type: int
-    mean_reward = ... # type: float
+    number_steps = ... # type: builtin___int
+    number_episodes = ... # type: builtin___int
+    mean_reward = ... # type: builtin___float
 
     def __init__(self,
         *,
-        api_version : typing___Optional[int] = None,
+        api_version : typing___Optional[builtin___int] = None,
         demonstration_name : typing___Optional[typing___Text] = None,
-        number_steps : typing___Optional[int] = None,
-        number_episodes : typing___Optional[int] = None,
-        mean_reward : typing___Optional[float] = None,
+        number_steps : typing___Optional[builtin___int] = None,
+        number_episodes : typing___Optional[builtin___int] = None,
+        mean_reward : typing___Optional[builtin___float] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> DemonstrationMetaProto: ...
+    def FromString(cls, s: builtin___bytes) -> DemonstrationMetaProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
