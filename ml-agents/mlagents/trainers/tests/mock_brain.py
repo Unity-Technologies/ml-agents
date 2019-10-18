@@ -99,11 +99,16 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     mock_env.return_value.step.return_value = {brain_name: mock_braininfo}
 
 
-def simulate_rollout(env, policy, buffer_init_samples):
+def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     brain_info_list = []
     for i in range(buffer_init_samples):
         brain_info_list.append(env.step()[env.external_brain_names[0]])
     buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
+    # If a key_list was given, remove those keys
+    if exclude_key_list:
+        for key in exclude_key_list:
+            if key in buffer.update_buffer:
+                buffer.update_buffer.pop(key)
     return buffer
 
 

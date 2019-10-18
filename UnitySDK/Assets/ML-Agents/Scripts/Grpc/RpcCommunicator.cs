@@ -124,6 +124,7 @@ namespace MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
+        /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
             m_HasQueried[brainKey] = false;
@@ -207,19 +208,19 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        QuitCommandReceived?.Invoke();
-                        return;
-                    }
+                {
+                    QuitCommandReceived?.Invoke();
+                    return;
+                }
                 case CommandProto.Reset:
-                    {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
-                        return;
-                    }
+                {
+                    ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 
@@ -239,7 +240,7 @@ namespace MLAgents
         /// sent once all the brains that were part of initialization have tried
         /// to send information.
         /// </summary>
-        /// <param name="key">Batch Key.</param>
+        /// <param name="brainKey">Batch Key.</param>
         /// <param name="agents">Agent info.</param>
         public void PutObservations(string brainKey, ICollection<Agent> agents)
         {

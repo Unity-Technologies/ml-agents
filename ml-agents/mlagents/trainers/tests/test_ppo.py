@@ -327,6 +327,12 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer_params = dummy_config
     trainer_params["use_recurrent"] = True
 
+    # Test curiosity reward signal
+    trainer_params["reward_signals"]["curiosity"] = {}
+    trainer_params["reward_signals"]["curiosity"]["strength"] = 1.0
+    trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
+    trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
+
     trainer = PPOTrainer(mock_brain, 0, trainer_params, True, False, 0, "0", False)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
@@ -334,6 +340,10 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["extrinsic_returns"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["extrinsic_value_estimates"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_returns"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_value_estimates"] = buffer.update_buffer["rewards"]
+
     trainer.training_buffer = buffer
     trainer.update_policy()
     # Make batch length a larger multiple of sequence length

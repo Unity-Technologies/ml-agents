@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Barracuda;
@@ -14,7 +14,6 @@ namespace MLAgents.InferenceBrain
 
         private NNModel m_Model;
         private InferenceDevice m_InferenceDevice;
-        private Model m_BarracudaModel;
         private IWorker m_Engine;
         private bool m_Verbose = false;
         private string[] m_OutputNames;
@@ -27,11 +26,11 @@ namespace MLAgents.InferenceBrain
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
-        /// <param name="model"> The Barracuda model to load
+        /// <param name="model"> The Barracuda model to load </param>
         /// <param name="brainParameters"> The parameters of the Brain used to generate the
-        /// placeholder tensors
+        /// placeholder tensors </param>
         /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
-        /// option for most of ML Agents models.
+        /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
         /// and Multinomial objects used when running inference.</param>
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
@@ -42,6 +41,7 @@ namespace MLAgents.InferenceBrain
             InferenceDevice inferenceDevice = InferenceDevice.CPU,
             int seed = 0)
         {
+            Model barracudaModel;
             m_Model = model;
             m_InferenceDevice = inferenceDevice;
             m_TensorAllocator = new TensorCachingAllocator();
@@ -53,34 +53,35 @@ namespace MLAgents.InferenceBrain
 
                 D.logEnabled = m_Verbose;
 
-                m_BarracudaModel = ModelLoader.Load(model.Value);
+                barracudaModel = ModelLoader.Load(model.Value);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
                     ? BarracudaWorkerFactory.Type.ComputePrecompiled
                     : BarracudaWorkerFactory.Type.CSharp;
-                m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, m_BarracudaModel, m_Verbose);
+                m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
             }
             else
             {
-                m_BarracudaModel = null;
+                barracudaModel = null;
                 m_Engine = null;
             }
 
-            m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(m_BarracudaModel);
-            m_OutputNames = BarracudaModelParamLoader.GetOutputNames(m_BarracudaModel);
-            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
-            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, m_BarracudaModel);
+            m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
+            m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
+            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, barracudaModel);
+            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
         }
 
-        private Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
+        private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
-            foreach (var inp in m_InferenceInputs)
+            foreach (var inp in infInputs)
             {
                 inputs[inp.name] = inp.data;
             }
 
             return inputs;
         }
+
         public void Dispose()
         {
             if (m_Engine != null)

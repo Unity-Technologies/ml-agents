@@ -229,10 +229,6 @@ class BrainInfo:
             logger.warning(
                 "An agent had a NaN reward for brain " + brain_params.brain_name
             )
-        if any(np.isnan(x.stacked_vector_observation).any() for x in agent_info_list):
-            logger.warning(
-                "An agent had a NaN observation for brain " + brain_params.brain_name
-            )
 
         if len(agent_info_list) == 0:
             vector_obs = np.zeros(
@@ -243,9 +239,32 @@ class BrainInfo:
                 )
             )
         else:
-            vector_obs = np.nan_to_num(
-                np.array([x.stacked_vector_observation for x in agent_info_list])
-            )
+            stacked_obs = []
+            has_nan = False
+            has_inf = False
+            for x in agent_info_list:
+                np_obs = np.array(x.stacked_vector_observation)
+                # Check for NaNs or infs in the observations
+                # If there's a NaN in the observations, the dot() result will be NaN
+                # If there's an Inf (either sign) then the result will be Inf
+                # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
+                # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
+                # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
+                d = np.dot(np_obs, np_obs)
+                has_nan = has_nan or np.isnan(d)
+                has_inf = has_inf or not np.isfinite(d)
+                stacked_obs.append(np_obs)
+            vector_obs = np.array(stacked_obs)
+
+            # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
+            if has_nan or has_inf:
+                vector_obs = np.nan_to_num(vector_obs)
+
+            if has_nan:
+                logger.warning(
+                    f"An agent had a NaN observation for brain {brain_params.brain_name}"
+                )
+
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
             visual_observation=vis_obs,

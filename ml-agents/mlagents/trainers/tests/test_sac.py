@@ -94,8 +94,9 @@ def test_sac_cc_policy(mock_env, dummy_config):
     env.close()
 
 
+@pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @mock.patch("mlagents.envs.environment.UnityEnvironment")
-def test_sac_update_reward_signals(mock_env, dummy_config):
+def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     # Test evaluate
     tf.reset_default_graph()
     # Add a Curiosity module
@@ -104,11 +105,17 @@ def test_sac_update_reward_signals(mock_env, dummy_config):
     dummy_config["reward_signals"]["curiosity"]["gamma"] = 0.99
     dummy_config["reward_signals"]["curiosity"]["encoding_size"] = 128
     env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+        mock_env, dummy_config, use_rnn=False, use_discrete=discrete, use_visual=False
     )
 
-    # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Test update, while removing PPO-specific buffer elements.
+    buffer = mb.simulate_rollout(
+        env,
+        policy,
+        BUFFER_INIT_SAMPLES,
+        exclude_key_list=["advantages", "actions_pre", "random_normal_epsilon"],
+    )
+
     # Mock out reward signal eval
     buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]

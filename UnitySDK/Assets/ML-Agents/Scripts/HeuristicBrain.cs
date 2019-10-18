@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using Debug = System.Diagnostics.Debug;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -47,6 +48,8 @@ namespace MLAgents
             if ((cDecision != null) && decision == null)
             {
                 decision = CreateInstance(cDecision) as Decision;
+                Debug.Assert(decision != null,
+                    "Expected Decision instance type: " + cDecision + " to be non-null.");
                 decision.brainParameters = brainParameters;
             }
         }

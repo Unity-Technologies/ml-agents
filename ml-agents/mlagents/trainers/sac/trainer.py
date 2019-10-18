@@ -329,10 +329,10 @@ class SACTrainer(RLTrainer):
                         self.trainer_parameters["batch_size"],
                         sequence_length=self.policy.sequence_length,
                     )
-                    update_stats = self.policy.update_reward_signals(
-                        reward_signal_minibatches, n_sequences
-                    )
-                    for stat_name, value in update_stats.items():
-                        batch_update_stats[stat_name].append(value)
+            update_stats = self.policy.update_reward_signals(
+                reward_signal_minibatches, n_sequences
+            )
+            for stat_name, value in update_stats.items():
+                batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
             self.stats[stat].append(np.mean(stat_list))
