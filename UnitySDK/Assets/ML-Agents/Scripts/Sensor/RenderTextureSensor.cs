@@ -7,9 +7,9 @@ namespace MLAgents.Sensor
     class RenderTextureSensor : SensorBase
     {
         public RenderTexture renderTexture;
-        public int width;
-        public int height;
-        public bool grayscale;
+        public int width = 84;
+        public int height = 84;
+        public bool grayscale = false;
 
         public override int[] GetFloatObservationShape()
         {

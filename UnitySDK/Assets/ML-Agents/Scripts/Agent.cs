@@ -121,12 +121,14 @@ namespace MLAgents
         /// The list of the Camera GameObjects the agent uses for visual
         /// observations.
         /// </summary>
+        // TODO REMOVE!
         public List<Camera> agentCameras = new List<Camera>();
 
         /// <summary>
         /// The list of the RenderTextures the agent uses for visual
         /// observations.
         /// </summary>
+        // TODO REMOVE!
         public List<RenderTexture> agentRenderTextures = new List<RenderTexture>();
 
 
@@ -598,17 +600,6 @@ namespace MLAgents
             Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
             Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
                 m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
-
-            var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
-            if (param.cameraResolutions.Length > visualObservationCount)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "Not enough cameras/renderTextures for agent {0} : Brain {1} expecting at " +
-                    "least {2} cameras/renderTextures but only {3} were present.",
-                    gameObject.name, brain.name,
-                    brain.brainParameters.cameraResolutions.Length,
-                    visualObservationCount));
-            }
 
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;

@@ -28,22 +28,21 @@ namespace MLAgents.CommunicatorObjects {
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGj9tbGFnZW50cy9lbnZz",
             "L2NvbW11bmljYXRvcl9vYmplY3RzL2NvbXByZXNzZWRfb2JzZXJ2YXRpb24u",
             "cHJvdG8aO21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvY3Vz",
-            "dG9tX29ic2VydmF0aW9uLnByb3RvIq8DCg5BZ2VudEluZm9Qcm90bxIiChpz",
-            "dGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMoAhIbChN2aXN1YWxfb2Jz",
-            "ZXJ2YXRpb25zGAIgAygMEhgKEHRleHRfb2JzZXJ2YXRpb24YAyABKAkSHQoV",
-            "c3RvcmVkX3ZlY3Rvcl9hY3Rpb25zGAQgAygCEhsKE3N0b3JlZF90ZXh0X2Fj",
-            "dGlvbnMYBSABKAkSEAoIbWVtb3JpZXMYBiADKAISDgoGcmV3YXJkGAcgASgC",
-            "EgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVhY2hlZBgJIAEoCBIKCgJp",
-            "ZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCBJIChJjdXN0b21fb2JzZXJ2",
-            "YXRpb24YDCABKAsyLC5jb21tdW5pY2F0b3Jfb2JqZWN0cy5DdXN0b21PYnNl",
-            "cnZhdGlvblByb3RvElEKF2NvbXByZXNzZWRfb2JzZXJ2YXRpb25zGA0gAygL",
-            "MjAuY29tbXVuaWNhdG9yX29iamVjdHMuQ29tcHJlc3NlZE9ic2VydmF0aW9u",
-            "UHJvdG9CH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3Rv",
-            "Mw=="));
+            "dG9tX29ic2VydmF0aW9uLnByb3RvIpgDCg5BZ2VudEluZm9Qcm90bxIiChpz",
+            "dGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMoAhIYChB0ZXh0X29ic2Vy",
+            "dmF0aW9uGAMgASgJEh0KFXN0b3JlZF92ZWN0b3JfYWN0aW9ucxgEIAMoAhIb",
+            "ChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEhAKCG1lbW9yaWVzGAYgAygC",
+            "Eg4KBnJld2FyZBgHIAEoAhIMCgRkb25lGAggASgIEhgKEG1heF9zdGVwX3Jl",
+            "YWNoZWQYCSABKAgSCgoCaWQYCiABKAUSEwoLYWN0aW9uX21hc2sYCyADKAgS",
+            "SAoSY3VzdG9tX29ic2VydmF0aW9uGAwgASgLMiwuY29tbXVuaWNhdG9yX29i",
+            "amVjdHMuQ3VzdG9tT2JzZXJ2YXRpb25Qcm90bxJRChdjb21wcmVzc2VkX29i",
+            "c2VydmF0aW9ucxgNIAMoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLkNvbXBy",
+            "ZXNzZWRPYnNlcnZhdGlvblByb3RvSgQIAhADQh+qAhxNTEFnZW50cy5Db21t",
+            "dW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CompressedObservationReflection.Descriptor, global::MLAgents.CommunicatorObjects.CustomObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "VisualObservations", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
           }));
     }
     #endregion
@@ -76,7 +75,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto(AgentInfoProto other) : this() {
       stackedVectorObservation_ = other.stackedVectorObservation_.Clone();
-      visualObservations_ = other.visualObservations_.Clone();
       textObservation_ = other.textObservation_;
       storedVectorActions_ = other.storedVectorActions_.Clone();
       storedTextActions_ = other.storedTextActions_;
@@ -104,16 +102,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<float> StackedVectorObservation {
       get { return stackedVectorObservation_; }
-    }
-
-    /// <summary>Field number for the "visual_observations" field.</summary>
-    public const int VisualObservationsFieldNumber = 2;
-    private static readonly pb::FieldCodec<pb::ByteString> _repeated_visualObservations_codec
-        = pb::FieldCodec.ForBytes(18);
-    private readonly pbc::RepeatedField<pb::ByteString> visualObservations_ = new pbc::RepeatedField<pb::ByteString>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<pb::ByteString> VisualObservations {
-      get { return visualObservations_; }
     }
 
     /// <summary>Field number for the "text_observation" field.</summary>
@@ -247,7 +235,6 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if(!stackedVectorObservation_.Equals(other.stackedVectorObservation_)) return false;
-      if(!visualObservations_.Equals(other.visualObservations_)) return false;
       if (TextObservation != other.TextObservation) return false;
       if(!storedVectorActions_.Equals(other.storedVectorActions_)) return false;
       if (StoredTextActions != other.StoredTextActions) return false;
@@ -266,7 +253,6 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= stackedVectorObservation_.GetHashCode();
-      hash ^= visualObservations_.GetHashCode();
       if (TextObservation.Length != 0) hash ^= TextObservation.GetHashCode();
       hash ^= storedVectorActions_.GetHashCode();
       if (StoredTextActions.Length != 0) hash ^= StoredTextActions.GetHashCode();
@@ -292,7 +278,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       stackedVectorObservation_.WriteTo(output, _repeated_stackedVectorObservation_codec);
-      visualObservations_.WriteTo(output, _repeated_visualObservations_codec);
       if (TextObservation.Length != 0) {
         output.WriteRawTag(26);
         output.WriteString(TextObservation);
@@ -334,7 +319,6 @@ namespace MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       size += stackedVectorObservation_.CalculateSize(_repeated_stackedVectorObservation_codec);
-      size += visualObservations_.CalculateSize(_repeated_visualObservations_codec);
       if (TextObservation.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(TextObservation);
       }
@@ -372,7 +356,6 @@ namespace MLAgents.CommunicatorObjects {
         return;
       }
       stackedVectorObservation_.Add(other.stackedVectorObservation_);
-      visualObservations_.Add(other.visualObservations_);
       if (other.TextObservation.Length != 0) {
         TextObservation = other.TextObservation;
       }
@@ -415,10 +398,6 @@ namespace MLAgents.CommunicatorObjects {
           case 10:
           case 13: {
             stackedVectorObservation_.AddEntriesFrom(input, _repeated_stackedVectorObservation_codec);
-            break;
-          }
-          case 18: {
-            visualObservations_.AddEntriesFrom(input, _repeated_visualObservations_codec);
             break;
           }
           case 26: {

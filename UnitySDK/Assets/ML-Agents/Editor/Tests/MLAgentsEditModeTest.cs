@@ -244,7 +244,6 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -370,7 +369,6 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -487,7 +485,6 @@ namespace MLAgents.Tests
             agent1.agentParameters.resetOnDone = false;
             agent2.agentParameters.resetOnDone = false;
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -567,7 +564,6 @@ namespace MLAgents.Tests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 

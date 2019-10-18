@@ -6,7 +6,6 @@ from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 impor
 )
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
-from mlagents.envs.communicator_objects.resolution_pb2 import ResolutionProto
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 
 
@@ -39,15 +38,14 @@ class MockCommunicator(Communicator):
             self.num_stacks = 1
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
-        resolutions = [
-            ResolutionProto(width=30, height=40, gray_scale=False)
-            for i in range(self.visual_inputs)
-        ]
+        # resolutions = [
+        #     ResolutionProto(width=30, height=40, gray_scale=False)
+        #     for i in range(self.visual_inputs)
+        # ]
         bp = BrainParametersProto(
             vector_observation_size=self.vec_obs_size,
             num_stacked_vector_observations=self.num_stacks,
             vector_action_size=[2],
-            camera_resolutions=resolutions,
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
             brain_name=self.brain_name,

@@ -15,21 +15,25 @@ from typing import (
 )
 
 
-class CommandProto(int):
+builtin___int = int
+builtin___str = str
+
+
+class CommandProto(builtin___int):
     DESCRIPTOR: google___protobuf___descriptor___EnumDescriptor = ...
     @classmethod
-    def Name(cls, number: int) -> str: ...
+    def Name(cls, number: builtin___int) -> builtin___str: ...
     @classmethod
-    def Value(cls, name: str) -> CommandProto: ...
+    def Value(cls, name: builtin___str) -> 'CommandProto': ...
     @classmethod
-    def keys(cls) -> typing___List[str]: ...
+    def keys(cls) -> typing___List[builtin___str]: ...
     @classmethod
-    def values(cls) -> typing___List[CommandProto]: ...
+    def values(cls) -> typing___List['CommandProto']: ...
     @classmethod
-    def items(cls) -> typing___List[typing___Tuple[str, CommandProto]]: ...
-    STEP = typing___cast(CommandProto, 0)
-    RESET = typing___cast(CommandProto, 1)
-    QUIT = typing___cast(CommandProto, 2)
-STEP = typing___cast(CommandProto, 0)
-RESET = typing___cast(CommandProto, 1)
-QUIT = typing___cast(CommandProto, 2)
+    def items(cls) -> typing___List[typing___Tuple[builtin___str, 'CommandProto']]: ...
+    STEP = typing___cast('CommandProto', 0)
+    RESET = typing___cast('CommandProto', 1)
+    QUIT = typing___cast('CommandProto', 2)
+STEP = typing___cast('CommandProto', 0)
+RESET = typing___cast('CommandProto', 1)
+QUIT = typing___cast('CommandProto', 2)

@@ -8,7 +8,7 @@ package communicator_objects;
 
 message AgentInfoProto {
     repeated float stacked_vector_observation = 1;
-    repeated bytes visual_observations = 2;
+    reserved 2; // deprecated repeated bytes visual_observations = 2;
     string text_observation = 3;
     repeated float stored_vector_actions = 4;
     string stored_text_actions = 5;

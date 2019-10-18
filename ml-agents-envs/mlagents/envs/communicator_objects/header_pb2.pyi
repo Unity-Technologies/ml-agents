@@ -18,18 +18,24 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class HeaderProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    status = ... # type: int
+    status = ... # type: builtin___int
     message = ... # type: typing___Text
 
     def __init__(self,
         *,
-        status : typing___Optional[int] = None,
+        status : typing___Optional[builtin___int] = None,
         message : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> HeaderProto: ...
+    def FromString(cls, s: builtin___bytes) -> HeaderProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
