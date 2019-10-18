@@ -38,10 +38,6 @@ class MockCommunicator(Communicator):
             self.num_stacks = 1
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
-        # resolutions = [
-        #     ResolutionProto(width=30, height=40, gray_scale=False)
-        #     for i in range(self.visual_inputs)
-        # ]
         bp = BrainParametersProto(
             vector_observation_size=self.vec_obs_size,
             num_stacked_vector_observations=self.num_stacks,

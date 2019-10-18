@@ -14,16 +14,11 @@ logger = logging.getLogger("mlagents.envs")
 class CameraResolution(NamedTuple):
     height: int
     width: int
-    gray_scale: bool
+    num_channels: int
 
     @property
-    def num_channels(self) -> int:
-        return 1 if self.gray_scale else 3
-
-    @staticmethod
-    def from_proto(p):
-        # TODO REMOVE
-        return CameraResolution(height=p.height, width=p.width, gray_scale=p.gray_scale)
+    def gray_scale(self) -> bool:
+        return self.num_channels == 1
 
 
 class BrainParameters:
@@ -78,11 +73,7 @@ class BrainParameters:
         :return: BrainParameter object.
         """
         resolutions = [
-            CameraResolution(
-                x.shape[0],
-                x.shape[1],
-                x.shape[2] == 1,  # is_grayscale  # TODO save num channels
-            )
+            CameraResolution(x.shape[0], x.shape[1], x.shape[2])
             for x in agent_info.compressed_observations
         ]
 
