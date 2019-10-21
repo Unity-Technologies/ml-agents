@@ -1,6 +1,6 @@
 # Creating an Academy
 
-An Academy orchestrates all the Agent and Brain objects in a Unity scene. Every
+An Academy orchestrates all the Agent objects in a Unity scene. Every
 scene containing Agents must contain a single Academy. To use an Academy, you
 must create your own subclass. However, all the methods you can override are
 optional.

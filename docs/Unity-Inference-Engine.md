@@ -26,8 +26,8 @@ but we only tested for the following platforms :
 
 ## Using the Unity Inference Engine
 
-When using a **Learning Brain**, drag the `.nn` file into the **Model** field 
-in the Inspector. 
+When using a model, drag the `.nn` file into the **Model** field 
+in the Inspector of the Agent. 
 Select the **Inference Device** : CPU or GPU you want to use for Inference.
 
 **Note:** For most of the models generated with the ML-Agents toolkit, CPU will be faster than GPU.

@@ -22,10 +22,6 @@
 * [Designing a Learning Environment](Learning-Environment-Design.md)
   * [Agents](Learning-Environment-Design-Agents.md)
   * [Academy](Learning-Environment-Design-Academy.md)
-  * [Brains](Learning-Environment-Design-Brains.md):
-    [Player](Learning-Environment-Design-Player-Brains.md),
-    [Heuristic](Learning-Environment-Design-Heuristic-Brains.md),
-    [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 
 ### Advanced Usage

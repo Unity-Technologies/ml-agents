@@ -44,7 +44,7 @@ UnityAgentsException: The Communicator was unable to connect. Please make sure t
 
 There may be a number of possible causes:
 
-* _Cause_: There may be no agent in the scene with a LearningBrain
+* _Cause_: There may be no agent in the scene 
 * _Cause_: On OSX, the firewall may be preventing communication with the
   environment. _Solution_: Add the built environment binary to the list of
   exceptions on the firewall by following
