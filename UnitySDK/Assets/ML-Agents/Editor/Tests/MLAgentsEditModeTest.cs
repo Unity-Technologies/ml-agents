@@ -1,6 +1,8 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using MLAgents.Sensor;
+using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -54,6 +56,46 @@ namespace MLAgents.Tests
         public override void AgentOnDone()
         {
             agentOnDoneCalls += 1;
+        }
+
+        public override void AddCustomSensors()
+        {
+            var sensor1 = new TestSensor("testsensor1");
+            var sensor2 = new TestSensor("testsensor2");
+
+            m_Sensors.Add(sensor2);
+            m_Sensors.Add(sensor1);
+        }
+    }
+
+    public class TestSensor : ISensor
+    {
+        public string sensorName;
+
+        public TestSensor(string n)
+        {
+            sensorName = n;
+        }
+
+        public int[] GetFloatObservationShape() {
+            return new[] {1};
+        }
+
+        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+
+        public byte[] GetCompressedObservation()
+        {
+            return null;
+        }
+
+        public CompressionType GetCompressionType()
+        {
+            return CompressionType.None;
+        }
+
+        public string GetName()
+        {
+            return sensorName;
         }
     }
 
@@ -177,6 +219,10 @@ namespace MLAgents.Tests
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
+
+            // Make sure the sensors were sorted
+            Assert.AreEqual(agent1.m_Sensors[0].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.m_Sensors[1].GetName(), "testsensor2");
         }
     }
 
@@ -589,6 +635,12 @@ namespace MLAgents.Tests
                 }
                 j++;
             }
+        }
+
+        [Test]
+        public void TestSensors()
+        {
+
         }
     }
 }

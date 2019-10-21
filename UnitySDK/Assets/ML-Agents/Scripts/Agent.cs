@@ -552,17 +552,34 @@ namespace MLAgents
         /// <summary>
         /// Set up the list of ISensors on the Agent. By default, this will select any
         /// SensorBase's attached to the Agent. To add custom ISensor implementations that are not attached,
-        /// override this method and add them there.
+        /// override the AddCustomSensors method and add them to m_Sensors there.
         /// </summary>
-        public virtual void InitializeSensors()
+        public void InitializeSensors()
         {
-            // TODO deterministic sorting
             var attachedSensorComponents = GetComponents<SensorComponent>();
             m_Sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
                 m_Sensors.Add(component.CreateSensor());
             }
+
+            AddCustomSensors();
+
+            // Sort the sensors by name to ensure determinism
+            m_Sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+
+            // Make sure the names are actually unique
+            for (var i = 0; i < m_Sensors.Count - 1; i++)
+            {
+                Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i+1].GetName()), "Sensor names must be unique.");
+            }
+        }
+
+        /// <summary>
+        /// Create additional ISensors to be added to Agent.
+        /// </summary>
+        public virtual void AddCustomSensors()
+        {
         }
 
         /// <summary>
