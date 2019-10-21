@@ -159,6 +159,7 @@ GameObject:
   - component: {fileID: 65678389736547598}
   - component: {fileID: 54606255118850520}
   - component: {fileID: 114451776683649118}
+  - component: {fileID: 114516857402348526}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1861,9 +1862,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: a36aad05c06144991a0a5e87de40d003, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20961984019151212}
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1875,3 +1873,19 @@ MonoBehaviour:
   symbolO: {fileID: 1945451279398622}
   symbolX: {fileID: 1162012575508818}
   useVectorObs: 0
+--- !u!114 &114516857402348526
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1234267001558658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0

@@ -558,6 +558,7 @@ GameObject:
   - component: {fileID: 114741503533626942}
   - component: {fileID: 114027965503222182}
   - component: {fileID: 65882754134362954}
+  - component: {fileID: 114538851081060382}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -3159,6 +3160,22 @@ MonoBehaviour:
   onMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
   offMaterial: {fileID: 2100000, guid: 5c59bd36def9a4684be49a21cf201a2d, type: 2}
   myButton: {fileID: 1756074776765382}
+--- !u!114 &114538851081060382
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736680821577442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!114 &114659265491970150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3198,9 +3215,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20712684238256298}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
