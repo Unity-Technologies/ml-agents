@@ -600,6 +600,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         if len(arr) == 0:
             return arr
         if isinstance(arr[0], np.ndarray):
+            # pylint: disable=no-member
             arr = [item for sublist in arr for item in sublist.tolist()]
         if isinstance(arr[0], list):
             # pylint: disable=not-an-iterable
