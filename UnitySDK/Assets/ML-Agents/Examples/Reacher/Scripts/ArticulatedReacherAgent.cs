@@ -69,11 +69,14 @@ public class ArticulatedReacherAgent : Agent
         
         var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * maxTorque;
         var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * maxTorque;
-        m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        //m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        m_RbA.AddTorque(new Vector3(0f, torqueX, torqueZ));
+        
 
         torqueX = Mathf.Clamp(vectorAction[2], -1f, 1f) * maxTorque;
         torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * maxTorque;
-        m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        //m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+        m_RbB.AddTorque(new Vector3(0f, torqueX, torqueZ));
     }
 
     /// <summary>
