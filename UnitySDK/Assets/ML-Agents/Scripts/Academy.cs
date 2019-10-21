@@ -75,10 +75,8 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors. More
-    /// specifically, an academy is a collection of Brain objects and each agent
-    /// in a scene is attached to one brain (a single brain may be attached to
-    /// multiple agents). Currently, this class is expected to be extended to
+    /// An Academy is where Agent objects go to train their behaviors.
+    /// Currently, this class is expected to be extended to
     /// implement the desired academy behavior.
     /// </summary>
     /// <remarks>
@@ -87,8 +85,8 @@ namespace MLAgents
     /// the presence of a communicator, the academy is run in training mode where
     /// the states and observations of each agent are sent through the
     /// communicator. In the absence of a communicator, the academy is run in
-    /// inference mode where the agent behavior is determined by the brain
-    /// attached to it (which may be internal, heuristic or player).
+    /// inference mode where the agent behavior is determined by the Policy
+    /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
@@ -131,7 +129,7 @@ namespace MLAgents
         /// </summary>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training with an external Brain by passing a config
+        /// be modified when training by passing a config
         /// dictionary at reset.
         /// </remarks>
         [SerializeField]
@@ -155,8 +153,8 @@ namespace MLAgents
 
         /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
-        /// or absence of a communicator. Furthermore, it can be modified by an
-        /// external Brain during reset via <see cref="SetIsInference"/>.
+        /// or absence of a communicator. Furthermore, it can be modified during 
+        /// training via <see cref="SetIsInference"/>.
         bool m_IsInference = true;
 
         /// The number of episodes completed by the environment. Incremented
@@ -173,7 +171,7 @@ namespace MLAgents
         int m_TotalStepCount;
 
         /// Flag that indicates whether the inference/training mode of the
-        /// environment was switched by the external Brain. This impacts the
+        /// environment was switched by the training process. This impacts the
         /// engine settings at the next environment step.
         bool m_ModeSwitched;
 
@@ -186,14 +184,14 @@ namespace MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
-        // The Academy uses a series of events to communicate with agents and
-        // brains to facilitate synchronization. More specifically, it ensure
+        // The Academy uses a series of events to communicate with agents 
+        // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
-        // Signals to all the Brains at each environment step so they can decide
-        // actions for their agents.
+        // Signals to all the Agents at each environment step so they can use 
+        // their Policy to decide on their next action.
         public event System.Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
@@ -211,7 +209,7 @@ namespace MLAgents
         public event System.Action AgentResetIfDone;
 
         // Signals to all the agents at each environment step so they can send
-        // their state to their Brain if they have requested a decision.
+        // their state to their Policy if they have requested a decision.
         public event System.Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
@@ -505,7 +503,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Performs a single environment update to the Academy, Brain and Agent
+        /// Performs a single environment update to the Academy, and Agent
         /// objects within the environment.
         /// </summary>
         void EnvironmentStep()
@@ -532,7 +530,7 @@ namespace MLAgents
                 AgentSendState?.Invoke();
             }
 
-            using (TimerStack.Instance.Scoped("BrainDecideAction"))
+            using (TimerStack.Instance.Scoped("DecideAction"))
             {
                 DecideAction?.Invoke();
             }
