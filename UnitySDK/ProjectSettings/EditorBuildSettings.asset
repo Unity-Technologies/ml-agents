@@ -4,4 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Reacher/Scenes/ArticulatedReacher.unity
+    guid: 36c2de1a721aa550b8b9a53c6736ed89
+  - enabled: 0
+    path: Assets/ML-Agents/Examples/Reacher/Scenes/Reacher.unity
+    guid: e58a3c10c43de4b6b91b7149838d1dfb
+  m_configObjects: {}

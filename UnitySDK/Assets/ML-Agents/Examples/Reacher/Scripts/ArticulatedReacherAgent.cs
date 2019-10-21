@@ -63,12 +63,16 @@ public class ArticulatedReacherAgent : Agent
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();
 
-        var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * 150f;
-        var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * 150f;
+        //float maxTorque = 150f;
+        //float maxTorque = 500f;
+        float maxTorque = 1000f;
+        
+        var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * maxTorque;
+        var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * maxTorque;
         m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
-        torqueX = Mathf.Clamp(vectorAction[2], -1f, 1f) * 150f;
-        torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * 150f;
+        torqueX = Mathf.Clamp(vectorAction[2], -1f, 1f) * maxTorque;
+        torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * maxTorque;
         m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
     }
 
@@ -89,11 +93,11 @@ public class ArticulatedReacherAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        //pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
-        //pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
+        pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
         
-        //pendulumB.transform.position = new Vector3(0f, -10f, 0f) + transform.position;
-        //pendulumB.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        pendulumB.transform.position = new Vector3(0f, -10f, 0f) + transform.position;
+        pendulumB.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
         
         m_GoalDegree = Random.Range(0, 360);
         UpdateGoalPosition();
