@@ -609,7 +609,10 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Generate data for each sensor and store it on the Agent's AgentInfo
+        /// Generate data for each sensor and store it on the Agent's AgentInfo.
+        /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
+        /// during inference the sensors are used to write directly to the Tensor data. This will likely change in the
+        /// future to be controlled by the type of brain being used.
         /// </summary>
         public void GenerateSensorData()
         {
