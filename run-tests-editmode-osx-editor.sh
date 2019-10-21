@@ -2,7 +2,16 @@
 
 set -eo pipefail
 
-UNITY="${UNITY_PATH:="~/2017.4.33f1/Unity.app/Contents/MacOS}/Unity"
+EDITOR_VERSION="2017.4.33f1"
+BOKKEN_UNITY="/Users/bokken/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
+HUB_UNITY="/Applications/Unity/Hub/Editor/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
+
+if [[ -f ${BOKKEN_UNITY} ]]; then 
+    echo "PREFIX was unset using '${default_unity_path}' as default"
+    UNITY=${BOKKEN_UNITY}
+else
+    UNITY=${HUB_UNITY}
+fi 
 
 pushd $(dirname "${0}") > /dev/null
 BASETPATH=$(pwd -L)
@@ -10,9 +19,9 @@ popd > /dev/null
 
 echo "Cleaning previous results"
 
-if [ -e $BASETPATH/results.xml ]
+if [[ -e ${BASETPATH}/results.xml ]]
 then
-	rm $BASETPATH/results.xml
+	rm ${BASETPATH}/results.xml
 fi
 
 echo "Starting tests via $UNITY"
@@ -31,8 +40,10 @@ DURATION=$(echo 'cat /test-run/test-suite/@duration' | xmllint --shell results.x
 
 echo "$TOTAL tests executed in ${DURATION}s: $PASSED passed, $FAILED failed. More details in results.xml"
 
-if [ $RES -eq 0 ] && [ -e $BASETPATH/results.xml ]; then
+if [[ ${RES} -eq 0 ]] && [[ -e ${BASETPATH}/results.xml ]]; then
     echo "Test run SUCCEEDED!"
 else
     echo "Test run FAILED!"
 fi
+
+exit ${RES}
