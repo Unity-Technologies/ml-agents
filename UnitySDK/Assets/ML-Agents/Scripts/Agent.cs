@@ -219,29 +219,11 @@ namespace MLAgents
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
+    [RequireComponent(typeof(BehaviorParameters))]
     public abstract class Agent : MonoBehaviour
     {
         private IPolicy m_Brain;
-
-        [HideInInspector]
-        [SerializeField]
-        private BrainParameters m_BrainParameters = new BrainParameters();
-        [HideInInspector] [SerializeField] private NNModel m_Model;
-        [HideInInspector] [SerializeField] private InferenceDevice m_InferenceDevice;
-        [HideInInspector] [SerializeField] private bool m_UseHeuristic;
-        [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
-
-        [HideInInspector]
-        public BrainParameters brainParameters
-        {
-            get { return m_BrainParameters; }
-        }
-
-        [HideInInspector]
-        public string behaviorName
-        {
-            get { return m_BehaviorName; }
-        }
+        private BehaviorParameters m_PolicyFactory;
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -341,16 +323,8 @@ namespace MLAgents
             academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
-
-            m_Brain = PolicyFactory.GeneratePolicy(
-                m_BrainParameters,
-                m_UseHeuristic,
-                Heuristic,
-                academy.IsCommunicatorOn,
-                m_BehaviorName,
-                m_Model,
-                m_InferenceDevice
-            );
+            m_PolicyFactory = GetComponent<BehaviorParameters>();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
         }
@@ -389,26 +363,9 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            if ((m_BehaviorName == behaviorName) &&
-            (m_Model = model) &&
-            (m_InferenceDevice == inferenceDevice))
-            {
-                return;
-            }
-            var academy = FindObjectOfType<Academy>();
-            academy.LazyInitialization();
-            m_Model = model;
-            m_InferenceDevice = inferenceDevice;
-            m_BehaviorName = behaviorName;
-            m_Brain = PolicyFactory.GeneratePolicy(
-                m_BrainParameters,
-                m_UseHeuristic,
-                Heuristic,
-                academy.IsCommunicatorOn,
-                m_BehaviorName,
-                m_Model,
-                m_InferenceDevice
-            );
+            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
+            m_Brain?.Dispose();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
         /// <summary>
@@ -525,7 +482,7 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            var param = m_BrainParameters;
+            var param = m_PolicyFactory.brainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
@@ -585,7 +542,10 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            return new float[0];
+            throw new UnityAgentsException(string.Format(
+                    "The Heuristic method was not implemented for the Agent on the " +
+                    "{0} GameObject.",
+                    gameObject.name));
         }
 
         /// <summary>
@@ -609,7 +569,7 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = m_BrainParameters;
+            var param = m_PolicyFactory.brainParameters;
             if (m_Info.vectorObservation.Count != param.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(

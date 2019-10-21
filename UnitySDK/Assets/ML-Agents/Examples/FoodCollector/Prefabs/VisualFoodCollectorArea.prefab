@@ -36,6 +36,7 @@ GameObject:
   - component: {fileID: 4832857155303182}
   - component: {fileID: 65510090524908360}
   - component: {fileID: 54865913683142128}
+  - component: {fileID: 114564810125537486}
   - component: {fileID: 114080191139215080}
   m_Layer: 0
   m_Name: Agent (2)
@@ -105,6 +106,7 @@ GameObject:
   - component: {fileID: 4892856258802580}
   - component: {fileID: 65925430337389280}
   - component: {fileID: 54653908079683982}
+  - component: {fileID: 114320361409861110}
   - component: {fileID: 114247162260729192}
   m_Layer: 0
   m_Name: Agent (3)
@@ -340,6 +342,7 @@ GameObject:
   - component: {fileID: 4015274133258160}
   - component: {fileID: 65959033265788268}
   - component: {fileID: 54207587506622482}
+  - component: {fileID: 114217412993098834}
   - component: {fileID: 114863435926048830}
   m_Layer: 0
   m_Name: Agent (1)
@@ -548,6 +551,7 @@ GameObject:
   - component: {fileID: 4721926730511018}
   - component: {fileID: 65563133257606082}
   - component: {fileID: 54258406050963606}
+  - component: {fileID: 114616966616559464}
   - component: {fileID: 114903360062746560}
   m_Layer: 0
   m_Name: Agent
@@ -2988,20 +2992,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    cameraResolutions:
-    - width: 84
-      height: 84
-      blackAndWhite: 0
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: VisualFoodCollector
   agentParameters:
     agentCameras:
     - {fileID: 20679969901551906}
@@ -3020,15 +3010,15 @@ MonoBehaviour:
   myLaser: {fileID: 1006968938063954}
   contribute: 0
   useVectorObs: 0
---- !u!114 &114247162260729192
+--- !u!114 &114217412993098834
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1211677436653794}
+  m_GameObject: {fileID: 1528979566928068}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
@@ -3045,6 +3035,17 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: VisualFoodCollector
+--- !u!114 &114247162260729192
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1211677436653794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   agentParameters:
     agentCameras:
     - {fileID: 20331881495365350}
@@ -3063,6 +3064,31 @@ MonoBehaviour:
   myLaser: {fileID: 1824268286961114}
   contribute: 0
   useVectorObs: 0
+--- !u!114 &114320361409861110
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1211677436653794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: VisualFoodCollector
 --- !u!114 &114541409203740600
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3080,15 +3106,15 @@ MonoBehaviour:
   numBadFood: 25
   respawnFood: 1
   range: 45
---- !u!114 &114863435926048830
+--- !u!114 &114564810125537486
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1528979566928068}
+  m_GameObject: {fileID: 1020607011779042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
@@ -3105,6 +3131,42 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: VisualFoodCollector
+--- !u!114 &114616966616559464
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1746403492684166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    cameraResolutions:
+    - width: 84
+      height: 84
+      blackAndWhite: 0
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: VisualFoodCollector
+--- !u!114 &114863435926048830
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1528979566928068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   agentParameters:
     agentCameras:
     - {fileID: 20456226298854438}
@@ -3134,20 +3196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    cameraResolutions:
-    - width: 84
-      height: 84
-      blackAndWhite: 0
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
-  m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: VisualFoodCollector
   agentParameters:
     agentCameras:
     - {fileID: 20191148433578948}
