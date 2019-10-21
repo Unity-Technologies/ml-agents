@@ -636,11 +636,5 @@ namespace MLAgents.Tests
                 j++;
             }
         }
-
-        [Test]
-        public void TestSensors()
-        {
-
-        }
     }
 }
