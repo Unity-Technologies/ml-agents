@@ -310,7 +310,7 @@ action parameter passed to the Agent's `AgentAction()` function is an array with
 length equal to the Brain object's `Vector Action Space Size` property value.
 The individual values in the array have whatever meanings that you ascribe to
 them. If you assign an element in the array as the speed of an Agent, for
-example, the training process learns to control the speed of the Agent though
+example, the training process learns to control the speed of the Agent through
 this parameter.
 
 The [Reacher example](Learning-Environment-Examples.md#reacher) defines a
