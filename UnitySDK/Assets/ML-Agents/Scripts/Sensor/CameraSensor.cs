@@ -6,38 +6,53 @@ namespace MLAgents.Sensor
 {
     public class CameraSensor : ISensor
     {
-        private Camera camera;
-        private int width;
-        private int height;
-        private bool grayscale;
+        private Camera m_Camera;
+        private int m_Width;
+        private int m_Height;
+        private bool m_Grayscale;
+        private string m_Name;
+        private int[] m_Shape;
 
-        public CameraSensor(Camera camera, int width, int height, bool grayscale)
+        public CameraSensor(Camera camera, int width, int height, bool grayscale, string name)
         {
-            this.camera = camera;
-            this.width = width;
-            this.height = height;
-            this.grayscale = grayscale;
+            m_Camera = camera;
+            m_Width = width;
+            m_Height = height;
+            m_Grayscale = grayscale;
+            m_Name = name;
+            m_Shape = new[] { width, height, grayscale ? 1 : 3 };
+        }
+
+        public string GetName()
+        {
+            return m_Name;
         }
 
         public int[] GetFloatObservationShape()
         {
-            return new [] {width, height, grayscale ? 1 : 3};
+            return m_Shape;
         }
 
         public byte[] GetCompressedObservation()
         {
-            var texture = ObservationToTexture(camera, width, height);
-            // TODO support more types here, e.g. JPG
-            var compressed = texture.EncodeToPNG();
-            UnityEngine.Object.Destroy(texture);
-            return compressed;
+            using (TimerStack.Instance.Scoped("CameraSensor.GetCompressedObservation"))
+            {
+                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
+                // TODO support more types here, e.g. JPG
+                var compressed = texture.EncodeToPNG();
+                UnityEngine.Object.Destroy(texture);
+                return compressed;
+            }
         }
 
         public void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
         {
-            var texture = ObservationToTexture(camera, width, height);
-            Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, agentIndex);
-            UnityEngine.Object.Destroy(texture);
+            using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
+            {
+                var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
+                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
+                UnityEngine.Object.Destroy(texture);
+            }
         }
 
         public CompressionType GetCompressionType()
@@ -46,7 +61,7 @@ namespace MLAgents.Sensor
         }
 
         /// <summary>
-        /// Converts a camera and corresponding resolution to a 2D texture.
+        /// Converts a m_Camera and corresponding resolution to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>

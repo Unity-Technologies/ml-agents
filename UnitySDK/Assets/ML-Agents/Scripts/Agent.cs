@@ -563,7 +563,6 @@ namespace MLAgents
             {
                 m_Sensors.Add(component.CreateSensor());
             }
-            Debug.Log($"Agent {name} made {m_Sensors.Count} sensors");
         }
 
         /// <summary>

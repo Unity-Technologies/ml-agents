@@ -14,6 +14,8 @@ namespace MLAgents.Sensor
 
         public abstract int[] GetFloatObservationShape();
 
+        public abstract string GetName();
+
         /// <summary>
         /// Default implementation of WriteToTensor interface. This creates a temporary array, calls WriteObservation,
         /// and then writes the results to the TensorProxy.

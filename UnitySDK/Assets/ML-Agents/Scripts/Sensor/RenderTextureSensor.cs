@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using MLAgents.InferenceBrain;
 using UnityEngine;
 
@@ -6,38 +7,53 @@ namespace MLAgents.Sensor
 {
     class RenderTextureSensor : ISensor
     {
-        private RenderTexture renderTexture;
-        private int width = 84;
-        private int height = 84;
-        private bool grayscale = false;
+        private RenderTexture m_RenderTexture;
+        private int m_Width;
+        private int m_Height;
+        private bool m_Grayscale;
+        private string m_Name;
+        private int[] m_Shape;
 
-        public RenderTextureSensor(RenderTexture renderTexture, int width, int height, bool grayscale)
+        public RenderTextureSensor(RenderTexture renderTexture, int width, int height, bool grayscale, string name)
         {
-            this.renderTexture = renderTexture;
-            this.width = width;
-            this.height = height;
-            this.grayscale = grayscale;
+            m_RenderTexture = renderTexture;
+            m_Width = width;
+            m_Height = height;
+            m_Grayscale = grayscale;
+            m_Name = name;
+            m_Shape = new[] { width, height, grayscale ? 1 : 3 };
+        }
+
+        public string GetName()
+        {
+            return m_Name;
         }
 
         public int[] GetFloatObservationShape()
         {
-            return new [] {width, height, grayscale ? 1 : 3};
+            return m_Shape;
         }
 
         public byte[] GetCompressedObservation()
         {
-            var texture = ObservationToTexture(renderTexture, width, height);
-            // TODO support more types here, e.g. JPG
-            var compressed = texture.EncodeToPNG();
-            UnityEngine.Object.Destroy(texture);
-            return compressed;
+            using(TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
+            {
+                var texture = ObservationToTexture(m_RenderTexture, m_Width, m_Height);
+                // TODO support more types here, e.g. JPG
+                var compressed = texture.EncodeToPNG();
+                UnityEngine.Object.Destroy(texture);
+                return compressed;
+            }
         }
 
         public void WriteToTensor(TensorProxy tensorProxy, int index)
         {
-            var texture = ObservationToTexture(renderTexture, width, height);
-            Utilities.TextureToTensorProxy(texture, tensorProxy, grayscale, index);
-            UnityEngine.Object.Destroy(texture);
+            using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
+            {
+                var texture = ObservationToTexture(m_RenderTexture, m_Width, m_Height);
+                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, index);
+                UnityEngine.Object.Destroy(texture);
+            }
         }
 
         public CompressionType GetCompressionType()

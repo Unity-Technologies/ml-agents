@@ -257,15 +257,18 @@ namespace MLAgents
             // the message and update hasSentState
             if (m_CurrentAgents[brainKey].Count > 0)
             {
-                foreach (var agent in m_CurrentAgents[brainKey])
+                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    // Update the sensor data on the AgentInfo
-                    agent.GenerateSensorData();
-                    var agentInfoProto = agent.Info.ToProto();
-                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                    // e.g. after recording them to demo and using them for inference.
-                    agent.ClearVisualObservations();
+                    foreach (var agent in m_CurrentAgents[brainKey])
+                    {
+                        // Update the sensor data on the AgentInfo
+                        agent.GenerateSensorData();
+                        var agentInfoProto = agent.Info.ToProto();
+                        m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                        // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
+                        // e.g. after recording them to demo and using them for inference.
+                        agent.ClearVisualObservations();
+                    }
                 }
 
                 m_HasData[brainKey] = true;

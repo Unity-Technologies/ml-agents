@@ -42,6 +42,13 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns></returns>
         CompressionType GetCompressionType();
+
+        /// <summary>
+        /// Get the name of the sensor. This is used to ensure deterministic sorting of the sensors on an Agent,
+        /// so the naming must be consistent across all sensors and agents.
+        /// </summary>
+        /// <returns>The name of the sensor</returns>
+        string GetName();
     }
 
 }

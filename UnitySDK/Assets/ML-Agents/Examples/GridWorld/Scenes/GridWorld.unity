@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971162, g: 0.49977726, b: 0.5756362, a: 1}
+  m_IndirectSpecularColor: {r: 0.4497121, g: 0.49977785, b: 0.57563704, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 125487789}
   - component: {fileID: 125487788}
   - component: {fileID: 125487787}
+  - component: {fileID: 125487790}
   m_Layer: 8
   m_Name: Agent
   m_TagString: agent
@@ -314,7 +315,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 1
     numberOfActionsBetweenDecisions: 1
-  m_Area: {fileID: 1795599557}
+  area: {fileID: 1795599557}
   timeBetweenDecisionsAtInference: 0.15
   renderCamera: {fileID: 797520692}
   maskActions: 1
@@ -339,6 +340,22 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 125487785}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &125487790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 125487785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 797520692}
+  name: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!1 &260425459
 GameObject:
   m_ObjectHideFlags: 0
