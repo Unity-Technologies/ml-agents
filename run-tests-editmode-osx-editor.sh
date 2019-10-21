@@ -1,6 +1,8 @@
 #!/bin/bash
 
-UNITY="${UNITY_PATH:=/Applications/Unity/Hub/Editor/2017.4.33f1/Unity.app/Contents/MacOS}/Unity"
+set -eo pipefail
+
+UNITY="${UNITY_PATH:="~/2017.4.33f1/Unity.app/Contents/MacOS}/Unity"
 
 pushd $(dirname "${0}") > /dev/null
 BASETPATH=$(pwd -L)
