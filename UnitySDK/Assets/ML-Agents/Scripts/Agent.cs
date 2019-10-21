@@ -109,21 +109,6 @@ namespace MLAgents
     public class AgentParameters
     {
         /// <summary>
-        /// The list of the Camera GameObjects the agent uses for visual
-        /// observations.
-        /// </summary>
-        // TODO REMOVE!
-        public List<Camera> agentCameras = new List<Camera>();
-
-        /// <summary>
-        /// The list of the RenderTextures the agent uses for visual
-        /// observations.
-        /// </summary>
-        // TODO REMOVE!
-        public List<RenderTexture> agentRenderTextures = new List<RenderTexture>();
-
-
-        /// <summary>
         /// The maximum number of steps the agent takes before being done.
         /// </summary>
         /// <remarks>
