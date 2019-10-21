@@ -51,6 +51,20 @@ repos:
     hooks:
     -   id: python-check-mock-methods
 
+
+
+-   repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v2.4.3
+    hooks:
+    -   id: pylint
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py|
+                .*/tests/.*
+            )$
+        require_serial: true
+
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:

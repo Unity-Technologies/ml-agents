@@ -211,10 +211,8 @@ class BrainInfo:
         if memory_size == 0:
             memory = np.zeros((0, 0))
         else:
-            [
+            for x in agent_info_list:
                 x.memories.extend([0] * (memory_size - len(x.memories)))
-                for x in agent_info_list
-            ]
             memory = np.array([list(x.memories) for x in agent_info_list])
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))

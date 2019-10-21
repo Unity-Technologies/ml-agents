@@ -17,17 +17,6 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class MultiGpuPPOPolicy(PPOPolicy):
-    def __init__(self, seed, brain, trainer_params, is_training, load):
-        """
-        Policy for Proximal Policy Optimization Networks with multi-GPU training
-        :param seed: Random seed.
-        :param brain: Assigned Brain object.
-        :param trainer_params: Defined training parameters.
-        :param is_training: Whether the model should be trained.
-        :param load: Whether a pre-trained model will be loaded or a new one created.
-        """
-        super().__init__(seed, brain, trainer_params, is_training, load)
-
     def create_model(
         self, brain, trainer_params, reward_signal_configs, is_training, load, seed
     ):

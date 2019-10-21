@@ -123,7 +123,7 @@ class TFPolicy(Policy):
         if len(brain_info.agents) == 0:
             return ActionInfo([], [], [], None, None)
 
-        run_out = self.evaluate(brain_info)
+        run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         return ActionInfo(
             action=run_out.get("action"),
             memory=run_out.get("memory_out"),

@@ -1,10 +1,3 @@
-# # Unity ML-Agents Toolkit
-import math
-from time import perf_counter
-
-from contextlib import contextmanager
-from typing import Any, Callable, Dict, Generator, List, TypeVar
-
 """
 Lightweight, hierarchical timers for profiling sections of code.
 
@@ -34,6 +27,12 @@ distinct blocks, and are tracked separately.
 The decorator and contextmanager are equivalent; the context manager may be more useful if you want more control
 over the timer name, or are splitting up multiple sections of a large function.
 """
+
+import math
+from time import perf_counter
+
+from contextlib import contextmanager
+from typing import Any, Callable, Dict, Generator, List, TypeVar
 
 
 class TimerNode:

@@ -280,7 +280,7 @@ class UnityEnv(gym.Env):
         """Sets the seed for this env's random number generator(s).
         Currently not implemented.
         """
-        logger.warn("Could not seed environment %s", self.name)
+        logger.warning("Could not seed environment %s", self.name)
         return
 
     def _check_agents(self, n_agents):
