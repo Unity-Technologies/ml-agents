@@ -39,9 +39,12 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            foreach (var obs in ai.compressedObservations)
+            if (ai.compressedObservations != null)
             {
-                agentInfoProto.CompressedObservations.Add(obs.ToProto());
+                foreach (var obs in ai.compressedObservations)
+                {
+                    agentInfoProto.CompressedObservations.Add(obs.ToProto());
+                }
             }
 
             return agentInfoProto;

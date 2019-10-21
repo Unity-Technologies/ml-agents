@@ -84,15 +84,6 @@ namespace MLAgents
         /// TODO(cgoy): All references to protobuf objects should be removed.
         /// </summary>
         public CommunicatorObjects.CustomObservationProto customObservation;
-
-        /// <summary>
-        /// Remove the visual observations from memory. Call at each timestep
-        /// to avoid memory leaks.
-        /// </summary>
-        public void ClearVisualObs()
-        {
-            compressedObservations.Clear();
-        }
     }
 
     /// <summary>
@@ -596,6 +587,7 @@ namespace MLAgents
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
             m_Info.vectorObservation.Clear();
+            m_Info.compressedObservations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
@@ -628,6 +620,13 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
+                // This is a bit of a hack - if we're in inference mode, compressed observations won't be generated
+                // But we need these to be generated for the recorder. So generate them here.
+                if (m_Info.compressedObservations.Count == 0)
+                {
+                    GenerateSensorData();
+                }
+
                 m_Recorder.WriteExperience(m_Info);
             }
 
@@ -652,11 +651,6 @@ namespace MLAgents
                 };
                 m_Info.compressedObservations.Add(compressedObs);
             }
-        }
-
-        public void ClearVisualObservations()
-        {
-            m_Info.ClearVisualObs();
         }
 
         /// <summary>

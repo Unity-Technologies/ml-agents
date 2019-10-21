@@ -265,9 +265,6 @@ namespace MLAgents
                         agent.GenerateSensorData();
                         var agentInfoProto = agent.Info.ToProto();
                         m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                        // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                        // e.g. after recording them to demo and using them for inference.
-                        agent.ClearVisualObservations();
                     }
                 }
 

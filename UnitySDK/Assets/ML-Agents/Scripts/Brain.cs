@@ -25,6 +25,9 @@ namespace MLAgents
         /// </summary>
         protected List<Agent> m_Agents = new List<Agent>(1024);
 
+        /// <summary>
+        /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their sensors.
+        /// </summary>
         List<int[]> m_SensorShapes = new List<int[]>();
 
         [NonSerialized]
