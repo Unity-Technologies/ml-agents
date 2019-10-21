@@ -35,6 +35,13 @@ namespace MLAgents.Tests
         public override void InitializeAgent()
         {
             initializeAgentCalls += 1;
+
+            // Add in some custom sensors so we can confirm they get sorted as expected.
+            var sensor1 = new TestSensor("testsensor1");
+            var sensor2 = new TestSensor("testsensor2");
+
+            m_Sensors.Add(sensor2);
+            m_Sensors.Add(sensor1);
         }
 
         public override void CollectObservations()
@@ -56,15 +63,6 @@ namespace MLAgents.Tests
         public override void AgentOnDone()
         {
             agentOnDoneCalls += 1;
-        }
-
-        public override void AddCustomSensors()
-        {
-            var sensor1 = new TestSensor("testsensor1");
-            var sensor2 = new TestSensor("testsensor2");
-
-            m_Sensors.Add(sensor2);
-            m_Sensors.Add(sensor1);
         }
     }
 

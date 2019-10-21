@@ -112,7 +112,8 @@ namespace MLAgents.InferenceBrain
             if (!m_visualObservationsInitialized)
             {
                 // Just grab the first agent in the collection (any will suffice, really).
-                var firstAgent = agents.FirstOrDefault();
+                // We check for an empty Collection above, so this will always return successfully.
+                var firstAgent = agents.First();
                 m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
                 m_visualObservationsInitialized = true;
             }

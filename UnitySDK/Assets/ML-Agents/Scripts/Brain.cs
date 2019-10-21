@@ -28,7 +28,7 @@ namespace MLAgents
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their sensors.
         /// </summary>
-        List<int[]> m_SensorShapes = new List<int[]>();
+        List<int[]> m_SensorShapes;
 
         [NonSerialized]
         private bool m_IsInitialized;
@@ -40,8 +40,39 @@ namespace MLAgents
         public void SubscribeAgentForDecision(Agent agent)
         {
             LazyInitialize();
-            if (m_SensorShapes.Count == 0)
+            ValidateAgentSensorShapes(agent);
+            m_Agents.Add(agent);
+        }
+
+        /// <summary>
+        /// If the Brain is not initialized, it subscribes to the Academy's DecideAction Event and
+        /// calls the Initialize method to be implemented by child classes.
+        /// </summary>
+        protected void LazyInitialize()
+        {
+            if (!m_IsInitialized)
             {
+                var academy = FindObjectOfType<Academy>();
+                if (academy)
+                {
+                    m_IsInitialized = true;
+                    academy.BrainDecideAction += BrainDecideAction;
+                    academy.DestroyAction += Shutdown;
+                    Initialize();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check that the Agent sensors are the same shape as the the other Agents using the same Brain.
+        /// If this is the first Agent being checked, its Sensor sizes will be saved.
+        /// </summary>
+        /// <param name="agent">The Agent to check</param>
+        private void ValidateAgentSensorShapes(Agent agent)
+        {
+            if (m_SensorShapes == null)
+            {
+                m_SensorShapes = new List<int[]>(agent.m_Sensors.Count);
                 // First agent, save the sensor sizes
                 foreach(var sensor in agent.m_Sensors)
                 {
@@ -62,26 +93,6 @@ namespace MLAgents
                     {
                         Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes much match.");
                     }
-                }
-            }
-            m_Agents.Add(agent);
-        }
-
-        /// <summary>
-        /// If the Brain is not initialized, it subscribes to the Academy's DecideAction Event and
-        /// calls the Initialize method to be implemented by child classes.
-        /// </summary>
-        protected void LazyInitialize()
-        {
-            if (!m_IsInitialized)
-            {
-                var academy = FindObjectOfType<Academy>();
-                if (academy)
-                {
-                    m_IsInitialized = true;
-                    academy.BrainDecideAction += BrainDecideAction;
-                    academy.DestroyAction += Shutdown;
-                    Initialize();
                 }
             }
         }

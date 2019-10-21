@@ -239,21 +239,8 @@ namespace MLAgents.InferenceBrain
                     "The model does not contain a Vector Observation  Placeholder Input. " +
                     "You must set the Vector Observation Space Size to 0.");
             }
-            // If there are not enough Visual Observation Input compared to what the
-            // Brain Parameters expect.
-            // TODO figure out how to do this if we move everything to agents
-//            for (var visObsIndex = 0;
-//                 visObsIndex < brainParameters.cameraResolutions.Length;
-//                 visObsIndex++)
-//            {
-//                if (!tensorsNames.Contains(
-//                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
-//                {
-//                    failedModelChecks.Add(
-//                        "The model does not contain a Visual Observation Placeholder Input " +
-//                        "for visual observation " + visObsIndex + ".");
-//                }
-//            }
+
+            // TODO reenable checks there are enough Visual Observation Placeholder in the model.
 
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
@@ -344,13 +331,8 @@ namespace MLAgents.InferenceBrain
                 tensorTester[mem.input] = ((bp, tensor) => null);
             }
 
-            // TODO figure out how to check this if we move everything to Agent
-//            for (var obsIndex = 0; obsIndex < brainParameters.cameraResolutions.Length; obsIndex++)
-//            {
-//                var index = obsIndex;
-//                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + obsIndex] =
-//                    (bp, tensor) => CheckVisualObsShape(bp, tensor, index);
-//            }
+            // TODO reenable checks on visual observation shapes.
+
             // If the model expects an input but it is not in this list
             foreach (var tensor in GetInputTensors(model))
             {
@@ -418,38 +400,6 @@ namespace MLAgents.InferenceBrain
                 return "Previous Action Size of the model does not match. " +
                     $"Received {numberActionsBp} but was expecting {numberActionsT}.";
             }
-            return null;
-        }
-
-        /// <summary>
-        /// Checks that the shape of the visual observation input placeholder is the same in the
-        /// model and in the Brain Parameters.
-        /// </summary>
-        /// <param name="brainParameters">
-        /// The BrainParameters that are used verify the compatibility with the InferenceEngine
-        /// </param>
-        /// <param name="tensorProxy">The tensor that is expected by the model</param>
-        /// <param name="visObsIndex">The index of the visual observation.</param>
-        /// <returns>
-        /// If the Check failed, returns a string containing information about why the
-        /// check failed. If the check passed, returns null.
-        /// </returns>
-        private static string CheckVisualObsShape(
-            BrainParameters brainParameters, TensorProxy tensorProxy, int visObsIndex)
-        {
-//            var resolutionBp = brainParameters.cameraResolutions[visObsIndex];
-//            var widthBp = resolutionBp.width;
-//            var heightBp = resolutionBp.height;
-//            var pixelBp = resolutionBp.blackAndWhite ? 1 : 3;
-//            var heightT = tensorProxy.shape[1];
-//            var widthT = tensorProxy.shape[2];
-//            var pixelT = tensorProxy.shape[3];
-//            if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
-//            {
-//                return $"The visual Observation {visObsIndex} of the model does not match. " +
-//                    $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
-//                    $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
-//            }
             return null;
         }
 

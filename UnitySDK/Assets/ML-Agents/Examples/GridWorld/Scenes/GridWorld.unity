@@ -308,9 +308,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 2c1d51b7167874f31beda0b0cf0af468, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures:
-    - {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
     maxStep: 100
     resetOnDone: 1
     onDemandDecision: 1
@@ -348,11 +345,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 125487785}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Script: {fileID: 11500000, guid: 132e1194facb64429b007ea1edf562d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 797520692}
-  name: CameraSensor
+  renderTexture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
+  sensorName: RenderTextureSensor
   width: 84
   height: 84
   grayscale: 0

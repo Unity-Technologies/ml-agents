@@ -440,7 +440,6 @@ namespace MLAgents
         private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            //if (m_unsentBrainKeys.Count != 0)
             foreach(var brainKey in m_unsentBrainKeys.Keys)
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
