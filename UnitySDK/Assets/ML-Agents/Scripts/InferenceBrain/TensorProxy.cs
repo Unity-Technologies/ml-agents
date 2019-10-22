@@ -21,14 +21,14 @@ namespace MLAgents.InferenceBrain
 		{
 			Integer,
 			FloatingPoint,
-            Boolean
+			Boolean
 		};
 
 		private static Dictionary<TensorType, Type> m_typeMap = new Dictionary<TensorType, Type>()
 		{
 			{ TensorType.FloatingPoint, typeof(float) },
 			{ TensorType.Integer, typeof(int) },
-            { TensorType.Boolean, typeof(bool) }
+			{ TensorType.Boolean, typeof(bool) }
 		};
 
 		public string Name;
