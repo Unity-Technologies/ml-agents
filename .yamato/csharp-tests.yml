@@ -1,6 +1,6 @@
 name: Mac Edit Mode Tests
 triggers:
-    sources:
+    branches:
       only:
       - "/develop-.*/"
     targets:
