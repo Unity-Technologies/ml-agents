@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class RenderTextureSensorComponent : SensorComponent
+    public class RenderTextureSensorComponent : SensorComponent
     {
         public RenderTexture renderTexture;
         public string sensorName = "RenderTextureSensor";

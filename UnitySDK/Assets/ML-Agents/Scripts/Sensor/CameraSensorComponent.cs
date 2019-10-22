@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class CameraSensorComponent : SensorComponent
+    public class CameraSensorComponent : SensorComponent
     {
         public new Camera camera;
         public string sensorName = "CameraSensor";
