@@ -541,11 +541,13 @@ namespace MLAgents
             // Sort the sensors by name to ensure determinism
             m_Sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
 
+#if DEBUG
             // Make sure the names are actually unique
             for (var i = 0; i < m_Sensors.Count - 1; i++)
             {
                 Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i+1].GetName()), "Sensor names must be unique.");
             }
+#endif
         }
 
         /// <summary>

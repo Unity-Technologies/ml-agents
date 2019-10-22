@@ -40,7 +40,9 @@ namespace MLAgents
         public void SubscribeAgentForDecision(Agent agent)
         {
             LazyInitialize();
+#if DEBUG
             ValidateAgentSensorShapes(agent);
+#endif
             m_Agents.Add(agent);
         }
 
