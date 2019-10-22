@@ -21,4 +21,4 @@ agent:
 variables:
   LC_ALL: "en_US.UTF-8"
 commands:
-  - ./run-satndalone-build-osx.sh
+  - ./run-standalone-build-osx.sh
