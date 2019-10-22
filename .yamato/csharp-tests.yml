@@ -20,6 +20,5 @@ agent:
 
 variables:
   LC_ALL: "en_US.UTF-8"
-  UNITY_PATH: "/Users/bokken/2017.4.33f1/Unity.app/Contents/MacOS/Unity"
 commands:
   - ./run-tests-editmode-osx-editor.sh
