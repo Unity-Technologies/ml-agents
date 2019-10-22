@@ -492,22 +492,38 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 580f2003972f64189826f085e2498080, type: 3}
-    - target: {fileID: 114708558732651708, guid: c85b585836e104587b4efdc4d8b9d62b,
+    - target: {fileID: 0}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1081822021}
+    - target: {fileID: 0}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1081822020}
+    - target: {fileID: 0}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1081822019}
+    - target: {fileID: 0}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1081822018}
+    - target: {fileID: 114010142639509262, guid: c85b585836e104587b4efdc4d8b9d62b,
         type: 2}
       propertyPath: camera
       value: 
       objectReference: {fileID: 1081822021}
-    - target: {fileID: 114401766178763868, guid: c85b585836e104587b4efdc4d8b9d62b,
+    - target: {fileID: 114556984853812690, guid: c85b585836e104587b4efdc4d8b9d62b,
         type: 2}
       propertyPath: camera
       value: 
       objectReference: {fileID: 1081822020}
-    - target: {fileID: 114778458791730518, guid: c85b585836e104587b4efdc4d8b9d62b,
+    - target: {fileID: 114403571510733698, guid: c85b585836e104587b4efdc4d8b9d62b,
         type: 2}
       propertyPath: camera
       value: 
       objectReference: {fileID: 1081822019}
-    - target: {fileID: 114741414993459624, guid: c85b585836e104587b4efdc4d8b9d62b,
+    - target: {fileID: 114283046684622648, guid: c85b585836e104587b4efdc4d8b9d62b,
         type: 2}
       propertyPath: camera
       value: 

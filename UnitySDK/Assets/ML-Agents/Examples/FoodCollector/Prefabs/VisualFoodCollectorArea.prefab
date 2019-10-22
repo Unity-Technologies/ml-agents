@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 65932430430952094}
   - component: {fileID: 54338553804475180}
   - component: {fileID: 114080992426104682}
-  - component: {fileID: 114741414993459624}
+  - component: {fileID: 114283046684622648}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -327,7 +327,7 @@ GameObject:
   - component: {fileID: 65178766753981896}
   - component: {fileID: 54088750604404324}
   - component: {fileID: 114257846618384398}
-  - component: {fileID: 114708558732651708}
+  - component: {fileID: 114010142639509262}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -498,7 +498,7 @@ GameObject:
   - component: {fileID: 65441205843344002}
   - component: {fileID: 54753735395303746}
   - component: {fileID: 114625025344622832}
-  - component: {fileID: 114401766178763868}
+  - component: {fileID: 114556984853812690}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -721,7 +721,7 @@ GameObject:
   - component: {fileID: 65540878552782854}
   - component: {fileID: 54626777054134360}
   - component: {fileID: 114855044884614820}
-  - component: {fileID: 114778458791730518}
+  - component: {fileID: 114403571510733698}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -2981,6 +2981,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114010142639509262
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1443673828307814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!114 &114080992426104682
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2994,9 +3010,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20825339371991526}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3024,9 +3037,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20890573870796418}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3041,18 +3051,35 @@ MonoBehaviour:
   myLaser: {fileID: 1580603984718180}
   contribute: 0
   useVectorObs: 0
---- !u!114 &114401766178763868
+--- !u!114 &114283046684622648
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1661627863960872}
+  m_GameObject: {fileID: 1169383371125934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41cb6bf4b09974bf583f5b2fef0c08a7, type: 3}
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 0}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
+--- !u!114 &114403571510733698
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1964761937961574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  sensorName: CameraSensor
   width: 84
   height: 84
   grayscale: 0
@@ -3073,6 +3100,22 @@ MonoBehaviour:
   numBadFood: 25
   respawnFood: 1
   range: 45
+--- !u!114 &114556984853812690
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1661627863960872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!114 &114625025344622832
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3086,9 +3129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20184829288622090}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3103,51 +3143,6 @@ MonoBehaviour:
   myLaser: {fileID: 1335947341879056}
   contribute: 0
   useVectorObs: 0
---- !u!114 &114708558732651708
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1443673828307814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41cb6bf4b09974bf583f5b2fef0c08a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 0}
-  width: 84
-  height: 84
-  grayscale: 0
---- !u!114 &114741414993459624
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1169383371125934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41cb6bf4b09974bf583f5b2fef0c08a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 0}
-  width: 84
-  height: 84
-  grayscale: 0
---- !u!114 &114778458791730518
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1964761937961574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41cb6bf4b09974bf583f5b2fef0c08a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 0}
-  width: 84
-  height: 84
-  grayscale: 0
 --- !u!114 &114855044884614820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3161,9 +3156,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brain: {fileID: 11400000, guid: 24e823594179d48189b2c78003c50ce0, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20416796192002010}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
