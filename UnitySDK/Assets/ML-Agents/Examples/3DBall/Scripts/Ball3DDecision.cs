@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensor;
 
 public class Ball3DDecision : Decision
 {
@@ -8,7 +9,7 @@ public class Ball3DDecision : Decision
 
     public override float[] Decide(
         List<float> vectorObs,
-        List<Texture2D> visualObs,
+        List<ISensor> sensors,
         float reward,
         bool done,
         List<float> memory)
@@ -36,7 +37,7 @@ public class Ball3DDecision : Decision
 
     public override List<float> MakeMemory(
         List<float> vectorObs,
-        List<Texture2D> visualObs,
+        List<ISensor> sensors,
         float reward,
         bool done,
         List<float> memory)

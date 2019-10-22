@@ -5,16 +5,11 @@ from google.protobuf.descriptor import (
 )
 
 from google.protobuf.internal.containers import (
-    RepeatedCompositeFieldContainer as google___protobuf___internal___containers___RepeatedCompositeFieldContainer,
     RepeatedScalarFieldContainer as google___protobuf___internal___containers___RepeatedScalarFieldContainer,
 )
 
 from google.protobuf.message import (
     Message as google___protobuf___message___Message,
-)
-
-from mlagents.envs.communicator_objects.resolution_pb2 import (
-    ResolutionProto as mlagents___envs___communicator_objects___resolution_pb2___ResolutionProto,
 )
 
 from mlagents.envs.communicator_objects.space_type_pb2 import (
@@ -48,15 +43,11 @@ class BrainParametersProto(google___protobuf___message___Message):
     brain_name = ... # type: typing___Text
     is_training = ... # type: builtin___bool
 
-    @property
-    def camera_resolutions(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___resolution_pb2___ResolutionProto]: ...
-
     def __init__(self,
         *,
         vector_observation_size : typing___Optional[builtin___int] = None,
         num_stacked_vector_observations : typing___Optional[builtin___int] = None,
         vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
-        camera_resolutions : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___resolution_pb2___ResolutionProto]] = None,
         vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
         vector_action_space_type : typing___Optional[mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
         brain_name : typing___Optional[typing___Text] = None,
@@ -67,6 +58,6 @@ class BrainParametersProto(google___protobuf___message___Message):
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",u"camera_resolutions",u"is_training",u"num_stacked_vector_observations",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type",u"vector_observation_size"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",u"is_training",u"num_stacked_vector_observations",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type",u"vector_observation_size"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"camera_resolutions",b"camera_resolutions",u"is_training",b"is_training",u"num_stacked_vector_observations",b"num_stacked_vector_observations",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type",u"vector_observation_size",b"vector_observation_size"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"is_training",b"is_training",u"num_stacked_vector_observations",b"num_stacked_vector_observations",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type",u"vector_observation_size",b"vector_observation_size"]) -> None: ...

@@ -1,6 +1,8 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using MLAgents.Sensor;
+using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -33,6 +35,13 @@ namespace MLAgents.Tests
         public override void InitializeAgent()
         {
             initializeAgentCalls += 1;
+
+            // Add in some custom sensors so we can confirm they get sorted as expected.
+            var sensor1 = new TestSensor("testsensor1");
+            var sensor2 = new TestSensor("testsensor2");
+
+            m_Sensors.Add(sensor2);
+            m_Sensors.Add(sensor1);
         }
 
         public override void CollectObservations()
@@ -54,6 +63,37 @@ namespace MLAgents.Tests
         public override void AgentOnDone()
         {
             agentOnDoneCalls += 1;
+        }
+    }
+
+    public class TestSensor : ISensor
+    {
+        public string sensorName;
+
+        public TestSensor(string n)
+        {
+            sensorName = n;
+        }
+
+        public int[] GetFloatObservationShape() {
+            return new[] {1};
+        }
+
+        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+
+        public byte[] GetCompressedObservation()
+        {
+            return null;
+        }
+
+        public CompressionType GetCompressionType()
+        {
+            return CompressionType.None;
+        }
+
+        public string GetName()
+        {
+            return sensorName;
         }
     }
 
@@ -177,6 +217,10 @@ namespace MLAgents.Tests
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
+
+            // Make sure the sensors were sorted
+            Assert.AreEqual(agent1.m_Sensors[0].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.m_Sensors[1].GetName(), "testsensor2");
         }
     }
 
@@ -244,7 +288,6 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -370,7 +413,6 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -487,7 +529,6 @@ namespace MLAgents.Tests
             agent1.agentParameters.resetOnDone = false;
             agent2.agentParameters.resetOnDone = false;
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 
@@ -567,7 +608,6 @@ namespace MLAgents.Tests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
             brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
             agent1.GiveBrain(brain);
             agent2.GiveBrain(brain);
 

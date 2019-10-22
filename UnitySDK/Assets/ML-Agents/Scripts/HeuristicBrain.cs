@@ -67,7 +67,7 @@ namespace MLAgents
                 var info = agent.Info;
                 agent.UpdateVectorAction(decision.Decide(
                     info.stackedVectorObservation,
-                    info.visualObservations,
+                    agent.m_Sensors, // TODO set on Info? property?
                     info.reward,
                     info.done,
                     info.memories));
@@ -77,7 +77,7 @@ namespace MLAgents
                 var info = agent.Info;
                 agent.UpdateMemoriesAction(decision.MakeMemory(
                     info.stackedVectorObservation,
-                    info.visualObservations,
+                    agent.m_Sensors,
                     info.reward,
                     info.done,
                     info.memories));

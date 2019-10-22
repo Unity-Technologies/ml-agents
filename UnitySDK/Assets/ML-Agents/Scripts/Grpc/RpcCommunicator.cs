@@ -44,7 +44,9 @@ namespace MLAgents
         Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
-        private UnityRLInitializationOutputProto m_CurrentUnityRlInitializationOutput;
+        // Brains that we have sent over the communicator with agents.
+        HashSet<string> m_sentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -130,12 +132,10 @@ namespace MLAgents
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
-                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
-            if (m_CurrentUnityRlInitializationOutput == null)
-            {
-                m_CurrentUnityRlInitializationOutput = new UnityRLInitializationOutputProto();
-            }
-            m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                new UnityRLOutputProto.Types.ListAgentInfoProto()
+            );
+
+            CacheBrainParameters(brainKey, brainParameters);
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
@@ -257,13 +257,15 @@ namespace MLAgents
             // the message and update hasSentState
             if (m_CurrentAgents[brainKey].Count > 0)
             {
-                foreach (var agent in m_CurrentAgents[brainKey])
+                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    var agentInfoProto = agent.Info.ToProto();
-                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                    // e.g. after recording them to demo and using them for inference.
-                    agent.ClearVisualObservations();
+                    foreach (var agent in m_CurrentAgents[brainKey])
+                    {
+                        // Update the sensor data on the AgentInfo
+                        agent.GenerateSensorData();
+                        var agentInfoProto = agent.Info.ToProto();
+                        m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                    }
                 }
 
                 m_HasData[brainKey] = true;
@@ -298,13 +300,14 @@ namespace MLAgents
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
-            if (m_CurrentUnityRlInitializationOutput != null)
+            var tempUnityRlInitializationOutput = GetTempUnityRlInitializationOutput();
+            if (tempUnityRlInitializationOutput != null)
             {
-                message.RlInitializationOutput = m_CurrentUnityRlInitializationOutput;
+                message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
             var input = Exchange(message);
-            m_CurrentUnityRlInitializationOutput = null;
+            UpdateSentBrainParameters(tempUnityRlInitializationOutput);
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
@@ -420,6 +423,51 @@ namespace MLAgents
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Dispose();
+            }
+        }
+
+        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        {
+            if (m_sentBrainKeys.Contains(brainKey))
+            {
+                return;
+            }
+
+            // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
+            m_unsentBrainKeys[brainKey] = brainParameters;
+        }
+
+        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        {
+            UnityRLInitializationOutputProto output = null;
+            foreach(var brainKey in m_unsentBrainKeys.Keys)
+            {
+                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
+                {
+                    if (output == null)
+                    {
+                        output = new UnityRLInitializationOutputProto();
+                    }
+
+                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                }
+            }
+
+            return output;
+        }
+
+        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            foreach (var brainProto in output.BrainParameters)
+            {
+                m_sentBrainKeys.Add(brainProto.BrainName);
+                m_unsentBrainKeys.Remove(brainProto.BrainName);
             }
         }
 

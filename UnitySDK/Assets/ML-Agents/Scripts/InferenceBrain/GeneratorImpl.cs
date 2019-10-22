@@ -302,21 +302,24 @@ namespace MLAgents.InferenceBrain
         private readonly ITensorAllocator m_Allocator;
 
         public VisualObservationInputGenerator(
-            int index, bool grayScale, ITensorAllocator allocator)
+            int index, ITensorAllocator allocator)
         {
             m_Index = index;
-            m_GrayScale = grayScale;
             m_Allocator = allocator;
         }
 
         public void Generate(
             TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
         {
-            var textures = agents.Select(
-                agent => agent.Info.visualObservations[m_Index]).ToList();
-
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            Utilities.TextureToTensorProxy(textures, tensorProxy, m_GrayScale);
+            var agentIndex = 0;
+            foreach (var agent in agents)
+            {
+                // TODO direct access to sensors list here - should we do it differently?
+                // TODO m_Index here is the visual observation index. Will work for now but not if we add more sensor types.
+                agent.m_Sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
+                agentIndex++;
+            }
         }
     }
 }

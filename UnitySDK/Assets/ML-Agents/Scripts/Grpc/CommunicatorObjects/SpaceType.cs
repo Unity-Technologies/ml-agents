@@ -25,12 +25,11 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjNtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3NwYWNlX3R5",
-            "cGUucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjNtbGFnZW50cy9lbnZz",
-            "L2NvbW11bmljYXRvcl9vYmplY3RzL3Jlc29sdXRpb24ucHJvdG8qLgoOU3Bh",
-            "Y2VUeXBlUHJvdG8SDAoIZGlzY3JldGUQABIOCgpjb250aW51b3VzEAFCH6oC",
-            "HE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "cGUucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKi4KDlNwYWNlVHlwZVBy",
+            "b3RvEgwKCGRpc2NyZXRlEAASDgoKY29udGludW91cxABQh+qAhxNTEFnZW50",
+            "cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.ResolutionReflection.Descriptor, },
+          new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.SpaceTypeProto), }, null));
     }
     #endregion

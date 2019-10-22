@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents
@@ -7,7 +8,7 @@ namespace MLAgents
     {
         public override float[] Decide(
             List<float> vectorObs,
-            List<Texture2D> visualObs,
+            List<ISensor> sensors,
             float reward,
             bool done,
             List<float> memory)
@@ -36,7 +37,7 @@ namespace MLAgents
 
         public override List<float> MakeMemory(
             List<float> vectorObs,
-            List<Texture2D> visualObs,
+            List<ISensor> sensors,
             float reward,
             bool done,
             List<float> memory)
