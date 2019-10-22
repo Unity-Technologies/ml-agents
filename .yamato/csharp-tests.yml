@@ -1,8 +1,12 @@
 name: Mac Edit Mode Tests
 triggers:
-    braches:
+    sources:
       only:
-      - "develop-.*"
+      - "/develop-.*/"
+    targets:
+      only:
+      - "develop"
+
 agent:
   type: Unity::VM::osx
   image: ml-agents/ml-agents-bokken-mac:latest
