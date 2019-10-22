@@ -613,7 +613,6 @@ MonoBehaviour:
     vectorObservationSize: 8
     numStackedVectorObservations: 1
     vectorActionSize: 02000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: a0e8d1fda5a6f41be955d2b30479c2a1, type: 3}
@@ -632,9 +631,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
-    maxStep: 100
+    maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5

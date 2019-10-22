@@ -10,28 +10,6 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// The resolution of a camera used by an agent.
-    /// The width defines the number of pixels on the horizontal axis.
-    /// The height defines the number of pixels on the verical axis.
-    /// blackAndWhite defines whether or not the image is grayscale.
-    /// </summary>
-    [Serializable]
-    public struct Resolution
-    {
-        /// <summary>The width of the observation in pixels </summary>
-        public int width;
-
-        /// <summary>The height of the observation in pixels</summary>
-        public int height;
-
-        /// <summary>
-        /// If true, the image will be in black and white.
-        /// If false, it will be in colors RGB
-        /// </summary>
-        public bool blackAndWhite;
-    }
-
-    /// <summary>
     /// Holds information about the Brain. It defines what are the inputs and outputs of the
     /// decision process.
     /// </summary>
@@ -54,9 +32,6 @@ namespace MLAgents
         /// </summary>
         public int[] vectorActionSize = new[] {1};
 
-        /// <summary> The list of observation resolutions for the brain</summary>
-        public Resolution[] cameraResolutions;
-
         /// <summary></summary>The list of strings describing what the actions correpond to */
         public string[] vectorActionDescriptions;
 
@@ -74,7 +49,6 @@ namespace MLAgents
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,
                 vectorActionSize = (int[])vectorActionSize.Clone(),
-                cameraResolutions = (Resolution[])cameraResolutions.Clone(),
                 vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = vectorActionSpaceType
             };

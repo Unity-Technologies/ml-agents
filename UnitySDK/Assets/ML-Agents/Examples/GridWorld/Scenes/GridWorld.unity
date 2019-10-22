@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 125487788}
   - component: {fileID: 125487790}
   - component: {fileID: 125487787}
+  - component: {fileID: 125487791}
   m_Layer: 8
   m_Name: Agent
   m_TagString: agent
@@ -307,9 +308,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures:
-    - {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
     maxStep: 100
     resetOnDone: 1
     onDemandDecision: 1
@@ -354,16 +352,28 @@ MonoBehaviour:
     vectorObservationSize: 0
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
-    cameraResolutions:
-    - width: 84
-      height: 84
-      blackAndWhite: 0
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: GridWorld
+--- !u!114 &125487791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 125487785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132e1194facb64429b007ea1edf562d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderTexture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
+  sensorName: RenderTextureSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!1 &260425459
 GameObject:
   m_ObjectHideFlags: 0

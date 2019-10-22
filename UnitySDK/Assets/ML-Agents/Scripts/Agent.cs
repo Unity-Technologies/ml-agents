@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
+using MLAgents.Sensor;
+
 
 
 namespace MLAgents
@@ -24,9 +26,9 @@ namespace MLAgents
         public List<float> stackedVectorObservation;
 
         /// <summary>
-        /// Most recent agent camera (i.e. texture) observation.
+        /// Most recent compressed observations.
         /// </summary>
-        public List<Texture2D> visualObservations;
+        public List<CompressedObservation> compressedObservations;
 
         /// <summary>
         /// Most recent text observation.
@@ -84,19 +86,6 @@ namespace MLAgents
         /// TODO(cgoy): All references to protobuf objects should be removed.
         /// </summary>
         public CommunicatorObjects.CustomObservationProto customObservation;
-
-        /// <summary>
-        /// Remove the visual observations from memory. Call at each timestep
-        /// to avoid memory leaks.
-        /// </summary>
-        public void ClearVisualObs()
-        {
-            foreach (var obs in visualObservations)
-            {
-                Object.Destroy(obs);
-            }
-            visualObservations.Clear();
-        }
     }
 
     /// <summary>
@@ -121,19 +110,6 @@ namespace MLAgents
     [System.Serializable]
     public class AgentParameters
     {
-        /// <summary>
-        /// The list of the Camera GameObjects the agent uses for visual
-        /// observations.
-        /// </summary>
-        public List<Camera> agentCameras = new List<Camera>();
-
-        /// <summary>
-        /// The list of the RenderTextures the agent uses for visual
-        /// observations.
-        /// </summary>
-        public List<RenderTexture> agentRenderTextures = new List<RenderTexture>();
-
-
         /// <summary>
         /// The maximum number of steps the agent takes before being done.
         /// </summary>
@@ -292,6 +268,8 @@ namespace MLAgents
         /// </summary>
         private DemonstrationRecorder m_Recorder;
 
+        public List<ISensor> m_Sensors;
+
         /// Monobehavior function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -310,6 +288,7 @@ namespace MLAgents
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
+            m_Sensors = new List<ISensor>();
 
             if (academy == null)
             {
@@ -324,9 +303,10 @@ namespace MLAgents
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory?.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
+            InitializeSensors();
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -515,7 +495,7 @@ namespace MLAgents
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
 
-            m_Info.visualObservations = new List<Texture2D>();
+            m_Info.compressedObservations = new List<CompressedObservation>();
             m_Info.customObservation = null;
         }
 
@@ -549,6 +529,31 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Set up the list of ISensors on the Agent. By default, this will select any
+        /// SensorBase's attached to the Agent.
+        /// </summary>
+        public void InitializeSensors()
+        {
+            var attachedSensorComponents = GetComponents<SensorComponent>();
+            m_Sensors.Capacity += attachedSensorComponents.Length;
+            foreach (var component in attachedSensorComponents)
+            {
+                m_Sensors.Add(component.CreateSensor());
+            }
+
+            // Sort the sensors by name to ensure determinism
+            m_Sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+
+#if DEBUG
+            // Make sure the names are actually unique
+            for (var i = 0; i < m_Sensors.Count - 1; i++)
+            {
+                Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i + 1].GetName()), "Sensor names must be unique.");
+            }
+#endif
+        }
+
+        /// <summary>
         /// Sends the Agent info to the linked Brain.
         /// </summary>
         void SendInfoToBrain()
@@ -562,6 +567,7 @@ namespace MLAgents
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
             m_Info.vectorObservation.Clear();
+            m_Info.compressedObservations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
@@ -585,42 +591,6 @@ namespace MLAgents
             Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
                 m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
 
-            m_Info.visualObservations.Clear();
-            var visualObservationCount = agentParameters.agentCameras.Count + agentParameters.agentRenderTextures.Count;
-            if (param.cameraResolutions != null)
-            {
-                if (param.cameraResolutions.Length > visualObservationCount)
-                {
-                    throw new UnityAgentsException(string.Format(
-                        "Not enough cameras/renderTextures for agent {0} : expecting at " +
-                        "least {1} cameras/renderTextures but only {2} were present.",
-                        gameObject.name,
-                        param.cameraResolutions.Length,
-                        visualObservationCount));
-                }
-            }
-
-            //First add all cameras
-            for (var i = 0; i < agentParameters.agentCameras.Count; i++)
-            {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentCameras[i],
-                    param.cameraResolutions[i].width,
-                    param.cameraResolutions[i].height);
-                m_Info.visualObservations.Add(obsTexture);
-            }
-
-            //Then add all renderTextures
-            var camCount = agentParameters.agentCameras.Count;
-            for (var i = 0; i < agentParameters.agentRenderTextures.Count; i++)
-            {
-                var obsTexture = ObservationToTexture(
-                    agentParameters.agentRenderTextures[i],
-                    param.cameraResolutions[camCount + i].width,
-                    param.cameraResolutions[camCount + i].height);
-                m_Info.visualObservations.Add(obsTexture);
-            }
-
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -630,15 +600,40 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
+                // This is a bit of a hack - if we're in inference mode, compressed observations won't be generated
+                // But we need these to be generated for the recorder. So generate them here.
+                if (m_Info.compressedObservations.Count == 0)
+                {
+                    GenerateSensorData();
+                }
+
                 m_Recorder.WriteExperience(m_Info);
             }
 
             m_Info.textObservation = "";
         }
 
-        public void ClearVisualObservations()
+        /// <summary>
+        /// Generate data for each sensor and store it on the Agent's AgentInfo.
+        /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
+        /// during inference the sensors are used to write directly to the Tensor data. This will likely change in the
+        /// future to be controlled by the type of brain being used.
+        /// </summary>
+        public void GenerateSensorData()
         {
-            m_Info.ClearVisualObs();
+            // Generate data for all sensors
+            // TODO add bool argument indicating when to compress? For now, we always will compress.
+            for (var i = 0; i < m_Sensors.Count; i++)
+            {
+                var sensor = m_Sensors[i];
+                var compressedObs = new CompressedObservation
+                {
+                    Data = sensor.GetCompressedObservation(),
+                    Shape = sensor.GetFloatObservationShape(),
+                    CompressionType = sensor.GetCompressionType()
+                };
+                m_Info.compressedObservations.Add(compressedObs);
+            }
         }
 
         /// <summary>
@@ -1069,77 +1064,6 @@ namespace MLAgents
         void DecideAction()
         {
             m_Brain?.DecideAction();
-        }
-
-        /// <summary>
-        /// Converts a camera and corresponding resolution to a 2D texture.
-        /// </summary>
-        /// <returns>The 2D texture.</returns>
-        /// <param name="obsCamera">Camera.</param>
-        /// <param name="width">Width of resulting 2D texture.</param>
-        /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
-        public static Texture2D ObservationToTexture(Camera obsCamera, int width, int height)
-        {
-            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-            var oldRec = obsCamera.rect;
-            obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
-            var depth = 24;
-            var format = RenderTextureFormat.Default;
-            var readWrite = RenderTextureReadWrite.Default;
-
-            var tempRt =
-                RenderTexture.GetTemporary(width, height, depth, format, readWrite);
-
-            var prevActiveRt = RenderTexture.active;
-            var prevCameraRt = obsCamera.targetTexture;
-
-            // render to offscreen texture (readonly from CPU side)
-            RenderTexture.active = tempRt;
-            obsCamera.targetTexture = tempRt;
-
-            obsCamera.Render();
-
-            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-
-            obsCamera.targetTexture = prevCameraRt;
-            obsCamera.rect = oldRec;
-            RenderTexture.active = prevActiveRt;
-            RenderTexture.ReleaseTemporary(tempRt);
-            return texture2D;
-        }
-
-        /// <summary>
-        /// Converts a RenderTexture and correspinding resolution to a 2D texture.
-        /// </summary>
-        /// <returns>The 2D texture.</returns>
-        /// <param name="obsTexture">RenderTexture.</param>
-        /// <param name="width">Width of resulting 2D texture.</param>
-        /// <param name="height">Height of resulting 2D texture.</param>
-        /// <returns name="texture2D">Texture2D to render to.</returns>
-        public static Texture2D ObservationToTexture(RenderTexture obsTexture, int width, int height)
-        {
-            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-
-            if (width != texture2D.width || height != texture2D.height)
-            {
-                texture2D.Resize(width, height);
-            }
-
-            if (width != obsTexture.width || height != obsTexture.height)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "RenderTexture {0} : width/height is {1}/{2} brain is expecting {3}/{4}.",
-                    obsTexture.name, obsTexture.width, obsTexture.height, width, height));
-            }
-
-            var prevActiveRt = RenderTexture.active;
-            RenderTexture.active = obsTexture;
-
-            texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
-            texture2D.Apply();
-            RenderTexture.active = prevActiveRt;
-            return texture2D;
         }
 
         /// <summary>

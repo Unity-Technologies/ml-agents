@@ -19,6 +19,8 @@ namespace MLAgents.InferenceBrain
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
+        private bool m_visualObservationsInitialized = false;
+
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
@@ -108,6 +110,15 @@ namespace MLAgents.InferenceBrain
             if (currentBatchSize == 0)
             {
                 return;
+            }
+
+            if (!m_visualObservationsInitialized)
+            {
+                // Just grab the first agent in the collection (any will suffice, really).
+                // We check for an empty Collection above, so this will always return successfully.
+                var firstAgent = m_Agents[0];
+                m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
+                m_visualObservationsInitialized = true;
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");

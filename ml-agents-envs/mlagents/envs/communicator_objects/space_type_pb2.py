@@ -14,16 +14,14 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from mlagents.envs.communicator_objects import resolution_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_resolution__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/space_type.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n3mlagents/envs/communicator_objects/space_type.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents/envs/communicator_objects/resolution.proto*.\n\x0eSpaceTypeProto\x12\x0c\n\x08\x64iscrete\x10\x00\x12\x0e\n\ncontinuous\x10\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
-  ,
-  dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_resolution__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n3mlagents/envs/communicator_objects/space_type.proto\x12\x14\x63ommunicator_objects*.\n\x0eSpaceTypeProto\x12\x0c\n\x08\x64iscrete\x10\x00\x12\x0e\n\ncontinuous\x10\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+)
 
 _SPACETYPEPROTO = _descriptor.EnumDescriptor(
   name='SpaceTypeProto',
@@ -42,8 +40,8 @@ _SPACETYPEPROTO = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=130,
-  serialized_end=176,
+  serialized_start=77,
+  serialized_end=123,
 )
 _sym_db.RegisterEnumDescriptor(_SPACETYPEPROTO)
 

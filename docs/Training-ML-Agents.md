@@ -162,8 +162,7 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
-
-
+* `--cpu`: Forces training using CPU only.
 
 ### Training Config File
 

@@ -33,7 +33,6 @@ namespace MLAgents.Tests
             {
                 vectorObservationSize = 3,
                 numStackedVectorObservations = 2,
-                cameraResolutions = new[] {new Resolution()},
                 vectorActionDescriptions = new[] {"TestActionA", "TestActionB"},
                 vectorActionSize = new[] {2, 2},
                 vectorActionSpaceType = SpaceType.Discrete
@@ -47,7 +46,6 @@ namespace MLAgents.Tests
             var agentInfo = new AgentInfo
             {
                 reward = 1f,
-                visualObservations = new List<Texture2D>(),
                 actionMasks = new[] {false, true},
                 done = true,
                 id = 5,

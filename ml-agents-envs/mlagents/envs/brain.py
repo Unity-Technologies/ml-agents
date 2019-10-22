@@ -14,15 +14,11 @@ logger = logging.getLogger("mlagents.envs")
 class CameraResolution(NamedTuple):
     height: int
     width: int
-    gray_scale: bool
+    num_channels: int
 
     @property
-    def num_channels(self) -> int:
-        return 1 if self.gray_scale else 3
-
-    @staticmethod
-    def from_proto(p):
-        return CameraResolution(height=p.height, width=p.width, gray_scale=p.gray_scale)
+    def gray_scale(self) -> bool:
+        return self.num_channels == 1
 
 
 class BrainParameters:
@@ -68,20 +64,24 @@ class BrainParameters:
         )
 
     @staticmethod
-    def from_proto(brain_param_proto: BrainParametersProto) -> "BrainParameters":
+    def from_proto(
+        brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
+    ) -> "BrainParameters":
         """
         Converts brain parameter proto to BrainParameter object.
         :param brain_param_proto: protobuf object.
         :return: BrainParameter object.
         """
-        resolution = [
-            CameraResolution.from_proto(x) for x in brain_param_proto.camera_resolutions
+        resolutions = [
+            CameraResolution(x.shape[0], x.shape[1], x.shape[2])
+            for x in agent_info.compressed_observations
         ]
+
         brain_params = BrainParameters(
             brain_param_proto.brain_name,
             brain_param_proto.vector_observation_size,
             brain_param_proto.num_stacked_vector_observations,
-            resolution,
+            resolutions,
             list(brain_param_proto.vector_action_size),
             list(brain_param_proto.vector_action_descriptions),
             brain_param_proto.vector_action_space_type,
@@ -198,7 +198,7 @@ class BrainInfo:
         for i in range(brain_params.number_visual_observations):
             obs = [
                 BrainInfo.process_pixels(
-                    x.visual_observations[i],
+                    x.compressed_observations[i].data,
                     brain_params.camera_resolutions[i].gray_scale,
                 )
                 for x in agent_info_list
