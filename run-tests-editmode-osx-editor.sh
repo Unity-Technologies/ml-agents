@@ -7,7 +7,6 @@ BOKKEN_UNITY="/Users/bokken/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
 HUB_UNITY="/Applications/Unity/Hub/Editor/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
 
 if [[ -f ${BOKKEN_UNITY} ]]; then 
-    echo "PREFIX was unset using '${default_unity_path}' as default"
     UNITY=${BOKKEN_UNITY}
 else
     UNITY=${HUB_UNITY}
@@ -45,5 +44,7 @@ if [[ ${RES} -eq 0 ]] && [[ -e ${BASETPATH}/results.xml ]]; then
 else
     echo "Test run FAILED!"
 fi
+
+rm "${BASETPATH}/results.xml"
 
 exit ${RES}
