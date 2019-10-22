@@ -6,6 +6,12 @@ triggers:
     targets:
       only:
       - "develop"
+    pull_requests:
+      - targets:
+          only:
+            - "master"
+            - "/release-.*/"
+            - "/hotfix-.*/"
 
 agent:
   type: Unity::VM::osx
