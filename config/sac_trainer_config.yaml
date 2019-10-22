@@ -211,7 +211,8 @@ HallwayLearning:
     num_layers: 2
     hidden_units: 128
     memory_size: 256
-    init_entcoef: 0.5
+    init_entcoef: 0.1
+    batch_size: 256
     buffer_init_steps: 1000
     max_steps: 5.0e5
     summary_freq: 1000
