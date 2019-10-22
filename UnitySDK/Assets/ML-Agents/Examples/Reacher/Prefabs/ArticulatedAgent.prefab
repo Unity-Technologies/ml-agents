@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 5577473675271150779}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33129520809121966
 MeshFilter:
@@ -282,7 +282,7 @@ ArticulationBody:
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
   m_ComputeParentAnchor: 1
-  m_ArticulationJointType: 3
+  m_ArticulationJointType: 0
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
@@ -372,7 +372,7 @@ MonoBehaviour:
     numberOfActionsBetweenDecisions: 4
   pendulumA: {fileID: 1612288809266921535}
   pendulumB: {fileID: 2828438114980972834}
-  hand: {fileID: 2774910285752296781}
+  hand: {fileID: 1654288206095398}
   goal: {fileID: 1986879271678326}
 --- !u!1 &1644872085946016
 GameObject:
@@ -494,11 +494,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1654288206095398}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 2, y: 0.66, z: 2}
   m_Children: []
-  m_Father: {fileID: 5113607647341911964}
+  m_Father: {fileID: 5577473675271150779}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33164921905814718
@@ -724,7 +724,7 @@ ArticulationBody:
   m_LinearZ: 0
   m_Swing1: 2
   m_Swing2: 2
-  m_Twist: 2
+  m_Twist: 0
   m_XDrive:
     lowerLimit: 0
     upperLimit: 0
@@ -769,7 +769,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5113607647341911964
 Transform:
   m_ObjectHideFlags: 0
@@ -780,10 +780,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 4910003592613346}
+  m_Children: []
   m_Father: {fileID: 5577473675271150779}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!171741748 &6077791648343126729
 ArticulationBody:
@@ -862,6 +861,7 @@ Transform:
   m_LocalPosition: {x: 0, y: -6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4910003592613346}
   - {fileID: 4340471134207970}
   - {fileID: 5113607647341911964}
   m_Father: {fileID: 7854106910146316266}
@@ -887,7 +887,7 @@ ArticulationBody:
   m_LinearZ: 0
   m_Swing1: 2
   m_Swing2: 2
-  m_Twist: 2
+  m_Twist: 0
   m_XDrive:
     lowerLimit: 0
     upperLimit: 0
