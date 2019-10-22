@@ -9,34 +9,30 @@ namespace MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorGenerator
     {
-        private class TestAgent : Agent
-        {
-        }
-
         private static IEnumerable<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();
             var infoA = new AgentInfo
             {
-                stackedVectorObservation = new[] {1f, 2f, 3f}.ToList(),
+                stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
                 memories = null,
-                storedVectorActions = new[] {1f, 2f},
+                storedVectorActions = new[] { 1f, 2f },
                 actionMasks = null
             };
             var goB = new GameObject("goB");
             var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo
             {
-                stackedVectorObservation = new[] {4f, 5f, 6f}.ToList(),
-                memories = new[] {1f, 1f, 1f}.ToList(),
-                storedVectorActions = new[] {3f, 4f},
-                actionMasks = new[] {true, false, false, false, false},
+                stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
+                memories = new[] { 1f, 1f, 1f }.ToList(),
+                storedVectorActions = new[] { 3f, 4f },
+                actionMasks = new[] { true, false, false, false, false },
             };
             agentA.Info = infoA;
             agentB.Info = infoB;
 
-            return new List<Agent> {agentA, agentB};
+            return new List<Agent> { agentA, agentB };
         }
 
         [Test]
@@ -80,7 +76,7 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] {2, 3}
+                shape = new long[] { 2, 3 }
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
@@ -100,7 +96,7 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] {2, 5}
+                shape = new long[] { 2, 5 }
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgentInfos();
@@ -120,7 +116,7 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] {2, 2},
+                shape = new long[] { 2, 2 },
                 valueType = TensorProxy.TensorType.Integer
             };
             const int batchSize = 4;
@@ -142,7 +138,7 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] {2, 5},
+                shape = new long[] { 2, 5 },
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
             const int batchSize = 4;

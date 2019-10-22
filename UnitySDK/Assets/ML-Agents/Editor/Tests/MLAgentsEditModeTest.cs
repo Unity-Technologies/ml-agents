@@ -65,6 +65,11 @@ namespace MLAgents.Tests
         {
             agentOnDoneCalls += 1;
         }
+
+        public override float[] Heuristic()
+        {
+            return new float[0];
+        }
     }
 
     public class TestSensor : ISensor

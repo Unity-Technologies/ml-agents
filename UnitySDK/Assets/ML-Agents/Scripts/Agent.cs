@@ -303,7 +303,7 @@ namespace MLAgents
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory?.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
             InitializeSensors();
