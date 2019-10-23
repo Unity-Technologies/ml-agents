@@ -18,11 +18,6 @@ popd > /dev/null
 
 echo "Cleaning previous results"
 
-if [[ -e ${BASETPATH}/results.xml ]]
-then
-	rm ${BASETPATH}/results.xml
-fi
-
 echo "Starting tests via $UNITY"
 
 CMD_LINE="$UNITY -projectPath $BASETPATH/UnitySDK -batchmode -executeMethod MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX"
