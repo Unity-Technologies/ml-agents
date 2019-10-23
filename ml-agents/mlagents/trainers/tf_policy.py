@@ -56,6 +56,7 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
+        self._memories = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
@@ -126,7 +127,6 @@ class TFPolicy(Policy):
         run_out = self.evaluate(brain_info)
         return ActionInfo(
             action=run_out.get("action"),
-            memory=run_out.get("memory_out"),
             text=None,
             value=run_out.get("value"),
             outputs=run_out,
