@@ -169,6 +169,24 @@ class TFPolicy(Policy):
         """
         return np.zeros((num_agents, self.m_size))
 
+    def _save_memories(self, agent_ids, memory_matrix):
+        if not isinstance(memory_matrix, np.ndarray):
+            return
+        for index, id in enumerate(agent_ids):
+            self.memory_dict[id] = memory_matrix[index, :]
+
+    def _retrieve_memories(self, agent_ids):
+        memory_matrix = np.zeros((len(agent_ids), self.m_size))
+        for index, id in enumerate(agent_ids):
+            if id in self.memory_dict.keys():
+                memory_matrix[index, :] = self.memory_dict[id]
+        return memory_matrix
+
+    def _remove_memories(self, agent_ids):
+        for id in agent_ids:
+            if id in self.memory_dict.keys():
+                self.memory_dict.pop(id)
+
     def get_current_step(self):
         """
         Gets current model step.
