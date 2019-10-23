@@ -1,0 +1,24 @@
+name: Mac Edit Mode Tests
+triggers:
+    branches:
+      only:
+      - "/develop-.*/"
+    targets:
+      only:
+      - "develop"
+    pull_requests:
+      - targets:
+          only:
+            - "master"
+            - "/release-.*/"
+            - "/hotfix-.*/"
+
+agent:
+  type: Unity::VM::osx
+  image: ml-agents/ml-agents-bokken-mac:latest
+  flavor: i1.small
+
+variables:
+  LC_ALL: "en_US.UTF-8"
+commands:
+  - ./run-tests-editmode-osx-editor.sh

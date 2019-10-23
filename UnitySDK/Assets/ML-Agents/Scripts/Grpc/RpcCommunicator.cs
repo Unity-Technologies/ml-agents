@@ -386,23 +386,6 @@ namespace MLAgents
             };
         }
 
-        #endregion
-
-#if UNITY_EDITOR
-#if UNITY_2017_2_OR_NEWER
-        /// <summary>
-        /// When the editor exits, the communicator must be closed
-        /// </summary>
-        /// <param name="state">State.</param>
-        private void HandleOnPlayModeChanged(PlayModeStateChange state)
-        {
-            // This method is run whenever the playmode state is changed.
-            if (state == PlayModeStateChange.ExitingPlayMode)
-            {
-                Dispose();
-            }
-        }
-
         private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
             if (m_sentBrainKeys.Contains(brainKey))
@@ -445,6 +428,23 @@ namespace MLAgents
             {
                 m_sentBrainKeys.Add(brainProto.BrainName);
                 m_unsentBrainKeys.Remove(brainProto.BrainName);
+            }
+        }
+
+        #endregion
+
+#if UNITY_EDITOR
+#if UNITY_2017_2_OR_NEWER
+        /// <summary>
+        /// When the editor exits, the communicator must be closed
+        /// </summary>
+        /// <param name="state">State.</param>
+        private void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            // This method is run whenever the playmode state is changed.
+            if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                Dispose();
             }
         }
 
