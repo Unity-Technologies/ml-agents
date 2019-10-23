@@ -17,7 +17,8 @@ message AgentInfoProto {
     bool done = 8;
     bool max_step_reached = 9;
     int32 id = 10;
-    repeated bool action_mask = 11;
-    CustomObservationProto custom_observation = 12;
-    repeated CompressedObservationProto compressed_observations = 13;
+    int32 team_id = 11;
+    repeated bool action_mask = 12;
+    CustomObservationProto custom_observation = 13;
+    repeated CompressedObservationProto compressed_observations = 14;
 }

@@ -24,6 +24,9 @@ namespace MLAgents
                 "agentParameters.resetOnDone");
             var isOdd = serializedAgent.FindProperty(
                 "agentParameters.onDemandDecision");
+            var teamId = serializedAgent.FindProperty(
+                "agentParameters.teamId");
+
 
 
 
@@ -51,6 +54,12 @@ namespace MLAgents
                         " steps and perform an action at every step."));
                 actionsPerDecision.intValue = Mathf.Max(1, actionsPerDecision.intValue);
             }
+
+            EditorGUILayout.PropertyField(
+                teamId,
+                new GUIContent(
+                    "Team ID",
+                    "The team the agent belongs to."));
 
             serializedAgent.ApplyModifiedProperties();
 

@@ -104,6 +104,7 @@ class BrainInfo:
         max_reached=None,
         action_mask=None,
         custom_observations=None,
+        team_ids=None,
     ):
         """
         Describes experience at current step of all agents linked to a brain.
@@ -120,6 +121,7 @@ class BrainInfo:
         self.previous_text_actions = text_action
         self.action_masks = action_mask
         self.custom_observations = custom_observations
+        self.team_ids = team_ids
 
     def merge(self, other):
         for i in range(len(self.visual_observations)):
@@ -278,6 +280,7 @@ class BrainInfo:
             text_action=[list(x.stored_text_actions) for x in agent_info_list],
             max_reached=[x.max_step_reached for x in agent_info_list],
             custom_observations=[x.custom_observation for x in agent_info_list],
+            team_ids=[x.team_id for x in agent_info_list],
             action_mask=mask_actions,
         )
         return brain_info

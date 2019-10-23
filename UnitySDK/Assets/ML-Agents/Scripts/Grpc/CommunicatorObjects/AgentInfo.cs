@@ -28,21 +28,21 @@ namespace MLAgents.CommunicatorObjects {
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGj9tbGFnZW50cy9lbnZz",
             "L2NvbW11bmljYXRvcl9vYmplY3RzL2NvbXByZXNzZWRfb2JzZXJ2YXRpb24u",
             "cHJvdG8aO21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvY3Vz",
-            "dG9tX29ic2VydmF0aW9uLnByb3RvIpgDCg5BZ2VudEluZm9Qcm90bxIiChpz",
+            "dG9tX29ic2VydmF0aW9uLnByb3RvIqkDCg5BZ2VudEluZm9Qcm90bxIiChpz",
             "dGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMoAhIYChB0ZXh0X29ic2Vy",
             "dmF0aW9uGAMgASgJEh0KFXN0b3JlZF92ZWN0b3JfYWN0aW9ucxgEIAMoAhIb",
             "ChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEhAKCG1lbW9yaWVzGAYgAygC",
             "Eg4KBnJld2FyZBgHIAEoAhIMCgRkb25lGAggASgIEhgKEG1heF9zdGVwX3Jl",
-            "YWNoZWQYCSABKAgSCgoCaWQYCiABKAUSEwoLYWN0aW9uX21hc2sYCyADKAgS",
-            "SAoSY3VzdG9tX29ic2VydmF0aW9uGAwgASgLMiwuY29tbXVuaWNhdG9yX29i",
-            "amVjdHMuQ3VzdG9tT2JzZXJ2YXRpb25Qcm90bxJRChdjb21wcmVzc2VkX29i",
-            "c2VydmF0aW9ucxgNIAMoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLkNvbXBy",
-            "ZXNzZWRPYnNlcnZhdGlvblByb3RvSgQIAhADQh+qAhxNTEFnZW50cy5Db21t",
-            "dW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "YWNoZWQYCSABKAgSCgoCaWQYCiABKAUSDwoHdGVhbV9pZBgLIAEoBRITCgth",
+            "Y3Rpb25fbWFzaxgMIAMoCBJIChJjdXN0b21fb2JzZXJ2YXRpb24YDSABKAsy",
+            "LC5jb21tdW5pY2F0b3Jfb2JqZWN0cy5DdXN0b21PYnNlcnZhdGlvblByb3Rv",
+            "ElEKF2NvbXByZXNzZWRfb2JzZXJ2YXRpb25zGA4gAygLMjAuY29tbXVuaWNh",
+            "dG9yX29iamVjdHMuQ29tcHJlc3NlZE9ic2VydmF0aW9uUHJvdG9KBAgCEANC",
+            "H6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CompressedObservationReflection.Descriptor, global::MLAgents.CommunicatorObjects.CustomObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "TeamId", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
           }));
     }
     #endregion
@@ -83,6 +83,7 @@ namespace MLAgents.CommunicatorObjects {
       done_ = other.done_;
       maxStepReached_ = other.maxStepReached_;
       id_ = other.id_;
+      teamId_ = other.teamId_;
       actionMask_ = other.actionMask_.Clone();
       CustomObservation = other.customObservation_ != null ? other.CustomObservation.Clone() : null;
       compressedObservations_ = other.compressedObservations_.Clone();
@@ -190,10 +191,21 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "team_id" field.</summary>
+    public const int TeamIdFieldNumber = 11;
+    private int teamId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int TeamId {
+      get { return teamId_; }
+      set {
+        teamId_ = value;
+      }
+    }
+
     /// <summary>Field number for the "action_mask" field.</summary>
-    public const int ActionMaskFieldNumber = 11;
+    public const int ActionMaskFieldNumber = 12;
     private static readonly pb::FieldCodec<bool> _repeated_actionMask_codec
-        = pb::FieldCodec.ForBool(90);
+        = pb::FieldCodec.ForBool(98);
     private readonly pbc::RepeatedField<bool> actionMask_ = new pbc::RepeatedField<bool>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<bool> ActionMask {
@@ -201,7 +213,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "custom_observation" field.</summary>
-    public const int CustomObservationFieldNumber = 12;
+    public const int CustomObservationFieldNumber = 13;
     private global::MLAgents.CommunicatorObjects.CustomObservationProto customObservation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::MLAgents.CommunicatorObjects.CustomObservationProto CustomObservation {
@@ -212,9 +224,9 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Field number for the "compressed_observations" field.</summary>
-    public const int CompressedObservationsFieldNumber = 13;
+    public const int CompressedObservationsFieldNumber = 14;
     private static readonly pb::FieldCodec<global::MLAgents.CommunicatorObjects.CompressedObservationProto> _repeated_compressedObservations_codec
-        = pb::FieldCodec.ForMessage(106, global::MLAgents.CommunicatorObjects.CompressedObservationProto.Parser);
+        = pb::FieldCodec.ForMessage(114, global::MLAgents.CommunicatorObjects.CompressedObservationProto.Parser);
     private readonly pbc::RepeatedField<global::MLAgents.CommunicatorObjects.CompressedObservationProto> compressedObservations_ = new pbc::RepeatedField<global::MLAgents.CommunicatorObjects.CompressedObservationProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<global::MLAgents.CommunicatorObjects.CompressedObservationProto> CompressedObservations {
@@ -243,6 +255,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != other.Done) return false;
       if (MaxStepReached != other.MaxStepReached) return false;
       if (Id != other.Id) return false;
+      if (TeamId != other.TeamId) return false;
       if(!actionMask_.Equals(other.actionMask_)) return false;
       if (!object.Equals(CustomObservation, other.CustomObservation)) return false;
       if(!compressedObservations_.Equals(other.compressedObservations_)) return false;
@@ -261,6 +274,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != false) hash ^= Done.GetHashCode();
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
+      if (TeamId != 0) hash ^= TeamId.GetHashCode();
       hash ^= actionMask_.GetHashCode();
       if (customObservation_ != null) hash ^= CustomObservation.GetHashCode();
       hash ^= compressedObservations_.GetHashCode();
@@ -304,9 +318,13 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(80);
         output.WriteInt32(Id);
       }
+      if (TeamId != 0) {
+        output.WriteRawTag(88);
+        output.WriteInt32(TeamId);
+      }
       actionMask_.WriteTo(output, _repeated_actionMask_codec);
       if (customObservation_ != null) {
-        output.WriteRawTag(98);
+        output.WriteRawTag(106);
         output.WriteMessage(CustomObservation);
       }
       compressedObservations_.WriteTo(output, _repeated_compressedObservations_codec);
@@ -338,6 +356,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (Id != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
+      }
+      if (TeamId != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TeamId);
       }
       size += actionMask_.CalculateSize(_repeated_actionMask_codec);
       if (customObservation_ != null) {
@@ -375,6 +396,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.Id != 0) {
         Id = other.Id;
+      }
+      if (other.TeamId != 0) {
+        TeamId = other.TeamId;
       }
       actionMask_.Add(other.actionMask_);
       if (other.customObservation_ != null) {
@@ -434,19 +458,23 @@ namespace MLAgents.CommunicatorObjects {
             Id = input.ReadInt32();
             break;
           }
-          case 90:
           case 88: {
+            TeamId = input.ReadInt32();
+            break;
+          }
+          case 98:
+          case 96: {
             actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
             break;
           }
-          case 98: {
+          case 106: {
             if (customObservation_ == null) {
               customObservation_ = new global::MLAgents.CommunicatorObjects.CustomObservationProto();
             }
             input.ReadMessage(customObservation_);
             break;
           }
-          case 106: {
+          case 114: {
             compressedObservations_.AddEntriesFrom(input, _repeated_compressedObservations_codec);
             break;
           }
