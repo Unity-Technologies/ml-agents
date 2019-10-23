@@ -108,7 +108,7 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator : IBatchedDecisionMaker
+    public interface ICommunicator
     {
         /// <summary>
         /// Quit was received by the communicator.
@@ -142,16 +142,19 @@ namespace MLAgents
         void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
+        /// Sends the observations of one Agent. 
+        /// </summary>
+        /// <param name="key">Batch Key.</param>
+        /// <param name="agents">Agent info.</param>
+        void PutObservations(string brainKey, Agent agent);
+
+        void DecideBatch();
+
+        /// <summary>
         /// Gets the AgentActions based on the batching key.
         /// </summary>
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
         Dictionary<Agent, AgentAction> GetActions(string key);
-    }
-
-    public interface IBatchedDecisionMaker : IDisposable
-    {
-        void PutObservations(string key, Agent agent);
-        void DecideBatch();
     }
 }

@@ -28,7 +28,11 @@ namespace MLAgents.InferenceBrain
             /// <param name="agents"> List of Agents containing the
             /// information that will be used to populate the tensor's data</param>
             void Generate(
-                TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents);
+                TensorProxy tensorProxy,
+                int batchSize,
+                IEnumerable<Agent> agents,
+                Dictionary<int, List<float>> memories
+                );
         }
 
         private readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
@@ -51,8 +55,8 @@ namespace MLAgents.InferenceBrain
                 new SequenceLengthGenerator(allocator);
             m_Dict[TensorNames.VectorObservationPlacholder] =
                 new VectorObservationGenerator(allocator);
-            m_Dict[TensorNames.RecurrentInPlaceholder] =
-                new RecurrentInputGenerator(allocator);
+            // m_Dict[TensorNames.RecurrentInPlaceholder] =
+            //     new RecurrentInputGenerator(allocator);
 
             if (barracudaModel != null)
             {
@@ -102,7 +106,8 @@ namespace MLAgents.InferenceBrain
         public void GenerateTensors(
             IEnumerable<TensorProxy> tensors,
             int currentBatchSize,
-            IEnumerable<Agent> agents)
+            IEnumerable<Agent> agents,
+            Dictionary<int, List<float>> memories)
         {
             foreach (var tensor in tensors)
             {
@@ -111,7 +116,7 @@ namespace MLAgents.InferenceBrain
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents);
+                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents, memories);
             }
         }
     }

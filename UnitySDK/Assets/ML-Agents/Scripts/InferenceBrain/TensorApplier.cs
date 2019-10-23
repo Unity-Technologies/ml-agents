@@ -30,7 +30,12 @@ namespace MLAgents.InferenceBrain
             /// <param name="agents">
             /// List of Agents that will receive the values of the Tensor.
             /// </param>
-            void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents);
+            /// <param name="memories">
+            /// The memories of all the agents
+            /// </param>
+            void Apply(TensorProxy tensorProxy,
+                IEnumerable<Agent> agents,
+                Dictionary<int, List<float>> memories);
         }
 
         private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
@@ -56,7 +61,7 @@ namespace MLAgents.InferenceBrain
                 m_Dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            // m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
 
             if (barracudaModel != null)
             {
@@ -78,7 +83,7 @@ namespace MLAgents.InferenceBrain
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IEnumerable<TensorProxy> tensors,  IEnumerable<Agent> agents)
+            IEnumerable<TensorProxy> tensors, IEnumerable<Agent> agents, Dictionary<int, List<float>> memories)
         {
             foreach (var tensor in tensors)
             {
@@ -87,7 +92,7 @@ namespace MLAgents.InferenceBrain
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                m_Dict[tensor.name].Apply(tensor, agents);
+                m_Dict[tensor.name].Apply(tensor, agents, memories);
             }
         }
     }

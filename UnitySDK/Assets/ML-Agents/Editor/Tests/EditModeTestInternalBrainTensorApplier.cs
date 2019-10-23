@@ -13,7 +13,7 @@ namespace MLAgents.Tests
         {
             public AgentAction GetAction()
             {
-                var f =  typeof(Agent).GetField(
+                var f = typeof(Agent).GetField(
                     "m_Action", BindingFlags.Instance | BindingFlags.NonPublic);
                 return (AgentAction)f.GetValue(this);
             }
@@ -26,7 +26,7 @@ namespace MLAgents.Tests
             var goB = new GameObject("goB");
             var agentB = goB.AddComponent<TestAgent>();
 
-            return new List<Agent> {agentA, agentB};
+            return new List<Agent> { agentA, agentB };
         }
 
         [Test]
@@ -44,13 +44,13 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] {2, 3},
-                data = new Tensor(2, 3, new float[] {1, 2, 3, 4, 5, 6})
+                shape = new long[] { 2, 3 },
+                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
             };
             var agentInfos = GetFakeAgentInfos();
 
             var applier = new ContinuousActionOutputApplier();
-            applier.Apply(inputTensor, agentInfos);
+            applier.Apply(inputTensor, agentInfos, null);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
@@ -73,16 +73,16 @@ namespace MLAgents.Tests
         {
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] {2, 5},
+                shape = new long[] { 2, 5 },
                 data = new Tensor(
                     2,
                     5,
-                    new[] {0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f})
+                    new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
-            var applier = new DiscreteActionOutputApplier(new[] {2, 3}, 0, alloc);
-            applier.Apply(inputTensor, agentInfos);
+            var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
+            applier.Apply(inputTensor, agentInfos, null);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
@@ -100,47 +100,17 @@ namespace MLAgents.Tests
         }
 
         [Test]
-        public void ApplyMemoryOutput()
-        {
-            var inputTensor = new TensorProxy()
-            {
-                shape = new long[] {2, 5},
-                data = new Tensor(
-                    2,
-                    5,
-                    new[] {0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f})
-            };
-            var agentInfos = GetFakeAgentInfos();
-
-            var applier = new MemoryOutputApplier();
-            applier.Apply(inputTensor, agentInfos);
-            var agents = agentInfos;
-
-            var agent = agents[0] as TestAgent;
-            Assert.NotNull(agent);
-            var action = agent.GetAction();
-            Assert.AreEqual(action.memories[0], 0.5f);
-            Assert.AreEqual(action.memories[1], 22.5f);
-
-            agent = agents[1] as TestAgent;
-            Assert.NotNull(agent);
-            action = agent.GetAction();
-            Assert.AreEqual(action.memories[2], 6);
-            Assert.AreEqual(action.memories[3], 7);
-        }
-
-        [Test]
         public void ApplyValueEstimate()
         {
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] {2, 1},
-                data = new Tensor(2, 1, new[] {0.5f, 8f})
+                shape = new long[] { 2, 1 },
+                data = new Tensor(2, 1, new[] { 0.5f, 8f })
             };
             var agentInfos = GetFakeAgentInfos();
 
             var applier = new ValueEstimateApplier();
-            applier.Apply(inputTensor, agentInfos);
+            applier.Apply(inputTensor, agentInfos, null);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;

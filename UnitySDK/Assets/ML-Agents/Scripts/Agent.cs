@@ -52,14 +52,6 @@ namespace MLAgents
         public bool[] actionMasks;
 
         /// <summary>
-        /// Used by the Trainer to store information about the agent. This data
-        /// structure is not consumed or modified by the agent directly, they are
-        /// just the owners of their trainier's memory. Currently, however, the
-        /// size of the memory is in the Brain properties.
-        /// </summary>
-        public List<float> memories;
-
-        /// <summary>
         /// Current agent reward.
         /// </summary>
         public float reward;
@@ -96,7 +88,6 @@ namespace MLAgents
     {
         public float[] vectorActions;
         public string textActions;
-        public List<float> memories;
         public float value;
         /// TODO(cgoy): All references to protobuf objects should be removed.
         public CommunicatorObjects.CustomActionProto customAction;
@@ -484,8 +475,6 @@ namespace MLAgents
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
             m_Action.textActions = "";
-            m_Info.memories = new List<float>();
-            m_Action.memories = new List<float>();
             m_Info.vectorObservation =
                 new List<float>(param.vectorObservationSize);
             m_Info.stackedVectorObservation =
@@ -563,7 +552,6 @@ namespace MLAgents
                 return;
             }
 
-            m_Info.memories = m_Action.memories;
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
             m_Info.vectorObservation.Clear();
@@ -900,25 +888,6 @@ namespace MLAgents
         public void UpdateVectorAction(float[] vectorActions)
         {
             m_Action.vectorActions = vectorActions;
-        }
-
-        /// <summary>
-        /// Updates the memories action.
-        /// </summary>
-        /// <param name="memories">Memories.</param>
-        public void UpdateMemoriesAction(List<float> memories)
-        {
-            m_Action.memories = memories;
-        }
-
-        public void AppendMemoriesAction(List<float> memories)
-        {
-            m_Action.memories.AddRange(memories);
-        }
-
-        public List<float> GetMemoriesAction()
-        {
-            return m_Action.memories;
         }
 
         /// <summary>

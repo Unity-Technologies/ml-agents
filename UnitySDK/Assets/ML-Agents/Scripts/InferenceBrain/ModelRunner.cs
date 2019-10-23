@@ -4,7 +4,7 @@ using UnityEngine.Profiling;
 
 namespace MLAgents.InferenceBrain
 {
-    public class ModelRunner : IBatchedDecisionMaker
+    public class ModelRunner
     {
         private List<Agent> m_Agents = new List<Agent>();
         private ITensorAllocator m_TensorAllocator;
@@ -18,6 +18,7 @@ namespace MLAgents.InferenceBrain
         private string[] m_OutputNames;
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
+        private Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
 
         private bool m_visualObservationsInitialized = false;
 
@@ -100,7 +101,7 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(string key, Agent agent)
+        public void PutObservations(Agent agent)
         {
             m_Agents.Add(agent);
         }
@@ -125,7 +126,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents, m_Memories);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -143,7 +144,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents, m_Memories);
             Profiler.EndSample();
 
             Profiler.EndSample();

@@ -16,7 +16,6 @@ namespace MLAgents.Tests
             var infoA = new AgentInfo
             {
                 stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
-                memories = null,
                 storedVectorActions = new[] { 1f, 2f },
                 actionMasks = null
             };
@@ -25,7 +24,6 @@ namespace MLAgents.Tests
             var infoB = new AgentInfo
             {
                 stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
-                memories = new[] { 1f, 1f, 1f }.ToList(),
                 storedVectorActions = new[] { 3f, 4f },
                 actionMasks = new[] { true, false, false, false, false },
             };
@@ -52,7 +50,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             const int batchSize = 4;
             var generator = new BatchSizeGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, null);
+            generator.Generate(inputTensor, batchSize, null, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0], batchSize);
             alloc.Dispose();
@@ -65,7 +63,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             const int batchSize = 4;
             var generator = new SequenceLengthGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, null);
+            generator.Generate(inputTensor, batchSize, null, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0], 1);
             alloc.Dispose();
@@ -82,32 +80,12 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
             var generator = new VectorObservationGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos);
+            generator.Generate(inputTensor, batchSize, agentInfos, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 2], 3);
             Assert.AreEqual(inputTensor.data[1, 0], 4);
             Assert.AreEqual(inputTensor.data[1, 2], 6);
-            alloc.Dispose();
-        }
-
-        [Test]
-        public void GenerateRecurrentInput()
-        {
-            var inputTensor = new TensorProxy
-            {
-                shape = new long[] { 2, 5 }
-            };
-            const int batchSize = 4;
-            var agentInfos = GetFakeAgentInfos();
-            var alloc = new TensorCachingAllocator();
-            var generator = new RecurrentInputGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 0);
-            Assert.AreEqual(inputTensor.data[0, 4], 0);
-            Assert.AreEqual(inputTensor.data[1, 0], 1);
-            Assert.AreEqual(inputTensor.data[1, 4], 0);
             alloc.Dispose();
         }
 
@@ -124,7 +102,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             var generator = new PreviousActionInputGenerator(alloc);
 
-            generator.Generate(inputTensor, batchSize, agentInfos);
+            generator.Generate(inputTensor, batchSize, agentInfos, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 1], 2);
@@ -145,7 +123,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
             var generator = new ActionMaskInputGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos);
+            generator.Generate(inputTensor, batchSize, agentInfos, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 4], 1);

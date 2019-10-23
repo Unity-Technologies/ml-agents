@@ -11,7 +11,7 @@ namespace MLAgents
     {
 
         private string m_BehaviorName;
-        protected IBatchedDecisionMaker m_BatchedDecisionMaker;
+        protected ICommunicator m_BatchedDecisionMaker;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their sensors.
