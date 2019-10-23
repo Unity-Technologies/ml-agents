@@ -174,7 +174,10 @@ class RLTrainer(Trainer):
                         self.training_buffer[agent_id]["next_vector_in"].append(
                             next_info.vector_observations[next_idx]
                         )
-
+                    if self.policy.use_recurrent:
+                        self.training_buffer[agent_id]["memory"].append(
+                            self.policy._retrieve_memories([idx])[0, :]
+                        )
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[next_idx]
