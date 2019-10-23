@@ -92,8 +92,6 @@ behavior:
 * **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
-* **Visual Observations** — Defines any Camera objects used by the Agent to
-  observe its environment. 3D Balance Ball does not use camera observations.
 * **Max Step** — Defines how many simulation steps can occur before the Agent
   decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
 * **Reset On Done** — Defines whether an Agent starts over when it is finished.
