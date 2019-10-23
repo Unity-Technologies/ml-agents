@@ -211,11 +211,12 @@ are also typically less efficient and slower to train, and sometimes don't
 succeed at all.
 
 Visual observations can be derived from Cameras or RenderTextures within your scene. 
-To add a visual observation to an Agent, either click on the `Add Camera` or 
-`Add RenderTexture` button in the Agent inspector. Then drag the camera or 
+To add a visual observation to an Agent, add either a Camera Sensor Component 
+or RenderTextures Sensor Component to the Agent. Then drag the camera or 
 render texture you want to add to the `Camera` or `RenderTexture` field. 
 You can have more than one camera or render texture and even use a combination 
-of both attached to an Agent.
+of both attached to an Agent. For each visual observation, set the width and height
+of the image (in pixels) and whether or not the observation is color or grayscale. 
 
 ![Agent Camera](images/visual-observation.png)
 
@@ -223,23 +224,11 @@ or
 
 ![Agent RenderTexture](images/visual-observation-rendertexture.png)
 
-In addition, make sure that the Agent's Policy expects a visual observation. In
-the Agent inspector, under **Behavior Parameters** > **Visual Observations**,
-specify the number of Resolutions the Agent is using for its visual observations.
-For each visual observation, set the width and height of the image (in pixels)
-and whether or not the observation is color or grayscale (when `Black And White`
-is checked). 
-
-For instance, if you are using two cameras and one render texture on your Agent,
-three **Visual Observations** have to be added to the **Behavior Parameters**. 
-During runtime, if a combination of `Cameras` and `RenderTextures` is used, all 
-cameras are captured first, then all render textures will be added, in the
-order they appear in the editor. 
-
-![Agent Camera and RenderTexture combination](images/visual-observation-combination.png)
-
-RenderTexture observations will throw an `Exception` if the width/height doesn't 
-match the resolution specified under **Behavior Parameters** > **Visual Observations**.
+Each Agent that uses the same Policy must have the same number of visual observations,
+and they must all have the same resolutions (including whether or not they are grayscale).
+Additionally, each Sensor Component on an Agent must have a unique name so that they can
+be sorted deterministically (the name must be unique for that Agent, but multiple Agents can
+have a Sensor Component with the same name).
 
 When using `RenderTexture` visual observations, a handy feature for debugging is 
 adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's 
@@ -519,7 +508,7 @@ called independently of the `Max Step` property.
 
 ## Agent Properties
 
-![Agent Inspector](images/agent.png)
+![Agent Inspector](images/3dball_learning_brain.png)
 
 * `Behavior Parameters` - The parameters dictating what Policy the Agent will
 receive.
@@ -529,8 +518,6 @@ receive.
       be stacked and used collectively for decision making. This results in the
       effective size of the vector observation being passed to the Policy being:
       _Space Size_ x _Stacked Vectors_.
-  * `Visual Observations` - Describes height, width, and whether to grayscale
-    visual observations for the Policy.
   * `Vector Action`
     * `Space Type` - Corresponds to whether action vector contains a single
       integer (Discrete) or a series of real-valued floats (Continuous).
@@ -543,8 +530,6 @@ receive.
   * `Inference Device` - Whether to use CPU or GPU to run the model during inference
   * `Use Heuristic` - If checked, the Agent will use its 'Heuristic()' method for
   decisions.
-* `Visual Observations` - A list of `Cameras` or `RenderTextures` which will 
-  be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the Agent's `AgentReset()` function should be called
