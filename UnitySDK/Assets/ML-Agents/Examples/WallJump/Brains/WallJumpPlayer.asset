@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Name: WallJumpPlayer
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 74
-    numStackedVectorObservations: 6
+    vectorObservationSize: 83
+    numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     cameraResolutions: []
     vectorActionDescriptions:

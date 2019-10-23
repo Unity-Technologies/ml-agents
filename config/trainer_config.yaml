@@ -47,7 +47,7 @@ PushBlockLearning:
     num_layers: 2
 
 SmallWallJumpLearning:
-    max_steps: 1.0e6
+    max_steps: 2.0e5
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
@@ -57,16 +57,55 @@ SmallWallJumpLearning:
     num_layers: 2
     normalize: false
 
+# BigWallJumpLearning:
+#     max_steps: 1.0e6
+#     batch_size: 128
+#     buffer_size: 2048
+#     beta: 5.0e-3
+#     hidden_units: 256
+#     summary_freq: 2000
+#     time_horizon: 128
+#     num_layers: 2
+#     normalize: false
+
 BigWallJumpLearning:
-    max_steps: 1.0e6
-    batch_size: 128
-    buffer_size: 2048
-    beta: 5.0e-3
-    hidden_units: 256
-    summary_freq: 2000
-    time_horizon: 128
+    normalize: true
+    num_epoch: 8
+    time_horizon: 1000
+    batch_size: 512
+    buffer_size: 4096
+    max_steps: 1e6
+    summary_freq: 3000
     num_layers: 2
-    normalize: false
+    hidden_units: 128
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.99
+        curiosity:
+            strength: 0.02
+            gamma: 0.99
+            encoding_size: 256
+
+# BigWallJumpLearning:
+#     normalize: true
+#     num_epoch: 3
+#     time_horizon: 1000
+#     batch_size: 2024
+#     buffer_size: 20240
+#     max_steps: 1e6
+#     summary_freq: 3000
+#     num_layers: 3
+#     hidden_units: 512
+#     reward_signals:
+#         extrinsic:
+#             strength: 1.0
+#             gamma: 0.99
+#         curiosity:
+#             strength: 0.02
+#             gamma: 0.99
+#             encoding_size: 256
+
 
 StrikerLearning:
     max_steps: 5.0e5
