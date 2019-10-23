@@ -46,7 +46,7 @@
 * [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 
 ### Cloud Training (Deprecated)
-Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and 
+Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and
 so they may not be work correctly. We've decided to keep them up just in case they are helpful to
 you.
 

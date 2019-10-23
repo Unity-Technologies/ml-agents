@@ -30,5 +30,5 @@
   logic should not be placed here.
 * **External Coordinator** - ML-Agents class responsible for communication with
   outside processes (in this case, the Python API).
-* **Trainer** - Python class which is responsible for training a given 
+* **Trainer** - Python class which is responsible for training a given
   group of Agents.
