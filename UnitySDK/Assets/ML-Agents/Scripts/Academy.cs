@@ -600,7 +600,7 @@ namespace MLAgents
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
 
             // Signal to listeners that the academy is being destroyed now
-            DestroyAction();
+            DestroyAction?.Invoke();
 
             foreach (var mr in m_ModelRunners)
             {
