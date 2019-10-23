@@ -12,7 +12,7 @@ default:
     memory_size: 256
     demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demo_File>.demo
 
-HallwayLearning:
+Hallway:
     trainer: offline_bc
     max_steps: 5.0e5
     num_epoch: 5

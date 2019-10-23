@@ -63,7 +63,7 @@ For more on using the gym interface, see our
 
 ## Limitations
 
-* It is only possible to use an environment with a single Brain.
+* It is only possible to use an environment with a single Agent.
 * By default, the first visual observation is provided as the `observation`, if 
   present. Otherwise, vector observations are provided. You can receive all visual
   observations by using the `allow_multiple_visual_obs=True` option in the gym
@@ -264,8 +264,7 @@ that use branched discrete action spaces (e.g.
 `flatten_branched` parameter in `UnityEnv`, which treats each combination of branched 
 actions as separate actions.
 
-Furthermore, when building your environments, ensure that your
-[Learning Brain](../docs/Learning-Environment-Design-Brains.md) is using visual
+Furthermore, when building your environments, ensure that your Agent is using visual
 observations with greyscale enabled, and that the dimensions of the visual observations
 is 84 by 84 (matches the parameter found in `dqn_agent.py` and `rainbow_agent.py`).
 Dopamine's agents currently do not automatically adapt to the observation 

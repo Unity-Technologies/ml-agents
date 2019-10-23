@@ -90,7 +90,6 @@ namespace MLAgents.InferenceBrain
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
             var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
-
             var agentIndex = 0;
             foreach (var agent in agents)
             {

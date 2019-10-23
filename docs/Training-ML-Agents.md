@@ -174,9 +174,8 @@ with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files a
 into sections. The **default** section defines the default values for all the available
 training with PPO, SAC, GAIL (with PPO), and offline BC. These files are divided into sections.
 The **default** section defines the default values for all the available settings. You can 
-also add new sections to override these defaults to train specific Brains. Name each of these
-override sections after the GameObject containing the Brain component that should use these 
-settings. (This GameObject will be a child of the Academy in your scene.) Sections for the 
+also add new sections to override these defaults to train specific Behaviors. Name each of these
+override sections after the appropriate `Behavior Name`. Sections for the 
 example environments are included in the provided config file.
 
 |     **Setting**      |                                                                                     **Description**                                                                                     | **Applies To Trainer\*** |

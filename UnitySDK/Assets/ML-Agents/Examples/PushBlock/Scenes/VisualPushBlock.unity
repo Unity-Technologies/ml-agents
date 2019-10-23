@@ -858,25 +858,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 114812843792483960, guid: 9d9b85a2a80e74e5294bdfb248825335,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: d359d2290a825421e930c94284994e3f,
-        type: 2}
-    - target: {fileID: 114024228081418500, guid: 9d9b85a2a80e74e5294bdfb248825335,
-        type: 2}
-      propertyPath: camera
-      value: 
-      objectReference: {fileID: 1954420365}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9d9b85a2a80e74e5294bdfb248825335, type: 2}
   m_IsPrefabParent: 0
---- !u!20 &1954420365 stripped
-Camera:
-  m_PrefabParentObject: {fileID: 20961401228419460, guid: 9d9b85a2a80e74e5294bdfb248825335,
-    type: 2}
-  m_PrefabInternal: {fileID: 1954420364}
 --- !u!1001 &1969300026
 Prefab:
   m_ObjectHideFlags: 0

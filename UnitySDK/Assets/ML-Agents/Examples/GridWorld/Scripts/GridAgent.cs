@@ -123,6 +123,27 @@ public class GridAgent : Agent
         }
     }
 
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { k_Right };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { k_Up };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { k_Left };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { k_Down };
+        }
+        return new float[] { k_NoAction };
+    }
+
     // to be implemented by the developer
     public override void AgentReset()
     {

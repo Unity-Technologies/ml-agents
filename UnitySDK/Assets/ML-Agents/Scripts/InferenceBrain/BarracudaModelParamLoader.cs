@@ -338,8 +338,11 @@ namespace MLAgents.InferenceBrain
             {
                 if (!tensorTester.ContainsKey(tensor.name))
                 {
-                    failedModelChecks.Add(
-                        "Model requires an unknown input named : " + tensor.name);
+                    if (!tensor.name.Contains("visual_observation"))
+                    {
+                        failedModelChecks.Add(
+                            "Model requires an unknown input named : " + tensor.name);
+                    }
                 }
                 else
                 {

@@ -22,42 +22,30 @@ namespace MLAgents
         /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (property.isExpanded)
-            {
-                return k_LineHeight +
-                    GetHeightDrawVectorObservation() +
-                    GetHeightDrawVectorAction(property) +
-                    GetHeightDrawVectorActionDescriptions(property);
-            }
-            return k_LineHeight;
+            return GetHeightDrawVectorObservation() +
+                GetHeightDrawVectorAction(property);
+
         }
 
         /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+
             var indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             position.height = k_LineHeight;
-            property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, label);
-            position.y += k_LineHeight;
-            if (property.isExpanded)
-            {
-                EditorGUI.BeginProperty(position, label, property);
-                EditorGUI.indentLevel++;
+            EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.indentLevel++;
 
-                // Vector Observations
-                DrawVectorObservation(position, property);
-                position.y += GetHeightDrawVectorObservation();
+            // Vector Observations
+            DrawVectorObservation(position, property);
+            position.y += GetHeightDrawVectorObservation();
 
-                // Vector Action
-                DrawVectorAction(position, property);
-                position.y += GetHeightDrawVectorAction(property);
+            // Vector Action
+            DrawVectorAction(position, property);
+            position.y += GetHeightDrawVectorAction(property);
 
-                // Vector Action Descriptions
-                DrawVectorActionDescriptions(position, property);
-                position.y += GetHeightDrawVectorActionDescriptions(property);
-                EditorGUI.EndProperty();
-            }
+            EditorGUI.EndProperty();
             EditorGUI.indentLevel = indent;
         }
 
@@ -188,69 +176,6 @@ namespace MLAgents
                 actionSize += 1;
             }
             return actionSize * k_LineHeight;
-        }
-
-        /// <summary>
-        /// Draws the Vector Actions descriptions for the Brain Parameters
-        /// </summary>
-        /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
-        /// <param name="property">The SerializedProperty of the BrainParameters
-        /// to make the custom GUI for.</param>
-        private static void DrawVectorActionDescriptions(Rect position, SerializedProperty property)
-        {
-            var bpVectorActionType = property.FindPropertyRelative(k_ActionTypePropName);
-            var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-            var numberOfDescriptions = 0;
-            if (bpVectorActionType.enumValueIndex == 1)
-            {
-                numberOfDescriptions = vecActionSize.GetArrayElementAtIndex(0).intValue;
-            }
-            else
-            {
-                numberOfDescriptions = vecActionSize.arraySize;
-            }
-
-            EditorGUI.indentLevel++;
-            var vecActionDescriptions =
-                property.FindPropertyRelative(k_ActionDescriptionPropName);
-            vecActionDescriptions.arraySize = numberOfDescriptions;
-            if (bpVectorActionType.enumValueIndex == 1)
-            {
-                //Continuous case :
-                EditorGUI.PropertyField(
-                    position,
-                    vecActionDescriptions,
-                    new GUIContent("Action Descriptions",
-                        "A list of strings used to name the available actionsm for the Brain."),
-                    true);
-                position.y += k_LineHeight;
-            }
-            else
-            {
-                // Discrete case :
-                EditorGUI.PropertyField(
-                    position,
-                    vecActionDescriptions,
-                    new GUIContent("Branch Descriptions",
-                        "A list of strings used to name the available branches for the Brain."),
-                    true);
-                position.y += k_LineHeight;
-            }
-        }
-
-        /// <summary>
-        /// The Height required to draw the Action Descriptions
-        /// </summary>
-        /// <returns>The height of the drawer of the Action Descriptions </returns>
-        private static float GetHeightDrawVectorActionDescriptions(SerializedProperty property)
-        {
-            var descriptionSize = 1;
-            if (property.FindPropertyRelative(k_ActionDescriptionPropName).isExpanded)
-            {
-                var descriptions = property.FindPropertyRelative(k_ActionDescriptionPropName);
-                descriptionSize += descriptions.arraySize + 1;
-            }
-            return descriptionSize * k_LineHeight;
         }
     }
 }

@@ -25,14 +25,6 @@ namespace MLAgents
         /// The default number of agents in the scene
         private const int k_NumAgents = 32;
 
-        /// Keeps track of which brains have data to send on the current step
-        Dictionary<string, bool> m_HasData =
-            new Dictionary<string, bool>();
-
-        /// Keeps track of which brains queried the communicator on the current step
-        Dictionary<string, bool> m_HasQueried =
-            new Dictionary<string, bool>();
-
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
@@ -127,8 +119,10 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            m_HasQueried[brainKey] = false;
-            m_HasData[brainKey] = false;
+            if (m_CurrentAgents.ContainsKey(brainKey))
+            {
+                return;
+            }
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
@@ -208,19 +202,19 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
+                    {
+                        QuitCommandReceived?.Invoke();
+                        return;
+                    }
                 case CommandProto.Reset:
-                {
-                    ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
-                    return;
-                }
+                    {
+                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -233,61 +227,44 @@ namespace MLAgents
 
         #region Sending and retreiving data
 
-        /// <summary>
-        /// Sends the observations. If at least one brain has an agent in need of
-        /// a decision or if the academy is done, the data is sent via
-        /// Communicator. Else, a new step is realized. The data can only be
-        /// sent once all the brains that were part of initialization have tried
-        /// to send information.
-        /// </summary>
-        /// <param name="brainKey">Batch Key.</param>
-        /// <param name="agents">Agent info.</param>
-        public void PutObservations(string brainKey, ICollection<Agent> agents)
+        public void DecideBatch()
         {
-            // The brain tried called GiveBrainInfo, update m_hasQueried
-            m_HasQueried[brainKey] = true;
-            // Populate the currentAgents dictionary
-            m_CurrentAgents[brainKey].Clear();
-            foreach (var agent in agents)
+            if (m_CurrentAgents.Values.All(l => l.Count == 0))
             {
-                m_CurrentAgents[brainKey].Add(agent);
+                return;
             }
-
-            // If at least one agent has data to send, then append data to
-            // the message and update hasSentState
-            if (m_CurrentAgents[brainKey].Count > 0)
+            foreach (var brainKey in m_CurrentAgents.Keys)
             {
                 using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    foreach (var agent in m_CurrentAgents[brainKey])
+                    if (m_CurrentAgents[brainKey].Count > 0)
                     {
-                        // Update the sensor data on the AgentInfo
-                        agent.GenerateSensorData();
-                        var agentInfoProto = agent.Info.ToProto();
-                        m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                        foreach (var agent in m_CurrentAgents[brainKey])
+                        {
+                            // Update the sensor data on the AgentInfo
+                            agent.GenerateSensorData();
+                            var agentInfoProto = agent.Info.ToProto();
+                            m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                        }
+
                     }
                 }
-
-                m_HasData[brainKey] = true;
             }
-
-            // If any agent needs to send data, then the whole message
-            // must be sent
-            if (m_HasQueried.Values.All(x => x))
+            SendBatchedMessageHelper();
+            foreach (var brainKey in m_CurrentAgents.Keys)
             {
-                if (m_HasData.Values.Any(x => x))
-                {
-                    SendBatchedMessageHelper();
-                }
-
-                // The message was just sent so we must reset hasSentState and
-                // triedSendState
-                foreach (var k in m_CurrentAgents.Keys)
-                {
-                    m_HasData[k] = false;
-                    m_HasQueried[k] = false;
-                }
+                m_CurrentAgents[brainKey].Clear();
             }
+        }
+
+        /// <summary>
+        /// Sends the observations of one Agent. 
+        /// </summary>
+        /// <param name="key">Batch Key.</param>
+        /// <param name="agents">Agent info.</param>
+        public void PutObservations(string brainKey, Agent agent)
+        {
+            m_CurrentAgents[brainKey].Add(agent);
         }
 
         /// <summary>
@@ -423,7 +400,7 @@ namespace MLAgents
         private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach(var brainKey in m_unsentBrainKeys.Keys)
+            foreach (var brainKey in m_unsentBrainKeys.Keys)
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
                 {

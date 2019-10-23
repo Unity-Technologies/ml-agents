@@ -21,7 +21,7 @@ default:
             strength: 1.0
             gamma: 0.99
 
-PyramidsLearning:
+Pyramids:
     summary_freq: 2000
     time_horizon: 128
     batch_size: 128
@@ -49,7 +49,7 @@ PyramidsLearning:
             encoding_size: 128
             demo_path: demos/ExpertPyramid.demo
 
-CrawlerStaticLearning:
+CrawlerStatic:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
@@ -66,7 +66,7 @@ CrawlerStaticLearning:
             encoding_size: 128
             demo_path: demos/ExpertCrawlerSta.demo
 
-PushBlockLearning:
+PushBlock:
     max_steps: 5.0e4
     batch_size: 128
     buffer_size: 2048
@@ -82,7 +82,7 @@ PushBlockLearning:
             encoding_size: 128
             demo_path: demos/ExpertPush.demo
 
-HallwayLearning:
+Hallway:
     use_recurrent: true
     sequence_length: 64
     num_layers: 2

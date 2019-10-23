@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEditor;
+using Barracuda;
 
 namespace MLAgents
 {
-/*
- This code is meant to modify the behavior of the inspector on Brain Components.
- Depending on the type of brain that is used, the available fields will be modified in the inspector accordingly.
-*/
+    /*
+     This code is meant to modify the behavior of the inspector on Agent Components.
+    */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
     public class AgentEditor : Editor
@@ -16,7 +16,6 @@ namespace MLAgents
             var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            var brain = serializedAgent.FindProperty("brain");
             var actionsPerDecision = serializedAgent.FindProperty(
                 "agentParameters.numberOfActionsBetweenDecisions");
             var maxSteps = serializedAgent.FindProperty(
@@ -26,7 +25,6 @@ namespace MLAgents
             var isOdd = serializedAgent.FindProperty(
                 "agentParameters.onDemandDecision");
 
-            EditorGUILayout.PropertyField(brain);
 
 
             EditorGUILayout.PropertyField(

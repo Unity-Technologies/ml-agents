@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using Barracuda;
 using UnityEngine.Profiling;
 
@@ -8,6 +6,7 @@ namespace MLAgents.InferenceBrain
 {
     public class ModelRunner : IBatchedDecisionMaker
     {
+        private List<Agent> m_Agents = new List<Agent>();
         private ITensorAllocator m_TensorAllocator;
         private TensorGenerator m_TensorGenerator;
         private TensorApplier m_TensorApplier;
@@ -101,9 +100,13 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(string key, ICollection<Agent> agents)
+        public void PutObservations(string key, Agent agent)
         {
-            var currentBatchSize = agents.Count;
+            m_Agents.Add(agent);
+        }
+        public void DecideBatch()
+        {
+            var currentBatchSize = m_Agents.Count;
             if (currentBatchSize == 0)
             {
                 return;
@@ -113,21 +116,16 @@ namespace MLAgents.InferenceBrain
             {
                 // Just grab the first agent in the collection (any will suffice, really).
                 // We check for an empty Collection above, so this will always return successfully.
-                var firstAgent = agents.First();
+                var firstAgent = m_Agents[0];
                 m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
                 m_visualObservationsInitialized = true;
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");
-            if (m_Engine == null)
-            {
-                Debug.LogError($"No model was present for the Brain {m_Model.name}.");
-                return;
-            }
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, agents);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -145,10 +143,12 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, agents);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
             Profiler.EndSample();
 
             Profiler.EndSample();
+
+            m_Agents.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)

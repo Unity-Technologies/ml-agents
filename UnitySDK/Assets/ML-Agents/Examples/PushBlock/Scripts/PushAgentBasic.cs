@@ -186,6 +186,27 @@ public class PushAgentBasic : Agent
         AddReward(-1f / agentParameters.maxStep);
     }
 
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 3 };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { 1 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 4 };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { 2 };
+        }
+        return new float[] { 0 };
+    }
+
     /// <summary>
     /// Resets the block position and velocities.
     /// </summary>

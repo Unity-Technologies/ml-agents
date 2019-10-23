@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Barracuda;
 using MLAgents.Sensor;
+
 
 
 namespace MLAgents
@@ -150,17 +152,15 @@ namespace MLAgents
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
     /// user in <see cref="CollectObservations"/>. On the other hand, actions
-    /// are determined by decisions produced by a linked Brain. Currently, this
+    /// are determined by decisions produced by a Policy. Currently, this
     /// class is expected to be extended to implement the desired agent behavior.
     /// </summary>
     /// <remarks>
     /// Simply speaking, an agent roams through an environment and at each step
     /// of the environment extracts its current observation, sends them to its
-    /// linked brain and in return receives an action from its brain. In practice,
+    /// policy and in return receives an action. In practice,
     /// however, an agent need not send its observation at every step since very
-    /// little may have changed between sucessive steps. Currently, how often an
-    /// agent updates its brain with a fresh observation is determined by the
-    /// Academy.
+    /// little may have changed between successive steps. 
     ///
     /// At any step, an agent may be considered <see cref="m_Done"/>.
     /// This could occur due to a variety of reasons:
@@ -185,8 +185,8 @@ namespace MLAgents
     /// set to a value larger than the academy max steps value, then the academy
     /// value takes precedence (since the agent max step will never be reached).
     ///
-    /// Lastly, note that at any step the brain linked to the agent is allowed to
-    /// change programmatically with <see cref="GiveBrain"/>.
+    /// Lastly, note that at any step the policy to the agent is allowed to
+    /// change model with <see cref="GiveModel"/>.
     ///
     /// Implementation-wise, it is required that this class is extended and the
     /// virtual methods overridden. For sample implementations of agent behavior,
@@ -195,15 +195,11 @@ namespace MLAgents
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
+    [RequireComponent(typeof(BehaviorParameters))]
     public abstract class Agent : MonoBehaviour
     {
-        /// <summary>
-        /// The Brain attached to this agent. A brain can be attached either
-        /// directly from the Editor through AgentEditor or
-        /// programmatically through <see cref="GiveBrain"/>. It is OK for an agent
-        /// to not have a brain, as long as no decision is requested.
-        /// </summary>
-        [HideInInspector] public Brain brain;
+        private IPolicy m_Brain;
+        private BehaviorParameters m_PolicyFactory;
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -215,7 +211,7 @@ namespace MLAgents
         public AgentInfo Info
         {
             get { return m_Info; }
-            set { m_Info = value;  }
+            set { m_Info = value; }
         }
 
         /// Current Agent action (message sent from Brain).
@@ -280,6 +276,7 @@ namespace MLAgents
         {
             m_Id = gameObject.GetInstanceID();
             var academy = FindObjectOfType<Academy>();
+            academy.LazyInitialization();
             OnEnableHelper(academy);
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
@@ -302,22 +299,12 @@ namespace MLAgents
             academy.AgentSetStatus += SetStatus;
             academy.AgentResetIfDone += ResetIfDone;
             academy.AgentSendState += SendInfo;
+            academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
-
-            if (brain != null)
-            {
-                ResetData();
-            }
-            else
-            {
-                Debug.Log(
-                    string.Format(
-                        "The Agent component attached to the " +
-                        "GameObject {0} was initialized without a brain.",
-                        gameObject.name));
-            }
-
+            m_PolicyFactory = GetComponent<BehaviorParameters>();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            ResetData();
             InitializeAgent();
             InitializeSensors();
         }
@@ -332,28 +319,33 @@ namespace MLAgents
                 academy.AgentSetStatus -= SetStatus;
                 academy.AgentResetIfDone -= ResetIfDone;
                 academy.AgentSendState -= SendInfo;
+                academy.DecideAction -= DecideAction;
                 academy.AgentAct -= AgentStep;
                 academy.AgentForceReset -= ForceReset;
             }
+            m_Brain?.Dispose();
         }
 
         /// <summary>
-        /// Updates the Brain for the agent. Any brain currently assigned to the
-        /// agent will be replaced with the provided one.
+        /// Updates the Model for the agent. Any model currently assigned to the
+        /// agent will be replaced with the provided one. If the arguments are 
+        /// identical to the current parameters of the agent, the model will
+        /// remain unchanged. 
         /// </summary>
-        /// <remarks>
-        /// The agent unsubscribes from its current brain (if it has one) and
-        /// subscribes to the provided brain. This enables contextual brains, that
-        /// is, updating the behaviour (hence brain) of the agent depending on
-        /// the context of the game. For example, we may utilize one (wandering)
-        /// brain when an agent is randomly exploring an open world, but switch
-        /// to another (fighting) brain when it comes into contact with an enemy.
-        /// </remarks>
-        /// <param name="givenBrain">New brain to subscribe this agent to</param>
-        public void GiveBrain(Brain givenBrain)
+        /// <param name="behaviorName"> The identifier of the behavior. This 
+        /// will categorize the agent when training. 
+        /// </param>
+        /// <param name="model"> The model to use for inference.</param>
+        /// <param name = "inferenceDevide"> Define on what device the model 
+        /// will be run.</param>
+        public void GiveModel(
+            string behaviorName,
+            NNModel model,
+            InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            brain = givenBrain;
-            ResetData();
+            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
+            m_Brain?.Dispose();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
         /// <summary>
@@ -470,12 +462,7 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            if (brain == null)
-            {
-                return;
-            }
-
-            var param = brain.brainParameters;
+            var param = m_PolicyFactory.brainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
@@ -503,7 +490,7 @@ namespace MLAgents
                 new List<float>(param.vectorObservationSize);
             m_Info.stackedVectorObservation =
                 new List<float>(param.vectorObservationSize
-                    * brain.brainParameters.numStackedVectorObservations);
+                    * param.numStackedVectorObservations);
             m_Info.stackedVectorObservation.AddRange(
                 new float[param.vectorObservationSize
                           * param.numStackedVectorObservations]);
@@ -523,6 +510,22 @@ namespace MLAgents
         /// </remarks>
         public virtual void InitializeAgent()
         {
+        }
+
+
+        /// <summary>
+        /// When the Agent uses Heuristics, it will call this method every time it
+        /// needs an action. This can be used for debugging or controlling the agent
+        /// with keyboard.
+        /// </summary>
+        /// <returns> A float array corresponding to the next action of the Agent
+        /// </returns>
+        public virtual float[] Heuristic()
+        {
+            throw new UnityAgentsException(string.Format(
+                    "The Heuristic method was not implemented for the Agent on the " +
+                    "{0} GameObject.",
+                    gameObject.name));
         }
 
         /// <summary>
@@ -545,7 +548,7 @@ namespace MLAgents
             // Make sure the names are actually unique
             for (var i = 0; i < m_Sensors.Count - 1; i++)
             {
-                Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i+1].GetName()), "Sensor names must be unique.");
+                Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
         }
@@ -555,7 +558,7 @@ namespace MLAgents
         /// </summary>
         void SendInfoToBrain()
         {
-            if (brain == null)
+            if (m_Brain == null)
             {
                 return;
             }
@@ -572,15 +575,15 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = brain.brainParameters;
+            var param = m_PolicyFactory.brainParameters;
             if (m_Info.vectorObservation.Count != param.vectorObservationSize)
             {
                 throw new UnityAgentsException(string.Format(
-                    "Vector Observation size mismatch between continuous " +
-                    "agent {0} and brain {1}. " +
-                    "Was Expecting {2} but received {3}. ",
-                    gameObject.name, brain.name,
-                    brain.brainParameters.vectorObservationSize,
+                    "Vector Observation size mismatch in continuous " +
+                    "agent {0}. " +
+                    "Was Expecting {1} but received {2}. ",
+                    gameObject.name,
+                    param.vectorObservationSize,
                     m_Info.vectorObservation.Count));
             }
 
@@ -593,7 +596,7 @@ namespace MLAgents
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            brain.SubscribeAgentForDecision(this);
+            m_Brain.RequestDecision(this);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
@@ -620,7 +623,7 @@ namespace MLAgents
         {
             // Generate data for all sensors
             // TODO add bool argument indicating when to compress? For now, we always will compress.
-            for (var i = 0; i<m_Sensors.Count; i++)
+            for (var i = 0; i < m_Sensors.Count; i++)
             {
                 var sensor = m_Sensors[i];
                 var compressedObs = new CompressedObservation
@@ -1023,7 +1026,7 @@ namespace MLAgents
                 AgentOnDone();
             }
 
-            if ((m_RequestAction) && (brain != null))
+            if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
                 AgentAction(m_Action.vectorActions, m_Action.textActions, m_Action.customAction);
@@ -1056,6 +1059,11 @@ namespace MLAgents
                     RequestDecision();
                 }
             }
+        }
+
+        void DecideAction()
+        {
+            m_Brain?.DecideAction();
         }
 
         /// <summary>
