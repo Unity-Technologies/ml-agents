@@ -89,7 +89,7 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 "Agent" GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior 
+* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
 * **Visual Observations** — Defines any Camera objects used by the Agent to
@@ -110,7 +110,7 @@ The Ball3DAgent subclass defines the following methods:
   training generalizes to more than a specific starting position and agent cube
   attitude.
 * agent.CollectObservations() — Called every simulation step. Responsible for
-  collecting the Agent's observations of the environment. Since the Behavior 
+  collecting the Agent's observations of the environment. Since the Behavior
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations()` must call
   `AddVectorObs` such that vector size adds up to 8.
@@ -122,11 +122,11 @@ The Ball3DAgent subclass defines the following methods:
   negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
-* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior 
+* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
   the actions of the Agent. As such, the `Heuristic()` method returns an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
-  keyboard inputs into actions.  
+  keyboard inputs into actions.
 
 
 #### Behavior Parameters : Vector Observation Space

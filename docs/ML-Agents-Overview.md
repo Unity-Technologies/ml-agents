@@ -172,7 +172,7 @@ details, let's summarize the earlier components. Each character is attached to
 an Agent, and each Agent has a Policy. The Policy receives observations
 and rewards from the Agent and returns actions. The Academy ensures that all the
 Agents are in sync in addition to controlling environment-wide
-settings. 
+settings.
 
 
 ## Training Modes
@@ -192,7 +192,7 @@ During training these actions are mostly exploratory to help the Python API
 learn the best policy for each medic. Once training concludes, the learned
 policy for each medic can be exported. Given that all our implementations are
 based on TensorFlow, the learned policy is just a TensorFlow model file. Then
-during the inference phase, we use the 
+during the inference phase, we use the
 TensorFlow model generated from the training phase. Now during the inference
 phase, the medics still continue to generate their observations, but instead of
 being sent to the Python API, they will be fed into their (internal, embedded)
@@ -212,7 +212,7 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 In the previous mode, the Agents were used for training to generate
 a TensorFlow model that the Agents can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for
-training. In this case, the behaviors of all the Agents in the scene 
+training. In this case, the behaviors of all the Agents in the scene
 will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
 
@@ -268,7 +268,7 @@ It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 For example, instead of training the medic by setting up its reward function,
 this mode allows providing real examples from a game controller on how the medic
-should behave. More specifically, in this mode, the Agent must use its heuristic 
+should behave. More specifically, in this mode, the Agent must use its heuristic
 to generate action, and all the actions performed with the controller (in addition
 to the agent observations) will be recorded. The
 imitation learning algorithm will then use these pairs of observations and
@@ -316,7 +316,7 @@ inspiration:
   signals with same or different `Behavior Parameters`. In this
   scenario, agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting agents with independent reward signals with 
+- Ecosystem. Multiple interacting agents with independent reward signals with
   same or different `Behavior Parameters`. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and

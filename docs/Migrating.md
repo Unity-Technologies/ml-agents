@@ -4,7 +4,7 @@
 
 ### Important Changes
 * The definition of the gRPC service has changed.
-* The online BC training feature has been removed. 
+* The online BC training feature has been removed.
 * The BroadcastHub has been deprecated. If there is a training Python process, all LearningBrains in the scene will automatically be trained. If there is no Python process, inference will be used.
 * The Brain ScriptableObjects have been deprecated. The Brain Parameters are now on the Agent and are referred to as Behavior Parameters. Make sure the Behavior Parameters is attached to the Agent GameObject.
 

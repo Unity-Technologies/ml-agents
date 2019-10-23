@@ -40,7 +40,7 @@ This page contains instructions for setting up a custom Virtual Machine on Micro
 6. Navigate to [http://developer.nvidia.com](http://developer.nvidia.com) and
    create an account and verify it.
 
-7. Download (to your own computer) cuDNN from [this url](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/Ubuntu16_04_x64/libcudnn6_6.0.20-1+cuda8.0_amd64-deb).  
+7. Download (to your own computer) cuDNN from [this url](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/Ubuntu16_04_x64/libcudnn6_6.0.20-1+cuda8.0_amd64-deb).
 
 8. Copy the deb package to your VM:
 

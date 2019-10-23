@@ -45,6 +45,9 @@ repos:
                 .*_pb2_grpc.py
             )$
         additional_dependencies: [flake8-comprehensions]
+    -   id: trailing-whitespace
+        name: trailing-whitespace-markdown
+        types: [markdown]
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.4.1  # Use the ref you want to point at

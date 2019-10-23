@@ -60,7 +60,7 @@ If you would like to contribute environments, please see our
       * Default: 1
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
-    * gravity: Magnitude of gravity  
+    * gravity: Magnitude of gravity
       * Default: 9.81
       * Recommended Minimum: 4
       * Recommended Maximum: 105
@@ -119,7 +119,7 @@ If you would like to contribute environments, please see our
 * Reset Parameters: Three
     * angle: Angle of the racket from the vertical (Y) axis.
       * Default: 55
-      * Recommended Minimum: 35 
+      * Recommended Minimum: 35
       * Recommended Maximum: 65
     * gravity: Magnitude of gravity
       * Default: 9.81
@@ -176,8 +176,8 @@ If you would like to contribute environments, please see our
 
 * Set-up: A platforming environment where the agent can jump over a wall.
 * Goal: The agent must use the block to scale the wall and reach the goal.
-* Agents: The environment contains one agent linked to two different 
-  Models. The Policy the agent is linked to changes depending on the 
+* Agents: The environment contains one agent linked to two different
+  Models. The Policy the agent is linked to changes depending on the
   height of the wall. The change of Policy is done in the WallJumpAgent class.
 * Agent Reward Function:
   * -0.0005 for every step.
