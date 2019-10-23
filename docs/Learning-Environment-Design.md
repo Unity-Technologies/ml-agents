@@ -67,7 +67,7 @@ information.
 
 To train and use the ML-Agents toolkit in a Unity scene, the scene must contain
 a single Academy subclass and as many Agent subclasses
-as you need. 
+as you need.
 Agent instances should be attached to the GameObject representing that Agent.
 
 ### Academy
@@ -98,7 +98,7 @@ the Academy properties and their uses.
 The Agent class represents an actor in the scene that collects observations and
 carries out actions. The Agent class is typically attached to the GameObject in
 the scene that otherwise represents the actor — for example, to a player object
-in a football game or a car object in a vehicle simulation. Every Agent must 
+in a football game or a car object in a vehicle simulation. Every Agent must
 have appropriate `Behavior Parameters`.
 
 To create an Agent, extend the Agent class and implement the essential
@@ -113,11 +113,11 @@ assigned to this Agent must be set.
 
 You must also determine how an Agent finishes its task or times out. You can
 manually set an Agent to done in your `AgentAction()` function when the Agent
-has finished (or irrevocably failed) its task by calling the `Done()` function. 
-You can also set the Agent's `Max Steps` property to a positive value and the 
-Agent will consider itself done after it has taken that many steps. If you 
-set an Agent's `ResetOnDone` property to true, then the Agent can attempt its 
-task several times in one episode. (Use the `Agent.AgentReset()` function to 
+has finished (or irrevocably failed) its task by calling the `Done()` function.
+You can also set the Agent's `Max Steps` property to a positive value and the
+Agent will consider itself done after it has taken that many steps. If you
+set an Agent's `ResetOnDone` property to true, then the Agent can attempt its
+task several times in one episode. (Use the `Agent.AgentReset()` function to
 prepare the Agent to start again.)
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information
@@ -139,7 +139,7 @@ to control the agent decision making process. The Academy defines several
 properties that can be set differently for a training scene versus a regular
 scene. The Academy's **Configuration** properties control rendering and time
 scale. You can set the **Training Configuration** to minimize the time Unity
-spends rendering graphics in order to speed up training. 
+spends rendering graphics in order to speed up training.
 When you create a training environment in Unity, you must set up the scene so
 that it can be controlled by the external training process. Considerations
 include:

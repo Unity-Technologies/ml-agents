@@ -31,7 +31,7 @@ accomplish tasks otherwise much more difficult.
 
 ## How-To
 
-Each group of Agents under the same `Behavior Name` in an environment can have 
+Each group of Agents under the same `Behavior Name` in an environment can have
 a corresponding curriculum. These
 curriculums are held in what we call a metacurriculum. A metacurriculum allows
 different groups of Agents to follow different curriculums within the same environment.
@@ -101,7 +101,7 @@ for an example.
 
 We will save this file into our metacurriculum folder with the name of its
 corresponding `Behavior Name`. For example, in the Wall Jump environment, there are two
-different `Behaviors Name` set via script in `WallJumpAgent.cs` 
+different `Behaviors Name` set via script in `WallJumpAgent.cs`
 ---BigWallBrainLearning and SmallWallBrainLearning. If we want to define a curriculum for
 the BigWallBrainLearning, we will save `BigWallBrainLearning.json` into
 `config/curricula/wall-jump/`.
