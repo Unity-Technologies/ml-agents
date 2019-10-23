@@ -58,7 +58,6 @@ class RLTrainer(Trainer):
         ]  # TODO add types to brain.py methods
         vector_observations = []
         text_observations = []
-        memories = []
         rewards = []
         local_dones = []
         max_reacheds = []
@@ -79,11 +78,6 @@ class RLTrainer(Trainer):
                 agent_brain_info.vector_observations[agent_index]
             )
             text_observations.append(agent_brain_info.text_observations[agent_index])
-            if self.policy.use_recurrent:
-                if len(agent_brain_info.memories) > 0:
-                    memories.append(agent_brain_info.memories[agent_index])
-                else:
-                    memories.append(self.policy.make_empty_memory(1))
             rewards.append(agent_brain_info.rewards[agent_index])
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
@@ -95,14 +89,10 @@ class RLTrainer(Trainer):
                 agent_brain_info.previous_text_actions[agent_index]
             )
             action_masks.append(agent_brain_info.action_masks[agent_index])
-        # Check if memories exists (i.e. next_info is not empty) before attempting vstack
-        if self.policy.use_recurrent and memories:
-            memories = np.vstack(memories)
         curr_info = BrainInfo(
             visual_observations,
             vector_observations,
             text_observations,
-            memories,
             rewards,
             agents,
             local_dones,
@@ -183,14 +173,6 @@ class RLTrainer(Trainer):
                         )
                         self.training_buffer[agent_id]["next_vector_in"].append(
                             next_info.vector_observations[next_idx]
-                        )
-                    if self.policy.use_recurrent:
-                        if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros(
-                                (len(stored_info.agents), self.policy.m_size)
-                            )
-                        self.training_buffer[agent_id]["memory"].append(
-                            stored_info.memories[idx]
                         )
 
                     self.training_buffer[agent_id]["masks"].append(1.0)

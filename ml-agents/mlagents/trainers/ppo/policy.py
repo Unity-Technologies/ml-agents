@@ -251,7 +251,7 @@ class PPOPolicy(TFPolicy):
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = self._retrieve_memories(brain_info.agents)
+            feed_dict[self.model.memory_in] = self._retrieve_memories([idx])
         if not self.use_continuous_act and self.use_recurrent:
             feed_dict[self.model.prev_action] = [
                 brain_info.previous_vector_actions[idx]
