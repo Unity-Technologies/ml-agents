@@ -124,7 +124,15 @@ class TFPolicy(Policy):
         if len(brain_info.agents) == 0:
             return ActionInfo([], [], [], None, None)
 
+        self._remove_memories(
+            [
+                brain_info.agents[i]
+                for i in range(len(brain_info.agents))
+                if brain_info.local_done[i]
+            ]
+        )
         run_out = self.evaluate(brain_info)
+        self._save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
             text=None,
