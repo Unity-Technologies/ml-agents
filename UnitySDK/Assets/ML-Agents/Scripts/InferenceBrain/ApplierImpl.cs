@@ -214,31 +214,6 @@ namespace MLAgents.InferenceBrain
         }
     }
 
-    // /// <summary>
-    // /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
-    // /// memory data of the agents in the batch.
-    // /// </summary>
-    // public class MemoryOutputApplier : TensorApplier.IApplier
-    // {
-    //     public void Apply(TensorProxy tensorProxy,
-    //         IEnumerable<Agent> agents,
-    //         Dictionary<int,List<float>> memories)
-    //     {
-    //         var agentIndex = 0;
-    //         var memorySize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-    //         foreach (var agent in agents)
-    //         {
-    //             var memory = new List<float>();
-    //             for (var j = 0; j < memorySize; j++)
-    //             {
-    //                 memory.Add(tensorProxy.data[agentIndex, j]);
-    //             }
-
-    //             agent.UpdateMemoriesAction(memory);
-    //             agentIndex++;
-    //         }
-    //     }
-    // }
 
     /// <summary>
     /// The Applier for the Value Estimate output tensor. Tensor is assumed to contain the

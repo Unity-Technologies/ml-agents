@@ -119,52 +119,6 @@ namespace MLAgents.InferenceBrain
         }
     }
 
-    // /// <summary>
-    // /// Generates the Tensor corresponding to the Recurrent input : Will be a two
-    // /// dimensional float array of dimension [batchSize x memorySize].
-    // /// It will use the Memory data contained in the agentInfo to fill the data
-    // /// of the tensor.
-    // /// </summary>
-    // public class RecurrentInputGenerator : TensorGenerator.IGenerator
-    // {
-    //     private readonly ITensorAllocator m_Allocator;
-
-    //     public RecurrentInputGenerator(ITensorAllocator allocator)
-    //     {
-    //         m_Allocator = allocator;
-    //     }
-
-    //     public void Generate(
-    //         TensorProxy tensorProxy,
-    //         int batchSize,
-    //         IEnumerable<Agent> agents,
-    //         Dictionary<int, List<float>> memories)
-    //     {
-    //         TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-
-    //         var memorySize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-    //         var agentIndex = 0;
-    //         foreach (var agent in agents)
-    //         {
-    //             var info = agent.Info;
-    //             var memory = info.memories;
-    //             if (memory == null)
-    //             {
-    //                 agentIndex++;
-    //                 continue;
-    //             }
-    //             for (var j = 0; j < Math.Min(memorySize, memory.Count); j++)
-    //             {
-    //                 if (j >= memory.Count)
-    //                 {
-    //                     break;
-    //                 }
-    //                 tensorProxy.data[agentIndex, j] = memory[j];
-    //             }
-    //             agentIndex++;
-    //         }
-    //     }
-    // }
 
     public class BarracudaRecurrentInputGenerator : TensorGenerator.IGenerator
     {
