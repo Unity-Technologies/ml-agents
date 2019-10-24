@@ -217,6 +217,7 @@ jobs:
             twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 workflows:
+  version: 2
   workflow:
     jobs:
       - build_python:
@@ -231,6 +232,9 @@ workflows:
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_version.txt
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
       - markdown_link_check
       - protobuf_generation_check
       - deploy:
