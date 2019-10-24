@@ -204,7 +204,7 @@ public class WallJumpAgent : Agent
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
         m_GroundRenderer.material = mat;
-        yield return new WaitForSeconds(time); //wait for 2 sec
+        yield return new WaitForSeconds(time);
         m_GroundRenderer.material = m_GroundMaterial;
     }
 
@@ -397,7 +397,7 @@ public class WallJumpAgent : Agent
         {
             SetReward(1f);
             StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 2));
+                GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, .5f));
             Done();
         }
     }
@@ -424,11 +424,11 @@ public class WallJumpAgent : Agent
     {
         m_currentVelMag = m_AgentRb.velocity.magnitude;
         fuTimer++;
-        if (m_Configuration != -1)
-        {
-            ConfigureAgent(m_Configuration);
-            m_Configuration = -1;
-        }
+        // if (m_Configuration != -1)
+        // {
+        //     ConfigureAgent(m_Configuration);
+        //     m_Configuration = -1;
+        // }
     }
 
     /// <summary>
