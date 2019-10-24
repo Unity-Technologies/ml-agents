@@ -43,6 +43,7 @@ def create_mock_all_brain_info(brain_info):
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
+    mock_policy.retrieve_memories.return_value = np.zeros((1, 1))
     return mock_policy
 
 

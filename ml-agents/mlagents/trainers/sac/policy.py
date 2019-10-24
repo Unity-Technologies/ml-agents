@@ -180,7 +180,7 @@ class SACPolicy(TFPolicy):
                 ] = brain_info.previous_vector_actions.reshape(
                     [-1, len(self.model.act_size)]
                 )
-            feed_dict[self.model.memory_in] = self._retrieve_memories(brain_info.agents)
+            feed_dict[self.model.memory_in] = self.retrieve_memories(brain_info.agents)
 
         feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)

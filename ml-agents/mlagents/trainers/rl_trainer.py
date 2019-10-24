@@ -176,7 +176,7 @@ class RLTrainer(Trainer):
                         )
                     if self.policy.use_recurrent:
                         self.training_buffer[agent_id]["memory"].append(
-                            self.policy._retrieve_memories([idx])[0, :]
+                            self.policy.retrieve_memories([agent_id])[0, :]
                         )
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(

@@ -122,9 +122,9 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], [], None, None)
+            return ActionInfo([], [], [], None)
 
-        self._remove_memories(
+        self.remove_memories(
             [
                 brain_info.agents[i]
                 for i in range(len(brain_info.agents))
@@ -132,7 +132,7 @@ class TFPolicy(Policy):
             ]
         )
         run_out = self.evaluate(brain_info)
-        self._save_memories(brain_info.agents, run_out.get("memory_out"))
+        self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
             text=None,
@@ -177,20 +177,20 @@ class TFPolicy(Policy):
         """
         return np.zeros((num_agents, self.m_size))
 
-    def _save_memories(self, agent_ids, memory_matrix):
+    def save_memories(self, agent_ids, memory_matrix):
         if not isinstance(memory_matrix, np.ndarray):
             return
         for index, id in enumerate(agent_ids):
             self.memory_dict[id] = memory_matrix[index, :]
 
-    def _retrieve_memories(self, agent_ids):
+    def retrieve_memories(self, agent_ids):
         memory_matrix = np.zeros((len(agent_ids), self.m_size))
         for index, id in enumerate(agent_ids):
             if id in self.memory_dict.keys():
                 memory_matrix[index, :] = self.memory_dict[id]
         return memory_matrix
 
-    def _remove_memories(self, agent_ids):
+    def remove_memories(self, agent_ids):
         for id in agent_ids:
             if id in self.memory_dict.keys():
                 self.memory_dict.pop(id)
