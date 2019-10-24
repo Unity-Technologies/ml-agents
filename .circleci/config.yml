@@ -240,7 +240,7 @@ workflows:
             - python_3.7.3
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
             branches:
               ignore: /.*/
       - deploy:
@@ -250,7 +250,7 @@ workflows:
             - python_3.7.3
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)(\.dev[0-9]+)*/
             branches:
               ignore: /.*/
       - deploy:
@@ -260,6 +260,6 @@ workflows:
             - python_3.7.3
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*/
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
             branches:
               ignore: /.*/
