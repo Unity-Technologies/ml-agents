@@ -53,7 +53,8 @@ class UnityEnv(gym.Env):
         )
 
         # Take a single step so that the brain information will be sent over
-        self._env.step()
+        if not self._env.brains:
+            self._env.step()
 
         self.name = self._env.academy_name
         self.visual_obs = None
