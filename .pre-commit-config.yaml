@@ -69,3 +69,8 @@ repos:
         exclude: ".*localized.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
         stages: [manual]
+    -   id: validate-versions
+        name: validate library versions
+        language: script
+        entry: utils/validate_versions.py
+        files: ".*/setup.py"
