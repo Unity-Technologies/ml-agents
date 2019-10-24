@@ -170,50 +170,50 @@ jobs:
             path: /tmp/proto.patch
             destination: proto.patch
 
-deploy:
-  parameters:
-    version:
-      type: directory
-  docker:
-    - image: circleci/python:3.6
-  steps:
-    - checkout
-    - run:
-        name: install python dependencies
-        command: |
-          python3 -m venv venv
-          . venv/bin/activate
-          pip install  --upgrade pip
-          pip install setuptools wheel twine
-    - run:
-        name: verify git tag vs. version
-        command: |
-          python3 -m venv venv
-          . venv/bin/activate
-          cd << parameters.directory >>
-          python setup.py verify
-    - run:
-        name: init .pypirc
-        # TODO update username for final release
-        command: |
-          echo -e "[pypi]" >> ~/.pypirc
-          echo -e "username = mlagents-test" >> ~/.pypirc
-          echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-    - run:
-        # TODO example doesn't use venv here but I think we need it
-        name: create packages
-        command: |
-          . venv/bin/activate
-          cd << parameters.directory >>
-          python setup.py sdist
-          python setup.py bdist_wheel
-    - run:
-        name: upload to pypi
-        # TODO remove --repository-url for final release
-        command: |
-          . venv/bin/activate
-          cd << parameters.directory >>
-          twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+  deploy:
+    parameters:
+      version:
+        type: directory
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install  --upgrade pip
+            pip install setuptools wheel twine
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py verify
+      - run:
+          name: init .pypirc
+          # TODO update username for final release
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = mlagents-test" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          # TODO example doesn't use venv here but I think we need it
+          name: create packages
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: upload to pypi
+          # TODO remove --repository-url for final release
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 workflows:
   workflow:
@@ -233,7 +233,7 @@ workflows:
       - markdown_link_check
       - protobuf_generation_check
       - deploy:
-          name: deploy-ml-agents-envs
+          name: deploy ml-agents-envs
           directory: ml-agents-envs
           requires:
             - python_3.7.3
@@ -243,7 +243,7 @@ workflows:
             branches:
               ignore: /.*/
       - deploy:
-          name: deploy-ml-agents
+          name: deploy ml-agents
           directory: ml-agents
           requires:
             - python_3.7.3
@@ -253,7 +253,7 @@ workflows:
             branches:
               ignore: /.*/
       - deploy:
-          name: deploy-gym-unity
+          name: deploy gym-unity
           directory: gym-unity
           requires:
             - python_3.7.3
