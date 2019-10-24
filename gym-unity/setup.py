@@ -5,13 +5,13 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 
-VERSION = "0.10.1"
+VERSION = "0.11.0.dev"
 
 
 class VerifyVersionCommand(install):
     """
     Custom command to verify that the git tag matches our version
-    See https://circleci.com/blog/Adding-container-security-scanning-anchore/
+    See https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
     """
 
     description = "verify that the git tag matches our version"
