@@ -84,7 +84,7 @@ tensorboard --logdir=summaries --port 6006
 And then opening the URL: [localhost:6006](http://localhost:6006).
 
 **Note:** The default port TensorBoard uses is 6006. If there is an existing session
-running on port 6006 a new session can be launched on an open port using the --port 
+running on port 6006 a new session can be launched on an open port using the --port
 option.
 
 When training is finished, you can find the saved model in the `models` folder
@@ -118,7 +118,7 @@ environment, you can set the following command line options when invoking
   Default is set to 1. Set to higher values when benchmarking performance and
   multiple training sessions is desired. Training sessions are independent, and
   do not improve learning performance.
-* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to 
+* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to
   collect experiences from when training. Defaults to 1.
 * `--run-id=<path>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
@@ -137,9 +137,9 @@ environment, you can set the following command line options when invoking
   All arguments after this flag will be passed to the executable. For example, setting
   `mlagents-learn config/trainer_config.yaml --env-args --num-orcs 42` would result in
    ` --num-orcs 42` passed to the executable.
-* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance 
-  will get assigned a port sequentially, starting from the `base-port`. Each instance 
-  will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs 
+* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance
+  will get assigned a port sequentially, starting from the `base-port`. Each instance
+  will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs
   given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
   training using the Editor rather than an executable, the base port will be ignored.
 * `--slow`: Specify this option to run the Unity environment at normal, game
@@ -162,22 +162,20 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
-
-
+* `--cpu`: Forces training using CPU only.
 
 ### Training Config File
 
 The training config files `config/trainer_config.yaml`, `config/sac_trainer_config.yaml`,
 `config/gail_config.yaml` and `config/offline_bc_config.yaml` specifies the training method,
-the hyperparameters, and a few additional values to use when training with Proximal Policy 
-Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial Imitation Learning) 
-with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files are divided 
+the hyperparameters, and a few additional values to use when training with Proximal Policy
+Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial Imitation Learning)
+with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files are divided
 into sections. The **default** section defines the default values for all the available
 training with PPO, SAC, GAIL (with PPO), and offline BC. These files are divided into sections.
-The **default** section defines the default values for all the available settings. You can 
-also add new sections to override these defaults to train specific Brains. Name each of these
-override sections after the GameObject containing the Brain component that should use these 
-settings. (This GameObject will be a child of the Academy in your scene.) Sections for the 
+The **default** section defines the default values for all the available settings. You can
+also add new sections to override these defaults to train specific Behaviors. Name each of these
+override sections after the appropriate `Behavior Name`. Sections for the
 example environments are included in the provided config file.
 
 |     **Setting**      |                                                                                     **Description**                                                                                     | **Applies To Trainer\*** |

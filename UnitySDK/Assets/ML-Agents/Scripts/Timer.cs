@@ -1,6 +1,6 @@
+// Compile with: csc CRefTest.cs -doc:Results.xml
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
@@ -38,19 +38,19 @@ namespace MLAgents
         /// <summary>
         /// Number of total ticks elapsed for this node.
         /// </summary>
-        long m_TotalTicks = 0;
+        long m_TotalTicks;
 
         /// <summary>
         /// If the node is currently running, the time (in ticks) when the node was started.
         /// If the node is not running, is set to 0.
         /// </summary>
-        long m_TickStart = 0;
+        long m_TickStart;
 
         /// <summary>
         /// Number of times the corresponding code block has been called.
         /// </summary>
         [DataMember(Name = "count")]
-        int m_NumCalls = 0;
+        int m_NumCalls;
 
         /// <summary>
         /// The total recorded ticks for the timer node, plus the currently elapsed ticks
@@ -60,7 +60,7 @@ namespace MLAgents
         {
             get
             {
-                long currentTicks = m_TotalTicks;
+                var currentTicks = m_TotalTicks;
                 if (m_TickStart != 0)
                 {
                     currentTicks += (System.DateTime.Now.Ticks - m_TickStart);
@@ -186,9 +186,9 @@ namespace MLAgents
         /// <returns></returns>
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
-            string indent = new string(' ', 2 * level); // TODO generalize
-            string shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
-            string timerString = "";
+            var indent = new string(' ', 2 * level); // TODO generalize
+            var shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
+            string timerString;
             if (level == 0)
             {
                 timerString = $"{shortName}(root)\n";
@@ -198,10 +198,10 @@ namespace MLAgents
                 timerString = $"{indent}{shortName}\t\traw={TotalSeconds}  rawCount={m_NumCalls}\n";
             }
 
-            // TODO use stringbuilder? might be overkill since this is only debugging code?
+            // TODO use StringBuilder? might be overkill since this is only debugging code?
             if (m_Children != null)
             {
-                foreach (TimerNode c in m_Children.Values)
+                foreach (var c in m_Children.Values)
                 {
                     timerString += c.DebugGetTimerString(m_FullName, level + 1);
                 }
@@ -212,12 +212,13 @@ namespace MLAgents
 
     /// <summary>
     /// A "stack" of timers that allows for lightweight hierarchical profiling of long-running processes.
+    /// <example>
     /// Example usage:
-    ///
+    /// <code>
     /// using(TimerStack.Instance.Scoped("foo"))
     /// {
     ///     doSomeWork();
-    ///     for (int i=0; i<5; i++)
+    ///     for (int i=0; i&lt;5; i++)
     ///     {
     ///         using(myTimer.Scoped("bar"))
     ///         {
@@ -225,6 +226,8 @@ namespace MLAgents
     ///         }
     ///     }
     /// }
+    /// </code>
+    /// </example>
     /// </summary>
     /// <remarks>
     /// This implements the Singleton pattern (solution 4) as described in
@@ -232,7 +235,7 @@ namespace MLAgents
     /// </remarks>
     public class TimerStack : System.IDisposable
     {
-        private static readonly TimerStack instance = new TimerStack();
+        private static readonly TimerStack k_Instance = new TimerStack();
 
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
@@ -257,7 +260,7 @@ namespace MLAgents
 
         public static TimerStack Instance
         {
-            get { return instance; }
+            get { return k_Instance; }
         }
 
         public TimerNode RootNode
@@ -267,8 +270,8 @@ namespace MLAgents
 
         private void Push(string name)
         {
-            TimerNode current = m_Stack.Peek();
-            TimerNode next = current.GetChild(name);
+            var current = m_Stack.Peek();
+            var next = current.GetChild(name);
             m_Stack.Push(next);
             next.Begin();
         }

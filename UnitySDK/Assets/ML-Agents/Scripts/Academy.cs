@@ -1,17 +1,18 @@
 using UnityEngine;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
-
 #endif
+using MLAgents.InferenceBrain;
+using Barracuda;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
  *
- * The ML-Agents toolkit contains five entities: Academy, Brain, Agent, Communicator and
- * Python API. The academy, and all its brains and connected agents live within
- * a learning environment (herin called Environment), while the communicator
+ * The ML-Agents toolkit contains four entities: Academy, Agent, Communicator and
+ * Python API. The academy and connected agents live within
+ * a learning environment (herein called Environment), while the communicator
  * manages the communication between the learning environment and the Python
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
@@ -74,10 +75,8 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors. More
-    /// specifically, an academy is a collection of Brain objects and each agent
-    /// in a scene is attached to one brain (a single brain may be attached to
-    /// multiple agents). Currently, this class is expected to be extended to
+    /// An Academy is where Agent objects go to train their behaviors.
+    /// Currently, this class is expected to be extended to
     /// implement the desired academy behavior.
     /// </summary>
     /// <remarks>
@@ -86,8 +85,8 @@ namespace MLAgents
     /// the presence of a communicator, the academy is run in training mode where
     /// the states and observations of each agent are sent through the
     /// communicator. In the absence of a communicator, the academy is run in
-    /// inference mode where the agent behavior is determined by the brain
-    /// attached to it (which may be internal, heuristic or player).
+    /// inference mode where the agent behavior is determined by the Policy
+    /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
@@ -130,7 +129,7 @@ namespace MLAgents
         /// </summary>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training with an external Brain by passing a config
+        /// be modified when training by passing a config
         /// dictionary at reset.
         /// </remarks>
         [SerializeField]
@@ -147,15 +146,15 @@ namespace MLAgents
         /// <returns>
         /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
         /// </returns>
-        bool IsCommunicatorOn
+        public bool IsCommunicatorOn
         {
             get { return Communicator != null; }
         }
 
         /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
-        /// or absence of a communicator. Furthermore, it can be modified by an
-        /// external Brain during reset via <see cref="SetIsInference"/>.
+        /// or absence of a communicator. Furthermore, it can be modified during 
+        /// training via <see cref="SetIsInference"/>.
         bool m_IsInference = true;
 
         /// The number of episodes completed by the environment. Incremented
@@ -172,25 +171,28 @@ namespace MLAgents
         int m_TotalStepCount;
 
         /// Flag that indicates whether the inference/training mode of the
-        /// environment was switched by the external Brain. This impacts the
+        /// environment was switched by the training process. This impacts the
         /// engine settings at the next environment step.
         bool m_ModeSwitched;
 
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
 
+        private bool m_Initialized;
+        private List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
+
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
-        // The Academy uses a series of events to communicate with agents and
-        // brains to facilitate synchronization. More specifically, it ensure
+        // The Academy uses a series of events to communicate with agents 
+        // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
-        // Signals to all the Brains at each environment step so they can decide
-        // actions for their agents.
-        public event System.Action BrainDecideAction;
+        // Signals to all the Agents at each environment step so they can use 
+        // their Policy to decide on their next action.
+        public event System.Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
         public event System.Action DestroyAction;
@@ -207,7 +209,7 @@ namespace MLAgents
         public event System.Action AgentResetIfDone;
 
         // Signals to all the agents at each environment step so they can send
-        // their state to their Brain if they have requested a decision.
+        // their state to their Policy if they have requested a decision.
         public event System.Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
@@ -225,7 +227,16 @@ namespace MLAgents
         /// </summary>
         void Awake()
         {
-            InitializeEnvironment();
+            LazyInitialization();
+        }
+
+        public void LazyInitialization()
+        {
+            if (!m_Initialized)
+            {
+                InitializeEnvironment();
+                m_Initialized = true;
+            }
         }
 
         // Used to read Python-provided environment parameters
@@ -300,7 +311,8 @@ namespace MLAgents
                     Communicator = null;
                 }
 
-                if (Communicator != null){
+                if (Communicator != null)
+                {
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
@@ -313,13 +325,13 @@ namespace MLAgents
 
             SetIsInference(!IsCommunicatorOn);
 
-            BrainDecideAction += () => {};
-            DestroyAction += () => {};
-            AgentSetStatus += i => {};
-            AgentResetIfDone += () => {};
-            AgentSendState += () => {};
-            AgentAct += () => {};
-            AgentForceReset += () => {};
+            DecideAction += () => { };
+            DestroyAction += () => { };
+            AgentSetStatus += i => { };
+            AgentResetIfDone += () => { };
+            AgentSendState += () => { };
+            AgentAct += () => { };
+            AgentForceReset += () => { };
 
             ConfigureEnvironment();
         }
@@ -486,12 +498,12 @@ namespace MLAgents
         void ForcedFullReset()
         {
             EnvironmentReset();
-            AgentForceReset();
+            AgentForceReset?.Invoke();
             m_FirstAcademyReset = true;
         }
 
         /// <summary>
-        /// Performs a single environment update to the Academy, Brain and Agent
+        /// Performs a single environment update to the Academy, and Agent
         /// objects within the environment.
         /// </summary>
         void EnvironmentStep()
@@ -506,21 +518,21 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentSetStatus(m_StepCount);
+            AgentSetStatus?.Invoke(m_StepCount);
 
             using (TimerStack.Instance.Scoped("AgentResetIfDone"))
             {
-                AgentResetIfDone();
+                AgentResetIfDone?.Invoke();
             }
 
             using (TimerStack.Instance.Scoped("AgentSendState"))
             {
-                AgentSendState();
+                AgentSendState?.Invoke();
             }
 
-            using (TimerStack.Instance.Scoped("BrainDecideAction"))
+            using (TimerStack.Instance.Scoped("DecideAction"))
             {
-                BrainDecideAction();
+                DecideAction?.Invoke();
             }
 
             using (TimerStack.Instance.Scoped("AcademyStep"))
@@ -530,7 +542,7 @@ namespace MLAgents
 
             using (TimerStack.Instance.Scoped("AgentAct"))
             {
-                AgentAct();
+                AgentAct?.Invoke();
             }
 
             m_StepCount += 1;
@@ -556,6 +568,29 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Creates or retrieves an existing ModelRunner that uses the same 
+        /// NNModel and the InferenceDevice as provided.
+        /// </summary>
+        /// <param name="model"> The NNModel the ModelRunner must use </param>
+        /// <param name="brainParameters"> The brainParameters used to create 
+        /// the ModelRunner </param>
+        /// <param name="inferenceDevice"> The inference device (CPU or GPU) 
+        /// the ModelRunner will use </param>
+        /// <returns> The ModelRunner compatible with the input settings</returns>
+        public ModelRunner GetOrCreateModelRunner(
+            NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
+        {
+            var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
+            if (modelRunner == null)
+            {
+                modelRunner = new ModelRunner(
+                    model, brainParameters, inferenceDevice);
+                m_ModelRunners.Add(modelRunner);
+            }
+            return modelRunner;
+        }
+
+        /// <summary>
         /// Cleanup function
         /// </summary>
         protected virtual void OnDestroy()
@@ -565,7 +600,12 @@ namespace MLAgents
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
 
             // Signal to listeners that the academy is being destroyed now
-            DestroyAction();
+            DestroyAction?.Invoke();
+
+            foreach (var mr in m_ModelRunners)
+            {
+                mr.Dispose();
+            }
 
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.

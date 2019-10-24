@@ -25,14 +25,6 @@ namespace MLAgents
         /// The default number of agents in the scene
         private const int k_NumAgents = 32;
 
-        /// Keeps track of which brains have data to send on the current step
-        Dictionary<string, bool> m_HasData =
-            new Dictionary<string, bool>();
-
-        /// Keeps track of which brains queried the communicator on the current step
-        Dictionary<string, bool> m_HasQueried =
-            new Dictionary<string, bool>();
-
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
             new Dictionary<string, List<Agent>>();
@@ -44,7 +36,9 @@ namespace MLAgents
         Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
-        private UnityRLInitializationOutputProto m_CurrentUnityRlInitializationOutput;
+        // Brains that we have sent over the communicator with agents.
+        HashSet<string> m_sentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -122,18 +116,20 @@ namespace MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
+        /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            m_HasQueried[brainKey] = false;
-            m_HasData[brainKey] = false;
+            if (m_CurrentAgents.ContainsKey(brainKey))
+            {
+                return;
+            }
             m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
-                new CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto());
-            if (m_CurrentUnityRlInitializationOutput == null){
-                m_CurrentUnityRlInitializationOutput = new CommunicatorObjects.UnityRLInitializationOutputProto();
-            }
-            m_CurrentUnityRlInitializationOutput.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                new UnityRLOutputProto.Types.ListAgentInfoProto()
+            );
+
+            CacheBrainParameters(brainKey, brainParameters);
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
@@ -175,7 +171,7 @@ namespace MLAgents
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
-        public void Close()
+        public void Dispose()
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -206,19 +202,19 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
+                    {
+                        QuitCommandReceived?.Invoke();
+                        return;
+                    }
                 case CommandProto.Reset:
-                {
-                    ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
-                    return;
-                }
+                    {
+                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -231,51 +227,44 @@ namespace MLAgents
 
         #region Sending and retreiving data
 
-        public void PutObservations(
-            string brainKey, IEnumerable<Agent> agents)
+        public void DecideBatch()
         {
-            // The brain tried called GiveBrainInfo, update m_hasQueried
-            m_HasQueried[brainKey] = true;
-            // Populate the currentAgents dictionary
-            m_CurrentAgents[brainKey].Clear();
-            foreach (var agent in agents)
+            if (m_CurrentAgents.Values.All(l => l.Count == 0))
             {
-                m_CurrentAgents[brainKey].Add(agent);
+                return;
             }
-
-            // If at least one agent has data to send, then append data to
-            // the message and update hasSentState
-            if (m_CurrentAgents[brainKey].Count > 0)
+            foreach (var brainKey in m_CurrentAgents.Keys)
             {
-                foreach (var agent in m_CurrentAgents[brainKey])
+                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
                 {
-                    var agentInfoProto = agent.Info.ToProto();
-                    m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                    // Avoid visual obs memory leak. This should be called AFTER we are done with the visual obs.
-                    // e.g. after recording them to demo and using them for inference.
-                    agent.ClearVisualObservations();
-                }
+                    if (m_CurrentAgents[brainKey].Count > 0)
+                    {
+                        foreach (var agent in m_CurrentAgents[brainKey])
+                        {
+                            // Update the sensor data on the AgentInfo
+                            agent.GenerateSensorData();
+                            var agentInfoProto = agent.Info.ToProto();
+                            m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                        }
 
-                m_HasData[brainKey] = true;
-            }
-
-            // If any agent needs to send data, then the whole message
-            // must be sent
-            if (m_HasQueried.Values.All(x => x))
-            {
-                if (m_HasData.Values.Any(x => x))
-                {
-                    SendBatchedMessageHelper();
-                }
-
-                // The message was just sent so we must reset hasSentState and
-                // triedSendState
-                foreach (var k in m_CurrentAgents.Keys)
-                {
-                    m_HasData[k] = false;
-                    m_HasQueried[k] = false;
+                    }
                 }
             }
+            SendBatchedMessageHelper();
+            foreach (var brainKey in m_CurrentAgents.Keys)
+            {
+                m_CurrentAgents[brainKey].Clear();
+            }
+        }
+
+        /// <summary>
+        /// Sends the observations of one Agent. 
+        /// </summary>
+        /// <param name="key">Batch Key.</param>
+        /// <param name="agents">Agent info.</param>
+        public void PutObservations(string brainKey, Agent agent)
+        {
+            m_CurrentAgents[brainKey].Add(agent);
         }
 
         /// <summary>
@@ -284,17 +273,18 @@ namespace MLAgents
         /// </summary>
         void SendBatchedMessageHelper()
         {
-            var message = new CommunicatorObjects.UnityOutputProto
+            var message = new UnityOutputProto
             {
                 RlOutput = m_CurrentUnityRlOutput,
             };
-            if (m_CurrentUnityRlInitializationOutput != null)
+            var tempUnityRlInitializationOutput = GetTempUnityRlInitializationOutput();
+            if (tempUnityRlInitializationOutput != null)
             {
-                message.RlInitializationOutput = m_CurrentUnityRlInitializationOutput;
+                message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
             var input = Exchange(message);
-            m_CurrentUnityRlInitializationOutput = null;
+            UpdateSentBrainParameters(tempUnityRlInitializationOutput);
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
@@ -396,6 +386,51 @@ namespace MLAgents
             };
         }
 
+        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        {
+            if (m_sentBrainKeys.Contains(brainKey))
+            {
+                return;
+            }
+
+            // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
+            m_unsentBrainKeys[brainKey] = brainParameters;
+        }
+
+        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        {
+            UnityRLInitializationOutputProto output = null;
+            foreach (var brainKey in m_unsentBrainKeys.Keys)
+            {
+                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
+                {
+                    if (output == null)
+                    {
+                        output = new UnityRLInitializationOutputProto();
+                    }
+
+                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                }
+            }
+
+            return output;
+        }
+
+        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            foreach (var brainProto in output.BrainParameters)
+            {
+                m_sentBrainKeys.Add(brainProto.BrainName);
+                m_unsentBrainKeys.Remove(brainProto.BrainName);
+            }
+        }
+
         #endregion
 
 #if UNITY_EDITOR
@@ -409,7 +444,7 @@ namespace MLAgents
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                Close();
+                Dispose();
             }
         }
 

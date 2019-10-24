@@ -259,6 +259,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4743084330461368}
+  - component: {fileID: 114727679958902886}
   - component: {fileID: 114230237520033992}
   - component: {fileID: 114375802757824636}
   m_Layer: 0
@@ -1810,7 +1811,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0505e961608004377974940ed17e03d5, type: 2}
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -1938,6 +1938,28 @@ MonoBehaviour:
   penalizeGroundContact: 0
   groundContactPenalty: 0
   touchingGround: 0
+--- !u!114 &114727679958902886
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1492298671135358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 126
+    numStackedVectorObservations: 1
+    vectorActionSize: 14000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: 48982d8fa360a4ed0bb265495e4f378b, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: CrawlerStatic
 --- !u!114 &114954029223843696
 MonoBehaviour:
   m_ObjectHideFlags: 1

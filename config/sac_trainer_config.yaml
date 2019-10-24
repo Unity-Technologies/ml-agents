@@ -24,7 +24,7 @@ default:
             strength: 1.0
             gamma: 0.99
 
-FoodCollectorLearning:
+FoodCollector:
     normalize: false
     batch_size: 256
     buffer_size: 500000
@@ -32,14 +32,14 @@ FoodCollectorLearning:
     init_entcoef: 0.05
     train_interval: 1
 
-BouncerLearning:
+Bouncer:
     normalize: true
     max_steps: 5.0e5
     num_layers: 2
     hidden_units: 64
     summary_freq: 1000
 
-PushBlockLearning:
+PushBlock:
     max_steps: 5.0e4
     init_entcoef: 0.05
     hidden_units: 256
@@ -47,7 +47,7 @@ PushBlockLearning:
     time_horizon: 64
     num_layers: 2
 
-SmallWallJumpLearning:
+SmallWallJump:
     max_steps: 1.0e6
     hidden_units: 256
     summary_freq: 2000
@@ -56,7 +56,7 @@ SmallWallJumpLearning:
     num_layers: 2
     normalize: false
 
-BigWallJumpLearning:
+BigWallJump:
     max_steps: 1.0e6
     hidden_units: 256
     summary_freq: 2000
@@ -65,7 +65,7 @@ BigWallJumpLearning:
     init_entcoef: 0.1
     normalize: false
 
-StrikerLearning:
+Striker:
     max_steps: 5.0e5
     learning_rate: 1e-3
     hidden_units: 256
@@ -75,7 +75,7 @@ StrikerLearning:
     num_layers: 2
     normalize: false
 
-GoalieLearning:
+Goalie:
     max_steps: 5.0e5
     learning_rate: 1e-3
     hidden_units: 256
@@ -85,7 +85,7 @@ GoalieLearning:
     num_layers: 2
     normalize: false
 
-PyramidsLearning:
+Pyramids:
     summary_freq: 2000
     time_horizon: 128
     batch_size: 128
@@ -109,7 +109,7 @@ PyramidsLearning:
             use_actions: true
             demo_path: demos/ExpertPyramid.demo
 
-VisualPyramidsLearning:
+VisualPyramids:
     time_horizon: 128
     batch_size: 64
     hidden_units: 256
@@ -130,7 +130,7 @@ VisualPyramidsLearning:
             use_actions: true
             demo_path: demos/ExpertPyramid.demo
 
-3DBallLearning:
+3DBall:
     normalize: true
     batch_size: 64
     buffer_size: 12000
@@ -139,18 +139,18 @@ VisualPyramidsLearning:
     hidden_units: 64
     init_entcoef: 0.5
 
-3DBallHardLearning:
+3DBallHard:
     normalize: true
     batch_size: 256
     summary_freq: 1000
     time_horizon: 1000
 
-TennisLearning:
+Tennis:
     buffer_size: 500000
     normalize: true
     max_steps: 2e5
 
-CrawlerStaticLearning:
+CrawlerStatic:
     normalize: true
     time_horizon: 1000
     batch_size: 256
@@ -167,7 +167,7 @@ CrawlerStaticLearning:
             strength: 1.0
             gamma: 0.995
 
-CrawlerDynamicLearning:
+CrawlerDynamic:
     normalize: true
     time_horizon: 1000
     batch_size: 256
@@ -182,7 +182,7 @@ CrawlerDynamicLearning:
             strength: 1.0
             gamma: 0.995
 
-WalkerLearning:
+Walker:
     normalize: true
     time_horizon: 1000
     batch_size: 256
@@ -197,7 +197,7 @@ WalkerLearning:
             strength: 1.0
             gamma: 0.995
 
-ReacherLearning:
+Reacher:
     normalize: true
     time_horizon: 1000
     batch_size: 128
@@ -205,7 +205,7 @@ ReacherLearning:
     max_steps: 2e5
     summary_freq: 3000
 
-HallwayLearning:
+Hallway:
     use_recurrent: true
     sequence_length: 32
     num_layers: 2
@@ -217,7 +217,7 @@ HallwayLearning:
     time_horizon: 64
     use_recurrent: true
 
-VisualHallwayLearning:
+VisualHallway:
     use_recurrent: true
     sequence_length: 32
     num_layers: 1
@@ -230,7 +230,7 @@ VisualHallwayLearning:
     time_horizon: 64
     use_recurrent: true
 
-VisualPushBlockLearning:
+VisualPushBlock:
     use_recurrent: true
     sequence_length: 32
     num_layers: 1
@@ -243,12 +243,13 @@ VisualPushBlockLearning:
     summary_freq: 1000
     time_horizon: 64
 
-GridWorldLearning:
+GridWorld:
     batch_size: 128
     normalize: false
     num_layers: 1
     hidden_units: 128
-    init_entcoef: 0.01
+    init_entcoef: 0.5
+    buffer_init_steps: 1000
     buffer_size: 50000
     max_steps: 5.0e5
     summary_freq: 2000
@@ -258,7 +259,7 @@ GridWorldLearning:
             strength: 1.0
             gamma: 0.9
 
-BasicLearning:
+Basic:
     batch_size: 64
     normalize: false
     num_layers: 2

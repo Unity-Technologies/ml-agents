@@ -179,9 +179,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4456685767774680}
   - component: {fileID: 54790445914364846}
+  - component: {fileID: 114923027571458262}
   - component: {fileID: 114812843792483960}
-  - component: {fileID: 114650520402303970}
   - component: {fileID: 65891831092422300}
+  - component: {fileID: 114505118440755634}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1209,7 +1210,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114650520402303970
+--- !u!114 &114505118440755634
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1217,9 +1218,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1626010291821672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camera: {fileID: 20961401228419460}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
 --- !u!114 &114690277332619348
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1243,11 +1249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: cc62140bff6494e0399caaed0b56020d, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20961401228419460}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1261,3 +1263,24 @@ MonoBehaviour:
   block: {fileID: 1609037632005304}
   goalDetect: {fileID: 0}
   useVectorObs: 0
+--- !u!114 &114923027571458262
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1626010291821672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 07000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: VisualHallway

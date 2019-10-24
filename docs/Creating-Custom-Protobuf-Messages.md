@@ -3,7 +3,7 @@
 
 # Creating Custom Protobuf Messages
 
-Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default. 
+Unity and Python communicate by sending protobuf messages to and from each other. You can create custom protobuf messages if you want to exchange structured data beyond what is included by default.
 
 ## Implementing a Custom Message
 
@@ -17,7 +17,7 @@ There are three custom message types currently supported - Custom Actions, Custo
 
 By default, the Python API sends actions to Unity in the form of a floating point list and an optional string-valued text action for each agent.
 
-You can define a custom action type, to either replace or augment the default, by adding fields to the `CustomAction` message, which you can do by editing the file `protobuf-definitions/proto/mlagents/envs/communicator_objects/custom_action.proto`. 
+You can define a custom action type, to either replace or augment the default, by adding fields to the `CustomAction` message, which you can do by editing the file `protobuf-definitions/proto/mlagents/envs/communicator_objects/custom_action.proto`.
 
 Instances of custom actions are set via the `custom_action` parameter of the `env.step`. An agent receives a custom action by defining a method with the signature:
 
@@ -25,7 +25,7 @@ Instances of custom actions are set via the `custom_action` parameter of the `en
 public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomAction customAction)
 ```
 
-Below is an example of creating a custom action that instructs an agent to choose a cardinal direction to walk in and how far to walk. 
+Below is an example of creating a custom action that instructs an agent to choose a cardinal direction to walk in and how far to walk.
 
 The `custom_action.proto` file looks like:
 
@@ -42,7 +42,7 @@ message CustomAction {
         EAST=2;
         WEST=3;
     }
-    float walkAmount = 1;    
+    float walkAmount = 1;
     Direction direction = 2;
 }
 ```
@@ -81,7 +81,7 @@ Keep in mind that the protobuffer compiler automatically configures the capitali
 
 ### Custom Reset Parameters
 
-By default, you can configure an environment `env` in the Python API by specifying a `config` parameter that is a dictionary mapping strings to floats. 
+By default, you can configure an environment `env` in the Python API by specifying a `config` parameter that is a dictionary mapping strings to floats.
 
 You can also configure the environment reset using a custom protobuf message. To do this, add fields to the `CustomResetParameters` protobuf message in `custom_reset_parameters.proto`, analogously to `CustomAction` above. Then pass an instance of the message to `env.reset` via the `custom_reset_parameters` keyword parameter.
 
@@ -140,9 +140,9 @@ public class MyAcademy : Academy
 
 ### Custom Observations
 
-By default, Unity returns observations to Python in the form of a floating-point vector. 
+By default, Unity returns observations to Python in the form of a floating-point vector.
 
-You can define a custom observation message to supplement that. To do so, add fields to the `CustomObservation` protobuf message in `custom_observation.proto`. 
+You can define a custom observation message to supplement that. To do so, add fields to the `CustomObservation` protobuf message in `custom_observation.proto`.
 
 Then in your agent, create an instance of a custom observation via `new CommunicatorObjects.CustomObservation`. Then in `CollectObservations`, call `SetCustomObservation` with the custom observation instance as the parameter.
 
@@ -156,7 +156,7 @@ class MyAgent : Agent {
         var obs = new CustomObservation();
         obs.CustomField = 1.0;
         SetCustomObservation(obs);
-    }    
+    }
 }
 ```
 
@@ -165,7 +165,7 @@ In Python, the custom field would be accessed like:
 ```python
 ...
 result = env.step(...)
-result[brain_name].custom_observations[0].customField
+result[behavior_name].custom_observations[0].customField
 ```
 
-where `brain_name` is the name of the brain attached to the agent.
+where `behavior_name` is the `Behavior Name` property of the Agent.

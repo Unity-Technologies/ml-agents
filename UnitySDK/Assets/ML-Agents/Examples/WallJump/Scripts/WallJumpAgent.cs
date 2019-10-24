@@ -3,17 +3,19 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using Barracuda;
+
 
 public class WallJumpAgent : Agent
 {
     // Depending on this value, the wall will have different height
     int m_Configuration;
     // Brain to use when no wall is present
-    public Brain noWallBrain;
+    public NNModel noWallBrain;
     // Brain to use when a jumpable wall is present
-    public Brain smallWallBrain;
+    public NNModel smallWallBrain;
     // Brain to use when a wall requiring a block to jump over is present
-    public Brain bigWallBrain;
+    public NNModel bigWallBrain;
 
     public GameObject ground;
     public GameObject spawnArea;
@@ -245,6 +247,29 @@ public class WallJumpAgent : Agent
         }
     }
 
+    public override float[] Heuristic()
+    {
+        var action = new float[4];
+        if (Input.GetKey(KeyCode.D))
+        {
+            action[1] = 2f;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            action[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            action[1] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            action[0] = 2f;
+        }
+        action[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        return action;
+    }
+
     // Detect when the agent hits the goal
     void OnTriggerStay(Collider col)
     {
@@ -301,7 +326,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["no_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(noWallBrain);
+            GiveModel("SmallWallJump", noWallBrain);
         }
         else if (config == 1)
         {
@@ -310,7 +335,7 @@ public class WallJumpAgent : Agent
                 m_Academy.resetParameters["small_wall_height"],
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(smallWallBrain);
+            GiveModel("SmallWallJump", smallWallBrain);
         }
         else
         {
@@ -323,7 +348,7 @@ public class WallJumpAgent : Agent
                 height,
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveBrain(bigWallBrain);
+            GiveModel("BigWallJump", bigWallBrain);
         }
     }
 }

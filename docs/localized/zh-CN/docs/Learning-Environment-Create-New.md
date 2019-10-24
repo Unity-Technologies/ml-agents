@@ -160,7 +160,7 @@ agent 到达目标时会将自己标记为完成状态，而 agent 重置函数�
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RollerAgent : Agent 
+public class RollerAgent : Agent
 {
     Rigidbody rBody;
     void Start () {
@@ -171,14 +171,14 @@ public class RollerAgent : Agent
     public override void AgentReset()
     {
         if (this.transform.position.y < -1.0)
-        {  
+        {
             // agent 掉落
             this.transform.position = Vector3.zero;
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
         }
         else
-        { 
+        {
             // 将目标移动到新的位置
             Target.position = new Vector3(Random.value * 8 - 4,
                                           0.5f,
@@ -235,17 +235,17 @@ public override void CollectObservations()
 {
     // 计算相对位置
     Vector3 relativePosition = Target.position - this.transform.position;
-    
+
     // 相对位置
     AddVectorObs(relativePosition.x/5);
     AddVectorObs(relativePosition.z/5);
-    
+
     // 与平台边缘的距离
     AddVectorObs((this.transform.position.x + 5)/5);
     AddVectorObs((this.transform.position.x - 5)/5);
     AddVectorObs((this.transform.position.z + 5)/5);
     AddVectorObs((this.transform.position.z - 5)/5);
-    
+
     // Agent 速度
     AddVectorObs(rBody.velocity.x/5);
     AddVectorObs(rBody.velocity.z/5);
@@ -317,7 +317,7 @@ if (this.transform.position.y < -1.0)
 ```
 
 **AgentAction()**
- 
+
 利用上面列出的动作和奖励逻辑，`AgentAction()` 函数的最终版本如下所示：
 
 ```csharp
@@ -327,16 +327,16 @@ private float previousDistance = float.MaxValue;
 public override void AgentAction(float[] vectorAction, string textAction)
 {
     // 奖励
-    float distanceToTarget = Vector3.Distance(this.transform.position, 
+    float distanceToTarget = Vector3.Distance(this.transform.position,
                                               Target.position);
-    
+
     // 已到达目标
     if (distanceToTarget < 1.42f)
     {
         Done();
         AddReward(1.0f);
     }
-    
+
     // 进一步接近
     if (distanceToTarget < previousDistance)
     {
@@ -407,9 +407,9 @@ public override void AgentAction(float[] vectorAction, string textAction)
 
 按 **Play** 运行场景，并用 WASD 键在平台上移动 agent。确保在 Unity Editor Console 窗口中没有显示任何错误，并且 agent 在到达目标或掉下平台时会重置。请注意，对于较复杂的调试，ML-Agents SDK 提供了一个方便的 Monitor 类，您可以使用该类轻松地在 Game 窗口中显示 agent 状态信息。
 
-您可以执行一个额外的测试是，首先使用 `python/Basics` 
+您可以执行一个额外的测试是，首先使用 `python/Basics`
 [Jupyter Notebook](/docs/Background-Jupyter.md)
-确保您的环境和 Python API 能正常工作。在 `Basics` 中，务必将 
+确保您的环境和 Python API 能正常工作。在 `Basics` 中，务必将
 `env_name` 设置为您生成的此环境对应的可执行文件的
 名称。
 

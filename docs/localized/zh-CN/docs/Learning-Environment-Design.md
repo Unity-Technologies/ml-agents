@@ -24,7 +24,7 @@ ML-Agents Academy 类按如下方式编排 agent 模拟循环：
 8. 当 Academy 达到其自身的 `Max Step` 计数时，它会通过调用您的 Academy 子类的 `AcademyReset()` 函数来再次开始下一场景。
 
 要创建训练环境，请扩展 Academy 和 Agent 类以实现上述方法。`Agent.CollectObservations()` 和 `Agent.AgentAction()` 函数必须实现；而其他方法是可选的，即是否需要实现它们取决于您的具体情况。
-  
+
 **注意：**在这里用到的 Python API 也可用于其他目的。例如，借助于该 API，您可以将 Unity 用作您自己的机器学习算法的模拟引擎。请参阅 [Python API](/docs/Python-API.md) 以了解更多信息。
 
 ## 组织 Unity 场景
@@ -46,11 +46,11 @@ Academy 对象会指挥多个 agent 的决策过程。一个场景中有且仅�
 * `AcademyStep()` — 为下一模拟步骤准备环境。Academy 基类首先调用此函数，然后才调用当前步骤的任何 `AgentAction()` 方法。您可以使用此函数在 agent 采取动作之前更新场景中的其他对象。请注意，在 Academy 调用此方法之前，agent 已收集了自己的观测结果并选择了动作。
 
 Academy 基类还定义了若干可以在 Unity Editor Inspector 中设置的重要属性。对于训练而言，这些属性中最重要的是 `Max Steps`，它决定了每个训练场景的持续时间。Academy 的步骤计数器达到此值后，它将调用 `AcademyReset()` 函数来开始下一轮模拟。
-  
+
   请参阅 [Academy](/docs/Learning-Environment-Design-Academy.md) 以查看 Academy 属性及其用途的完整列表。
 
 ### Brain
- 
+
 Brain 内部封装了决策过程。Brain 对象必须放在 Hierarchy 视图中的 Academy 的子级。我们必须为每个 Agent 分配一个 Brain，但可以在多个 Agent 之间共享同一个 Brain。
 
 当我们使用 Brain 类的时候不需要使用其子类，而应该直接使用 Brain 这个类。Brain 的行为取决于 Brain 的类型。在训练期间，应将 agent 上连接的 Brain 的 Brain Type 设置为 **External**。要使用经过训练的模型，请将模型文件导入 Unity 项目，并将对应 Brain 的 Brain  Type 更改为 **Internal**。请参阅 [Brain](/docs/Learning-Environment-Design-Brains.md) 以了解有关使用不同类型的 Brain 的详细信息。如果四种内置的类型不能满足您的需求，您可以扩展 CoreBrain 类以创建其它的 Brain 类型。
@@ -69,7 +69,7 @@ Agent 类代表场景中负责收集观测结果并采取动作的一个参与�
 * `AgentAction()` — 执行由 agent 的 Brain 选择的动作，并为当前状态分配奖励。
 
 这些函数的实现决定了分配给此 agent 的 Brain 的属性要如何设置。
- 
+
 您还必须确定 Agent 如何完成任务，以及当它超时后如何处理。agent 完成其任务（或彻底失败）后，您可以在 `AgentAction()` 函数中手动将 agent 设置为完成。您还可以将 agent 的 `Max Steps` 属性设置为正值，这样 agent 在执行了此数量的步骤后会认为自己已完成。Academy 达到自己的 `Max Steps` 计数后，会开始下一场景。如果将 agent 的 `ResetOnDone` 属性设置为 true，则 agent 可以在一个场景中多次尝试自己的任务。（在 `Agent.AgentReset()` 函数中可以设置 agent 的初始化逻辑，为下一次的任务做好准备。）
 
 请参阅 [Agent](/docs/Learning-Environment-Design-Agents.md) 以详细了解如何编写一个你自己的 agent。

@@ -19,7 +19,7 @@ The `curiosity` reward signal helps your agent explore when extrinsic rewards ar
 
 Reward signals, like other hyperparameters, are defined in the trainer config `.yaml` file. An
 example is provided in `config/trainer_config.yaml` and `config/gail_config.yaml`. To enable a reward signal, add it to the
-`reward_signals:` section under the brain name. For instance, to enable the extrinsic signal
+`reward_signals:` section under the behavior name. For instance, to enable the extrinsic signal
 in addition to a small curiosity reward and a GAIL reward signal, you would define your `reward_signals` as follows:
 
 ```yaml
