@@ -172,8 +172,9 @@ jobs:
 
   deploy:
     parameters:
-      version:
-        type: directory
+      directory:
+        type: string
+        description: Local directory to use for publishing (e.g. ml-agents)
     docker:
       - image: circleci/python:3.6
     steps:
