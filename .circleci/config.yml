@@ -197,7 +197,7 @@ jobs:
           name: init .pypirc
           # TODO update username for final release
           command: |
-            echo -e "[testpypi]" >> ~/.pypirc
+            echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = mlagents-test" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
@@ -214,7 +214,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd << parameters.directory >>
-            twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+            twine upload --config-file ~/.pypirc --repository-url https://test.pypi.org/legacy/ dist/*
 
 workflows:
   version: 2
