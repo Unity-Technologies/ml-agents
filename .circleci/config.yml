@@ -194,7 +194,6 @@ jobs:
             cd << parameters.directory >>
             python setup.py verify
       - run:
-          # TODO example doesn't use venv here but I think we need it
           name: create packages
           command: |
             . venv/bin/activate
