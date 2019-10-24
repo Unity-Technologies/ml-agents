@@ -194,13 +194,6 @@ jobs:
             cd << parameters.directory >>
             python setup.py verify
       - run:
-          name: init .pypirc
-          # TODO update username for final release
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = mlagents-test" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
           # TODO example doesn't use venv here but I think we need it
           name: create packages
           command: |
@@ -210,11 +203,13 @@ jobs:
             python setup.py bdist_wheel
       - run:
           name: upload to pypi
-          # TODO remove --repository-url for final release
+          # To upload to test, just add the following flag to twine upload:
+          # --repository-url https://test.pypi.org/legacy/
+          # and change the username to "mlagents-test"
           command: |
             . venv/bin/activate
             cd << parameters.directory >>
-            twine upload -u mlagents-test -p $PYPI_PASSWORD --repository-url https://test.pypi.org/legacy/ dist/*
+            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
 
 workflows:
   version: 2
