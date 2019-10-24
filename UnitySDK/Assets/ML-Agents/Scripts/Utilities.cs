@@ -66,6 +66,8 @@ namespace MLAgents
 
             var t = textureOffset;
             var texturePixels = texture.GetPixels32();
+            // During training, we convert from Texture to PNG before sending to the trainer, which has the
+            // effect of flipping the image. We need another flip here at inference time to match this.
             for (var h = height - 1; h >= 0; h--)
             {
                 for (var w = 0; w < width; w++)
