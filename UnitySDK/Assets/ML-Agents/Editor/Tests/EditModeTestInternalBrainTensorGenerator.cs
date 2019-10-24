@@ -38,7 +38,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters();
             var alloc = new TensorCachingAllocator();
-            var tensorGenerator = new TensorGenerator(bp, 0, alloc);
+            var tensorGenerator = new TensorGenerator(bp, 0, alloc, null);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }
@@ -50,7 +50,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             const int batchSize = 4;
             var generator = new BatchSizeGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, null, null);
+            generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0], batchSize);
             alloc.Dispose();
@@ -63,7 +63,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             const int batchSize = 4;
             var generator = new SequenceLengthGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, null, null);
+            generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0], 1);
             alloc.Dispose();
@@ -80,7 +80,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
             var generator = new VectorObservationGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos, null);
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 2], 3);
@@ -102,7 +102,7 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             var generator = new PreviousActionInputGenerator(alloc);
 
-            generator.Generate(inputTensor, batchSize, agentInfos, null);
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 1], 2);
@@ -123,7 +123,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
             var generator = new ActionMaskInputGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos, null);
+            generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
             Assert.AreEqual(inputTensor.data[0, 4], 1);

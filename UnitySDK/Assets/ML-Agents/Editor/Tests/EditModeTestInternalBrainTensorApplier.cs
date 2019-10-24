@@ -34,7 +34,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters();
             var alloc = new TensorCachingAllocator();
-            var tensorGenerator = new TensorApplier(bp, 0, alloc);
+            var tensorGenerator = new TensorApplier(bp, 0, alloc, null);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }
@@ -50,7 +50,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
 
             var applier = new ContinuousActionOutputApplier();
-            applier.Apply(inputTensor, agentInfos, null);
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
@@ -82,7 +82,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
-            applier.Apply(inputTensor, agentInfos, null);
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;
@@ -110,7 +110,7 @@ namespace MLAgents.Tests
             var agentInfos = GetFakeAgentInfos();
 
             var applier = new ValueEstimateApplier();
-            applier.Apply(inputTensor, agentInfos, null);
+            applier.Apply(inputTensor, agentInfos);
             var agents = agentInfos;
 
             var agent = agents[0] as TestAgent;

@@ -67,8 +67,10 @@ namespace MLAgents.InferenceBrain
 
             m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
             m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
-            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, barracudaModel);
-            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
+            m_TensorGenerator = new TensorGenerator(
+                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+            m_TensorApplier = new TensorApplier(
+                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
 
         private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
@@ -126,7 +128,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents, m_Memories);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -144,7 +146,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents, m_Memories);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
             Profiler.EndSample();
 
             Profiler.EndSample();

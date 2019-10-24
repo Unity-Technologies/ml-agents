@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import numpy as np
 import tensorflow as tf
@@ -56,7 +56,7 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
-        self.memory_dict = {}
+        self.memory_dict: Dict[int, np.ndarray] = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
@@ -177,23 +177,21 @@ class TFPolicy(Policy):
         """
         return np.zeros((num_agents, self.m_size))
 
-    def save_memories(self, agent_ids, memory_matrix):
-        if not isinstance(memory_matrix, np.ndarray):
-            return
-        for index, id in enumerate(agent_ids):
-            self.memory_dict[id] = memory_matrix[index, :]
+    def save_memories(self, agent_ids: List[int], memory_matrix: np.ndarray) -> None:
+        for index, agent_id in enumerate(agent_ids):
+            self.memory_dict[agent_id] = memory_matrix[index, :]
 
-    def retrieve_memories(self, agent_ids):
-        memory_matrix = np.zeros((len(agent_ids), self.m_size))
-        for index, id in enumerate(agent_ids):
-            if id in self.memory_dict.keys():
-                memory_matrix[index, :] = self.memory_dict[id]
+    def retrieve_memories(self, agent_ids: List[int]) -> np.ndarray:
+        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float)
+        for index, agent_id in enumerate(agent_ids):
+            if agent_id in self.memory_dict:
+                memory_matrix[index, :] = self.memory_dict[agent_id]
         return memory_matrix
 
     def remove_memories(self, agent_ids):
-        for id in agent_ids:
-            if id in self.memory_dict.keys():
-                self.memory_dict.pop(id)
+        for agent_id in agent_ids:
+            if agent_id in self.memory_dict:
+                self.memory_dict.pop(agent_id)
 
     def get_current_step(self):
         """

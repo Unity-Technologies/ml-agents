@@ -28,11 +28,7 @@ namespace MLAgents.InferenceBrain
             /// <param name="agents"> List of Agents containing the
             /// information that will be used to populate the tensor's data</param>
             void Generate(
-                TensorProxy tensorProxy,
-                int batchSize,
-                IEnumerable<Agent> agents,
-                Dictionary<int, List<float>> memories
-                );
+                TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents);
         }
 
         private readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
@@ -46,7 +42,11 @@ namespace MLAgents.InferenceBrain
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(
-            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+            BrainParameters bp,
+            int seed,
+            ITensorAllocator allocator,
+            Dictionary<int, List<float>> memories,
+            object barracudaModel = null)
         {
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
@@ -64,7 +64,7 @@ namespace MLAgents.InferenceBrain
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator);
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
                 }
             }
 
@@ -104,10 +104,7 @@ namespace MLAgents.InferenceBrain
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IEnumerable<TensorProxy> tensors,
-            int currentBatchSize,
-            IEnumerable<Agent> agents,
-            Dictionary<int, List<float>> memories)
+            IEnumerable<TensorProxy> tensors, int currentBatchSize, IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {
@@ -116,7 +113,7 @@ namespace MLAgents.InferenceBrain
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents, memories);
+                m_Dict[tensor.name].Generate(tensor, currentBatchSize, agents);
             }
         }
     }
