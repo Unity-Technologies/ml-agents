@@ -197,7 +197,7 @@ jobs:
           name: init .pypirc
           # TODO update username for final release
           command: |
-            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "[testpypi]" >> ~/.pypirc
             echo -e "username = mlagents-test" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
