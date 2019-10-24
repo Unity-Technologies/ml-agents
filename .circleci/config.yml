@@ -214,7 +214,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd << parameters.directory >>
-            twine upload --config-file ~/.pypirc --repository-url https://test.pypi.org/legacy/ dist/*
+            twine upload -u mlagents-test -p $PYPI_PASSWORD --repository-url https://test.pypi.org/legacy/ dist/*
 
 workflows:
   version: 2
