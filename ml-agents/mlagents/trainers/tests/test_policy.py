@@ -27,6 +27,7 @@ def test_take_action_returns_nones_on_missing_values():
     test_seed = 3
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
     policy.evaluate = MagicMock(return_value={})
+    policy.save_memories = MagicMock()
     brain_info_with_agents = BrainInfo(
         [], [], [], agents=["an-agent-id"], local_done=[False]
     )

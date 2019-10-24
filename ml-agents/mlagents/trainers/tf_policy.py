@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import tensorflow as tf
@@ -177,7 +177,11 @@ class TFPolicy(Policy):
         """
         return np.zeros((num_agents, self.m_size))
 
-    def save_memories(self, agent_ids: List[int], memory_matrix: np.ndarray) -> None:
+    def save_memories(
+        self, agent_ids: List[int], memory_matrix: Optional[np.ndarray]
+    ) -> None:
+        if memory_matrix is None:
+            return
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
