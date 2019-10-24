@@ -193,9 +193,9 @@ namespace MLAgents.InferenceBrain
 
             foreach (var agent in agents)
             {
-                var memory = m_Memories.ElementAtOrDefault(agent.Info.id).Value;
+                var memory = m_Memories.ContainsKey(agent.Info.id) ? m_Memories[agent.Info.id] : null;
 
-                if (memory == null || m_Memories.Count < memorySize * m_MemoriesCount)
+                if (memory == null || memory.Count < memorySize * m_MemoriesCount)
                 {
                     memory = new List<float>();
                     memory.AddRange(Enumerable.Repeat(0f, memorySize * m_MemoriesCount));
@@ -207,7 +207,6 @@ namespace MLAgents.InferenceBrain
                 }
 
                 m_Memories[agent.Info.id] = memory;
-                UnityEngine.Debug.Log(m_Memories[agent.Info.id].Count + " " + agent.Info.id);
                 agentIndex++;
             }
         }

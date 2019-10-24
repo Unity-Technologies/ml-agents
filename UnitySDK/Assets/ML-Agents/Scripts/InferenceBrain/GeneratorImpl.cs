@@ -131,12 +131,9 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                var agentInfo = agent.Info;
-                var memory = m_Memories.ElementAtOrDefault(agentInfo.id).Value;
-
+                var memory = m_Memories.ContainsKey(agent.Info.id) ? m_Memories[agent.Info.id] : null;
                 var offset = memorySize * m_MemoryIndex;
 
-                UnityEngine.Debug.Log(memory + "  " + agent.Info.id);
                 if (memory == null)
                 {
                     agentIndex++;
