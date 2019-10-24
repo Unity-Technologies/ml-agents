@@ -45,7 +45,7 @@ namespace MLAgents.InferenceBrain
             BrainParameters bp,
             int seed,
             ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories,
+            ref Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
             // Generator for Inputs
@@ -64,7 +64,7 @@ namespace MLAgents.InferenceBrain
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
+                        new BarracudaRecurrentInputGenerator(i, allocator, ref memories);
                 }
             }
 

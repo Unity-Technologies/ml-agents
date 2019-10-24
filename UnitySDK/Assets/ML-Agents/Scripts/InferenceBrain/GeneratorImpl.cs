@@ -115,11 +115,12 @@ namespace MLAgents.InferenceBrain
         public BarracudaRecurrentInputGenerator(
             int memoryIndex,
             ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories)
+            ref Dictionary<int, List<float>> memories)
         {
             m_MemoryIndex = memoryIndex;
             m_Allocator = allocator;
             m_Memories = memories;
+
         }
 
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
@@ -135,6 +136,7 @@ namespace MLAgents.InferenceBrain
 
                 var offset = memorySize * m_MemoryIndex;
 
+                UnityEngine.Debug.Log(memory + "  " + agent.Info.id);
                 if (memory == null)
                 {
                     agentIndex++;
@@ -146,6 +148,7 @@ namespace MLAgents.InferenceBrain
                     {
                         break;
                     }
+
                     tensorProxy.data[agentIndex, j] = memory[j + offset];
                 }
                 agentIndex++;

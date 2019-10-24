@@ -179,7 +179,7 @@ namespace MLAgents.InferenceBrain
         public BarracudaMemoryOutputApplier(
             int memoriesCount,
             int memoryIndex,
-            Dictionary<int, List<float>> memories)
+            ref Dictionary<int, List<float>> memories)
         {
             m_MemoriesCount = memoriesCount;
             m_MemoryIndex = memoryIndex;
@@ -207,7 +207,7 @@ namespace MLAgents.InferenceBrain
                 }
 
                 m_Memories[agent.Info.id] = memory;
-
+                UnityEngine.Debug.Log(m_Memories[agent.Info.id].Count + " " + agent.Info.id);
                 agentIndex++;
             }
         }

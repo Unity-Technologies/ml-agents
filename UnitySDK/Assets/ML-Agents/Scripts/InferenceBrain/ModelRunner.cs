@@ -68,9 +68,9 @@ namespace MLAgents.InferenceBrain
             m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
             m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
             m_TensorGenerator = new TensorGenerator(
-                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                brainParameters, seed, m_TensorAllocator, ref m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
-                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                brainParameters, seed, m_TensorAllocator, ref m_Memories, barracudaModel);
         }
 
         private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)

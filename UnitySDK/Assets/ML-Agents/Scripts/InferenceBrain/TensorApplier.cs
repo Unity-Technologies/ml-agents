@@ -47,7 +47,7 @@ namespace MLAgents.InferenceBrain
             BrainParameters bp,
             int seed,
             ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories,
+            ref Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
             m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
@@ -68,7 +68,7 @@ namespace MLAgents.InferenceBrain
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Length, i, memories);
+                        new BarracudaMemoryOutputApplier(model.memories.Length, i, ref memories);
                 }
             }
         }
