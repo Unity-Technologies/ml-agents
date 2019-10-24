@@ -1,8 +1,30 @@
 #!/usr/bin/env python
 
+import os
+import sys
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 VERSION = "0.10.1"
+
+
+class VerifyVersionCommand(install):
+    """
+    Custom command to verify that the git tag matches our version
+    See https://circleci.com/blog/Adding-container-security-scanning-anchore/
+    """
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+
+        if tag != VERSION:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, VERSION
+            )
+            sys.exit(info)
+
 
 setup(
     name="gym_unity",
@@ -14,4 +36,5 @@ setup(
     url="https://github.com/Unity-Technologies/ml-agents",
     packages=find_packages(),
     install_requires=["gym", "mlagents_envs=={}".format(VERSION)],
+    cmdclass={"verify": VerifyVersionCommand},
 )

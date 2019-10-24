@@ -1,13 +1,35 @@
-from setuptools import setup, find_namespace_packages
-from os import path
 from io import open
+import os
+import sys
+
+from setuptools import setup, find_namespace_packages
+from setuptools.command.install import install
 
 VERSION = "0.10.1"
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+class VerifyVersionCommand(install):
+    """
+    Custom command to verify that the git tag matches our version
+    See https://circleci.com/blog/Adding-container-security-scanning-anchore/
+    """
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+
+        if tag != VERSION:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, VERSION
+            )
+            sys.exit(info)
+
 
 # Get the long description from the README file
-with open(path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
@@ -47,4 +69,5 @@ setup(
     ],
     python_requires=">=3.6.1",
     entry_points={"console_scripts": ["mlagents-learn=mlagents.trainers.learn:main"]},
+    cmdclass={"verify": VerifyVersionCommand},
 )
