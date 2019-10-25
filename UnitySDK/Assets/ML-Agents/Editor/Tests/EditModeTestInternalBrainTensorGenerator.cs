@@ -16,7 +16,6 @@ namespace MLAgents.Tests
             var infoA = new AgentInfo
             {
                 stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
-                memories = null,
                 storedVectorActions = new[] { 1f, 2f },
                 actionMasks = null
             };
@@ -25,7 +24,6 @@ namespace MLAgents.Tests
             var infoB = new AgentInfo
             {
                 stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
-                memories = new[] { 1f, 1f, 1f }.ToList(),
                 storedVectorActions = new[] { 3f, 4f },
                 actionMasks = new[] { true, false, false, false, false },
             };
@@ -40,7 +38,8 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters();
             var alloc = new TensorCachingAllocator();
-            var tensorGenerator = new TensorGenerator(bp, 0, alloc);
+            var mem = new Dictionary<int, List<float>>();
+            var tensorGenerator = new TensorGenerator(bp, 0, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }
@@ -88,26 +87,6 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[0, 2], 3);
             Assert.AreEqual(inputTensor.data[1, 0], 4);
             Assert.AreEqual(inputTensor.data[1, 2], 6);
-            alloc.Dispose();
-        }
-
-        [Test]
-        public void GenerateRecurrentInput()
-        {
-            var inputTensor = new TensorProxy
-            {
-                shape = new long[] { 2, 5 }
-            };
-            const int batchSize = 4;
-            var agentInfos = GetFakeAgentInfos();
-            var alloc = new TensorCachingAllocator();
-            var generator = new RecurrentInputGenerator(alloc);
-            generator.Generate(inputTensor, batchSize, agentInfos);
-            Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 0);
-            Assert.AreEqual(inputTensor.data[0, 4], 0);
-            Assert.AreEqual(inputTensor.data[1, 0], 1);
-            Assert.AreEqual(inputTensor.data[1, 4], 0);
             alloc.Dispose();
         }
 

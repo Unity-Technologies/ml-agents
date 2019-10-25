@@ -4,7 +4,7 @@ using UnityEngine.Profiling;
 
 namespace MLAgents.InferenceBrain
 {
-    public class ModelRunner : IBatchedDecisionMaker
+    public class ModelRunner
     {
         private List<Agent> m_Agents = new List<Agent>();
         private ITensorAllocator m_TensorAllocator;
@@ -18,6 +18,7 @@ namespace MLAgents.InferenceBrain
         private string[] m_OutputNames;
         private IReadOnlyList<TensorProxy> m_InferenceInputs;
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
+        private Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
 
         private bool m_visualObservationsInitialized = false;
 
@@ -66,8 +67,10 @@ namespace MLAgents.InferenceBrain
 
             m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
             m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
-            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, barracudaModel);
-            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
+            m_TensorGenerator = new TensorGenerator(
+                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+            m_TensorApplier = new TensorApplier(
+                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
 
         private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
@@ -100,7 +103,7 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(string key, Agent agent)
+        public void PutObservations(Agent agent)
         {
             m_Agents.Add(agent);
         }

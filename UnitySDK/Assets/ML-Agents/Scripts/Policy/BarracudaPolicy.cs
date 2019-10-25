@@ -1,6 +1,7 @@
 using UnityEngine;
 using Barracuda;
 using System.Collections.Generic;
+using MLAgents.InferenceBrain;
 
 namespace MLAgents
 {
@@ -18,7 +19,7 @@ namespace MLAgents
     public class BarracudaPolicy : IPolicy
     {
 
-        protected IBatchedDecisionMaker m_BatchedDecisionMaker;
+        protected ModelRunner m_ModelRunner;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their sensors.
@@ -34,7 +35,7 @@ namespace MLAgents
             var aca = GameObject.FindObjectOfType<Academy>();
             aca.LazyInitialization();
             var modelRunner = aca.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
-            m_BatchedDecisionMaker = modelRunner;
+            m_ModelRunner = modelRunner;
         }
 
         /// <inheritdoc />
@@ -43,13 +44,13 @@ namespace MLAgents
 #if DEBUG
             ValidateAgentSensorShapes(agent);
 #endif
-            m_BatchedDecisionMaker?.PutObservations(null, agent);
+            m_ModelRunner?.PutObservations(agent);
         }
 
         /// <inheritdoc />
         public void DecideAction()
         {
-            m_BatchedDecisionMaker?.DecideBatch();
+            m_ModelRunner?.DecideBatch();
         }
 
         /// <summary>

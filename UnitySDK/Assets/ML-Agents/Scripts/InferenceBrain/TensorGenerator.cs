@@ -42,7 +42,11 @@ namespace MLAgents.InferenceBrain
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(
-            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+            BrainParameters bp,
+            int seed,
+            ITensorAllocator allocator,
+            Dictionary<int, List<float>> memories,
+            object barracudaModel = null)
         {
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
@@ -51,8 +55,6 @@ namespace MLAgents.InferenceBrain
                 new SequenceLengthGenerator(allocator);
             m_Dict[TensorNames.VectorObservationPlacholder] =
                 new VectorObservationGenerator(allocator);
-            m_Dict[TensorNames.RecurrentInPlaceholder] =
-                new RecurrentInputGenerator(allocator);
 
             if (barracudaModel != null)
             {
@@ -60,7 +62,7 @@ namespace MLAgents.InferenceBrain
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator);
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
                 }
             }
 
@@ -100,9 +102,7 @@ namespace MLAgents.InferenceBrain
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IEnumerable<TensorProxy> tensors,
-            int currentBatchSize,
-            IEnumerable<Agent> agents)
+            IEnumerable<TensorProxy> tensors, int currentBatchSize, IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {

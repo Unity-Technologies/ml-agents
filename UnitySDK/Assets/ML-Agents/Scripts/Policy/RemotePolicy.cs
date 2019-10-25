@@ -11,7 +11,7 @@ namespace MLAgents
     {
 
         private string m_BehaviorName;
-        protected IBatchedDecisionMaker m_BatchedDecisionMaker;
+        protected ICommunicator m_Communicator;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their sensors.
@@ -26,7 +26,7 @@ namespace MLAgents
             m_BehaviorName = behaviorName;
             var aca = GameObject.FindObjectOfType<Academy>();
             aca.LazyInitialization();
-            m_BatchedDecisionMaker = aca.Communicator;
+            m_Communicator = aca.Communicator;
             aca.Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
         }
 
@@ -36,13 +36,13 @@ namespace MLAgents
 #if DEBUG
             ValidateAgentSensorShapes(agent);
 #endif
-            m_BatchedDecisionMaker?.PutObservations(m_BehaviorName, agent);
+            m_Communicator?.PutObservations(m_BehaviorName, agent);
         }
 
         /// <inheritdoc />
         public void DecideAction()
         {
-            m_BatchedDecisionMaker?.DecideBatch();
+            m_Communicator?.DecideBatch();
         }
 
         /// <summary>
