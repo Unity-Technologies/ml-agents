@@ -48,7 +48,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1191598557174792
 GameObject:
   m_ObjectHideFlags: 1
@@ -190,7 +190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1485171514847798
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,7 +420,7 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4581736733780204
 Transform:
@@ -433,7 +433,7 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4651390251185036
 Transform:
@@ -478,10 +478,10 @@ Transform:
   - {fileID: 4764219638476960}
   - {fileID: 4886712515982252}
   - {fileID: 4982066033175770}
+  - {fileID: 4972445296092312}
   - {fileID: 4267601320324198}
   - {fileID: 4581736733780204}
   - {fileID: 4969149838347924}
-  - {fileID: 4972445296092312}
   - {fileID: 4959657776237834}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -589,7 +589,7 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4972445296092312
 Transform:
@@ -602,7 +602,7 @@ Transform:
   m_LocalScale: {x: 3, y: 1.5, z: 3}
   m_Children: []
   m_Father: {fileID: 4768003208014390}
-  m_RootOrder: 9
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4982066033175770
 Transform:
@@ -1406,7 +1406,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1040054285917182}
   serializedVersion: 2
-  m_Mass: 150
+  m_Mass: 25
   m_Drag: 0.5
   m_AngularDrag: 0.5
   m_UseGravity: 1
@@ -1603,12 +1603,12 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 3
-  noWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  smallWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  bigWallBrain: {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
+  noWallBrain: {fileID: 11400000, guid: 6265d54a73b2a448daa5d2fd5ed22301, type: 2}
+  smallWallBrain: {fileID: 11400000, guid: 6265d54a73b2a448daa5d2fd5ed22301, type: 2}
+  bigWallBrain: {fileID: 11400000, guid: aedc31894d06b4044928faf0507b1047, type: 2}
   ground: {fileID: 1324926338613664}
   spawnArea: {fileID: 1886170194660384}
-  shortBlock: {fileID: 1478101936519122}
+  shortBlock: {fileID: 1040054285917182}
   wall: {fileID: 1528738716925344}
   jumpTimer: 0
   m_currentVelMag: 0

@@ -74,7 +74,7 @@ BigWallJumpLearning:
     time_horizon: 1000
     batch_size: 512
     buffer_size: 4096
-    max_steps: 1e6
+    max_steps: 2e6
     summary_freq: 3000
     num_layers: 2
     hidden_units: 128

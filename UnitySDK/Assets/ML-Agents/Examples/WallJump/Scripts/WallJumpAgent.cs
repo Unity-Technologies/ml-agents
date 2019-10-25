@@ -426,11 +426,11 @@ public class WallJumpAgent : Agent
         //     || (!Physics.Raycast(m_ShortBlockRb.position, Vector3.down, 20)))
         if(m_AgentRb.position.y < -1 || m_ShortBlockRb.position.y < -1)
         {
-            Done();
             SetReward(-1f);
             ResetBlock(m_ShortBlockRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
+            Done();
         }
     }
 
@@ -442,6 +442,7 @@ public class WallJumpAgent : Agent
         if (col.gameObject.CompareTag("goal") && m_groundCheck.isGrounded)
         {
             SetReward(1f);
+            ResetBlock(m_ShortBlockRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, .5f));
             Done();
