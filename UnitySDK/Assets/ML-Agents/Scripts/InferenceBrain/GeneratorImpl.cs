@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System;
-using System.Linq;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
 
@@ -132,7 +131,7 @@ namespace MLAgents.InferenceBrain
             foreach (var agent in agents)
             {
                 var offset = memorySize * m_MemoryIndex;
-                List<float> memory = null;
+                List<float> memory;
                 if (!m_Memories.TryGetValue(agent.Info.id, out memory))
                 {
                     agentIndex++;
@@ -272,7 +271,7 @@ namespace MLAgents.InferenceBrain
             {
                 // TODO direct access to sensors list here - should we do it differently?
                 // TODO m_Index here is the visual observation index. Will work for now but not if we add more sensor types.
-                agent.m_Sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
+                agent.sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
                 agentIndex++;
             }
         }

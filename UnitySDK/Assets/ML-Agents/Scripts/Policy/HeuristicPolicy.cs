@@ -1,6 +1,4 @@
 using UnityEngine;
-using Barracuda;
-using MLAgents.InferenceBrain;
 using System;
 
 namespace MLAgents

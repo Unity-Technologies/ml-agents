@@ -20,7 +20,7 @@ namespace MLAgents.InferenceBrain
         private IReadOnlyList<TensorProxy> m_InferenceOutputs;
         private Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
 
-        private bool m_visualObservationsInitialized = false;
+        private bool m_VisualObservationsInitialized;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -68,7 +68,7 @@ namespace MLAgents.InferenceBrain
             m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
             m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
             m_TensorGenerator = new TensorGenerator(
-                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
                 brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
@@ -115,13 +115,13 @@ namespace MLAgents.InferenceBrain
                 return;
             }
 
-            if (!m_visualObservationsInitialized)
+            if (!m_VisualObservationsInitialized)
             {
                 // Just grab the first agent in the collection (any will suffice, really).
                 // We check for an empty Collection above, so this will always return successfully.
                 var firstAgent = m_Agents[0];
                 m_TensorGenerator.InitializeVisualObservations(firstAgent, m_TensorAllocator);
-                m_visualObservationsInitialized = true;
+                m_VisualObservationsInitialized = true;
             }
 
             Profiler.BeginSample("LearningBrain.DecideAction");

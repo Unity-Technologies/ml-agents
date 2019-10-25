@@ -19,13 +19,11 @@ namespace MLAgents
         [HideInInspector] [SerializeField] private bool m_UseHeuristic;
         [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
 
-        [HideInInspector]
         public BrainParameters brainParameters
         {
             get { return m_BrainParameters; }
         }
 
-        [HideInInspector]
         public string behaviorName
         {
             get { return m_BehaviorName; }

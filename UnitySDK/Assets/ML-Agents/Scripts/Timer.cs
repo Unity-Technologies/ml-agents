@@ -5,11 +5,6 @@ using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-#if UNITY_EDITOR
-using UnityEditor;
-
-#endif
-
 
 namespace MLAgents
 {

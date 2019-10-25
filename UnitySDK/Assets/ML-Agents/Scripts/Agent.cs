@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
 using MLAgents.Sensor;
-
-
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -259,9 +258,10 @@ namespace MLAgents
         /// </summary>
         private DemonstrationRecorder m_Recorder;
 
-        public List<ISensor> m_Sensors;
+        [FormerlySerializedAs("m_Sensors")]
+        public List<ISensor> sensors;
 
-        /// Monobehavior function that is called when the attached GameObject
+        /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
@@ -279,7 +279,7 @@ namespace MLAgents
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
-            m_Sensors = new List<ISensor>();
+            sensors = new List<ISensor>();
 
             if (academy == null)
             {
@@ -327,7 +327,7 @@ namespace MLAgents
         /// will categorize the agent when training. 
         /// </param>
         /// <param name="model"> The model to use for inference.</param>
-        /// <param name = "inferenceDevide"> Define on what device the model 
+        /// <param name = "inferenceDevice"> Define on what device the model 
         /// will be run.</param>
         public void GiveModel(
             string behaviorName,
@@ -524,20 +524,20 @@ namespace MLAgents
         public void InitializeSensors()
         {
             var attachedSensorComponents = GetComponents<SensorComponent>();
-            m_Sensors.Capacity += attachedSensorComponents.Length;
+            sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
-                m_Sensors.Add(component.CreateSensor());
+                sensors.Add(component.CreateSensor());
             }
 
-            // Sort the sensors by name to ensure determinism
-            m_Sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
+            // Sort the Sensors by name to ensure determinism
+            sensors.Sort((x, y) => x.GetName().CompareTo(y.GetName()));
 
 #if DEBUG
             // Make sure the names are actually unique
-            for (var i = 0; i < m_Sensors.Count - 1; i++)
+            for (var i = 0; i < sensors.Count - 1; i++)
             {
-                Debug.Assert(!m_Sensors[i].GetName().Equals(m_Sensors[i + 1].GetName()), "Sensor names must be unique.");
+                Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
         }
@@ -604,16 +604,16 @@ namespace MLAgents
         /// <summary>
         /// Generate data for each sensor and store it on the Agent's AgentInfo.
         /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
-        /// during inference the sensors are used to write directly to the Tensor data. This will likely change in the
+        /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
         public void GenerateSensorData()
         {
-            // Generate data for all sensors
+            // Generate data for all Sensors
             // TODO add bool argument indicating when to compress? For now, we always will compress.
-            for (var i = 0; i < m_Sensors.Count; i++)
+            for (var i = 0; i < sensors.Count; i++)
             {
-                var sensor = m_Sensors[i];
+                var sensor = sensors[i];
                 var compressedObs = new CompressedObservation
                 {
                     Data = sensor.GetCompressedObservation(),

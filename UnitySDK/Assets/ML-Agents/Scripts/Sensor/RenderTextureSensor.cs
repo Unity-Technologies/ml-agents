@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using MLAgents.InferenceBrain;
 using UnityEngine;
 

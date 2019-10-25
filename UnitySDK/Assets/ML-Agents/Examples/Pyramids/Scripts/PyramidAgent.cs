@@ -33,7 +33,7 @@ public class PyramidAgent : Agent
             float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
 
             string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn", "stone" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects));
             AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
             AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
             AddVectorObs(m_SwitchLogic.GetState());

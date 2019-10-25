@@ -19,19 +19,19 @@ namespace MLAgents
 
         public override void OnInspectorGUI()
         {
-            var serializedObject = base.serializedObject;
-            serializedObject.Update();
+            var so = serializedObject;
+            so.Update();
 
             // Drawing the Behavior Parameters
             EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_BehaviorName"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_BrainParameters"), true);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Model"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorName"));
+            EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_Model"), true);
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_InferenceDevice"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_UseHeuristic"));
+            EditorGUILayout.PropertyField(so.FindProperty("m_UseHeuristic"));
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())
@@ -39,7 +39,7 @@ namespace MLAgents
                 m_RequireReload = true;
             }
             DisplayFailedModelChecks();
-            serializedObject.ApplyModifiedProperties();
+            so.ApplyModifiedProperties();
         }
 
         /// <summary>

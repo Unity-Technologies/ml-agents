@@ -1,5 +1,4 @@
 using System;
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor

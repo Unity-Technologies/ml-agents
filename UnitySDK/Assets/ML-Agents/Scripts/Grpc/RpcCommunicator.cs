@@ -37,8 +37,8 @@ namespace MLAgents
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
         // Brains that we have sent over the communicator with agents.
-        HashSet<string> m_sentBrainKeys = new HashSet<string>();
-        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
+        HashSet<string> m_SentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_UnsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -260,8 +260,8 @@ namespace MLAgents
         /// <summary>
         /// Sends the observations of one Agent. 
         /// </summary>
-        /// <param name="key">Batch Key.</param>
-        /// <param name="agents">Agent info.</param>
+        /// <param name="brainKey">Batch Key.</param>
+        /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, Agent agent)
         {
             m_CurrentAgents[brainKey].Add(agent);
@@ -388,19 +388,19 @@ namespace MLAgents
 
         private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
-            if (m_sentBrainKeys.Contains(brainKey))
+            if (m_SentBrainKeys.Contains(brainKey))
             {
                 return;
             }
 
             // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_unsentBrainKeys[brainKey] = brainParameters;
+            m_UnsentBrainKeys[brainKey] = brainParameters;
         }
 
         private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach (var brainKey in m_unsentBrainKeys.Keys)
+            foreach (var brainKey in m_UnsentBrainKeys.Keys)
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
                 {
@@ -409,7 +409,7 @@ namespace MLAgents
                         output = new UnityRLInitializationOutputProto();
                     }
 
-                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    var brainParameters = m_UnsentBrainKeys[brainKey];
                     output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
                 }
             }
@@ -426,8 +426,8 @@ namespace MLAgents
 
             foreach (var brainProto in output.BrainParameters)
             {
-                m_sentBrainKeys.Add(brainProto.BrainName);
-                m_unsentBrainKeys.Remove(brainProto.BrainName);
+                m_SentBrainKeys.Add(brainProto.BrainName);
+                m_UnsentBrainKeys.Remove(brainProto.BrainName);
             }
         }
 

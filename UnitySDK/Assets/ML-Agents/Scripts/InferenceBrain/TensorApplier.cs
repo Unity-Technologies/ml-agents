@@ -42,6 +42,7 @@ namespace MLAgents.InferenceBrain
         /// used</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
+        /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorApplier(
             BrainParameters bp,
