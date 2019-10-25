@@ -17,26 +17,32 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class EngineConfigurationProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    width = ... # type: int
-    height = ... # type: int
-    quality_level = ... # type: int
-    time_scale = ... # type: float
-    target_frame_rate = ... # type: int
-    show_monitor = ... # type: bool
+    width = ... # type: builtin___int
+    height = ... # type: builtin___int
+    quality_level = ... # type: builtin___int
+    time_scale = ... # type: builtin___float
+    target_frame_rate = ... # type: builtin___int
+    show_monitor = ... # type: builtin___bool
 
     def __init__(self,
         *,
-        width : typing___Optional[int] = None,
-        height : typing___Optional[int] = None,
-        quality_level : typing___Optional[int] = None,
-        time_scale : typing___Optional[float] = None,
-        target_frame_rate : typing___Optional[int] = None,
-        show_monitor : typing___Optional[bool] = None,
+        width : typing___Optional[builtin___int] = None,
+        height : typing___Optional[builtin___int] = None,
+        quality_level : typing___Optional[builtin___int] = None,
+        time_scale : typing___Optional[builtin___float] = None,
+        target_frame_rate : typing___Optional[builtin___int] = None,
+        show_monitor : typing___Optional[builtin___bool] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> EngineConfigurationProto: ...
+    def FromString(cls, s: builtin___bytes) -> EngineConfigurationProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

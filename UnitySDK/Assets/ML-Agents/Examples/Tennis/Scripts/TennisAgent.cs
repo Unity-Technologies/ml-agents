@@ -80,6 +80,15 @@ public class TennisAgent : Agent
         m_TextComponent.text = score.ToString();
     }
 
+    public override float[] Heuristic()
+    {
+        var action = new float[2];
+
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;
+        return action;
+    }
+
     public override void AgentReset()
     {
         m_InvertMult = invertX ? -1f : 1f;

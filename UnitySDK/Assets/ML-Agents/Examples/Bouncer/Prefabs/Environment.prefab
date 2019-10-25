@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 33085749764809866}
   - component: {fileID: 65800894914404220}
   - component: {fileID: 54030303118153432}
+  - component: {fileID: 114938751572484598}
   - component: {fileID: 114878620968301562}
   m_Layer: 0
   m_Name: Agent
@@ -826,7 +827,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f09741cbce2e44bc88d3e92917eea0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 573920e3a672d40038169c7ffdbdca05, type: 2}
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -837,3 +837,25 @@ MonoBehaviour:
   target: {fileID: 1160631129428284}
   bodyObject: {fileID: 1680588139522898}
   strength: 500
+--- !u!114 &114938751572484598
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1604827395706042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 6
+    numStackedVectorObservations: 3
+    vectorActionSize: 03000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: f5250a39cb2134db49b833e3c92527a1, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Bouncer

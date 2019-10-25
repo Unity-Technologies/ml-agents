@@ -52,29 +52,21 @@ public class HallwayAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+        var action = Mathf.FloorToInt(act[0]);
+        switch (action)
         {
-            dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-            rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-        }
-        else
-        {
-            var action = Mathf.FloorToInt(act[0]);
-            switch (action)
-            {
-                case 1:
-                    dirToGo = transform.forward * 1f;
-                    break;
-                case 2:
-                    dirToGo = transform.forward * -1f;
-                    break;
-                case 3:
-                    rotateDir = transform.up * 1f;
-                    break;
-                case 4:
-                    rotateDir = transform.up * -1f;
-                    break;
-            }
+            case 1:
+                dirToGo = transform.forward * 1f;
+                break;
+            case 2:
+                dirToGo = transform.forward * -1f;
+                break;
+            case 3:
+                rotateDir = transform.up * 1f;
+                break;
+            case 4:
+                rotateDir = transform.up * -1f;
+                break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 150f);
         m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
@@ -103,6 +95,27 @@ public class HallwayAgent : Agent
             }
             Done();
         }
+    }
+
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 3 };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { 1 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 4 };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { 2 };
+        }
+        return new float[] { 0 };
     }
 
     public override void AgentReset()

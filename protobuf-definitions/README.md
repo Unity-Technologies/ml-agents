@@ -34,7 +34,7 @@ Download and install the latest version of [nuget](https://www.nuget.org/downloa
 `sudo apt-get install nuget`
 
 
-Navigate to your installation of nuget and run the following: 
+Navigate to your installation of nuget and run the following:
 
 `nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
@@ -52,7 +52,7 @@ Whenever you change the fields of a custom message, you must follow the steps be
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 ```
  and the following line to the end
- 
+
  ```csharp
  #endif
  ```
@@ -71,4 +71,4 @@ pip install -e .
 mlagents-learn
 ```
 
-The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo. 
+The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo.

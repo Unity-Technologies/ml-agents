@@ -9,7 +9,7 @@ It is now possible to give memories to your agents. When training, the agents
 will be able to store a vector of floats to be used next time they need to make
 a decision.
 
-![Brain Inspector](images/ml-agents-LSTM.png)
+![Inspector](images/ml-agents-LSTM.png)
 
 Deciding what the agents should remember in order to solve a task is not easy to
 do by hand, but our training algorithms can learn to keep track of what is
@@ -19,7 +19,7 @@ important to remember with
 ## How to use
 
 When configuring the trainer parameters in the `config/trainer_config.yaml`
-file, add the following parameters to the Brain you want to use.
+file, add the following parameters to the Behavior you want to use.
 
 ```json
 use_recurrent: true

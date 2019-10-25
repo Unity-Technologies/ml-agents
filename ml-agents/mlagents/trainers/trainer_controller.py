@@ -163,7 +163,7 @@ class TrainerController(object):
 
     def _not_done_training(self) -> bool:
         return (
-            any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
+            any(t.get_step <= t.get_max_steps for k, t in self.trainers.items())
             or not self.train_model
         ) or len(self.trainers) == 0
 
@@ -296,4 +296,7 @@ class TrainerController(object):
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
                     env.set_policy(brain_name, trainer.policy)
+            else:
+                # Avoid memory leak during inference
+                trainer.clear_update_buffer()
         return len(new_step_infos)

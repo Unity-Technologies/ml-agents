@@ -313,7 +313,7 @@ long to decrease, `init_entcoef` should be adjusted.
 
 ### Entropy
 
-This corresponds to how random the decisions of a Brain are. This should
+This corresponds to how random the decisions are. This should
 initially increase during training, reach a peak, and should decline along
 with the Entropy Coefficient. This is because in the beginning, the agent is
 incentivized to be more random for exploration due to a high entropy coefficient.

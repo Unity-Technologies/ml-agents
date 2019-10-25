@@ -13,7 +13,7 @@ from typing import Any, Callable, Optional, List, NamedTuple
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
-from mlagents.trainers.meta_curriculum import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
@@ -43,6 +43,7 @@ class CommandLineOptions(NamedTuple):
     sampler_file_path: Optional[str]
     docker_target_name: Optional[str]
     env_args: Optional[List[str]]
+    cpu: bool
 
     @property
     def fast_simulation(self) -> bool:
@@ -155,6 +156,10 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         nargs=argparse.REMAINDER,
         help="Arguments passed to the Unity executable.",
     )
+    parser.add_argument(
+        "--cpu", default=False, action="store_true", help="Run with CPU only"
+    )
+
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
 
@@ -283,17 +288,6 @@ def try_create_meta_curriculum(
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         meta_curriculum.set_all_curriculums_to_lesson_num(lesson)
-        for brain_name in meta_curriculum.brains_to_curriculums.keys():
-            if brain_name not in env.external_brains.keys():
-                raise MetaCurriculumError(
-                    "One of the curricula "
-                    "defined in " + curriculum_folder + " "
-                    "does not have a corresponding "
-                    "Brain. Check that the "
-                    "curriculum file has the same "
-                    "name as the Brain "
-                    "whose curriculum it defines."
-                )
 
         return meta_curriculum
 
@@ -405,6 +399,9 @@ def main():
 
     jobs = []
     run_seed = options.seed
+    if options.cpu:
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
     if options.num_runs == 1:
         if options.seed == -1:
             run_seed = np.random.randint(0, 10000)

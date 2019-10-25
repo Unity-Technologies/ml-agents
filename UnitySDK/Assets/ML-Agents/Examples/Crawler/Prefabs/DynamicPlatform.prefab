@@ -293,6 +293,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4313455366547514}
+  - component: {fileID: 114060650647145362}
   - component: {fileID: 114590693924030052}
   - component: {fileID: 114423363226357902}
   m_Layer: 0
@@ -2086,6 +2087,28 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114060650647145362
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1515093357607024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 126
+    numStackedVectorObservations: 1
+    vectorActionSize: 14000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: abc9c8f2180154ed7ba3f116ab0beb90, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: CrawlerDynamic
 --- !u!114 &114157055237627828
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2192,7 +2215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0e3b44d36c7a047c4addb92457b12be5, type: 2}
   agentParameters:
     agentCameras: []
     agentRenderTextures: []
@@ -2203,6 +2225,7 @@ MonoBehaviour:
   target: {fileID: 4490950947783742}
   ground: {fileID: 4684408634944056}
   detectTargets: 1
+  targetIsStatic: 0
   respawnTargetWhenTouched: 1
   targetSpawnRadius: 40
   body: {fileID: 4331762859142564}

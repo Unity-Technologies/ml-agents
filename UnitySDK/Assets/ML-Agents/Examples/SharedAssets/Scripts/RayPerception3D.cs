@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,7 +34,7 @@ namespace MLAgents
         /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
         public override List<float> Perceive(float rayDistance,
             float[] rayAngles, string[] detectableObjects,
-            float startOffset, float endOffset)
+            float startOffset=0.0f, float endOffset=0.0f)
         {
             if (m_SubList == null || m_SubList.Length != detectableObjects.Length + 2)
                 m_SubList = new float[detectableObjects.Length + 2];

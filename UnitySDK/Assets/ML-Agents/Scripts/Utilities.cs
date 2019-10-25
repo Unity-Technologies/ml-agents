@@ -28,31 +28,66 @@ namespace MLAgents
             var numTextures = textures.Count;
             var width = textures[0].width;
             var height = textures[0].height;
-            var data = tensorProxy.data;
 
             for (var t = 0; t < numTextures; t++)
             {
-                var texturePixels = textures[t].GetPixels32();
-                for (var h = height - 1; h >= 0; h--)
+                var texture = textures[t];
+                Debug.Assert(width == texture.width, "All Textures must have the same dimension");
+                Debug.Assert(height == texture.height, "All Textures must have the same dimension");
+                TextureToTensorProxy(texture, tensorProxy, grayScale, t);
+            }
+        }
+
+        /// <summary>
+        /// Puts a Texture2D into a TensorProxy.
+        /// </summary>
+        /// <param name="texture">
+        /// The texture to be put into the tensor.
+        /// </param>
+        /// <param name="tensorProxy">
+        /// TensorProxy to fill with Texture data.
+        /// </param>
+        /// <param name="grayScale">
+        /// If set to <c>true</c> the textures will be converted to grayscale before
+        /// being stored in the tensor.
+        /// </param>
+        /// <param name="textureOffset">
+        /// Index of the texture being written.
+        /// </param>
+        public static void TextureToTensorProxy(
+            Texture2D texture,
+            TensorProxy tensorProxy,
+            bool grayScale,
+            int textureOffset = 0)
+        {
+            var width = texture.width;
+            var height = texture.height;
+            var data = tensorProxy.data;
+
+            var t = textureOffset;
+            var texturePixels = texture.GetPixels32();
+            // During training, we convert from Texture to PNG before sending to the trainer, which has the
+            // effect of flipping the image. We need another flip here at inference time to match this.
+            for (var h = height - 1; h >= 0; h--)
+            {
+                for (var w = 0; w < width; w++)
                 {
-                    for (var w = 0; w < width; w++)
+                    var currentPixel = texturePixels[(height - h - 1) * width + w];
+                    if (grayScale)
                     {
-                        var currentPixel = texturePixels[(height - h - 1) * width + w];
-                        if (grayScale)
-                        {
-                            data[t, h, w, 0] =
-                                (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
-                        }
-                        else
-                        {
-                            // For Color32, the r, g and b values are between 0 and 255.
-                            data[t, h, w, 0] = currentPixel.r / 255.0f;
-                            data[t, h, w, 1] = currentPixel.g / 255.0f;
-                            data[t, h, w, 2] = currentPixel.b / 255.0f;
-                        }
+                        data[t, h, w, 0] =
+                            (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
+                    }
+                    else
+                    {
+                        // For Color32, the r, g and b values are between 0 and 255.
+                        data[t, h, w, 0] = currentPixel.r / 255.0f;
+                        data[t, h, w, 1] = currentPixel.g / 255.0f;
+                        data[t, h, w, 2] = currentPixel.b / 255.0f;
                     }
                 }
             }
+
         }
 
         /// <summary>

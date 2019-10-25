@@ -22,12 +22,11 @@ from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
 from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
     EnvironmentParametersProto,
 )
+from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
     UnityRLInitializationInputProto,
 )
-from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
-    UnityRLInitializationOutputProto,
-)
+
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents.envs.communicator_objects.custom_action_pb2 import CustomActionProto
 
@@ -102,7 +101,8 @@ class UnityEnvironment(BaseUnityEnvironment):
 
         rl_init_parameters_in = UnityRLInitializationInputProto(seed=seed)
         try:
-            aca_params = self.send_academy_parameters(rl_init_parameters_in)
+            aca_output = self.send_academy_parameters(rl_init_parameters_in)
+            aca_params = aca_output.rl_initialization_output
         except UnityTimeOutException:
             self._close()
             raise
@@ -122,7 +122,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._brains: Dict[str, BrainParameters] = {}
         self._external_brain_names: List[str] = []
         self._num_external_brains = 0
-        self._update_brain_parameters(aca_params)
+        self._update_brain_parameters(aca_output)
         self._resetParameters = dict(aca_params.environment_parameters.float_parameters)
         logger.info(
             "\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self))
@@ -333,7 +333,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_brain_parameters(outputs.rl_initialization_output)
+            self._update_brain_parameters(outputs)
             rl_output = outputs.rl_output
             s = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -554,7 +554,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_brain_parameters(outputs.rl_initialization_output)
+            self._update_brain_parameters(outputs)
             rl_output = outputs.rl_output
             state = self._get_state(rl_output)
             for _b in self._external_brain_names:
@@ -620,16 +620,20 @@ class UnityEnvironment(BaseUnityEnvironment):
             )
         return _data
 
-    def _update_brain_parameters(
-        self, init_output: Optional[UnityRLInitializationOutputProto]
-    ) -> None:
-        if init_output is not None:
-            for brain_param in init_output.brain_parameters:
+    def _update_brain_parameters(self, output: UnityOutputProto) -> None:
+        init_output = output.rl_initialization_output
+
+        for brain_param in init_output.brain_parameters:
+            # Each BrainParameter in the rl_initialization_output should have at least one AgentInfo
+            # Get that agent, because we need some of its observations.
+            agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
+            if agent_infos.value:
+                agent = agent_infos.value[0]
                 self._brains[brain_param.brain_name] = BrainParameters.from_proto(
-                    brain_param
+                    brain_param, agent
                 )
-            self._external_brain_names = list(self._brains.keys())
-            self._num_external_brains = len(self._external_brain_names)
+        self._external_brain_names = list(self._brains.keys())
+        self._num_external_brains = len(self._external_brain_names)
 
     @timed
     def _generate_step_input(
@@ -678,10 +682,10 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def send_academy_parameters(
         self, init_parameters: UnityRLInitializationInputProto
-    ) -> UnityRLInitializationOutputProto:
+    ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
-        return self.communicator.initialize(inputs).rl_initialization_output
+        return self.communicator.initialize(inputs)
 
     @staticmethod
     def wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:

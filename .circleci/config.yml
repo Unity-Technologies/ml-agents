@@ -146,7 +146,7 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install grpcio-tools==1.13.0  --progress-bar=off
-            pip install mypy-protobuf --progress-bar=off
+            pip install mypy-protobuf==1.16.0 --progress-bar=off
       - save_cache:
           paths:
             - ./venv
@@ -170,7 +170,48 @@ jobs:
             path: /tmp/proto.patch
             destination: proto.patch
 
+  deploy:
+    parameters:
+      directory:
+        type: string
+        description: Local directory to use for publishing (e.g. ml-agents)
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install  --upgrade pip
+            pip install setuptools wheel twine
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: upload to pypi
+          # To upload to test, just add the following flag to twine upload:
+          # --repository-url https://test.pypi.org/legacy/
+          # and change the username to "mlagents-test"
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
+
 workflows:
+  version: 2
   workflow:
     jobs:
       - build_python:
@@ -193,3 +234,27 @@ workflows:
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
+      - deploy:
+          name: deploy ml-agents-envs
+          directory: ml-agents-envs
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy ml-agents
+          directory: ml-agents
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy gym-unity
+          directory: gym-unity
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/

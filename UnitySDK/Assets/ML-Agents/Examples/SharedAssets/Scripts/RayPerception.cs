@@ -1,16 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class RayPerception : MonoBehaviour
 {
     protected List<float> m_PerceptionBuffer = new List<float>();
 
-    public virtual List<float> Perceive(float rayDistance,
+    abstract public List<float> Perceive(float rayDistance,
         float[] rayAngles, string[] detectableObjects,
-        float startOffset, float endOffset)
-    {
-        return m_PerceptionBuffer;
-    }
+        float startOffset=0.0f, float endOffset=0.0f);
 
     /// <summary>
     /// Converts degrees to radians.

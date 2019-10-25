@@ -1,6 +1,6 @@
 # Training Using Concurrent Unity Instances
 
-As part of release v0.8, we enabled developers to run concurrent, parallel instances of the Unity executable during training. For certain scenarios, this should speed up the training.  
+As part of release v0.8, we enabled developers to run concurrent, parallel instances of the Unity executable during training. For certain scenarios, this should speed up the training.
 
 ## How to Run Concurrent Unity Instances During Training
 

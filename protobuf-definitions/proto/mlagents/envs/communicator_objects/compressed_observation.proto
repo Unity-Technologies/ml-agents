@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+enum CompressionTypeProto {
+    NONE = 0;
+    PNG = 1;
+}
+
+message CompressedObservationProto {
+    repeated int32 shape = 1;
+    CompressionTypeProto compression_type = 2;
+    bytes data = 3;
+}

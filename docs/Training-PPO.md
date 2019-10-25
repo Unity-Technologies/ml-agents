@@ -306,7 +306,7 @@ into the training process.
 
 ### Entropy
 
-This corresponds to how random the decisions of a Brain are. This should
+This corresponds to how random the decisions are. This should
 consistently decrease during training. If it decreases too soon or not at all,
 `beta` should be adjusted (when using discrete action space).
 

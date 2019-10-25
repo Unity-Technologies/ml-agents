@@ -202,7 +202,7 @@ class SubprocessEnvManager(EnvManager):
         train_mode: bool = True,
         custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
-        while any([ew.waiting for ew in self.env_workers]):
+        while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
                 step = self.step_queue.get_nowait()
                 self.env_workers[step.worker_id].waiting = False

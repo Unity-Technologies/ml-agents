@@ -1,6 +1,8 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using MLAgents.Sensor;
+using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -33,11 +35,19 @@ namespace MLAgents.Tests
         public override void InitializeAgent()
         {
             initializeAgentCalls += 1;
+
+            // Add in some custom sensors so we can confirm they get sorted as expected.
+            var sensor1 = new TestSensor("testsensor1");
+            var sensor2 = new TestSensor("testsensor2");
+
+            m_Sensors.Add(sensor2);
+            m_Sensors.Add(sensor1);
         }
 
         public override void CollectObservations()
         {
             collectObservationsCalls += 1;
+            AddVectorObs(0f);
         }
 
         public override void AgentAction(float[] vectorAction, string textAction)
@@ -55,31 +65,44 @@ namespace MLAgents.Tests
         {
             agentOnDoneCalls += 1;
         }
+
+        public override float[] Heuristic()
+        {
+            return new float[0];
+        }
     }
 
-    // This is an empty class for testing the behavior of agents and academy
-    // It is left empty because we are not testing any brain behavior
-    public class TestBrain : Brain
+    public class TestSensor : ISensor
     {
-        public int numberOfCallsToInitialize;
-        public int numberOfCallsToDecideAction;
-        public static TestBrain Instantiate()
+        public string sensorName;
+
+        public TestSensor(string n)
         {
-            return CreateInstance<TestBrain>();
+            sensorName = n;
         }
 
-        protected override void Initialize()
+        public int[] GetFloatObservationShape()
         {
-            numberOfCallsToInitialize++;
+            return new[] { 1 };
         }
 
-        protected override void DecideAction()
+        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+
+        public byte[] GetCompressedObservation()
         {
-            numberOfCallsToDecideAction++;
-            m_Agents.Clear();
+            return null;
+        }
+
+        public CompressionType GetCompressionType()
+        {
+            return CompressionType.None;
+        }
+
+        public string GetName()
+        {
+            return sensorName;
         }
     }
-
 
     public class EditModeTestGeneration
     {
@@ -122,7 +145,7 @@ namespace MLAgents.Tests
             //This will call the method even though it is private
             var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
             Assert.AreEqual(1, aca.initializeAcademyCalls);
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
@@ -142,11 +165,6 @@ namespace MLAgents.Tests
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
             aca.resetParameters = new ResetParameters();
-            var brain = TestBrain.Instantiate();
-            brain.brainParameters = new BrainParameters();
-            brain.brainParameters.vectorObservationSize = 0;
-            agent1.GiveBrain(brain);
-            agent2.GiveBrain(brain);
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -164,7 +182,7 @@ namespace MLAgents.Tests
 
 
             agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
             agentEnableMethod?.Invoke(agent1, new object[] { aca });
 
             Assert.AreEqual(false, agent1.IsDone());
@@ -177,6 +195,10 @@ namespace MLAgents.Tests
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
+
+            // Make sure the sensors were sorted
+            Assert.AreEqual(agent1.m_Sensors[0].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.m_Sensors[1].GetName(), "testsensor2");
         }
     }
 
@@ -191,7 +213,7 @@ namespace MLAgents.Tests
             aca.resetParameters = new ResetParameters();
             var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
 
             var academyStepMethod = typeof(Academy).GetMethod("EnvironmentStep",
                 BindingFlags.Instance | BindingFlags.NonPublic);
@@ -209,7 +231,7 @@ namespace MLAgents.Tests
                 {
                     numberReset += 1;
                 }
-                academyStepMethod?.Invoke(aca, new object[] {});
+                academyStepMethod?.Invoke(aca, new object[] { });
             }
         }
 
@@ -226,7 +248,6 @@ namespace MLAgents.Tests
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
             aca.resetParameters = new ResetParameters();
-            var brain = TestBrain.Instantiate();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -236,20 +257,15 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
-            brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
-            agent1.GiveBrain(brain);
-            agent2.GiveBrain(brain);
 
             agentEnableMethod?.Invoke(agent1, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
 
             var academyStepMethod = typeof(Academy).GetMethod(
                 "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -296,7 +312,7 @@ namespace MLAgents.Tests
                     requestAction += 1;
                     agent2.RequestAction();
                 }
-                academyStepMethod?.Invoke(aca, new object[] {});
+                academyStepMethod?.Invoke(aca, new object[] { });
             }
         }
     }
@@ -312,7 +328,7 @@ namespace MLAgents.Tests
             aca.resetParameters = new ResetParameters();
             var academyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
 
             var academyStepMethod = typeof(Academy).GetMethod(
                 "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -332,7 +348,7 @@ namespace MLAgents.Tests
                 }
 
                 stepsSinceReset += 1;
-                academyStepMethod.Invoke(aca, new object[] {});
+                academyStepMethod.Invoke(aca, new object[] { });
             }
         }
 
@@ -349,7 +365,6 @@ namespace MLAgents.Tests
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
             aca.resetParameters = new ResetParameters();
-            var brain = TestBrain.Instantiate();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -362,20 +377,14 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
-            // agent2 will request decisions only when RequestDecision is called
-            brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
-            agent1.GiveBrain(brain);
-            agent2.GiveBrain(brain);
 
             agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
 
             var numberAgent1Reset = 0;
             var numberAgent2Reset = 0;
@@ -441,8 +450,8 @@ namespace MLAgents.Tests
                 agent2StepSinceReset += 1;
                 //Agent 1 is only initialized at step 2
                 if (i < 2)
-                {}
-                academyStepMethod?.Invoke(aca, new object[] {});
+                { }
+                academyStepMethod?.Invoke(aca, new object[] { });
             }
         }
     }
@@ -462,7 +471,6 @@ namespace MLAgents.Tests
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
             aca.resetParameters = new ResetParameters();
-            var brain = TestBrain.Instantiate();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -475,7 +483,6 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             // agent1 will take an action at every step and request a decision every steps
@@ -486,13 +493,9 @@ namespace MLAgents.Tests
             //Here we specify that the agent does not reset when done
             agent1.agentParameters.resetOnDone = false;
             agent2.agentParameters.resetOnDone = false;
-            brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
-            agent1.GiveBrain(brain);
-            agent2.GiveBrain(brain);
 
             agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
             agentEnableMethod?.Invoke(agent1, new object[] { aca });
 
             var agent1ResetOnDone = 0;
@@ -528,7 +531,7 @@ namespace MLAgents.Tests
                 }
 
 
-                academyStepMethod?.Invoke(aca, new object[] {});
+                academyStepMethod?.Invoke(aca, new object[] { });
             }
         }
 
@@ -545,7 +548,6 @@ namespace MLAgents.Tests
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
             aca.resetParameters = new ResetParameters();
-            var brain = TestBrain.Instantiate();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -558,7 +560,6 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            brain.brainParameters = new BrainParameters();
             // We use event based so the agent will now try to send anything to the brain
             agent1.agentParameters.onDemandDecision = false;
             agent1.agentParameters.numberOfActionsBetweenDecisions = 3;
@@ -566,13 +567,9 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
-            brain.brainParameters.vectorObservationSize = 0;
-            brain.brainParameters.cameraResolutions = new Resolution[0];
-            agent1.GiveBrain(brain);
-            agent2.GiveBrain(brain);
 
             agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] {});
+            academyInitializeMethod?.Invoke(aca, new object[] { });
             agentEnableMethod?.Invoke(agent1, new object[] { aca });
 
 
@@ -584,7 +581,7 @@ namespace MLAgents.Tests
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
 
-                academyStepMethod?.Invoke(aca, new object[] {});
+                academyStepMethod?.Invoke(aca, new object[] { });
                 agent1.AddReward(10f);
 
                 if ((i % 21 == 0) && (i > 0))

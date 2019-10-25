@@ -555,9 +555,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4464253672231148}
   - component: {fileID: 54125904932801864}
+  - component: {fileID: 114722927650955174}
   - component: {fileID: 114741503533626942}
-  - component: {fileID: 114027965503222182}
   - component: {fileID: 65882754134362954}
+  - component: {fileID: 114674665608406760}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -3134,17 +3135,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1450.4971, y: 985.00024, z: 100}
   m_Center: {x: -575.24854, y: 292.50012, z: -3144.2273}
---- !u!114 &114027965503222182
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1736680821577442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114404304054259594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3185,6 +3175,43 @@ MonoBehaviour:
   - {fileID: 1625610554007742}
   numPyra: 1
   range: 45
+--- !u!114 &114674665608406760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736680821577442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 20712684238256298}
+  sensorName: CameraSensor
+  width: 84
+  height: 84
+  grayscale: 0
+--- !u!114 &114722927650955174
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1736680821577442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
+    vectorActionSize: 05000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: VisualPyramids
 --- !u!114 &114741503533626942
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3196,11 +3223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8db44472779248d3be46895c4d562d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 60f0ffcd08c3b43a6bdc746cfc0c4059, type: 2}
   agentParameters:
-    agentCameras:
-    - {fileID: 20712684238256298}
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

@@ -17,7 +17,7 @@ performing computations using data flow graphs, the underlying representation of
 deep learning models. It facilitates training and inference on CPUs and GPUs in
 a desktop, server, or mobile device. Within the ML-Agents toolkit, when you
 train the behavior of an agent, the output is a TensorFlow model (.nn) file
-that you can then embed within a Learning Brain. Unless you implement a new
+that you can then associate with an Agent. Unless you implement a new
 algorithm, the use of TensorFlow is mostly abstracted away and behind the
 scenes.
 
