@@ -1,3 +1,4 @@
+//Standardized movement controller for the Agent Cube
 using UnityEngine;
 
 namespace MLAgents

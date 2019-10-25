@@ -1,6 +1,5 @@
-using System.Collections;
+//Standardized ground check for the Agent Cube
 using UnityEngine;
-// using MLAgents;
 
 namespace MLAgents
 {
@@ -12,15 +11,12 @@ namespace MLAgents
     public class AgentCubeGroundCheck : MonoBehaviour
     {
         public bool debugDrawGizmos;
-        // public List<string> tagsToDetect = new List<string>(){"walkableSurface", "block"};
         public Collider[] hitGroundColliders = new Collider[3];
-
         public Vector3 groundCheckBoxLocalPos = new Vector3(0,-0.52f, 0);
         public Vector3 groundCheckBoxSize = new Vector3(0.99f, 0.02f, 0.99f);
         public bool isGrounded;
         public float ungroundedTime; //amount of time agent hasn't been grounded
         public float groundedTime; //amount of time agent has been grounded
-
 
         void FixedUpdate()
         {
@@ -45,7 +41,6 @@ namespace MLAgents
         /// <param name="smallCheck"></param>
         public void DoGroundCheck()
         {
-            // hitGroundColliders = new Collider[3];
             isGrounded = false;
             if(Physics.OverlapBoxNonAlloc(
                 transform.TransformPoint(groundCheckBoxLocalPos),
@@ -55,14 +50,8 @@ namespace MLAgents
                 {
                     foreach (var col in hitGroundColliders)
                     {
-                        // if (col != null && col.transform != transform &&
-                        //     (col.CompareTag("walkableSurface") ||
-                        //      col.CompareTag("block") ||
-                        //      col.CompareTag("wall")))
-                        // {
                         if (col != null && col.transform != transform &&
                             (col.CompareTag("walkableSurface") ||
-                            // col.CompareTag("wall") ||
                                 col.CompareTag("block")))
                         {
                             isGrounded = true; //then we're grounded
@@ -77,25 +66,15 @@ namespace MLAgents
             }
         }
 
-        //Draw the Box Overlap as a gizmo to show where it currently is testing. Click the Gizmos button to see this
+        //Draw the Box Overlap as a gizmo to show where it currently is testing.
         void OnDrawGizmos()
         {
             if (debugDrawGizmos)
             {
-                // Convert the local coordinate values into world
-                // coordinates for the matrix transformation.
-                //Draw a cube where the OverlapBox is (positioned where your GameObject is as well as a size)
-                // Gizmos.DrawWireCube(transform.position, transform.localScale);
-
                 Gizmos.color = Color.red;
                 Gizmos.matrix = transform.localToWorldMatrix;
                 Gizmos.DrawWireCube(groundCheckBoxLocalPos, groundCheckBoxSize);
-                // Gizmos.color = Color.blue;
-                // Gizmos.DrawWireCube(transform.TransformPoint(groundCheckBoxLocalPos), groundCheckBoxSize);
-
-                // Gizmos.DrawWireCube(transform.TransformPoint(groundCheckBoxLocalPos), transform.localScale);
             }
         }
-
     }
 }
