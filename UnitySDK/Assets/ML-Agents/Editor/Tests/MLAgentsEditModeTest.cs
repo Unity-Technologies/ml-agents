@@ -93,9 +93,9 @@ namespace MLAgents.Tests
             return null;
         }
 
-        public Sensor.CompressionType GetCompressionType()
+        public CompressionType GetCompressionType()
         {
-            return Sensor.CompressionType.None;
+            return CompressionType.None;
         }
 
         public string GetName()
