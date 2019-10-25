@@ -126,9 +126,9 @@ class TFPolicy(Policy):
 
         self.remove_memories(
             [
-                brain_info.agents[i]
-                for i in range(len(brain_info.agents))
-                if brain_info.local_done[i]
+                agent
+                for agent, done in zip(brain_info.agents, brain_info.local_done)
+                if done
             ]
         )
         run_out = self.evaluate(brain_info)

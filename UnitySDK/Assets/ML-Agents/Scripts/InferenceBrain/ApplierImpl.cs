@@ -179,7 +179,7 @@ namespace MLAgents.InferenceBrain
         public BarracudaMemoryOutputApplier(
             int memoriesCount,
             int memoryIndex,
-            ref Dictionary<int, List<float>> memories)
+            Dictionary<int, List<float>> memories)
         {
             m_MemoriesCount = memoriesCount;
             m_MemoryIndex = memoryIndex;
@@ -193,9 +193,9 @@ namespace MLAgents.InferenceBrain
 
             foreach (var agent in agents)
             {
-                var memory = m_Memories.ContainsKey(agent.Info.id) ? m_Memories[agent.Info.id] : null;
-
-                if (memory == null || memory.Count < memorySize * m_MemoriesCount)
+                List<float> memory = null;
+                if (!m_Memories.TryGetValue(agent.Info.id, out memory)
+                    || memory.Count < memorySize * m_MemoriesCount)
                 {
                     memory = new List<float>();
                     memory.AddRange(Enumerable.Repeat(0f, memorySize * m_MemoriesCount));

@@ -115,7 +115,7 @@ namespace MLAgents.InferenceBrain
         public BarracudaRecurrentInputGenerator(
             int memoryIndex,
             ITensorAllocator allocator,
-            ref Dictionary<int, List<float>> memories)
+            Dictionary<int, List<float>> memories)
         {
             m_MemoryIndex = memoryIndex;
             m_Allocator = allocator;
@@ -131,10 +131,9 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                var memory = m_Memories.ContainsKey(agent.Info.id) ? m_Memories[agent.Info.id] : null;
                 var offset = memorySize * m_MemoryIndex;
-
-                if (memory == null)
+                List<float> memory = null;
+                if (!m_Memories.TryGetValue(agent.Info.id, out memory))
                 {
                     agentIndex++;
                     continue;

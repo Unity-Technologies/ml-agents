@@ -45,7 +45,7 @@ namespace MLAgents.InferenceBrain
             BrainParameters bp,
             int seed,
             ITensorAllocator allocator,
-            ref Dictionary<int, List<float>> memories,
+            Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
             // Generator for Inputs
@@ -55,8 +55,6 @@ namespace MLAgents.InferenceBrain
                 new SequenceLengthGenerator(allocator);
             m_Dict[TensorNames.VectorObservationPlacholder] =
                 new VectorObservationGenerator(allocator);
-            // m_Dict[TensorNames.RecurrentInPlaceholder] =
-            //     new RecurrentInputGenerator(allocator);
 
             if (barracudaModel != null)
             {
@@ -64,7 +62,7 @@ namespace MLAgents.InferenceBrain
                 for (var i = 0; i < model?.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator, ref memories);
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
                 }
             }
 

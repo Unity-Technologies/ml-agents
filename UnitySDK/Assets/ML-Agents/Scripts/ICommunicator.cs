@@ -148,6 +148,11 @@ namespace MLAgents
         /// <param name="agents">Agent info.</param>
         void PutObservations(string brainKey, Agent agent);
 
+        /// <summary>
+        /// Signals the ICommunicator that the Agents are now ready to receive their action
+        /// and that if the communicator has not yet received an action for one of the Agents
+        /// it needs to get one at this point.
+        /// </summary>
         void DecideBatch();
 
         /// <summary>

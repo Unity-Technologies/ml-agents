@@ -39,7 +39,7 @@ namespace MLAgents.Tests
             var bp = new BrainParameters();
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();
-            var tensorGenerator = new TensorGenerator(bp, 0, alloc, ref mem);
+            var tensorGenerator = new TensorGenerator(bp, 0, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }
