@@ -11,11 +11,11 @@ namespace MLAgents
     [CanEditMultipleObjects]
     public class BehaviorParametersEditor : Editor
     {
-        private const float k_TimeBetweenModelReloads = 2f;
+        const float k_TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model
-        private float m_TimeSinceModelReload;
+        float m_TimeSinceModelReload;
         // Whether or not the model needs to be reloaded
-        private bool m_RequireReload;
+        bool m_RequireReload;
 
         public override void OnInspectorGUI()
         {
@@ -45,7 +45,7 @@ namespace MLAgents
         /// <summary>
         /// Must be called within OnEditorGUI()
         /// </summary>
-        private void DisplayFailedModelChecks()
+        void DisplayFailedModelChecks()
         {
             if (m_RequireReload && m_TimeSinceModelReload > k_TimeBetweenModelReloads)
             {

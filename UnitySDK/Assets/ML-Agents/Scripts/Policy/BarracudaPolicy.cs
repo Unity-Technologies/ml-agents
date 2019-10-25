@@ -58,7 +58,7 @@ namespace MLAgents
         /// If this is the first Agent being checked, its Sensor sizes will be saved.
         /// </summary>
         /// <param name="agent">The Agent to check</param>
-        private void ValidateAgentSensorShapes(Agent agent)
+        void ValidateAgentSensorShapes(Agent agent)
         {
             if (m_SensorShapes == null)
             {

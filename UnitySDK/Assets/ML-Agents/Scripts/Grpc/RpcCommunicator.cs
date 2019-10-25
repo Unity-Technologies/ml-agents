@@ -23,7 +23,7 @@ namespace MLAgents
         bool m_IsOpen;
 
         /// The default number of agents in the scene
-        private const int k_NumAgents = 32;
+        const int k_NumAgents = 32;
 
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
@@ -138,7 +138,7 @@ namespace MLAgents
             SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
         }
 
-        private UnityInputProto Initialize(UnityOutputProto unityOutput,
+        UnityInputProto Initialize(UnityOutputProto unityOutput,
             out UnityInputProto unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -197,7 +197,8 @@ namespace MLAgents
         #endregion
 
         #region Sending Events
-        private void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+
+        void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
         {
             switch (command)
             {
@@ -218,7 +219,7 @@ namespace MLAgents
             }
         }
 
-        private void SendRLInputReceivedEvent(bool isTraining)
+        void SendRLInputReceivedEvent(bool isTraining)
         {
             RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
@@ -337,7 +338,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        private UnityInputProto Exchange(UnityOutputProto unityOutput)
+        UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -377,7 +378,7 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        private static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
+        static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
         {
             return new UnityMessageProto
             {
@@ -386,7 +387,7 @@ namespace MLAgents
             };
         }
 
-        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
             if (m_SentBrainKeys.Contains(brainKey))
             {
@@ -397,7 +398,7 @@ namespace MLAgents
             m_UnsentBrainKeys[brainKey] = brainParameters;
         }
 
-        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
             foreach (var brainKey in m_UnsentBrainKeys.Keys)
@@ -417,7 +418,7 @@ namespace MLAgents
             return output;
         }
 
-        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
         {
             if (output == null)
             {
@@ -439,7 +440,7 @@ namespace MLAgents
         /// When the editor exits, the communicator must be closed
         /// </summary>
         /// <param name="state">State.</param>
-        private void HandleOnPlayModeChanged(PlayModeStateChange state)
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)

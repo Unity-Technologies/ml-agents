@@ -11,8 +11,8 @@ namespace MLAgents
     /// </summary>
     public class HeuristicPolicy : IPolicy
     {
-        private Func<float[]> m_Heuristic;
-        private Agent m_Agent;
+        Func<float[]> m_Heuristic;
+        Agent m_Agent;
 
         /// <inheritdoc />
         public HeuristicPolicy(Func<float[]> heuristic)

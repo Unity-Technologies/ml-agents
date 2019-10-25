@@ -13,11 +13,15 @@ namespace MLAgents
 
         [HideInInspector]
         [SerializeField]
-        private BrainParameters m_BrainParameters = new BrainParameters();
-        [HideInInspector] [SerializeField] private NNModel m_Model;
-        [HideInInspector] [SerializeField] private InferenceDevice m_InferenceDevice;
-        [HideInInspector] [SerializeField] private bool m_UseHeuristic;
-        [HideInInspector] [SerializeField] private string m_BehaviorName = "My Behavior";
+        BrainParameters m_BrainParameters = new BrainParameters();
+        [HideInInspector] [SerializeField]
+        NNModel m_Model;
+        [HideInInspector] [SerializeField]
+        InferenceDevice m_InferenceDevice;
+        [HideInInspector] [SerializeField]
+        bool m_UseHeuristic;
+        [HideInInspector] [SerializeField]
+        string m_BehaviorName = "My Behavior";
 
         public BrainParameters brainParameters
         {

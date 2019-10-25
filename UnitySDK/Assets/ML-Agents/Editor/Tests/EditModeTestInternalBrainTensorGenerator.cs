@@ -9,7 +9,7 @@ namespace MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorGenerator
     {
-        private static IEnumerable<Agent> GetFakeAgentInfos()
+        static IEnumerable<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();

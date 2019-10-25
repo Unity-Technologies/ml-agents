@@ -33,7 +33,7 @@ namespace MLAgents.InferenceBrain
             void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents);
         }
 
-        private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
+        readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.

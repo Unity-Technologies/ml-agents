@@ -299,7 +299,7 @@ public class WallJumpAgent : Agent
         m_AgentRb.velocity = default(Vector3);
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (m_Configuration != -1)
         {

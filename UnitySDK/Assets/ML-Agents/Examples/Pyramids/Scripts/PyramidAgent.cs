@@ -7,10 +7,10 @@ using MLAgents;
 public class PyramidAgent : Agent
 {
     public GameObject area;
-    private PyramidArea m_MyArea;
-    private Rigidbody m_AgentRb;
-    private RayPerception m_RayPer;
-    private PyramidSwitch m_SwitchLogic;
+    PyramidArea m_MyArea;
+    Rigidbody m_AgentRb;
+    RayPerception m_RayPer;
+    PyramidSwitch m_SwitchLogic;
     public GameObject areaSwitch;
     public bool useVectorObs;
 
@@ -113,7 +113,7 @@ public class PyramidAgent : Agent
         m_MyArea.CreateStonePyramid(1, items[8]);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("goal"))
         {

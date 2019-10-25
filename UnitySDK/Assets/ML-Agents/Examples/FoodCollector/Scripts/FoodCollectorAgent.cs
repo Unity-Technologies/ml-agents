@@ -3,7 +3,7 @@ using MLAgents;
 
 public class FoodCollectorAgent : Agent
 {
-    private FoodCollectorAcademy m_MyAcademy;
+    FoodCollectorAcademy m_MyAcademy;
     public GameObject area;
     FoodCollectorArea m_MyArea;
     bool m_Frozen;
@@ -13,7 +13,7 @@ public class FoodCollectorAgent : Agent
     float m_FrozenTime;
     float m_EffectTime;
     Rigidbody m_AgentRb;
-    private float m_LaserLength;
+    float m_LaserLength;
     // Speed of agent rotation.
     public float turnSpeed = 300;
 
@@ -25,7 +25,7 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    private RayPerception3D m_RayPer;
+    RayPerception3D m_RayPer;
     public bool useVectorObs;
 
 

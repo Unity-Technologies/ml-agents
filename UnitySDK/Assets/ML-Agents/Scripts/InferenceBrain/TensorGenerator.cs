@@ -31,7 +31,7 @@ namespace MLAgents.InferenceBrain
                 TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents);
         }
 
-        private readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
+        readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
 
         /// <summary>
         /// Returns a new TensorGenerators object.
