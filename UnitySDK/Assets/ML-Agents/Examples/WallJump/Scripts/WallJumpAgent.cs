@@ -32,7 +32,7 @@ public class WallJumpAgent : Agent
     RayPerception m_RayPer;
 
     // public float jumpingTime;
-    // public float jumpTime;
+    public float jumpTimer; //timer used to control jump timing & prevent rapid doublejumps
     // // This is a downward force applied when falling to make jumps look
     // // less floaty
     // public float fallingForce;
@@ -47,13 +47,17 @@ public class WallJumpAgent : Agent
     public float m_currentVelMag;
 
     //Groundcheck
-    AgentCubeGroundCheck m_groundCheck;
+    private AgentCubeGroundCheck m_groundCheck;
+    public AgentCubeMovement m_agentMovement;
     int fuTimer;
+    public float smoothTime = 0.3F;
+    private Vector3 velocity = Vector3.zero;
 
     public override void InitializeAgent()
     {
         m_groundCheck = GetComponent<AgentCubeGroundCheck>();
         m_Academy = FindObjectOfType<WallJumpAcademy>();
+        m_agentMovement = FindObjectOfType<AgentCubeMovement>();
         m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
         m_DetectableObjects = new[] { "wall", "goal", "block" };
@@ -174,7 +178,7 @@ public class WallJumpAgent : Agent
         AddVectorObs(agentPos / 20f);
         // AddVectorObs(grounded? 1 : 0);
         AddVectorObs(m_groundCheck.isGrounded);
-        AddVectorObs(m_AgentRb.velocity/m_Academy.agentMaxVel);
+        AddVectorObs(m_AgentRb.velocity/m_agentMovement.agentRunSpeed);
         AddVectorObs(m_AgentRb.angularVelocity/m_AgentRb.maxAngularVelocity);
         AddVectorObs(m_AgentRb.transform.forward);
     }
@@ -220,8 +224,8 @@ public class WallJumpAgent : Agent
         var rotateDir = Vector3.zero;
         var dirToGoForwardAction = (int)act[0];
         var rotateDirAction = (int)act[1];
-        var dirToGoSideAction = (int)act[2];
-        var jumpAction = (int)act[3];
+//        var dirToGoSideAction = (int)act[2];
+        var jumpAction = (int)act[2];
         // print($"Academy: {m_Academy.GetStepCount()}");
         // print($"Agent: {GetStepCount()}");
         // print($"Action: {GetStepCount()} {fuTimer}");
@@ -250,44 +254,83 @@ public class WallJumpAgent : Agent
                 dirToGo += transform.forward;
             else if (dirToGoForwardAction == 2)
                 dirToGo += -transform.forward;
-            if (dirToGoSideAction == 1)
-                dirToGo += -transform.right;
-            else if (dirToGoSideAction == 2)
-                dirToGo += transform.right;
+//            if (dirToGoSideAction == 1)
+//                dirToGo += -transform.right;
+//            else if (dirToGoSideAction == 2)
+//                dirToGo += transform.right;
         // // }
         if (rotateDirAction == 1)
-            rotateDir = transform.up * -1f;
+            rotateDir = -transform.up ;
         else if (rotateDirAction == 2)
-            rotateDir = transform.up * 1f;
+            rotateDir = transform.up;
         if (jumpAction == 1)
         {
             // if (largeGrounded)
+//            if (m_groundCheck.isGrounded && jumpTimer > .15f)
             if (m_groundCheck.isGrounded)
             {
                 // Jump();
                 // print($"JUMP {m_groundCheck.isGrounded}");
                 // m_AgentRb.velocity = Vector3.zero;
-                Vector3 velToUse = m_AgentRb.velocity;
-                velToUse.y = m_Academy.agentJumpVelocity;
-                m_AgentRb.velocity = velToUse;
-                // m_AgentRb.AddForce(Vector3.up * m_Academy.agentJumpVelocity,
-                //     ForceMode.VelocityChange);
+                
+//                jumpTimer = 0f;
+                m_agentMovement.Jump(m_AgentRb);
+//                Vector3 velToUse = m_AgentRb.velocity;
+//                velToUse.y = m_Academy.agentJumpVelocity;
+//                m_AgentRb.velocity = velToUse;
+
+
+//                m_AgentRb.AddForce(Vector3.up * m_Academy.agentJumpVelocity,
+//                    ForceMode.VelocityChange);
+//                m_AgentRb.AddForce(Vector3.up * m_Academy.agentJumpVelocity,
+//                    ForceMode.Impulse);
                 // AddReward(-0.01f); //don't constantly jump
             }
         }
 
         // transform.Rotate(rotateDir, Time.fixedDeltaTime * 300f);
-        transform.Rotate(rotateDir, m_Academy.agentRotationSpeed);
-
-        float runSpeed = m_groundCheck.isGrounded? m_Academy.agentRunSpeed: m_Academy.agentRunSpeed * .25f;
-        if(m_currentVelMag < m_Academy.agentMaxVel)
+//        transform.Rotate(rotateDir, m_Academy.agentRotationSpeed);
+        if (rotateDir != Vector3.zero)
         {
-            // if (m_groundCheck.isGrounded)
-            // {
-                m_AgentRb.AddForce(dirToGo.normalized * runSpeed,
-                    ForceMode.VelocityChange);
-            // }
+            m_agentMovement.RotateBody(m_AgentRb, rotateDir);
+//            m_AgentRb.MoveRotation(m_AgentRb.rotation * Quaternion.AngleAxis(m_Academy.agentRotationSpeed, rotateDir));
         }
+
+        
+        //Running Logic
+//        float runSpeed = Mathf.Clamp(m_agentMovement.agentRunSpeed - m_currentVelMag, 0, m_agentMovement.agentRunSpeed);
+//        float runSpeed = Mathf.Clamp(m_agentMovement.agentRunMaxVelMagnitude - m_currentVelMag, 0, m_agentMovement.agentRunMaxVelMagnitude);
+        if (!m_groundCheck.isGrounded)
+        {
+            m_agentMovement.RunInAir(m_AgentRb, dirToGo.normalized);
+        }
+        else
+        {
+            m_agentMovement.RunOnGround(m_AgentRb, dirToGo.normalized);
+        }
+
+        
+//        m_AgentRb.AddForce(dirToGo.normalized * runSpeed,
+//            ForceMode.VelocityChange); 
+//        m_AgentRb.AddForce(dirToGo.normalized * runSpeed,
+//            ForceMode.Impulse); 
+        
+//        if (m_groundCheck.isGrounded && dirToGo == Vector3.zero && jumpTimer > .15f)
+        if (m_groundCheck.isGrounded && dirToGo == Vector3.zero)
+        {
+            m_agentMovement.AddIdleDrag(m_AgentRb);
+//            m_AgentRb.velocity *= m_Academy.agentIdleDragVelCoeff;
+//            print("damping");
+        }
+//        //Running Logic
+//        Vector3 smoothedVel = Vector3.SmoothDamp(m_AgentRb.velocity, dirToGo * runSpeed, ref velocity, smoothTime);
+//        m_AgentRb.velocity = smoothedVel;
+        
+        
+        
+        
+        
+        
         // if(m_currentVelMag < m_Academy.agentMaxVel)
         // {
         //     m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
@@ -304,11 +347,13 @@ public class WallJumpAgent : Agent
         //         m_Academy.agentJumpVelocityMaxChange);
         // }
 
+//        if (!m_groundCheck.isGrounded && jumpTimer > .15f)
         if (!m_groundCheck.isGrounded)
         {
-            m_AgentRb.AddForce(
-                // Vector3.down * fallingForce, ForceMode.Acceleration);
-                Vector3.down * m_Academy.agentFallingSpeed, ForceMode.Acceleration);
+            m_agentMovement.AddFallingForce(m_AgentRb);
+//            m_AgentRb.AddForce(
+//                // Vector3.down * fallingForce, ForceMode.Acceleration);
+//                Vector3.down * m_Academy.agentFallingSpeed, ForceMode.Acceleration);
         }
         // if (!(jumpingTime > 0f) && !m_groundCheck.isGrounded)
         // {
@@ -317,6 +362,7 @@ public class WallJumpAgent : Agent
         //         Vector3.down * m_Academy.agentFallingSpeed, ForceMode.Acceleration);
         // }
         // jumpingTime -= Time.fixedDeltaTime;
+//        jumpTimer += Time.fixedDeltaTime;
     }
     // public void MoveAgent(float[] act)
     // {
@@ -423,12 +469,12 @@ public class WallJumpAgent : Agent
     private void FixedUpdate()
     {
         m_currentVelMag = m_AgentRb.velocity.magnitude;
-        fuTimer++;
-        // if (m_Configuration != -1)
-        // {
-        //     ConfigureAgent(m_Configuration);
-        //     m_Configuration = -1;
-        // }
+//        fuTimer++;
+        if (m_Configuration != -1)
+        {
+            ConfigureAgent(m_Configuration);
+            m_Configuration = -1;
+        }
     }
 
     /// <summary>

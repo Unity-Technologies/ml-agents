@@ -19,6 +19,7 @@ namespace MLAgents
         public Vector3 groundCheckBoxSize = new Vector3(0.99f, 0.02f, 0.99f);
         public bool isGrounded;
         public float ungroundedTime; //amount of time agent hasn't been grounded
+        public float groundedTime; //amount of time agent has been grounded
 
 
         void FixedUpdate()
@@ -27,9 +28,11 @@ namespace MLAgents
             if(!isGrounded)
             {
                 ungroundedTime += Time.deltaTime;
+                groundedTime = 0;
             }
             else
             {
+                groundedTime += Time.deltaTime;
                 ungroundedTime = 0;
             }
         }
