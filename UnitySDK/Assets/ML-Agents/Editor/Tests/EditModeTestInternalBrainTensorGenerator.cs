@@ -9,7 +9,7 @@ namespace MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorGenerator
     {
-        private static IEnumerable<Agent> GetFakeAgentInfos()
+        static IEnumerable<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();
@@ -36,10 +36,9 @@ namespace MLAgents.Tests
         [Test]
         public void Construction()
         {
-            var bp = new BrainParameters();
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();
-            var tensorGenerator = new TensorGenerator(bp, 0, alloc, mem);
+            var tensorGenerator = new TensorGenerator(0, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }

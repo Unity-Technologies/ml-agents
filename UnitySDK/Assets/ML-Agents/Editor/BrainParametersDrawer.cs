@@ -11,13 +11,13 @@ namespace MLAgents
     public class BrainParametersDrawer : PropertyDrawer
     {
         // The height of a line in the Unity Inspectors
-        private const float k_LineHeight = 17f;
-        private const int k_VecObsNumLine = 3;
-        private const string k_ActionSizePropName = "vectorActionSize";
-        private const string k_ActionTypePropName = "vectorActionSpaceType";
-        private const string k_ActionDescriptionPropName = "vectorActionDescriptions";
-        private const string k_VecObsPropName = "vectorObservationSize";
-        private const string k_NumVecObsPropName = "numStackedVectorObservations";
+        const float k_LineHeight = 17f;
+        const int k_VecObsNumLine = 3;
+        const string k_ActionSizePropName = "vectorActionSize";
+        const string k_ActionTypePropName = "vectorActionSpaceType";
+        const string k_ActionDescriptionPropName = "vectorActionDescriptions";
+        const string k_VecObsPropName = "vectorObservationSize";
+        const string k_NumVecObsPropName = "numStackedVectorObservations";
 
         /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -55,7 +55,7 @@ namespace MLAgents
         /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
         /// <param name="property">The SerializedProperty of the BrainParameters
         /// to make the custom GUI for.</param>
-        private static void DrawVectorObservation(Rect position, SerializedProperty property)
+        static void DrawVectorObservation(Rect position, SerializedProperty property)
         {
             EditorGUI.LabelField(position, "Vector Observation");
             position.y += k_LineHeight;
@@ -82,7 +82,7 @@ namespace MLAgents
         /// The Height required to draw the Vector Observations paramaters
         /// </summary>
         /// <returns>The height of the drawer of the Vector Observations </returns>
-        private static float GetHeightDrawVectorObservation()
+        static float GetHeightDrawVectorObservation()
         {
             return k_VecObsNumLine * k_LineHeight;
         }
@@ -93,7 +93,7 @@ namespace MLAgents
         /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
         /// <param name="property">The SerializedProperty of the BrainParameters
         /// to make the custom GUI for.</param>
-        private static void DrawVectorAction(Rect position, SerializedProperty property)
+        static void DrawVectorAction(Rect position, SerializedProperty property)
         {
             EditorGUI.LabelField(position, "Vector Action");
             position.y += k_LineHeight;
@@ -122,7 +122,7 @@ namespace MLAgents
         /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
         /// <param name="property">The SerializedProperty of the BrainParameters
         /// to make the custom GUI for.</param>
-        private static void DrawContinuousVectorAction(Rect position, SerializedProperty property)
+        static void DrawContinuousVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
             vecActionSize.arraySize = 1;
@@ -140,7 +140,7 @@ namespace MLAgents
         /// <param name="position">Rectangle on the screen to use for the property GUI.</param>
         /// <param name="property">The SerializedProperty of the BrainParameters
         /// to make the custom GUI for.</param>
-        private static void DrawDiscreteVectorAction(Rect position, SerializedProperty property)
+        static void DrawDiscreteVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
             vecActionSize.arraySize = EditorGUI.IntField(
@@ -168,7 +168,7 @@ namespace MLAgents
         /// The Height required to draw the Vector Action parameters
         /// </summary>
         /// <returns>The height of the drawer of the Vector Action </returns>
-        private static float GetHeightDrawVectorAction(SerializedProperty property)
+        static float GetHeightDrawVectorAction(SerializedProperty property)
         {
             var actionSize = 2 + property.FindPropertyRelative(k_ActionSizePropName).arraySize;
             if (property.FindPropertyRelative(k_ActionTypePropName).enumValueIndex == 0)

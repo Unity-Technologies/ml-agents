@@ -144,8 +144,8 @@ namespace MLAgents
         /// <summary>
         /// Sends the observations of one Agent. 
         /// </summary>
-        /// <param name="key">Batch Key.</param>
-        /// <param name="agents">Agent info.</param>
+        /// <param name="brainKey">Batch Key.</param>
+        /// <param name="agent">Agent info.</param>
         void PutObservations(string brainKey, Agent agent);
 
         /// <summary>

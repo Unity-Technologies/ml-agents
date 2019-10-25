@@ -13,7 +13,7 @@ namespace MLAgents
     [ScriptedImporter(1, new[] {"demo"})]
     public class DemonstrationImporter : ScriptedImporter
     {
-        private const string k_IconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
+        const string k_IconPath = "Assets/ML-Agents/Resources/DemoIcon.png";
 
         public override void OnImportAsset(AssetImportContext ctx)
         {

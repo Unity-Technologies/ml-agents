@@ -5,8 +5,8 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
-    private Rigidbody m_BallRb;
-    private ResetParameters m_ResetParams;
+    Rigidbody m_BallRb;
+    ResetParameters m_ResetParams;
 
     public override void InitializeAgent()
     {

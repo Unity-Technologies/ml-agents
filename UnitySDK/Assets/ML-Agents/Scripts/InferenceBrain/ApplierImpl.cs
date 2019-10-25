@@ -36,9 +36,9 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class DiscreteActionOutputApplier : TensorApplier.IApplier
     {
-        private readonly int[] m_ActionSize;
-        private readonly Multinomial m_Multinomial;
-        private readonly ITensorAllocator m_Allocator;
+        readonly int[] m_ActionSize;
+        readonly Multinomial m_Multinomial;
+        readonly ITensorAllocator m_Allocator;
 
         public DiscreteActionOutputApplier(int[] actionSize, int seed, ITensorAllocator allocator)
         {
@@ -171,10 +171,10 @@ namespace MLAgents.InferenceBrain
 
     public class BarracudaMemoryOutputApplier : TensorApplier.IApplier
     {
-        private readonly int m_MemoriesCount;
-        private readonly int m_MemoryIndex;
+        readonly int m_MemoriesCount;
+        readonly int m_MemoryIndex;
 
-        private Dictionary<int, List<float>> m_Memories;
+        Dictionary<int, List<float>> m_Memories;
 
         public BarracudaMemoryOutputApplier(
             int memoriesCount,

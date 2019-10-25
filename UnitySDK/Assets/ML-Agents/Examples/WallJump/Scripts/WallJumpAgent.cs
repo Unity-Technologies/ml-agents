@@ -142,7 +142,7 @@ public class WallJumpAgent : Agent
         var rayDistance = 20f;
         float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
         AddVectorObs(m_RayPer.Perceive(
-            rayDistance, rayAngles, m_DetectableObjects, 0f, 0f));
+            rayDistance, rayAngles, m_DetectableObjects));
         AddVectorObs(m_RayPer.Perceive(
             rayDistance, rayAngles, m_DetectableObjects, 2.5f, 2.5f));
         var agentPos = m_AgentRb.position - ground.transform.position;
@@ -299,7 +299,7 @@ public class WallJumpAgent : Agent
         m_AgentRb.velocity = default(Vector3);
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (m_Configuration != -1)
         {

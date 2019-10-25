@@ -5,7 +5,7 @@ namespace MLAgents.Sensor
     public enum CompressionType
     {
         None,
-        PNG,
+        PNG
     }
 
     /// <summary>

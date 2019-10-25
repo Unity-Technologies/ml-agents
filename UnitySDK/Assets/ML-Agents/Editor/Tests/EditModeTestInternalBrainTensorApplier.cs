@@ -9,7 +9,7 @@ namespace MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorApplier
     {
-        private class TestAgent : Agent
+        class TestAgent : Agent
         {
             public AgentAction GetAction()
             {
@@ -19,7 +19,7 @@ namespace MLAgents.Tests
             }
         }
 
-        private List<Agent> GetFakeAgentInfos()
+        List<Agent> GetFakeAgentInfos()
         {
             var goA = new GameObject("goA");
             var agentA = goA.AddComponent<TestAgent>();

@@ -12,7 +12,7 @@ namespace MLAgents
     {
         Vector3 m_EndPosition;
         RaycastHit m_Hit;
-        private float[] m_SubList;
+        float[] m_SubList;
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
