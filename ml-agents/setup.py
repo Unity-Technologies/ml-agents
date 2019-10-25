@@ -60,7 +60,8 @@ setup(
         "jupyter",
         "matplotlib",
         "mlagents_envs=={}".format(VERSION),
-        "numpy>=1.13.3,<2.0",
+        # "numpy>=1.13.3,<2.0",
+        "numpy>=1.16.0,<2.0",  # TEMP FOR TRAINING
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
