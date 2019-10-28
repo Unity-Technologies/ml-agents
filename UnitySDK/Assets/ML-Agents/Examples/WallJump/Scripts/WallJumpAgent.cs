@@ -1,8 +1,10 @@
 //Put this script on your blue cube.
 
+using System;
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(AgentCubeGroundCheck))] // Required for groundcheck
 public class WallJumpAgent : Agent
@@ -19,6 +21,7 @@ public class WallJumpAgent : Agent
     public GameObject ground;
     public GameObject spawnArea;
     public GameObject shortBlock;
+    public Rigidbody hazardRb;
     public GameObject wall;
     Bounds m_SpawnAreaBounds;
     Rigidbody m_ShortBlockRb;
@@ -40,7 +43,7 @@ public class WallJumpAgent : Agent
         m_agentMovement = FindObjectOfType<AgentCubeMovement>();
         m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
-        m_DetectableObjects = new[] { "wall", "goal", "block" };
+        m_DetectableObjects = new[] { "wall", "goal", "block", "hazard" };
         m_AgentRb = GetComponent<Rigidbody>();
         m_ShortBlockRb = shortBlock.GetComponent<Rigidbody>();
         m_SpawnAreaBounds = spawnArea.GetComponent<Collider>().bounds;
@@ -156,11 +159,27 @@ public class WallJumpAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        if (IsDone())
+        {
+            return;
+        }
         MoveAgent(vectorAction);
-        if(m_AgentRb.position.y < -1 || m_ShortBlockRb.position.y < -1)
+        if(m_AgentRb.position.y < -1 || m_ShortBlockRb.position.y < -1 || hazardRb.position.y < -1)
         {
             SetReward(-1f);
-            ResetBlock(m_ShortBlockRb);
+//            ResetBlock(m_ShortBlockRb);
+//            ResetBlock(hazardRb);
+            StartCoroutine(
+                GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
+            Done();
+        }
+    }
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.CompareTag("hazard"))
+        {
+            SetReward(-1f);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
             Done();
@@ -170,10 +189,15 @@ public class WallJumpAgent : Agent
     // Detect when the agent hits the goal
     void OnTriggerStay(Collider col)
     {
+        if (IsDone())
+        {
+            return;
+        }
         if (col.gameObject.CompareTag("goal") && m_groundCheck.isGrounded)
         {
             SetReward(1f);
-            ResetBlock(m_ShortBlockRb);
+//            ResetBlock(m_ShortBlockRb);
+//            ResetBlock(hazardRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, .5f));
             Done();
@@ -191,6 +215,7 @@ public class WallJumpAgent : Agent
     public override void AgentReset()
     {
         ResetBlock(m_ShortBlockRb);
+        ResetBlock(hazardRb);
         transform.localPosition = new Vector3(
             18 * (Random.value - 0.5f), 1, -12);
         m_Configuration = Random.Range(0, 5);

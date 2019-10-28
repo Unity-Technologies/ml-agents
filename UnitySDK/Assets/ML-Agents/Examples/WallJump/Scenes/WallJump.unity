@@ -1390,10 +1390,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrainingConfiguration:
-    width: 80
-    height: 80
+    width: 1280
+    height: 720
     qualityLevel: 1
-    timeScale: 10
+    timeScale: 5
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280

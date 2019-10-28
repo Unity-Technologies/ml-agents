@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: BigWallJumpLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 83
+    vectorObservationSize: 97
     numStackedVectorObservations: 1
     vectorActionSize: 030000000300000002000000
     cameraResolutions: []
