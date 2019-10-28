@@ -222,14 +222,14 @@ public class WallJumpAgent : Agent
         m_AgentRb.velocity = Vector3.zero;
     }
 
-    private void FixedUpdate()
-    {
-        if (m_Configuration != -1)
-        {
-            ConfigureAgent(m_Configuration);
-            m_Configuration = -1;
-        }
-    }
+//    private void FixedUpdate()
+//    {
+//        if (m_Configuration != -1)
+//        {
+//            ConfigureAgent(m_Configuration);
+//            m_Configuration = -1;
+//        }
+//    }
 
     /// <summary>
     /// Configures the agent. Given an integer config, the wall will have

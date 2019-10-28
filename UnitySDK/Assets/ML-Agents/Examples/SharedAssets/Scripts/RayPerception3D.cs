@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace MLAgents
@@ -13,7 +14,10 @@ namespace MLAgents
         Vector3 m_EndPosition;
         RaycastHit m_Hit;
         private float[] m_SubList;
-
+        public bool drawSphereGizmos;
+        public float gizmoSphereRadius = .5f;
+        public float gizmoSphereDrawDist = 2f;
+        public float[] rayAnglesForDebug;
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
         /// Each ray in the rayAngles array adds a sublist of data to the observation.
@@ -38,6 +42,19 @@ namespace MLAgents
         {
             if (m_SubList == null || m_SubList.Length != detectableObjects.Length + 2)
                 m_SubList = new float[detectableObjects.Length + 2];
+            
+            if (drawSphereGizmos)
+            {
+                rayAnglesForDebug = rayAngles;
+            }
+
+
+//            if (rayAnglesForDebug == null)
+//            {
+//                rayAnglesForDebug = new float[rayAngles.Length];
+//            }
+            
+
 
             m_PerceptionBuffer.Clear();
             m_PerceptionBuffer.Capacity = m_SubList.Length * rayAngles.Length;
@@ -80,6 +97,20 @@ namespace MLAgents
             }
 
             return m_PerceptionBuffer;
+        }
+
+
+        private void OnDrawGizmos()
+        {
+            if (drawSphereGizmos)
+            {
+                foreach (var angle in rayAnglesForDebug)
+                {
+                    var pos = transform.TransformPoint(
+                        PolarToCartesian(gizmoSphereDrawDist, angle));
+                    Gizmos.DrawWireSphere(pos, gizmoSphereRadius);
+                }
+            }
         }
 
         /// <summary>
