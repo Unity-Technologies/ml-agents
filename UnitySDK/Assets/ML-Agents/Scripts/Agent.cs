@@ -540,7 +540,7 @@ namespace MLAgents
             if (param.vectorObservationSize > 0)
             {
                 m_CollectObservationsSensor = new VectorSensor(param.vectorObservationSize);
-                if (param.numStackedVectorObservations > 0)
+                if (param.numStackedVectorObservations > 1)
                 {
                     var stackingSensor = new StackingSensor(m_CollectObservationsSensor, param.numStackedVectorObservations);
                     sensors.Add(stackingSensor);

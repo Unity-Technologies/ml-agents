@@ -37,6 +37,7 @@ namespace MLAgents.Sensor
         /// </param>
         public StackingSensor(SensorBase wrapped, int stackSize, int stackingDimension=-1)
         {
+            // TODO ensure stackSize > 1
             m_WrappedSensor = wrapped;
             m_StackSize = stackSize;
 
@@ -52,7 +53,7 @@ namespace MLAgents.Sensor
                 m_Shape[d] = shape[d];
             }
 
-            m_Shape[m_StackingDimension] *= 2;
+            m_Shape[m_StackingDimension] *= stackSize;
         }
 
         public override void WriteObservation(float[] output)
