@@ -51,7 +51,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         seed: int = 0,
         docker_training: bool = False,
         no_graphics: bool = False,
-        timeout_wait: int = 30,
+        timeout_wait: int = 60,
         args: Optional[List[str]] = None,
     ):
         """
