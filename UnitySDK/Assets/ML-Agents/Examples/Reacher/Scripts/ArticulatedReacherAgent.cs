@@ -39,21 +39,41 @@ public class ArticulatedReacherAgent : Agent
     /// </summary>
     public override void CollectObservations()
     {
-        AddVectorObs(pendulumA.transform.localPosition);
+        Vector3 pendulumAPosToLocalSpace = gameObject.transform.InverseTransformPoint(pendulumA.transform.position); 
+        AddVectorObs(pendulumAPosToLocalSpace);
         AddVectorObs(pendulumA.transform.rotation);
-        AddVectorObs(m_RbA.angularVelocity);
-        AddVectorObs(m_RbA.velocity);
+        // Below resulted in 1.691 after 1 M steps
+        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbA.angularVelocity));
+        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbA.velocity));
+        // Below resulted in 0.0732 after 1 M steps, not learning
+        //AddVectorObs(m_RbA.angularVelocity);
+        //AddVectorObs(m_RbA.velocity);
 
-        AddVectorObs(pendulumB.transform.localPosition);
+        
+        
+        Vector3 pendulumBPosToLocalSpace = gameObject.transform.InverseTransformPoint(pendulumB.transform.position);
+        AddVectorObs(pendulumBPosToLocalSpace);
         AddVectorObs(pendulumB.transform.rotation);
-        AddVectorObs(m_RbB.angularVelocity);
-        AddVectorObs(m_RbB.velocity);
+        
+        // Below resulted in 1.691 after 1 M steps
+        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbB.angularVelocity));
+        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbB.velocity));
+        // Below resulted in 0.0732 after 1 M steps, not learning
+        //AddVectorObs(m_RbB.angularVelocity);
+        //AddVectorObs(m_RbB.velocity);
 
-        AddVectorObs(goal.transform.localPosition);
-        AddVectorObs(hand.transform.localPosition);
+        Vector3 goalPosToLocalSpace = gameObject.transform.InverseTransformPoint(goal.transform.position); 
+        AddVectorObs(goalPosToLocalSpace);
 
-        AddVectorObs(m_GoalSpeed);
+        Vector3 handPosToLocalSpace = gameObject.transform.InverseTransformPoint(hand.transform.position); 
+        AddVectorObs(handPosToLocalSpace);
+
+        //AddVectorObs(m_GoalSpeed);
+        // Below resulted in 4.18 after 1 M steps and reached 37.52 after 1.25 M steps
+        AddVectorObs(Vector3.Distance(goalPosToLocalSpace, handPosToLocalSpace));
     }
+    
+    
 
     /// <summary>
     /// The agent's four actions correspond to torques on each of the two joints.
@@ -63,7 +83,8 @@ public class ArticulatedReacherAgent : Agent
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();
 
-        float maxTorque = 150f;
+        //float maxTorque = 150f;
+        float maxTorque = 250f;
         
         var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * maxTorque;
         var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * maxTorque;
@@ -113,4 +134,6 @@ public class ArticulatedReacherAgent : Agent
         m_Deviation = m_MyAcademy.resetParameters["deviation"];
         m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
     }
+    
+    
 }

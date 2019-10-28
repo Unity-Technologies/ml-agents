@@ -208,7 +208,7 @@ ReacherLearning:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e6
+    max_steps: 1e7
     summary_freq: 3000
     reward_signals:
         extrinsic:

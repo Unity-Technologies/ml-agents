@@ -8,11 +8,17 @@ public class ManualControlReacherArm : MonoBehaviour
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
-    private ArticulationBody m_RbA;
-    private ArticulationBody m_RbB;
+    private ArticulationBody m_AbA;
+    private ArticulationBody m_AbB;
+    
+    private Rigidbody m_RbA;
+    private Rigidbody m_RbB;
 
     private Vector3 m_TorqueA;
     private Vector3 m_TorqueB;
+
+    public bool useAlternativeKeySetForInput = false;
+    public bool useArticulations = false;
 
     /// <summary>
     /// Collect the rigidbodies of the reacher in order to resue them for
@@ -20,8 +26,17 @@ public class ManualControlReacherArm : MonoBehaviour
     /// </summary>
     public void Start()
     {
-        m_RbA = pendulumA.GetComponent<ArticulationBody>();
-        m_RbB = pendulumB.GetComponent<ArticulationBody>();
+        if (useArticulations)
+        {
+            m_AbA = pendulumA.GetComponent<ArticulationBody>();
+            m_AbB = pendulumB.GetComponent<ArticulationBody>();
+        }
+        else
+        {
+            m_RbA = pendulumA.GetComponent<Rigidbody>();
+            m_RbB = pendulumB.GetComponent<Rigidbody>();
+        }
+
         m_TorqueA = m_TorqueB = Vector3.zero;
     }
 
@@ -40,10 +55,15 @@ public class ManualControlReacherArm : MonoBehaviour
     public void FixedUpdate()
     {
         //float maxTorque = 1000f;
-        float deltaTorque = 25f;
+        float deltaTorque = 150f;
 
         m_TorqueA = Vector3.zero;
+        m_TorqueB = Vector3.zero;
+
+        if (useAlternativeKeySetForInput && !Input.GetKey(KeyCode.RightBracket))
+            return;
         
+        // upper arm
         if (Input.GetKey(KeyCode.A))
             m_TorqueA.x += deltaTorque;
         if (Input.GetKey(KeyCode.Z))
@@ -57,14 +77,7 @@ public class ManualControlReacherArm : MonoBehaviour
         if (Input.GetKey(KeyCode.C))
             m_TorqueA.z -= deltaTorque;
 
-        //m_TorqueA.x = Mathf.Clamp(m_TorqueA.x, -1.0f, 1.0f);
-        //m_TorqueA.y = Mathf.Clamp(m_TorqueA.y, -1.0f, 1.0f);
-        //m_TorqueA.z = Mathf.Clamp(m_TorqueA.z, -1.0f, 1.0f);
-        
-        m_RbA.AddTorque(m_TorqueA);
-        
-        m_TorqueB = Vector3.zero;
-        
+        // lower arm
         if (Input.GetKey(KeyCode.F))
             m_TorqueB.x += deltaTorque;
         if (Input.GetKey(KeyCode.V))
@@ -76,11 +89,26 @@ public class ManualControlReacherArm : MonoBehaviour
         if (Input.GetKey(KeyCode.H))
             m_TorqueB.z += deltaTorque;
         if (Input.GetKey(KeyCode.N))
-            m_TorqueB.z -= deltaTorque;
-
-        m_RbB.AddTorque(m_TorqueB);
-    
+           m_TorqueB.z -= deltaTorque;
         
+        
+        
+        //m_TorqueA.x = Mathf.Clamp(m_TorqueA.x, -1.0f, 1.0f);
+        //m_TorqueA.y = Mathf.Clamp(m_TorqueA.y, -1.0f, 1.0f);
+        //m_TorqueA.z = Mathf.Clamp(m_TorqueA.z, -1.0f, 1.0f);
+
+        if (useArticulations)
+        {
+            m_AbA.AddTorque(m_TorqueA);
+            m_AbB.AddTorque(m_TorqueB);
+        }
+        else
+        {
+            m_RbA.AddTorque(m_TorqueA);
+            m_RbB.AddTorque(m_TorqueB);
+        }
+
+
         if (Input.GetKey(KeyCode.Escape))
             AgentReset();
     }
