@@ -18,13 +18,13 @@ spec:
                  cpu: 4
              command: ["/bin/sh", "-c"]
              args: ["
-              mpirun --allow-run-as-root -np 16 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib mlagents-learn /unity-volume/trainer_config.yaml --run-id=snoopydist15-ppo --train --env=/unity-volume/Walker --num-envs=6;
-              mpirun --allow-run-as-root -np 16 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib gsutil cp -r models gs://ray-volume/horovod/;
-              mpirun --allow-run-as-root -np 16 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib gsutil cp -r summaries gs://ray-volume/horovod/;
+              mpirun --allow-run-as-root -np 8 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib mlagents-learn /unity-volume/trainer_config.yaml --run-id=snoopydfd-ppo-8m --train --env=/unity-volume/SnoopyPop15Levels_dfd --num-envs=6;
+              mpirun --allow-run-as-root -np 8 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib gsutil cp -r models gs://ray-volume/horovod/;
+              mpirun --allow-run-as-root -np 8 -bind-to none -map-by slot -x NCCL_DEBUG=INFO -x LD_LIBRARY_PATH -x HOROVOD_AUTOTUNE=1 -x PATH -mca pml ob1 -mca btl ^openib gsutil cp -r summaries gs://ray-volume/horovod/;
              "]
 
     Worker:
-      replicas: 16
+      replicas: 8
       template:
         spec:
           containers:
@@ -46,14 +46,14 @@ spec:
                 memory: 48G
             command: ["/bin/sh", "-c"]
             args: ["
-              sleep 95s;
+              sleep 45s;
               cd /unity-volume;
-              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5005 &);
-              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5006 &);
-              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5007 &);
-              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5008 &);
-              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5009 &);
-              xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_10.x86_64 --port 5010
+              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5005 &);
+              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5006 &);
+              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5007 &);
+              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5008 &);
+              (xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5009 &);
+              xvfb-run --auto-servernum  --server-args='-screen 0 640x480x24' /unity-volume/SnoopyPop15Levels_dfd.x86_64 --port 5010
             "]
             stdin: true
             tty: true

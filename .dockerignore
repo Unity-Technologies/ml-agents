@@ -1,3 +1,5 @@
 UnitySDK/
 .git/
 venv-harper/
+summaries/
+models/

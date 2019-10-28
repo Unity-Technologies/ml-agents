@@ -10,7 +10,7 @@ LOG_STD_MAX = 2
 LOG_STD_MIN = -20
 EPSILON = 1e-6  # Small value to avoid divide by zero
 DISCRETE_TARGET_ENTROPY_SCALE = 0.1  # Roughly equal to e-greedy 0.05
-CONTINUOUS_TARGET_ENTROPY_SCALE = 0.8  # TODO: Make these an optional hyperparam.
+CONTINUOUS_TARGET_ENTROPY_SCALE = 3.0  # TODO: Make these an optional hyperparam.
 
 LOGGER = logging.getLogger("mlagents.trainers")
 

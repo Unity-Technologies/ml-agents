@@ -3,7 +3,11 @@ import numpy as np
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
-import horovod.tensorflow as hvd
+
+try:
+    import horovod.tensorflow as hvd
+except ImportError:
+    hvd = None
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -375,6 +379,7 @@ class PPOModel(LearningModel):
 
     def create_ppo_optimizer(self):
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-        self.optimizer = hvd.DistributedOptimizer(self.optimizer)
+        if hvd is not None:
+            self.optimizer = hvd.DistributedOptimizer(self.optimizer)
         self.grads = self.optimizer.compute_gradients(self.loss)
         self.update_batch = self.optimizer.minimize(self.loss)
