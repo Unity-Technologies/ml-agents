@@ -22,6 +22,7 @@ namespace MLAgents
         /// history (i.e. number of vector observations to stack) is specified
         /// in the Brain parameters.
         /// </summary>
+        // TODO REMOVE
         public List<float> stackedVectorObservation;
 
         /// <summary>
@@ -150,7 +151,7 @@ namespace MLAgents
     /// of the environment extracts its current observation, sends them to its
     /// policy and in return receives an action. In practice,
     /// however, an agent need not send its observation at every step since very
-    /// little may have changed between successive steps. 
+    /// little may have changed between successive steps.
     ///
     /// At any step, an agent may be considered <see cref="m_Done"/>.
     /// This could occur due to a variety of reasons:
@@ -261,6 +262,8 @@ namespace MLAgents
         [FormerlySerializedAs("m_Sensors")]
         public List<ISensor> sensors;
 
+        public VectorSensor m_CollectObservationsSensor;
+
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -319,15 +322,15 @@ namespace MLAgents
 
         /// <summary>
         /// Updates the Model for the agent. Any model currently assigned to the
-        /// agent will be replaced with the provided one. If the arguments are 
+        /// agent will be replaced with the provided one. If the arguments are
         /// identical to the current parameters of the agent, the model will
-        /// remain unchanged. 
+        /// remain unchanged.
         /// </summary>
-        /// <param name="behaviorName"> The identifier of the behavior. This 
-        /// will categorize the agent when training. 
+        /// <param name="behaviorName"> The identifier of the behavior. This
+        /// will categorize the agent when training.
         /// </param>
         /// <param name="model"> The model to use for inference.</param>
-        /// <param name = "inferenceDevice"> Define on what device the model 
+        /// <param name = "inferenceDevice"> Define on what device the model
         /// will be run.</param>
         public void GiveModel(
             string behaviorName,
@@ -475,6 +478,7 @@ namespace MLAgents
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
             m_Action.textActions = "";
+            // TODO handle VectorSensor
             m_Info.vectorObservation =
                 new List<float>(param.vectorObservationSize);
             m_Info.stackedVectorObservation =
@@ -523,11 +527,32 @@ namespace MLAgents
         /// </summary>
         public void InitializeSensors()
         {
+            // Get all attached sensor components
             var attachedSensorComponents = GetComponents<SensorComponent>();
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
                 sensors.Add(component.CreateSensor());
+            }
+
+            // Support legacy CollectObservations
+            var param = m_PolicyFactory.brainParameters;
+            if (param.vectorObservationSize > 0)
+            {
+                m_CollectObservationsSensor = new VectorSensor(param.vectorObservationSize);
+                if (param.numStackedVectorObservations > 0)
+                {
+                    var stackingSensor = new StackingSensor(m_CollectObservationsSensor, param.numStackedVectorObservations);
+                    sensors.Add(stackingSensor);
+                }
+                else
+                {
+                    sensors.Add(m_CollectObservationsSensor);
+                }
+
+                // Connect these so that AddVectorObs will append to the VectorSensor
+                // TODO change AddVectorObs to write to m_CollectObservationsSensor.observations directly instead?
+                m_Info.vectorObservation = m_CollectObservationsSensor.observations;
             }
 
             // Sort the Sensors by name to ensure determinism
@@ -575,6 +600,7 @@ namespace MLAgents
                     m_Info.vectorObservation.Count));
             }
 
+            // TODO handle in StackedSensor.Step() and VectorSensor.Step()
             Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
             Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
                 m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
