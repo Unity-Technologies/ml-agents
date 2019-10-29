@@ -50,5 +50,9 @@ namespace MLAgents.Sensor
         {
             return CompressionType.None;
         }
+
+        public virtual void Update()
+        {
+        }
     }
 }

@@ -49,6 +49,11 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns>The name of the sensor</returns>
         string GetName();
+
+        /// <summary>
+        /// Update any internal data in the sensor. This is called at the start AgentStep.
+        /// </summary>
+        void Update();
     }
 
 }

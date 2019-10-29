@@ -92,6 +92,8 @@ namespace MLAgents.InferenceBrain
             foreach (var agent in agents)
             {
                 var info = agent.Info;
+                // TODO decide what to do here - should we have 1:1 sensor:tensor, or all sensors write
+                // consecutively to the same 1 tensor
                 var vectorObs = info.stackedVectorObservation;
                 for (var j = 0; j < vecObsSizeT; j++)
                 {

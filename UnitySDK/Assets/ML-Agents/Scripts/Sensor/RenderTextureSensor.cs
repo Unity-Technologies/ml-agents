@@ -60,6 +60,10 @@ namespace MLAgents.Sensor
             return CompressionType.PNG;
         }
 
+        public void Update()
+        {
+        }
+
         /// <summary>
         /// Converts a RenderTexture and correspinding resolution to a 2D texture.
         /// </summary>

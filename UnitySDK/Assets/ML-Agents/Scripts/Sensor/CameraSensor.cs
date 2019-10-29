@@ -60,6 +60,10 @@ namespace MLAgents.Sensor
             return CompressionType.PNG;
         }
 
+        public void Update()
+        {
+        }
+
         /// <summary>
         /// Converts a m_Camera and corresponding resolution to a 2D texture.
         /// </summary>

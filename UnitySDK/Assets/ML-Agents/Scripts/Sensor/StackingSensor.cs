@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.Assertions.Comparers;
 
 namespace MLAgents.Sensor
 {
@@ -15,9 +16,9 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Number of stacks to save
         /// </summary>
-        int m_StackSize;
+        int m_NumStackedObservations;
+        int m_NumUnstackedObservationSize;
 
-        int m_StackingDimension;
         string m_Name;
         int[] m_Shape;
 
@@ -31,37 +32,43 @@ namespace MLAgents.Sensor
         ///
         /// </summary>
         /// <param name="wrapped">The wrapped sensor</param>
-        /// <param name="stackSize">Number of stacked observations to keep</param>
-        /// <param name="stackingDimension">The dimension of the observation to stack on.
-        ///     -1 implies the last dimension.
-        /// </param>
-        public StackingSensor(SensorBase wrapped, int stackSize, int stackingDimension=-1)
+        /// <param name="numStackedObservations">Number of stacked observations to keep</param>
+        public StackingSensor(SensorBase wrapped, int numStackedObservations)
         {
-            // TODO ensure stackSize > 1
+            // TODO ensure numStackedObservations > 1
             m_WrappedSensor = wrapped;
-            m_StackSize = stackSize;
+            m_NumStackedObservations = numStackedObservations;
 
             m_Name = wrapped.GetName() + "_stacked";
 
             var shape = wrapped.GetFloatObservationShape();
             m_Shape = new int[shape.Length];
-            m_StackingDimension = stackingDimension < 0 ? shape.Length - 1 : stackingDimension;
 
-
+            m_NumUnstackedObservationSize = 1;
             for (int d = 0; d < shape.Length; d++)
             {
                 m_Shape[d] = shape[d];
+                m_NumUnstackedObservationSize *= shape[d];
             }
 
-            m_Shape[m_StackingDimension] *= stackSize;
+            // TODO support arbitrary stacking dimension
+            m_Shape[0] *= numStackedObservations;
+            m_StackedObservations = new List<float>(m_NumUnstackedObservationSize * m_NumStackedObservations);
         }
 
         public override void WriteObservation(float[] output)
         {
-            // TODO
-            // Update m_StackedObservations (or add separate call for that)
-            // Call m_wrapped.Write
+            // TODO optimize - keep a temp version or use a circular buffer of float[]s
+            var tempOut = new float[m_NumUnstackedObservationSize];
+            m_WrappedSensor.WriteObservation(tempOut);
+
+            Utilities.ReplaceRange(m_StackedObservations, tempOut,m_StackedObservations.Count - tempOut.Length);
+
             // Write all stacked to output
+            for (var i = 0; i < m_StackedObservations.Count; i++)
+            {
+                output[i] = m_StackedObservations[i];
+            }
         }
 
         public override int[] GetFloatObservationShape()
@@ -72,6 +79,13 @@ namespace MLAgents.Sensor
         public override string GetName()
         {
             return m_Name;
+        }
+
+        public override void Update()
+        {
+            Utilities.ShiftLeft(m_StackedObservations, m_NumUnstackedObservationSize);
+
+            m_WrappedSensor.Update();
         }
 
         // TODO support stacked compressed observations (byte stream)

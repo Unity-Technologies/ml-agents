@@ -149,6 +149,14 @@ namespace MLAgents
             }
         }
 
+        public static void ReplaceRange<T>(List<T> dst, T[] src, int start)
+        {
+            for (var i = 0; i < src.Length; i++)
+            {
+                dst[i + start] = src[i];
+            }
+        }
+
         /// <summary>
         /// Adds elements to list without extra temp allocations (assuming it fits pre-allocated
         /// capacity of the list). The built-in List/<T/>.AddRange() unfortunately allocates

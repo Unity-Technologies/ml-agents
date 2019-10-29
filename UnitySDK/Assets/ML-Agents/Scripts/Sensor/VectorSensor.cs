@@ -55,5 +55,10 @@ namespace MLAgents.Sensor
         {
             return m_Name;
         }
+
+        public override void Update()
+        {
+            observations.Clear();
+        }
     }
 }
