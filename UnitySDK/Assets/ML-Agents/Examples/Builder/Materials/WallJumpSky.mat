@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: GridMatHazard
-  m_Shader: {fileID: 4800000, guid: bbecf177c38d84ff08d7c683c116affd, type: 3}
-  m_ShaderKeywords: 
+  m_Name: WallJumpSky
+  m_Shader: {fileID: 106, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -55,40 +55,29 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AtmosphereThickness: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DrawU: 1
-    - _DrawV: 1
     - _DstBlend: 0
+    - _Exposure: 1.3
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GridSize: 1
-    - _LineOffset: 0.5
-    - _LineSize: 0.1
-    - _LineWidth: 0.1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0
     - _Parallax: 0.02
-    - _ParcelSize: 1
-    - _RepeatCount: 5
-    - _SelectCell: 0
-    - _SelectedCellX: 0
-    - _SelectedCellY: 0
     - _SmoothnessTextureChannel: 0
-    - _Spacing: 0.5
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SunDisk: 2
+    - _SunSize: 0.04
+    - _SunSizeConvergence: 5
     - _UVSec: 0
     - _ZWrite: 1
-    - _transparency: 1
     m_Colors:
-    - _CellColor: {r: 0.74509805, g: 0.22745098, b: 0.15294118, a: 1}
-    - _Color: {r: 0.935151, g: 0.9705882, b: 0.3282872, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LineColor: {r: 0.5882353, g: 0.17956656, b: 0.12074303, a: 1}
-    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SelectedColor: {r: 0.1586206, g: 1, b: 0, a: 1}
+    - _GroundColor: {r: 0.369, g: 0.349, b: 0.341, a: 1}
+    - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}

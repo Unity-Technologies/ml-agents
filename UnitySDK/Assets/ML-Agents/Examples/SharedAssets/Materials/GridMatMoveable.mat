@@ -66,7 +66,7 @@ Material:
     - _GlossyReflections: 1
     - _GridSize: 1
     - _LineOffset: 0.5
-    - _LineSize: 0.05
+    - _LineSize: 0.1
     - _LineWidth: 0.1
     - _Metallic: 0
     - _Mode: 0

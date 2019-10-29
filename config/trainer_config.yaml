@@ -76,6 +76,44 @@ BigWallJumpLearning:
             gamma: 0.99
             encoding_size: 256
 
+BuilderGrabLearning:
+    normalize: true
+    num_epoch: 8
+    time_horizon: 1000
+    batch_size: 512
+    buffer_size: 4096
+    max_steps: 2.0e6
+    summary_freq: 3000
+    num_layers: 2
+    hidden_units: 128
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.99
+        curiosity:
+            strength: 0.02
+            gamma: 0.99
+            encoding_size: 256
+
+BuilderLearning:
+    normalize: true
+    num_epoch: 8
+    time_horizon: 1000
+    batch_size: 512
+    buffer_size: 4096
+    max_steps: 1.0e6
+    summary_freq: 3000
+    num_layers: 2
+    hidden_units: 128
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.99
+        curiosity:
+            strength: 0.02
+            gamma: 0.99
+            encoding_size: 256
+
 StrikerLearning:
     max_steps: 5.0e5
     learning_rate: 1e-3

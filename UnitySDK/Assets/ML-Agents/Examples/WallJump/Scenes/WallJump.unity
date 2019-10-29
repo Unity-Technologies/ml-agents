@@ -690,6 +690,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114092229367912210, guid: 54e3af627216447f790531de496099f0,
+        type: 2}
+      propertyPath: drawSphereGizmos
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 23418352498320674, guid: 54e3af627216447f790531de496099f0,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 54e3af627216447f790531de496099f0, type: 2}
   m_IsPrefabParent: 0

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace MLAgents
@@ -11,11 +10,11 @@ namespace MLAgents
     /// </summary>
     public class RayPerception3D : RayPerception
     {
-        Vector3 m_EndPosition;
+        public Vector3 m_EndPosition;
         RaycastHit m_Hit;
         private float[] m_SubList;
         public bool drawSphereGizmos;
-        public float gizmoSphereRadius = .5f;
+        public float sphereCastRadius = .5f;
         public float gizmoSphereDrawDist = 2f;
         public float[] rayAnglesForDebug;
         /// <summary>
@@ -63,21 +62,34 @@ namespace MLAgents
             // along with object distance.
             foreach (var angle in rayAngles)
             {
-                m_EndPosition = transform.TransformDirection(
+                Vector3 startPos = transform.TransformPoint(new Vector3(0f, startOffset, 0f));
+                m_EndPosition = transform.TransformPoint(
                     PolarToCartesian(rayDistance, angle));
-                m_EndPosition.y = endOffset;
+                m_EndPosition.y += endOffset;
+                Vector3 castDir = m_EndPosition - startPos;
                 if (Application.isEditor)
                 {
-                    Debug.DrawRay(transform.position + new Vector3(0f, startOffset, 0f),
+                    Debug.DrawRay(startPos,
+                        castDir, Color.cyan, 0.01f, true);
+                    Debug.DrawRay(startPos,
                         m_EndPosition, Color.black, 0.01f, true);
+                    Debug.DrawRay(m_EndPosition,
+                        Vector3.up, Color.green, 0.01f, true);
                 }
 
                 Array.Clear(m_SubList, 0, m_SubList.Length);
 
-                if (Physics.SphereCast(transform.position +
-                    new Vector3(0f, startOffset, 0f), 0.5f,
-                    m_EndPosition, out m_Hit, rayDistance))
+//                if (Physics.SphereCast(startPos, sphereCastRadius,
+//                    m_EndPosition, out m_Hit, rayDistance))
+                if (Physics.SphereCast(startPos, sphereCastRadius,
+                    castDir, out m_Hit, rayDistance))
                 {
+                    if (drawSphereGizmos)
+                    {
+                        Debug.DrawRay(m_Hit.point,
+                            m_Hit.normal, Color.green, 0.01f, true);
+                    }
+
                     for (var i = 0; i < detectableObjects.Length; i++)
                     {
                         if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
@@ -108,7 +120,7 @@ namespace MLAgents
                 {
                     var pos = transform.TransformPoint(
                         PolarToCartesian(gizmoSphereDrawDist, angle));
-                    Gizmos.DrawWireSphere(pos, gizmoSphereRadius);
+                    Gizmos.DrawWireSphere(pos, sphereCastRadius);
                 }
             }
         }

@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
     guid: 56024e8d040d344709949bc88128944d
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Builder/Scenes/Builder.unity
+    guid: 76883e42ee0224c40aa53ae7f2886a34

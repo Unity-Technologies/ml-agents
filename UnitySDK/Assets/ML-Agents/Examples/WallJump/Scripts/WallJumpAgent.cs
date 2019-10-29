@@ -36,6 +36,7 @@ public class WallJumpAgent : Agent
     AgentCubeGroundCheck m_groundCheck;
     AgentCubeMovement m_agentMovement;
 
+
     public override void InitializeAgent()
     {
         m_groundCheck = GetComponent<AgentCubeGroundCheck>();
@@ -67,6 +68,7 @@ public class WallJumpAgent : Agent
         AddVectorObs(m_AgentRb.velocity/m_agentMovement.agentRunSpeed); //normalized vel
         AddVectorObs(m_AgentRb.angularVelocity/m_AgentRb.maxAngularVelocity); //normalized angVel
         AddVectorObs(m_AgentRb.transform.forward); //help with orientation
+
     }
 
     /// <summary>
@@ -115,6 +117,10 @@ public class WallJumpAgent : Agent
             rotateDir = -transform.up ;
         else if (rotateDirAction == 2)
             rotateDir = transform.up;
+
+        
+        
+        
         
         //handle jumping
         if (jumpAction == 1)
@@ -167,13 +173,13 @@ public class WallJumpAgent : Agent
         if(m_AgentRb.position.y < -1 || m_ShortBlockRb.position.y < -1 || hazardRb.position.y < -1)
         {
             SetReward(-1f);
-//            ResetBlock(m_ShortBlockRb);
-//            ResetBlock(hazardRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
             Done();
         }
     }
+
+
 
     void OnCollisionEnter(Collision col)
     {
