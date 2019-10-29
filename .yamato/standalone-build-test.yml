@@ -15,7 +15,7 @@ triggers:
 
 agent:
   type: Unity::VM::osx
-  image: ml-agents/ml-agents-bokken-mac:latest
+  image: ml-agents/ml-agents-bokken-mac:stable
   flavor: i1.small
 
 variables:
