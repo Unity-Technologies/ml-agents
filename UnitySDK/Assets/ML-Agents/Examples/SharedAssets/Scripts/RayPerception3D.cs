@@ -48,8 +48,6 @@ namespace MLAgents
                 Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
                 Vector3 endPositionLocal = PolarToCartesian(rayDistance, angle);
                 endPositionLocal.y += endOffset;
-//                // BAD old behavior
-//                endPositionLocal.y += startOffset;
 
                 var startPositionWorld = transform.TransformPoint(startPositionLocal);
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
