@@ -45,23 +45,21 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int index)
+        public int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
         {
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
                 var texture = ObservationToTexture(m_RenderTexture, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, index);
+                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
                 UnityEngine.Object.Destroy(texture);
             }
+
+            return -1; // TODO reasonable return and use tensorOffset
         }
 
         public SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.PNG;
-        }
-
-        public void Update()
-        {
         }
 
         /// <summary>

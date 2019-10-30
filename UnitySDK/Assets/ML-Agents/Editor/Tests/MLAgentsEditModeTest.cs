@@ -86,7 +86,10 @@ namespace MLAgents.Tests
             return new[] { 1 };
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+        public int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
+        {
+            return 0;
+        }
 
         public byte[] GetCompressedObservation()
         {

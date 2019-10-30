@@ -581,14 +581,8 @@ namespace MLAgents
                 return;
             }
 
-            foreach (var sensor in sensors)
-            {
-                sensor.Update();
-            }
-
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
-            //m_Info.vectorObservation.Clear();
             m_Info.compressedObservations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -597,22 +591,7 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = m_PolicyFactory.brainParameters;
-//            if (m_Info.vectorObservation.Count != param.vectorObservationSize)
-//            {
-//                throw new UnityAgentsException(string.Format(
-//                    "Vector Observation size mismatch in continuous " +
-//                    "agent {0}. " +
-//                    "Was Expecting {1} but received {2}. ",
-//                    gameObject.name,
-//                    param.vectorObservationSize,
-//                    m_Info.vectorObservation.Count));
-//            }
-
-            // TODO handle in StackedSensor.Step() and VectorSensor.Step()
-//            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
-//            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
-//                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
+            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
@@ -754,8 +733,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            // TODO consider making these methods on VectorSensor? Probably not though.
-            m_CollectObservationsSensor.observations.Add(observation);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -765,7 +743,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            m_CollectObservationsSensor.observations.Add(observation);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -775,9 +753,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            m_CollectObservationsSensor.observations.Add(observation.x);
-            m_CollectObservationsSensor.observations.Add(observation.y);
-            m_CollectObservationsSensor.observations.Add(observation.z);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -787,8 +763,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            m_CollectObservationsSensor.observations.Add(observation.x);
-            m_CollectObservationsSensor.observations.Add(observation.y);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -798,7 +773,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            m_CollectObservationsSensor.observations.AddRange(observation);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -808,10 +783,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            m_CollectObservationsSensor.observations.Add(observation.x);
-            m_CollectObservationsSensor.observations.Add(observation.y);
-            m_CollectObservationsSensor.observations.Add(observation.z);
-            m_CollectObservationsSensor.observations.Add(observation.w);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -821,14 +793,12 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            m_CollectObservationsSensor.observations.Add(observation ? 1f : 0f);
+            m_CollectObservationsSensor.AddObservation(observation);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            var oneHotVector = new float[range];
-            oneHotVector[observation] = 1;
-            m_CollectObservationsSensor.observations.AddRange(oneHotVector);
+            m_CollectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>

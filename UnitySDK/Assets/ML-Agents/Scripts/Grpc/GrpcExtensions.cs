@@ -19,7 +19,7 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                StackedVectorObservation = { ai.stackedVectorObservation },
+                //StackedVectorObservation = { ai.stackedVectorObservation },
                 StoredVectorActions = { ai.storedVectorActions },
                 StoredTextActions = ai.storedTextActions,
                 TextObservation = ai.textObservation,

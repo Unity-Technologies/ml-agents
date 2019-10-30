@@ -27,7 +27,9 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <param name="tensorProxy"></param>
         /// <param name="agentIndex"></param>
-        void WriteToTensor(TensorProxy tensorProxy, int agentIndex);
+        /// <param name="tensorOffset"></param>
+        /// <returns>The number of elements written</returns>
+        int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this should generally not be
@@ -49,11 +51,6 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns>The name of the sensor</returns>
         string GetName();
-
-        /// <summary>
-        /// Update any internal data in the sensor. This is called at the start AgentStep.
-        /// </summary>
-        void Update();
     }
 
 }

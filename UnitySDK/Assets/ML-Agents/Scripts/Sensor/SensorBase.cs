@@ -22,7 +22,7 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <param name="tensorProxy"></param>
         /// <param name="agentIndex"></param>
-        public virtual void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
+        public virtual int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
         {
             // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()
             int[] shape = GetFloatObservationShape();
@@ -37,8 +37,10 @@ namespace MLAgents.Sensor
 
             for (var i = 0; i < numFloats; i++)
             {
-                tensorProxy.data[agentIndex, i] = buffer[i];
+                tensorProxy.data[agentIndex, i + tensorOffset] = buffer[i];
             }
+
+            return numFloats;
         }
 
         public virtual byte[] GetCompressedObservation()
@@ -49,10 +51,6 @@ namespace MLAgents.Sensor
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
-        }
-
-        public virtual void Update()
-        {
         }
     }
 }

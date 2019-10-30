@@ -51,8 +51,6 @@ namespace MLAgents.InferenceBrain
                 new BatchSizeGenerator(allocator);
             m_Dict[TensorNames.SequenceLengthPlaceholder] =
                 new SequenceLengthGenerator(allocator);
-            m_Dict[TensorNames.VectorObservationPlacholder] =
-                new VectorObservationGenerator(allocator);
 
             if (barracudaModel != null)
             {
@@ -78,13 +76,41 @@ namespace MLAgents.InferenceBrain
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
         }
 
-        public void InitializeVisualObservations(Agent agent, ITensorAllocator allocator)
+        public void InitializeObservations(Agent agent, ITensorAllocator allocator)
         {
-            for (var visIndex = 0; visIndex < agent.sensors.Count; visIndex++)
+            // Loop through the sensors on a representative agent.
+            // For vector observations, add the index to the (single) VectorObservationGenerator
+            // For visual observations, make a VisualObservationInputGenerator
+            var visIndex = 0;
+            var vecIndex = 0;
+            VectorObservationGenerator vecObsGen = null;
+            for (var sensorIndex = 0; sensorIndex < agent.sensors.Count; sensorIndex++)
             {
-                // TODO handle non-visual Sensors too - need to index better
-                m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
-                    new VisualObservationInputGenerator(visIndex, allocator);
+                var sensor = agent.sensors[sensorIndex];
+                var shape = sensor.GetFloatObservationShape();
+                // TODO generalize - we currently only have vector or visual, but can't handle "2D" observations
+                var isVectorSensor = (shape.Length == 1);
+                if (isVectorSensor)
+                {
+                    if (vecObsGen == null)
+                    {
+                        vecObsGen = new VectorObservationGenerator(allocator);
+                    }
+
+                    vecObsGen.AddSensorIndex(sensorIndex);
+                    vecIndex++;
+                }
+                else
+                {
+                    m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
+                        new VisualObservationInputGenerator(sensorIndex, allocator);
+                    visIndex++;
+                }
+            }
+
+            if (vecObsGen != null)
+            {
+                m_Dict[TensorNames.VectorObservationPlacholder] = vecObsGen;
             }
         }
 

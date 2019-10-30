@@ -69,6 +69,8 @@ namespace MLAgents.Sensor
             {
                 output[i] = m_StackedObservations[i];
             }
+
+            UpdateStacks();
         }
 
         public override int[] GetFloatObservationShape()
@@ -81,11 +83,9 @@ namespace MLAgents.Sensor
             return m_Name;
         }
 
-        public override void Update()
+        void UpdateStacks()
         {
             Utilities.ShiftLeft(m_StackedObservations, m_NumUnstackedObservationSize);
-
-            m_WrappedSensor.Update();
         }
 
         // TODO support stacked compressed observations (byte stream)

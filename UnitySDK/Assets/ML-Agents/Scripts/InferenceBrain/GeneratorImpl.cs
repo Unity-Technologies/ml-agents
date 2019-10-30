@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -79,26 +80,33 @@ namespace MLAgents.InferenceBrain
     public class VectorObservationGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
+        List<int> m_SensorIndices = new List<int>();
         public VectorObservationGenerator(ITensorAllocator allocator)
         {
             m_Allocator = allocator;
         }
 
+        public void AddSensorIndex(int sensorIndex)
+        {
+            m_SensorIndices.Add(sensorIndex);
+        }
+
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            //var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                var info = agent.Info;
-                // TODO decide what to do here - should we have 1:1 sensor:tensor, or all sensors write
-                // consecutively to the same 1 tensor
-                var vectorObs = info.stackedVectorObservation;
-                for (var j = 0; j < vecObsSizeT; j++)
+                var tensorOffset = 0;
+                // Write each sensor consecutively to the tensor
+                foreach (var sensorIndex in m_SensorIndices)
                 {
-                    tensorProxy.data[agentIndex, j] = vectorObs[j];
+                    var sensor = agent.sensors[sensorIndex];
+                    var numWritten = sensor.WriteToTensor(tensorProxy, agentIndex, tensorOffset);
+                    tensorOffset += numWritten;
                 }
+                // TODO check tensorOffset == vecObsSizeT -> make sure enough was written
                 agentIndex++;
             }
         }
@@ -254,14 +262,13 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class VisualObservationInputGenerator : TensorGenerator.IGenerator
     {
-        readonly int m_Index;
-        readonly bool m_GrayScale;
+        readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
 
         public VisualObservationInputGenerator(
-            int index, ITensorAllocator allocator)
+            int sensorIndex, ITensorAllocator allocator)
         {
-            m_Index = index;
+            m_SensorIndex = sensorIndex;
             m_Allocator = allocator;
         }
 
@@ -271,9 +278,7 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                // TODO direct access to sensors list here - should we do it differently?
-                // TODO m_Index here is the visual observation index. Will work for now but not if we add more sensor types.
-                agent.sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
+                agent.sensors[m_SensorIndex].WriteToTensor(tensorProxy, agentIndex, 0);
                 agentIndex++;
             }
         }

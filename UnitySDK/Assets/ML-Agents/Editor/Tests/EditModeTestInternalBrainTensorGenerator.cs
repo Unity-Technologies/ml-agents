@@ -15,7 +15,7 @@ namespace MLAgents.Tests
             var agentA = goA.AddComponent<TestAgent>();
             var infoA = new AgentInfo
             {
-                stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
+                //stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
                 storedVectorActions = new[] { 1f, 2f },
                 actionMasks = null
             };
@@ -23,7 +23,7 @@ namespace MLAgents.Tests
             var agentB = goB.AddComponent<TestAgent>();
             var infoB = new AgentInfo
             {
-                stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
+                //stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
                 storedVectorActions = new[] { 3f, 4f },
                 actionMasks = new[] { true, false, false, false, false },
             };

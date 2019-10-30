@@ -45,7 +45,7 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
+        public int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
@@ -53,15 +53,13 @@ namespace MLAgents.Sensor
                 Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
                 UnityEngine.Object.Destroy(texture);
             }
+
+            return -1; // TODO reasonable return and use tensorOffset
         }
 
         public SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.PNG;
-        }
-
-        public void Update()
-        {
         }
 
         /// <summary>
