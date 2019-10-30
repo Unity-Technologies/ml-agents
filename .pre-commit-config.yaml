@@ -62,12 +62,19 @@ repos:
         # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
         # Note that you must install the package separately via npm. For example:
         #  brew install npm; npm install -g markdown-link-check
-        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json' --
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.fast.json' --
         language: system
         types: [markdown]
         # Don't check localized files since their target might not be localized.
         exclude: ".*localized.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
+        stages: [manual]
+    -   id: markdown-link-check-full
+        name: markdown-link-check-full
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.full.json' --
+        language: system
+        types: [markdown]
+        exclude: ".*localized.*"
         stages: [manual]
     -   id: validate-versions
         name: validate library versions

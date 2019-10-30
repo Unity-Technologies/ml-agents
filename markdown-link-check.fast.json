@@ -7,6 +7,10 @@
         {
             "pattern": "^https://developer.nvidia.com/compute/machine-learning/cudnn/secure",
             "comment": "Requires login"
+        },
+        {
+            "pattern": "^https?://",
+            "comment": "Skip external links for fast runs."
         }
     ]
 }

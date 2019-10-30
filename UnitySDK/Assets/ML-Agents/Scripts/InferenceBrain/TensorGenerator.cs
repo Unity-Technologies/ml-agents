@@ -31,18 +31,20 @@ namespace MLAgents.InferenceBrain
                 TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents);
         }
 
-        private readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
+        readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
 
         /// <summary>
         /// Returns a new TensorGenerators object.
         /// </summary>
-        /// <param name="bp"> The BrainParameters used to determine what Generators will be
-        /// used</param>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
+        /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(
-            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+            int seed,
+            ITensorAllocator allocator,
+            Dictionary<int, List<float>> memories,
+            object barracudaModel = null)
         {
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
@@ -51,16 +53,14 @@ namespace MLAgents.InferenceBrain
                 new SequenceLengthGenerator(allocator);
             m_Dict[TensorNames.VectorObservationPlacholder] =
                 new VectorObservationGenerator(allocator);
-            m_Dict[TensorNames.RecurrentInPlaceholder] =
-                new RecurrentInputGenerator(allocator);
 
             if (barracudaModel != null)
             {
                 var model = (Model)barracudaModel;
-                for (var i = 0; i < model?.memories.Length; i++)
+                for (var i = 0; i < model.memories.Length; i++)
                 {
                     m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator);
+                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
                 }
             }
 
@@ -80,9 +80,9 @@ namespace MLAgents.InferenceBrain
 
         public void InitializeVisualObservations(Agent agent, ITensorAllocator allocator)
         {
-            for (var visIndex = 0; visIndex < agent.m_Sensors.Count; visIndex++)
+            for (var visIndex = 0; visIndex < agent.sensors.Count; visIndex++)
             {
-                // TODO handle non-visual sensors too - need to index better
+                // TODO handle non-visual Sensors too - need to index better
                 m_Dict[TensorNames.VisualObservationPlaceholderPrefix + visIndex] =
                     new VisualObservationInputGenerator(visIndex, allocator);
             }
@@ -100,9 +100,7 @@ namespace MLAgents.InferenceBrain
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
         public void GenerateTensors(
-            IEnumerable<TensorProxy> tensors,
-            int currentBatchSize,
-            IEnumerable<Agent> agents)
+            IEnumerable<TensorProxy> tensors, int currentBatchSize, IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {

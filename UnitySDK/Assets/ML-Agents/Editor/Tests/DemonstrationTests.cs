@@ -7,9 +7,9 @@ namespace MLAgents.Tests
 {
     public class DemonstrationTests : MonoBehaviour
     {
-        private const string k_DemoDirecory = "Assets/Demonstrations/";
-        private const string k_ExtensionType = ".demo";
-        private const string k_DemoName = "Test";
+        const string k_DemoDirecory = "Assets/Demonstrations/";
+        const string k_ExtensionType = ".demo";
+        const string k_DemoName = "Test";
 
         [Test]
         public void TestSanitization()
@@ -33,8 +33,8 @@ namespace MLAgents.Tests
             {
                 vectorObservationSize = 3,
                 numStackedVectorObservations = 2,
-                vectorActionDescriptions = new[] {"TestActionA", "TestActionB"},
-                vectorActionSize = new[] {2, 2},
+                vectorActionDescriptions = new[] { "TestActionA", "TestActionB" },
+                vectorActionSize = new[] { 2, 2 },
                 vectorActionSpaceType = SpaceType.Discrete
             };
 
@@ -46,14 +46,13 @@ namespace MLAgents.Tests
             var agentInfo = new AgentInfo
             {
                 reward = 1f,
-                actionMasks = new[] {false, true},
+                actionMasks = new[] { false, true },
                 done = true,
                 id = 5,
                 maxStepReached = true,
-                memories = new List<float>(),
-                stackedVectorObservation = new List<float>() {1f, 1f, 1f},
+                stackedVectorObservation = new List<float>() { 1f, 1f, 1f },
                 storedTextActions = "TestAction",
-                storedVectorActions = new[] {0f, 1f},
+                storedVectorActions = new[] { 0f, 1f },
                 textObservation = "TestAction",
             };
 
