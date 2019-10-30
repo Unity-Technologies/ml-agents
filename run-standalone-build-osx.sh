@@ -2,37 +2,44 @@
 
 set -eo pipefail
 
-EDITOR_VERSION="2017.4.33f1"
-BOKKEN_UNITY="/Users/bokken/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
-HUB_UNITY="/Applications/Unity/Hub/Editor/${EDITOR_VERSION}/Unity.app/Contents/MacOS/Unity"
+if [[ -z "${UNITY_VERSION}" ]]; then
 
-if [[ -f ${BOKKEN_UNITY} ]]; then 
-    UNITY=${BOKKEN_UNITY}
+    echo "Environment Variable UNITY_VERSION was not set"
+    exit 1
+
 else
-    UNITY=${HUB_UNITY}
-fi 
+    BOKKEN_UNITY="/Users/bokken/${UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
+    HUB_UNITY="/Applications/Unity/Hub/Editor/${UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
 
-pushd $(dirname "${0}") > /dev/null
-BASETPATH=$(pwd -L)
-popd > /dev/null
+    if [[ -f ${BOKKEN_UNITY} ]]; then
+        UNITY=${BOKKEN_UNITY}
+    else
+        UNITY=${HUB_UNITY}
+    fi
 
-echo "Cleaning previous results"
+    pushd $(dirname "${0}") > /dev/null
+    BASETPATH=$(pwd -L)
+    popd > /dev/null
 
-echo "Starting tests via $UNITY"
+    echo "Cleaning previous results"
 
-CMD_LINE="$UNITY -projectPath $BASETPATH/UnitySDK -batchmode -executeMethod MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX"
+    echo "Starting tests via $UNITY"
 
-echo "$CMD_LINE ..."
+    CMD_LINE="$UNITY -projectPath $BASETPATH/UnitySDK -logfile - -batchmode -executeMethod MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX"
 
-${CMD_LINE}
-RES=$?
+    echo "$CMD_LINE ..."
 
-if [[ "${RES}" -eq "0" ]]; then
-    echo "Standalone build completed successfully.";
-    exit 0;
-else
-    echo "Standalone build failed."
-    exit 1;
+    ${CMD_LINE}
+    RES=$?
+
+    if [[ "${RES}" -eq "0" ]]; then
+        echo "Standalone build completed successfully.";
+        exit 0;
+    else
+        echo "Standalone build failed."
+        exit 1;
+    fi
+
+    exit ${RES}
+
 fi
-
-exit ${RES}

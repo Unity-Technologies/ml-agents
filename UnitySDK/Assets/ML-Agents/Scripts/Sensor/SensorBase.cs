@@ -46,9 +46,9 @@ namespace MLAgents.Sensor
             return null;
         }
 
-        public virtual CompressionType GetCompressionType()
+        public virtual SensorCompressionType GetCompressionType()
         {
-            return CompressionType.None;
+            return SensorCompressionType.None;
         }
 
         public virtual void Update()

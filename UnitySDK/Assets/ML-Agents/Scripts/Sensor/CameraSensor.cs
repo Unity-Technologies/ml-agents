@@ -55,9 +55,9 @@ namespace MLAgents.Sensor
             }
         }
 
-        public CompressionType GetCompressionType()
+        public SensorCompressionType GetCompressionType()
         {
-            return CompressionType.PNG;
+            return SensorCompressionType.PNG;
         }
 
         public void Update()

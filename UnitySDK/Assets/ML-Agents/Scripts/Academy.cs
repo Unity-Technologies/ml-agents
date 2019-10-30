@@ -92,7 +92,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        const string k_ApiVersion = "API-10";
+        const string k_ApiVersion = "API-11";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
