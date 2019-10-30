@@ -10,5 +10,6 @@ public class BuilderAcademy : Academy
     public Material failMaterial;
     public Material grabbedMaterial;
     public Material notGrabbedMaterial;
+    public Material frozenMaterial;
     public float heightRewardCoeff = .01f;
 }

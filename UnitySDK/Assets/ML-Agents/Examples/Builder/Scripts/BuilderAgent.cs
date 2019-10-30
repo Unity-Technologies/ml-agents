@@ -40,7 +40,7 @@ public class BuilderAgent : Agent
         m_agentMovement = FindObjectOfType<AgentCubeMovement>();
         m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
-        m_DetectableObjects = new[] { "block" };
+        m_DetectableObjects = new[] { "block", "frozenBlock"};
         m_SpawnAreaBounds = spawnArea.GetComponent<Collider>().bounds;
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_AgentRb = GetComponent<Rigidbody>();
@@ -141,6 +141,47 @@ public class BuilderAgent : Agent
                 GrabBlock();
             }
         }
+        var freezeBlockAction = (int)act[4];
+        if (freezeBlockAction == 1)
+        {
+            if(grabbingItem)
+            {
+                grabbedItemRb.isKinematic = true;
+                grabbedItemRb.gameObject.tag = "frozenBlock";
+                grabbedItemRb.transform.SetParent(m_AreaTransform);
+                grabbedItemRb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                grabbedItemCol.enabled = true;
+                grabbingItem = false;
+            }
+            else
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(m_AgentRb.position, transform.forward, out hit, 1f))
+                {
+                    var rb = hit.transform.GetComponent<Rigidbody>();
+                    var col = hit.collider;
+                    if (hit.collider.gameObject.CompareTag("block")) //need to freeez
+                    {
+                        //freeze block
+                        rb.isKinematic = true;
+                        rb.gameObject.tag = "frozenBlock";
+                        rb.transform.SetParent(m_AreaTransform);
+                        rb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                        col.enabled = true;
+                    }
+                    else if(hit.collider.gameObject.CompareTag("frozenBlock")) //need to unfreeze
+                    {
+                        //unfreeze block
+                        rb.isKinematic = false;
+                        rb.gameObject.tag = "block";
+                        rb.transform.SetParent(m_AreaTransform);
+                        rb.transform.GetComponent<Renderer>().material = m_Academy.notGrabbedMaterial;
+                        col.enabled = true;
+                    }
+                }
+//                GrabBlock();
+            }
+        }
 
         
         
@@ -188,6 +229,11 @@ public class BuilderAgent : Agent
         }
     }
 
+    void FreezeBlock(Rigidbody rb)
+    {
+        
+    }
+    
     bool AllBlockOnPlatform()
     {
         foreach (var item in buildingBlocksList)
@@ -211,6 +257,45 @@ public class BuilderAgent : Agent
             else
             {
                 GrabBlock();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if(grabbingItem)
+            {
+                grabbedItemRb.isKinematic = true;
+                grabbedItemRb.gameObject.tag = "frozenBlock";
+                grabbedItemRb.transform.SetParent(m_AreaTransform);
+                grabbedItemRb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                grabbedItemCol.enabled = true;
+                grabbingItem = false;
+            }
+            else
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(m_AgentRb.position, transform.forward, out hit, 1f))
+                {
+                    var rb = hit.transform.GetComponent<Rigidbody>();
+                    var col = hit.collider;
+                    if (hit.collider.gameObject.CompareTag("block")) //need to freeez
+                    {
+                        //freeze block
+                        rb.isKinematic = true;
+                        rb.gameObject.tag = "frozenBlock";
+                        rb.transform.SetParent(m_AreaTransform);
+                        rb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                        col.enabled = true;
+                    }
+                    else if (hit.collider.gameObject.CompareTag("frozenBlock")) //need to unfreeze
+                    {
+                        //unfreeze block
+                        rb.isKinematic = false;
+                        rb.gameObject.tag = "block";
+                        rb.transform.SetParent(m_AreaTransform);
+                        rb.transform.GetComponent<Renderer>().material = m_Academy.notGrabbedMaterial;
+                        col.enabled = true;
+                    }
+                }
             }
         }
     }
@@ -248,7 +333,7 @@ public class BuilderAgent : Agent
         RaycastHit hit;
         if (Physics.Raycast(m_AgentRb.position, transform.forward, out hit, 1f))
         {
-            if (hit.collider.gameObject.CompareTag("block"))
+            if (hit.collider.gameObject.CompareTag("block") || hit.collider.gameObject.CompareTag("frozenBlock"))
             {
                 hit.rigidbody.isKinematic = true;
                 hit.transform.SetParent(transform);

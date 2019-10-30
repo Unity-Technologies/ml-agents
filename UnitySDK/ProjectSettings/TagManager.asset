@@ -30,6 +30,7 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - hazard
+  - frozenBlock
   layers:
   - Default
   - TransparentFX

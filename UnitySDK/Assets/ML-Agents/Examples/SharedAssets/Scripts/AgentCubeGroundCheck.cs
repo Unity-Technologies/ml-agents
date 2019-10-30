@@ -52,6 +52,7 @@ namespace MLAgents
                     {
                         if (col != null && col.transform != transform &&
                             (col.CompareTag("walkableSurface") ||
+                            col.CompareTag("frozenBlock") ||
                                 col.CompareTag("block")))
                         {
                             isGrounded = true; //then we're grounded

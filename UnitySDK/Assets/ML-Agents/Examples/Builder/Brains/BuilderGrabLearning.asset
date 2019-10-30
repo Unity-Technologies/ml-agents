@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Name: BuilderGrabLearning
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 116
+    vectorObservationSize: 85
     numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000200000002000000
+    vectorActionSize: 0300000003000000020000000200000002000000
     cameraResolutions: []
     vectorActionDescriptions:
+    - 
     - 
     - 
     - 
