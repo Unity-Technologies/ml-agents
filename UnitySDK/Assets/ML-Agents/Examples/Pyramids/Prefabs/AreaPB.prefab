@@ -2888,10 +2888,9 @@ MonoBehaviour:
     vectorObservationSize: 172
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 9bafa731bfcbc4f0faa73c365e7af924, type: 3}
+  m_Model: {fileID: 11400000, guid: aa3fa19a09ec44a41be3da037783ad41, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Pyramids
@@ -2932,8 +2931,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
