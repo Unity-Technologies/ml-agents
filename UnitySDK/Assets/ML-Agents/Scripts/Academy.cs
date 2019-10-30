@@ -108,7 +108,7 @@ namespace MLAgents
 
         // Fields provided in the Inspector
 
-        [FormerlySerializedAs("maxSteps")]
+        [FormerlySerializedAs("trainingConfiguration")]
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
             "quality and engine speed during Training.")]
