@@ -144,7 +144,7 @@ public class WallJumpAgent : Agent
         AddVectorObs(m_RayPer.Perceive(
             rayDistance, rayAngles, m_DetectableObjects));
         AddVectorObs(m_RayPer.Perceive(
-            rayDistance, rayAngles, m_DetectableObjects, 2.5f, 2.5f));
+            rayDistance, rayAngles, m_DetectableObjects, 2.5f, 5.0f));
         var agentPos = m_AgentRb.position - ground.transform.position;
 
         AddVectorObs(agentPos / 20f);

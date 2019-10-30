@@ -48,6 +48,8 @@ namespace MLAgents
                 Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
                 Vector3 endPositionLocal = PolarToCartesian(rayDistance, angle);
                 endPositionLocal.y += endOffset;
+//                // BAD old behavior
+//                endPositionLocal.y += startOffset;
 
                 var startPositionWorld = transform.TransformPoint(startPositionLocal);
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
@@ -55,8 +57,7 @@ namespace MLAgents
                 var rayDirection = endPositionWorld - startPositionWorld;
                 if (Application.isEditor)
                 {
-                    //Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
-                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.0f, true);
+                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
                 }
 
                 Array.Clear(m_SubList, 0, m_SubList.Length);
