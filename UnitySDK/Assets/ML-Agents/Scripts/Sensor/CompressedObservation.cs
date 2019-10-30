@@ -13,7 +13,7 @@ namespace MLAgents.Sensor
         /// <summary>
         /// The format of the compressed data
         /// </summary>
-        public CompressionType CompressionType;
+        public SensorCompressionType CompressionType;
 
         /// <summary>
         /// The uncompressed dimensions of the data.

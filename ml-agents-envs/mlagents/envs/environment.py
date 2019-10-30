@@ -42,6 +42,7 @@ class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     SINGLE_BRAIN_TEXT_TYPES = list
+    API_VERSION = "API-11"
 
     def __init__(
         self,
@@ -72,7 +73,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-10"
+        self._version_ = UnityEnvironment.API_VERSION
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
