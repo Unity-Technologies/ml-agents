@@ -10,7 +10,6 @@ namespace MLAgents
     /// </summary>
     public class RayPerception3D : RayPerception
     {
-        Vector3 m_EndPosition;
         RaycastHit m_Hit;
         float[] m_SubList;
 
@@ -46,20 +45,23 @@ namespace MLAgents
             // along with object distance.
             foreach (var angle in rayAngles)
             {
-                m_EndPosition = transform.TransformDirection(
-                    PolarToCartesian(rayDistance, angle));
-                m_EndPosition.y = endOffset;
+                Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
+                Vector3 endPositionLocal = PolarToCartesian(rayDistance, angle);
+                endPositionLocal.y += endOffset;
+
+                var startPositionWorld = transform.TransformPoint(startPositionLocal);
+                var endPositionWorld = transform.TransformPoint(endPositionLocal);
+
+                var rayDirection = endPositionWorld - startPositionWorld;
                 if (Application.isEditor)
                 {
-                    Debug.DrawRay(transform.position + new Vector3(0f, startOffset, 0f),
-                        m_EndPosition, Color.black, 0.01f, true);
+                    //Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
+                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.0f, true);
                 }
 
                 Array.Clear(m_SubList, 0, m_SubList.Length);
 
-                if (Physics.SphereCast(transform.position +
-                    new Vector3(0f, startOffset, 0f), 0.5f,
-                    m_EndPosition, out m_Hit, rayDistance))
+                if (Physics.SphereCast(startPositionWorld, 0.5f, rayDirection, out m_Hit, rayDistance))
                 {
                     for (var i = 0; i < detectableObjects.Length; i++)
                     {
