@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
+using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -81,6 +82,8 @@ namespace MLAgents.InferenceBrain
     {
         readonly ITensorAllocator m_Allocator;
         List<int> m_SensorIndices = new List<int>();
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
+
         public VectorObservationGenerator(ITensorAllocator allocator)
         {
             m_Allocator = allocator;
@@ -102,8 +105,9 @@ namespace MLAgents.InferenceBrain
                 // Write each sensor consecutively to the tensor
                 foreach (var sensorIndex in m_SensorIndices)
                 {
+                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
                     var sensor = agent.sensors[sensorIndex];
-                    var numWritten = sensor.WriteToTensor(tensorProxy, agentIndex, tensorOffset);
+                    var numWritten = sensor.Write(m_WriteAdapter);
                     tensorOffset += numWritten;
                 }
                 // TODO check tensorOffset == vecObsSizeT -> make sure enough was written
@@ -264,6 +268,7 @@ namespace MLAgents.InferenceBrain
     {
         readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         public VisualObservationInputGenerator(
             int sensorIndex, ITensorAllocator allocator)
@@ -278,7 +283,8 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                agent.sensors[m_SensorIndex].WriteToTensor(tensorProxy, agentIndex, 0);
+                m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
+                agent.sensors[m_SensorIndex].Write(m_WriteAdapter);
                 agentIndex++;
             }
         }

@@ -86,7 +86,7 @@ namespace MLAgents.Tests
             return new[] { 1 };
         }
 
-        public int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
+        public int Write(WriteAdapter adapter)
         {
             return 0;
         }

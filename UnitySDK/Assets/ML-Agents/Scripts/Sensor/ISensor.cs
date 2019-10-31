@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 
 namespace MLAgents.Sensor
@@ -6,6 +8,79 @@ namespace MLAgents.Sensor
     {
         None,
         PNG
+    }
+
+    public class WriteAdapter
+    {
+        IList<float> m_Data;
+        int m_Offset;
+
+        TensorProxy m_Proxy;
+        int m_Batch;
+
+        public WriteAdapter(){ }
+
+        public void SetTarget(IList<float> data, int offset)
+        {
+            m_Data = data;
+            m_Offset = offset;
+            m_Proxy = null;
+            m_Batch = -1;
+        }
+
+        public void SetTarget(TensorProxy tensorProxy, int batchIndex, int offset)
+        {
+            m_Proxy = tensorProxy;
+            m_Batch = batchIndex;
+            m_Offset = offset;
+            m_Data = null;
+        }
+
+        public float this[int index]
+        {
+            set
+            {
+                if (m_Data != null)
+                {
+                    m_Data[index + m_Offset] = value;
+                }
+                else
+                {
+                    m_Proxy.data[m_Batch, index + m_Offset] = value;
+                }
+            }
+        }
+
+        public float this[int h, int w, int ch]
+        {
+            set
+            {
+                // Only TensorProxy supports 3D access
+                m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+            }
+        }
+
+        public void AddRange(IEnumerable<float> data)
+        {
+            if (m_Data != null)
+            {
+                int index = 0;
+                foreach (var val in data)
+                {
+                    m_Data[index + m_Offset] = val;
+                    index++;
+                }
+            }
+            else
+            {
+                int index = 0;
+                foreach (var val in data)
+                {
+                    m_Proxy.data[m_Batch, index + m_Offset] = val;
+                    index++;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -22,14 +97,12 @@ namespace MLAgents.Sensor
         int[] GetFloatObservationShape();
 
         /// <summary>
-        /// Write the observation data directly to the TensorProxy.
+        /// Write the observation data directly to the WriteAdapter.
         /// This is considered an advanced interface; for a simpler approach, use SensorBase and override WriteFloats instead.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="agentIndex"></param>
-        /// <param name="tensorOffset"></param>
+        /// <param name="adapater"></param>
         /// <returns>The number of elements written</returns>
-        int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset);
+        int Write(WriteAdapter adapater);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this should generally not be

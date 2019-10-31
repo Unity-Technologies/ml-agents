@@ -45,12 +45,12 @@ namespace MLAgents.Sensor
             }
         }
 
-        public int WriteToTensor(TensorProxy tensorProxy, int agentIndex, int tensorOffset)
+        public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
+                Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
             }
 
