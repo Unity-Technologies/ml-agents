@@ -1574,8 +1574,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1613,10 +1611,9 @@ MonoBehaviour:
     vectorObservationSize: 36
     numStackedVectorObservations: 3
     vectorActionSize: 05000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: b3f3b601fa5e84185862261041525ea9, type: 3}
+  m_Model: {fileID: 11400000, guid: 317f4f8da7e4846b3aae0969781824a2, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Hallway
