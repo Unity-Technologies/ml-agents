@@ -60,14 +60,14 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void AddRange(IEnumerable<float> data)
+        public void AddRange(IEnumerable<float> data, int offset = 0)
         {
             if (m_Data != null)
             {
                 int index = 0;
                 foreach (var val in data)
                 {
-                    m_Data[index + m_Offset] = val;
+                    m_Data[index + m_Offset + offset] = val;
                     index++;
                 }
             }
@@ -76,7 +76,7 @@ namespace MLAgents.Sensor
                 int index = 0;
                 foreach (var val in data)
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset] = val;
+                    m_Proxy.data[m_Batch, index + m_Offset + offset] = val;
                     index++;
                 }
             }

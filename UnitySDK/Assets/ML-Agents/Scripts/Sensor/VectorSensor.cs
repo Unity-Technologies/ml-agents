@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    public class VectorSensor : SensorBase
+    public class VectorSensor : ISensor
     {
         // TODO use float[] instead
         // TOOD allow setting float[]
@@ -23,36 +23,33 @@ namespace MLAgents.Sensor
             m_Shape = new[] { observationSize };
         }
 
-        public override void WriteObservation(float[] output)
+        public int Write(WriteAdapter adapter)
         {
-            // TODO implement WriteToTensor
-            if (m_Observations.Count > output.Length)
-            {
-                Debug.LogWarningFormat(
-                    "Too many m_Observations ({0} > {1}). Only the first {1} will be used",
-                    m_Observations.Count, output.Length
-                );
-            }
-
-            // TODO warn if not enough?
-
-            var size = Mathf.Min(m_Observations.Count, output.Length);
-            for (var i = 0; i < size; i++)
-            {
-                output[i] = m_Observations[i];
-            }
-
+            // TODO warn about size mismatches
+            adapter.AddRange(m_Observations);
+            var numWritten = m_Observations.Count;
             Clear();
+            return numWritten;
         }
 
-        public override int[] GetFloatObservationShape()
+        public int[] GetFloatObservationShape()
         {
             return m_Shape;
         }
 
-        public override string GetName()
+        public string GetName()
         {
             return m_Name;
+        }
+
+        public virtual byte[] GetCompressedObservation()
+        {
+            return null;
+        }
+
+        public virtual SensorCompressionType GetCompressionType()
+        {
+            return SensorCompressionType.None;
         }
 
         void Clear()
@@ -60,7 +57,7 @@ namespace MLAgents.Sensor
             m_Observations.Clear();
         }
 
-        private void AddFloatObs(float obs)
+        void AddFloatObs(float obs)
         {
             m_Observations.Add(obs);
         }

@@ -5,13 +5,17 @@ namespace MLAgents.Sensor
 {
     /// <summary>
     /// Sensor that wraps around another Sensor to provide temporal stacking.
+    /// Conceptually, consecutive observations are stored left-to-right, which is how they're output
+    /// For example, 4 stacked sets of observations would be output like
+    ///   |  t = now - 3  |  t = now -3  |  t = now - 2  |  t = now  |
+    /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// </summary>
-    public class StackingSensor : SensorBase
+    public class StackingSensor : ISensor
     {
         /// <summary>
         /// The wrapped sensor.
         /// </summary>
-        SensorBase m_WrappedSensor;
+        ISensor m_WrappedSensor;
 
         /// <summary>
         /// Number of stacks to save
@@ -25,15 +29,17 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Buffer of previous observations
         /// </summary>
-        // TODO Flat list like old code? Circular buffer?
-        List<float> m_StackedObservations;
+        float[][] m_StackedObservations;
+
+        int m_currentIndex;
+        WriteAdapter m_LocalAdapter = new WriteAdapter();
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="wrapped">The wrapped sensor</param>
         /// <param name="numStackedObservations">Number of stacked observations to keep</param>
-        public StackingSensor(SensorBase wrapped, int numStackedObservations)
+        public StackingSensor(ISensor wrapped, int numStackedObservations)
         {
             // TODO ensure numStackedObservations > 1
             m_WrappedSensor = wrapped;
@@ -53,39 +59,51 @@ namespace MLAgents.Sensor
 
             // TODO support arbitrary stacking dimension
             m_Shape[0] *= numStackedObservations;
-            m_StackedObservations = new List<float>(m_NumUnstackedObservationSize * m_NumStackedObservations);
+            m_StackedObservations = new float[numStackedObservations][];
+            for (var i = 0; i < numStackedObservations; i++)
+            {
+                m_StackedObservations[i] = new float[m_NumUnstackedObservationSize];
+            }
         }
 
-        public override void WriteObservation(float[] output)
+        public int Write(WriteAdapter adapter)
         {
-            // TODO optimize - keep a temp version or use a circular buffer of float[]s
-            var tempOut = new float[m_NumUnstackedObservationSize];
-            m_WrappedSensor.WriteObservation(tempOut);
+            // First, call the wrapped sensor's write method. Make sure to use our own adapater, not the passed one.
+            m_LocalAdapter.SetTarget(m_StackedObservations[m_currentIndex], 0);
+            m_WrappedSensor.Write(m_LocalAdapter);
 
-            Utilities.ReplaceRange(m_StackedObservations, tempOut,m_StackedObservations.Count - tempOut.Length);
-
-            // Write all stacked to output
-            for (var i = 0; i < m_StackedObservations.Count; i++)
+            // Now write the saved observations (oldest first)
+            var numWritten = 0;
+            for (var i = 0; i < m_NumStackedObservations; i++)
             {
-                output[i] = m_StackedObservations[i];
+                var obsIndex = (m_currentIndex + 1 + i) % m_NumStackedObservations;
+                adapter.AddRange(m_StackedObservations[obsIndex], numWritten);
+                numWritten += m_NumUnstackedObservationSize;
             }
 
-            UpdateStacks();
+            // Finally update the index of the "current" buffer.
+            m_currentIndex = (m_currentIndex + 1) % m_NumStackedObservations;
+            return numWritten;
         }
 
-        public override int[] GetFloatObservationShape()
+        public int[] GetFloatObservationShape()
         {
             return m_Shape;
         }
 
-        public override string GetName()
+        public string GetName()
         {
             return m_Name;
         }
 
-        void UpdateStacks()
+        public virtual byte[] GetCompressedObservation()
         {
-            Utilities.ShiftLeft(m_StackedObservations, m_NumUnstackedObservationSize);
+            return null;
+        }
+
+        public virtual SensorCompressionType GetCompressionType()
+        {
+            return SensorCompressionType.None;
         }
 
         // TODO support stacked compressed observations (byte stream)
