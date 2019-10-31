@@ -493,6 +493,10 @@ namespace MLAgents
 //                          * param.numStackedVectorObservations]);
 
             m_Info.compressedObservations = new List<CompressedObservation>();
+            m_Info.floatObservations = new List<float>();
+            m_Info.floatObservations.AddRange(
+                new float[param.vectorObservationSize
+                    * param.numStackedVectorObservations]);
             m_Info.customObservation = null;
         }
 
@@ -623,18 +627,27 @@ namespace MLAgents
         /// </summary>
         public void GenerateSensorData()
         {
+            WriteAdapter wa = new WriteAdapter();
+            int floatsWritten = 0;
             // Generate data for all Sensors
-            // TODO add bool argument indicating when to compress? For now, we always will compress.
             for (var i = 0; i < sensors.Count; i++)
             {
                 var sensor = sensors[i];
-                var compressedObs = new CompressedObservation
+                if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    Data = sensor.GetCompressedObservation(),
-                    Shape = sensor.GetFloatObservationShape(),
-                    CompressionType = sensor.GetCompressionType()
-                };
-                m_Info.compressedObservations.Add(compressedObs);
+                    wa.SetTarget(m_Info.floatObservations, floatsWritten);
+                    floatsWritten += sensor.Write(wa);
+                }
+                else
+                {
+                    var compressedObs = new CompressedObservation
+                    {
+                        Data = sensor.GetCompressedObservation(),
+                        Shape = sensor.GetFloatObservationShape(),
+                        CompressionType = sensor.GetCompressionType()
+                    };
+                    m_Info.compressedObservations.Add(compressedObs);
+                }
             }
         }
 
