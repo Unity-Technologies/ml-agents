@@ -4,31 +4,9 @@ using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
-    public class VectorSensorTest
+    public class SensorTestHelper
     {
-        [Test]
-        public void TestCtor()
-        {
-            ISensor sensor = new VectorSensor(4);
-            Assert.AreEqual("VectorSensor_size4", sensor.GetName());
-
-            sensor = new VectorSensor(3, "test_sensor");
-            Assert.AreEqual("test_sensor", sensor.GetName());
-        }
-
-        [Test]
-        public void TestWrite()
-        {
-            var sensor = new VectorSensor(4);
-            sensor.AddObservation(1f);
-            sensor.AddObservation(2f);
-            sensor.AddObservation(3f);
-            sensor.AddObservation(4f);
-
-            CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
-        }
-
-        static void CompareObservation(ISensor sensor, float[] expected)
+        public static void CompareObservation(ISensor sensor, float[] expected)
         {
             var numExpected = expected.Length;
             const float fill = -1337f;
@@ -51,13 +29,38 @@ namespace MLAgents.Tests
                 Assert.AreEqual(expected[i], output[i]);
             }
         }
+    }
+
+    public class VectorSensorTest
+    {
+        [Test]
+        public void TestCtor()
+        {
+            ISensor sensor = new VectorSensor(4);
+            Assert.AreEqual("VectorSensor_size4", sensor.GetName());
+
+            sensor = new VectorSensor(3, "test_sensor");
+            Assert.AreEqual("test_sensor", sensor.GetName());
+        }
+
+        [Test]
+        public void TestWrite()
+        {
+            var sensor = new VectorSensor(4);
+            sensor.AddObservation(1f);
+            sensor.AddObservation(2f);
+            sensor.AddObservation(3f);
+            sensor.AddObservation(4f);
+
+            SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
+        }
 
         [Test]
         public void TestAddObservationFloat()
         {
             var sensor = new VectorSensor(1);
             sensor.AddObservation(1.2f);
-            CompareObservation(sensor, new []{1.2f});
+            SensorTestHelper.CompareObservation(sensor, new []{1.2f});
         }
 
         [Test]
@@ -65,7 +68,7 @@ namespace MLAgents.Tests
         {
             var sensor = new VectorSensor(1);
             sensor.AddObservation(42);
-            CompareObservation(sensor, new []{42f});
+            SensorTestHelper.CompareObservation(sensor, new []{42f});
         }
 
         [Test]
@@ -73,11 +76,11 @@ namespace MLAgents.Tests
         {
             var sensor = new VectorSensor(3);
             sensor.AddObservation(new Vector3(1,2,3));
-            CompareObservation(sensor, new []{1f, 2f, 3f});
+            SensorTestHelper.CompareObservation(sensor, new []{1f, 2f, 3f});
 
             sensor = new VectorSensor(2);
             sensor.AddObservation(new Vector2(4,5));
-            CompareObservation(sensor, new[] { 4f, 5f });
+            SensorTestHelper.CompareObservation(sensor, new[] { 4f, 5f });
         }
 
         [Test]
@@ -85,7 +88,7 @@ namespace MLAgents.Tests
         {
             var sensor = new VectorSensor(4);
             sensor.AddObservation(Quaternion.identity);
-            CompareObservation(sensor, new []{0f, 0f, 0f, 1f});
+            SensorTestHelper.CompareObservation(sensor, new []{0f, 0f, 0f, 1f});
         }
 
         [Test]
@@ -94,7 +97,7 @@ namespace MLAgents.Tests
             var sensor = new VectorSensor(4);
             sensor.AddObservation(new [] {1f, 2f, 3f, 4f});
 
-            CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
+            SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
         }
 
         [Test]
@@ -102,7 +105,7 @@ namespace MLAgents.Tests
         {
             var sensor = new VectorSensor(1);
             sensor.AddObservation(true);
-            CompareObservation(sensor, new []{1f});
+            SensorTestHelper.CompareObservation(sensor, new []{1f});
         }
 
         [Test]
@@ -110,7 +113,7 @@ namespace MLAgents.Tests
         {
             var sensor = new VectorSensor(4);
             sensor.AddOneHotObservation(2, 4);
-            CompareObservation(sensor, new []{0f, 0f, 1f, 0f});
+            SensorTestHelper.CompareObservation(sensor, new []{0f, 0f, 1f, 0f});
         }
 
         [Test]
@@ -119,7 +122,7 @@ namespace MLAgents.Tests
             var sensor = new VectorSensor(2);
             sensor.AddObservation(new [] {1f, 2f, 3f, 4f});
 
-            CompareObservation(sensor, new[] { 1f, 2f});
+            SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f});
         }
 
         [Test]
@@ -129,7 +132,7 @@ namespace MLAgents.Tests
             sensor.AddObservation(new [] {1f, 2f});
 
             // Make sure extra zeros are added
-            CompareObservation(sensor, new[] { 1f, 2f, 0f, 0f});
+            SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 0f, 0f});
         }
     }
 }

@@ -18,7 +18,7 @@ namespace MLAgents.Sensor
         /// Number of stacks to save
         /// </summary>
         int m_NumStackedObservations;
-        int m_NumUnstackedObservationSize;
+        int m_UnstackedObservationSize;
 
         string m_Name;
         int[] m_Shape;
@@ -42,16 +42,16 @@ namespace MLAgents.Sensor
             m_WrappedSensor = wrapped;
             m_NumStackedObservations = numStackedObservations;
 
-            m_Name = wrapped.GetName() + "_stacked";
+            m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
             var shape = wrapped.GetFloatObservationShape();
             m_Shape = new int[shape.Length];
 
-            m_NumUnstackedObservationSize = 1;
+            m_UnstackedObservationSize = 1;
             for (int d = 0; d < shape.Length; d++)
             {
                 m_Shape[d] = shape[d];
-                m_NumUnstackedObservationSize *= shape[d];
+                m_UnstackedObservationSize *= shape[d];
             }
 
             // TODO support arbitrary stacking dimension
@@ -59,7 +59,7 @@ namespace MLAgents.Sensor
             m_StackedObservations = new float[numStackedObservations][];
             for (var i = 0; i < numStackedObservations; i++)
             {
-                m_StackedObservations[i] = new float[m_NumUnstackedObservationSize];
+                m_StackedObservations[i] = new float[m_UnstackedObservationSize];
             }
         }
 
@@ -75,7 +75,7 @@ namespace MLAgents.Sensor
             {
                 var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
                 adapter.AddRange(m_StackedObservations[obsIndex], numWritten);
-                numWritten += m_NumUnstackedObservationSize;
+                numWritten += m_UnstackedObservationSize;
             }
 
             // Finally update the index of the "current" buffer.
