@@ -26,10 +26,28 @@ namespace MLAgents.Sensor
         public int Write(WriteAdapter adapter)
         {
             // TODO warn about size mismatches
+            var expectedObservations = m_Shape[0];
+            Debug.AssertFormat(
+                expectedObservations == m_Observations.Count,
+                "mismatch between vector observation size ({0}) and number of observations written ({1})",
+                expectedObservations, m_Observations.Count
+            );
+            if (m_Observations.Count > expectedObservations)
+            {
+                // Too many observations, truncate
+                m_Observations.RemoveRange(expectedObservations, m_Observations.Count - expectedObservations);
+            }
+            else if (m_Observations.Count < expectedObservations)
+            {
+                // Not enough observations; pad with zeros.
+                for (int i = m_Observations.Count; i < expectedObservations; i++)
+                {
+                    m_Observations.Add(0);
+                }
+            }
             adapter.AddRange(m_Observations);
-            var numWritten = m_Observations.Count;
             Clear();
-            return numWritten;
+            return expectedObservations;
         }
 
         public int[] GetFloatObservationShape()
