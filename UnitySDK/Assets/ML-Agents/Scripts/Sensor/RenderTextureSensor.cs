@@ -50,11 +50,10 @@ namespace MLAgents.Sensor
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
                 var texture = ObservationToTexture(m_RenderTexture, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
+                return numWritten;
             }
-
-            return -1; // TODO reasonable return and use tensorOffset
         }
 
         public SensorCompressionType GetCompressionType()

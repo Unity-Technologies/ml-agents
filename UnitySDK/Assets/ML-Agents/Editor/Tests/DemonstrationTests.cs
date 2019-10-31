@@ -50,7 +50,7 @@ namespace MLAgents.Tests
                 done = true,
                 id = 5,
                 maxStepReached = true,
-                //stackedVectorObservation = new List<float>() { 1f, 1f, 1f },
+                floatObservations = new List<float>() { 1f, 1f, 1f },
                 storedTextActions = "TestAction",
                 storedVectorActions = new[] { 0f, 1f },
                 textObservation = "TestAction",

@@ -24,7 +24,8 @@ namespace MLAgents
         /// <param name="textureOffset">
         /// Index of the texture being written.
         /// </param>
-        public static void TextureToTensorProxy(
+        /// <returns>The number of floats written</returns>
+        public static int TextureToTensorProxy(
             Texture2D texture,
             WriteAdapter adapter,
             bool grayScale)
@@ -55,6 +56,7 @@ namespace MLAgents
                 }
             }
 
+            return height * width * (grayScale ? 1 : 3);
         }
 
         /// <summary>
@@ -111,14 +113,6 @@ namespace MLAgents
         public static void ReplaceRange<T>(List<T> dst, List<T> src, int start)
         {
             for (var i = 0; i < src.Count; i++)
-            {
-                dst[i + start] = src[i];
-            }
-        }
-
-        public static void ReplaceRange<T>(List<T> dst, T[] src, int start)
-        {
-            for (var i = 0; i < src.Length; i++)
             {
                 dst[i + start] = src[i];
             }

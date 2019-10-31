@@ -14,19 +14,6 @@ namespace MLAgents
     public struct AgentInfo
     {
         /// <summary>
-        /// Most recent agent vector (i.e. numeric) observation.
-        /// </summary>
-        //public List<float> vectorObservation;
-
-        /// <summary>
-        /// The previous agent vector observations, stacked. The length of the
-        /// history (i.e. number of vector observations to stack) is specified
-        /// in the Brain parameters.
-        /// </summary>
-        // TODO REMOVE
-        //public List<float> stackedVectorObservation;
-
-        /// <summary>
         /// Most recent compressed observations.
         /// </summary>
         public List<CompressedObservation> compressedObservations;
@@ -482,15 +469,6 @@ namespace MLAgents
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
             m_Action.textActions = "";
-            // TODO handle VectorSensor
-//            m_Info.vectorObservation =
-//                new List<float>(param.vectorObservationSize);
-//            m_Info.stackedVectorObservation =
-//                new List<float>(param.vectorObservationSize
-//                    * param.numStackedVectorObservations);
-//            m_Info.stackedVectorObservation.AddRange(
-//                new float[param.vectorObservationSize
-//                          * param.numStackedVectorObservations]);
 
             m_Info.compressedObservations = new List<CompressedObservation>();
             m_Info.floatObservations = new List<float>();
@@ -557,10 +535,6 @@ namespace MLAgents
                 {
                     sensors.Add(m_CollectObservationsSensor);
                 }
-
-                // Connect these so that AddVectorObs will append to the VectorSensor
-                // TODO change AddVectorObs to write to m_CollectObservationsSensor.observations directly instead?
-                //m_Info.vectorObservation = m_CollectObservationsSensor.observations;
             }
 
             // Sort the Sensors by name to ensure determinism
