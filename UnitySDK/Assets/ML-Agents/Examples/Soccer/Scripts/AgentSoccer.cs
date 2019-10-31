@@ -94,7 +94,7 @@ public class AgentSoccer : Agent
             detectableObjects = m_DetectableObjectsBlue;
         }
         AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects));
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f));
+        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 1f));
     }
 
     public void MoveAgent(float[] act)

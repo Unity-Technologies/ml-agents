@@ -3,7 +3,7 @@ from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.exception import UnityCommunicationException
+from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
@@ -116,7 +116,7 @@ def worker(
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
                 break
-    except (KeyboardInterrupt, UnityCommunicationException):
+    except (KeyboardInterrupt, UnityCommunicationException, UnityTimeOutException):
         logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:
