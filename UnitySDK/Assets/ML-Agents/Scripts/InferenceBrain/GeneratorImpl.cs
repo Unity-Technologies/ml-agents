@@ -97,7 +97,7 @@ namespace MLAgents.InferenceBrain
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            //var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var vecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
             foreach (var agent in agents)
             {
@@ -110,7 +110,12 @@ namespace MLAgents.InferenceBrain
                     var numWritten = sensor.Write(m_WriteAdapter);
                     tensorOffset += numWritten;
                 }
-                // TODO check tensorOffset == vecObsSizeT -> make sure enough was written
+                Debug.AssertFormat(
+                    tensorOffset == vecObsSizeT,
+                    "mismatch between vector observation size ({0}) and number of observations written ({1})",
+                    vecObsSizeT, tensorOffset
+                );
+
                 agentIndex++;
             }
         }

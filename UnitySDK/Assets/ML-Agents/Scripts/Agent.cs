@@ -1,4 +1,3 @@
-using System.CodeDom;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
@@ -253,7 +252,9 @@ namespace MLAgents
         [FormerlySerializedAs("m_Sensors")]
         public List<ISensor> sensors;
 
-        public VectorSensor m_CollectObservationsSensor;
+        public VectorSensor collectObservationsSensor;
+
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -525,15 +526,15 @@ namespace MLAgents
             var param = m_PolicyFactory.brainParameters;
             if (param.vectorObservationSize > 0)
             {
-                m_CollectObservationsSensor = new VectorSensor(param.vectorObservationSize);
+                collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
                 if (param.numStackedVectorObservations > 1)
                 {
-                    var stackingSensor = new StackingSensor(m_CollectObservationsSensor, param.numStackedVectorObservations);
+                    var stackingSensor = new StackingSensor(collectObservationsSensor, param.numStackedVectorObservations);
                     sensors.Add(stackingSensor);
                 }
                 else
                 {
-                    sensors.Add(m_CollectObservationsSensor);
+                    sensors.Add(collectObservationsSensor);
                 }
             }
 
@@ -601,7 +602,7 @@ namespace MLAgents
         /// </summary>
         public void GenerateSensorData()
         {
-            WriteAdapter wa = new WriteAdapter();
+
             int floatsWritten = 0;
             // Generate data for all Sensors
             for (var i = 0; i < sensors.Count; i++)
@@ -609,8 +610,8 @@ namespace MLAgents
                 var sensor = sensors[i];
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    wa.SetTarget(m_Info.floatObservations, floatsWritten);
-                    floatsWritten += sensor.Write(wa);
+                    m_WriteAdapter.SetTarget(m_Info.floatObservations, floatsWritten);
+                    floatsWritten += sensor.Write(m_WriteAdapter);
                 }
                 else
                 {
@@ -720,7 +721,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -730,7 +731,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -740,7 +741,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -750,7 +751,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -760,7 +761,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -770,7 +771,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -780,12 +781,12 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            m_CollectObservationsSensor.AddObservation(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            m_CollectObservationsSensor.AddOneHotObservation(observation, range);
+            collectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>

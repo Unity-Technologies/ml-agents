@@ -1,4 +1,3 @@
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor
@@ -20,8 +19,7 @@ namespace MLAgents.Sensor
         /// Default implementation of Write interface. This creates a temporary array, calls WriteObservation,
         /// and then writes the results to the WriteAdapter.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="agentIndex"></param>
+        /// <param name="adapter"></param>
         public virtual int Write(WriteAdapter adapter)
         {
             // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()

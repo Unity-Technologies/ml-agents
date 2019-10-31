@@ -28,9 +28,9 @@ namespace MLAgents
             }
 #else
             var error = buildResult;
-            var isOK = string.IsNullOrEmpty(error);
+            var isOk = string.IsNullOrEmpty(error);
 #endif
-            if (isOK)
+            if (isOk)
             {
                 EditorApplication.Exit(0);
             }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine.Assertions.Comparers;
-
 namespace MLAgents.Sensor
 {
     /// <summary>
@@ -31,7 +28,7 @@ namespace MLAgents.Sensor
         /// </summary>
         float[][] m_StackedObservations;
 
-        int m_currentIndex;
+        int m_CurrentIndex;
         WriteAdapter m_LocalAdapter = new WriteAdapter();
 
         /// <summary>
@@ -69,20 +66,20 @@ namespace MLAgents.Sensor
         public int Write(WriteAdapter adapter)
         {
             // First, call the wrapped sensor's write method. Make sure to use our own adapater, not the passed one.
-            m_LocalAdapter.SetTarget(m_StackedObservations[m_currentIndex], 0);
+            m_LocalAdapter.SetTarget(m_StackedObservations[m_CurrentIndex], 0);
             m_WrappedSensor.Write(m_LocalAdapter);
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
-                var obsIndex = (m_currentIndex + 1 + i) % m_NumStackedObservations;
+                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
                 adapter.AddRange(m_StackedObservations[obsIndex], numWritten);
                 numWritten += m_NumUnstackedObservationSize;
             }
 
             // Finally update the index of the "current" buffer.
-            m_currentIndex = (m_currentIndex + 1) % m_NumStackedObservations;
+            m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
             return numWritten;
         }
 

@@ -1,10 +1,9 @@
 using System;
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class RenderTextureSensor : ISensor
+    public class RenderTextureSensor : ISensor
     {
         RenderTexture m_RenderTexture;
         int m_Width;

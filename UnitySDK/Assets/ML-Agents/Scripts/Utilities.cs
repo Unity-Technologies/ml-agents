@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.InferenceBrain;
 using MLAgents.Sensor;
 
 namespace MLAgents
@@ -14,15 +13,12 @@ namespace MLAgents
         /// <param name="texture">
         /// The texture to be put into the tensor.
         /// </param>
-        /// <param name="tensorProxy">
-        /// TensorProxy to fill with Texture data.
+        /// <param name="adapter">
+        /// Adapter to fill with Texture data.
         /// </param>
         /// <param name="grayScale">
         /// If set to <c>true</c> the textures will be converted to grayscale before
         /// being stored in the tensor.
-        /// </param>
-        /// <param name="textureOffset">
-        /// Index of the texture being written.
         /// </param>
         /// <returns>The number of floats written</returns>
         public static int TextureToTensorProxy(

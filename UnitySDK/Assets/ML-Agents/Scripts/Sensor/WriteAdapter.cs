@@ -15,13 +15,6 @@ namespace MLAgents.Sensor
         int m_Batch;
 
         /// <summary>
-        /// Create an empty Adapter. SetTarget() must be called first before using.
-        /// </summary>
-        public WriteAdapter()
-        {
-        }
-
-        /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data"></param>

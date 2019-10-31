@@ -2,7 +2,6 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using MLAgents.Sensor;
-using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {

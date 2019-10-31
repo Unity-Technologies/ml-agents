@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
@@ -37,8 +36,8 @@ namespace MLAgents.Tests
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 agentEnableMethod?.Invoke(agent, new object[] { aca });
             }
-            agentA.m_CollectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
-            agentB.m_CollectObservationsSensor.AddObservation(new Vector3(4, 5, 6));
+            agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
+            agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));
 
             var infoA = new AgentInfo
             {
