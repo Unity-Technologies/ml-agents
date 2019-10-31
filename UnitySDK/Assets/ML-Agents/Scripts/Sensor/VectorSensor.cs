@@ -25,21 +25,23 @@ namespace MLAgents.Sensor
 
         public int Write(WriteAdapter adapter)
         {
-            // TODO warn about size mismatches
             var expectedObservations = m_Shape[0];
-            Debug.AssertFormat(
-                expectedObservations == m_Observations.Count,
-                "mismatch between vector observation size ({0}) and number of observations written ({1})",
-                expectedObservations, m_Observations.Count
-            );
             if (m_Observations.Count > expectedObservations)
             {
                 // Too many observations, truncate
+                Debug.LogWarningFormat(
+                    "More observations ({0}) made than vector observation size ({1}). The observations will be truncated.",
+                    m_Observations.Count, expectedObservations
+                );
                 m_Observations.RemoveRange(expectedObservations, m_Observations.Count - expectedObservations);
             }
             else if (m_Observations.Count < expectedObservations)
             {
                 // Not enough observations; pad with zeros.
+                Debug.LogWarningFormat(
+                    "Fewer observations ({0}) made than vector observation size ({1}). The observations will be padded.",
+                    m_Observations.Count, expectedObservations
+                );
                 for (int i = m_Observations.Count; i < expectedObservations; i++)
                 {
                     m_Observations.Add(0);

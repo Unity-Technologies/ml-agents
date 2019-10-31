@@ -82,7 +82,6 @@ namespace MLAgents.InferenceBrain
             // For vector observations, add the index to the (single) VectorObservationGenerator
             // For visual observations, make a VisualObservationInputGenerator
             var visIndex = 0;
-            var vecIndex = 0;
             VectorObservationGenerator vecObsGen = null;
             for (var sensorIndex = 0; sensorIndex < agent.sensors.Count; sensorIndex++)
             {
@@ -98,7 +97,6 @@ namespace MLAgents.InferenceBrain
                     }
 
                     vecObsGen.AddSensorIndex(sensorIndex);
-                    vecIndex++;
                 }
                 else
                 {
