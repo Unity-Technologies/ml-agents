@@ -7,6 +7,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.ghost.create_ghost import create_ghost_trainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 
 
@@ -97,6 +98,9 @@ def initialize_trainer(
         trainer_parameters.update(trainer_config[_brain_key])
 
     trainer = None
+
+    # capturing trainer args
+    args: Any = []
     if trainer_parameters["trainer"] == "offline_bc":
         trainer = OfflineBCTrainer(
             brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
@@ -114,6 +118,9 @@ def initialize_trainer(
             run_id,
             multi_gpu,
         )
+
+        # hacking it this way because SAC and PPO take variable args
+        args = [run_id, multi_gpu]
     elif trainer_parameters["trainer"] == "sac":
         trainer = SACTrainer(
             brain_parameters,
@@ -126,12 +133,33 @@ def initialize_trainer(
             seed,
             run_id,
         )
+
+        # hacking it this way because SAC and PPO take variable args
+        args = [run_id]
+
     else:
         raise UnityEnvironmentException(
             "The trainer config contains "
             "an unknown trainer type for "
             "brain {}".format(brain_name)
         )
+
+    if trainer_parameters["ghosts"] > 0:
+        # wraps the trainer with the ghost trainer and passes the number of ghosts
+        trainer = create_ghost_trainer(
+            trainer,
+            trainer_parameters["ghosts"],
+            brain_parameters,
+            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
+            if meta_curriculum
+            else 1,
+            trainer_parameters,
+            train_model,
+            load_model,
+            seed,
+            *args,
+        )
+
     return trainer
 
 
