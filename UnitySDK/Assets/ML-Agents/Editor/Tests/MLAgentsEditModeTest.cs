@@ -83,11 +83,12 @@ namespace MLAgents.Tests
 
         public int[] GetFloatObservationShape()
         {
-            return new[] { 1 };
+            return new[] { 0 };
         }
 
         public int Write(WriteAdapter adapter)
         {
+            // No-op
             return 0;
         }
 
