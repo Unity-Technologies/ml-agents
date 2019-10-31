@@ -24,7 +24,7 @@ namespace MLAgents.Tests
             var agentA = goA.AddComponent<TestAgent>();
 
             var goB = new GameObject("goB");
-            var bpB = goA.AddComponent<BehaviorParameters>();
+            var bpB = goB.AddComponent<BehaviorParameters>();
             bpB.brainParameters.vectorObservationSize = 3;
             bpB.brainParameters.numStackedVectorObservations = 1;
             var agentB = goB.AddComponent<TestAgent>();
