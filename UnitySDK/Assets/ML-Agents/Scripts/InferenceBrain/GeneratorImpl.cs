@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
+using MLAgents.Sensor;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -79,9 +81,17 @@ namespace MLAgents.InferenceBrain
     public class VectorObservationGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
+        List<int> m_SensorIndices = new List<int>();
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
+
         public VectorObservationGenerator(ITensorAllocator allocator)
         {
             m_Allocator = allocator;
+        }
+
+        public void AddSensorIndex(int sensorIndex)
+        {
+            m_SensorIndices.Add(sensorIndex);
         }
 
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<Agent> agents)
@@ -91,12 +101,21 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                var info = agent.Info;
-                var vectorObs = info.stackedVectorObservation;
-                for (var j = 0; j < vecObsSizeT; j++)
+                var tensorOffset = 0;
+                // Write each sensor consecutively to the tensor
+                foreach (var sensorIndex in m_SensorIndices)
                 {
-                    tensorProxy.data[agentIndex, j] = vectorObs[j];
+                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
+                    var sensor = agent.sensors[sensorIndex];
+                    var numWritten = sensor.Write(m_WriteAdapter);
+                    tensorOffset += numWritten;
                 }
+                Debug.AssertFormat(
+                    tensorOffset == vecObsSizeT,
+                    "mismatch between vector observation size ({0}) and number of observations written ({1})",
+                    vecObsSizeT, tensorOffset
+                );
+
                 agentIndex++;
             }
         }
@@ -252,14 +271,14 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class VisualObservationInputGenerator : TensorGenerator.IGenerator
     {
-        readonly int m_Index;
-        readonly bool m_GrayScale;
+        readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         public VisualObservationInputGenerator(
-            int index, ITensorAllocator allocator)
+            int sensorIndex, ITensorAllocator allocator)
         {
-            m_Index = index;
+            m_SensorIndex = sensorIndex;
             m_Allocator = allocator;
         }
 
@@ -269,9 +288,8 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                // TODO direct access to sensors list here - should we do it differently?
-                // TODO m_Index here is the visual observation index. Will work for now but not if we add more sensor types.
-                agent.sensors[m_Index].WriteToTensor(tensorProxy, agentIndex);
+                m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
+                agent.sensors[m_SensorIndex].Write(m_WriteAdapter);
                 agentIndex++;
             }
         }

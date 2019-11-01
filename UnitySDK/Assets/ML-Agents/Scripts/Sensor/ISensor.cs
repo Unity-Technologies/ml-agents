@@ -1,5 +1,3 @@
-using MLAgents.InferenceBrain;
-
 namespace MLAgents.Sensor
 {
     public enum SensorCompressionType
@@ -22,12 +20,12 @@ namespace MLAgents.Sensor
         int[] GetFloatObservationShape();
 
         /// <summary>
-        /// Write the observation data directly to the TensorProxy.
+        /// Write the observation data directly to the WriteAdapter.
         /// This is considered an advanced interface; for a simpler approach, use SensorBase and override WriteFloats instead.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="agentIndex"></param>
-        void WriteToTensor(TensorProxy tensorProxy, int agentIndex);
+        /// <param name="adapater"></param>
+        /// <returns>The number of elements written</returns>
+        int Write(WriteAdapter adapater);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this should generally not be

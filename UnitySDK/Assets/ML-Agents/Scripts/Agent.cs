@@ -13,21 +13,12 @@ namespace MLAgents
     public struct AgentInfo
     {
         /// <summary>
-        /// Most recent agent vector (i.e. numeric) observation.
-        /// </summary>
-        public List<float> vectorObservation;
-
-        /// <summary>
-        /// The previous agent vector observations, stacked. The length of the
-        /// history (i.e. number of vector observations to stack) is specified
-        /// in the Brain parameters.
-        /// </summary>
-        public List<float> stackedVectorObservation;
-
-        /// <summary>
         /// Most recent compressed observations.
         /// </summary>
         public List<CompressedObservation> compressedObservations;
+
+        // TODO struct?
+        public List<float> floatObservations;
 
         /// <summary>
         /// Most recent text observation.
@@ -261,6 +252,10 @@ namespace MLAgents
         [FormerlySerializedAs("m_Sensors")]
         public List<ISensor> sensors;
 
+        public VectorSensor collectObservationsSensor;
+
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
+
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -475,16 +470,12 @@ namespace MLAgents
             if (m_Info.textObservation == null)
                 m_Info.textObservation = "";
             m_Action.textActions = "";
-            m_Info.vectorObservation =
-                new List<float>(param.vectorObservationSize);
-            m_Info.stackedVectorObservation =
-                new List<float>(param.vectorObservationSize
-                    * param.numStackedVectorObservations);
-            m_Info.stackedVectorObservation.AddRange(
-                new float[param.vectorObservationSize
-                          * param.numStackedVectorObservations]);
 
             m_Info.compressedObservations = new List<CompressedObservation>();
+            m_Info.floatObservations = new List<float>();
+            m_Info.floatObservations.AddRange(
+                new float[param.vectorObservationSize
+                    * param.numStackedVectorObservations]);
             m_Info.customObservation = null;
         }
 
@@ -523,11 +514,28 @@ namespace MLAgents
         /// </summary>
         public void InitializeSensors()
         {
+            // Get all attached sensor components
             var attachedSensorComponents = GetComponents<SensorComponent>();
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
                 sensors.Add(component.CreateSensor());
+            }
+
+            // Support legacy CollectObservations
+            var param = m_PolicyFactory.brainParameters;
+            if (param.vectorObservationSize > 0)
+            {
+                collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
+                if (param.numStackedVectorObservations > 1)
+                {
+                    var stackingSensor = new StackingSensor(collectObservationsSensor, param.numStackedVectorObservations);
+                    sensors.Add(stackingSensor);
+                }
+                else
+                {
+                    sensors.Add(collectObservationsSensor);
+                }
             }
 
             // Sort the Sensors by name to ensure determinism
@@ -554,7 +562,6 @@ namespace MLAgents
 
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
-            m_Info.vectorObservation.Clear();
             m_Info.compressedObservations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -563,21 +570,7 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = m_PolicyFactory.brainParameters;
-            if (m_Info.vectorObservation.Count != param.vectorObservationSize)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "Vector Observation size mismatch in continuous " +
-                    "agent {0}. " +
-                    "Was Expecting {1} but received {2}. ",
-                    gameObject.name,
-                    param.vectorObservationSize,
-                    m_Info.vectorObservation.Count));
-            }
-
-            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
-            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
-                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
+            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
@@ -609,18 +602,27 @@ namespace MLAgents
         /// </summary>
         public void GenerateSensorData()
         {
+
+            int floatsWritten = 0;
             // Generate data for all Sensors
-            // TODO add bool argument indicating when to compress? For now, we always will compress.
             for (var i = 0; i < sensors.Count; i++)
             {
                 var sensor = sensors[i];
-                var compressedObs = new CompressedObservation
+                if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    Data = sensor.GetCompressedObservation(),
-                    Shape = sensor.GetFloatObservationShape(),
-                    CompressionType = sensor.GetCompressionType()
-                };
-                m_Info.compressedObservations.Add(compressedObs);
+                    m_WriteAdapter.SetTarget(m_Info.floatObservations, floatsWritten);
+                    floatsWritten += sensor.Write(m_WriteAdapter);
+                }
+                else
+                {
+                    var compressedObs = new CompressedObservation
+                    {
+                        Data = sensor.GetCompressedObservation(),
+                        Shape = sensor.GetFloatObservationShape(),
+                        CompressionType = sensor.GetCompressionType()
+                    };
+                    m_Info.compressedObservations.Add(compressedObs);
+                }
             }
         }
 
@@ -719,7 +721,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -729,7 +731,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -739,9 +741,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -751,8 +751,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -762,7 +761,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            m_Info.vectorObservation.AddRange(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -772,10 +771,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
-            m_Info.vectorObservation.Add(observation.w);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -785,14 +781,12 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            m_Info.vectorObservation.Add(observation ? 1f : 0f);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            var oneHotVector = new float[range];
-            oneHotVector[observation] = 1;
-            m_Info.vectorObservation.AddRange(oneHotVector);
+            collectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>
