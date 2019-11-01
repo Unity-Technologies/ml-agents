@@ -1,6 +1,14 @@
 # Migrating
 
-## Migrating from ML-Agents toolkit v0.10 to v0.11
+## Migrating from ML-Agents toolkit v0.11.0
+
+### Important Changes
+
+### Steps to Migrate
+* The usage of `RayPerception3d.Perceive()`'s `startOffset` and `endOffset` parameters [was changed](https://github.com/Unity-Technologies/ml-agents/pull/2823) to be more consistent, however this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the previous `endOffset` by `startOffset`.
+
+
+## Migrating from ML-Agents toolkit v0.10 to v0.11.0
 
 ### Important Changes
 * The definition of the gRPC service has changed.
