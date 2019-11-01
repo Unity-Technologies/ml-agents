@@ -10,7 +10,6 @@ class BaseUnityEnvironment(ABC):
         self,
         vector_action: Optional[Dict] = None,
         memory: Optional[Dict] = None,
-        text_action: Optional[Dict] = None,
         value: Optional[Dict] = None,
     ) -> AllBrainInfo:
         pass

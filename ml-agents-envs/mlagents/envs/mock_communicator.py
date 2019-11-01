@@ -86,8 +86,6 @@ class MockCommunicator(Communicator):
                     stacked_vector_observation=observation,
                     reward=1,
                     stored_vector_actions=vector_action,
-                    stored_text_actions="",
-                    text_observation="",
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,

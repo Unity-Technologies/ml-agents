@@ -90,13 +90,11 @@ def worker(
             if cmd.name == "step":
                 all_action_info = cmd.payload
                 actions = {}
-                texts = {}
                 values = {}
                 for brain_name, action_info in all_action_info.items():
                     actions[brain_name] = action_info.action
-                    texts[brain_name] = action_info.text
                     values[brain_name] = action_info.value
-                all_brain_info = env.step(actions, texts, values, None)
+                all_brain_info = env.step(actions, values, None)
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce

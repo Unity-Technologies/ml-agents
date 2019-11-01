@@ -25,13 +25,11 @@ class SimpleEnvManager(EnvManager):
         self.previous_all_action_info = all_action_info
 
         actions = {}
-        texts = {}
         values = {}
         for brain_name, action_info in all_action_info.items():
             actions[brain_name] = action_info.action
-            texts[brain_name] = action_info.text
             values[brain_name] = action_info.value
-        all_brain_info = self.env.step(actions, texts, values, None)
+        all_brain_info = self.env.step(actions, values, None)
         step_brain_info = all_brain_info
 
         step_info = EnvironmentStep(

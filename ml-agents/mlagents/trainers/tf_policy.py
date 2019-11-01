@@ -135,7 +135,6 @@ class TFPolicy(Policy):
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
-            text=None,
             value=run_out.get("value"),
             outputs=run_out,
         )

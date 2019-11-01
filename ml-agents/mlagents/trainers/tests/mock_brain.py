@@ -74,8 +74,6 @@ def create_mock_braininfo(
     mock_braininfo.return_value.memories = np.ones((num_agents, 8))
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
-    mock_braininfo.return_value.text_observations = num_agents * [""]
-    mock_braininfo.return_value.previous_text_actions = num_agents * [""]
     mock_braininfo.return_value.max_reached = num_agents * [100]
     mock_braininfo.return_value.action_masks = num_agents * [num_vector_acts * [1.0]]
     mock_braininfo.return_value.agents = range(0, num_agents)

@@ -241,7 +241,7 @@ class UnityEnv(gym.Env):
             default_observation,
             info.rewards[0],
             info.local_done[0],
-            {"text_observation": info.text_observations[0], "brain_info": info},
+            {"text_observation": None, "brain_info": info},
         )
 
     def _preprocess_single(self, single_visual_obs):
@@ -260,7 +260,7 @@ class UnityEnv(gym.Env):
             list(default_observation),
             info.rewards,
             info.local_done,
-            {"text_observation": info.text_observations, "brain_info": info},
+            {"text_observation": None, "brain_info": info},
         )
 
     def _preprocess_multi(self, multiple_visual_obs):

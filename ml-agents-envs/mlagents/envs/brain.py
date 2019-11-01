@@ -94,12 +94,10 @@ class BrainInfo:
         self,
         visual_observation,
         vector_observation,
-        text_observations,
         reward=None,
         agents=None,
         local_done=None,
         vector_action=None,
-        text_action=None,
         max_reached=None,
         action_mask=None,
         custom_observations=None,
@@ -109,13 +107,11 @@ class BrainInfo:
         """
         self.visual_observations = visual_observation
         self.vector_observations = vector_observation
-        self.text_observations = text_observations
         self.rewards = reward
         self.local_done = local_done
         self.max_reached = max_reached
         self.agents = agents
         self.previous_vector_actions = vector_action
-        self.previous_text_actions = text_action
         self.action_masks = action_mask
         self.custom_observations = custom_observations
 
@@ -228,12 +224,10 @@ class BrainInfo:
         brain_info = BrainInfo(
             visual_observation=vis_obs,
             vector_observation=vector_obs,
-            text_observations=[x.text_observation for x in agent_info_list],
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=agents,
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
-            text_action=[list(x.stored_text_actions) for x in agent_info_list],
             max_reached=[x.max_step_reached for x in agent_info_list],
             custom_observations=[x.custom_observation for x in agent_info_list],
             action_mask=mask_actions,
