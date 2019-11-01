@@ -2,7 +2,6 @@
 # ## ML-Agent Learning (Ghost Trainer)
 # Contains an implementation of a 'ghost trainer' which loads
 # snapshots of the agent's past selves to train against in adversarial settings.
-import copy
 import logging
 from collections import defaultdict
 
@@ -120,29 +119,41 @@ def create_ghost_trainer(
             #     print(len(_binfo.agents))
 
             # current policy
-            # run_out = self.evaluate(brain_infos[0])
+            run_out2 = self.evaluate(brain_info)  # This is bad
             run_out = self.evaluate(brain_infos[0])
 
-            run_out_copy = copy.deepcopy(run_out)
+            # run_out_copy = copy.deepcopy(run_out)
+            all_team_actions = np.zeros(run_out2["action"].shape)
+            all_team_values = np.zeros(run_out2["value"].shape)
 
+            for i, (action, value) in enumerate(
+                zip(run_out["action"], run_out["value"])
+            ):
+                all_team_actions[indices[0][i]] = action
+                all_team_values[indices[0][i]] = value
             # ghost actions
             for ghost in range(self.num_ghosts):
                 # hack for inference
                 # if len(indices[ghost + 1]) > 0:
                 ghost_run_out = self.ghosts[ghost].evaluate(brain_infos[ghost + 1])
-                run_out_copy["action"] = np.concatenate(
-                    (run_out_copy["action"], ghost_run_out["action"]), axis=0
-                )
-                run_out_copy["value"] = np.concatenate(
-                    (run_out_copy["value"], ghost_run_out["value"]), axis=0
-                )
+                for i, (action, value) in enumerate(
+                    zip(ghost_run_out["action"], ghost_run_out["value"])
+                ):
+                    all_team_actions[indices[ghost + 1][i]] = np.zeros(action.shape)
+                    all_team_values[indices[ghost + 1][i]] = value
+                # run_out_copy["action"] = np.concatenate(
+                #     (run_out_copy["action"], ghost_run_out["action"]), axis=0
+                # )
+                # run_out_copy["value"] = np.concatenate(
+                #     (run_out_copy["value"], ghost_run_out["value"]), axis=0
+                # )
             # print(run_out_copy["action"], len(run_out_copy["action"]))
 
             return ActionInfo(
-                action=run_out_copy.get("action"),
-                memory=run_out_copy.get("memory_out"),
+                action=all_team_actions,
+                memory=run_out.get("memory_out"),
                 text=None,
-                value=run_out_copy.get("value"),
+                value=all_team_values,
                 outputs=run_out,
             )
 
