@@ -111,14 +111,17 @@ def create_ghost_trainer(
             # plus 1 for number of teams since num_ghosts = teams -1
             brain_infos = []
             indices = get_indices(brain_info)
+            # print(indices)
             for team_id in range(self.num_ghosts + 1):
                 brain_infos.append(filter_by_indices(brain_info, indices[team_id]))
-            print(brain_info.agents)
-            for k in brain_info.__dict__:
-                print(k)
+            # print(len(brain_info.agents))
+            # print(self.num_ghosts)
+            # for _binfo in brain_infos:
+            #     print(len(_binfo.agents))
+
             # current policy
             # run_out = self.evaluate(brain_infos[0])
-            run_out = self.evaluate(brain_info)
+            run_out = self.evaluate(brain_infos[0])
 
             run_out_copy = copy.deepcopy(run_out)
 
@@ -133,14 +136,14 @@ def create_ghost_trainer(
                 run_out_copy["value"] = np.concatenate(
                     (run_out_copy["value"], ghost_run_out["value"]), axis=0
                 )
-            print(run_out_copy["action"], len(run_out_copy["action"]))
+            # print(run_out_copy["action"], len(run_out_copy["action"]))
 
             return ActionInfo(
                 action=run_out_copy.get("action"),
                 memory=run_out_copy.get("memory_out"),
                 text=None,
                 value=run_out_copy.get("value"),
-                outputs=run_out_copy,
+                outputs=run_out,
             )
 
     # ghost trainer now wraps base trainer class
@@ -169,16 +172,18 @@ def create_ghost_trainer(
 
             # Assumes that learning policy is team_id 0
             indices = get_indices(current_info[self.brain_name])[0]
-            current_info[self.brain_name] = filter_by_indices(
+            new_curr_info: AllBrainInfo = {}
+            new_curr_info[self.brain_name] = filter_by_indices(
                 current_info[self.brain_name], indices
             )
 
             indices = get_indices(new_info[self.brain_name])[0]
-            new_info[self.brain_name] = filter_by_indices(
+            new_new_info: AllBrainInfo = {}
+            new_new_info[self.brain_name] = filter_by_indices(
                 new_info[self.brain_name], indices
             )
 
-            super(GhostTrainer, self).process_experiences(current_info, new_info)
+            super(GhostTrainer, self).process_experiences(new_curr_info, new_new_info)
 
         def add_experiences(
             self,
@@ -190,17 +195,19 @@ def create_ghost_trainer(
             # Assumes that learning policy is team_id 0. Writing it this way because of the structure of add_exp
 
             indices = get_indices(curr_all_info[self.brain_name])[0]
-            curr_all_info[self.brain_name] = filter_by_indices(
+            new_all_info: AllBrainInfo = {}
+            new_all_info[self.brain_name] = filter_by_indices(
                 curr_all_info[self.brain_name], indices
             )
 
             indices = get_indices(next_all_info[self.brain_name])[0]
-            next_all_info[self.brain_name] = filter_by_indices(
+            new_next_all_info: AllBrainInfo = {}
+            new_next_all_info[self.brain_name] = filter_by_indices(
                 next_all_info[self.brain_name], indices
             )
 
             super(GhostTrainer, self).add_experiences(
-                curr_all_info, next_all_info, take_action_outputs
+                new_all_info, new_next_all_info, take_action_outputs
             )
 
         def save_snapshot(self):
