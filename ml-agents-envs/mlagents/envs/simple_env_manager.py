@@ -29,7 +29,7 @@ class SimpleEnvManager(EnvManager):
         for brain_name, action_info in all_action_info.items():
             actions[brain_name] = action_info.action
             values[brain_name] = action_info.value
-        all_brain_info = self.env.step(actions, values, None)
+        all_brain_info = self.env.step(vector_action=actions, value=values)
         step_brain_info = all_brain_info
 
         step_info = EnvironmentStep(
