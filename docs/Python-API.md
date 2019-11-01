@@ -106,12 +106,10 @@ variable named `env` in this example, can be used in the following way:
     `resetParameters` and the values are their corresponding float values.
     Define the reset parameters on the Academy Inspector window in the Unity
     Editor.
-- **Step : `env.step(action, memory=None)`**
+- **Step : `env.step(action)`**
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
     multiple Agents per Brain.
-  - `memory` is an optional input that can be used to send a list of floats per
-    Agents to be retrieved at the next step.
 
     Returns a dictionary mapping Brain names to BrainInfo objects.
 
