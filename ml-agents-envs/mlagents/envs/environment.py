@@ -460,9 +460,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                     )
 
-            step_input = self._generate_step_input(
-                vector_action, value
-            )
+            step_input = self._generate_step_input(vector_action, value)
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
@@ -550,9 +548,7 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     @timed
     def _generate_step_input(
-        self,
-        vector_action: Dict[str, np.ndarray],
-        value: Dict[str, np.ndarray],
+        self, vector_action: Dict[str, np.ndarray], value: Dict[str, np.ndarray]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -562,7 +558,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             _a_s = len(vector_action[b]) // n_agents
             for i in range(n_agents):
                 action = AgentActionProto(
-                    vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s],
+                    vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s]
                 )
                 if b in value:
                     if value[b] is not None:

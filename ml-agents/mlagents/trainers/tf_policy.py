@@ -134,9 +134,7 @@ class TFPolicy(Policy):
         run_out = self.evaluate(brain_info)
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
-            action=run_out.get("action"),
-            value=run_out.get("value"),
-            outputs=run_out,
+            action=run_out.get("action"), value=run_out.get("value"), outputs=run_out
         )
 
     def update(self, mini_batch, num_sequences):
