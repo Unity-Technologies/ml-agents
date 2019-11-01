@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from typing import Optional
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
@@ -43,6 +44,11 @@ class SACNetwork(LearningModel):
         self.stream_names = stream_names
         self.h_size = h_size
         self.activ_fn = self.swish
+
+        self.policy_memory_in: Optional[tf.Tensor] = None
+        self.value_memory_in: Optional[tf.Tensor] = None
+        self.q1_memory_in: Optional[tf.Tensor] = None
+        self.q2_memory_in: Optional[tf.Tensor] = None
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)

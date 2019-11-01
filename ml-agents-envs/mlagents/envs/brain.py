@@ -175,6 +175,7 @@ class BrainInfo:
                 for x in agent_info_list
             ]
             vis_obs += [obs]
+
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
         for agent_index, agent_info in enumerate(agent_info_list):
