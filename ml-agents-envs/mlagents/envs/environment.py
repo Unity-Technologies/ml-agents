@@ -28,7 +28,6 @@ from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import
 )
 
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
-from mlagents.envs.communicator_objects.custom_action_pb2 import CustomActionProto
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -349,7 +348,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         self,
         vector_action: Dict[str, np.ndarray] = None,
         value: Optional[Dict[str, np.ndarray]] = None,
-        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
@@ -357,14 +355,12 @@ class UnityEnvironment(BaseUnityEnvironment):
         :param value: Value estimates provided by agents.
         :param vector_action: Agent's vector action. Can be a scalar or vector of int/floats.
         :param memory: Vector corresponding to memory used for recurrent policies.
-        :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
         if self._is_first_message:
             return self.reset()
         vector_action = {} if vector_action is None else vector_action
         value = {} if value is None else value
-        custom_action = {} if custom_action is None else custom_action
 
         # Check that environment is loaded, and episode is currently running.
         if not self._loaded:
@@ -400,22 +396,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a value input"
                     )
 
-            if isinstance(custom_action, CustomActionProto):
-                if self._num_external_brains == 1:
-                    custom_action = {self._external_brain_names[0]: custom_action}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and CustomAction instances as values".format(
-                            self._num_external_brains
-                        )
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a custom_action input"
-                    )
-
             for brain_name in list(vector_action.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
@@ -440,15 +420,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                 else:
                     vector_action[brain_name] = self._flatten(vector_action[brain_name])
-                if brain_name not in custom_action:
-                    custom_action[brain_name] = [None] * n_agent
-                else:
-                    if custom_action[brain_name] is None:
-                        custom_action[brain_name] = [None] * n_agent
-                    if isinstance(custom_action[brain_name], CustomActionProto):
-                        custom_action[brain_name] = [
-                            custom_action[brain_name]
-                        ] * n_agent
 
                 discrete_check = (
                     self._brains[brain_name].vector_action_space_type == "discrete"
@@ -490,7 +461,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                     )
 
             step_input = self._generate_step_input(
-                vector_action, value, custom_action
+                vector_action, value
             )
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
@@ -582,7 +553,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         self,
         vector_action: Dict[str, np.ndarray],
         value: Dict[str, np.ndarray],
-        custom_action: Dict[str, list],
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -593,7 +563,6 @@ class UnityEnvironment(BaseUnityEnvironment):
             for i in range(n_agents):
                 action = AgentActionProto(
                     vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s],
-                    custom_action=custom_action[b][i],
                 )
                 if b in value:
                     if value[b] is not None:

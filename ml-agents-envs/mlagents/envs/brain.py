@@ -100,7 +100,6 @@ class BrainInfo:
         vector_action=None,
         max_reached=None,
         action_mask=None,
-        custom_observations=None,
     ):
         """
         Describes experience at current step of all agents linked to a brain.
@@ -113,7 +112,6 @@ class BrainInfo:
         self.agents = agents
         self.previous_vector_actions = vector_action
         self.action_masks = action_mask
-        self.custom_observations = custom_observations
 
     @staticmethod
     def merge_memories(m1, m2, agents1, agents2):
@@ -229,7 +227,6 @@ class BrainInfo:
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             max_reached=[x.max_step_reached for x in agent_info_list],
-            custom_observations=[x.custom_observation for x in agent_info_list],
             action_mask=mask_actions,
         )
         return brain_info
