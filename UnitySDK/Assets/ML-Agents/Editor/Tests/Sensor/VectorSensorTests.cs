@@ -31,7 +31,7 @@ namespace MLAgents.Tests
         }
     }
 
-    public class VectorSensorTest
+    public class VectorSensorTests
     {
         [Test]
         public void TestCtor()

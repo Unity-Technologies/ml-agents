@@ -4,7 +4,7 @@ using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
-    public class StackingSensorTest
+    public class StackingSensorTests
     {
         [Test]
         public void TestCtor()
