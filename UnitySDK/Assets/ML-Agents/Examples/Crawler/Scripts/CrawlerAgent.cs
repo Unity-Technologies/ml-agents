@@ -163,7 +163,7 @@ public class CrawlerAgent : Agent
         target.position = newTargetPos + ground.position;
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         if (detectTargets)
         {

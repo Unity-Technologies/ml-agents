@@ -51,9 +51,7 @@ namespace MLAgents.Tests
                 id = 5,
                 maxStepReached = true,
                 floatObservations = new List<float>() { 1f, 1f, 1f },
-                storedTextActions = "TestAction",
                 storedVectorActions = new[] { 0f, 1f },
-                textObservation = "TestAction",
             };
 
             demoStore.Record(agentInfo);

@@ -25,7 +25,7 @@ public class BasicAgent : Agent
         AddVectorObs(m_Position, 20);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         var movement = (int)vectorAction[0];
 

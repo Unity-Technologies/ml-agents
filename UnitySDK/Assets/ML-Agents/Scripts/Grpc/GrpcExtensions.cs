@@ -21,13 +21,10 @@ namespace MLAgents
             {
                 StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
-                StoredTextActions = ai.storedTextActions,
-                TextObservation = ai.textObservation,
                 Reward = ai.reward,
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
                 Id = ai.id,
-                CustomObservation = ai.customObservation
             };
 
             if (ai.actionMasks != null)
@@ -159,9 +156,7 @@ namespace MLAgents
             return new AgentAction
             {
                 vectorActions = aap.VectorActions.ToArray(),
-                textActions = aap.TextActions,
                 value = aap.Value,
-                customAction = aap.CustomAction
             };
         }
 
