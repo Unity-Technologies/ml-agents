@@ -27,6 +27,7 @@ namespace MLAgents
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
                 Id = ai.id,
+                TeamId = ai.teamId,
                 CustomObservation = ai.customObservation
             };
             if (ai.memories != null)
