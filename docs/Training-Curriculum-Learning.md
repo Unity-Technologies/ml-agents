@@ -31,9 +31,10 @@ accomplish tasks otherwise much more difficult.
 
 ## How-To
 
-Each Brain in an environment can have a corresponding curriculum. These
+Each group of Agents under the same `Behavior Name` in an environment can have
+a corresponding curriculum. These
 curriculums are held in what we call a metacurriculum. A metacurriculum allows
-different Brains to follow different curriculums within the same environment.
+different groups of Agents to follow different curriculums within the same environment.
 
 ### Specifying a Metacurriculum
 
@@ -53,7 +54,7 @@ describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the
 percentage of training steps which have taken place, or what the average reward
 the agent has received in the recent past is. Below is an example curriculum for
-the BigWallBrain in the Wall Jump environment.
+the BigWallBehavior in the Wall Jump environment.
 
 ```json
 {
@@ -99,9 +100,10 @@ and modify the environment from the Agent's `AgentReset()` function. See
 for an example.
 
 We will save this file into our metacurriculum folder with the name of its
-corresponding Brain. For example, in the Wall Jump environment, there are two
-Brains---BigWallBrain and SmallWallBrain. If we want to define a curriculum for
-the BigWallBrain, we will save `BigWallBrain.json` into
+corresponding `Behavior Name`. For example, in the Wall Jump environment, there are two
+different `Behaviors Name` set via script in `WallJumpAgent.cs`
+---BigWallBrainLearning and SmallWallBrainLearning. If we want to define a curriculum for
+the BigWallBrainLearning, we will save `BigWallBrainLearning.json` into
 `config/curricula/wall-jump/`.
 
 ### Training with a Curriculum

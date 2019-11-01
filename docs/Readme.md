@@ -22,10 +22,6 @@
 * [Designing a Learning Environment](Learning-Environment-Design.md)
   * [Agents](Learning-Environment-Design-Agents.md)
   * [Academy](Learning-Environment-Design-Academy.md)
-  * [Brains](Learning-Environment-Design-Brains.md):
-    [Player](Learning-Environment-Design-Player-Brains.md),
-    [Heuristic](Learning-Environment-Design-Heuristic-Brains.md),
-    [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
 
 ### Advanced Usage
@@ -50,7 +46,7 @@
 * [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
 
 ### Cloud Training (Deprecated)
-Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and 
+Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and
 so they may not be work correctly. We've decided to keep them up just in case they are helpful to
 you.
 

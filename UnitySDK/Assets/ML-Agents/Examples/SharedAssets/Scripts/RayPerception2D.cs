@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -28,8 +28,11 @@ namespace MLAgents
         /// <param name="rayDistance">Radius of rays</param>
         /// <param name="rayAngles">Angles of rays (starting from (1,0) on unit circle).</param>
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
-        public List<float> Perceive(float rayDistance,
-            float[] rayAngles, string[] detectableObjects)
+        /// <param name="startOffset">Unused</param>
+        /// <param name="endOffset">Unused</param>
+        public override List<float> Perceive(float rayDistance,
+            float[] rayAngles, string[] detectableObjects,
+            float startOffset=0.0f, float endOffset=0.0f)
         {
             m_PerceptionBuffer.Clear();
             // For each ray sublist stores categorical information on detected object

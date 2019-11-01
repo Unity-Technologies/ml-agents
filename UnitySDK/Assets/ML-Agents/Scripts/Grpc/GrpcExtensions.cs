@@ -4,6 +4,7 @@ using System.Linq;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents
@@ -18,7 +19,7 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                StackedVectorObservation = { ai.stackedVectorObservation },
+                StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
                 StoredTextActions = ai.storedTextActions,
                 TextObservation = ai.textObservation,
@@ -28,30 +29,25 @@ namespace MLAgents
                 Id = ai.id,
                 CustomObservation = ai.customObservation
             };
-            if (ai.memories != null)
-            {
-                agentInfoProto.Memories.Add(ai.memories);
-            }
 
             if (ai.actionMasks != null)
             {
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            foreach (var obs in ai.visualObservations)
+            if (ai.compressedObservations != null)
             {
-                using (TimerStack.Instance.Scoped("encodeVisualObs"))
+                foreach (var obs in ai.compressedObservations)
                 {
-                    agentInfoProto.VisualObservations.Add(
-                        ByteString.CopyFrom(obs.EncodeToPNG())
-                    );
+                    agentInfoProto.CompressedObservations.Add(obs.ToProto());
                 }
             }
+
             return agentInfoProto;
         }
 
         /// <summary>
-        /// Converts a Brain into to a Protobuff BrainInfoProto so it can be sent
+        /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="bp">The instance of BrainParameter to extend.</param>
@@ -70,17 +66,6 @@ namespace MLAgents
                 IsTraining = isTraining
             };
             brainParametersProto.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
-            foreach (var res in bp.cameraResolutions)
-            {
-                brainParametersProto.CameraResolutions.Add(
-                    new ResolutionProto
-                    {
-                        Width = res.width,
-                        Height = res.height,
-                        GrayScale = res.blackAndWhite
-                    });
-            }
-
             return brainParametersProto;
         }
 
@@ -120,25 +105,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Converts Resolution protobuf array to C# Resolution array.
-        /// </summary>
-        private static Resolution[] ResolutionProtoToNative(IReadOnlyList<ResolutionProto> resolutionProtos)
-        {
-            var localCameraResolutions = new Resolution[resolutionProtos.Count];
-            for (var i = 0; i < resolutionProtos.Count; i++)
-            {
-                localCameraResolutions[i] = new Resolution
-                {
-                    height = resolutionProtos[i].Height,
-                    width = resolutionProtos[i].Width,
-                    blackAndWhite = resolutionProtos[i].GrayScale
-                };
-            }
-
-            return localCameraResolutions;
-        }
-
-        /// <summary>
         /// Convert a BrainParametersProto to a BrainParameters struct.
         /// </summary>
         /// <param name="bpp">An instance of a brain parameters protobuf object.</param>
@@ -148,9 +114,6 @@ namespace MLAgents
             var bp = new BrainParameters
             {
                 vectorObservationSize = bpp.VectorObservationSize,
-                cameraResolutions = ResolutionProtoToNative(
-                    bpp.CameraResolutions
-                    ),
                 numStackedVectorObservations = bpp.NumStackedVectorObservations,
                 vectorActionSize = bpp.VectorActionSize.ToArray(),
                 vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
@@ -197,7 +160,6 @@ namespace MLAgents
             {
                 vectorActions = aap.VectorActions.ToArray(),
                 textActions = aap.TextActions,
-                memories = aap.Memories.ToList(),
                 value = aap.Value,
                 customAction = aap.CustomAction
             };
@@ -211,6 +173,17 @@ namespace MLAgents
                 agentActions.Add(ap.ToAgentAction());
             }
             return agentActions;
+        }
+
+        public static CompressedObservationProto ToProto(this CompressedObservation obs)
+        {
+            var obsProto = new CompressedObservationProto
+            {
+                Data = ByteString.CopyFrom(obs.Data),
+                CompressionType = (CompressionTypeProto)obs.CompressionType,
+            };
+            obsProto.Shape.AddRange(obs.Shape);
+            return obsProto;
         }
     }
 }

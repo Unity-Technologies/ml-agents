@@ -4,6 +4,7 @@ import numpy as np
 
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
+from mlagents.envs.brain import CameraResolution
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -18,6 +19,7 @@ def test_gym_wrapper(mock_env):
     actions = env.action_space.sample()
     assert actions.shape[0] == 2
     obs, rew, done, info = env.step(actions)
+    assert env.observation_space.contains(obs)
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
     assert isinstance(done, bool)
@@ -62,6 +64,26 @@ def test_branched_flatten(mock_env):
     assert isinstance(env.action_space, spaces.MultiDiscrete)
 
 
+@pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
+@mock.patch("gym_unity.envs.UnityEnvironment")
+def test_gym_wrapper_visual(mock_env, use_uint8):
+    mock_brain = create_mock_brainparams(number_visual_observations=1)
+    mock_braininfo = create_mock_vector_braininfo(number_visual_observations=1)
+    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+
+    env = UnityEnv(" ", use_visual=True, multiagent=False, uint8_visual=use_uint8)
+    assert isinstance(env, UnityEnv)
+    assert isinstance(env.reset(), np.ndarray)
+    actions = env.action_space.sample()
+    assert actions.shape[0] == 2
+    obs, rew, done, info = env.step(actions)
+    assert env.observation_space.contains(obs)
+    assert isinstance(obs, np.ndarray)
+    assert isinstance(rew, float)
+    assert isinstance(done, bool)
+    assert isinstance(info, dict)
+
+
 # Helper methods
 
 
@@ -80,6 +102,11 @@ def create_mock_brainparams(
         vector_action_space_size = [2]
     mock_brain = mock.Mock()
     mock_brain.return_value.number_visual_observations = number_visual_observations
+    if number_visual_observations:
+        mock_brain.return_value.camera_resolutions = [
+            CameraResolution(width=8, height=8, num_channels=3)
+            for _ in range(number_visual_observations)
+        ]
     mock_brain.return_value.num_stacked_vector_observations = (
         num_stacked_vector_observations
     )
@@ -91,7 +118,7 @@ def create_mock_brainparams(
     return mock_brain()
 
 
-def create_mock_vector_braininfo(num_agents=1):
+def create_mock_vector_braininfo(num_agents=1, number_visual_observations=0):
     """
     Creates a mock BrainInfo with vector observations. Imitates constant
     vector observations, rewards, dones, and agents.
@@ -100,6 +127,8 @@ def create_mock_vector_braininfo(num_agents=1):
     """
     mock_braininfo = mock.Mock()
     mock_braininfo.return_value.vector_observations = np.array([num_agents * [1, 2, 3]])
+    if number_visual_observations:
+        mock_braininfo.return_value.visual_observations = [[np.zeros(shape=(8, 8, 3))]]
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
     mock_braininfo.return_value.text_observations = num_agents * [""]

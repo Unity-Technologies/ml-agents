@@ -84,8 +84,8 @@ public class PushAgentBasic : Agent
         {
             var rayDistance = 12f;
 
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 0f, 0f));
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 1.5f));
         }
     }
 
@@ -184,6 +184,27 @@ public class PushAgentBasic : Agent
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / agentParameters.maxStep);
+    }
+
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 3 };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { 1 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 4 };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { 2 };
+        }
+        return new float[] { 0 };
     }
 
     /// <summary>

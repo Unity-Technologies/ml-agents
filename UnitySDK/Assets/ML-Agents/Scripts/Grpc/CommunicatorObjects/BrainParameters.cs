@@ -26,21 +26,19 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CjltbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2JyYWluX3Bh",
             "cmFtZXRlcnMucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjNtbGFnZW50",
-            "cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3Jlc29sdXRpb24ucHJvdG8a",
-            "M21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvc3BhY2VfdHlw",
-            "ZS5wcm90byLUAgoUQnJhaW5QYXJhbWV0ZXJzUHJvdG8SHwoXdmVjdG9yX29i",
-            "c2VydmF0aW9uX3NpemUYASABKAUSJwofbnVtX3N0YWNrZWRfdmVjdG9yX29i",
-            "c2VydmF0aW9ucxgCIAEoBRIaChJ2ZWN0b3JfYWN0aW9uX3NpemUYAyADKAUS",
-            "QQoSY2FtZXJhX3Jlc29sdXRpb25zGAQgAygLMiUuY29tbXVuaWNhdG9yX29i",
-            "amVjdHMuUmVzb2x1dGlvblByb3RvEiIKGnZlY3Rvcl9hY3Rpb25fZGVzY3Jp",
-            "cHRpb25zGAUgAygJEkYKGHZlY3Rvcl9hY3Rpb25fc3BhY2VfdHlwZRgGIAEo",
-            "DjIkLmNvbW11bmljYXRvcl9vYmplY3RzLlNwYWNlVHlwZVByb3RvEhIKCmJy",
-            "YWluX25hbWUYByABKAkSEwoLaXNfdHJhaW5pbmcYCCABKAhCH6oCHE1MQWdl",
-            "bnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3NwYWNlX3R5cGUucHJvdG8i",
+            "lwIKFEJyYWluUGFyYW1ldGVyc1Byb3RvEh8KF3ZlY3Rvcl9vYnNlcnZhdGlv",
+            "bl9zaXplGAEgASgFEicKH251bV9zdGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlv",
+            "bnMYAiABKAUSGgoSdmVjdG9yX2FjdGlvbl9zaXplGAMgAygFEiIKGnZlY3Rv",
+            "cl9hY3Rpb25fZGVzY3JpcHRpb25zGAUgAygJEkYKGHZlY3Rvcl9hY3Rpb25f",
+            "c3BhY2VfdHlwZRgGIAEoDjIkLmNvbW11bmljYXRvcl9vYmplY3RzLlNwYWNl",
+            "VHlwZVByb3RvEhIKCmJyYWluX25hbWUYByABKAkSEwoLaXNfdHJhaW5pbmcY",
+            "CCABKAhKBAgEEAVCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNi",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.ResolutionReflection.Descriptor, global::MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.BrainParametersProto), global::MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorObservationSize", "NumStackedVectorObservations", "VectorActionSize", "CameraResolutions", "VectorActionDescriptions", "VectorActionSpaceType", "BrainName", "IsTraining" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.BrainParametersProto), global::MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorObservationSize", "NumStackedVectorObservations", "VectorActionSize", "VectorActionDescriptions", "VectorActionSpaceType", "BrainName", "IsTraining" }, null, null, null)
           }));
     }
     #endregion
@@ -75,7 +73,6 @@ namespace MLAgents.CommunicatorObjects {
       vectorObservationSize_ = other.vectorObservationSize_;
       numStackedVectorObservations_ = other.numStackedVectorObservations_;
       vectorActionSize_ = other.vectorActionSize_.Clone();
-      cameraResolutions_ = other.cameraResolutions_.Clone();
       vectorActionDescriptions_ = other.vectorActionDescriptions_.Clone();
       vectorActionSpaceType_ = other.vectorActionSpaceType_;
       brainName_ = other.brainName_;
@@ -118,16 +115,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<int> VectorActionSize {
       get { return vectorActionSize_; }
-    }
-
-    /// <summary>Field number for the "camera_resolutions" field.</summary>
-    public const int CameraResolutionsFieldNumber = 4;
-    private static readonly pb::FieldCodec<global::MLAgents.CommunicatorObjects.ResolutionProto> _repeated_cameraResolutions_codec
-        = pb::FieldCodec.ForMessage(34, global::MLAgents.CommunicatorObjects.ResolutionProto.Parser);
-    private readonly pbc::RepeatedField<global::MLAgents.CommunicatorObjects.ResolutionProto> cameraResolutions_ = new pbc::RepeatedField<global::MLAgents.CommunicatorObjects.ResolutionProto>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::MLAgents.CommunicatorObjects.ResolutionProto> CameraResolutions {
-      get { return cameraResolutions_; }
     }
 
     /// <summary>Field number for the "vector_action_descriptions" field.</summary>
@@ -189,7 +176,6 @@ namespace MLAgents.CommunicatorObjects {
       if (VectorObservationSize != other.VectorObservationSize) return false;
       if (NumStackedVectorObservations != other.NumStackedVectorObservations) return false;
       if(!vectorActionSize_.Equals(other.vectorActionSize_)) return false;
-      if(!cameraResolutions_.Equals(other.cameraResolutions_)) return false;
       if(!vectorActionDescriptions_.Equals(other.vectorActionDescriptions_)) return false;
       if (VectorActionSpaceType != other.VectorActionSpaceType) return false;
       if (BrainName != other.BrainName) return false;
@@ -203,7 +189,6 @@ namespace MLAgents.CommunicatorObjects {
       if (VectorObservationSize != 0) hash ^= VectorObservationSize.GetHashCode();
       if (NumStackedVectorObservations != 0) hash ^= NumStackedVectorObservations.GetHashCode();
       hash ^= vectorActionSize_.GetHashCode();
-      hash ^= cameraResolutions_.GetHashCode();
       hash ^= vectorActionDescriptions_.GetHashCode();
       if (VectorActionSpaceType != 0) hash ^= VectorActionSpaceType.GetHashCode();
       if (BrainName.Length != 0) hash ^= BrainName.GetHashCode();
@@ -230,7 +215,6 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteInt32(NumStackedVectorObservations);
       }
       vectorActionSize_.WriteTo(output, _repeated_vectorActionSize_codec);
-      cameraResolutions_.WriteTo(output, _repeated_cameraResolutions_codec);
       vectorActionDescriptions_.WriteTo(output, _repeated_vectorActionDescriptions_codec);
       if (VectorActionSpaceType != 0) {
         output.WriteRawTag(48);
@@ -259,7 +243,6 @@ namespace MLAgents.CommunicatorObjects {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NumStackedVectorObservations);
       }
       size += vectorActionSize_.CalculateSize(_repeated_vectorActionSize_codec);
-      size += cameraResolutions_.CalculateSize(_repeated_cameraResolutions_codec);
       size += vectorActionDescriptions_.CalculateSize(_repeated_vectorActionDescriptions_codec);
       if (VectorActionSpaceType != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) VectorActionSpaceType);
@@ -288,7 +271,6 @@ namespace MLAgents.CommunicatorObjects {
         NumStackedVectorObservations = other.NumStackedVectorObservations;
       }
       vectorActionSize_.Add(other.vectorActionSize_);
-      cameraResolutions_.Add(other.cameraResolutions_);
       vectorActionDescriptions_.Add(other.vectorActionDescriptions_);
       if (other.VectorActionSpaceType != 0) {
         VectorActionSpaceType = other.VectorActionSpaceType;
@@ -321,10 +303,6 @@ namespace MLAgents.CommunicatorObjects {
           case 26:
           case 24: {
             vectorActionSize_.AddEntriesFrom(input, _repeated_vectorActionSize_codec);
-            break;
-          }
-          case 34: {
-            cameraResolutions_.AddEntriesFrom(input, _repeated_cameraResolutions_codec);
             break;
           }
           case 42: {

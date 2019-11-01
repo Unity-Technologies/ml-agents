@@ -4,9 +4,9 @@ using MLAgents;
 public class BasicAgent : Agent
 {
     [Header("Specific to Basic")]
-    private BasicAcademy m_Academy;
+    BasicAcademy m_Academy;
     public float timeBetweenDecisionsAtInference;
-    private float m_TimeSinceDecision;
+    float m_TimeSinceDecision;
     int m_Position;
     int m_SmallGoalPosition;
     int m_LargeGoalPosition;
@@ -73,6 +73,19 @@ public class BasicAgent : Agent
         largeGoal.transform.position = new Vector3(m_LargeGoalPosition - 10f, 0f, 0f);
     }
 
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 2 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 1 };
+        }
+        return new float[] { 0 };
+    }
+
     public override void AgentOnDone()
     {
     }
@@ -82,7 +95,7 @@ public class BasicAgent : Agent
         WaitTimeInference();
     }
 
-    private void WaitTimeInference()
+    void WaitTimeInference()
     {
         if (!m_Academy.GetIsInference())
         {

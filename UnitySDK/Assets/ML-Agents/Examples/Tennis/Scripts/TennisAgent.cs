@@ -12,17 +12,17 @@ public class TennisAgent : Agent
     public float angle;
     public float scale;
 
-    private Text m_TextComponent;
-    private Rigidbody m_AgentRb;
-    private Rigidbody m_BallRb;
-    private float m_InvertMult;
-    private ResetParameters m_ResetParams;
+    Text m_TextComponent;
+    Rigidbody m_AgentRb;
+    Rigidbody m_BallRb;
+    float m_InvertMult;
+    ResetParameters m_ResetParams;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
-    private const string k_CanvasName = "Canvas";
-    private const string k_ScoreBoardAName = "ScoreA";
-    private const string k_ScoreBoardBName = "ScoreB";
+    const string k_CanvasName = "Canvas";
+    const string k_ScoreBoardAName = "ScoreA";
+    const string k_ScoreBoardBName = "ScoreB";
 
     public override void InitializeAgent()
     {
@@ -78,6 +78,15 @@ public class TennisAgent : Agent
         }
 
         m_TextComponent.text = score.ToString();
+    }
+
+    public override float[] Heuristic()
+    {
+        var action = new float[2];
+
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;
+        return action;
     }
 
     public override void AgentReset()

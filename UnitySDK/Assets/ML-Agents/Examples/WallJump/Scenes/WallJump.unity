@@ -598,6 +598,10 @@ Prefab:
       propertyPath: m_Name
       value: Canvas - Watermark
       objectReference: {fileID: 0}
+    - target: {fileID: 1537641056927260, guid: 3ce107b4a79bc4eef83afde434932a68, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3ce107b4a79bc4eef83afde434932a68, type: 2}
   m_IsPrefabParent: 0
@@ -1328,10 +1332,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b93afe82bc647b581a706891913e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    brainsToControl:
-    - {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-    - {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
   m_TrainingConfiguration:
     width: 80
     height: 80

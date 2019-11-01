@@ -22,7 +22,7 @@ namespace MLAgents
             UpdateResetParameters();
         }
 
-        private void UpdateResetParameters()
+        void UpdateResetParameters()
         {
             m_ResetParameters.Clear();
             foreach (var pair in this)
@@ -32,7 +32,8 @@ namespace MLAgents
         }
 
         [FormerlySerializedAs("resetParameters")]
-        [SerializeField] private List<ResetParameter> m_ResetParameters = new List<ResetParameter>();
+        [SerializeField]
+        List<ResetParameter> m_ResetParameters = new List<ResetParameter>();
 
         public void OnBeforeSerialize()
         {

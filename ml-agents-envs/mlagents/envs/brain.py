@@ -14,15 +14,11 @@ logger = logging.getLogger("mlagents.envs")
 class CameraResolution(NamedTuple):
     height: int
     width: int
-    gray_scale: bool
+    num_channels: int
 
     @property
-    def num_channels(self) -> int:
-        return 1 if self.gray_scale else 3
-
-    @staticmethod
-    def from_proto(p):
-        return CameraResolution(height=p.height, width=p.width, gray_scale=p.gray_scale)
+    def gray_scale(self) -> bool:
+        return self.num_channels == 1
 
 
 class BrainParameters:
@@ -68,20 +64,24 @@ class BrainParameters:
         )
 
     @staticmethod
-    def from_proto(brain_param_proto: BrainParametersProto) -> "BrainParameters":
+    def from_proto(
+        brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
+    ) -> "BrainParameters":
         """
         Converts brain parameter proto to BrainParameter object.
         :param brain_param_proto: protobuf object.
         :return: BrainParameter object.
         """
-        resolution = [
-            CameraResolution.from_proto(x) for x in brain_param_proto.camera_resolutions
+        resolutions = [
+            CameraResolution(x.shape[0], x.shape[1], x.shape[2])
+            for x in agent_info.compressed_observations
         ]
+
         brain_params = BrainParameters(
             brain_param_proto.brain_name,
             brain_param_proto.vector_observation_size,
             brain_param_proto.num_stacked_vector_observations,
-            resolution,
+            resolutions,
             list(brain_param_proto.vector_action_size),
             list(brain_param_proto.vector_action_descriptions),
             brain_param_proto.vector_action_space_type,
@@ -95,7 +95,6 @@ class BrainInfo:
         visual_observation,
         vector_observation,
         text_observations,
-        memory=None,
         reward=None,
         agents=None,
         local_done=None,
@@ -111,7 +110,6 @@ class BrainInfo:
         self.visual_observations = visual_observation
         self.vector_observations = vector_observation
         self.text_observations = text_observations
-        self.memories = memory
         self.rewards = reward
         self.local_done = local_done
         self.max_reached = max_reached
@@ -120,33 +118,6 @@ class BrainInfo:
         self.previous_text_actions = text_action
         self.action_masks = action_mask
         self.custom_observations = custom_observations
-
-    def merge(self, other):
-        for i in range(len(self.visual_observations)):
-            self.visual_observations[i].extend(other.visual_observations[i])
-        self.vector_observations = np.append(
-            self.vector_observations, other.vector_observations, axis=0
-        )
-        self.text_observations.extend(other.text_observations)
-        self.memories = self.merge_memories(
-            self.memories, other.memories, self.agents, other.agents
-        )
-        self.rewards = safe_concat_lists(self.rewards, other.rewards)
-        self.local_done = safe_concat_lists(self.local_done, other.local_done)
-        self.max_reached = safe_concat_lists(self.max_reached, other.max_reached)
-        self.agents = safe_concat_lists(self.agents, other.agents)
-        self.previous_vector_actions = safe_concat_np_ndarray(
-            self.previous_vector_actions, other.previous_vector_actions
-        )
-        self.previous_text_actions = safe_concat_lists(
-            self.previous_text_actions, other.previous_text_actions
-        )
-        self.action_masks = safe_concat_np_ndarray(
-            self.action_masks, other.action_masks
-        )
-        self.custom_observations = safe_concat_lists(
-            self.custom_observations, other.custom_observations
-        )
 
     @staticmethod
     def merge_memories(m1, m2, agents1, agents2):
@@ -198,22 +169,13 @@ class BrainInfo:
         for i in range(brain_params.number_visual_observations):
             obs = [
                 BrainInfo.process_pixels(
-                    x.visual_observations[i],
+                    x.compressed_observations[i].data,
                     brain_params.camera_resolutions[i].gray_scale,
                 )
                 for x in agent_info_list
             ]
             vis_obs += [obs]
-        if len(agent_info_list) == 0:
-            memory_size = 0
-        else:
-            memory_size = max(len(x.memories) for x in agent_info_list)
-        if memory_size == 0:
-            memory = np.zeros((0, 0))
-        else:
-            for x in agent_info_list:
-                x.memories.extend([0] * (memory_size - len(x.memories)))
-            memory = np.array([list(x.memories) for x in agent_info_list])
+
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
         for agent_index, agent_info in enumerate(agent_info_list):
@@ -268,7 +230,6 @@ class BrainInfo:
             visual_observation=vis_obs,
             vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
-            memory=memory,
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=agents,
             local_done=[x.done for x in agent_info_list],

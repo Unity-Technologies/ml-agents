@@ -13,7 +13,7 @@ from typing import Any, Callable, Optional, List, NamedTuple
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
-from mlagents.trainers.meta_curriculum import MetaCurriculumError, MetaCurriculum
+from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
@@ -288,17 +288,6 @@ def try_create_meta_curriculum(
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         meta_curriculum.set_all_curriculums_to_lesson_num(lesson)
-        for brain_name in meta_curriculum.brains_to_curriculums.keys():
-            if brain_name not in env.external_brains.keys():
-                raise MetaCurriculumError(
-                    "One of the curricula "
-                    "defined in " + curriculum_folder + " "
-                    "does not have a corresponding "
-                    "Brain. Check that the "
-                    "curriculum file has the same "
-                    "name as the Brain "
-                    "whose curriculum it defines."
-                )
 
         return meta_curriculum
 

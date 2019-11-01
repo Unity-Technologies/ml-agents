@@ -1,23 +1,26 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Barracuda;
 using UnityEngine.Profiling;
 
 namespace MLAgents.InferenceBrain
 {
-    public class ModelRunner : IBatchedDecisionMaker
+    public class ModelRunner
     {
-        private ITensorAllocator m_TensorAllocator;
-        private TensorGenerator m_TensorGenerator;
-        private TensorApplier m_TensorApplier;
+        List<Agent> m_Agents = new List<Agent>();
+        ITensorAllocator m_TensorAllocator;
+        TensorGenerator m_TensorGenerator;
+        TensorApplier m_TensorApplier;
 
-        private NNModel m_Model;
-        private InferenceDevice m_InferenceDevice;
-        private IWorker m_Engine;
-        private bool m_Verbose = false;
-        private string[] m_OutputNames;
-        private IReadOnlyList<TensorProxy> m_InferenceInputs;
-        private IReadOnlyList<TensorProxy> m_InferenceOutputs;
+        NNModel m_Model;
+        InferenceDevice m_InferenceDevice;
+        IWorker m_Engine;
+        bool m_Verbose = false;
+        string[] m_OutputNames;
+        IReadOnlyList<TensorProxy> m_InferenceInputs;
+        IReadOnlyList<TensorProxy> m_InferenceOutputs;
+        Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
+
+        bool m_VisualObservationsInitialized;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -64,11 +67,13 @@ namespace MLAgents.InferenceBrain
 
             m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
             m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
-            m_TensorGenerator = new TensorGenerator(brainParameters, seed, m_TensorAllocator, barracudaModel);
-            m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
+            m_TensorGenerator = new TensorGenerator(
+                seed, m_TensorAllocator, m_Memories, barracudaModel);
+            m_TensorApplier = new TensorApplier(
+                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
 
-        private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
+        static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
             foreach (var inp in infInputs)
@@ -86,7 +91,7 @@ namespace MLAgents.InferenceBrain
             m_TensorAllocator?.Reset(false);
         }
 
-        private List<TensorProxy> FetchBarracudaOutputs(string[] names)
+        List<TensorProxy> FetchBarracudaOutputs(string[] names)
         {
             var outputs = new List<TensorProxy>();
             foreach (var n in names)
@@ -98,24 +103,32 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(string key, ICollection<Agent> agents)
+        public void PutObservations(Agent agent)
         {
-            var currentBatchSize = agents.Count;
+            m_Agents.Add(agent);
+        }
+        public void DecideBatch()
+        {
+            var currentBatchSize = m_Agents.Count;
             if (currentBatchSize == 0)
             {
                 return;
             }
 
-            Profiler.BeginSample("LearningBrain.DecideAction");
-            if (m_Engine == null)
+            if (!m_VisualObservationsInitialized)
             {
-                Debug.LogError($"No model was present for the Brain {m_Model.name}.");
-                return;
+                // Just grab the first agent in the collection (any will suffice, really).
+                // We check for an empty Collection above, so this will always return successfully.
+                var firstAgent = m_Agents[0];
+                m_TensorGenerator.InitializeObservations(firstAgent, m_TensorAllocator);
+                m_VisualObservationsInitialized = true;
             }
+
+            Profiler.BeginSample("LearningBrain.DecideAction");
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, agents);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -133,10 +146,12 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, agents);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
             Profiler.EndSample();
 
             Profiler.EndSample();
+
+            m_Agents.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)

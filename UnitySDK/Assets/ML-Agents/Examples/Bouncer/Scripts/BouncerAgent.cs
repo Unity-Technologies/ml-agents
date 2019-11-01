@@ -72,7 +72,7 @@ public class BouncerAgent : Agent
     {
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (Physics.Raycast(transform.position, new Vector3(0f, -1f, 0f), 0.51f) && m_JumpCooldown <= 0f)
         {
@@ -104,7 +104,17 @@ public class BouncerAgent : Agent
         }
     }
 
-    private void Update()
+    public override float[] Heuristic()
+    {
+        var action = new float[3];
+
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        action[2] = Input.GetAxis("Vertical");
+        return action;
+    }
+
+    void Update()
     {
         if (m_LookDir.magnitude > float.Epsilon)
         {

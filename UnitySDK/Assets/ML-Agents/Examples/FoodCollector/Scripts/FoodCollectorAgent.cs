@@ -3,7 +3,7 @@ using MLAgents;
 
 public class FoodCollectorAgent : Agent
 {
-    private FoodCollectorAcademy m_MyAcademy;
+    FoodCollectorAcademy m_MyAcademy;
     public GameObject area;
     FoodCollectorArea m_MyArea;
     bool m_Frozen;
@@ -13,7 +13,7 @@ public class FoodCollectorAgent : Agent
     float m_FrozenTime;
     float m_EffectTime;
     Rigidbody m_AgentRb;
-    private float m_LaserLength;
+    float m_LaserLength;
     // Speed of agent rotation.
     public float turnSpeed = 300;
 
@@ -25,7 +25,7 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    private RayPerception3D m_RayPer;
+    RayPerception3D m_RayPer;
     public bool useVectorObs;
 
 
@@ -48,7 +48,7 @@ public class FoodCollectorAgent : Agent
             const float rayDistance = 50f;
             float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
             string[] detectableObjects = { "food", "agent", "wall", "badFood", "frozenAgent" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects));
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             AddVectorObs(localVelocity.x);
             AddVectorObs(localVelocity.z);
@@ -91,54 +91,45 @@ public class FoodCollectorAgent : Agent
         if (!m_Frozen)
         {
             var shootCommand = false;
-            if (brain.brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+            var forwardAxis = (int)act[0];
+            var rightAxis = (int)act[1];
+            var rotateAxis = (int)act[2];
+            var shootAxis = (int)act[3];
+
+            switch (forwardAxis)
             {
-                dirToGo = transform.forward * Mathf.Clamp(act[0], -1f, 1f);
-                rotateDir = transform.up * Mathf.Clamp(act[1], -1f, 1f);
-                shootCommand = Mathf.Clamp(act[2], -1f, 1f) > 0.5f;
+                case 1:
+                    dirToGo = transform.forward;
+                    break;
+                case 2:
+                    dirToGo = -transform.forward;
+                    break;
             }
-            else
+
+            switch (rightAxis)
             {
-                var forwardAxis = (int)act[0];
-                var rightAxis = (int)act[1];
-                var rotateAxis = (int)act[2];
-                var shootAxis = (int)act[3];
+                case 1:
+                    dirToGo = transform.right;
+                    break;
+                case 2:
+                    dirToGo = -transform.right;
+                    break;
+            }
 
-                switch (forwardAxis)
-                {
-                    case 1:
-                        dirToGo = transform.forward;
-                        break;
-                    case 2:
-                        dirToGo = -transform.forward;
-                        break;
-                }
-
-                switch (rightAxis)
-                {
-                    case 1:
-                        dirToGo = transform.right;
-                        break;
-                    case 2:
-                        dirToGo = -transform.right;
-                        break;
-                }
-
-                switch (rotateAxis)
-                {
-                    case 1:
-                        rotateDir = -transform.up;
-                        break;
-                    case 2:
-                        rotateDir = transform.up;
-                        break;
-                }
-                switch (shootAxis)
-                {
-                    case 1:
-                        shootCommand = true;
-                        break;
-                }
+            switch (rotateAxis)
+            {
+                case 1:
+                    rotateDir = -transform.up;
+                    break;
+                case 2:
+                    rotateDir = transform.up;
+                    break;
+            }
+            switch (shootAxis)
+            {
+                case 1:
+                    shootCommand = true;
+                    break;
             }
             if (shootCommand)
             {
@@ -220,6 +211,29 @@ public class FoodCollectorAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         MoveAgent(vectorAction);
+    }
+
+    public override float[] Heuristic()
+    {
+        var action = new float[4];
+        if (Input.GetKey(KeyCode.D))
+        {
+            action[2] = 2f;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            action[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            action[2] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            action[0] = 2f;
+        }
+        action[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        return action;
     }
 
     public override void AgentReset()

@@ -29,7 +29,7 @@
 - TF importer: made detection of actual output node from LSTM/GRU pattern more bullet proof by skipping Const nodes.
 - TF importer: improved InstanceNormalization handling.
 - TF importer: fixed SquareDifference pattern.
-- TF importer: fixed Conv2DBackpropInput (transpose convolution) import. 
+- TF importer: fixed Conv2DBackpropInput (transpose convolution) import.
 - Fixed Conv2D performance regression on some GPUs.
 - Fixed TextureAsTensorData.Download() to work properly with InterpretDepthAs.Channels.
 - Fixed bug when identity/nop layers would reuse input as an output and later causing premature release of that tensor as part of intermediate data cleanup.
@@ -37,7 +37,7 @@
 - Fixed double Dispose issue when worker gets garbage collected.
 
 ## 0.2.0
-- Version bumped to 0.2.0 as it brings breaking API changes, for details look below. 
+- Version bumped to 0.2.0 as it brings breaking API changes, for details look below.
 - Significantly reduced temporary memory allocations by introducing internal allocator support. Now memory is re-used between layer execution as much as possible.
 - Improved small workload performance on CSharp backend
 - Added parallel implementation for multiple activation functions on CSharp backend
@@ -47,7 +47,7 @@
 - Added `Summary()` method to `Worker`. Currently returns allocator information.
 - Tabs to spaces! Aiming at higher salary (https://stackoverflow.blog/2017/06/15/developers-use-spaces-make-money-use-tabs/).
 - Renamed worker type enum members: `CSharp` -> `CSharpRef`, `CSharpFast` -> `CSharp`, `Compute` -> `ComputeRef`, `ComputeFast` -> `Compute`.
-- Implemented new optimized `ComputePrecompiled` worker. This worker caches Compute kernels and state beforehand to reduce CPU overhead. 
+- Implemented new optimized `ComputePrecompiled` worker. This worker caches Compute kernels and state beforehand to reduce CPU overhead.
 - Added `ExecuteAsync()` to `IWorker` interface, it returns `IEnumerator`, which enables you to control how many layers to schedule per frame (one iteration == one layer).
 - Added `Log` op support on Compute workers.
 - Optimized activation functions and ScaleBias by accessing tensor as continuous array. Gained ~2.0ms on 4 batch MobileNet (MBP2016).
@@ -123,8 +123,8 @@
 - Fixed compilation issues on Xbox One.
 - TexConv2D support was temporary disabled.
 - Barracuda logging now can be configured via static fields of ``Barracuda.D`` class, it allows both disable specific logging levels or just disable stack trace collection (helps with performance when profiling).
-- Compute Concat implementation now will fall back to C# implementation instead of throwing exception when unsupported configuration is encountered. 
-- Fixed several ``ComputeBuffer`` release issues. 
+- Compute Concat implementation now will fall back to C# implementation instead of throwing exception when unsupported configuration is encountered.
+- Fixed several ``ComputeBuffer`` release issues.
 - Added constructor for ``Tensor`` that allows to pass in data array.
 - Improved Flatten handling in TensorFlow models.
 - Added helper func ``ModelLoader.LoadFromStreamingAssets``.
