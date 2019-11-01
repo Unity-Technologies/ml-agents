@@ -95,7 +95,6 @@ class BrainInfo:
         visual_observation,
         vector_observation,
         text_observations,
-        memory=None,
         reward=None,
         agents=None,
         local_done=None,
@@ -111,7 +110,6 @@ class BrainInfo:
         self.visual_observations = visual_observation
         self.vector_observations = vector_observation
         self.text_observations = text_observations
-        self.memories = memory
         self.rewards = reward
         self.local_done = local_done
         self.max_reached = max_reached
@@ -120,33 +118,6 @@ class BrainInfo:
         self.previous_text_actions = text_action
         self.action_masks = action_mask
         self.custom_observations = custom_observations
-
-    def merge(self, other):
-        for i in range(len(self.visual_observations)):
-            self.visual_observations[i].extend(other.visual_observations[i])
-        self.vector_observations = np.append(
-            self.vector_observations, other.vector_observations, axis=0
-        )
-        self.text_observations.extend(other.text_observations)
-        self.memories = self.merge_memories(
-            self.memories, other.memories, self.agents, other.agents
-        )
-        self.rewards = safe_concat_lists(self.rewards, other.rewards)
-        self.local_done = safe_concat_lists(self.local_done, other.local_done)
-        self.max_reached = safe_concat_lists(self.max_reached, other.max_reached)
-        self.agents = safe_concat_lists(self.agents, other.agents)
-        self.previous_vector_actions = safe_concat_np_ndarray(
-            self.previous_vector_actions, other.previous_vector_actions
-        )
-        self.previous_text_actions = safe_concat_lists(
-            self.previous_text_actions, other.previous_text_actions
-        )
-        self.action_masks = safe_concat_np_ndarray(
-            self.action_masks, other.action_masks
-        )
-        self.custom_observations = safe_concat_lists(
-            self.custom_observations, other.custom_observations
-        )
 
     @staticmethod
     def merge_memories(m1, m2, agents1, agents2):
@@ -204,18 +175,6 @@ class BrainInfo:
                 for x in agent_info_list
             ]
             vis_obs += [obs]
-        if len(agent_info_list) == 0:
-            memory_size = 0
-        else:
-            memory_size = max(len(x.memories) for x in agent_info_list)
-        if memory_size == 0:
-            memory = np.zeros((0, 0))
-        else:
-            [
-                x.memories.extend([0] * (memory_size - len(x.memories)))
-                for x in agent_info_list
-            ]
-            memory = np.array([list(x.memories) for x in agent_info_list])
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
         for agent_index, agent_info in enumerate(agent_info_list):
@@ -270,7 +229,6 @@ class BrainInfo:
             visual_observation=vis_obs,
             vector_observation=vector_obs,
             text_observations=[x.text_observation for x in agent_info_list],
-            memory=memory,
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=agents,
             local_done=[x.done for x in agent_info_list],

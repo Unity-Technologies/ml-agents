@@ -2,10 +2,10 @@ using MLAgents.InferenceBrain;
 
 namespace MLAgents.Sensor
 {
-    public enum CompressionType
+    public enum SensorCompressionType
     {
         None,
-        PNG,
+        PNG
     }
 
     /// <summary>
@@ -38,10 +38,10 @@ namespace MLAgents.Sensor
         byte[] GetCompressedObservation();
 
         /// <summary>
-        /// Return the compression type being used. If no compression is used, return CompressionType.None
+        /// Return the compression type being used. If no compression is used, return SensorCompressionType.None
         /// </summary>
         /// <returns></returns>
-        CompressionType GetCompressionType();
+        SensorCompressionType GetCompressionType();
 
         /// <summary>
         /// Get the name of the sensor. This is used to ensure deterministic sorting of the sensors on an Agent,

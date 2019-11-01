@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from mlagents.trainers import tf
@@ -56,6 +56,7 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
+        self.memory_dict: Dict[int, np.ndarray] = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         self.model_path = trainer_parameters["model_path"]
@@ -121,12 +122,19 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], [], None, None)
+            return ActionInfo([], [], [], None)
 
+        self.remove_memories(
+            [
+                agent
+                for agent, done in zip(brain_info.agents, brain_info.local_done)
+                if done
+            ]
+        )
         run_out = self.evaluate(brain_info)
+        self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
-            memory=run_out.get("memory_out"),
             text=None,
             value=run_out.get("value"),
             outputs=run_out,
@@ -168,6 +176,26 @@ class TFPolicy(Policy):
         :return: Numpy array of zeros.
         """
         return np.zeros((num_agents, self.m_size))
+
+    def save_memories(
+        self, agent_ids: List[int], memory_matrix: Optional[np.ndarray]
+    ) -> None:
+        if memory_matrix is None:
+            return
+        for index, agent_id in enumerate(agent_ids):
+            self.memory_dict[agent_id] = memory_matrix[index, :]
+
+    def retrieve_memories(self, agent_ids: List[int]) -> np.ndarray:
+        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float)
+        for index, agent_id in enumerate(agent_ids):
+            if agent_id in self.memory_dict:
+                memory_matrix[index, :] = self.memory_dict[agent_id]
+        return memory_matrix
+
+    def remove_memories(self, agent_ids):
+        for agent_id in agent_ids:
+            if agent_id in self.memory_dict:
+                self.memory_dict.pop(agent_id)
 
     def get_current_step(self):
         """

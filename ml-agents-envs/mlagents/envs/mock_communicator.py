@@ -1,4 +1,5 @@
 from .communicator import Communicator
+from .environment import UnityEnvironment
 from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 import (
@@ -52,7 +53,10 @@ class MockCommunicator(Communicator):
             is_training=True,
         )
         rl_init = UnityRLInitializationOutputProto(
-            name="RealFakeAcademy", version="API-10", log_path="", brain_parameters=[bp]
+            name="RealFakeAcademy",
+            version=UnityEnvironment.API_VERSION,
+            log_path="",
+            brain_parameters=[bp],
         )
         output = UnityRLOutputProto(agentInfos=self._get_agent_infos())
         return UnityOutputProto(rl_initialization_output=rl_init, rl_output=output)
@@ -84,7 +88,6 @@ class MockCommunicator(Communicator):
                     stored_vector_actions=vector_action,
                     stored_text_actions="",
                     text_observation="",
-                    memories=[],
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,

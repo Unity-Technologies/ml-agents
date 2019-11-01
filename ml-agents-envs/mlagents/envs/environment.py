@@ -42,6 +42,7 @@ class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     SINGLE_BRAIN_TEXT_TYPES = list
+    API_VERSION = "API-11"
 
     def __init__(
         self,
@@ -51,7 +52,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         seed: int = 0,
         docker_training: bool = False,
         no_graphics: bool = False,
-        timeout_wait: int = 30,
+        timeout_wait: int = 60,
         args: Optional[List[str]] = None,
     ):
         """
@@ -72,7 +73,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = "API-10"
+        self._version_ = UnityEnvironment.API_VERSION
         self._loaded = (
             False
         )  # If true, this means the environment was successfully loaded
@@ -347,7 +348,6 @@ class UnityEnvironment(BaseUnityEnvironment):
     def step(
         self,
         vector_action: Dict[str, np.ndarray] = None,
-        memory: Optional[Dict[str, np.ndarray]] = None,
         text_action: Optional[Dict[str, List[str]]] = None,
         value: Optional[Dict[str, np.ndarray]] = None,
         custom_action: Dict[str, Any] = None,
@@ -365,7 +365,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         if self._is_first_message:
             return self.reset()
         vector_action = {} if vector_action is None else vector_action
-        memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action
         value = {} if value is None else value
         custom_action = {} if custom_action is None else custom_action
@@ -386,20 +385,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                     raise UnityActionException(
                         "There are no external brains in the environment, "
                         "step cannot take a vector_action input"
-                    )
-
-            if isinstance(memory, self.SINGLE_BRAIN_ACTION_TYPES):
-                if self._num_external_brains == 1:
-                    memory = {self._external_brain_names[0]: memory}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and memories as values".format(self._num_external_brains)
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a memory input"
                     )
 
             if isinstance(text_action, self.SINGLE_BRAIN_TEXT_TYPES):
@@ -448,11 +433,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a custom_action input"
                     )
 
-            for brain_name in (
-                list(vector_action.keys())
-                + list(memory.keys())
-                + list(text_action.keys())
-            ):
+            for brain_name in list(vector_action.keys()) + list(text_action.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
@@ -476,13 +457,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                 else:
                     vector_action[brain_name] = self._flatten(vector_action[brain_name])
-                if brain_name not in memory:
-                    memory[brain_name] = []
-                else:
-                    if memory[brain_name] is None:
-                        memory[brain_name] = []
-                    else:
-                        memory[brain_name] = self._flatten(memory[brain_name])
                 if brain_name not in text_action:
                     text_action[brain_name] = [""] * n_agent
                 else:
@@ -548,7 +522,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                     )
 
             step_input = self._generate_step_input(
-                vector_action, memory, text_action, value, custom_action
+                vector_action, text_action, value, custom_action
             )
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
@@ -639,7 +613,6 @@ class UnityEnvironment(BaseUnityEnvironment):
     def _generate_step_input(
         self,
         vector_action: Dict[str, np.ndarray],
-        memory: Dict[str, np.ndarray],
         text_action: Dict[str, list],
         value: Dict[str, np.ndarray],
         custom_action: Dict[str, list],
@@ -650,11 +623,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             if n_agents == 0:
                 continue
             _a_s = len(vector_action[b]) // n_agents
-            _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
                 action = AgentActionProto(
                     vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s],
-                    memories=memory[b][i * _m_s : (i + 1) * _m_s],
                     text_actions=text_action[b][i],
                     custom_action=custom_action[b][i],
                 )

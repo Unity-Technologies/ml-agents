@@ -33,9 +33,6 @@ jobs:
           keys:
           # Parameterize the cache so that different python versions can get different versions of the packages
           - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          # TEMP IGNORE CACHING
-          #- v1-dependencies-py<< parameters.pyversion >>-
 
       - run:
           name: Install Dependencies
@@ -89,6 +86,11 @@ jobs:
 
 
   markdown_link_check:
+    parameters:
+      precommit_command:
+        type: string
+        description: precommit hook to run
+        default: markdown-link-check
     docker:
       - image: circleci/node:12.6.0
     working_directory: ~/repo
@@ -120,7 +122,7 @@ jobs:
           name: Run markdown-link-check via precommit
           command: |
             . venv/bin/activate
-            pre-commit run --hook-stage manual markdown-link-check --all-files
+            pre-commit run --hook-stage manual << parameters.precommit_command >> --all-files
 
   protobuf_generation_check:
     docker:
@@ -259,3 +261,15 @@ workflows:
               only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
             branches:
               ignore: /.*/
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - markdown_link_check:
+          name: markdown-link-check full
+          precommit_command: markdown-link-check-full

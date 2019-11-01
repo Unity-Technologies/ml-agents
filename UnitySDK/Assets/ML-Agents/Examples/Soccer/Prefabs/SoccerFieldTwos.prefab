@@ -3524,7 +3524,6 @@ MonoBehaviour:
     vectorObservationSize: 112
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -3559,8 +3558,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3595,7 +3592,6 @@ MonoBehaviour:
     vectorObservationSize: 112
     numStackedVectorObservations: 1
     vectorActionSize: 07000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -3614,8 +3610,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3639,7 +3633,6 @@ MonoBehaviour:
     vectorObservationSize: 112
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -3688,8 +3681,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -3724,7 +3715,6 @@ MonoBehaviour:
     vectorObservationSize: 112
     numStackedVectorObservations: 1
     vectorActionSize: 07000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -3743,8 +3733,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0

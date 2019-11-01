@@ -9,7 +9,7 @@ namespace MLAgents.Sensor
         public string sensorName = "CameraSensor";
         public int width = 84;
         public int height = 84;
-        public bool grayscale = false;
+        public bool grayscale;
 
         public override ISensor CreateSensor()
         {

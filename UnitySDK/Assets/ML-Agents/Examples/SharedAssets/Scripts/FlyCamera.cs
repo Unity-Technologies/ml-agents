@@ -17,12 +17,12 @@ namespace MLAgents
         public bool rotateOnlyIfMousedown = true;
         public bool movementStaysFlat = true;
 
-        private Vector3
+        Vector3
             m_LastMouse =
             new Vector3(255, 255,
                 255);     // kind of in the middle of the screen, rather than at the top (play)
 
-        private float m_TotalRun = 1.0f;
+        float m_TotalRun = 1.0f;
 
         void Awake()
         {
@@ -86,7 +86,7 @@ namespace MLAgents
             }
         }
 
-        private Vector3 GetBaseInput()
+        Vector3 GetBaseInput()
         {
             // returns the basic values, if it's 0 than it's not active.
             var pVelocity = new Vector3();

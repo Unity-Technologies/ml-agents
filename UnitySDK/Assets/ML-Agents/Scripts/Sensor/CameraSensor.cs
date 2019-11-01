@@ -6,12 +6,12 @@ namespace MLAgents.Sensor
 {
     public class CameraSensor : ISensor
     {
-        private Camera m_Camera;
-        private int m_Width;
-        private int m_Height;
-        private bool m_Grayscale;
-        private string m_Name;
-        private int[] m_Shape;
+        Camera m_Camera;
+        int m_Width;
+        int m_Height;
+        bool m_Grayscale;
+        string m_Name;
+        int[] m_Shape;
 
         public CameraSensor(Camera camera, int width, int height, bool grayscale, string name)
         {
@@ -55,9 +55,9 @@ namespace MLAgents.Sensor
             }
         }
 
-        public CompressionType GetCompressionType()
+        public SensorCompressionType GetCompressionType()
         {
-            return CompressionType.PNG;
+            return SensorCompressionType.PNG;
         }
 
         /// <summary>

@@ -5,11 +5,6 @@ using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-#if UNITY_EDITOR
-using UnityEditor;
-
-#endif
-
 
 namespace MLAgents
 {
@@ -33,7 +28,7 @@ namespace MLAgents
         /// <summary>
         /// Custom sampler used to add timings to the profiler.
         /// </summary>
-        private CustomSampler m_Sampler;
+        CustomSampler m_Sampler;
 
         /// <summary>
         /// Number of total ticks elapsed for this node.
@@ -235,7 +230,7 @@ namespace MLAgents
     /// </remarks>
     public class TimerStack : System.IDisposable
     {
-        private static readonly TimerStack k_Instance = new TimerStack();
+        static readonly TimerStack k_Instance = new TimerStack();
 
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
@@ -246,7 +241,7 @@ namespace MLAgents
         {
         }
 
-        private TimerStack()
+        TimerStack()
         {
             Reset();
         }
@@ -268,7 +263,7 @@ namespace MLAgents
             get { return m_RootNode; }
         }
 
-        private void Push(string name)
+        void Push(string name)
         {
             var current = m_Stack.Peek();
             var next = current.GetChild(name);
@@ -276,7 +271,7 @@ namespace MLAgents
             next.Begin();
         }
 
-        private void Pop()
+        void Pop()
         {
             var node = m_Stack.Pop();
             node.End();
