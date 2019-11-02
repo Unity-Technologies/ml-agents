@@ -37,11 +37,7 @@ disable =
     W0703,
 
     # W0201: Attribute '...' defined outside __init__
-    W0201,
-
-    # We should fix these up ASAP
-    # W0221: Parameters differ from overridden
-    #W0221,
+    #W0201,
 
     # E0401: Unable to import...
     # E0611: No name '...' in module '...'
