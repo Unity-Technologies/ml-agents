@@ -28,13 +28,20 @@ namespace MLAgents.CommunicatorObjects {
             "ZWRfb2JzZXJ2YXRpb24ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIn8K",
             "GkNvbXByZXNzZWRPYnNlcnZhdGlvblByb3RvEg0KBXNoYXBlGAEgAygFEkQK",
             "EGNvbXByZXNzaW9uX3R5cGUYAiABKA4yKi5jb21tdW5pY2F0b3Jfb2JqZWN0",
-            "cy5Db21wcmVzc2lvblR5cGVQcm90bxIMCgRkYXRhGAMgASgMKikKFENvbXBy",
-            "ZXNzaW9uVHlwZVByb3RvEggKBE5PTkUQABIHCgNQTkcQAUIfqgIcTUxBZ2Vu",
-            "dHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "cy5Db21wcmVzc2lvblR5cGVQcm90bxIMCgRkYXRhGAMgASgMIvkBChBPYnNl",
+            "cnZhdGlvblByb3RvEg0KBXNoYXBlGAEgAygFEkQKEGNvbXByZXNzaW9uX3R5",
+            "cGUYAiABKA4yKi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5Db21wcmVzc2lvblR5",
+            "cGVQcm90bxIZCg9jb21wcmVzc2VkX2RhdGEYAyABKAxIABJGCgpmbG9hdF9k",
+            "YXRhGAQgASgLMjAuY29tbXVuaWNhdG9yX29iamVjdHMuT2JzZXJ2YXRpb25Q",
+            "cm90by5GbG9hdERhdGFIABoZCglGbG9hdERhdGESDAoEZGF0YRgBIAMoAkIS",
+            "ChBvYnNlcnZhdGlvbl9kYXRhKikKFENvbXByZXNzaW9uVHlwZVByb3RvEggK",
+            "BE5PTkUQABIHCgNQTkcQAUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2Jq",
+            "ZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CompressedObservationProto), global::MLAgents.CommunicatorObjects.CompressedObservationProto.Parser, new[]{ "Shape", "CompressionType", "Data" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.CompressedObservationProto), global::MLAgents.CommunicatorObjects.CompressedObservationProto.Parser, new[]{ "Shape", "CompressionType", "Data" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto), global::MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
           }));
     }
     #endregion
@@ -224,6 +231,383 @@ namespace MLAgents.CommunicatorObjects {
         }
       }
     }
+
+  }
+
+  /// <summary>
+  /// TODO remove compressed
+  /// </summary>
+  public sealed partial class ObservationProto : pb::IMessage<ObservationProto> {
+    private static readonly pb::MessageParser<ObservationProto> _parser = new pb::MessageParser<ObservationProto>(() => new ObservationProto());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ObservationProto> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::MLAgents.CommunicatorObjects.CompressedObservationReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObservationProto() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObservationProto(ObservationProto other) : this() {
+      shape_ = other.shape_.Clone();
+      compressionType_ = other.compressionType_;
+      switch (other.ObservationDataCase) {
+        case ObservationDataOneofCase.CompressedData:
+          CompressedData = other.CompressedData;
+          break;
+        case ObservationDataOneofCase.FloatData:
+          FloatData = other.FloatData.Clone();
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObservationProto Clone() {
+      return new ObservationProto(this);
+    }
+
+    /// <summary>Field number for the "shape" field.</summary>
+    public const int ShapeFieldNumber = 1;
+    private static readonly pb::FieldCodec<int> _repeated_shape_codec
+        = pb::FieldCodec.ForInt32(10);
+    private readonly pbc::RepeatedField<int> shape_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> Shape {
+      get { return shape_; }
+    }
+
+    /// <summary>Field number for the "compression_type" field.</summary>
+    public const int CompressionTypeFieldNumber = 2;
+    private global::MLAgents.CommunicatorObjects.CompressionTypeProto compressionType_ = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.CompressionTypeProto CompressionType {
+      get { return compressionType_; }
+      set {
+        compressionType_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "compressed_data" field.</summary>
+    public const int CompressedDataFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString CompressedData {
+      get { return observationDataCase_ == ObservationDataOneofCase.CompressedData ? (pb::ByteString) observationData_ : pb::ByteString.Empty; }
+      set {
+        observationData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        observationDataCase_ = ObservationDataOneofCase.CompressedData;
+      }
+    }
+
+    /// <summary>Field number for the "float_data" field.</summary>
+    public const int FloatDataFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData FloatData {
+      get { return observationDataCase_ == ObservationDataOneofCase.FloatData ? (global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData) observationData_ : null; }
+      set {
+        observationData_ = value;
+        observationDataCase_ = value == null ? ObservationDataOneofCase.None : ObservationDataOneofCase.FloatData;
+      }
+    }
+
+    private object observationData_;
+    /// <summary>Enum of possible cases for the "observation_data" oneof.</summary>
+    public enum ObservationDataOneofCase {
+      None = 0,
+      CompressedData = 3,
+      FloatData = 4,
+    }
+    private ObservationDataOneofCase observationDataCase_ = ObservationDataOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ObservationDataOneofCase ObservationDataCase {
+      get { return observationDataCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearObservationData() {
+      observationDataCase_ = ObservationDataOneofCase.None;
+      observationData_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ObservationProto);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ObservationProto other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!shape_.Equals(other.shape_)) return false;
+      if (CompressionType != other.CompressionType) return false;
+      if (CompressedData != other.CompressedData) return false;
+      if (!object.Equals(FloatData, other.FloatData)) return false;
+      if (ObservationDataCase != other.ObservationDataCase) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= shape_.GetHashCode();
+      if (CompressionType != 0) hash ^= CompressionType.GetHashCode();
+      if (observationDataCase_ == ObservationDataOneofCase.CompressedData) hash ^= CompressedData.GetHashCode();
+      if (observationDataCase_ == ObservationDataOneofCase.FloatData) hash ^= FloatData.GetHashCode();
+      hash ^= (int) observationDataCase_;
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      shape_.WriteTo(output, _repeated_shape_codec);
+      if (CompressionType != 0) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) CompressionType);
+      }
+      if (observationDataCase_ == ObservationDataOneofCase.CompressedData) {
+        output.WriteRawTag(26);
+        output.WriteBytes(CompressedData);
+      }
+      if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
+        output.WriteRawTag(34);
+        output.WriteMessage(FloatData);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += shape_.CalculateSize(_repeated_shape_codec);
+      if (CompressionType != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) CompressionType);
+      }
+      if (observationDataCase_ == ObservationDataOneofCase.CompressedData) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(CompressedData);
+      }
+      if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(FloatData);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ObservationProto other) {
+      if (other == null) {
+        return;
+      }
+      shape_.Add(other.shape_);
+      if (other.CompressionType != 0) {
+        CompressionType = other.CompressionType;
+      }
+      switch (other.ObservationDataCase) {
+        case ObservationDataOneofCase.CompressedData:
+          CompressedData = other.CompressedData;
+          break;
+        case ObservationDataOneofCase.FloatData:
+          if (FloatData == null) {
+            FloatData = new global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
+          }
+          FloatData.MergeFrom(other.FloatData);
+          break;
+      }
+
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10:
+          case 8: {
+            shape_.AddEntriesFrom(input, _repeated_shape_codec);
+            break;
+          }
+          case 16: {
+            compressionType_ = (global::MLAgents.CommunicatorObjects.CompressionTypeProto) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            CompressedData = input.ReadBytes();
+            break;
+          }
+          case 34: {
+            global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData subBuilder = new global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
+            if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
+              subBuilder.MergeFrom(FloatData);
+            }
+            input.ReadMessage(subBuilder);
+            FloatData = subBuilder;
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the ObservationProto message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public sealed partial class FloatData : pb::IMessage<FloatData> {
+        private static readonly pb::MessageParser<FloatData> _parser = new pb::MessageParser<FloatData>(() => new FloatData());
+        private pb::UnknownFieldSet _unknownFields;
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public static pb::MessageParser<FloatData> Parser { get { return _parser; } }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::MLAgents.CommunicatorObjects.ObservationProto.Descriptor.NestedTypes[0]; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public FloatData() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public FloatData(FloatData other) : this() {
+          data_ = other.data_.Clone();
+          _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public FloatData Clone() {
+          return new FloatData(this);
+        }
+
+        /// <summary>Field number for the "data" field.</summary>
+        public const int DataFieldNumber = 1;
+        private static readonly pb::FieldCodec<float> _repeated_data_codec
+            = pb::FieldCodec.ForFloat(10);
+        private readonly pbc::RepeatedField<float> data_ = new pbc::RepeatedField<float>();
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public pbc::RepeatedField<float> Data {
+          get { return data_; }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override bool Equals(object other) {
+          return Equals(other as FloatData);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public bool Equals(FloatData other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          if(!data_.Equals(other.data_)) return false;
+          return Equals(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override int GetHashCode() {
+          int hash = 1;
+          hash ^= data_.GetHashCode();
+          if (_unknownFields != null) {
+            hash ^= _unknownFields.GetHashCode();
+          }
+          return hash;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void WriteTo(pb::CodedOutputStream output) {
+          data_.WriteTo(output, _repeated_data_codec);
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(output);
+          }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public int CalculateSize() {
+          int size = 0;
+          size += data_.CalculateSize(_repeated_data_codec);
+          if (_unknownFields != null) {
+            size += _unknownFields.CalculateSize();
+          }
+          return size;
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void MergeFrom(FloatData other) {
+          if (other == null) {
+            return;
+          }
+          data_.Add(other.data_);
+          _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        public void MergeFrom(pb::CodedInputStream input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+                break;
+              case 10:
+              case 13: {
+                data_.AddEntriesFrom(input, _repeated_data_codec);
+                break;
+              }
+            }
+          }
+        }
+
+      }
+
+    }
+    #endregion
 
   }
 

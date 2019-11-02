@@ -19,7 +19,7 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                StackedVectorObservation = { ai.floatObservations },
+                //StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
                 StoredTextActions = ai.storedTextActions,
                 TextObservation = ai.textObservation,
@@ -35,11 +35,11 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            if (ai.compressedObservations != null)
+            if (ai.observations != null)
             {
-                foreach (var obs in ai.compressedObservations)
+                foreach (var obs in ai.observations)
                 {
-                    agentInfoProto.CompressedObservations.Add(obs.ToProto());
+                    agentInfoProto.Observations.Add(obs.ToProto());
                 }
             }
 
@@ -175,13 +175,38 @@ namespace MLAgents
             return agentActions;
         }
 
-        public static CompressedObservationProto ToProto(this CompressedObservation obs)
+        public static ObservationProto ToProto(this Observation obs)
         {
-            var obsProto = new CompressedObservationProto
+            if (obs.CompressedData != null && obs.FloatData != null)
             {
-                Data = ByteString.CopyFrom(obs.Data),
-                CompressionType = (CompressionTypeProto)obs.CompressionType,
-            };
+                // TODO XOR
+
+            }
+
+            ObservationProto obsProto = null;
+            ;
+            if (obs.CompressedData != null)
+            {
+                obsProto = new ObservationProto
+                {
+                    CompressedData = ByteString.CopyFrom(obs.CompressedData),
+                    CompressionType = (CompressionTypeProto)obs.CompressionType,
+                };
+            }
+            else
+            {
+                var floatDataProto = new ObservationProto.Types.FloatData
+                {
+                    Data = { obs.FloatData },
+                };
+
+                obsProto = new ObservationProto
+                {
+                    FloatData = floatDataProto,
+                    CompressionType = (CompressionTypeProto)obs.CompressionType,
+                };
+            }
+
             obsProto.Shape.AddRange(obs.Shape);
             return obsProto;
         }

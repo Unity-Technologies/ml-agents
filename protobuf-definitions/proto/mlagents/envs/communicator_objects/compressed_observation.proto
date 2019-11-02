@@ -13,3 +13,17 @@ message CompressedObservationProto {
     CompressionTypeProto compression_type = 2;
     bytes data = 3;
 }
+
+// TODO remove compressed
+message ObservationProto {
+    message FloatData {
+        repeated float data = 1;
+    }
+
+    repeated int32 shape = 1;
+    CompressionTypeProto compression_type = 2;
+    oneof observation_data {
+        bytes compressed_data = 3;
+        FloatData float_data = 4;
+    }
+}

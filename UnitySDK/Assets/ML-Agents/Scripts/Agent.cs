@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
@@ -13,12 +14,9 @@ namespace MLAgents
     public struct AgentInfo
     {
         /// <summary>
-        /// Most recent compressed observations.
+        /// Most recent observations.
         /// </summary>
-        public List<CompressedObservation> compressedObservations;
-
-        // TODO struct?
-        public List<float> floatObservations;
+        public List<Observation> observations;
 
         /// <summary>
         /// Most recent text observation.
@@ -253,6 +251,7 @@ namespace MLAgents
         public List<ISensor> sensors;
 
         public VectorSensor collectObservationsSensor;
+        float[] m_VectorSensorBuffer;
 
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
@@ -471,11 +470,7 @@ namespace MLAgents
                 m_Info.textObservation = "";
             m_Action.textActions = "";
 
-            m_Info.compressedObservations = new List<CompressedObservation>();
-            m_Info.floatObservations = new List<float>();
-            m_Info.floatObservations.AddRange(
-                new float[param.vectorObservationSize
-                    * param.numStackedVectorObservations]);
+            m_Info.observations = new List<Observation>();
             m_Info.customObservation = null;
         }
 
@@ -548,6 +543,20 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
+            // Create a buffer for writing vector sensor data too
+            int numFloatObservations = 0;
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                Debug.Log($"compression = {sensors[i].GetCompressionType()}");
+                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                {
+                    // TODO handle multi-D
+                    numFloatObservations += sensors[i].GetFloatObservationShape()[0];
+                }
+            }
+
+            Debug.Log($"numFloatObservations={numFloatObservations}  sensors.Count={sensors.Count}");
+            m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -562,7 +571,7 @@ namespace MLAgents
 
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.storedTextActions = m_Action.textActions;
-            m_Info.compressedObservations.Clear();
+            m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
@@ -583,7 +592,7 @@ namespace MLAgents
             {
                 // This is a bit of a hack - if we're in inference mode, compressed observations won't be generated
                 // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.compressedObservations.Count == 0)
+                if (m_Info.observations.Count == 0)
                 {
                     GenerateSensorData();
                 }
@@ -610,18 +619,28 @@ namespace MLAgents
                 var sensor = sensors[i];
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    m_WriteAdapter.SetTarget(m_Info.floatObservations, floatsWritten);
-                    floatsWritten += sensor.Write(m_WriteAdapter);
-                }
-                else
-                {
-                    var compressedObs = new CompressedObservation
+                    // only handles 1D
+                    // TODO handle in communicator code instead
+                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
+                    var numFloats = sensor.Write(m_WriteAdapter);
+                    var floatObs = new Observation
                     {
-                        Data = sensor.GetCompressedObservation(),
+                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
                         Shape = sensor.GetFloatObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.compressedObservations.Add(compressedObs);
+                    m_Info.observations.Add(floatObs);
+                    floatsWritten += numFloats;
+                }
+                else
+                {
+                    var compressedObs = new Observation
+                    {
+                        CompressedData = sensor.GetCompressedObservation(),
+                        Shape = sensor.GetFloatObservationShape(),
+                        CompressionType = sensor.GetCompressionType()
+                    };
+                    m_Info.observations.Add(compressedObs);
                 }
             }
         }
