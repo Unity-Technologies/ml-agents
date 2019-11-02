@@ -9,9 +9,9 @@ class BaseUnityEnvironment(ABC):
     def step(
         self,
         vector_action: Optional[Dict] = None,
-        memory: Optional[Dict] = None,
         text_action: Optional[Dict] = None,
         value: Optional[Dict] = None,
+        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         pass
 
