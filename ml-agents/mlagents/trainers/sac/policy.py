@@ -188,7 +188,12 @@ class SACPolicy(TFPolicy):
 
     @timed
     def update(
-        self, mini_batch: Dict[str, Any], num_sequences: int, update_target: bool = True
+        # pylint: disable=arguments-differ
+        # TODO ervteng FIX ME
+        self,
+        mini_batch: Dict[str, Any],
+        num_sequences: int,
+        update_target: bool = True,
     ) -> Dict[str, float]:
         """
         Updates model using buffer.
