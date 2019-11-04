@@ -84,7 +84,7 @@ public class ArticulatedReacherAgent : Agent
         UpdateGoalPosition();
 
         //float maxTorque = 150f;
-        float maxTorque = 250f;
+        float maxTorque = 150f;
         
         var torqueX = Mathf.Clamp(vectorAction[0], -1f, 1f) * maxTorque;
         var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * maxTorque;
