@@ -156,7 +156,7 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
         if (agentRole == AgentRole.Striker)

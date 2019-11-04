@@ -21,19 +21,9 @@ namespace MLAgents
         public List<float> floatObservations;
 
         /// <summary>
-        /// Most recent text observation.
-        /// </summary>
-        public string textObservation;
-
-        /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
         /// </summary>
         public float[] storedVectorActions;
-
-        /// <summary>
-        /// Keeps track of the last text action taken by the Brain.
-        /// </summary>
-        public string storedTextActions;
 
         /// <summary>
         /// For discrete control, specifies the actions that the agent cannot take. Is true if
@@ -61,13 +51,6 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int id;
-
-        /// <summary>
-        /// User-customizable object for sending structured output from Unity to Python in response
-        /// to an action in addition to a scalar reward.
-        /// TODO(cgoy): All references to protobuf objects should be removed.
-        /// </summary>
-        public CommunicatorObjects.CustomObservationProto customObservation;
     }
 
     /// <summary>
@@ -77,10 +60,7 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
-        public string textActions;
         public float value;
-        /// TODO(cgoy): All references to protobuf objects should be removed.
-        public CommunicatorObjects.CustomActionProto customAction;
     }
 
     /// <summary>
@@ -467,16 +447,11 @@ namespace MLAgents
                 }
             }
 
-            if (m_Info.textObservation == null)
-                m_Info.textObservation = "";
-            m_Action.textActions = "";
-
             m_Info.compressedObservations = new List<CompressedObservation>();
             m_Info.floatObservations = new List<float>();
             m_Info.floatObservations.AddRange(
                 new float[param.vectorObservationSize
                     * param.numStackedVectorObservations]);
-            m_Info.customObservation = null;
         }
 
         /// <summary>
@@ -561,7 +536,6 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.storedTextActions = m_Action.textActions;
             m_Info.compressedObservations.Clear();
             m_ActionMasker.ResetMask();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -591,7 +565,6 @@ namespace MLAgents
                 m_Recorder.WriteExperience(m_Info);
             }
 
-            m_Info.textObservation = "";
         }
 
         /// <summary>
@@ -627,7 +600,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Collects the (vector, visual, text) observations of the agent.
+        /// Collects the (vector, visual) observations of the agent.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
@@ -636,7 +609,7 @@ namespace MLAgents
         /// the Agent acheive its goal. For example, for a fighting Agent, its
         /// observation could include distances to friends or enemies, or the
         /// current level of ammunition at its disposal.
-        /// Recall that an Agent may attach vector, visual or textual observations.
+        /// Recall that an Agent may attach vector or visual observations.
         /// Vector observations are added by calling the provided helper methods:
         ///     - <see cref="AddVectorObs(int)"/>
         ///     - <see cref="AddVectorObs(float)"/>
@@ -657,8 +630,6 @@ namespace MLAgents
         /// needs to match the vectorObservationSize attribute of the linked Brain.
         /// Visual observations are implicitly added from the cameras attached to
         /// the Agent.
-        /// Lastly, textual observations are added using
-        /// <see cref="SetTextObs(string)"/>.
         /// </remarks>
         public virtual void CollectObservations()
         {
@@ -790,15 +761,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets the text observation.
-        /// </summary>
-        /// <param name="textObservation">The text observation.</param>
-        public void SetTextObs(string textObservation)
-        {
-            m_Info.textObservation = textObservation;
-        }
-
-        /// <summary>
         /// Specifies the agent behavior at every step based on the provided
         /// action.
         /// </summary>
@@ -806,28 +768,8 @@ namespace MLAgents
         /// Vector action. Note that for discrete actions, the provided array
         /// will be of length 1.
         /// </param>
-        /// <param name="textAction">Text action.</param>
-        public virtual void AgentAction(float[] vectorAction, string textAction)
+        public virtual void AgentAction(float[] vectorAction)
         {
-        }
-
-        /// <summary>
-        /// Specifies the agent behavior at every step based on the provided
-        /// action.
-        /// </summary>
-        /// <param name="vectorAction">
-        /// Vector action. Note that for discrete actions, the provided array
-        /// will be of length 1.
-        /// </param>
-        /// <param name="textAction">Text action.</param>
-        /// <param name="customAction">
-        /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
-        /// as either a flat vector or a single string.
-        /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomActionProto customAction)
-        {
-            // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
-            AgentAction(vectorAction, textAction);
         }
 
         /// <summary>
@@ -992,7 +934,7 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                AgentAction(m_Action.vectorActions, m_Action.textActions, m_Action.customAction);
+                AgentAction(m_Action.vectorActions);
             }
 
             if ((m_StepCount >= agentParameters.maxStep)
@@ -1027,15 +969,6 @@ namespace MLAgents
         void DecideAction()
         {
             m_Brain?.DecideAction();
-        }
-
-        /// <summary>
-        /// Sets the custom observation for the agent for this episode.
-        /// </summary>
-        /// <param name="customObservation">New value of the agent's custom observation.</param>
-        public void SetCustomObservation(CommunicatorObjects.CustomObservationProto customObservation)
-        {
-            m_Info.customObservation = customObservation;
         }
     }
 }

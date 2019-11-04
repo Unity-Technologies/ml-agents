@@ -24,7 +24,7 @@ public class Ball3DAgent : Agent
         AddVectorObs(m_BallRb.velocity);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);

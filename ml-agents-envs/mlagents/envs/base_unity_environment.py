@@ -7,11 +7,7 @@ from mlagents.envs.brain import AllBrainInfo, BrainParameters
 class BaseUnityEnvironment(ABC):
     @abstractmethod
     def step(
-        self,
-        vector_action: Optional[Dict] = None,
-        text_action: Optional[Dict] = None,
-        value: Optional[Dict] = None,
-        custom_action: Dict[str, Any] = None,
+        self, vector_action: Optional[Dict] = None, value: Optional[Dict] = None
     ) -> AllBrainInfo:
         pass
 

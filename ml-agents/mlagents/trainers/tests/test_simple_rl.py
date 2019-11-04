@@ -59,7 +59,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         self,
         vector_action: Dict[str, Any] = None,
         memory: Dict[str, Any] = None,
-        text_action: Dict[str, Any] = None,
         value: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         assert vector_action is not None
