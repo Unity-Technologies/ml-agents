@@ -278,9 +278,7 @@ class SACTrainer(RLTrainer):
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
 
-                update_stats = self.policy.update(
-                    sampled_minibatch, n_sequences, update_target=True
-                )
+                update_stats = self.policy.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 
