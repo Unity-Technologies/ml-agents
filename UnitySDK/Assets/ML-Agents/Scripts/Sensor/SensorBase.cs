@@ -38,6 +38,8 @@ namespace MLAgents.Sensor
             return numFloats;
         }
 
+        public void Update() { }
+
         public virtual byte[] GetCompressedObservation()
         {
             return null;

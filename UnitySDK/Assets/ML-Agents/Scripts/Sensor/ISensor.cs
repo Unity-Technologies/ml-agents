@@ -22,6 +22,8 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Write the observation data directly to the WriteAdapter.
         /// This is considered an advanced interface; for a simpler approach, use SensorBase and override WriteFloats instead.
+        /// Note that this (and GetCompressedObservation) may be called multiple times per agent step, so should not
+        /// mutate any internal state.
         /// </summary>
         /// <param name="adapater"></param>
         /// <returns>The number of elements written</returns>
@@ -34,6 +36,11 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns></returns>
         byte[] GetCompressedObservation();
+
+        /// <summary>
+        /// Update any internal state of the sensor. This is called once per each agent step.
+        /// </summary>
+        void Update();
 
         /// <summary>
         /// Return the compression type being used. If no compression is used, return SensorCompressionType.None
