@@ -4,7 +4,7 @@
 
 * [Installation](Installation.md)
   * [Background: Jupyter Notebooks](Background-Jupyter.md)
-  * [Docker Set-up](Using-Docker.md)
+  * [Using Virtual Environment](Using-Virtual-Environment.md)
 * [Basic Guide](Basic-Guide.md)
 
 ## Getting Started
@@ -22,29 +22,36 @@
 * [Designing a Learning Environment](Learning-Environment-Design.md)
   * [Agents](Learning-Environment-Design-Agents.md)
   * [Academy](Learning-Environment-Design-Academy.md)
-  * [Brains](Learning-Environment-Design-Brains.md):
-    [Player](Learning-Environment-Design-Player-Brains.md),
-    [Heuristic](Learning-Environment-Design-Heuristic-Brains.md),
-    [Learning](Learning-Environment-Design-Learning-Brains.md)
 * [Learning Environment Best Practices](Learning-Environment-Best-Practices.md)
-* [Using the Monitor](Feature-Monitor.md)
-* [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
-* [Using an Executable Environment](Learning-Environment-Executable.md)
-* [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
+
+### Advanced Usage
+  * [Using the Monitor](Feature-Monitor.md)
+  * [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
+  * [Using an Executable Environment](Learning-Environment-Executable.md)
+  * [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
 
 ## Training
 
 * [Training ML-Agents](Training-ML-Agents.md)
+* [Using TensorBoard to Observe Training](Using-Tensorboard.md)
+* [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
 * [Training with Proximal Policy Optimization](Training-PPO.md)
 * [Training with Soft Actor-Critic](Training-SAC.md)
+
+### Advanced Training Methods
+
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 * [Training with LSTM](Feature-Memory.md)
 * [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+
+### Cloud Training (Deprecated)
+Here are the cloud training set-up guides for Azure and AWS. We no longer use them ourselves and
+so they may not be work correctly. We've decided to keep them up just in case they are helpful to
+you.
+
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
-* [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
-* [Using TensorBoard to Observe Training](Using-Tensorboard.md)
 
 ## Inference
 

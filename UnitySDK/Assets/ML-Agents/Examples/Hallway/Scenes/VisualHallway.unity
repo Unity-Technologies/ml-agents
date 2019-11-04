@@ -167,9 +167,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 32612447}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &32612447 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 32612446}
 --- !u!1 &255077123
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,9 +325,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 341018563}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &341018563 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 341018562}
 --- !u!1 &365376270
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,9 +420,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 721234460}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &721234460 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 721234459}
 --- !u!1001 &977960505
 Prefab:
   m_ObjectHideFlags: 0
@@ -456,9 +486,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 977960506}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &977960506 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 977960505}
 --- !u!1 &1257687048
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,12 +701,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 114451776683649118, guid: f2281a3adc3e640b490f89407c2e12d1,
-        type: 2}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
@@ -723,9 +757,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1388008249}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &1388008249 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 1388008248}
 --- !u!1001 &1436760868
 Prefab:
   m_ObjectHideFlags: 0
@@ -779,9 +823,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1436760869}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &1436760869 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 1436760868}
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,10 +863,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40db664a3061b46a0a0628f90b2264f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    broadcastingBrains:
-    - {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2, type: 2}
-    m_BrainsToControl: []
   m_TrainingConfiguration:
     width: 128
     height: 128
@@ -898,9 +948,19 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: fe56dd72ed38a4c2fb5419aba1e2d5f2,
         type: 2}
+    - target: {fileID: 114516857402348526, guid: f2281a3adc3e640b490f89407c2e12d1,
+        type: 2}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1746153507}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f2281a3adc3e640b490f89407c2e12d1, type: 2}
   m_IsPrefabParent: 0
+--- !u!20 &1746153507 stripped
+Camera:
+  m_PrefabParentObject: {fileID: 20309822448307506, guid: f2281a3adc3e640b490f89407c2e12d1,
+    type: 2}
+  m_PrefabInternal: {fileID: 1746153506}
 --- !u!1001 &2025898844
 Prefab:
   m_ObjectHideFlags: 0

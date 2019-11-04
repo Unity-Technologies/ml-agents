@@ -51,6 +51,11 @@ class UnityEnv(gym.Env):
         self._env = UnityEnvironment(
             environment_filename, worker_id, no_graphics=no_graphics
         )
+
+        # Take a single step so that the brain information will be sent over
+        if not self._env.brains:
+            self._env.step()
+
         self.name = self._env.academy_name
         self.visual_obs = None
         self._current_state = None
@@ -132,20 +137,20 @@ class UnityEnv(gym.Env):
         high = np.array([np.inf] * brain.vector_observation_space_size)
         self.action_meanings = brain.vector_action_descriptions
         if self.use_visual:
-            if brain.camera_resolutions[0]["blackAndWhite"]:
-                depth = 1
-            else:
-                depth = 3
-            self._observation_space = spaces.Box(
-                0,
-                1,
-                dtype=np.float32,
-                shape=(
-                    brain.camera_resolutions[0]["height"],
-                    brain.camera_resolutions[0]["width"],
-                    depth,
-                ),
+            shape = (
+                brain.camera_resolutions[0].height,
+                brain.camera_resolutions[0].width,
+                brain.camera_resolutions[0].num_channels,
             )
+            if uint8_visual:
+                self._observation_space = spaces.Box(
+                    0, 255, dtype=np.uint8, shape=shape
+                )
+            else:
+                self._observation_space = spaces.Box(
+                    0, 1, dtype=np.float32, shape=shape
+                )
+
         else:
             self._observation_space = spaces.Box(-high, high, dtype=np.float32)
 

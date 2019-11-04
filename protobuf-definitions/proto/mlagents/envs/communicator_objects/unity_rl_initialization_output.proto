@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-import "mlagents/envs/communicator_objects/brain_parameters_proto.proto";
-import "mlagents/envs/communicator_objects/environment_parameters_proto.proto";
+import "mlagents/envs/communicator_objects/brain_parameters.proto";
+import "mlagents/envs/communicator_objects/environment_parameters.proto";
 
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 // The request message containing the academy's parameters.
-message UnityRLInitializationOutput {
+message UnityRLInitializationOutputProto {
     string name = 1;
     string version = 2;
     string log_path = 3;

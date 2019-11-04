@@ -3,6 +3,12 @@ repos:
     rev: 19.3b0
     hooks:
     -   id: black
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py
+            )$
+
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.720
     hooks:
@@ -20,6 +26,7 @@ repos:
         name: mypy-gym-unity
         files: "gym-unity/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
     hooks:
@@ -27,7 +34,8 @@ repos:
         exclude: >
             (?x)^(
                 .*cs.meta|
-                .*.css
+                .*.css|
+                .*.meta
             )$
         args: [--fix=lf]
     -   id: flake8
@@ -36,6 +44,16 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
+        additional_dependencies: [flake8-comprehensions]
+    -   id: trailing-whitespace
+        name: trailing-whitespace-markdown
+        types: [markdown]
+
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.4.1  # Use the ref you want to point at
+    hooks:
+    -   id: python-check-mock-methods
+
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
@@ -51,3 +69,8 @@ repos:
         exclude: ".*localized.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
         stages: [manual]
+    -   id: validate-versions
+        name: validate library versions
+        language: script
+        entry: utils/validate_versions.py
+        files: ".*/setup.py"

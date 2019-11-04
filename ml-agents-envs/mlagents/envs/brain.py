@@ -2,15 +2,23 @@ import logging
 import numpy as np
 import io
 
-from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
-    BrainParametersProto,
-)
+from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.timers import hierarchical_timer, timed
-from typing import Dict, List, Optional
+from typing import Dict, List, NamedTuple, Optional
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
+
+
+class CameraResolution(NamedTuple):
+    height: int
+    width: int
+    num_channels: int
+
+    @property
+    def gray_scale(self) -> bool:
+        return self.num_channels == 1
 
 
 class BrainParameters:
@@ -19,7 +27,7 @@ class BrainParameters:
         brain_name: str,
         vector_observation_space_size: int,
         num_stacked_vector_observations: int,
-        camera_resolutions: List[Dict],
+        camera_resolutions: List[CameraResolution],
         vector_action_space_size: List[int],
         vector_action_descriptions: List[str],
         vector_action_space_type: int,
@@ -56,21 +64,24 @@ class BrainParameters:
         )
 
     @staticmethod
-    def from_proto(brain_param_proto: BrainParametersProto) -> "BrainParameters":
+    def from_proto(
+        brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
+    ) -> "BrainParameters":
         """
         Converts brain parameter proto to BrainParameter object.
         :param brain_param_proto: protobuf object.
         :return: BrainParameter object.
         """
-        resolution = [
-            {"height": x.height, "width": x.width, "blackAndWhite": x.gray_scale}
-            for x in brain_param_proto.camera_resolutions
+        resolutions = [
+            CameraResolution(x.shape[0], x.shape[1], x.shape[2])
+            for x in agent_info.compressed_observations
         ]
+
         brain_params = BrainParameters(
             brain_param_proto.brain_name,
             brain_param_proto.vector_observation_size,
             brain_param_proto.num_stacked_vector_observations,
-            resolution,
+            resolutions,
             list(brain_param_proto.vector_action_size),
             list(brain_param_proto.vector_action_descriptions),
             brain_param_proto.vector_action_space_type,
@@ -187,8 +198,8 @@ class BrainInfo:
         for i in range(brain_params.number_visual_observations):
             obs = [
                 BrainInfo.process_pixels(
-                    x.visual_observations[i],
-                    brain_params.camera_resolutions[i]["blackAndWhite"],
+                    x.compressed_observations[i].data,
+                    brain_params.camera_resolutions[i].gray_scale,
                 )
                 for x in agent_info_list
             ]
@@ -196,7 +207,7 @@ class BrainInfo:
         if len(agent_info_list) == 0:
             memory_size = 0
         else:
-            memory_size = max([len(x.memories) for x in agent_info_list])
+            memory_size = max(len(x.memories) for x in agent_info_list)
         if memory_size == 0:
             memory = np.zeros((0, 0))
         else:
@@ -214,13 +225,9 @@ class BrainInfo:
                         0 if agent_info.action_mask[k] else 1
                         for k in range(total_num_actions)
                     ]
-        if any([np.isnan(x.reward) for x in agent_info_list]):
+        if any(np.isnan(x.reward) for x in agent_info_list):
             logger.warning(
                 "An agent had a NaN reward for brain " + brain_params.brain_name
-            )
-        if any([np.isnan(x.stacked_vector_observation).any() for x in agent_info_list]):
-            logger.warning(
-                "An agent had a NaN observation for brain " + brain_params.brain_name
             )
 
         if len(agent_info_list) == 0:
@@ -232,9 +239,32 @@ class BrainInfo:
                 )
             )
         else:
-            vector_obs = np.nan_to_num(
-                np.array([x.stacked_vector_observation for x in agent_info_list])
-            )
+            stacked_obs = []
+            has_nan = False
+            has_inf = False
+            for x in agent_info_list:
+                np_obs = np.array(x.stacked_vector_observation)
+                # Check for NaNs or infs in the observations
+                # If there's a NaN in the observations, the dot() result will be NaN
+                # If there's an Inf (either sign) then the result will be Inf
+                # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
+                # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
+                # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
+                d = np.dot(np_obs, np_obs)
+                has_nan = has_nan or np.isnan(d)
+                has_inf = has_inf or not np.isfinite(d)
+                stacked_obs.append(np_obs)
+            vector_obs = np.array(stacked_obs)
+
+            # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
+            if has_nan or has_inf:
+                vector_obs = np.nan_to_num(vector_obs)
+
+            if has_nan:
+                logger.warning(
+                    f"An agent had a NaN observation for brain {brain_params.brain_name}"
+                )
+
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
             visual_observation=vis_obs,

@@ -16,7 +16,7 @@ Clone(복제)하고 추가종속성을 가지는 Python(파이썬)을 설치해�
 </p>
 
 ## Windows 사용자
-Windows에서 환경을 설정하기 위해, [세부 사항](Installation-Windows.md)에 설정 방법에 대해 작성하였습니다. 
+Windows에서 환경을 설정하기 위해, [세부 사항](Installation-Windows.md)에 설정 방법에 대해 작성하였습니다.
 Mac과 Linux는 다음 가이드를 확인해주십시오.
 
 ## Mac 또는 Unix 사용자
@@ -58,14 +58,14 @@ Python 3.6이 만약 설치되어 있지 않다면, [다운로드](https://www.p
 pip3 install mlagents
 ```
 
-이 명령어를 통해 PyPi로 부터(복제된 저장소가 아닌) `ml-agents`가 설치될 것입니다. 
+이 명령어를 통해 PyPi로 부터(복제된 저장소가 아닌) `ml-agents`가 설치될 것입니다.
 만약 성공적으로 설치를 완료 했다면, `mlagents-learn --help` 명령어를 실행할 수 있을 것입니다.
-명령어를 실행하면 유니티 로고와 `mlagents-learn`에서 사용할 수 있는 명령어 라인 매개변수들을 볼 수 있습니다. 
+명령어를 실행하면 유니티 로고와 `mlagents-learn`에서 사용할 수 있는 명령어 라인 매개변수들을 볼 수 있습니다.
 
 **주의:**
 
 - 현재 Python 3.7 또는 Python 3.5을 지원하지 않습니다.
-- 만약 Anaconda를 사용하고 TensorFlow에 문제가 있다면, 다음 
+- 만약 Anaconda를 사용하고 TensorFlow에 문제가 있다면, 다음
   [링크](https://www.tensorflow.org/install/pip)에서 Anaconda 환경에서 어떻게 TensorFlow를 설치하는지 확인하십시오.
 ### 개발을 위한 설치방법
 
@@ -82,7 +82,7 @@ pip3 install -e ./
 
 `-e` 플래그를 사용하여 pip를 실행 하면 파이썬 파일을 직접 변경할 수 있고 `mlagents-learn`를 실행할 때 반영됩니다.
 `mlagents` 패키지가 `mlagents_envs`에 의존적이고, 다른 순서로 설치하면 PyPi로 부터 `mlagents_envs`를
-설치할 수 있기 때문에 이 순서대로 패키지를 설치하는 것은 중요합니다. 
+설치할 수 있기 때문에 이 순서대로 패키지를 설치하는 것은 중요합니다.
 
 ## 도커 기반 설치
 
@@ -90,7 +90,7 @@ pip3 install -e ./
 
 ## 다음 단계
 
-[기초 가이드](Basic-Guide.md) 페이지에는 유니티 내에서 ML-Agents toolkit의 설정 및 학습된 모델 실행, 
+[기초 가이드](Basic-Guide.md) 페이지에는 유니티 내에서 ML-Agents toolkit의 설정 및 학습된 모델 실행,
 환경 구축, 학습 방법에 대한 여러 짧은 튜토리얼을 포함하고 있습니다.
 
 ## 도움말

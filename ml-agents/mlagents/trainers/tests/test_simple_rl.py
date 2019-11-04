@@ -7,10 +7,10 @@ from typing import Any, Dict
 
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.trainer_util import initialize_trainers
+from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
 
@@ -192,9 +192,8 @@ def _check_environment_trains(env, config):
 
         trainer_config = yaml.safe_load(config)
         env_manager = SimpleEnvManager(env)
-        trainers = initialize_trainers(
+        trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
-            external_brains=env_manager.external_brains,
             summaries_dir=dir,
             run_id=run_id,
             model_path=dir,
@@ -207,7 +206,7 @@ def _check_environment_trains(env, config):
         )
 
         tc = TrainerController(
-            trainers=trainers,
+            trainer_factory=trainer_factory,
             summaries_dir=dir,
             model_path=dir,
             run_id=run_id,

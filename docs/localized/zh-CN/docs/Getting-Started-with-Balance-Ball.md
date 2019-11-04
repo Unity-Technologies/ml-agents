@@ -37,9 +37,9 @@ agent 是一种观测并与_环境_交互的
 **注意：**在 Unity 中，场景内所有元素的基础对象均为
 _游戏对象_(GameObject)。游戏对象本质上是其他任何元素
 （包括行为、图形、物理等）的容器。要查看组成游戏对象的组件，
-请在 Scene 窗口中选择 GameObject，然后打开 
+请在 Scene 窗口中选择 GameObject，然后打开
 Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
- 
+
 在打开 3D Balance Ball 场景后，您可能会首先注意到它包含的
 不是一个平台，而是多个平台。场景中的每个平台都是
 独立的 agent，但它们全部共享同一个 Brain。3D Balance Ball 通过
@@ -51,15 +51,15 @@ Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
 当您在 Inspector 中查看该 Academy 组件时，可以看到若干
 用于控制环境工作方式的属性。例如，Inspector中可以看到
 **Training** 和 **Inference Configuration** 属性， 在其中我们可以设置之后生成的 Unity 可执行文件的
-图形和 Time Scale 属性。Academy 在训练期间使用 
-**Training Configuration**，而在不训练时使用 
+图形和 Time Scale 属性。Academy 在训练期间使用
+**Training Configuration**，而在不训练时使用
 **Inference Configuration**。（*Inference* 等同于**不**进行训练的任何时候，此时 agent 可以使用经过训练的模型控制，或用写定的代码控制，或让玩家直接控制。）
 通常情况下，您需要为 **Training configuration** 设置低图形质量
-和高Time Scale，而为 **Inference Configuration** 设置高图形质量和 
+和高Time Scale，而为 **Inference Configuration** 设置高图形质量和
 `1.0` 的Time Scale。
 
-**注意：**如果您想在训练期间观测环境，则可以调整 
-**Inference Configuration** 设置来使用更大的窗口和更接近 
+**注意：**如果您想在训练期间观测环境，则可以调整
+**Inference Configuration** 设置来使用更大的窗口和更接近
 1:1 的时间刻度。当你要正式训练时一定要重新设置这些参数；
 否则，训练可能需要很长时间。
 
@@ -68,7 +68,7 @@ Inspector 窗口。Inspector 会显示游戏对象上的每个组件。
 您可以实现以下三个函数，但这些函数都是可选的：
 
 * Academy.InitializeAcademy() — 启动环境时调用一次。
-* Academy.AcademyStep() — 在 
+* Academy.AcademyStep() — 在
 Agent.AgentAction() 之前（以及 agent 收集其观测结果之后）的每个模拟步骤调用。
 * Academy.AcademyReset() — 在 Academy 开始或重新开始模拟
 （包括第一次）时调用。
@@ -80,7 +80,7 @@ Agent.AgentAction() 之前（以及 agent 收集其观测结果之后）的每�
 ### Brain
 
 场景中的 Ball3DBrain 游戏对象包含 Brain 组件，
-是 Academy 对象的子级。（场景中的所有 Brain 对象都必须是 
+是 Academy 对象的子级。（场景中的所有 Brain 对象都必须是
 Academy 的子级。）3D Balance Ball 环境中的所有 agent 使用
 同一个 Brain 实例。
 Brain 不存储关于 agent 的任何信息，
@@ -99,7 +99,7 @@ Brain 不存储关于 agent 的任何信息，
 实现自己的 CoreBrain 来创建自有的类型。
 
 在本教程中，进行训练时，需要将 **Brain Type** 设置为 **External**；
-当您将经过训练的模型嵌入到 Unity 应用程序中时，需要将 
+当您将经过训练的模型嵌入到 Unity 应用程序中时，需要将
 **Brain Type** 更改为 **Internal**。
 
 **向量观测空间**
@@ -107,11 +107,11 @@ Brain 不存储关于 agent 的任何信息，
 在决策之前，agent 会收集有关自己在环境中所处的状态的
 观测结果。ML-Agents 将观测分为两类：
 **Continuous** 和 **Discrete**。**Continuous** 向量观测空间
-会收集浮点数向量中的观测结果。**Discrete** 
+会收集浮点数向量中的观测结果。**Discrete**
 向量观测空间是一个状态表的索引。大多数示例环境
 都使用连续的向量观测空间。
 
-3D Balance Ball 示例中所用的 Brain 实例使用 **State Size** 为 8 的 
+3D Balance Ball 示例中所用的 Brain 实例使用 **State Size** 为 8 的
 **Continuous** 向量观测空间。这意味着
 包含 agent 观测结果的特征向量包含八个元素：
 平台旋转的 `x` 和 `z` 分量以及球相对位置和
@@ -121,10 +121,10 @@ Brain 不存储关于 agent 的任何信息，
 **向量运动空间**
 
 Brain 以*动作*的形式向 agent 提供指令。与状态
-一样，ML-Agents 将动作分为两种类型：**Continuous** 
+一样，ML-Agents 将动作分为两种类型：**Continuous**
 向量运动空间是一个可以连续变化的数字向量。向量
 每个元素的含义都是由 agent 逻辑定义的（PPO 训练过程是一个了解agent的哪种状态更好的过程，这个过程是通过学习不同agent的不同状态会对应多少奖励来实现的）。
-例如，一个元素可能表示施加到 agent 某个 
+例如，一个元素可能表示施加到 agent 某个
 `Rigidbody` 上的力或扭矩。**Discrete** 向量运动空间将其动作
 定义为一个表。提供给 agent 的具体动作是这个表的
 索引。
@@ -134,7 +134,7 @@ Brain 以*动作*的形式向 agent 提供指令。与状态
 您可以尝试使用两种设置进行训练，观测是否有
 差异。（使用离散运动空间时将 `Vector Action Space Size` 设置为 4，
 而使用连续运动空间时将其设置为 2。）
- 
+
 ### Agent
 
 Agent 是在环境中进行观测并采取动作的参与者。
@@ -143,14 +143,14 @@ Agent 是在环境中进行观测并采取动作的参与者。
 属性：
 
 * **Brain** — 每个 Agent 必须有一个 Brain。Brain 决定了 agent 如何
-决策。3D Balance Ball 场景中的所有 agent 共享同一个 
+决策。3D Balance Ball 场景中的所有 agent 共享同一个
 Brain。
 * **Visual Observations** — 定义 agent 用来观测其环境的
 任何 Camera 对象。3D Balance Ball 不使用摄像机观测。
 * **Max Step** — 定义在 agent 决定自己完成之前可以发生多少个
 模拟步骤。在 3D Balance Ball 中，agent 在 5000 步之后重新开始。
 * **Reset On Done** — 定义 agent 是否在完成时重新开始。
-3D Balance Ball 将此项设置为 true，因此 agent 在达到 
+3D Balance Ball 将此项设置为 true，因此 agent 在达到
 **Max Step** 计数后或在掉球后重新开始。
 
 也许 agent 更有趣的方面在于 Agent 子类的
@@ -163,9 +163,9 @@ Ball3DAgent 子类定义了以下方法：
 训练不局限于特定的开始位置和平台
 姿态。
 * Agent.CollectObservations() — 在每个模拟步骤调用。负责
-收集 agent 对环境的观测结果。由于分配给 
+收集 agent 对环境的观测结果。由于分配给
 agent 的 Brain 实例设置为状态大小为 8 的连续向量观测空间，
-因此 `CollectObservations()` 必须调用 8 次 
+因此 `CollectObservations()` 必须调用 8 次
 `AddVectorObs`。
 * Agent.AgentAction() — 在每个模拟步骤调用。接收 Brain 选择的
 动作。Ball3DAgent 示例可以处理连续和离散
@@ -180,14 +180,14 @@ agent 的 Brain 实例设置为状态大小为 8 的连续向量观测空间，
 
 ## 构建环境
 
-第一步是打开包含 3D Balance Ball 环境的 
+第一步是打开包含 3D Balance Ball 环境的
 Unity 场景：
 
 1. 启动 Unity。
 2. 在 Projects 对话框上，选择窗口顶部的 **Open** 选项。
-3. 使用随后打开的文件对话框，找到 ML-Agents 项目内的 
+3. 使用随后打开的文件对话框，找到 ML-Agents 项目内的
 `unity-environment` 文件夹，然后单击 **Open**。
-4. 在 `Project` 窗口中，找到文件夹 
+4. 在 `Project` 窗口中，找到文件夹
 `Assets/ML-Agents/Examples/3DBall/`。
 5. 双击 `Scene` 文件以加载包含 Balance Ball 环境的
 场景。
@@ -210,7 +210,7 @@ Unity 场景：
 * 环境应用程序在后台运行
 * 没有对话需要互动
 * 正确的场景会自动加载
- 
+
 1. 打开 Player Settings（菜单：**Edit** > **Project Settings** > **Player**）。
 2. 在 **Resolution and Presentation** 下方：
     - 确保选中 **Run in Background**。
@@ -232,8 +232,8 @@ Unity 场景：
 ## 使用 Reinforcement Learning（强化学习）来训练 Brain
 
 有了一个包含模拟环境的 Unity 可执行文件后，现在我们
-可以执行训练。为了首先确保您的环境和 Python 
-API 能正常工作，您可以使用 `python/Basics` 
+可以执行训练。为了首先确保您的环境和 Python
+API 能正常工作，您可以使用 `python/Basics`
 [Jupyter 笔记本](/docs/Background-Jupyter.md)。
 此笔记本包含了 API 功能的简单演练。
 在 `Basics` 中，务必将 `env_name` 设置为您先前构建的
@@ -241,21 +241,21 @@ API 能正常工作，您可以使用 `python/Basics`
 
 ### 使用 PPO 进行训练
 
-为了训练 agent 对球进行正确平衡，我们将使用一种称为 Proximal Policy Optimization (PPO) 的 
+为了训练 agent 对球进行正确平衡，我们将使用一种称为 Proximal Policy Optimization (PPO) 的
 Reinforcement Learning（强化学习）算法。
 与其他许多 RL 算法相比，这种算法经证明是一种安全、
-有效且更通用的方法，因此我们选择它作为与 ML-Agents 
+有效且更通用的方法，因此我们选择它作为与 ML-Agents
 一起使用的示例算法。有关 PPO 的更多信息，
 请参阅 OpenAI 近期发布的[博客文章](https://blog.openai.com/openai-baselines-ppo/)，
 其中对 PPO 进行了说明。
 
 
-为了训练 Balance Ball 环境中的 agent，我们将使用 Python 
+为了训练 Balance Ball 环境中的 agent，我们将使用 Python
 包。我们提供了一个名为 `learn.py` 的方便的 Python 包装脚本，此脚本会接受用于配置训练和预测阶段的参数。
 
 
 我们将向这个脚本传递我们刚才构建的环境可执行文件的路径。（可选）我们可以
-使用 `run_id` 来识别实验并创建用于存储模型和摘要统计信息的文件夹。当使用 
+使用 `run_id` 来识别实验并创建用于存储模型和摘要统计信息的文件夹。当使用
 TensorBoard 来观测训练统计信息时，将每次训练的此项设置为顺序值
 将会很有用。也就是说，第一次训练时为“BalanceBall1”，
 第二次训练时为“BalanceBall2”，依此类推。如果不这样做，每次训练的
@@ -265,7 +265,7 @@ TensorBoard 来观测训练统计信息时，将每次训练的此项设置为�
 总之，转到命令行，进入 `ml-agents` 目录并输入：
 
 ```
-python3 python/learn.py <env_name> --run-id=<run-identifier> --train 
+python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 ```
 
 `--train` 标志告诉 ML-Agents 以训练模式运行。`env_name` 应该是刚才创建的 Unity 可执行文件的名字。
@@ -289,7 +289,7 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 * Cumulative Reward - 所有 agent 的平均累积场景奖励。
 在成功训练期间应该增大。
 * Entropy - 模型决策的随机程度。在成功训练过程中
-应该缓慢减小。如果减小得太快，应增大 `beta` 
+应该缓慢减小。如果减小得太快，应增大 `beta`
 超参数。
 * Episode Length - 所有 agent 在环境中每个场景的
 平均长度。
@@ -340,12 +340,12 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 1. 经过训练的模型存储在 `ml-agents` 文件夹中的 `models/<run-identifier>` 内。训练
 完成后，该位置会有一个 `<env_name>.bytes` 文件，其中的 `<env_name>` 是训练期间使用的可执行文件的
 名称。
-2. 将 `<env_name>.bytes` 从 `python/models/ppo/` 移入 
+2. 将 `<env_name>.bytes` 从 `python/models/ppo/` 移入
 `unity-environment/Assets/ML-Agents/Examples/3DBall/TFModels/`。
 3. 打开 Unity Editor，然后选择 `3DBall` 场景（如上所述）。
 4. 从 Scene 层级视图中选择 `Ball3DBrain` 对象。
 5. 将 `Type of Brain` 更改为 `Internal`。
-6. 将 `<env_name>.bytes` 文件从 Editor 的 Project 窗口拖入 
+6. 将 `<env_name>.bytes` 文件从 Editor 的 Project 窗口拖入
 `3DBallBrain` Inspector 窗口中的 `Graph Model` 占位区域。
 7. 按 Editor 顶部的 Play 按钮。
 

@@ -1,18 +1,18 @@
 using UnityEngine;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
-
 #endif
+using MLAgents.InferenceBrain;
+using Barracuda;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
  *
- * The ML-Agents toolkit contains five entities: Academy, Brain, Agent, Communicator and
- * Python API. The academy, and all its brains and connected agents live within
- * a learning environment (herin called Environment), while the communicator
+ * The ML-Agents toolkit contains four entities: Academy, Agent, Communicator and
+ * Python API. The academy and connected agents live within
+ * a learning environment (herein called Environment), while the communicator
  * manages the communication between the learning environment and the Python
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
@@ -75,10 +75,8 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors. More
-    /// specifically, an academy is a collection of Brain objects and each agent
-    /// in a scene is attached to one brain (a single brain may be attached to
-    /// multiple agents). Currently, this class is expected to be extended to
+    /// An Academy is where Agent objects go to train their behaviors.
+    /// Currently, this class is expected to be extended to
     /// implement the desired academy behavior.
     /// </summary>
     /// <remarks>
@@ -86,29 +84,26 @@ namespace MLAgents
     /// The mode is determined by the presence or absence of a Communicator. In
     /// the presence of a communicator, the academy is run in training mode where
     /// the states and observations of each agent are sent through the
-    /// communicator. In the absence of a communciator, the academy is run in
-    /// inference mode where the agent behavior is determined by the brain
-    /// attached to it (which may be internal, heuristic or player).
+    /// communicator. In the absence of a communicator, the academy is run in
+    /// inference mode where the agent behavior is determined by the Policy
+    /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        [SerializeField]
-        public BroadcastHub broadcastHub = new BroadcastHub();
-
-        private const string k_KApiVersion = "API-10";
+        private const string k_ApiVersion = "API-11";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
         private Vector3 m_OriginalGravity;
 
         /// Temporary storage for global fixedDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it
+        /// Used to restore original value when deriving Academy modifies it
         private float m_OriginalFixedDeltaTime;
 
         /// Temporary storage for global maximumDeltaTime value
-        /// Used to restore oringal value when deriving Academy modifies it
+        /// Used to restore original value when deriving Academy modifies it
         private float m_OriginalMaximumDeltaTime;
 
         // Fields provided in the Inspector
@@ -134,38 +129,39 @@ namespace MLAgents
         /// </summary>
         /// <remarks>
         /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training with an external Brain by passinga config
+        /// be modified when training by passing a config
         /// dictionary at reset.
         /// </remarks>
         [SerializeField]
         [Tooltip("List of custom parameters that can be changed in the " +
             "environment when it resets.")]
         public ResetParameters resetParameters;
-        public CommunicatorObjects.CustomResetParameters customResetParameters;
+        public CommunicatorObjects.CustomResetParametersProto customResetParameters;
 
         // Fields not provided in the Inspector.
 
-        /// Boolean flag indicating whether a communicator is accessible by the
-        /// environment. This also specifies whether the environment is in
-        /// Training or Inference mode.
-        bool m_IsCommunicatorOn;
-
-        /// Keeps track of the id of the last communicator message received.
-        /// Remains 0 if there are no communicators. Is used to ensure that
-        /// the same message is not used multiple times.
-        private ulong m_LastCommunicatorMessageNumber;
+        /// <summary>
+        /// Returns whether or not the communicator is on.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
+        /// </returns>
+        public bool IsCommunicatorOn
+        {
+            get { return Communicator != null; }
+        }
 
         /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
-        /// or absence of a communicator. Furthermore, it can be modified by an
-        /// external Brain during reset via <see cref="SetIsInference"/>.
+        /// or absence of a communicator. Furthermore, it can be modified during 
+        /// training via <see cref="SetIsInference"/>.
         bool m_IsInference = true;
 
         /// The number of episodes completed by the environment. Incremented
         /// each time the environment is reset.
         int m_EpisodeCount;
 
-        /// The number of steps completed within the current episide. Incremented
+        /// The number of steps completed within the current episode. Incremented
         /// each time a step is taken in the environment. Is reset to 0 during
         /// <see cref="AcademyReset"/>.
         int m_StepCount;
@@ -175,25 +171,28 @@ namespace MLAgents
         int m_TotalStepCount;
 
         /// Flag that indicates whether the inference/training mode of the
-        /// environment was switched by the external Brain. This impacts the
+        /// environment was switched by the training process. This impacts the
         /// engine settings at the next environment step.
         bool m_ModeSwitched;
 
-        /// Pointer to the batcher currently in use by the Academy.
-        Batcher m_BrainBatcher;
+        /// Pointer to the communicator currently in use by the Academy.
+        public ICommunicator Communicator;
+
+        private bool m_Initialized;
+        private List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
-        // The Academy uses a series of events to communicate with agents and
-        // brains to facilitate synchronization. More specifically, it ensure
+        // The Academy uses a series of events to communicate with agents 
+        // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
-        // Signals to all the Brains at each environment step so they can decide
-        // actions for their agents.
-        public event System.Action BrainDecideAction;
+        // Signals to all the Agents at each environment step so they can use 
+        // their Policy to decide on their next action.
+        public event System.Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
         public event System.Action DestroyAction;
@@ -210,29 +209,38 @@ namespace MLAgents
         public event System.Action AgentResetIfDone;
 
         // Signals to all the agents at each environment step so they can send
-        // their state to their Brain if they have requested a decision.
+        // their state to their Policy if they have requested a decision.
         public event System.Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
         // they have requested a decision.
         public event System.Action AgentAct;
 
-        // Sigals to all the agents each time the Academy force resets.
+        // Signals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
         /// <summary>
-        /// Monobehavior function called at the very beginning of environment
+        /// MonoBehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
         /// structures, initialize the environment and check for the existence
         /// of a communicator.
         /// </summary>
         void Awake()
         {
-            InitializeEnvironment();
+            LazyInitialization();
+        }
+
+        public void LazyInitialization()
+        {
+            if (!m_Initialized)
+            {
+                InitializeEnvironment();
+                m_Initialized = true;
+            }
         }
 
         // Used to read Python-provided environment parameters
-        private int ReadArgs()
+        private static int ReadArgs()
         {
             var args = System.Environment.GetCommandLineArgs();
             var inputPort = "";
@@ -257,108 +265,106 @@ namespace MLAgents
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
 
             InitializeAcademy();
-            ICommunicator communicator;
 
-            var exposedBrains = broadcastHub.broadcastingBrains.Where(x => x != null).ToList();
-            var controlledBrains = broadcastHub.broadcastingBrains.Where(
-                x => x != null && x is LearningBrain && broadcastHub.IsControlled(x));
-            foreach (var brain1 in controlledBrains)
-            {
-                var brain = (LearningBrain)brain1;
-                brain.SetToControlledExternally();
-            }
-
-            // Try to launch the communicator by usig the arguments passed at launch
+            // Try to launch the communicator by using the arguments passed at launch
             try
             {
-                communicator = new RpcCommunicator(
-                    new CommunicatorParameters
+                Communicator = new RpcCommunicator(
+                    new CommunicatorInitParameters
                     {
                         port = ReadArgs()
                     });
             }
-            // If it fails, we check if there are any external brains in the scene
-            // If there are : Launch the communicator on the default port
-            // If there arn't, there is no need for a communicator and it is set
-            // to null
             catch
             {
-                communicator = null;
-                if (controlledBrains.ToList().Count > 0)
+#if UNITY_EDITOR
+                Communicator = new RpcCommunicator(
+                    new CommunicatorInitParameters
+                    {
+                        port = 5004
+                    });
+#endif
+            }
+
+            if (Communicator != null)
+            {
+                // We try to exchange the first message with Python. If this fails, it means
+                // no Python Process is ready to train the environment. In this case, the
+                //environment must use Inference.
+                try
                 {
-                    communicator = new RpcCommunicator(
-                        new CommunicatorParameters
+                    var unityRLInitParameters = Communicator.Initialize(
+                        new CommunicatorInitParameters
                         {
-                            port = 5005
+                            version = k_ApiVersion,
+                            name = gameObject.name,
+                            environmentResetParameters = new EnvironmentResetParameters
+                            {
+                                resetParameters = resetParameters,
+                                customResetParameters = customResetParameters
+                            }
                         });
+                    Random.InitState(unityRLInitParameters.seed);
                 }
-            }
-
-            m_BrainBatcher = new Batcher(communicator);
-
-            foreach (var trainingBrain in exposedBrains)
-            {
-                trainingBrain.SetBatcher(m_BrainBatcher);
-            }
-
-            if (communicator != null)
-            {
-                m_IsCommunicatorOn = true;
-
-                var academyParameters =
-                    new CommunicatorObjects.UnityRLInitializationOutput();
-                academyParameters.Name = gameObject.name;
-                academyParameters.Version = k_KApiVersion;
-                foreach (var brain in exposedBrains)
+                catch
                 {
-                    var bp = brain.brainParameters;
-                    academyParameters.BrainParameters.Add(
-                        bp.ToProto(brain.name, broadcastHub.IsControlled(brain)));
-                }
-                academyParameters.EnvironmentParameters =
-                    new CommunicatorObjects.EnvironmentParametersProto();
-                foreach (var key in resetParameters.Keys)
-                {
-                    academyParameters.EnvironmentParameters.FloatParameters.Add(
-                        key, resetParameters[key]
-                    );
+                    Communicator = null;
                 }
 
-                var pythonParameters = m_BrainBatcher.SendAcademyParameters(academyParameters);
-                Random.InitState(pythonParameters.Seed);
+                if (Communicator != null)
+                {
+                    Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                    Communicator.ResetCommandReceived += OnResetCommand;
+                    Communicator.RLInputReceived += OnRLInputReceived;
+                }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
-            m_IsInference = !m_IsCommunicatorOn;
 
-            BrainDecideAction += () => { };
+            SetIsInference(!IsCommunicatorOn);
+
+            DecideAction += () => { };
             DestroyAction += () => { };
-            AgentSetStatus += (i) => { };
+            AgentSetStatus += i => { };
             AgentResetIfDone += () => { };
             AgentSendState += () => { };
             AgentAct += () => { };
             AgentForceReset += () => { };
 
-
-            // Configure the environment using the configurations provided by
-            // the developer in the Editor.
-            SetIsInference(!m_BrainBatcher.GetIsTraining());
             ConfigureEnvironment();
         }
 
-        private void UpdateResetParameters()
+        static void OnQuitCommandReceived()
         {
-            var newResetParameters = m_BrainBatcher.GetEnvironmentParameters();
-            if (newResetParameters != null)
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#endif
+            Application.Quit();
+        }
+
+        private void OnResetCommand(EnvironmentResetParameters newResetParameters)
+        {
+            UpdateResetParameters(newResetParameters);
+            ForcedFullReset();
+        }
+
+        void OnRLInputReceived(UnityRLInputParameters inputParams)
+        {
+            m_IsInference = !inputParams.isTraining;
+        }
+
+        private void UpdateResetParameters(EnvironmentResetParameters newResetParameters)
+        {
+            if (newResetParameters.resetParameters != null)
             {
-                foreach (var kv in newResetParameters.FloatParameters)
+                foreach (var kv in newResetParameters.resetParameters)
                 {
                     resetParameters[kv.Key] = kv.Value;
                 }
-                customResetParameters = newResetParameters.CustomResetParameters;
             }
+            customResetParameters = newResetParameters.customResetParameters;
         }
 
         /// <summary>
@@ -446,7 +452,7 @@ namespace MLAgents
 
                 // This signals to the academy that at the next environment step
                 // the engine configurations need updating to the respective mode
-                // (i.e. training vs inference) configuraiton.
+                // (i.e. training vs inference) configuration.
                 m_ModeSwitched = true;
             }
         }
@@ -485,17 +491,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns whether or not the communicator is on.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsCommunicatorOn()
-        {
-            return m_IsCommunicatorOn;
-        }
-
-        /// <summary>
         /// Forces the full reset. The done flags are not affected. Is either
         /// called the first reset at inference and every external reset
         /// at training.
@@ -503,12 +498,12 @@ namespace MLAgents
         void ForcedFullReset()
         {
             EnvironmentReset();
-            AgentForceReset();
+            AgentForceReset?.Invoke();
             m_FirstAcademyReset = true;
         }
 
         /// <summary>
-        /// Performs a single environment update to the Academy, Brain and Agent
+        /// Performs a single environment update to the Academy, and Agent
         /// objects within the environment.
         /// </summary>
         void EnvironmentStep()
@@ -518,48 +513,37 @@ namespace MLAgents
                 ConfigureEnvironment();
                 m_ModeSwitched = false;
             }
-
-            if ((m_IsCommunicatorOn) &&
-                (m_LastCommunicatorMessageNumber != m_BrainBatcher.GetNumberMessageReceived()))
+            if (!m_FirstAcademyReset)
             {
-                m_LastCommunicatorMessageNumber = m_BrainBatcher.GetNumberMessageReceived();
-                if (m_BrainBatcher.GetCommand() ==
-                    CommunicatorObjects.CommandProto.Reset)
-                {
-                    UpdateResetParameters();
-
-                    SetIsInference(!m_BrainBatcher.GetIsTraining());
-
-                    ForcedFullReset();
-                }
-
-                if (m_BrainBatcher.GetCommand() ==
-                    CommunicatorObjects.CommandProto.Quit)
-                {
-#if UNITY_EDITOR
-                    EditorApplication.isPlaying = false;
-#endif
-                    Application.Quit();
-                    return;
-                }
-            }
-            else if (!m_FirstAcademyReset)
-            {
-                UpdateResetParameters();
                 ForcedFullReset();
             }
 
-            AgentSetStatus(m_StepCount);
+            AgentSetStatus?.Invoke(m_StepCount);
 
-            AgentResetIfDone();
+            using (TimerStack.Instance.Scoped("AgentResetIfDone"))
+            {
+                AgentResetIfDone?.Invoke();
+            }
 
-            AgentSendState();
+            using (TimerStack.Instance.Scoped("AgentSendState"))
+            {
+                AgentSendState?.Invoke();
+            }
 
-            BrainDecideAction();
+            using (TimerStack.Instance.Scoped("DecideAction"))
+            {
+                DecideAction?.Invoke();
+            }
 
-            AcademyStep();
+            using (TimerStack.Instance.Scoped("AcademyStep"))
+            {
+                AcademyStep();
+            }
 
-            AgentAct();
+            using (TimerStack.Instance.Scoped("AgentAct"))
+            {
+                AgentAct?.Invoke();
+            }
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
@@ -576,11 +560,34 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Monobehavior function that dictates each environment step.
+        /// MonoBehaviour function that dictates each environment step.
         /// </summary>
         void FixedUpdate()
         {
             EnvironmentStep();
+        }
+
+        /// <summary>
+        /// Creates or retrieves an existing ModelRunner that uses the same 
+        /// NNModel and the InferenceDevice as provided.
+        /// </summary>
+        /// <param name="model"> The NNModel the ModelRunner must use </param>
+        /// <param name="brainParameters"> The brainParameters used to create 
+        /// the ModelRunner </param>
+        /// <param name="inferenceDevice"> The inference device (CPU or GPU) 
+        /// the ModelRunner will use </param>
+        /// <returns> The ModelRunner compatible with the input settings</returns>
+        public ModelRunner GetOrCreateModelRunner(
+            NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
+        {
+            var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
+            if (modelRunner == null)
+            {
+                modelRunner = new ModelRunner(
+                    model, brainParameters, inferenceDevice);
+                m_ModelRunners.Add(modelRunner);
+            }
+            return modelRunner;
         }
 
         /// <summary>
@@ -593,7 +600,16 @@ namespace MLAgents
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
 
             // Signal to listeners that the academy is being destroyed now
-            DestroyAction();
+            DestroyAction?.Invoke();
+
+            foreach (var mr in m_ModelRunners)
+            {
+                mr.Dispose();
+            }
+
+            // TODO - Pass worker ID or some other identifier,
+            // so that multiple envs won't overwrite each others stats.
+            TimerStack.Instance.SaveJsonTimers();
         }
     }
 }

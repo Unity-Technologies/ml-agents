@@ -178,6 +178,7 @@ known_classes = {
     "OneHot": Struct(id=67, rank=lambda inputs: inputs[0] + 1),
     # Broadcast ops
     "Add": Struct(id=100, rank=lambda inputs: np.max(inputs)),
+    "AddV2": Struct(id=100, rank=lambda inputs: np.max(inputs)),
     "Sub": Struct(id=101, rank=lambda inputs: np.max(inputs)),
     "Mul": Struct(id=102, rank=lambda inputs: np.max(inputs)),
     "RealDiv": Struct(id=103, rank=lambda inputs: np.max(inputs)),

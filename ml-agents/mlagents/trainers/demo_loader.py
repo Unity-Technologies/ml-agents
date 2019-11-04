@@ -4,11 +4,9 @@ import os
 from typing import List, Tuple
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
-from mlagents.envs.communicator_objects.agent_info_proto_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.brain_parameters_proto_pb2 import (
-    BrainParametersProto,
-)
-from mlagents.envs.communicator_objects.demonstration_meta_proto_pb2 import (
+from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents.envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
@@ -98,6 +96,7 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
         )
 
     brain_params = None
+    brain_param_proto = None
     brain_infos = []
     total_expected = 0
     for _file_path in file_paths:
@@ -113,11 +112,15 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
             if obs_decoded == 1:
                 brain_param_proto = BrainParametersProto()
                 brain_param_proto.ParseFromString(data[pos : pos + next_pos])
-                brain_params = BrainParameters.from_proto(brain_param_proto)
+
                 pos += next_pos
             if obs_decoded > 1:
                 agent_info = AgentInfoProto()
                 agent_info.ParseFromString(data[pos : pos + next_pos])
+                if brain_params is None:
+                    brain_params = BrainParameters.from_proto(
+                        brain_param_proto, agent_info
+                    )
                 brain_info = BrainInfo.from_agent_proto(0, [agent_info], brain_params)
                 brain_infos.append(brain_info)
                 if len(brain_infos) == total_expected:

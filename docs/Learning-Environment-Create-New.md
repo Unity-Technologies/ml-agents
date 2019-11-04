@@ -21,17 +21,13 @@ steps:
     containing the environment. Your Academy class can implement a few optional
     methods to update the scene independently of any agents. For example, you can
     add, move, or delete agents and other entities in the environment.
-3. Create one or more Brain assets by clicking **Assets** > **Create** > 
-    **ML-Agents** > **Brain**, and naming them appropriately.
-4. Implement your Agent subclasses. An Agent subclass defines the code an Agent
+3. Implement your Agent subclasses. An Agent subclass defines the code an Agent
     uses to observe its environment, to carry out assigned actions, and to
     calculate the rewards used for reinforcement training. You can also implement
     optional methods to reset the Agent when it has finished or failed its task.
-5. Add your Agent subclasses to appropriate GameObjects, typically, the object
+4. Add your Agent subclasses to appropriate GameObjects, typically, the object
     in the scene that represents the Agent in the simulation. Each Agent object
     must be assigned a Brain object.
-6. If training, check the `Control` checkbox in the BroadcastHub of the Academy.
-    [run the training process](Training-ML-Agents.md).
 
 **Note:** If you are unfamiliar with Unity, refer to
 [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
@@ -46,12 +42,12 @@ The first task to accomplish is simply creating a new Unity project and
 importing the ML-Agents assets into it:
 
 1. Launch the Unity Editor and create a new project named "RollerBall".
-2. Make sure that the Scripting Runtime Version for the project is set to use 
-    **.NET 4.x Equivalent** (This is an experimental option in Unity 2017, 
+2. Make sure that the Scripting Runtime Version for the project is set to use
+    **.NET 4.x Equivalent** (This is an experimental option in Unity 2017,
     but is the default as of 2018.3.)
 3. In a file system window, navigate to the folder containing your cloned
     ML-Agents repository.
-4. Drag the `ML-Agents` and `Gizmos` folders from `UnitySDK/Assets` to the Unity 
+4. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity
     Editor Project window.
 
 Your Unity **Project** window should contain the following assets:
@@ -138,7 +134,7 @@ Next, edit the new `RollerAcademy` script:
 1. In the Unity Project window, double-click the `RollerAcademy` script to open
     it in your code editor. (By default new scripts are placed directly in the
     **Assets** folder.)
-2. In the code editor, add the statement, `using MLAgents;`. 
+2. In the code editor, add the statement, `using MLAgents;`.
 3. Change the base class from `MonoBehaviour` to `Academy`.
 4. Delete the `Start()` and `Update()` methods that were added by default.
 
@@ -154,28 +150,9 @@ public class RollerAcademy : Academy { }
 
 The default settings for the Academy properties are also fine for this
 environment, so we don't need to change anything for the RollerAcademy component
-in the Inspector window. You may not have the RollerBrain in the Broadcast Hub yet, 
-more on that later. 
+in the Inspector window.
 
 ![The Academy properties](images/mlagents-NewTutAcademy.png)
-
-## Add Brain Assets
-
-The Brain object encapsulates the decision making process. An Agent sends its
-observations to its Brain and expects a decision in return. The type of the Brain
-(Learning, Heuristic or Player) determines how the Brain makes decisions. 
-To create the Brain:
-
-1. Go to **Assets** > **Create** > **ML-Agents** and select the type of Brain asset
-    you want to create. For this tutorial, create a **Learning Brain** and 
-    a **Player Brain**.
-2. Name them `RollerBallBrain` and `RollerBallPlayer` respectively.
-
-![Creating a Brain Asset](images/mlagents-NewTutBrain.png)
-
-We will come back to the Brain properties later, but leave the Model property
-of the `RollerBallBrain` as `None` for now. We will need to first train a 
-model before we can add it to the **Learning Brain**.
 
 ## Implement an Agent
 
@@ -191,7 +168,7 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
-2. In the editor, add the `using MLAgents;` statement and then change the base 
+2. In the editor, add the `using MLAgents;` statement and then change the base
     class from `MonoBehaviour` to `Agent`.
 3. Delete the `Update()` method, but we will use the `Start()` function, so
     leave it alone for now.
@@ -218,7 +195,7 @@ stores a GameObject's position, orientation and scale in the 3D world). To get
 this reference, add a public field of type `Transform` to the RollerAgent class.
 Public fields of a component in Unity get displayed in the Inspector window,
 allowing you to choose which GameObject to use as the target in the Unity
-Editor. 
+Editor.
 
 To reset the Agent's velocity (and later to apply force to move the
 agent) we need a reference to the Rigidbody component. A
@@ -276,13 +253,13 @@ calculate an analytical solution to the problem.
 
 In our case, the information our Agent collects includes:
 
-* Position of the target. 
+* Position of the target.
 
 ```csharp
 AddVectorObs(Target.position);
 ```
 
-* Position of the Agent itself. 
+* Position of the Agent itself.
 
 ```csharp
 AddVectorObs(this.transform.position);
@@ -344,15 +321,15 @@ rBody.AddForce(controlSignal * speed);
 ### Rewards
 
 Reinforcement learning requires rewards. Assign rewards in the `AgentAction()`
-function. The learning algorithm uses the rewards assigned to the Agent during 
+function. The learning algorithm uses the rewards assigned to the Agent during
 the simulation and learning process to determine whether it is giving
 the Agent the optimal actions. You want to reward an Agent for completing the
-assigned task. In this case, the Agent is given a reward of 1.0 for reaching the 
+assigned task. In this case, the Agent is given a reward of 1.0 for reaching the
 Target cube.
 
 The RollerAgent calculates the distance to detect when it reaches the target.
 When it does, the code calls the `Agent.SetReward()` method to assign a
-reward of 1.0 and marks the agent as finished by calling the `Done()` method 
+reward of 1.0 and marks the agent as finished by calling the `Done()` method
 on the Agent.
 
 ```csharp
@@ -425,62 +402,51 @@ window.
 ## Final Editor Setup
 
 Now, that all the GameObjects and ML-Agent components are in place, it is time
-to connect everything together in the Unity Editor. This involves assigning the
-Brain asset to the Agent, changing some of the Agent Component's properties, and
-setting the Brain properties so that they are compatible with our Agent code.
+to connect everything together in the Unity Editor. This involves
+changing some of the Agent Component's properties so that they are compatible
+with our Agent code.
 
-1. In the Academy Inspector, add the `RollerBallBrain` and `RollerBallPlayer`
-    Brains to the **Broadcast Hub**.
-2. Select the **RollerAgent** GameObject to show its properties in the Inspector
+1. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-3. Drag the Brain **RollerBallPlayer** from the Project window to the 
-    RollerAgent **Brain** field.
-4. Change **Decision Interval** from `1` to `10`.
-5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+2. Change **Decision Interval** from `1` to `10`.
+3. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
-
-![Assign the Brain to the RollerAgent](images/mlagents-NewTutAssignBrain.png)
-
-Finally, select the **RollerBallBrain** Asset in the **Project** window so that you can 
-see its properties in the Inspector window. Set the following properties:
-
-* `Vector Observation` `Space Size` = 8
-* `Vector Action` `Space Type` = **Continuous**
-* `Vector Action` `Space Size` = 2
-
-Select the **RollerBallPlayer** Asset in the **Project** window and set the same
-property values.
+4. Modify the Behavior Parameters of the Agent :
+  * `Behavior Name` to *RollerBallBrain*
+  * `Vector Observation` `Space Size` = 8
+  * `Vector Action` `Space Type` = **Continuous**
+  * `Vector Action` `Space Size` = 2
 
 Now you are ready to test the environment before training.
 
 ## Testing the Environment
 
 It is always a good idea to test your environment manually before embarking on
-an extended training run. The reason we have created the `RollerBallPlayer` Brain
-is so that we can control the Agent using direct keyboard
-control. But first, you need to define the keyboard to action mapping. Although
-the RollerAgent only has an `Action Size` of two, we will use one key to specify
-positive values and one to specify negative values for each action, for a total
-of four keys.
+an extended training run. To do so, you will need to implement the `Heuristic()`
+method on the RollerAgent class. This will allow you control the Agent using
+direct keyboard control.
 
-1. Select the `RollerBallPlayer` Asset to view its properties in the Inspector.
-2. Expand the **Key Continuous Player Actions** dictionary (only visible when using
-    a **PlayerBrain**).
-3. Set **Size** to 4.
-4. Set the following mappings:
+The `Heuristic()` method will look like this :
 
-| Element   | Key | Index | Value |
-| :------------ | :---: | :------: | :------: |
-| Element 0 | D   | 0        | 1        |
-| Element 1 | A    | 0        | -1       |
-| Element 2 | W  | 1        | 1        |
-| Element 3 | S   | 1        | -1       |
+```csharp
+    public override float[] Heuristic()
+    {
+        var action = new float[2];
+        action[0] = Input.GetAxis("Horizontal");
+        action[1] = Input.GetAxis("Vertical");
+        return action;
+    }
+```
 
-The **Index** value corresponds to the index of the action array passed to
-`AgentAction()` function. **Value** is assigned to action[Index] when **Key** is
-pressed.
+What this code means is that the heuristic will generate an action corresponding
+to the values of the "Horizontal" and "Vertical" input axis (which correspond to
+the keyboard arrow keys).
 
-Press **Play** to run the scene and use the WASD keys to move the Agent around
+In order for the Agent to use the Heuristic, You will need to check the `Use Heuristic`
+checkbox in the `Behavior Parameters` of the RollerAgent.
+
+
+Press **Play** to run the scene and use the arrows keys to move the Agent around
 the platform. Make sure that there are no errors displayed in the Unity editor
 Console window and that the Agent resets when it reaches its target or falls
 from the platform. Note that for more involved debugging, the ML-Agents SDK
@@ -495,96 +461,93 @@ environment.
 
 ## Training the Environment
 
-Now you can train the Agent. To get ready for training, you must first drag the 
-`RollerBallBrain` asset to the **RollerAgent** GameObject `Brain` field to change to the learning brain.
-Then, select the Academy GameObject and check the `Control` checkbox for 
-the RollerBallBrain item in the **Broadcast Hub** list. From there, the process is
-the same as described in [Training ML-Agents](Training-ML-Agents.md). Note that the 
+The process is
+the same as described in [Training ML-Agents](Training-ML-Agents.md). Note that the
 models will be created in the original ml-agents project folder, `ml-agents/models`.
 
 The hyperparameters for training are specified in the configuration file that you
-pass to the `mlagents-learn` program. Using the default settings specified 
+pass to the `mlagents-learn` program. Using the default settings specified
 in the original `ml-agents/config/trainer_config.yaml` file, the
-RollerAgent takes about 300,000 steps to train. However, you can change the 
+RollerAgent takes about 300,000 steps to train. However, you can change the
 following hyperparameters  to speed up training considerably (to under 20,000 steps):
 
     batch_size: 10
     buffer_size: 100
 
-Since this example creates a very simple training environment with only a few inputs 
-and outputs, using small batch and buffer sizes speeds up the training considerably. 
-However, if you add more complexity to the environment or change the reward or 
-observation functions, you might also find that training performs better with different 
+Since this example creates a very simple training environment with only a few inputs
+and outputs, using small batch and buffer sizes speeds up the training considerably.
+However, if you add more complexity to the environment or change the reward or
+observation functions, you might also find that training performs better with different
 hyperparameter values.
 
-**Note:** In addition to setting these hyperparameter values, the Agent 
+**Note:** In addition to setting these hyperparameter values, the Agent
 **DecisionFrequency** parameter has a large effect on training time and success.
 A larger value reduces the number of decisions the training algorithm has to consider and,
-in this simple environment, speeds up training. 
+in this simple environment, speeds up training.
 
-To train in the editor, run the following Python command from a Terminal or Console 
+To train in the editor, run the following Python command from a Terminal or Console
 window before pressing play:
 
     mlagents-learn config/config.yaml --run-id=RollerBall-1 --train
 
-(where `config.yaml` is a copy of `trainer_config.yaml` that you have edited 
-to change the `batch_size` and `buffer_size` hyperparameters for your brain.)
+(where `config.yaml` is a copy of `trainer_config.yaml` that you have edited
+to change the `batch_size` and `buffer_size` hyperparameters for your trainer.)
 
-**Note:** If you get a `command not found` error when running this command,  make sure 
-that you have followed the *Install Python and mlagents Package* section of the 
+**Note:** If you get a `command not found` error when running this command,  make sure
+that you have followed the *Install Python and mlagents Package* section of the
 ML-Agents [Installation](Installation.md) instructions.
 
-To monitor the statistics of Agent performance during training, use 
-[TensorBoard](Using-Tensorboard.md). 
+To monitor the statistics of Agent performance during training, use
+[TensorBoard](Using-Tensorboard.md).
 
 ![TensorBoard statistics display](images/mlagents-RollerAgentStats.png)
 
-In particular, the *cumulative_reward* and *value_estimate* statistics show how 
-well the Agent is achieving the task. In this example, the maximum reward an 
+In particular, the *cumulative_reward* and *value_estimate* statistics show how
+well the Agent is achieving the task. In this example, the maximum reward an
 Agent can earn is 1.0, so these statistics approach that value when the Agent
 has successfully *solved* the problem.
 
-**Note:** If you use TensorBoard, always increment or change the `run-id` 
-you pass to the `mlagents-learn` command for each training run. If you use 
-the same id value, the statistics for multiple runs are combined and become 
+**Note:** If you use TensorBoard, always increment or change the `run-id`
+you pass to the `mlagents-learn` command for each training run. If you use
+the same id value, the statistics for multiple runs are combined and become
 difficult to interpret.
 
 ## Optional: Multiple Training Areas within the Same Scene
 
-In many of the [example environments](Learning-Environment-Examples.md), many copies of 
+In many of the [example environments](Learning-Environment-Examples.md), many copies of
 the training area are instantiated in the scene. This generally speeds up training,
 allowing the environment to gather many experiences in parallel. This can be achieved
-simply by instantiating many Agents which share the same Brain. Use the following steps to
-parallelize your RollerBall environment.  
+simply by instantiating many Agents which share the `Behavior Parameters`. Use the following steps to
+parallelize your RollerBall environment.
 
 ### Instantiating Multiple Training Areas
 
-1. Right-click on your Project Hierarchy and create a new empty GameObject. 
-   Name it TrainingArea. 
-2. Reset the TrainingArea’s Transform so that it is at (0,0,0) with Rotation (0,0,0) 
-   and Scale (1,1,1). 
-3. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the 
-   TrainingArea GameObject. 
-4. Drag the TrainingArea GameObject, along with its attached GameObjects, into your 
+1. Right-click on your Project Hierarchy and create a new empty GameObject.
+   Name it TrainingArea.
+2. Reset the TrainingArea’s Transform so that it is at (0,0,0) with Rotation (0,0,0)
+   and Scale (1,1,1).
+3. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the
+   TrainingArea GameObject.
+4. Drag the TrainingArea GameObject, along with its attached GameObjects, into your
    Assets browser, turning it into a prefab.
-5. You can now instantiate copies of the TrainingArea prefab. Drag them into your scene, 
-   positioning them so that they do not overlap. 
+5. You can now instantiate copies of the TrainingArea prefab. Drag them into your scene,
+   positioning them so that they do not overlap.
 
-### Editing the Scripts 
+### Editing the Scripts
 
-You will notice that in the previous section, we wrote our scripts assuming that our 
-TrainingArea was at (0,0,0), performing checks such as `this.transform.position.y < 0` 
-to determine whether our agent has fallen off the platform. We will need to change 
-this if we are to use multiple TrainingAreas throughout the scene. 
+You will notice that in the previous section, we wrote our scripts assuming that our
+TrainingArea was at (0,0,0), performing checks such as `this.transform.position.y < 0`
+to determine whether our agent has fallen off the platform. We will need to change
+this if we are to use multiple TrainingAreas throughout the scene.
 
-A quick way to adapt our current code is to use 
-localPosition rather than position, so that our position reference is in reference 
-to the prefab TrainingArea's location, and not global coordinates. 
+A quick way to adapt our current code is to use
+localPosition rather than position, so that our position reference is in reference
+to the prefab TrainingArea's location, and not global coordinates.
 
 1. Replace all references of `this.transform.position` in RollerAgent.cs with `this.transform.localPosition`.
 2. Replace all references of `Target.position` in RollerAgent.cs with `Target.localPosition`.
 
-This is only one way to achieve this objective. Refer to the 
+This is only one way to achieve this objective. Refer to the
 [example environments](Learning-Environment-Examples.md) for other ways we can achieve relative positioning.
 
 ## Review: Scene Layout
@@ -593,11 +556,12 @@ This section briefly reviews how to organize your scene when using Agents in
 your Unity environment.
 
 There are two kinds of game objects you need to include in your scene in order
-to use Unity ML-Agents: an Academy and one or more Agents. You also need to 
-have brain assets linked appropriately to your Agents and to the Academy.
+to use Unity ML-Agents: an Academy and one or more Agents.
 
 Keep in mind:
 
 * There can only be one Academy game object in a scene.
-* You can only train Learning Brains that have been added to the Academy's Broadcast Hub list.
+* If you are using multiple training areas, make sure all the Agents have the same `Behavior Name`
+and `Behavior Parameters`
+
 

@@ -1,6 +1,7 @@
 import unittest.mock as mock
 import numpy as np
 
+from mlagents.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import Buffer
 
 
@@ -26,7 +27,7 @@ def create_mock_brainparams(
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size
     )
-    camrez = {"blackAndWhite": False, "height": 84, "width": 84}
+    camrez = CameraResolution(height=84, width=84, num_channels=3)
     mock_brain.return_value.camera_resolutions = [camrez] * number_visual_observations
     mock_brain.return_value.vector_action_space_size = vector_action_space_size
     mock_brain.return_value.brain_name = "MockBrain"
@@ -94,16 +95,20 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
     mock_env.return_value.academy_name = "MockAcademy"
     mock_env.return_value.brains = {brain_name: mock_brain}
     mock_env.return_value.external_brain_names = [brain_name]
-    mock_env.return_value.brain_names = [brain_name]
     mock_env.return_value.reset.return_value = {brain_name: mock_braininfo}
     mock_env.return_value.step.return_value = {brain_name: mock_braininfo}
 
 
-def simulate_rollout(env, policy, buffer_init_samples):
+def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     brain_info_list = []
     for i in range(buffer_init_samples):
-        brain_info_list.append(env.step()[env.brain_names[0]])
+        brain_info_list.append(env.step()[env.external_brain_names[0]])
     buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
+    # If a key_list was given, remove those keys
+    if exclude_key_list:
+        for key in exclude_key_list:
+            if key in buffer.update_buffer:
+                buffer.update_buffer.pop(key)
     return buffer
 
 
@@ -230,3 +235,26 @@ def create_mock_banana_brain():
         vector_observation_space_size=0,
     )
     return mock_brain
+
+
+def make_brain_parameters(
+    discrete_action: bool = False,
+    visual_inputs: int = 0,
+    stack: bool = True,
+    brain_name: str = "RealFakeBrain",
+    vec_obs_size: int = 3,
+) -> BrainParameters:
+    resolutions = [
+        CameraResolution(width=30, height=40, num_channels=3)
+        for _ in range(visual_inputs)
+    ]
+
+    return BrainParameters(
+        vector_observation_space_size=vec_obs_size,
+        num_stacked_vector_observations=2 if stack else 1,
+        camera_resolutions=resolutions,
+        vector_action_space_size=[2],
+        vector_action_descriptions=["", ""],
+        vector_action_space_type=int(not discrete_action),
+        brain_name=brain_name,
+    )

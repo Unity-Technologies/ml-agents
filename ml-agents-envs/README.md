@@ -3,9 +3,9 @@
 The `mlagents_envs` Python package is part of the
 [ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
 `mlagents_envs` provides a Python API that allows direct interaction with the Unity
-game engine. It is used by the trainer implementation in `mlagents` as well as 
-the `gym-unity` package to perform reinforcement learning within Unity. `mlagents_envs` can be 
-used independently of `mlagents` for Python communication. 
+game engine. It is used by the trainer implementation in `mlagents` as well as
+the `gym-unity` package to perform reinforcement learning within Unity. `mlagents_envs` can be
+used independently of `mlagents` for Python communication.
 
 The `mlagents_envs` Python package contains one sub package:
 

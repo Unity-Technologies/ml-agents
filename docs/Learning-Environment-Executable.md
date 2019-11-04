@@ -27,14 +27,6 @@ environment:
 
 ![3DBall Scene](images/mlagents-Open3DBall.png)
 
-Make sure the Brains in the scene have the right type. For example, if you want
-to be able to control your agents from Python, you will need to put the Brain
-controlling the Agents to be a **Learning Brain** and drag it into the
-Academy's `Broadcast Hub` with the `Control` checkbox checked. In the 3DBall
-scene, this can be done in the Platform GameObject within the Game prefab in
-`Assets/ML-Agents/Examples/3DBall/Prefabs/`, or in each instance of the
-Platform in the Scene.
-
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
 
@@ -201,19 +193,18 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 2
 ```
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<brain_name>.nn`, which corresponds
+`models/<run-identifier>/<behavior_name>.nn`, which corresponds
 to your model's latest checkpoint. (**Note:** There is a known bug on Windows
 that causes the saving of the model to fail when you early terminate the
 training, it's recommended to wait until Step has reached the max_steps
 parameter you set in trainer_config.yaml.) You can now embed this trained model
-into your Learning Brain by following the steps below:
+into your Agent by following the steps below:
 
 1. Move your model file into
    `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
-3. Select the **Ball3DLearning** object from the Project window.
-5. Drag the `<brain_name>.nn` file from the Project window of
-   the Editor to the **Model** placeholder in the **Ball3DLearning**
+3. Select the **3DBall** prefab from the Project window and select **Agent**.
+5. Drag the `<behavior_name>.nn` file from the Project window of
+   the Editor to the **Model** placeholder in the **Ball3DAgent**
    inspector window.
-6. Remove the **Ball3DLearning** from the Academy's `Broadcast Hub`
-7. Press the Play button at the top of the editor.
+6. Press the Play button at the top of the editor.

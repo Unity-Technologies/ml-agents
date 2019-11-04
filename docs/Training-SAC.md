@@ -197,10 +197,10 @@ Typical Range: `32` - `512`
 `vis_encode_type` corresponds to the encoder type for encoding visual observations.
 Valid options include:
 * `simple` (default): a simple encoder which consists of two convolutional layers
-* `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236),
+* `nature_cnn`: [CNN implementation proposed by Mnih et al.](https://www.nature.com/articles/nature14236),
 consisting of three convolutional layers
-* `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
-consisting of three stacked layers, each with two risidual blocks, making a
+* `resnet`: [IMPALA Resnet implementation](https://arxiv.org/abs/1802.01561),
+consisting of three stacked layers, each with two residual blocks, making a
 much larger network than the other two.
 
 Options: `simple`, `nature_cnn`, `resnet`
@@ -313,7 +313,7 @@ long to decrease, `init_entcoef` should be adjusted.
 
 ### Entropy
 
-This corresponds to how random the decisions of a Brain are. This should
+This corresponds to how random the decisions are. This should
 initially increase during training, reach a peak, and should decline along
 with the Entropy Coefficient. This is because in the beginning, the agent is
 incentivized to be more random for exploration due to a high entropy coefficient.

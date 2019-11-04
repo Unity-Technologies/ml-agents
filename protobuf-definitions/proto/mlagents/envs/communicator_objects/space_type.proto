@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+enum SpaceTypeProto {
+    discrete = 0;
+    continuous = 1;
+}
+

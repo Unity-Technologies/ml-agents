@@ -20,30 +20,39 @@ Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 
 `pip install mypy-protobuf`
 
-If you don't have it already, download the latest version of [nuget](https://www.nuget.org/downloads).
-Navigate to your installation of nuget and run the following: 
+
+#### On Windows
+
+Download and install the latest version of [nuget](https://www.nuget.org/downloads).
+
+#### On Mac
+
+`brew install nuget`
+
+#### On Linux
+
+`sudo apt-get install nuget`
+
+
+Navigate to your installation of nuget and run the following:
 
 `nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
-
-### Installing Protobuf Compiler
-
-On Mac: `brew install protobuf`
 
 ## Running
 
 Whenever you change the fields of a custom message, you must follow the steps below to create C# and Python files corresponding to the new message.
 
 1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
-2. Un-comment line 7 in `make.bat` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
-3. Run the `.bat` from the terminal by navigating to `$MLAGENTS_ROOT\protobuf-definitions` and entering `make.bat` (for Windows, use `make_for_win.bat`)
+2. Un-comment line 7 in `make.sh` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
+3. Run the protobuf generation script from the terminal by navigating to `$MLAGENTS_ROOT\protobuf-definitions` and entering `make.sh` (for Windows, use `make_for_win.bat`)
 4. Note any errors generated that may result from setting the wrong directory in step 2.
-5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, you will need to add the following to the beginning of the file:
+5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, check to see if you need to add the following to the beginning of the file:
 
 ```csharp
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 ```
  and the following line to the end
- 
+
  ```csharp
  #endif
  ```
@@ -62,4 +71,4 @@ pip install -e .
 mlagents-learn
 ```
 
-The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo. 
+The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo.

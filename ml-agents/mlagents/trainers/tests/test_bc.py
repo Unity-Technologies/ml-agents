@@ -12,6 +12,7 @@ from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.bc.offline_trainer import BCTrainer
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
+from mlagents.trainers.tests.mock_brain import make_brain_parameters
 
 
 @pytest.fixture
@@ -114,30 +115,28 @@ def test_bc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = BCPolicy(0, env.brains[env.brain_names[0]], trainer_parameters, False)
+    policy = BCPolicy(
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False
+    )
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
 
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_cc_bc_model(mock_communicator, mock_launcher):
+def test_cc_bc_model():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=0
+            model = BehavioralCloningModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-            model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -148,20 +147,16 @@ def test_cc_bc_model(mock_communicator, mock_launcher):
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
+            # env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_dc_bc_model(mock_communicator, mock_launcher):
+def test_dc_bc_model():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=0
+            model = BehavioralCloningModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-            model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -174,20 +169,15 @@ def test_dc_bc_model(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_visual_dc_bc_model(mock_communicator, mock_launcher):
+def test_visual_dc_bc_model():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=2
+            model = BehavioralCloningModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-            model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -202,20 +192,15 @@ def test_visual_dc_bc_model(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_visual_cc_bc_model(mock_communicator, mock_launcher):
+def test_visual_cc_bc_model():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=2
+            model = BehavioralCloningModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-            model = BehavioralCloningModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -228,7 +213,6 @@ def test_visual_cc_bc_model(mock_communicator, mock_launcher):
                 model.visual_in[1]: np.ones([2, 40, 30, 3]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
 if __name__ == "__main__":

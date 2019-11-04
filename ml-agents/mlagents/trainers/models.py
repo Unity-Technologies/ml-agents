@@ -1,12 +1,13 @@
 import logging
 from enum import Enum
-from typing import Any, Callable, Dict, List
+from typing import Callable, List
 
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
 from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.envs.brain import CameraResolution
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -126,21 +127,18 @@ class LearningModel(object):
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
     @staticmethod
-    def create_visual_input(camera_parameters: Dict[str, Any], name: str) -> tf.Tensor:
+    def create_visual_input(
+        camera_parameters: CameraResolution, name: str
+    ) -> tf.Tensor:
         """
         Creates image input op.
         :param camera_parameters: Parameters for visual observation from BrainInfo.
         :param name: Desired name of input op.
         :return: input op.
         """
-        o_size_h = camera_parameters["height"]
-        o_size_w = camera_parameters["width"]
-        bw = camera_parameters["blackAndWhite"]
-
-        if bw:
-            c_channels = 1
-        else:
-            c_channels = 3
+        o_size_h = camera_parameters.height
+        o_size_w = camera_parameters.width
+        c_channels = camera_parameters.num_channels
 
         visual_in = tf.placeholder(
             shape=[None, o_size_h, o_size_w, c_channels], dtype=tf.float32, name=name
@@ -247,8 +245,8 @@ class LearningModel(object):
                 )
         return hidden
 
+    @staticmethod
     def create_visual_observation_encoder(
-        self,
         image_input: tf.Tensor,
         h_size: int,
         activation: ActivationFunction,
@@ -288,13 +286,13 @@ class LearningModel(object):
             hidden = c_layers.flatten(conv2)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = self.create_vector_observation_encoder(
+            hidden_flat = LearningModel.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
 
+    @staticmethod
     def create_nature_cnn_visual_observation_encoder(
-        self,
         image_input: tf.Tensor,
         h_size: int,
         activation: ActivationFunction,
@@ -343,13 +341,13 @@ class LearningModel(object):
             hidden = c_layers.flatten(conv3)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = self.create_vector_observation_encoder(
+            hidden_flat = LearningModel.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
 
+    @staticmethod
     def create_resnet_visual_observation_encoder(
-        self,
         image_input: tf.Tensor,
         h_size: int,
         activation: ActivationFunction,
@@ -411,7 +409,7 @@ class LearningModel(object):
             hidden = c_layers.flatten(hidden)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = self.create_vector_observation_encoder(
+            hidden_flat = LearningModel.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -470,7 +468,7 @@ class LearningModel(object):
         num_layers: int,
         vis_encode_type: EncoderType = EncoderType.SIMPLE,
         stream_scopes: List[str] = None,
-    ) -> tf.Tensor:
+    ) -> List[tf.Tensor]:
         """
         Creates encoding stream for observations.
         :param num_streams: Number of streams to create.
@@ -491,45 +489,31 @@ class LearningModel(object):
             self.visual_in.append(visual_input)
         vector_observation_input = self.create_vector_input()
 
+        # Pick the encoder function based on the EncoderType
+        create_encoder_func = LearningModel.create_visual_observation_encoder
+        if vis_encode_type == EncoderType.RESNET:
+            create_encoder_func = LearningModel.create_resnet_visual_observation_encoder
+        elif vis_encode_type == EncoderType.NATURE_CNN:
+            create_encoder_func = (
+                LearningModel.create_nature_cnn_visual_observation_encoder
+            )
+
         final_hiddens = []
         for i in range(num_streams):
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             _scope_add = stream_scopes[i] if stream_scopes else ""
             if self.vis_obs_size > 0:
-                if vis_encode_type == EncoderType.RESNET:
-                    for j in range(brain.number_visual_observations):
-                        encoded_visual = self.create_resnet_visual_observation_encoder(
-                            self.visual_in[j],
-                            h_size,
-                            activation_fn,
-                            num_layers,
-                            _scope_add + "main_graph_{}_encoder{}".format(i, j),
-                            False,
-                        )
-                        visual_encoders.append(encoded_visual)
-                elif vis_encode_type == EncoderType.NATURE_CNN:
-                    for j in range(brain.number_visual_observations):
-                        encoded_visual = self.create_nature_cnn_visual_observation_encoder(
-                            self.visual_in[j],
-                            h_size,
-                            activation_fn,
-                            num_layers,
-                            _scope_add + "main_graph_{}_encoder{}".format(i, j),
-                            False,
-                        )
-                        visual_encoders.append(encoded_visual)
-                else:
-                    for j in range(brain.number_visual_observations):
-                        encoded_visual = self.create_visual_observation_encoder(
-                            self.visual_in[j],
-                            h_size,
-                            activation_fn,
-                            num_layers,
-                            _scope_add + "main_graph_{}_encoder{}".format(i, j),
-                            False,
-                        )
-                        visual_encoders.append(encoded_visual)
+                for j in range(brain.number_visual_observations):
+                    encoded_visual = create_encoder_func(
+                        self.visual_in[j],
+                        h_size,
+                        activation_fn,
+                        num_layers,
+                        scope=f"{_scope_add}main_graph_{i}_encoder{j}",
+                        reuse=False,
+                    )
+                    visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if brain.vector_observation_space_size > 0:
                 hidden_state = self.create_vector_observation_encoder(
@@ -537,8 +521,8 @@ class LearningModel(object):
                     h_size,
                     activation_fn,
                     num_layers,
-                    _scope_add + "main_graph_{}".format(i),
-                    False,
+                    scope=f"{_scope_add}main_graph_{i}",
+                    reuse=False,
                 )
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)

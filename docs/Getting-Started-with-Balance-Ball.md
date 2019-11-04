@@ -32,7 +32,7 @@ and Unity, see the [installation instructions](Installation.md).
 
 An agent is an autonomous actor that observes and interacts with an
 _environment_. In the context of Unity, an environment is a scene containing an
-Academy and one or more Brain and Agent objects, and, of course, the other
+Academy and one or more Agent objects, and, of course, the other
 entities that an agent interacts with.
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
@@ -45,7 +45,7 @@ window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
 it contains not one, but several agent cubes.  Each agent cube in the scene is an
-independent agent, but they all share the same Brain. 3D Balance Ball does this
+independent agent, but they all share the same Behavior. 3D Balance Ball does this
 to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
@@ -53,10 +53,6 @@ to speed up training since all twelve agents contribute to training in parallel.
 The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
 you look at an Academy component in the inspector, you can see several
 properties that control how the environment works.
-The **Broadcast Hub** keeps track of which Brains will send data during training.
-If a Brain is added to the hub, the data from this Brain will be sent to the external training
-process. If the `Control` checkbox is checked, the training process will be able to
-control and train the agents linked to the Brain.
 The **Training Configuration** and **Inference Configuration** properties
 set the graphics and timescale properties for the Unity application.
 The Academy uses the **Training Configuration**  during training and the
@@ -86,57 +82,6 @@ The 3D Balance Ball environment does not use these functions — each Agent rese
 itself when needed — but many environments do use these functions to control the
 environment around the Agents.
 
-### Brain
-
-As of v0.6, a Brain is a Unity asset and exists within the `UnitySDK` folder. These brains (ex. **3DBallLearning.asset**) are loaded into each Agent object (ex. **Ball3DAgents**).  A Brain doesn't store any information about an Agent, it just
-routes the Agent's collected observations to the decision making process and
-returns the chosen action to the Agent. All Agents can share the same
-Brain, but would act independently. The Brain settings tell you quite a bit about how
-an Agent works.
-
-You can create new Brain assets by selecting `Assets ->
-Create -> ML-Agents -> Brain`. There are 3 types of Brains.
-The **Learning Brain** is a Brain that uses a trained neural network to make decisions.
-When the `Control` box is checked in the Brains property under the **Broadcast Hub** in the Academy, the external process that is training the neural network will take over decision making for the agents
-and ultimately generate a trained neural network. You can also use the
-**Learning Brain** with a pre-trained model.
-The **Heuristic** Brain allows you to hand-code the Agent logic by extending
-the Decision class.
-Finally, the **Player** Brain lets you map keyboard commands to actions, which
-can be useful when testing your agents and environment. You can also implement your own type of Brain.
-
-In this tutorial, you will use the **Learning Brain** for training.
-
-#### Vector Observation Space
-
-Before making a decision, an agent collects its observation about its state in
-the world. The vector observation is a vector of floating point numbers which
-contain relevant information for the agent to make decisions.
-
-The Brain instance used in the 3D Balance Ball example uses the **Continuous**
-vector observation space with a **State Size** of 8. This means that the feature
-vector containing the Agent's observations contains eight elements: the `x` and
-`z` components of the agent cube's rotation and the `x`, `y`, and `z` components
-of the ball's relative position and velocity. (The observation values are
-defined in the Agent's `CollectObservations()` function.)
-
-#### Vector Action Space
-
-An Agent is given instructions from the Brain in the form of *actions*.
-ML-Agents toolkit classifies actions into two types: the **Continuous** vector
-action space is a vector of numbers that can vary continuously. What each
-element of the vector means is defined by the Agent logic (the PPO training
-process just learns what values are better given particular state observations
-based on the rewards received when it tries different values). For example, an
-element might represent a force or torque applied to a `Rigidbody` in the Agent.
-The **Discrete** action vector space defines its actions as tables. An action
-given to the Agent is an array of indices into tables.
-
-The 3D Balance Ball example is programmed to use both types of vector action
-space. You can try training with both settings to observe whether there is a
-difference. (Set the `Vector Action Space Size` to 4 when using the discrete
-action space and 2 when using continuous.)
-
 ### Agent
 
 The Agent is the actor that observes and takes actions in the environment. In
@@ -144,11 +89,9 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 "Agent" GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Brain** — Every Agent must have a Brain. The Brain determines how an Agent
-  makes decisions. All the Agents in the 3D Balance Ball scene share the same
-  Brain.
-* **Visual Observations** — Defines any Camera objects used by the Agent to
-  observe its environment. 3D Balance Ball does not use camera observations.
+* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
+  determines how an Agent makes decisions. More on Behavior Parameters in
+  the next section.
 * **Max Step** — Defines how many simulation steps can occur before the Agent
   decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
 * **Reset On Done** — Defines whether an Agent starts over when it is finished.
@@ -165,22 +108,54 @@ The Ball3DAgent subclass defines the following methods:
   training generalizes to more than a specific starting position and agent cube
   attitude.
 * agent.CollectObservations() — Called every simulation step. Responsible for
-  collecting the Agent's observations of the environment. Since the Brain
-  instance assigned to the Agent is set to the continuous vector observation
+  collecting the Agent's observations of the environment. Since the Behavior
+  Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations()` must call
-  `AddVectorObs` such that  vector size adds up to 8.
+  `AddVectorObs` such that vector size adds up to 8.
 * agent.AgentAction() — Called every simulation step. Receives the action chosen
-  by the Brain. The Ball3DAgent example handles both the continuous and the
-  discrete action space types. There isn't actually much difference between the
-  two state types in this environment — both vector action spaces result in a
+  by the Agent. The vector action spaces result in a
   small change in the agent cube's rotation at each step. The `AgentAction()` function
   assigns a reward to the Agent; in this example, an Agent receives a small
   positive reward for each step it keeps the ball on the agent cube's head and a larger,
   negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
+* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior
+  Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
+  the actions of the Agent. As such, the `Heuristic()` method returns an array of
+  floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
+  keyboard inputs into actions.
 
-## Training the Brain with Reinforcement Learning
+
+#### Behavior Parameters : Vector Observation Space
+
+Before making a decision, an agent collects its observation about its state in
+the world. The vector observation is a vector of floating point numbers which
+contain relevant information for the agent to make decisions.
+
+The Behavior Parameters of the 3D Balance Ball example uses a **Space Size** of 8.
+This means that the feature
+vector containing the Agent's observations contains eight elements: the `x` and
+`z` components of the agent cube's rotation and the `x`, `y`, and `z` components
+of the ball's relative position and velocity. (The observation values are
+defined in the Agent's `CollectObservations()` function.)
+
+#### Behavior Parameters : Vector Action Space
+
+An Agent is given instructions in the form of a float array of *actions*.
+ML-Agents toolkit classifies actions into two types: the **Continuous** vector
+action space is a vector of numbers that can vary continuously. What each
+element of the vector means is defined by the Agent logic (the training
+process just learns what values are better given particular state observations
+based on the rewards received when it tries different values). For example, an
+element might represent a force or torque applied to a `Rigidbody` in the Agent.
+The **Discrete** action vector space defines its actions as tables. An action
+given to the Agent is an array of indices into tables.
+
+The 3D Balance Ball example is programmed to use continuous action
+space with `Space Size` of 2.
+
+## Training with Reinforcement Learning
 
 Now that we have an environment, we can perform the training.
 
@@ -275,11 +250,11 @@ From TensorBoard, you will see the summary statistics:
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
-## Embedding the Trained Brain into the Unity Environment (Experimental)
+## Embedding the Model into the Unity Environment
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with Agents having a **Learning Brain**.
+use it with compatible Agents (the Agents that generated the model).
 __Note:__ Do not just close the Unity Window once the `Saved Model` message appears.
 Either wait for the training process to close the window or press Ctrl+C at the
 command-line prompt. If you close the window manually, the `.nn` file
@@ -288,6 +263,6 @@ containing the trained model is not exported into the ml-agents folder.
 ### Embedding the trained model into Unity
 
 To embed the trained model into Unity, follow the later part of [Training the
-Brain with Reinforcement
-Learning](Basic-Guide.md#training-the-brain-with-reinforcement-learning) section
+Model with Reinforcement
+Learning](Basic-Guide.md#training-the-model-with-reinforcement-learning) section
 of the Basic Guide page.

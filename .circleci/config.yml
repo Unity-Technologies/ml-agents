@@ -33,8 +33,6 @@ jobs:
           keys:
           # Parameterize the cache so that different python versions can get different versions of the packages
           - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-py<< parameters.pyversion >>-
 
       - run:
           name: Install Dependencies
@@ -121,7 +119,97 @@ jobs:
             . venv/bin/activate
             pre-commit run --hook-stage manual markdown-link-check --all-files
 
+  protobuf_generation_check:
+    docker:
+      - image: circleci/python:3.7.3
+    working_directory: ~/repo/
+
+    steps:
+      - checkout
+      - run:
+          name: Combine proto files for caching
+          command: cat protobuf-definitions/proto/mlagents/envs/communicator_objects/*.proto > /tmp/proto_deps.txt
+
+      - restore_cache:
+          keys:
+          - v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
+          - v1-protobuf-gen-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get install nuget
+            nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory protobuf-definitions/
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install grpcio-tools==1.13.0  --progress-bar=off
+            pip install mypy-protobuf==1.16.0 --progress-bar=off
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
+
+      - run:
+          name: Generate protobufs
+          command: |
+            . venv/bin/activate
+            cd protobuf-definitions
+            chmod +x Grpc.Tools.1.14.1/tools/linux_x64/protoc
+            chmod +x Grpc.Tools.1.14.1/tools/linux_x64/grpc_csharp_plugin
+            COMPILER=Grpc.Tools.1.14.1/tools/linux_x64 ./make.sh
+            CS_PROTO_PATH=UnitySDK/Assets/ML-Agents/Scripts/Grpc/CommunicatorObjects
+            git diff --exit-code --quiet -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" \
+              || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
+              echo "Apply the patch with the command: git apply proto.patch"; \
+              git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > /tmp/proto.patch; \
+              exit $GIT_ERR; }
+      - store_artifacts:
+            path: /tmp/proto.patch
+            destination: proto.patch
+
+  deploy:
+    parameters:
+      directory:
+        type: string
+        description: Local directory to use for publishing (e.g. ml-agents)
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install  --upgrade pip
+            pip install setuptools wheel twine
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: upload to pypi
+          # To upload to test, just add the following flag to twine upload:
+          # --repository-url https://test.pypi.org/legacy/
+          # and change the username to "mlagents-test"
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
+
 workflows:
+  version: 2
   workflow:
     jobs:
       - build_python:
@@ -137,3 +225,28 @@ workflows:
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_version.txt
       - markdown_link_check
+      - protobuf_generation_check
+      - deploy:
+          name: deploy ml-agents-envs
+          directory: ml-agents-envs
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy ml-agents
+          directory: ml-agents
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy gym-unity
+          directory: gym-unity
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/

@@ -138,6 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4895942152145390}
   - component: {fileID: 65170961617201804}
+  - component: {fileID: 114284317994838100}
   - component: {fileID: 114466000339026140}
   m_Layer: 0
   m_Name: Agent
@@ -597,6 +598,27 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114284317994838100
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1829721031899636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 5
+    numStackedVectorObservations: 9
+    vectorActionSize: 02000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: 27d49984757ed46b181090a532ef48e5, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: 3DBallHard
 --- !u!114 &114466000339026140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -608,10 +630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf26e11cf4ed42eaa3ffb7b91bb4676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 4f74e089fbb75455ebf6f0495e30be6e, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

@@ -78,10 +78,14 @@ training run if you plan to view the statistics. You can view these statistics
 using TensorBoard during or after training by running the following command:
 
 ```sh
-tensorboard --logdir=summaries
+tensorboard --logdir=summaries --port 6006
 ```
 
 And then opening the URL: [localhost:6006](http://localhost:6006).
+
+**Note:** The default port TensorBoard uses is 6006. If there is an existing session
+running on port 6006 a new session can be launched on an open port using the --port
+option.
 
 When training is finished, you can find the saved model in the `models` folder
 under the assigned run-id — in the cats example, the path to the model would be
@@ -110,15 +114,12 @@ environment, you can set the following command line options when invoking
   the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>`: Specify which lesson to start with when performing curriculum
   training. Defaults to 0.
-* `--load`: If set, the training code loads an already trained model to
-  initialize the neural network before training. The learning code looks for the
-  model in `models/<run-id>/` (which is also where it saves models at the end of
-  training). When not set (the default), the neural network weights are randomly
-  initialized and an existing model is not loaded.
 * `--num-runs=<n>`: Sets the number of concurrent training sessions to perform.
   Default is set to 1. Set to higher values when benchmarking performance and
   multiple training sessions is desired. Training sessions are independent, and
   do not improve learning performance.
+* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to
+  collect experiences from when training. Defaults to 1.
 * `--run-id=<path>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
   summary statistics are saved as well as the saved model itself. The default id
@@ -129,6 +130,18 @@ environment, you can set the following command line options when invoking
   training. Defaults to 50000.
 * `--seed=<n>`: Specifies a number to use as a seed for the random number
   generator used by the training code.
+* `--env-args=<string>`: Specify arguments for the executable environment. Be aware that
+  the standalone build will also process these as
+  [Unity Command Line Arguments](https://docs.unity3d.com/Manual/CommandLineArguments.html).
+  You should choose different argument names if you want to create environment-specific arguments.
+  All arguments after this flag will be passed to the executable. For example, setting
+  `mlagents-learn config/trainer_config.yaml --env-args --num-orcs 42` would result in
+   ` --num-orcs 42` passed to the executable.
+* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance
+  will get assigned a port sequentially, starting from the `base-port`. Each instance
+  will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs
+  given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
+  training using the Editor rather than an executable, the base port will be ignored.
 * `--slow`: Specify this option to run the Unity environment at normal, game
   speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
   specified in the Academy's **Inference Configuration**. By default, training
@@ -137,14 +150,11 @@ environment, you can set the following command line options when invoking
   [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train`: Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
-* `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to collect
-  experiences from when training. Defaults to 1.
-* `--base-port`: Specifies the starting port. Each concurrent Unity environment instance will
-  get assigned a port sequentially, starting from the `base-port`.  Each instance will use the
-  port `(base_port + worker_id)`, where the `worker_id` is sequential IDs given to each instance
-  from 0 to `num_envs - 1`. Default is 5005.
-* `--docker-target-name=<dt>`: The Docker Volume on which to store curriculum,
-  executable and model files. See [Using Docker](Using-Docker.md).
+* `--load`: If set, the training code loads an already trained model to
+  initialize the neural network before training. The learning code looks for the
+  model in `models/<run-id>/` (which is also where it saves models at the end of
+  training). When not set (the default), the neural network weights are randomly
+  initialized and an existing model is not loaded.
 * `--no-graphics`: Specify this option to run the Unity executable in
   `-batchmode` and doesn't initialize the graphics driver. Use this only if your
   training doesn't involve visual observations (reading from Pixels). See
@@ -152,59 +162,52 @@ environment, you can set the following command line options when invoking
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
-* `--env-args=<string>`: Specify arguments for the executable environment. Be aware that
-  the standalone build will also process these as
-  [Unity Command Line Arguments](https://docs.unity3d.com/Manual/CommandLineArguments.html).
-  You should choose different argument names if you want to create environment-specific arguments.
-  All arguments after this flag will be passed to the executable. For example, setting
-  `mlagents-learn config/trainer_config.yaml --env-args --num-orcs 42` would result in
-   ` --num-orcs 42` passed to the executable.
-
+* `--cpu`: Forces training using CPU only.
 
 ### Training Config File
 
 The training config files `config/trainer_config.yaml`, `config/sac_trainer_config.yaml`,
-`config/gail_config.yaml`, `config/online_bc_config.yaml` and `config/offline_bc_config.yaml`
-specifies the training method, the hyperparameters, and a few additional values to use when
-training with PPO, SAC, GAIL (with PPO), and online and offline BC. These files are divided into sections.
-The **default** section defines the default values for all the available
-settings. You can also add new sections to override these defaults to train
-specific Brains. Name each of these override sections after the GameObject
-containing the Brain component that should use these settings. (This GameObject
-will be a child of the Academy in your scene.) Sections for the example
-environments are included in the provided config file.
+`config/gail_config.yaml` and `config/offline_bc_config.yaml` specifies the training method,
+the hyperparameters, and a few additional values to use when training with Proximal Policy
+Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial Imitation Learning)
+with PPO, and online and offline Behavioral Cloning(BC)/Imitation. These files are divided
+into sections. The **default** section defines the default values for all the available
+training with PPO, SAC, GAIL (with PPO), and offline BC. These files are divided into sections.
+The **default** section defines the default values for all the available settings. You can
+also add new sections to override these defaults to train specific Behaviors. Name each of these
+override sections after the appropriate `Behavior Name`. Sections for the
+example environments are included in the provided config file.
 
 |     **Setting**      |                                                                                     **Description**                                                                                     | **Applies To Trainer\*** |
 | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- |
-| batch_size           | The number of experiences in each iteration of gradient descent.                                                                                                                        | PPO, SAC, BC                  |
+| batch_size           | The number of experiences in each iteration of gradient descent.                                                                                                                        | PPO, SAC, BC             |
 | batches_per_epoch    | In imitation learning, the number of batches of training examples to collect before training the model.                                                                                 | BC                       |
 | beta                 | The strength of entropy regularization.                                                                                                                                                 | PPO                      |
-| brain\_to\_imitate   | For online imitation learning, the name of the GameObject containing the Brain component to imitate.                                                                                    | (online)BC               |
 | demo_path            | For offline imitation learning, the file path of the recorded demonstration file                                                                                                        | (offline)BC              |
-| buffer_size          | The number of experiences to collect before updating the policy model. In SAC, the max size of the experience buffer.                                                                   | PPO, SAC                      |
-| buffer_init_steps          | The number of experiences to collect into the buffer before updating the policy model.                                                                                            | SAC                      |
+| buffer_size          | The number of experiences to collect before updating the policy model. In SAC, the max size of the experience buffer.                                                                   | PPO, SAC                 |
+| buffer_init_steps    | The number of experiences to collect into the buffer before updating the policy model.                                                                                                  | SAC                      |
 | epsilon              | Influences how rapidly the policy can evolve during training.                                                                                                                           | PPO                      |
-| hidden_units         | The number of units in the hidden layers of the neural network.                                                                                                                         | PPO, SAC, BC                  |
-| init_entcoef         | How much the agent should explore in the beginning of training.                                                                                                                         | SAC                  |
+| hidden_units         | The number of units in the hidden layers of the neural network.                                                                                                                         | PPO, SAC, BC             |
+| init_entcoef         | How much the agent should explore in the beginning of training.                                                                                                                         | SAC                      |
 | lambd                | The regularization parameter.                                                                                                                                                           | PPO                      |
-| learning_rate        | The initial learning rate for gradient descent.                                                                                                                                         | PPO, SAC, BC                  |
-| max_steps            | The maximum number of simulation steps to run during a training session.                                                                                                                | PPO, SAC, BC                  |
-| memory_size          | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC, BC                  |
-| normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                      |
+| learning_rate        | The initial learning rate for gradient descent.                                                                                                                                         | PPO, SAC, BC             |
+| max_steps            | The maximum number of simulation steps to run during a training session.                                                                                                                | PPO, SAC, BC             |
+| memory_size          | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC, BC             |
+| normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                 |
 | num_epoch            | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
-| num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, SAC, BC                  |
-| pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                                                                                            | PPO, SAC                      |
-| reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                           | PPO, SAC, BC                  |
-| save_replay_buffer      | Saves the replay buffer when exiting training, and loads it on resume.                                                                                                         | SAC                |
-| sequence_length      | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, SAC, BC                  |
-| summary_freq         | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, SAC, BC                  |
-| tau                  | How aggressively to update the target network used for bootstrapping value estimation in SAC.                                                                                            | SAC                          |
-| time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC, (online)BC          |
-| trainer              | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                                                  | PPO, SAC, BC                  |
-| train_interval              | How often to update the agent.                                                                                                                                                    | SAC                  |
-| num_update           | Number of mini-batches to update the agent with during each update.                                                                                       | SAC                  |
-| use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC, BC                  |
-
+<<<<<<< HEAD
+| num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, SAC, BC             |
+| pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                           | PPO, SAC                 |
+| reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                         | PPO, SAC, BC             |
+| save_replay_buffer   | Saves the replay buffer when exiting training, and loads it on resume.                                                                                                                  | SAC                      |
+| sequence_length      | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, SAC, BC             |
+| summary_freq         | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, SAC, BC             |
+| tau                  | How aggressively to update the target network used for bootstrapping value estimation in SAC.                                                                                           | SAC                      |
+| time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC, (online)BC     |
+| trainer              | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                             | PPO, SAC, BC             |
+| train_interval       | How often to update the agent.                                                                                                                                                          | SAC                      |
+| num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
+| use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC, BC             |
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation)
 

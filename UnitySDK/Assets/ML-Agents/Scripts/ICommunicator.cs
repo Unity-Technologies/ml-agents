@@ -1,12 +1,76 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
-    public struct CommunicatorParameters
+    public struct EnvironmentResetParameters
     {
-        public int port;
+        /// <summary>
+        /// Mapping of string : float which defines which parameters can be
+        /// reset from python.
+        /// </summary>
+        public ResetParameters resetParameters;
+
+        /// <summary>
+        /// The protobuf for custom reset parameters.
+        /// NOTE: This is the last remaining relic of gRPC protocol
+        /// that is left in our code.  We need to decide how to handle this
+        /// moving forward.
+        /// </summary>
+        public CustomResetParametersProto customResetParameters;
     }
+    public struct CommunicatorInitParameters
+    {
+        /// <summary>
+        /// Port to listen for connections on.
+        /// </summary>
+        public int port;
+        /// <summary>
+        /// The name of the environment.
+        /// </summary>
+        public string name;
+        /// <summary>
+        /// The version of the Unity SDK.
+        /// </summary>
+        public string version;
+        /// <summary>
+        /// The set of environment parameters defined by the user that will be sent to the communicator.
+        /// </summary>
+        public EnvironmentResetParameters environmentResetParameters;
+    }
+    public struct UnityRLInitParameters
+    {
+        /// <summary>
+        /// An RNG seed sent from the python process to Unity.
+        /// </summary>
+        public int seed;
+    }
+    public struct UnityRLInputParameters
+    {
+        /// <summary>
+        /// Boolean sent back from python to indicate whether or not training is happening.
+        /// </summary>
+        public bool isTraining;
+    }
+
+    /// <summary>
+    /// Delegate for handling quite events sent back from the communicator.
+    /// </summary>
+    public delegate void QuitCommandHandler();
+
+    /// <summary>
+    /// Delegate for handling reset parameter updates sent from the communicator.
+    /// </summary>
+    /// <param name="resetParams"></param>
+    public delegate void ResetCommandHandler(EnvironmentResetParameters resetParams);
+
+    /// <summary>
+    /// Delegate to handle UnityRLInputParameters updates from the communicator.
+    /// </summary>
+    /// <param name="inputParams"></param>
+    public delegate void RLInputReceivedHandler(UnityRLInputParameters inputParams);
 
     /**
     This is the interface of the Communicators.
@@ -38,34 +102,56 @@ namespace MLAgents
     ......UnityRLOutput
     ......UnityRLInitializationOutput
     ...UnityInput
-    ......UnityRLIntput
-    ......UnityRLInitializationIntput
+    ......UnityRLInput
+    ......UnityRLInitializationInput
 
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator
+    public interface ICommunicator : IBatchedDecisionMaker
     {
         /// <summary>
-        /// Initialize the communicator by sending the first UnityOutput and receiving the
-        /// first UnityInput. The second UnityInput is stored in the unityInput argument.
+        /// Quit was received by the communicator.
         /// </summary>
-        /// <returns>The first Unity Input.</returns>
-        /// <param name="unityOutput">The first Unity Output.</param>
-        /// <param name="unityInput">The second Unity input.</param>
-        UnityInput Initialize(UnityOutput unityOutput,
-            out UnityInput unityInput);
+        event QuitCommandHandler QuitCommandReceived;
+
 
         /// <summary>
-        /// Send a UnityOutput and receives a UnityInput.
+        /// Reset command sent back from the communicator.
         /// </summary>
-        /// <returns>The next UnityInput.</returns>
-        /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        UnityInput Exchange(UnityOutput unityOutput);
+        event ResetCommandHandler ResetCommandReceived;
 
         /// <summary>
-        /// Close the communicator gracefully on both sides of the communication.
+        /// Unity RL Input was received by the communicator.
         /// </summary>
-        void Close();
+        event RLInputReceivedHandler RLInputReceived;
+
+        /// <summary>
+        /// Sends the academy parameters through the Communicator.
+        /// Is used by the academy to send the AcademyParameters to the communicator.
+        /// </summary>
+        /// <returns>The External Initialization Parameters received.</returns>
+        /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
+        UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters);
+
+        /// <summary>
+        /// Registers a new Brain to the Communicator.
+        /// </summary>
+        /// <param name="name">The name or key uniquely identifying the Brain</param>
+        /// <param name="brainParameters">The Parameters for the Brain being registered</param>
+        void SubscribeBrain(string name, BrainParameters brainParameters);
+
+        /// <summary>
+        /// Gets the AgentActions based on the batching key.
+        /// </summary>
+        /// <param name="key">A key to identify which actions to get</param>
+        /// <returns></returns>
+        Dictionary<Agent, AgentAction> GetActions(string key);
+    }
+
+    public interface IBatchedDecisionMaker : IDisposable
+    {
+        void PutObservations(string key, Agent agent);
+        void DecideBatch();
     }
 }

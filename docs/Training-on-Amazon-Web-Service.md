@@ -1,5 +1,8 @@
 # Training on Amazon Web Service
 
+Note: We no longer use this guide ourselves and so it may not work correctly. We've
+decided to keep it up just in case it is helpful to you.
+
 This page contains instructions for setting up an EC2 instance on Amazon Web
 Service for training ML-Agents environments.
 
@@ -252,7 +255,7 @@ There is no data folder
 
 ### Unity Environment not responding
 
-If you didn't setup X Server or hasn't launched it properly, or you didn't made your environment with external brain, or your environment somehow crashes, or you haven't `chmod +x` your Unity Environment, all of these will cause connection between Unity and Python to fail. Then you will see something like this:
+If you didn't setup X Server or hasn't launched it properly, or your environment somehow crashes, or you haven't `chmod +x` your Unity Environment, all of these will cause connection between Unity and Python to fail. Then you will see something like this:
 
 ```console
 Logging to /home/ubuntu/.config/unity3d/<Some_Path>/Player.log
@@ -265,7 +268,6 @@ Traceback (most recent call last):
   File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/rpc_communicator.py", line 60, in initialize
 mlagents.envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
          The environment does not need user interaction to launch
-         The Academy and the External Brain(s) are attached to objects in the Scene
          The environment and the Python interface have compatible versions.
 ```
 

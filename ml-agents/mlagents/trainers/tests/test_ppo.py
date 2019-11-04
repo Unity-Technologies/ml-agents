@@ -14,6 +14,7 @@ from mlagents.envs.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import make_brain_parameters
 
 
 @pytest.fixture
@@ -65,14 +66,14 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
     )
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
@@ -88,14 +89,14 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     )
     env = UnityEnvironment(" ")
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(
-        0, env.brains[env.brain_names[0]], trainer_parameters, False, False
+        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
     )
     run_out = policy.get_value_estimates(brain_info, 0, done=False)
     for key, val in run_out.items():
@@ -117,18 +118,13 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
+def test_ppo_model_cc_vector():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=0
+            model = PPOModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-
-            model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -146,21 +142,15 @@ def test_ppo_model_cc_vector(mock_communicator, mock_launcher):
                 model.epsilon: np.array([[0, 1], [2, 3]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
+def test_ppo_model_cc_visual():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=2
+            model = PPOModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-
-            model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -180,20 +170,15 @@ def test_ppo_model_cc_visual(mock_communicator, mock_launcher):
                 model.epsilon: np.array([[0, 1], [2, 3]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
+def test_ppo_model_dc_visual():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=2
+            model = PPOModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-            model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -213,20 +198,15 @@ def test_ppo_model_dc_visual(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
+def test_ppo_model_dc_vector():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=0
+            model = PPOModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-            model = PPOModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -244,22 +224,17 @@ def test_ppo_model_dc_vector(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
+def test_ppo_model_dc_vector_rnn():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=0
-            )
-            env = UnityEnvironment(" ")
             memory_size = 128
             model = PPOModel(
-                env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size
+                make_brain_parameters(discrete_action=True, visual_inputs=0),
+                use_recurrent=True,
+                m_size=memory_size,
             )
             init = tf.global_variables_initializer()
             sess.run(init)
@@ -281,22 +256,17 @@ def test_ppo_model_dc_vector_rnn(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([1, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
+def test_ppo_model_cc_vector_rnn():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=0
-            )
-            env = UnityEnvironment(" ")
             memory_size = 128
             model = PPOModel(
-                env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size
+                make_brain_parameters(discrete_action=False, visual_inputs=0),
+                use_recurrent=True,
+                m_size=memory_size,
             )
             init = tf.global_variables_initializer()
             sess.run(init)
@@ -317,7 +287,6 @@ def test_ppo_model_cc_vector_rnn(mock_communicator, mock_launcher):
                 model.epsilon: np.array([[0, 1]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
 def test_rl_functions():
@@ -358,6 +327,12 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer_params = dummy_config
     trainer_params["use_recurrent"] = True
 
+    # Test curiosity reward signal
+    trainer_params["reward_signals"]["curiosity"] = {}
+    trainer_params["reward_signals"]["curiosity"]["strength"] = 1.0
+    trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
+    trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
+
     trainer = PPOTrainer(mock_brain, 0, trainer_params, True, False, 0, "0", False)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
@@ -365,6 +340,10 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["extrinsic_returns"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["extrinsic_value_estimates"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_returns"] = buffer.update_buffer["rewards"]
+    buffer.update_buffer["curiosity_value_estimates"] = buffer.update_buffer["rewards"]
+
     trainer.training_buffer = buffer
     trainer.update_policy()
     # Make batch length a larger multiple of sequence length

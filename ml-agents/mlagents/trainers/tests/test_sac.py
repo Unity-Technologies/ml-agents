@@ -8,9 +8,8 @@ import tensorflow as tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
+from mlagents.trainers.tests.mock_brain import make_brain_parameters
 
 
 @pytest.fixture
@@ -65,7 +64,7 @@ def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_vi
     )
 
     trainer_parameters = dummy_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
@@ -81,7 +80,7 @@ def test_sac_cc_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
@@ -95,8 +94,9 @@ def test_sac_cc_policy(mock_env, dummy_config):
     env.close()
 
 
+@pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @mock.patch("mlagents.envs.environment.UnityEnvironment")
-def test_sac_update_reward_signals(mock_env, dummy_config):
+def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     # Test evaluate
     tf.reset_default_graph()
     # Add a Curiosity module
@@ -105,11 +105,17 @@ def test_sac_update_reward_signals(mock_env, dummy_config):
     dummy_config["reward_signals"]["curiosity"]["gamma"] = 0.99
     dummy_config["reward_signals"]["curiosity"]["encoding_size"] = 128
     env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+        mock_env, dummy_config, use_rnn=False, use_discrete=discrete, use_visual=False
     )
 
-    # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    # Test update, while removing PPO-specific buffer elements.
+    buffer = mb.simulate_rollout(
+        env,
+        policy,
+        BUFFER_INIT_SAMPLES,
+        exclude_key_list=["advantages", "actions_pre", "random_normal_epsilon"],
+    )
+
     # Mock out reward signal eval
     buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
     buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
@@ -128,7 +134,7 @@ def test_sac_dc_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
@@ -150,7 +156,7 @@ def test_sac_visual_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=True
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
@@ -172,7 +178,7 @@ def test_sac_rnn_policy(mock_env, dummy_config):
         mock_env, dummy_config, use_rnn=True, use_discrete=True, use_visual=False
     )
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
@@ -184,18 +190,13 @@ def test_sac_rnn_policy(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_cc_vector(mock_communicator, mock_launcher):
+def test_sac_model_cc_vector():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=0
+            model = SACModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-
-            model = SACModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -206,21 +207,15 @@ def test_sac_model_cc_vector(mock_communicator, mock_launcher):
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_cc_visual(mock_communicator, mock_launcher):
+def test_sac_model_cc_visual():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=2
+            model = SACModel(
+                make_brain_parameters(discrete_action=False, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-
-            model = SACModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -233,20 +228,15 @@ def test_sac_model_cc_visual(mock_communicator, mock_launcher):
                 model.visual_in[1]: np.ones([2, 40, 30, 3]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_dc_visual(mock_communicator, mock_launcher):
+def test_sac_model_dc_visual():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=2
+            model = SACModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=2)
             )
-            env = UnityEnvironment(" ")
-            model = SACModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -260,20 +250,15 @@ def test_sac_model_dc_visual(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_dc_vector(mock_communicator, mock_launcher):
+def test_sac_model_dc_vector():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=0
+            model = SACModel(
+                make_brain_parameters(discrete_action=True, visual_inputs=0)
             )
-            env = UnityEnvironment(" ")
-            model = SACModel(env.brains["RealFakeBrain"])
             init = tf.global_variables_initializer()
             sess.run(init)
 
@@ -285,22 +270,17 @@ def test_sac_model_dc_vector(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([2, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_dc_vector_rnn(mock_communicator, mock_launcher):
+def test_sac_model_dc_vector_rnn():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=True, visual_inputs=0
-            )
-            env = UnityEnvironment(" ")
             memory_size = 128
             model = SACModel(
-                env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size
+                make_brain_parameters(discrete_action=True, visual_inputs=0),
+                use_recurrent=True,
+                m_size=memory_size,
             )
             init = tf.global_variables_initializer()
             sess.run(init)
@@ -322,22 +302,17 @@ def test_sac_model_dc_vector_rnn(mock_communicator, mock_launcher):
                 model.action_masks: np.ones([1, 2]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
-def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
+def test_sac_model_cc_vector_rnn():
     tf.reset_default_graph()
     with tf.Session() as sess:
         with tf.variable_scope("FakeGraphScope"):
-            mock_communicator.return_value = MockCommunicator(
-                discrete_action=False, visual_inputs=0
-            )
-            env = UnityEnvironment(" ")
             memory_size = 128
             model = SACModel(
-                env.brains["RealFakeBrain"], use_recurrent=True, m_size=memory_size
+                make_brain_parameters(discrete_action=False, visual_inputs=0),
+                use_recurrent=True,
+                m_size=memory_size,
             )
             init = tf.global_variables_initializer()
             sess.run(init)
@@ -357,7 +332,6 @@ def test_sac_model_cc_vector_rnn(mock_communicator, mock_launcher):
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
-            env.close()
 
 
 def test_sac_save_load_buffer(tmpdir):

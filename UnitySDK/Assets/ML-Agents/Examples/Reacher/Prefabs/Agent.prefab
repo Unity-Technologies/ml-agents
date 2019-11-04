@@ -75,6 +75,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4067321601414524}
+  - component: {fileID: 114731167133171590}
   - component: {fileID: 114955921823023820}
   m_Layer: 0
   m_Name: Agent
@@ -528,6 +529,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &114731167133171590
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1395682910799436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 33
+    numStackedVectorObservations: 1
+    vectorActionSize: 04000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: d7bdb6a78154f4cf99437d67e4a569a8, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Reacher
 --- !u!114 &114928491800121992
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -553,10 +575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 220b156e3b142406c8b76d4db981d044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 4000
     resetOnDone: 1
     onDemandDecision: 0

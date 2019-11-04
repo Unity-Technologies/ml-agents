@@ -5,7 +5,7 @@ that maximizes a reward. Typically, a reward is defined by your environment, and
 to reaching some goal. These are what we refer to as "extrinsic" rewards, as they are defined
 external of the learning algorithm.
 
-Rewards, however, can be defined outside of the enviroment as well, to encourage the agent to
+Rewards, however, can be defined outside of the environment as well, to encourage the agent to
 behave in certain ways, or to aid the learning of the true extrinsic reward. We refer to these
 rewards as "intrinsic" reward signals. The total reward that the agent will learn to maximize can
 be a mix of extrinsic and intrinsic reward signals.
@@ -19,7 +19,7 @@ The `curiosity` reward signal helps your agent explore when extrinsic rewards ar
 
 Reward signals, like other hyperparameters, are defined in the trainer config `.yaml` file. An
 example is provided in `config/trainer_config.yaml` and `config/gail_config.yaml`. To enable a reward signal, add it to the
-`reward_signals:` section under the brain name. For instance, to enable the extrinsic signal
+`reward_signals:` section under the behavior name. For instance, to enable the extrinsic signal
 in addition to a small curiosity reward and a GAIL reward signal, you would define your `reward_signals` as follows:
 
 ```yaml
@@ -74,9 +74,9 @@ Typical Range: `0.8` - `0.995`
 The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is an implementation
 of the approach described in "Curiosity-driven Exploration by Self-supervised Prediction"
 by Pathak, et al. It trains two networks:
-* an inverse model, which takes the current and next obersvation of the agent, encodes them, and
+* an inverse model, which takes the current and next observation of the agent, encodes them, and
 uses the encoding to predict the action that was taken between the observations
-* a forward model, which takes the encoded current obseravation and action, and predicts the
+* a forward model, which takes the encoded current observation and action, and predicts the
 next encoded observation.
 
 The loss of the forward model (the difference between the predicted and actual encoded observations) is used as the intrinsic reward, so the more surprised the model is, the larger the reward will be.

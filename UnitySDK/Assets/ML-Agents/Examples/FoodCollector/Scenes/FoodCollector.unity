@@ -747,11 +747,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fe57113e76a5426297487dd6faadc5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    broadcastingBrains:
-    - {fileID: 11400000, guid: 9e7865ec29c894c2d8c1617b0fa392f9, type: 2}
-    m_BrainsToControl: []
-  m_MaxSteps: 1500
   m_TrainingConfiguration:
     width: 500
     height: 500

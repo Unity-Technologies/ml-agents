@@ -1,6 +1,7 @@
 """Contains the MetaCurriculum class."""
 
 import os
+from typing import Any, Dict, Set
 from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.exception import MetaCurriculumError
 
@@ -14,7 +15,9 @@ class MetaCurriculum(object):
     particular brain in the environment.
     """
 
-    def __init__(self, curriculum_folder, default_reset_parameters):
+    def __init__(
+        self, curriculum_folder: str, default_reset_parameters: Dict[str, Any]
+    ):
         """Initializes a MetaCurriculum object.
 
         Args:
@@ -25,24 +28,23 @@ class MetaCurriculum(object):
             default_reset_parameters (dict): The default reset parameters
                 of the environment.
         """
-        used_reset_parameters = set()
-        self._brains_to_curriculums = {}
+        used_reset_parameters: Set[str] = set()
+        self._brains_to_curriculums: Dict[str, Curriculum] = {}
 
         try:
             for curriculum_filename in os.listdir(curriculum_folder):
+                # This process requires JSON files
+                if not curriculum_filename.lower().endswith(".json"):
+                    continue
                 brain_name = curriculum_filename.split(".")[0]
                 curriculum_filepath = os.path.join(
                     curriculum_folder, curriculum_filename
                 )
                 curriculum = Curriculum(curriculum_filepath, default_reset_parameters)
+                config_keys: Set[str] = set(curriculum.get_config().keys())
 
                 # Check if any two curriculums use the same reset params.
-                if any(
-                    [
-                        (parameter in curriculum.get_config().keys())
-                        for parameter in used_reset_parameters
-                    ]
-                ):
+                if config_keys & used_reset_parameters:
                     logger.warning(
                         "Two or more curriculums will "
                         "attempt to change the same reset "
@@ -50,7 +52,7 @@ class MetaCurriculum(object):
                         "non-deterministic."
                     )
 
-                used_reset_parameters.update(curriculum.get_config().keys())
+                used_reset_parameters.update(config_keys)
                 self._brains_to_curriculums[brain_name] = curriculum
         except NotADirectoryError:
             raise MetaCurriculumError(

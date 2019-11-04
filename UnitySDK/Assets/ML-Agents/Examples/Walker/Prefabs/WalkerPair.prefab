@@ -469,6 +469,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4821824385666130}
+  - component: {fileID: 114052351078996708}
   - component: {fileID: 114363722412740164}
   - component: {fileID: 114614375190687060}
   m_Layer: 0
@@ -2309,6 +2310,27 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114052351078996708
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1800913799254612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 212
+    numStackedVectorObservations: 1
+    vectorActionSize: 27000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 1
+  m_Model: {fileID: 11400000, guid: 4e86a19e012da43bfa5ab97ae8089b98, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Walker
 --- !u!114 &114110225517277148
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2416,10 +2438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccb0f85f0009540d7ad997952e2aed7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 3541a9a488cf54088a4526cff85512cc, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

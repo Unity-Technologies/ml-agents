@@ -105,6 +105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4170723581433160}
   - component: {fileID: 65968285873374238}
+  - component: {fileID: 114502619508238574}
   - component: {fileID: 114827551040495112}
   m_Layer: 0
   m_Name: BasicAgent
@@ -896,6 +897,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114502619508238574
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1263463520136984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 20
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000
+    cameraResolutions: []
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 53fa7c392ce3c492281be273668f6aaf, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Basic
 --- !u!114 &114827551040495112
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -907,7 +930,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624480a72e46148118ab2e2d89b537de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: e5cf0e35e16264ea483f8863e5115c3c, type: 2}
   agentParameters:
     agentCameras: []
     agentRenderTextures: []

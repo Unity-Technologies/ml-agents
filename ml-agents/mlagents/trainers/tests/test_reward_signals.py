@@ -108,7 +108,7 @@ def create_policy_mock(
     )
 
     trainer_parameters = trainer_config
-    model_path = env.brain_names[0]
+    model_path = env.external_brain_names[0]
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
@@ -122,8 +122,8 @@ def create_policy_mock(
 
 def reward_signal_eval(env, policy, reward_signal_name):
     brain_infos = env.reset()
-    brain_info = brain_infos[env.brain_names[0]]
-    next_brain_info = env.step()[env.brain_names[0]]
+    brain_info = brain_infos[env.external_brain_names[0]]
+    next_brain_info = env.step()[env.external_brain_names[0]]
     # Test evaluate
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
         brain_info, next_brain_info

@@ -131,36 +131,31 @@ components:
 
 _Simplified block diagram of ML-Agents._
 
-The Learning Environment contains three additional components that help
+The Learning Environment contains two additional components that help
 organize the Unity scene:
 
 - **Agents** - which is attached to a Unity GameObject (any character within a
   scene) and handles generating its observations, performing the actions it
   receives and assigning a reward (positive / negative) when appropriate. Each
-  Agent is linked to exactly one Brain.
-- **Brains** - which encapsulates the logic for making decisions for the Agent.
-  In essence, the Brain is what holds on to the policy for each Agent and
-  determines which actions the Agent should take at each instance. More
-  specifically, it is the component that receives the observations and rewards
-  from the Agent and returns an action.
+  Agent is linked to a Policy.
 - **Academy** - which orchestrates the observation and decision making process.
   Within the Academy, several environment-wide parameters such as the rendering
   quality and the speed at which the environment is run can be specified. The
   External Communicator lives within the Academy.
 
 Every Learning Environment will always have one global Academy and one Agent for
-every character in the scene. While each Agent must be linked to a Brain, it is
-possible for Agents that have similar observations and actions to be linked to
-the same Brain. In our sample game, we have two teams each with their own medic.
+every character in the scene. While each Agent must be linked to a Policy, it is
+possible for Agents that have similar observations and actions to have
+the same Policy type. In our sample game, we have two teams each with their own medic.
 Thus we will have two Agents in our Learning Environment, one for each medic,
-but both of these medics can be linked to the same Brain. Note that these two
-medics are linked to the same Brain because their _space_ of observations and
+but both of these medics can have the same Policy. Note that these two
+medics have the same Policy because their _space_ of observations and
 actions are similar. This does not mean that at each instance they will have
-identical observation and action _values_. In other words, the Brain defines the
+identical observation and action _values_. In other words, the Policy defines the
 space of all possible observations and actions, while the Agents connected to it
 (in this case the medics) can each have their own, unique observation and action
 values. If we expanded our game to include tank driver NPCs, then the Agent
-attached to those characters cannot share a Brain with the Agent linked to the
+attached to those characters cannot share a Policy with the Agent linked to the
 medics (medics and drivers have different actions).
 
 <p align="center">
@@ -174,46 +169,11 @@ _Example block diagram of ML-Agents toolkit for our sample game._
 We have yet to discuss how the ML-Agents toolkit trains behaviors, and what role
 the Python API and External Communicator play. Before we dive into those
 details, let's summarize the earlier components. Each character is attached to
-an Agent, and each Agent is linked to a Brain. The Brain receives observations
+an Agent, and each Agent has a Policy. The Policy receives observations
 and rewards from the Agent and returns actions. The Academy ensures that all the
-Agents and Brains are in sync in addition to controlling environment-wide
-settings. So how does the Brain control what the Agent does?
+Agents are in sync in addition to controlling environment-wide
+settings.
 
-In practice, we have three different categories of Brains, which enable a wide
-range of training and inference scenarios:
-
-- **Learning** - where decisions are made using an embedded
-  [TensorFlow](Background-TensorFlow.md) model. The embedded TensorFlow model
-  represents a learned policy and the Brain directly uses this model to
-  determine the action for each Agent. You can train a **Learning Brain**
-  by dragging it into the Academy's `Broadcast Hub` with the `Control`
-  checkbox checked.
-- **Player** - where decisions are made using real input from a keyboard or
-  controller. Here, a human player is controlling the Agent and the observations
-  and rewards collected by the Brain are not used to control the Agent.
-- **Heuristic** - where decisions are made using hard-coded behavior. This
-  resembles how most character behaviors are currently defined and can be
-  helpful for debugging or comparing how an Agent with hard-coded rules compares
-  to an Agent whose behavior has been trained. In our example, once we have
-  trained a Brain for the medics we could assign a medic on one team to the
-  trained Brain and assign the medic on the other team a Heuristic Brain with
-  hard-coded behaviors. We can then evaluate which medic is more effective.
-
-As currently described, it may seem that the External Communicator and Python
-API are only leveraged by the Learning Brain. This is not true. It is possible
-to configure the Learning, Player and Heuristic Brains to also send the
-observations, rewards and actions to the Python API through the External
-Communicator (a feature called _broadcasting_). As we will see shortly, this
-enables additional training modes.
-
-<p align="center">
-  <img src="images/learning_environment.png"
-       alt="ML-Agents Scene Block Diagram"
-       border="10" />
-</p>
-
-_An example of how a scene containing multiple Agents and Brains might be
-configured._
 
 ## Training Modes
 
@@ -224,27 +184,24 @@ inference can proceed.
 
 As mentioned previously, the ML-Agents toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
-In this mode, the only Brain used is a **Learning Brain**. More
-specifically, during training, all the medics in the
+More specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
-Communicator (this is the behavior with an External Brain). The Python API
+Communicator. The Python API
 processes these observations and sends back actions for each medic to take.
 During training these actions are mostly exploratory to help the Python API
 learn the best policy for each medic. Once training concludes, the learned
 policy for each medic can be exported. Given that all our implementations are
 based on TensorFlow, the learned policy is just a TensorFlow model file. Then
-during the inference phase, we use the **Learning Brain** in internal mode
-and include the
+during the inference phase, we use the
 TensorFlow model generated from the training phase. Now during the inference
-phase, the medics still  continue to generate their observations, but instead of
+phase, the medics still continue to generate their observations, but instead of
 being sent to the Python API, they will be fed into their (internal, embedded)
 model to generate the _optimal_ action for each medic to take at every point in
 time.
 
 To summarize: our built-in implementations are based on TensorFlow, thus, during
 training the Python API uses the observations it receives to learn a TensorFlow
-model. This model is then embedded within the Learning Brain during inference to
-generate the optimal actions for all Agents linked to that Brain.
+model. This model is then embedded within the Agent during inference.
 
 The
 [Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
@@ -252,12 +209,11 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 
 ### Custom Training and Inference
 
-In the previous mode, the Learning Brain was used for training to generate
-a TensorFlow model that the Learning Brain can later use. However,
+In the previous mode, the Agents were used for training to generate
+a TensorFlow model that the Agents can later use. However,
 any user of the ML-Agents toolkit can leverage their own algorithms for
-training. In this case, the Brain type would be set to Learning and be linked
-to the BroadcastHub (with checked `Control` checkbox)
-and the behaviors of all the Agents in the scene will be controlled within Python.
+training. In this case, the behaviors of all the Agents in the scene
+will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
 
 We do not currently have a tutorial highlighting this mode, but you can
@@ -312,15 +268,15 @@ It is often more intuitive to simply demonstrate the behavior we want an agent
 to perform, rather than attempting to have it learn via trial-and-error methods.
 For example, instead of training the medic by setting up its reward function,
 this mode allows providing real examples from a game controller on how the medic
-should behave. More specifically, in this mode, the Brain type during training
-is set to Player and all the actions performed with the controller (in addition
-to the agent observations) will be recorded and sent to the Python API. The
+should behave. More specifically, in this mode, the Agent must use its heuristic
+to generate action, and all the actions performed with the controller (in addition
+to the agent observations) will be recorded. The
 imitation learning algorithm will then use these pairs of observations and
 actions from the human player to learn a policy. [Video
 Link](https://youtu.be/kpb8ZkMBFYs).
 
 The toolkit provides a way to learn directly from demonstrations, as well as use them
-to help speed up reward-based training (RL).  We include two algorithms called
+to help speed up reward-based training (RL). We include two algorithms called
 Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
 [Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
 features in more depth.
@@ -333,35 +289,35 @@ kinds of novel and fun environments the community creates. For those new to
 training intelligent agents, below are a few examples that can serve as
 inspiration:
 
-- Single-Agent. A single agent linked to a single Brain, with its own reward
+- Single-Agent. A single agent, with its own reward
   signal. The traditional way of training an agent. An example is any
   single-player game, such as Chicken. [Video
   Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
 - Simultaneous Single-Agent. Multiple independent agents with independent reward
-  signals linked to a single Brain. A parallelized version of the traditional
+  signals with same `Behavior Parameters`. A parallelized version of the traditional
   training scenario, which can speed-up and stabilize the training process.
   Helpful when you have multiple versions of the same character in an
   environment who should learn similar behaviors. An example might be training a
   dozen robot-arms to each open a door simultaneously. [Video
   Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
-- Adversarial Self-Play. Two interacting agents with inverse reward signals
-  linked to a single Brain. In two-player games, adversarial self-play can allow
+- Adversarial Self-Play. Two interacting agents with inverse reward signals.
+  In two-player games, adversarial self-play can allow
   an agent to become increasingly more skilled, while always having the
   perfectly matched opponent: itself. This was the strategy employed when
   training AlphaGo, and more recently used by OpenAI to train a human-beating
   1-vs-1 Dota 2 agent.
 - Cooperative Multi-Agent. Multiple interacting agents with a shared reward
-  signal linked to either a single or multiple different Brains. In this
+  signal with same or different `Behavior Parameters`. In this
   scenario, all agents must work together to accomplish a task that cannot be
   done alone. Examples include environments where each agent only has access to
   partial information, which needs to be shared in order to accomplish the task
   or collaboratively solve a puzzle.
 - Competitive Multi-Agent. Multiple interacting agents with inverse reward
-  signals linked to either a single or multiple different Brains. In this
+  signals with same or different `Behavior Parameters`. In this
   scenario, agents must compete with one another to either win a competition, or
   obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting agents with independent reward signals linked
-  to either a single or multiple different Brains. This scenario can be thought
+- Ecosystem. Multiple interacting agents with independent reward signals with
+  same or different `Behavior Parameters`. This scenario can be thought
   of as creating a small world in which animals with different goals all
   interact, such as a savanna in which there might be zebras, elephants and
   giraffes, or an autonomous driving simulation within an urban environment.
@@ -415,24 +371,6 @@ training process.
   a way to randomly sample Reset Parameters of the environment during training. See
   [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
   to learn more about this feature.
-
-- **Broadcasting** - As discussed earlier, a Learning Brain sends the
-  observations for all its Agents to the Python API when dragged into the
-  Academy's `Broadcast Hub` with the `Control` checkbox checked. This is helpful
-  for training and later inference. Broadcasting is a feature which can be
-  enabled all types of Brains (Player, Learning, Heuristic) where the Agent
-  observations and actions are also sent to the Python API (despite the fact
-  that the Agent is **not** controlled by the Python API). This feature is
-  leveraged by Imitation Learning, where the observations and actions for a
-  Player Brain are used to learn the policies of an agent through demonstration.
-  However, this could also be helpful for the Heuristic and Learning Brains,
-  particularly when debugging agent behaviors. You can learn more about using
-  the broadcasting feature
-  [here](Learning-Environment-Design-Brains.md#using-the-broadcast-feature).
-
-- **Docker Set-up (Experimental)** - To facilitate setting up ML-Agents without
-  installing Python or TensorFlow directly, we provide a
-  [guide](Using-Docker.md) on how to create and run a Docker container.
 
 - **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
   Amazon Web Services (AWS) machines, we provide a

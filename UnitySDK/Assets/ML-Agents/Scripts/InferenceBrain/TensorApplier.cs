@@ -27,11 +27,10 @@ namespace MLAgents.InferenceBrain
             /// <param name="tensorProxy">
             /// The Tensor containing the data to be applied to the Agents
             /// </param>
-            /// <param name="agentInfo">
-            /// Dictionary of Agents to AgentInfo that will receive
-            /// the values of the Tensor.
+            /// <param name="agents">
+            /// List of Agents that will receive the values of the Tensor.
             /// </param>
-            void Apply(TensorProxy tensorProxy, Dictionary<Agent, AgentInfo> agentInfo);
+            void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents);
         }
 
         private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
@@ -75,12 +74,11 @@ namespace MLAgents.InferenceBrain
         /// Updates the state of the agents based on the data present in the tensor.
         /// </summary>
         /// <param name="tensors"> Enumerable of tensors containing the data.</param>
-        /// <param name="agentInfos"> Dictionary of Agent to AgentInfo that contains the
-        /// Agents that will be updated using the tensor's data</param>
+        /// <param name="agents"> List of Agents that will be updated using the tensor's data</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IEnumerable<TensorProxy> tensors,  Dictionary<Agent, AgentInfo> agentInfos)
+            IEnumerable<TensorProxy> tensors,  IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {
@@ -89,7 +87,7 @@ namespace MLAgents.InferenceBrain
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                m_Dict[tensor.name].Apply(tensor, agentInfos);
+                m_Dict[tensor.name].Apply(tensor, agents);
             }
         }
     }

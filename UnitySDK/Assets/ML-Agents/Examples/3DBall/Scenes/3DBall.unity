@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4497121, g: 0.4997778, b: 0.5756369, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971162, g: 0.49977726, b: 0.5756362, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -155,6 +155,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -306,6 +310,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -352,6 +360,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -397,6 +409,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -575,6 +591,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -620,6 +640,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -667,6 +691,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -712,6 +740,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_BrainParameters.numStackedVectorObservations
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -759,6 +791,10 @@ Prefab:
       propertyPath: m_Name
       value: 3DBall (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
   m_IsPrefabParent: 0
@@ -804,6 +840,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
@@ -851,11 +891,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb15e3c3d55e54abaafb74c635b6a458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    broadcastingBrains:
-    - {fileID: 11400000, guid: 383c589e8bb76464eadc2525b5b0f2c1, type: 2}
-    m_BrainsToControl: []
-  m_MaxSteps: 0
   m_TrainingConfiguration:
     width: 300
     height: 200
@@ -980,6 +1015,10 @@ Prefab:
     - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
       propertyPath: m_Name
       value: 3DBall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 2}

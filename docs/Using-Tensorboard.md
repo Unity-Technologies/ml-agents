@@ -15,10 +15,14 @@ start TensorBoard:
 3. From the command line run :
 
       ```sh
-      tensorboard --logdir=summaries
+      tensorboard --logdir=summaries --port=6006
       ```
 
 4. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
+
+**Note:** The default port TensorBoard uses is 6006. If there is an existing session
+running on port 6006 a new session can be launched on an open port using the --port
+option.
 
 **Note:** If you don't assign a `run-id` identifier, `mlagents-learn` uses the
 default string, "ppo". All the statistics will be saved to the same sub-folder
@@ -47,7 +51,7 @@ The ML-Agents training program saves the following statistics:
 
 * `Environment/Cumulative Reward` - The mean cumulative episode reward over all agents. Should
   increase during a successful training session.
-  
+
 * `Environment/Episode Length` - The mean length of each episode in the environment for all agents.
 
 ### Policy Statistics
@@ -58,7 +62,7 @@ The ML-Agents training program saves the following statistics:
 
 * `Policy/Learning Rate` (PPO; BC) - How large a step the training algorithm takes as it searches
   for the optimal policy. Should decrease over time.
-  
+
 * `Policy/Value Estimate` (PPO) - The mean value estimate for all states visited by the agent. Should increase during a successful training session.
 
 * `Policy/Curiosity Reward` (PPO+Curiosity) - This corresponds to the mean cumulative intrinsic reward generated per-episode.
@@ -81,5 +85,5 @@ The ML-Agents training program saves the following statistics:
 * `Losses/Inverse Loss` (PPO+Curiosity) - The mean magnitude of the forward model
   loss function. Corresponds to how well the model is able to predict the action
   taken between two observations.
-  
+
 * `Losses/Cloning Loss` (BC) - The mean magnitude of the behavioral cloning loss. Corresponds to how well the model imitates the demonstration data.

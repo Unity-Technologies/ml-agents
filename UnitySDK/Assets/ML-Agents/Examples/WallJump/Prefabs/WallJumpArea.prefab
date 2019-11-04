@@ -37,6 +37,7 @@ GameObject:
   - component: {fileID: 4651390251185036}
   - component: {fileID: 65193133000831296}
   - component: {fileID: 54678503543725326}
+  - component: {fileID: 114898893333200490}
   - component: {fileID: 114925928594762506}
   - component: {fileID: 114092229367912210}
   m_Layer: 0
@@ -1062,6 +1063,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114898893333200490
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1195095783991828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 74
+    numStackedVectorObservations: 6
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: SmallWallJump
 --- !u!114 &114925928594762506
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1073,17 +1095,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676fca959b8ee45539773905ca71afa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 0}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 2000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  noWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  smallWallBrain: {fileID: 11400000, guid: 2069d6ef649a549feb29054d6af8a86f, type: 2}
-  bigWallBrain: {fileID: 11400000, guid: b5f530c5bf8d64bf8a18df92e283bb9c, type: 2}
+  noWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  smallWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  bigWallBrain: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
   ground: {fileID: 1324926338613664}
   spawnArea: {fileID: 1886170194660384}
   goal: {fileID: 1982078136115924}

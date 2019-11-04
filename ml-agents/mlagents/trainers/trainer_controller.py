@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 import tensorflow as tf
@@ -21,12 +21,13 @@ from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.trainer_util import TrainerFactory
 
 
 class TrainerController(object):
     def __init__(
         self,
-        trainers: Dict[str, Trainer],
+        trainer_factory: TrainerFactory,
         model_path: str,
         summaries_dir: str,
         run_id: str,
@@ -39,7 +40,6 @@ class TrainerController(object):
         resampling_interval: Optional[int],
     ):
         """
-        :param trainers: Trainers for each brain to train.
         :param model_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
@@ -50,7 +50,8 @@ class TrainerController(object):
         :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
-        self.trainers = trainers
+        self.trainers: Dict[str, Trainer] = {}
+        self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
         self.logger = logging.getLogger("mlagents.envs")
@@ -162,9 +163,9 @@ class TrainerController(object):
 
     def _not_done_training(self) -> bool:
         return (
-            any([t.get_step <= t.get_max_steps for k, t in self.trainers.items()])
+            any(t.get_step <= t.get_max_steps for k, t in self.trainers.items())
             or not self.train_model
-        )
+        ) or len(self.trainers) == 0
 
     def write_to_tensorboard(self, global_step: int) -> None:
         for brain_name, trainer in self.trainers.items():
@@ -181,24 +182,30 @@ class TrainerController(object):
             else:
                 trainer.write_summary(global_step, delta_train_start)
 
+    def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
+        self.trainers[trainer.brain_name] = trainer
+        self.logger.info(trainer)
+        if self.train_model:
+            trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
+        env_manager.set_policy(trainer.brain_name, trainer.policy)
+
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
-
         tf.reset_default_graph()
-
-        for _, t in self.trainers.items():
-            self.logger.info(t)
-
         global_step = 0
-
-        if self.train_model:
-            for brain_name, trainer in self.trainers.items():
-                trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
+        last_brain_names: Set[str] = set()
         try:
-            for brain_name, trainer in self.trainers.items():
-                env_manager.set_policy(brain_name, trainer.policy)
             self._reset_env(env_manager)
             while self._not_done_training():
+                external_brains = set(env_manager.external_brains.keys())
+                new_brains = external_brains - last_brain_names
+                if last_brain_names != env_manager.external_brains.keys():
+                    for name in new_brains:
+                        trainer = self.trainer_factory.generate(
+                            env_manager.external_brains[name]
+                        )
+                        self.start_trainer(trainer, env_manager)
+                    last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
@@ -245,14 +252,11 @@ class TrainerController(object):
             )
         else:
             lessons_incremented = {}
-
         # If any lessons were incremented or the environment is
         # ready to be reset
         meta_curriculum_reset = any(lessons_incremented.values())
-
         # Check if we are performing generalization training and we have finished the
         # specified number of steps for the lesson
-
         generalization_reset = (
             not self.sampler_manager.is_empty()
             and (steps != 0)
@@ -268,19 +272,20 @@ class TrainerController(object):
             time_start_step = time()
             new_step_infos = env.step()
             delta_time_step = time() - time_start_step
-
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-                trainer.add_experiences(
-                    step_info.previous_all_brain_info,
-                    step_info.current_all_brain_info,
-                    step_info.brain_name_to_action_info[brain_name].outputs,
-                )
-                trainer.process_experiences(
-                    step_info.previous_all_brain_info, step_info.current_all_brain_info
-                )
+                if brain_name in step_info.brain_name_to_action_info:
+                    trainer.add_experiences(
+                        step_info.previous_all_brain_info,
+                        step_info.current_all_brain_info,
+                        step_info.brain_name_to_action_info[brain_name].outputs,
+                    )
+                    trainer.process_experiences(
+                        step_info.previous_all_brain_info,
+                        step_info.current_all_brain_info,
+                    )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
@@ -291,4 +296,7 @@ class TrainerController(object):
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
                     env.set_policy(brain_name, trainer.policy)
+            else:
+                # Avoid memory leak during inference
+                trainer.clear_update_buffer()
         return len(new_step_infos)

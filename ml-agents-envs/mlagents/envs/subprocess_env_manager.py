@@ -119,18 +119,18 @@ def worker(
             elif cmd.name == "close":
                 break
     except (KeyboardInterrupt, UnityCommunicationException):
-        print("UnityEnvironment worker: environment stopping.")
+        logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:
         # If this worker has put an item in the step queue that hasn't been processed by the EnvManager, the process
         # will hang until the item is processed. We avoid this behavior by using Queue.cancel_join_thread()
         # See https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue.cancel_join_thread for
         # more info.
-        logger.debug(f"Worker {worker_id} closing.")
+        logger.debug(f"UnityEnvironment worker {worker_id} closing.")
         step_queue.cancel_join_thread()
         step_queue.close()
         env.close()
-        logger.debug(f"Worker {worker_id} done.")
+        logger.debug(f"UnityEnvironment worker {worker_id} done.")
 
 
 class SubprocessEnvManager(EnvManager):
@@ -202,7 +202,7 @@ class SubprocessEnvManager(EnvManager):
         train_mode: bool = True,
         custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
-        while any([ew.waiting for ew in self.env_workers]):
+        while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
                 step = self.step_queue.get_nowait()
                 self.env_workers[step.worker_id].waiting = False

@@ -1,0 +1,30 @@
+test_editors:
+  - version: 2017.4
+  - version: 2018.4
+  - version: 2019.3
+---
+{% for editor in test_editors %}
+test_mac_standalone_{{ editor.version }}:
+  name: Test Mac Standalone {{ editor.version }}
+  agent:
+    type: Unity::VM::osx
+    image: ml-agents/ml-agents-bokken-mac:release
+    flavor: i1.small
+  variables:
+    UNITY_VERSION: {{ editor.version }}
+  commands:
+    - ./run-standalone-build-osx.sh
+  triggers:
+    branches:
+      only:
+        - "/develop-.*/"
+    targets:
+      only:
+        - "develop"
+    pull_requests:
+      - targets:
+          only:
+            - "master"
+            - "/release-.*/"
+            - "/hotfix-.*/"
+{% endfor %}

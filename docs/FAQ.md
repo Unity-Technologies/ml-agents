@@ -44,12 +44,7 @@ UnityAgentsException: The Communicator was unable to connect. Please make sure t
 
 There may be a number of possible causes:
 
-* _Cause_: There may be no LearningBrain with `Control` option checked in the
-  `Broadcast Hub` of the Academy. In this case, the environment will not attempt
-  to communicate with Python. _Solution_: Click `Add New` in your Academy's
-  `Broadcast Hub`, and drag your LearningBrain asset into the `Brains` field,
-  and check the `Control` toggle. Also you need to assign this LearningBrain
-  asset to all of the Agents you wish to do training on.
+* _Cause_: There may be no agent in the scene
 * _Cause_: On OSX, the firewall may be preventing communication with the
   environment. _Solution_: Add the built environment binary to the list of
   exceptions on the firewall by following

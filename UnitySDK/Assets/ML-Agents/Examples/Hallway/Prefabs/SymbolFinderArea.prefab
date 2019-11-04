@@ -246,6 +246,7 @@ GameObject:
   - component: {fileID: 4933884233896554}
   - component: {fileID: 65639693558106190}
   - component: {fileID: 54112968250075710}
+  - component: {fileID: 114907778469006590}
   - component: {fileID: 114286701363010626}
   - component: {fileID: 114569343444552314}
   m_Layer: 0
@@ -1572,10 +1573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b446afae240924105b36d07e8d17a608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 533f2edd327794ca996d0320901b501c, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 3000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1598,3 +1596,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114907778469006590
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1471560210313468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 36
+    numStackedVectorObservations: 3
+    vectorActionSize: 05000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: 317f4f8da7e4846b3aae0969781824a2, type: 3}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 0
+  m_BehaviorName: Hallway

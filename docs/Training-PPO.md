@@ -192,9 +192,9 @@ Typical Range: `32` - `512`
 `vis_encode_type` corresponds to the encoder type for encoding visual observations.
 Valid options include:
 * `simple` (default): a simple encoder which consists of two convolutional layers
-* `nature_cnn`: CNN implementation proposed by Mnih et al.(https://www.nature.com/articles/nature14236),
+* `nature_cnn`: [CNN implementation proposed by Mnih et al.](https://www.nature.com/articles/nature14236),
 consisting of three convolutional layers
-* `resnet`: IMPALA Resnet implementation (https://arxiv.org/abs/1802.01561),
+* `resnet`: [IMPALA Resnet implementation](https://arxiv.org/abs/1802.01561),
 consisting of three stacked layers, each with two residual blocks, making a
 much larger network than the other two.
 
@@ -306,7 +306,7 @@ into the training process.
 
 ### Entropy
 
-This corresponds to how random the decisions of a Brain are. This should
+This corresponds to how random the decisions are. This should
 consistently decrease during training. If it decreases too soon or not at all,
 `beta` should be adjusted (when using discrete action space).
 

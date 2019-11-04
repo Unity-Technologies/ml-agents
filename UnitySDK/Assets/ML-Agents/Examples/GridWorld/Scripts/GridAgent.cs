@@ -2,11 +2,14 @@ using System;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
+using UnityEngine.Serialization;
 
 public class GridAgent : Agent
 {
+    private Academy m_Academy;
+    [FormerlySerializedAs("m_Area")]
     [Header("Specific to GridWorld")]
-    private GridAcademy m_Academy;
+    public GridArea area;
     public float timeBetweenDecisionsAtInference;
     private float m_TimeSinceDecision;
 
@@ -27,7 +30,7 @@ public class GridAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(GridAcademy)) as GridAcademy;
+        m_Academy = FindObjectOfType<Academy>();
     }
 
     public override void CollectObservations()
@@ -50,7 +53,7 @@ public class GridAgent : Agent
         // Prevents the agent from picking an action that would make it collide with a wall
         var positionX = (int)transform.position.x;
         var positionZ = (int)transform.position.z;
-        var maxPosition = m_Academy.gridSize - 1;
+        var maxPosition = (int)m_Academy.resetParameters["gridSize"] - 1;
 
         if (positionX == 0)
         {
@@ -120,10 +123,31 @@ public class GridAgent : Agent
         }
     }
 
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { k_Right };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { k_Up };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { k_Left };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { k_Down };
+        }
+        return new float[] { k_NoAction };
+    }
+
     // to be implemented by the developer
     public override void AgentReset()
     {
-        m_Academy.AcademyReset();
+        area.AreaReset();
     }
 
     public void FixedUpdate()

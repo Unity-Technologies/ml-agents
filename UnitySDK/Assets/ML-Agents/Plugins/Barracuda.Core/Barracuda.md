@@ -249,7 +249,7 @@ Tan
 Tanh
 ```
 
-P.S. some of these operations are under limited support and not all configurations are properly supported 
+P.S. some of these operations are under limited support and not all configurations are properly supported
 
 P.P.S. Python 3.5 or 3.6 is recommended
 

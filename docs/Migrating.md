@@ -1,5 +1,22 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.10 to v0.11
+
+### Important Changes
+* The definition of the gRPC service has changed.
+* The online BC training feature has been removed.
+* The BroadcastHub has been deprecated. If there is a training Python process, all LearningBrains in the scene will automatically be trained. If there is no Python process, inference will be used.
+* The Brain ScriptableObjects have been deprecated. The Brain Parameters are now on the Agent and are referred to as Behavior Parameters. Make sure the Behavior Parameters is attached to the Agent GameObject.
+* Several changes were made to the setup for visual observations (i.e. using Cameras or RenderTextures):
+  * Camera resolutions are no longer stored in the Brain Parameters.
+  * AgentParameters no longer stores lists of Cameras and RenderTextures
+  * To add visual observations to an Agent, you must now attach a CameraSensorComponent or RenderTextureComponent to the agent. The corresponding Camera or RenderTexture can be added to these in the editor, and the resolution and color/grayscale is configured on the component itself.
+
+#### Steps to Migrate
+* In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
+* If your Agents used visual observations, you must add a CameraSensorComponent corresponding to each old Camera in the Agent's camera list (and similarly for RenderTextures).
+* Since Brain ScriptableObjects have been removed, you will need to delete all the Brain ScriptableObjects from your `Assets` folder. Then, add a `Behavior Parameters` component to each `Agent` GameObject. You will then need to complete the fields on the new `Behavior Parameters` component with the BrainParameters of the old Brain.
+
 ## Migrating from ML-Agents toolkit v0.9 to v0.10
 
 ### Important Changes
@@ -37,7 +54,7 @@ You may need to change `max_steps` in your config as appropriate as well.
 ## Migrating from ML-Agents toolkit v0.7 to v0.8
 
 ### Important Changes
-* We have split the Python packges into two seperate packages `ml-agents` and `ml-agents-envs`.
+* We have split the Python packages into two separate packages `ml-agents` and `ml-agents-envs`.
 * `--worker-id` option of `learn.py` has been removed, use `--base-port` instead if you'd like to run multiple instances of `learn.py`.
 
 #### Steps to Migrate
