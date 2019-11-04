@@ -11,9 +11,9 @@ namespace Barracuda
     [ScriptedImporter(1, new[] {"nn"})]
     public class NNModelImporter : ScriptedImporter
     {
-        private const string k_IconName = "NNModelIcon";
+        const string k_IconName = "NNModelIcon";
 
-        private Texture2D m_IconTexture;
+        Texture2D m_IconTexture;
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -25,7 +25,7 @@ namespace Barracuda
             ctx.SetMainObject(asset);
         }
 
-        private Texture2D LoadIconTexture()
+        Texture2D LoadIconTexture()
         {
             if (m_IconTexture == null)
             {

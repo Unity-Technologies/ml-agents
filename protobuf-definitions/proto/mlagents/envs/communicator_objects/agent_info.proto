@@ -12,7 +12,7 @@ message AgentInfoProto {
     string text_observation = 3;
     repeated float stored_vector_actions = 4;
     string stored_text_actions = 5;
-    repeated float memories = 6;
+    reserved 6; //repeated float memories = 6;
     float reward = 7;
     bool done = 8;
     bool max_step_reached = 9;

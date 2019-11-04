@@ -19,7 +19,7 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                StackedVectorObservation = { ai.stackedVectorObservation },
+                StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
                 StoredTextActions = ai.storedTextActions,
                 TextObservation = ai.textObservation,
@@ -29,10 +29,6 @@ namespace MLAgents
                 Id = ai.id,
                 CustomObservation = ai.customObservation
             };
-            if (ai.memories != null)
-            {
-                agentInfoProto.Memories.Add(ai.memories);
-            }
 
             if (ai.actionMasks != null)
             {
@@ -164,7 +160,6 @@ namespace MLAgents
             {
                 vectorActions = aap.VectorActions.ToArray(),
                 textActions = aap.TextActions,
-                memories = aap.Memories.ToList(),
                 value = aap.Value,
                 customAction = aap.CustomAction
             };
@@ -185,7 +180,7 @@ namespace MLAgents
             var obsProto = new CompressedObservationProto
             {
                 Data = ByteString.CopyFrom(obs.Data),
-                CompressionType = (CompressionTypeProto) obs.CompressionType,
+                CompressionType = (CompressionTypeProto)obs.CompressionType,
             };
             obsProto.Shape.AddRange(obs.Shape);
             return obsProto;

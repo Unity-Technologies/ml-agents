@@ -30,6 +30,7 @@ class MockCommunicator(Communicator):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
+        super().__init__()
         self.is_discrete = discrete_action
         self.steps = 0
         self.visual_inputs = visual_inputs
@@ -88,7 +89,6 @@ class MockCommunicator(Communicator):
                     stored_vector_actions=vector_action,
                     stored_text_actions="",
                     text_observation="",
-                    memories=[],
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,

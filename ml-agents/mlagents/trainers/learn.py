@@ -333,13 +333,11 @@ def create_environment_factory(
         )
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:
-        """
-            Comments for future maintenance:
-                Some OS/VM instances (e.g. COS GCP Image) mount filesystems
-                with COS flag which prevents execution of the Unity scene,
-                to get around this, we will copy the executable into the
-                container.
-            """
+        #     Comments for future maintenance:
+        #         Some OS/VM instances (e.g. COS GCP Image) mount filesystems
+        #         with COS flag which prevents execution of the Unity scene,
+        #         to get around this, we will copy the executable into the
+        #         container.
         # Navigate in docker path and find env_path and copy it.
         env_path = prepare_for_docker_run(docker_target_name, env_path)
     seed_count = 10000

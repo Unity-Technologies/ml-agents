@@ -8,7 +8,7 @@ test_mac_standalone_{{ editor.version }}:
   name: Test Mac Standalone {{ editor.version }}
   agent:
     type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:release
+    image: ml-agents/ml-agents-bokken-mac:v0.1.2-440635
     flavor: i1.small
   variables:
     UNITY_VERSION: {{ editor.version }}

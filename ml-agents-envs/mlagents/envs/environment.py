@@ -52,7 +52,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         seed: int = 0,
         docker_training: bool = False,
         no_graphics: bool = False,
-        timeout_wait: int = 30,
+        timeout_wait: int = 60,
         args: Optional[List[str]] = None,
     ):
         """
@@ -249,23 +249,22 @@ class UnityEnvironment(BaseUnityEnvironment):
                     ) from perm
 
             else:
-                """
-                Comments for future maintenance:
-                    xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                    rendering is done to virtual memory. It automatically creates a
-                    new virtual server automatically picking a server number `auto-servernum`.
-                    The server is passed the arguments using `server-args`, we are telling
-                    Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                    Note that 640 X 480 are the default width and height. The main reason for
-                    us to add this is because we'd like to change the depth from the default
-                    of 8 bits to 24.
-                    Unfortunately, this means that we will need to pass the arguments through
-                    a shell which is why we set `shell=True`. Now, this adds its own
-                    complications. E.g SIGINT can bounce off the shell and not get propagated
-                    to the child processes. This is why we add `exec`, so that the shell gets
-                    launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                    we created with `xvfb`.
-                """
+                # Comments for future maintenance:
+                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
+                #     rendering is done to virtual memory. It automatically creates a
+                #     new virtual server automatically picking a server number `auto-servernum`.
+                #     The server is passed the arguments using `server-args`, we are telling
+                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
+                #     Note that 640 X 480 are the default width and height. The main reason for
+                #     us to add this is because we'd like to change the depth from the default
+                #     of 8 bits to 24.
+                #     Unfortunately, this means that we will need to pass the arguments through
+                #     a shell which is why we set `shell=True`. Now, this adds its own
+                #     complications. E.g SIGINT can bounce off the shell and not get propagated
+                #     to the child processes. This is why we add `exec`, so that the shell gets
+                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
+                #     we created with `xvfb`.
+                #
                 docker_ls = (
                     "exec xvfb-run --auto-servernum"
                     " --server-args='-screen 0 640x480x24'"
@@ -348,7 +347,6 @@ class UnityEnvironment(BaseUnityEnvironment):
     def step(
         self,
         vector_action: Dict[str, np.ndarray] = None,
-        memory: Optional[Dict[str, np.ndarray]] = None,
         text_action: Optional[Dict[str, List[str]]] = None,
         value: Optional[Dict[str, np.ndarray]] = None,
         custom_action: Dict[str, Any] = None,
@@ -366,7 +364,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         if self._is_first_message:
             return self.reset()
         vector_action = {} if vector_action is None else vector_action
-        memory = {} if memory is None else memory
         text_action = {} if text_action is None else text_action
         value = {} if value is None else value
         custom_action = {} if custom_action is None else custom_action
@@ -387,20 +384,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                     raise UnityActionException(
                         "There are no external brains in the environment, "
                         "step cannot take a vector_action input"
-                    )
-
-            if isinstance(memory, self.SINGLE_BRAIN_ACTION_TYPES):
-                if self._num_external_brains == 1:
-                    memory = {self._external_brain_names[0]: memory}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and memories as values".format(self._num_external_brains)
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a memory input"
                     )
 
             if isinstance(text_action, self.SINGLE_BRAIN_TEXT_TYPES):
@@ -449,11 +432,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a custom_action input"
                     )
 
-            for brain_name in (
-                list(vector_action.keys())
-                + list(memory.keys())
-                + list(text_action.keys())
-            ):
+            for brain_name in list(vector_action.keys()) + list(text_action.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
@@ -477,13 +456,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                 else:
                     vector_action[brain_name] = self._flatten(vector_action[brain_name])
-                if brain_name not in memory:
-                    memory[brain_name] = []
-                else:
-                    if memory[brain_name] is None:
-                        memory[brain_name] = []
-                    else:
-                        memory[brain_name] = self._flatten(memory[brain_name])
                 if brain_name not in text_action:
                     text_action[brain_name] = [""] * n_agent
                 else:
@@ -549,7 +521,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                     )
 
             step_input = self._generate_step_input(
-                vector_action, memory, text_action, value, custom_action
+                vector_action, text_action, value, custom_action
             )
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
@@ -602,8 +574,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         if len(arr) == 0:
             return arr
         if isinstance(arr[0], np.ndarray):
+            # pylint: disable=no-member
             arr = [item for sublist in arr for item in sublist.tolist()]
         if isinstance(arr[0], list):
+            # pylint: disable=not-an-iterable
             arr = [item for sublist in arr for item in sublist]
         arr = [float(x) for x in arr]
         return arr
@@ -640,7 +614,6 @@ class UnityEnvironment(BaseUnityEnvironment):
     def _generate_step_input(
         self,
         vector_action: Dict[str, np.ndarray],
-        memory: Dict[str, np.ndarray],
         text_action: Dict[str, list],
         value: Dict[str, np.ndarray],
         custom_action: Dict[str, list],
@@ -651,11 +624,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             if n_agents == 0:
                 continue
             _a_s = len(vector_action[b]) // n_agents
-            _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
                 action = AgentActionProto(
                     vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s],
-                    memories=memory[b][i * _m_s : (i + 1) * _m_s],
                     text_actions=text_action[b][i],
                     custom_action=custom_action[b][i],
                 )
@@ -702,7 +673,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)
+            s = signal.Signals(-returncode)  # pylint: disable=no-member
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.

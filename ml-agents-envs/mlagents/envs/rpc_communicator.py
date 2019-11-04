@@ -41,6 +41,7 @@ class RpcCommunicator(Communicator):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
+        super().__init__(worker_id, base_port)
         self.port = base_port + worker_id
         self.worker_id = worker_id
         self.timeout_wait = timeout_wait
@@ -82,7 +83,12 @@ class RpcCommunicator(Communicator):
         finally:
             s.close()
 
-    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
+    def poll_for_timeout(self):
+        """
+        Polls the GRPC parent connection for data, to be used before calling recv.  This prevents
+        us from hanging indefinitely in the case where the environment process has died or was not
+        launched.
+        """
         if not self.unity_to_external.parent_conn.poll(self.timeout_wait):
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
@@ -90,6 +96,9 @@ class RpcCommunicator(Communicator):
                 "\t The Agents are linked to the appropriate Brains\n"
                 "\t The environment and the Python interface have compatible versions."
             )
+
+    def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
+        self.poll_for_timeout()
         aca_param = self.unity_to_external.parent_conn.recv().unity_output
         message = UnityMessageProto()
         message.header.status = 200
@@ -103,6 +112,7 @@ class RpcCommunicator(Communicator):
         message.header.status = 200
         message.unity_input.CopyFrom(inputs)
         self.unity_to_external.parent_conn.send(message)
+        self.poll_for_timeout()
         output = self.unity_to_external.parent_conn.recv()
         if output.header.status != 200:
             return None

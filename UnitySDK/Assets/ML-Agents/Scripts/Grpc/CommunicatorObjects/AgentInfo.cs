@@ -28,21 +28,21 @@ namespace MLAgents.CommunicatorObjects {
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGj9tbGFnZW50cy9lbnZz",
             "L2NvbW11bmljYXRvcl9vYmplY3RzL2NvbXByZXNzZWRfb2JzZXJ2YXRpb24u",
             "cHJvdG8aO21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvY3Vz",
-            "dG9tX29ic2VydmF0aW9uLnByb3RvIpgDCg5BZ2VudEluZm9Qcm90bxIiChpz",
+            "dG9tX29ic2VydmF0aW9uLnByb3RvIowDCg5BZ2VudEluZm9Qcm90bxIiChpz",
             "dGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgBIAMoAhIYChB0ZXh0X29ic2Vy",
             "dmF0aW9uGAMgASgJEh0KFXN0b3JlZF92ZWN0b3JfYWN0aW9ucxgEIAMoAhIb",
-            "ChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEhAKCG1lbW9yaWVzGAYgAygC",
-            "Eg4KBnJld2FyZBgHIAEoAhIMCgRkb25lGAggASgIEhgKEG1heF9zdGVwX3Jl",
-            "YWNoZWQYCSABKAgSCgoCaWQYCiABKAUSEwoLYWN0aW9uX21hc2sYCyADKAgS",
-            "SAoSY3VzdG9tX29ic2VydmF0aW9uGAwgASgLMiwuY29tbXVuaWNhdG9yX29i",
-            "amVjdHMuQ3VzdG9tT2JzZXJ2YXRpb25Qcm90bxJRChdjb21wcmVzc2VkX29i",
-            "c2VydmF0aW9ucxgNIAMoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLkNvbXBy",
-            "ZXNzZWRPYnNlcnZhdGlvblByb3RvSgQIAhADQh+qAhxNTEFnZW50cy5Db21t",
-            "dW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "ChNzdG9yZWRfdGV4dF9hY3Rpb25zGAUgASgJEg4KBnJld2FyZBgHIAEoAhIM",
+            "CgRkb25lGAggASgIEhgKEG1heF9zdGVwX3JlYWNoZWQYCSABKAgSCgoCaWQY",
+            "CiABKAUSEwoLYWN0aW9uX21hc2sYCyADKAgSSAoSY3VzdG9tX29ic2VydmF0",
+            "aW9uGAwgASgLMiwuY29tbXVuaWNhdG9yX29iamVjdHMuQ3VzdG9tT2JzZXJ2",
+            "YXRpb25Qcm90bxJRChdjb21wcmVzc2VkX29ic2VydmF0aW9ucxgNIAMoCzIw",
+            "LmNvbW11bmljYXRvcl9vYmplY3RzLkNvbXByZXNzZWRPYnNlcnZhdGlvblBy",
+            "b3RvSgQIAhADSgQIBhAHQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JPYmpl",
+            "Y3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CompressedObservationReflection.Descriptor, global::MLAgents.CommunicatorObjects.CustomObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "TextObservation", "StoredVectorActions", "StoredTextActions", "Memories", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "TextObservation", "StoredVectorActions", "StoredTextActions", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "CustomObservation", "CompressedObservations" }, null, null, null)
           }));
     }
     #endregion
@@ -78,7 +78,6 @@ namespace MLAgents.CommunicatorObjects {
       textObservation_ = other.textObservation_;
       storedVectorActions_ = other.storedVectorActions_.Clone();
       storedTextActions_ = other.storedTextActions_;
-      memories_ = other.memories_.Clone();
       reward_ = other.reward_;
       done_ = other.done_;
       maxStepReached_ = other.maxStepReached_;
@@ -134,16 +133,6 @@ namespace MLAgents.CommunicatorObjects {
       set {
         storedTextActions_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
-    }
-
-    /// <summary>Field number for the "memories" field.</summary>
-    public const int MemoriesFieldNumber = 6;
-    private static readonly pb::FieldCodec<float> _repeated_memories_codec
-        = pb::FieldCodec.ForFloat(50);
-    private readonly pbc::RepeatedField<float> memories_ = new pbc::RepeatedField<float>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<float> Memories {
-      get { return memories_; }
     }
 
     /// <summary>Field number for the "reward" field.</summary>
@@ -238,7 +227,6 @@ namespace MLAgents.CommunicatorObjects {
       if (TextObservation != other.TextObservation) return false;
       if(!storedVectorActions_.Equals(other.storedVectorActions_)) return false;
       if (StoredTextActions != other.StoredTextActions) return false;
-      if(!memories_.Equals(other.memories_)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reward, other.Reward)) return false;
       if (Done != other.Done) return false;
       if (MaxStepReached != other.MaxStepReached) return false;
@@ -256,7 +244,6 @@ namespace MLAgents.CommunicatorObjects {
       if (TextObservation.Length != 0) hash ^= TextObservation.GetHashCode();
       hash ^= storedVectorActions_.GetHashCode();
       if (StoredTextActions.Length != 0) hash ^= StoredTextActions.GetHashCode();
-      hash ^= memories_.GetHashCode();
       if (Reward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reward);
       if (Done != false) hash ^= Done.GetHashCode();
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
@@ -287,7 +274,6 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(42);
         output.WriteString(StoredTextActions);
       }
-      memories_.WriteTo(output, _repeated_memories_codec);
       if (Reward != 0F) {
         output.WriteRawTag(61);
         output.WriteFloat(Reward);
@@ -326,7 +312,6 @@ namespace MLAgents.CommunicatorObjects {
       if (StoredTextActions.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(StoredTextActions);
       }
-      size += memories_.CalculateSize(_repeated_memories_codec);
       if (Reward != 0F) {
         size += 1 + 4;
       }
@@ -363,7 +348,6 @@ namespace MLAgents.CommunicatorObjects {
       if (other.StoredTextActions.Length != 0) {
         StoredTextActions = other.StoredTextActions;
       }
-      memories_.Add(other.memories_);
       if (other.Reward != 0F) {
         Reward = other.Reward;
       }
@@ -411,11 +395,6 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 42: {
             StoredTextActions = input.ReadString();
-            break;
-          }
-          case 50:
-          case 53: {
-            memories_.AddEntriesFrom(input, _repeated_memories_codec);
             break;
           }
           case 61: {

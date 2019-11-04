@@ -14,11 +14,11 @@ namespace MLAgents
     [CustomPropertyDrawer(typeof(ResetParameters))]
     public class ResetParameterDrawer : PropertyDrawer
     {
-        private ResetParameters m_Parameters;
+        ResetParameters m_Parameters;
         // The height of a line in the Unity Inspectors
-        private const float k_LineHeight = 17f;
+        const float k_LineHeight = 17f;
         // This is the prefix for the key when you add a reset parameter
-        private const string k_NewKeyPrefix = "Param-";
+        const string k_NewKeyPrefix = "Param-";
 
         /// <summary>
         /// Computes the height of the Drawer depending on the property it is showing
@@ -84,7 +84,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="addRect">The rectangle for the Add New button.</param>
         /// <param name="removeRect">The rectangle for the Remove Last button.</param>
-        private void DrawAddRemoveButtons(Rect addRect, Rect removeRect)
+        void DrawAddRemoveButtons(Rect addRect, Rect removeRect)
         {
             // This is the Add button
             if (m_Parameters.Count == 0)
@@ -119,7 +119,7 @@ namespace MLAgents
         /// Signals that the property has been modified and requires the scene to be saved for
         /// the changes to persist. Only works when the Editor is not playing.
         /// </summary>
-        private static void MarkSceneAsDirty()
+        static void MarkSceneAsDirty()
         {
             if (!EditorApplication.isPlaying)
             {
@@ -132,7 +132,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="property">The SerializedProperty of the ResetParameters
         /// to make the custom GUI for.</param>
-        private void LazyInitializeParameters(SerializedProperty property)
+        void LazyInitializeParameters(SerializedProperty property)
         {
             if (m_Parameters != null)
             {
@@ -150,7 +150,7 @@ namespace MLAgents
         /// <summary>
         /// Removes the last ResetParameter from the ResetParameters
         /// </summary>
-        private void RemoveLastParameter()
+        void RemoveLastParameter()
         {
             if (m_Parameters.Count > 0)
             {
@@ -162,7 +162,7 @@ namespace MLAgents
         /// <summary>
         /// Adds a new ResetParameter to the ResetParameters with a default name.
         /// </summary>
-        private void AddParameter()
+        void AddParameter()
         {
             var key = k_NewKeyPrefix + m_Parameters.Count;
             var value = default(float);
