@@ -550,8 +550,7 @@ namespace MLAgents
                 Debug.Log($"compression = {sensors[i].GetCompressionType()}");
                 if (sensors[i].GetCompressionType() == SensorCompressionType.None)
                 {
-                    // TODO handle multi-D
-                    numFloatObservations += sensors[i].GetFloatObservationShape()[0];
+                    numFloatObservations += sensors[i].ObservationSize();
                 }
             }
 
@@ -611,7 +610,6 @@ namespace MLAgents
         /// </summary>
         public void GenerateSensorData()
         {
-
             int floatsWritten = 0;
             // Generate data for all Sensors
             for (var i = 0; i < sensors.Count; i++)
