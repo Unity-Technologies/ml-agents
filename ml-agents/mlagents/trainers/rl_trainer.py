@@ -240,7 +240,7 @@ class RLTrainer(Trainer):
         :param agent_idx: the index of the Agent agent_id
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_policy_outputs method was not implemented."
         )
 
     def add_rewards_outputs(
@@ -262,5 +262,5 @@ class RLTrainer(Trainer):
         :param agent_next_idx: the index of the Agent agent_id in the next brain info
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_rewards_outputs method was not implemented."
         )

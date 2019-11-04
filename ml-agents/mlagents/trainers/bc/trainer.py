@@ -45,20 +45,20 @@ class BCTrainer(Trainer):
 
     def add_experiences(
         self,
-        curr_info: AllBrainInfo,
-        next_info: AllBrainInfo,
+        curr_all_info: AllBrainInfo,
+        next_all_info: AllBrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
-        :param next_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
+        :param curr_all_info: Current AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
+        :param next_all_info: Next AllBrainInfo (Dictionary of all current brains and corresponding BrainInfo).
         :param take_action_outputs: The outputs of the take action method.
         """
 
         # Used to collect information about student performance.
-        info_student = curr_info[self.brain_name]
-        next_info_student = next_info[self.brain_name]
+        info_student = curr_all_info[self.brain_name]
+        next_info_student = next_all_info[self.brain_name]
         for agent_id in info_student.agents:
             self.evaluation_buffer[agent_id].last_brain_info = info_student
 

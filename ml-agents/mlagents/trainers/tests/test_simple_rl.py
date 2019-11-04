@@ -155,13 +155,13 @@ PPO_CONFIG = """
 SAC_CONFIG = """
     default:
         trainer: sac
-        batch_size: 32
-        buffer_size: 10240
-        buffer_init_steps: 1000
-        hidden_units: 64
+        batch_size: 8
+        buffer_size: 500
+        buffer_init_steps: 100
+        hidden_units: 16
         init_entcoef: 0.01
         learning_rate: 5.0e-3
-        max_steps: 2000
+        max_steps: 1000
         memory_size: 256
         normalize: false
         num_update: 1

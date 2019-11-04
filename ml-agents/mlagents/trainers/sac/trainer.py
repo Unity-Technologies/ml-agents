@@ -5,7 +5,7 @@
 
 import logging
 from collections import defaultdict
-from typing import List, Dict
+from typing import Dict
 import os
 
 import numpy as np
@@ -159,14 +159,14 @@ class SACTrainer(RLTrainer):
         )
 
     def process_experiences(
-        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+        self, current_info: AllBrainInfo, next_info: AllBrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param new_info: Dictionary of all next brains and corresponding BrainInfo.
+        :param next_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-        info = new_info[self.brain_name]
+        info = next_info[self.brain_name]
         if self.is_training:
             self.policy.update_normalization(info.vector_observations)
         for l in range(len(info.agents)):
@@ -254,7 +254,7 @@ class SACTrainer(RLTrainer):
         is greater than 1 and the reward signals are not updated in parallel.
         """
 
-        self.cumulative_returns_since_policy_update: List[float] = []
+        self.cumulative_returns_since_policy_update.clear()
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
@@ -278,9 +278,7 @@ class SACTrainer(RLTrainer):
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
 
-                update_stats = self.policy.update(
-                    sampled_minibatch, n_sequences, update_target=True
-                )
+                update_stats = self.policy.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 

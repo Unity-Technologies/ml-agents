@@ -247,23 +247,22 @@ class UnityEnvironment(BaseUnityEnvironment):
                     ) from perm
 
             else:
-                """
-                Comments for future maintenance:
-                    xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                    rendering is done to virtual memory. It automatically creates a
-                    new virtual server automatically picking a server number `auto-servernum`.
-                    The server is passed the arguments using `server-args`, we are telling
-                    Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                    Note that 640 X 480 are the default width and height. The main reason for
-                    us to add this is because we'd like to change the depth from the default
-                    of 8 bits to 24.
-                    Unfortunately, this means that we will need to pass the arguments through
-                    a shell which is why we set `shell=True`. Now, this adds its own
-                    complications. E.g SIGINT can bounce off the shell and not get propagated
-                    to the child processes. This is why we add `exec`, so that the shell gets
-                    launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                    we created with `xvfb`.
-                """
+                # Comments for future maintenance:
+                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
+                #     rendering is done to virtual memory. It automatically creates a
+                #     new virtual server automatically picking a server number `auto-servernum`.
+                #     The server is passed the arguments using `server-args`, we are telling
+                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
+                #     Note that 640 X 480 are the default width and height. The main reason for
+                #     us to add this is because we'd like to change the depth from the default
+                #     of 8 bits to 24.
+                #     Unfortunately, this means that we will need to pass the arguments through
+                #     a shell which is why we set `shell=True`. Now, this adds its own
+                #     complications. E.g SIGINT can bounce off the shell and not get propagated
+                #     to the child processes. This is why we add `exec`, so that the shell gets
+                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
+                #     we created with `xvfb`.
+                #
                 docker_ls = (
                     "exec xvfb-run --auto-servernum"
                     " --server-args='-screen 0 640x480x24'"
@@ -511,8 +510,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         if len(arr) == 0:
             return arr
         if isinstance(arr[0], np.ndarray):
+            # pylint: disable=no-member
             arr = [item for sublist in arr for item in sublist.tolist()]
         if isinstance(arr[0], list):
+            # pylint: disable=not-an-iterable
             arr = [item for sublist in arr for item in sublist]
         arr = [float(x) for x in arr]
         return arr
@@ -602,7 +603,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)
+            s = signal.Signals(-returncode)  # pylint: disable=no-member
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.

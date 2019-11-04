@@ -15,15 +15,10 @@ test_mac_editmode_{{ editor.version }}:
   commands:
     - ./run-tests-editmode-osx-editor.sh
   triggers:
-    branches:
-      only:
-        - "/develop-.*/"
-    targets:
-      only:
-        - "develop"
     pull_requests:
       - targets:
           only:
+            - "develop"
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"

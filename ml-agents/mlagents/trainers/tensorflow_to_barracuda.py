@@ -1,3 +1,4 @@
+# pylint: skip-file
 from __future__ import print_function
 import numpy as np
 import struct  # convert from Python values and C structs

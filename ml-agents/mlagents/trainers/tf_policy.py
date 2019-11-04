@@ -131,7 +131,7 @@ class TFPolicy(Policy):
                 if done
             ]
         )
-        run_out = self.evaluate(brain_info)
+        run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"), value=run_out.get("value"), outputs=run_out
