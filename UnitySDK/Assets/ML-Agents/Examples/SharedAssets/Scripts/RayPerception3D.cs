@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,30 @@ namespace MLAgents
         public float sphereCastRadius = .5f;
         public float gizmoSphereDrawDist = 2f;
         public float[] rayAnglesForDebug;
+
+        [Header("GIZMOS")] 
+        public bool showRaycastHits;
+        public float numOfHitsToShow;
+        public float showHitsduration = .2f;
+        public GameObject showHitsDebugObjectToUse;
+        public List<GameObject> showHitsDebugObjectPool = new List<GameObject>();
+
+
+        void Start()
+        {
+            if (showRaycastHits)
+            {
+                for (int i = 0; i < numOfHitsToShow; i++)
+                {
+                    GameObject g = Instantiate(showHitsDebugObjectToUse);
+                    g.SetActive(false);
+                    showHitsDebugObjectPool.Add(g);
+                }
+            }
+        }
+        
+        
+
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
         /// Each ray in the rayAngles array adds a sublist of data to the observation.
@@ -90,6 +115,12 @@ namespace MLAgents
                             m_Hit.normal, Color.green, 0.01f, true);
                     }
 
+                    if (showRaycastHits)
+                    {
+                        StartCoroutine(ShowRaycastHit(m_Hit.point));
+                    }
+                    
+
                     for (var i = 0; i < detectableObjects.Length; i++)
                     {
                         if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
@@ -111,7 +142,31 @@ namespace MLAgents
             return m_PerceptionBuffer;
         }
 
+        
+        IEnumerator ShowRaycastHit(Vector3 pos)
+        {
+            if (showRaycastHits)
+            {
+                GameObject go = null;
+                foreach (var item in showHitsDebugObjectPool)
+                {
+                    if (!item.activeInHierarchy)
+                    {
+                        go = item;
+                        go.transform.position = pos;
+                        go.SetActive(true);
+                        break;
+                    }
+                }
 
+                if (go)
+                {
+                    yield return new WaitForSeconds(showHitsduration);
+                    go.SetActive(false);
+                }
+            }
+        }
+        
         private void OnDrawGizmos()
         {
             if (drawSphereGizmos)

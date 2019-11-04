@@ -80,10 +80,12 @@ BuilderGrabLearning:
     normalize: true
     num_epoch: 8
     time_horizon: 1000
-    batch_size: 512
+    batch_size: 2048
     buffer_size: 4096
-    max_steps: 2.0e6
+    max_steps: 5.0e6
     summary_freq: 3000
+    # num_layers: 2
+    # hidden_units: 128
     num_layers: 2
     hidden_units: 128
     reward_signals:

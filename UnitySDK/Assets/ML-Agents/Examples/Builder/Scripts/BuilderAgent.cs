@@ -14,6 +14,7 @@ public class BuilderAgent : Agent
     int m_Configuration;
 
     public GameObject ground;
+    public GameObject goal;
     public GameObject spawnArea;
     Bounds m_SpawnAreaBounds;
     Material m_GroundMaterial;
@@ -32,6 +33,10 @@ public class BuilderAgent : Agent
     public Rigidbody grabbedItemRb;
     public Collider grabbedItemCol;
     private Transform m_AreaTransform;
+    Quaternion m_LookRotation;
+    Matrix4x4 m_TargetDirMatrix;
+    Vector3 m_DirToTarget;
+    public bool canGrab;
     public override void InitializeAgent()
     {
         m_AreaTransform = transform.parent;
@@ -40,7 +45,7 @@ public class BuilderAgent : Agent
         m_agentMovement = FindObjectOfType<AgentCubeMovement>();
         m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
-        m_DetectableObjects = new[] { "block", "frozenBlock"};
+        m_DetectableObjects = new[] { "block", "frozenBlock", "goal"};
         m_SpawnAreaBounds = spawnArea.GetComponent<Collider>().bounds;
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_AgentRb = GetComponent<Rigidbody>();
@@ -55,24 +60,46 @@ public class BuilderAgent : Agent
         AddVectorObs(m_RayPer.Perceive(
             rayDistance, rayAngles, m_DetectableObjects, 0f, 0f));
         AddVectorObs(m_RayPer.Perceive(
-            rayDistance, rayAngles, m_DetectableObjects, 1.5f, 0f));
+            rayDistance, rayAngles, m_DetectableObjects, 1.5f, 4f));
 //        AddVectorObs(m_RayPer.Perceive(
 //            rayDistance, rayAngles, m_DetectableObjects, 2.5f, 2.5f));
         var agentPos = m_AgentRb.position - ground.transform.position;
+//        AddVectorObs(agentPos / 20f); //help with orientation
+//        AddVectorObs(m_groundCheck.isGrounded);
+//        AddVectorObs(m_AgentRb.velocity/m_agentMovement.agentRunSpeed); //normalized vel
+//        AddVectorObs(m_AgentRb.angularVelocity/m_AgentRb.maxAngularVelocity); //normalized angVel
+//        AddVectorObs(m_AgentRb.transform.forward); //help with orientation
 
+        
+        // Update pos to target
+        m_DirToTarget = goal.transform.position - transform.position;
+        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
+        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
+        // Forward & up to help with orientation
+        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(transform.forward);
+        AddVectorObs(bodyForwardRelativeToLookRotationToTarget);
+        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(m_AgentRb.velocity);
+        AddVectorObs(velocityRelativeToLookRotationToTarget);
+        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(m_AgentRb.angularVelocity);
+        AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
+        
         AddVectorObs(agentPos / 20f); //help with orientation
         AddVectorObs(m_groundCheck.isGrounded);
-        AddVectorObs(m_AgentRb.velocity/m_agentMovement.agentRunSpeed); //normalized vel
-        AddVectorObs(m_AgentRb.angularVelocity/m_AgentRb.maxAngularVelocity); //normalized angVel
-        AddVectorObs(m_AgentRb.transform.forward); //help with orientation
+//        AddVectorObs(m_AgentRb.velocity/m_agentMovement.agentRunSpeed); //normalized vel
+//        AddVectorObs(m_AgentRb.angularVelocity/m_AgentRb.maxAngularVelocity); //normalized angVel
+//        AddVectorObs(m_AgentRb.transform.forward); //help with orientation
                 
         AddVectorObs(grabbingItem);
-        foreach (var item in buildingBlocksList)
-        {
-            var blockPos = item.position - ground.transform.position;
-            AddVectorObs(blockPos / 20f); //help with orientation
-        }
+        AddVectorObs(canGrab);
+//        foreach (var item in buildingBlocksList)
+//        {
+//            var blockPos = item.position - ground.transform.position;
+//            AddVectorObs(blockPos / 20f); //help with orientation
+//        }
     }
+
+
+    
 
     /// <summary>
     /// Gets a random spawn position in the spawningArea.
@@ -107,6 +134,13 @@ public class BuilderAgent : Agent
 
     public void MoveAgent(float[] act)
     {
+        bool isDecisionStep = false;
+        if (GetStepCount() %
+            agentParameters.numberOfActionsBetweenDecisions == 0)
+        {
+            isDecisionStep = true;
+//            print(GetStepCount());
+        }
         AddReward(-0.0005f); //hurry up
 
         var dirToGo = Vector3.zero;
@@ -132,54 +166,62 @@ public class BuilderAgent : Agent
         var grabOrReleaseAction = (int)act[3];
         if (grabOrReleaseAction == 1)
         {
-            if(grabbingItem)
+            if (isDecisionStep && canGrab)
             {
-                ReleaseBlock();
-            }
-            else
-            {
-                GrabBlock();
+                if(grabbingItem)
+                {
+                    ReleaseBlock();
+                }
+                else
+                {
+                    GrabBlock();
+                }
             }
         }
+
         var freezeBlockAction = (int)act[4];
         if (freezeBlockAction == 1)
         {
-            if(grabbingItem)
+            if (isDecisionStep)
             {
-                grabbedItemRb.isKinematic = true;
-                grabbedItemRb.gameObject.tag = "frozenBlock";
-                grabbedItemRb.transform.SetParent(m_AreaTransform);
-                grabbedItemRb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
-                grabbedItemCol.enabled = true;
-                grabbingItem = false;
-            }
-            else
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(m_AgentRb.position, transform.forward, out hit, 1f))
+                if(grabbingItem)
                 {
-                    var rb = hit.transform.GetComponent<Rigidbody>();
-                    var col = hit.collider;
-                    if (hit.collider.gameObject.CompareTag("block")) //need to freeez
-                    {
-                        //freeze block
-                        rb.isKinematic = true;
-                        rb.gameObject.tag = "frozenBlock";
-                        rb.transform.SetParent(m_AreaTransform);
-                        rb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
-                        col.enabled = true;
-                    }
-                    else if(hit.collider.gameObject.CompareTag("frozenBlock")) //need to unfreeze
-                    {
-                        //unfreeze block
-                        rb.isKinematic = false;
-                        rb.gameObject.tag = "block";
-                        rb.transform.SetParent(m_AreaTransform);
-                        rb.transform.GetComponent<Renderer>().material = m_Academy.notGrabbedMaterial;
-                        col.enabled = true;
-                    }
+                    grabbedItemRb.isKinematic = true;
+                    grabbedItemRb.gameObject.tag = "frozenBlock";
+                    grabbedItemRb.transform.SetParent(m_AreaTransform);
+                    grabbedItemRb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                    grabbedItemCol.enabled = true;
+                    grabbingItem = false;
                 }
-//                GrabBlock();
+                else
+                {
+                    RaycastHit hit;
+                    if (Physics.Raycast(m_AgentRb.position, transform.forward, out hit, 1f))
+                    {
+                        var rb = hit.transform.GetComponent<Rigidbody>();
+                        var col = hit.collider;
+                        if (hit.collider.gameObject.CompareTag("block")) //need to freeez
+                        {
+                            //freeze block
+                            rb.isKinematic = true;
+                            rb.gameObject.tag = "frozenBlock";
+                            rb.transform.SetParent(m_AreaTransform);
+                            rb.transform.GetComponent<Renderer>().material = m_Academy.frozenMaterial;
+                            col.enabled = true;
+                        }
+                        else if(hit.collider.gameObject.CompareTag("frozenBlock")) //need to unfreeze
+                        {
+                            //unfreeze block
+                            rb.isKinematic = false;
+                            rb.gameObject.tag = "block";
+                            rb.transform.SetParent(m_AreaTransform);
+                            rb.transform.GetComponent<Renderer>().material = m_Academy.notGrabbedMaterial;
+                            col.enabled = true;
+                        }
+                    }
+    //                GrabBlock();
+                }
+                
             }
         }
 
@@ -191,9 +233,12 @@ public class BuilderAgent : Agent
         //handle jumping
         if (jumpAction == 1)
         {
-            if (m_groundCheck.isGrounded)
+            if (isDecisionStep)
             {
-                m_agentMovement.Jump(m_AgentRb);
+                if (m_groundCheck.isGrounded)
+                {
+                    m_agentMovement.Jump(m_AgentRb);
+                }
             }
         }
 
@@ -248,7 +293,8 @@ public class BuilderAgent : Agent
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G))
+        canGrab = m_groundCheck.groundedTime > .2f ? true : false;
+        if (Input.GetKeyDown(KeyCode.G) && canGrab)
         {
             if(grabbingItem)
             {
@@ -315,10 +361,10 @@ public class BuilderAgent : Agent
             Done();
         }
 
-        if (m_groundCheck.isGrounded)
-        {
-            AddReward((m_AgentRb.transform.localPosition.y - 1) * m_Academy.heightRewardCoeff);
-        }
+//        if (m_groundCheck.isGrounded)
+//        {
+//            AddReward((m_AgentRb.transform.localPosition.y - 1) * m_Academy.heightRewardCoeff);
+//        }
     }
 
     void ResetAllBlocks()
@@ -359,16 +405,23 @@ public class BuilderAgent : Agent
         grabbedItemCol = null;
         grabbingItem = false;
     }
-//    void OnCollisionEnter(Collision col)
-//    {
-//        if (col.gameObject.CompareTag("hazard"))
-//        {
-//            SetReward(-1f);
-//            StartCoroutine(
-//                GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
-//            Done();
-//        }
-//    }
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.CompareTag("hazard"))
+        {
+            SetReward(-1f);
+            StartCoroutine(
+                GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
+            Done();
+        }
+        if (col.gameObject.CompareTag("goal"))
+        {
+            SetReward(1f);
+            StartCoroutine(
+                GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, .5f));
+            Done();
+        }
+    }
 
 //    // Detect when the agent hits the goal
 //    void OnTriggerStay(Collider col)
@@ -377,7 +430,8 @@ public class BuilderAgent : Agent
 //        {
 //            return;
 //        }
-//        if (col.gameObject.CompareTag("goal") && m_groundCheck.isGrounded)
+////        if (col.gameObject.CompareTag("goal") && m_groundCheck.isGrounded)
+//        if (col.gameObject.CompareTag("goal"))
 //        {
 //            SetReward(1f);
 ////            ResetBlock(m_ShortBlockRb);
@@ -408,6 +462,8 @@ public class BuilderAgent : Agent
         {
             item.transform.position = GetRandomSpawnPos();
         }
+
+        goal.transform.position = GetRandomSpawnPos();
         transform.localPosition = new Vector3(
             18 * (Random.value - 0.5f), 1, 0);
         m_Configuration = Random.Range(0, 5);

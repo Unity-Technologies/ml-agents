@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: BuilderGrabPlayer
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 85
+    vectorObservationSize: 84
     numStackedVectorObservations: 1
     vectorActionSize: 0300000003000000020000000200000002000000
     cameraResolutions: []
