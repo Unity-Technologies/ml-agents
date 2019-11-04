@@ -5,8 +5,7 @@
 ### Important Changes
 
 ### Steps to Migrate
-* The usage of `RayPerception3d.Perceive()`'s `startOffset` and `endOffset` parameters [was changed](https://github.com/Unity-Technologies/ml-agents/pull/2823) to be more consistent, however this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the previous `endOffset` by `startOffset`.
-
+* We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
 
 ## Migrating from ML-Agents toolkit v0.10 to v0.11.0
 
