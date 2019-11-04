@@ -49,4 +49,24 @@ namespace MLAgents.Sensor
         string GetName();
     }
 
+    public static class ISensorExtensions
+    {
+        /// <summary>
+        /// Get the total number of elements in the ISensor's observation (i.e. the product of the shape elements).
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <returns></returns>
+        public static int ObservationSize(this ISensor sensor)
+        {
+            var shape = sensor.GetFloatObservationShape();
+            int count = 1;
+            for (var i = 0; i < shape.Length; i++)
+            {
+                count *= shape[i];
+            }
+
+            return count;
+        }
+    }
+
 }
