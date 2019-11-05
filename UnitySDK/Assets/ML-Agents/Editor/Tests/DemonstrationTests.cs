@@ -102,24 +102,20 @@ namespace MLAgents.Tests
                 BindingFlags.Instance | BindingFlags.NonPublic);
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",
                 BindingFlags.Instance | BindingFlags.NonPublic);
+            var agentSendInfo = typeof(Agent).GetMethod("SendInfo",
+                BindingFlags.Instance | BindingFlags.NonPublic);
 
             agentEnableMethod?.Invoke(agent1, new object[] { });
             academyInitializeMethod?.Invoke(aca, new object[] { });
 
             // Step the agent
             agent1.RequestDecision();
-            // TODO grab with reflection?
-            agent1.SendInfo();
+            agentSendInfo?.Invoke(agent1, new object[] { });
+
             demoRecorder.Close();
 
             // Read back the demo file and make sure observations were written
-
-            var filename = DemonstrationStore.k_DemoDirecory + demoRecorder.demonstrationName + DemonstrationStore.k_ExtensionType;
-            Assert.AreEqual(filename, "Assets/Demonstrations/TestBrain.demo");
-            var reader = fileSystem.File.OpenRead(filename);
-
-            DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
-
+            var reader = fileSystem.File.OpenRead("Assets/Demonstrations/TestBrain.demo");
             reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
             BrainParametersProto.Parser.ParseDelimitedFrom(reader);
 

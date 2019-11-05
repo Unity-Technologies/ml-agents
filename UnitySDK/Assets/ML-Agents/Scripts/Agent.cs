@@ -909,7 +909,7 @@ namespace MLAgents
         /// <summary>
         /// Signals the agent that it must sent its decision to the brain.
         /// </summary>
-        public void SendInfo()
+        void SendInfo()
         {
             if (m_RequestDecision)
             {
