@@ -79,15 +79,15 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = {}
 
     def process_experiences(
-        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+        self, current_info: AllBrainInfo, next_info: AllBrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
         :param current_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param new_info: Dictionary of all next brains and corresponding BrainInfo.
+        :param next_info: Dictionary of all next brains and corresponding BrainInfo.
         """
-        info = new_info[self.brain_name]
+        info = next_info[self.brain_name]
         if self.is_training:
             self.policy.update_normalization(info.vector_observations)
         for l in range(len(info.agents)):
@@ -228,7 +228,7 @@ class PPOTrainer(RLTrainer):
             number_experiences=buffer_length,
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
-        self.cumulative_returns_since_policy_update = []
+        self.cumulative_returns_since_policy_update.clear()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.

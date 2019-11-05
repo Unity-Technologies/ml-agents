@@ -58,7 +58,7 @@ public class ReacherAgent : Agent
     /// <summary>
     /// The agent's four actions correspond to torques on each of the two joints.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();

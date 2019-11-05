@@ -49,7 +49,7 @@ namespace MLAgents.Tests
             AddVectorObs(0f);
         }
 
-        public override void AgentAction(float[] vectorAction, string textAction)
+        public override void AgentAction(float[] vectorAction)
         {
             agentActionCalls += 1;
             AddReward(0.1f);

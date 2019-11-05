@@ -77,7 +77,7 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-0.01f);
         var action = Mathf.FloorToInt(vectorAction[0]);

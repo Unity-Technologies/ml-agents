@@ -76,8 +76,6 @@ A BrainInfo object contains the following fields:
   the list corresponds to the n<sup>th</sup> observation of the Brain.
 - **`vector_observations`** : A two dimensional numpy array of dimension `(batch
   size, vector observation size)`.
-- **`text_observations`** : A list of string corresponding to the Agents text
-  observations.
 - **`memories`** : A two dimensional numpy array of dimension `(batch size,
   memory size)` which corresponds to the memories sent at the previous step.
 - **`rewards`** : A list as long as the number of Agents using the Brain
@@ -108,14 +106,10 @@ variable named `env` in this example, can be used in the following way:
     `resetParameters` and the values are their corresponding float values.
     Define the reset parameters on the Academy Inspector window in the Unity
     Editor.
-- **Step : `env.step(action, memory=None, text_action=None)`**
+- **Step : `env.step(action)`**
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
     multiple Agents per Brain.
-  - `memory` is an optional input that can be used to send a list of floats per
-    Agents to be retrieved at the next step.
-  - `text_action` is an optional input that be used to send a single string per
-    Agent.
 
     Returns a dictionary mapping Brain names to BrainInfo objects.
 

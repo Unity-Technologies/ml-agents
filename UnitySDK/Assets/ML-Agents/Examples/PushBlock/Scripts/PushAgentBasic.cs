@@ -177,7 +177,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);

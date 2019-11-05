@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Callable, List
+from typing import Callable, Dict, List, Optional
 
 import numpy as np
 import tensorflow as tf
@@ -85,6 +85,12 @@ class LearningModel(object):
                 trainable=False,
                 dtype=tf.int32,
             )
+        self.value_heads: Dict[str, tf.Tensor] = {}
+        self.normalization_steps: Optional[tf.Variable] = None
+        self.running_mean: Optional[tf.Variable] = None
+        self.running_variance: Optional[tf.Variable] = None
+        self.update_normalization: Optional[tf.Operation] = None
+        self.value: Optional[tf.Tensor] = None
 
     @staticmethod
     def create_global_steps():
@@ -573,7 +579,6 @@ class LearningModel(object):
         :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
         of the hidden input.
         """
-        self.value_heads = {}
         for name in stream_names:
             value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
             self.value_heads[name] = value

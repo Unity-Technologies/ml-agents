@@ -17,14 +17,9 @@ from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
     ObservationProto as mlagents___envs___communicator_objects___compressed_observation_pb2___ObservationProto,
 )
 
-from mlagents.envs.communicator_objects.custom_observation_pb2 import (
-    CustomObservationProto as mlagents___envs___communicator_objects___custom_observation_pb2___CustomObservationProto,
-)
-
 from typing import (
     Iterable as typing___Iterable,
     Optional as typing___Optional,
-    Text as typing___Text,
 )
 
 from typing_extensions import (
@@ -41,9 +36,7 @@ builtin___int = int
 class AgentInfoProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     stacked_vector_observation = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
-    text_observation = ... # type: typing___Text
     stored_vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
-    stored_text_actions = ... # type: typing___Text
     reward = ... # type: builtin___float
     done = ... # type: builtin___bool
     max_step_reached = ... # type: builtin___bool
@@ -51,23 +44,17 @@ class AgentInfoProto(google___protobuf___message___Message):
     action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
 
     @property
-    def custom_observation(self) -> mlagents___envs___communicator_objects___custom_observation_pb2___CustomObservationProto: ...
-
-    @property
     def observations(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___compressed_observation_pb2___ObservationProto]: ...
 
     def __init__(self,
         *,
         stacked_vector_observation : typing___Optional[typing___Iterable[builtin___float]] = None,
-        text_observation : typing___Optional[typing___Text] = None,
         stored_vector_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
-        stored_text_actions : typing___Optional[typing___Text] = None,
         reward : typing___Optional[builtin___float] = None,
         done : typing___Optional[builtin___bool] = None,
         max_step_reached : typing___Optional[builtin___bool] = None,
         id : typing___Optional[builtin___int] = None,
         action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
-        custom_observation : typing___Optional[mlagents___envs___communicator_objects___custom_observation_pb2___CustomObservationProto] = None,
         observations : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___compressed_observation_pb2___ObservationProto]] = None,
         ) -> None: ...
     @classmethod
@@ -75,8 +62,6 @@ class AgentInfoProto(google___protobuf___message___Message):
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation"]) -> builtin___bool: ...
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",u"custom_observation",u"done",u"id",u"max_step_reached",u"observations",u"reward",u"stacked_vector_observation",u"stored_text_actions",u"stored_vector_actions",u"text_observation"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",u"done",u"id",u"max_step_reached",u"observations",u"reward",u"stacked_vector_observation",u"stored_vector_actions"]) -> None: ...
     else:
-        def HasField(self, field_name: typing_extensions___Literal[u"custom_observation",b"custom_observation"]) -> builtin___bool: ...
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",b"action_mask",u"custom_observation",b"custom_observation",u"done",b"done",u"id",b"id",u"max_step_reached",b"max_step_reached",u"observations",b"observations",u"reward",b"reward",u"stacked_vector_observation",b"stacked_vector_observation",u"stored_text_actions",b"stored_text_actions",u"stored_vector_actions",b"stored_vector_actions",u"text_observation",b"text_observation"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",b"action_mask",u"done",b"done",u"id",b"id",u"max_step_reached",b"max_step_reached",u"observations",b"observations",u"reward",b"reward",u"stacked_vector_observation",b"stacked_vector_observation",u"stored_vector_actions",b"stored_vector_actions"]) -> None: ...

@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import List, Optional, Tuple
 
 import tensorflow as tf
 from mlagents.trainers.models import LearningModel
@@ -37,6 +37,10 @@ class GAILModel(object):
         self.gradient_penalty_weight = gradient_penalty_weight
         self.use_vail = use_vail
         self.use_actions = use_actions  # True # Not using actions
+
+        self.noise: Optional[tf.Tensor] = None
+        self.z: Optional[tf.Tensor] = None
+
         self.make_inputs()
         self.create_network()
         self.create_loss(learning_rate)

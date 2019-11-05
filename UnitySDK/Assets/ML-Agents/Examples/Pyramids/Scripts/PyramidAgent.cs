@@ -66,7 +66,7 @@ public class PyramidAgent : Agent
         m_AgentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);

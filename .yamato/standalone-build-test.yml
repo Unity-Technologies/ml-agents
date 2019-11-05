@@ -15,15 +15,10 @@ test_mac_standalone_{{ editor.version }}:
   commands:
     - ./run-standalone-build-osx.sh
   triggers:
-    branches:
-      only:
-        - "/develop-.*/"
-    targets:
-      only:
-        - "develop"
     pull_requests:
       - targets:
           only:
+            - "develop"
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"

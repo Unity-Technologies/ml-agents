@@ -32,7 +32,7 @@ public class BouncerAgent : Agent
         AddVectorObs(target.transform.localPosition);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         for (var i = 0; i < vectorAction.Length; i++)
         {
