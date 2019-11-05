@@ -23,7 +23,7 @@ public class ArticulatedCrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    [Header("Joint Settings")][Space(10)] JointDriveController m_JdController;
+    [Header("Joint Settings")][Space(10)] ArticulatedJointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
@@ -51,7 +51,7 @@ public class ArticulatedCrawlerAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_JdController = GetComponent<JointDriveController>();
+        m_JdController = GetComponent<ArticulatedJointDriveController>();
         m_CurrentDecisionStep = 1;
         m_DirToTarget = target.position - body.position;
 
@@ -89,21 +89,22 @@ public class ArticulatedCrawlerAgent : Agent
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
-    public void CollectObservationBodyPart(BodyPart bp)
+    public void CollectObservationBodyPart(ArticulationBodyPart bp)
     {
-        var rb = bp.rb;
+        var arb = bp.arb;
         AddVectorObs(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
+        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(arb.velocity);
         AddVectorObs(velocityRelativeToLookRotationToTarget);
 
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(arb.angularVelocity);
         AddVectorObs(angularVelocityRelativeToLookRotationToTarget);
 
-        if (bp.rb.transform != body)
+        if (bp.arb.transform != body)
         {
-            var localPosRelToBody = body.InverseTransformPoint(rb.position);
-            AddVectorObs(localPosRelToBody);
+            // Will need to rewrite this because body parts are in hiearchy, not flat like in RigidBody case
+            //var localPosRelToBody = body.InverseTransformPoint(arb.position);
+            //AddVectorObs(localPosRelToBody);
             AddVectorObs(bp.currentXNormalizedRot); // Current x rot
             AddVectorObs(bp.currentYNormalizedRot); // Current y rot
             AddVectorObs(bp.currentZNormalizedRot); // Current z rot
@@ -246,7 +247,7 @@ public class ArticulatedCrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
+        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].arb.velocity, m_DirToTarget.normalized);
         AddReward(0.03f * m_MovingTowardsDot);
     }
 

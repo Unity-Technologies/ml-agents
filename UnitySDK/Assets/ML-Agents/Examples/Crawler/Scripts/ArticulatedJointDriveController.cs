@@ -47,8 +47,10 @@ namespace MLAgents
         {
             bp.arb.transform.position = bp.startingPos;
             bp.arb.transform.rotation = bp.startingRot;
-            bp.arb.velocity = Vector3.zero;
-            bp.arb.angularVelocity = Vector3.zero;
+            
+            // Can't assigned articulation body velocitys/angularVelocities
+            //bp.arb.velocity = Vector3.zero;
+            //bp.arb.angularVelocity = Vector3.zero;
             if (bp.groundContact)
             {
                 bp.groundContact.touchingGround = false;
@@ -96,19 +98,20 @@ namespace MLAgents
 
         public void SetJointStrength(float strength)
         {
-            ArticulationDrive drive = arb.xDrive;
-             
-            
+            var xDrive = arb.xDrive;
+            var yDrive = arb.yDrive;
+            var zDrive = arb.zDrive;
+                
             var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
             
-            drive.stiffness = thisJdController.maxJointSpring;
-            drive.damping = thisJdController.jointDampen;
-            drive.forceLimit = rawVal;
+            xDrive.stiffness = yDrive.stiffness = zDrive.stiffness = thisJdController.maxJointSpring;
+            xDrive.damping = yDrive.damping = zDrive.damping = thisJdController.jointDampen;
+            xDrive.forceLimit = yDrive.forceLimit = zDrive.forceLimit = rawVal;
 
             // Slerp drive does not exist, so we try to set strength for each axis individually
-            arb.xDrive = drive;
-            arb.yDrive = drive;
-            arb.zDrive = drive;
+            arb.xDrive = xDrive;
+            arb.yDrive = yDrive;
+            arb.zDrive = zDrive;
             //joint.slerpDrive = jd;
             currentStrength = rawVal;
         }
@@ -168,11 +171,13 @@ namespace MLAgents
 
         public void GetCurrentJointForces()
         {
+            /*
             foreach (var bodyPart in bodyPartsDict.Values)
             {
                 if (!bodyPart.arb.isRoot)
                 {
-                    bodyPart.currentJointForce = bodyPart.arb;
+                    // Why do we need a force here ?
+                    //bodyPart.currentJointForce = bodyPart.arb;
                     bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.magnitude;
                     bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
                     bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.magnitude;
@@ -193,6 +198,7 @@ namespace MLAgents
                     }
                 }
             }
+            */
         }
     }
 }
