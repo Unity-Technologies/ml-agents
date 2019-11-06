@@ -19,7 +19,6 @@ class MockCommunicator(Communicator):
         self,
         discrete_action=False,
         visual_inputs=0,
-        # stack=True,
         num_agents=3,
         brain_name="RealFakeBrain",
         vec_obs_size=3,
@@ -42,7 +41,6 @@ class MockCommunicator(Communicator):
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         bp = BrainParametersProto(
             vector_observation_size=self.vec_obs_size,
-            num_stacked_vector_observations=1,  # TODO REMOVE
             vector_action_size=[2],
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),

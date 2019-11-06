@@ -54,9 +54,7 @@ class LearningModel(object):
             self.m_size = 0
         self.normalize = normalize
         self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = (
-            brain.vector_observation_space_size * brain.num_stacked_vector_observations
-        )
+        self.vec_obs_size = brain.vector_observation_space_size
         self.vis_obs_size = brain.number_visual_observations
         tf.Variable(
             int(brain.vector_action_space_type == "continuous"),

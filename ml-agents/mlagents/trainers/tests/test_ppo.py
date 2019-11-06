@@ -301,7 +301,6 @@ def test_trainer_increment_step(dummy_config):
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
-        num_stacked_vector_observations=1,
         camera_resolutions=[],
         vector_action_space_size=[2],
         vector_action_descriptions=[],
@@ -366,7 +365,6 @@ def test_add_rewards_output(dummy_config):
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
-        num_stacked_vector_observations=1,
         camera_resolutions=[],
         vector_action_space_size=[2],
         vector_action_descriptions=[],

@@ -14,7 +14,6 @@ from mlagents.envs.brain import BrainInfo, BrainParameters
 test_brain = BrainParameters(
     brain_name="test_brain",
     vector_observation_space_size=3,
-    num_stacked_vector_observations=1,
     camera_resolutions=[],
     vector_action_space_size=[],
     vector_action_descriptions=[],

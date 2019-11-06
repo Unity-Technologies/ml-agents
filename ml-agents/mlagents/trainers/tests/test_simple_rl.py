@@ -45,7 +45,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         brain_params = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
-            num_stacked_vector_observations=1,
             camera_resolutions=[],
             vector_action_space_size=[2] if use_discrete else [1],
             vector_action_descriptions=["moveDirection"],

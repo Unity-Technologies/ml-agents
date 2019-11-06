@@ -32,7 +32,6 @@ class BrainParameters:
         self,
         brain_name: str,
         vector_observation_space_size: int,
-        num_stacked_vector_observations: int,
         camera_resolutions: List[CameraResolution],
         vector_action_space_size: List[int],
         vector_action_descriptions: List[str],
@@ -43,7 +42,6 @@ class BrainParameters:
         """
         self.brain_name = brain_name
         self.vector_observation_space_size = vector_observation_space_size
-        self.num_stacked_vector_observations = num_stacked_vector_observations
         self.number_visual_observations = len(camera_resolutions)
         self.camera_resolutions = camera_resolutions
         self.vector_action_space_size = vector_action_space_size
@@ -57,7 +55,6 @@ class BrainParameters:
         Number of Visual Observations (per agent): {}
         Camera Resolutions: {}
         Vector Observation space size (per agent): {}
-        Number of stacked Vector Observation: {}
         Vector Action space type: {}
         Vector Action space size (per agent): {}
         Vector Action descriptions: {}""".format(
@@ -65,7 +62,6 @@ class BrainParameters:
             str(self.number_visual_observations),
             str([str(cr) for cr in self.camera_resolutions]),
             str(self.vector_observation_space_size),
-            str(self.num_stacked_vector_observations),
             self.vector_action_space_type,
             str(self.vector_action_space_size),
             ", ".join(self.vector_action_descriptions),
@@ -91,15 +87,12 @@ class BrainParameters:
         )
 
         assert (
-            total_vector_obs
-            == brain_param_proto.vector_observation_size
-            * brain_param_proto.num_stacked_vector_observations
-        ), f"total_vector_obs = {total_vector_obs}. brain_param_proto.vector_observation_size={brain_param_proto.vector_observation_size} brain_param_proto.num_stacked_vector_observations={brain_param_proto.num_stacked_vector_observations}"  # noqa
+            total_vector_obs == brain_param_proto.vector_observation_size
+        ), f"total_vector_obs = {total_vector_obs}. brain_param_proto.vector_observation_size={brain_param_proto.vector_observation_size}"  # noqa
 
         brain_params = BrainParameters(
             brain_name=brain_param_proto.brain_name,
-            vector_observation_space_size=brain_param_proto.vector_observation_size,
-            num_stacked_vector_observations=brain_param_proto.num_stacked_vector_observations,
+            vector_observation_space_size=total_vector_obs,
             camera_resolutions=resolutions,
             vector_action_space_size=list(brain_param_proto.vector_action_size),
             vector_action_descriptions=list(
@@ -256,13 +249,7 @@ class BrainInfo:
         vector_observations: List[List[ObservationProto]],
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
-            vector_obs = np.zeros(
-                (
-                    0,
-                    brain_params.vector_observation_space_size
-                    * brain_params.num_stacked_vector_observations,
-                )
-            )
+            vector_obs = np.zeros((0, brain_params.vector_observation_space_size))
         else:
             stacked_obs = []
             has_nan = False
