@@ -26,18 +26,18 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CjNtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjRtbGFnZW50cy9lbnZz",
-            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIogCCg5B",
-            "Z2VudEluZm9Qcm90bxIiChpzdGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgB",
-            "IAMoAhIdChVzdG9yZWRfdmVjdG9yX2FjdGlvbnMYBCADKAISDgoGcmV3YXJk",
-            "GAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVhY2hlZBgJIAEo",
-            "CBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCBI8CgxvYnNlcnZh",
-            "dGlvbnMYDSADKAsyJi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5PYnNlcnZhdGlv",
-            "blByb3RvSgQIAhADSgQIAxAESgQIBRAGSgQIBhAHSgQIDBANQh+qAhxNTEFn",
-            "ZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIuoBCg5B",
+            "Z2VudEluZm9Qcm90bxIdChVzdG9yZWRfdmVjdG9yX2FjdGlvbnMYBCADKAIS",
+            "DgoGcmV3YXJkGAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVh",
+            "Y2hlZBgJIAEoCBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCBI8",
+            "CgxvYnNlcnZhdGlvbnMYDSADKAsyJi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5P",
+            "YnNlcnZhdGlvblByb3RvSgQIARACSgQIAhADSgQIAxAESgQIBRAGSgQIBhAH",
+            "SgQIDBANQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "StoredVectorActions", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StoredVectorActions", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
           }));
     }
     #endregion
@@ -69,7 +69,6 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto(AgentInfoProto other) : this() {
-      stackedVectorObservation_ = other.stackedVectorObservation_.Clone();
       storedVectorActions_ = other.storedVectorActions_.Clone();
       reward_ = other.reward_;
       done_ = other.done_;
@@ -83,16 +82,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto Clone() {
       return new AgentInfoProto(this);
-    }
-
-    /// <summary>Field number for the "stacked_vector_observation" field.</summary>
-    public const int StackedVectorObservationFieldNumber = 1;
-    private static readonly pb::FieldCodec<float> _repeated_stackedVectorObservation_codec
-        = pb::FieldCodec.ForFloat(10);
-    private readonly pbc::RepeatedField<float> stackedVectorObservation_ = new pbc::RepeatedField<float>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<float> StackedVectorObservation {
-      get { return stackedVectorObservation_; }
     }
 
     /// <summary>Field number for the "stored_vector_actions" field.</summary>
@@ -182,7 +171,6 @@ namespace MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!stackedVectorObservation_.Equals(other.stackedVectorObservation_)) return false;
       if(!storedVectorActions_.Equals(other.storedVectorActions_)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reward, other.Reward)) return false;
       if (Done != other.Done) return false;
@@ -196,7 +184,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= stackedVectorObservation_.GetHashCode();
       hash ^= storedVectorActions_.GetHashCode();
       if (Reward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reward);
       if (Done != false) hash ^= Done.GetHashCode();
@@ -217,7 +204,6 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      stackedVectorObservation_.WriteTo(output, _repeated_stackedVectorObservation_codec);
       storedVectorActions_.WriteTo(output, _repeated_storedVectorActions_codec);
       if (Reward != 0F) {
         output.WriteRawTag(61);
@@ -245,7 +231,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += stackedVectorObservation_.CalculateSize(_repeated_stackedVectorObservation_codec);
       size += storedVectorActions_.CalculateSize(_repeated_storedVectorActions_codec);
       if (Reward != 0F) {
         size += 1 + 4;
@@ -272,7 +257,6 @@ namespace MLAgents.CommunicatorObjects {
       if (other == null) {
         return;
       }
-      stackedVectorObservation_.Add(other.stackedVectorObservation_);
       storedVectorActions_.Add(other.storedVectorActions_);
       if (other.Reward != 0F) {
         Reward = other.Reward;
@@ -299,11 +283,6 @@ namespace MLAgents.CommunicatorObjects {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10:
-          case 13: {
-            stackedVectorObservation_.AddEntriesFrom(input, _repeated_stackedVectorObservation_codec);
-            break;
-          }
           case 34:
           case 37: {
             storedVectorActions_.AddEntriesFrom(input, _repeated_storedVectorActions_codec);

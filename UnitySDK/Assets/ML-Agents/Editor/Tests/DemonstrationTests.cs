@@ -53,7 +53,6 @@ namespace MLAgents.Tests
                 done = true,
                 id = 5,
                 maxStepReached = true,
-                //floatObservations = new List<float>() { 1f, 1f, 1f },
                 storedVectorActions = new[] { 0f, 1f },
             };
 

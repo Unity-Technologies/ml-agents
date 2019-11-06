@@ -19,7 +19,6 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                //StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
                 Reward = ai.reward,
                 MaxStepReached = ai.maxStepReached,

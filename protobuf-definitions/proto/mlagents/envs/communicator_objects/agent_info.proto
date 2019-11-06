@@ -6,7 +6,7 @@ option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 message AgentInfoProto {
-    repeated float stacked_vector_observation = 1;
+    reserved 1; // deprecated repeated float stacked_vector_observation = 1;
     reserved 2; // deprecated repeated bytes visual_observations = 2;
     reserved 3; // deprecated string text_observation = 3;
     repeated float stored_vector_actions = 4;

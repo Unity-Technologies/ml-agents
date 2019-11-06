@@ -35,7 +35,6 @@ builtin___int = int
 
 class AgentInfoProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    stacked_vector_observation = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
     stored_vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
     reward = ... # type: builtin___float
     done = ... # type: builtin___bool
@@ -48,7 +47,6 @@ class AgentInfoProto(google___protobuf___message___Message):
 
     def __init__(self,
         *,
-        stacked_vector_observation : typing___Optional[typing___Iterable[builtin___float]] = None,
         stored_vector_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
         reward : typing___Optional[builtin___float] = None,
         done : typing___Optional[builtin___bool] = None,
@@ -62,6 +60,6 @@ class AgentInfoProto(google___protobuf___message___Message):
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",u"done",u"id",u"max_step_reached",u"observations",u"reward",u"stacked_vector_observation",u"stored_vector_actions"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",u"done",u"id",u"max_step_reached",u"observations",u"reward",u"stored_vector_actions"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",b"action_mask",u"done",b"done",u"id",b"id",u"max_step_reached",b"max_step_reached",u"observations",b"observations",u"reward",b"reward",u"stacked_vector_observation",b"stacked_vector_observation",u"stored_vector_actions",b"stored_vector_actions"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_mask",b"action_mask",u"done",b"done",u"id",b"id",u"max_step_reached",b"max_step_reached",u"observations",b"observations",u"reward",b"reward",u"stored_vector_actions",b"stored_vector_actions"]) -> None: ...
