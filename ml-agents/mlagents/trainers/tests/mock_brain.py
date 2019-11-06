@@ -234,16 +234,14 @@ def create_mock_banana_brain():
 def make_brain_parameters(
     discrete_action: bool = False,
     visual_inputs: int = 0,
-    stack: bool = True,
     brain_name: str = "RealFakeBrain",
-    vec_obs_size: int = 3,
+    vec_obs_size: int = 6,
 ) -> BrainParameters:
     resolutions = [
         CameraResolution(width=30, height=40, num_channels=3)
         for _ in range(visual_inputs)
     ]
 
-    vec_obs_size = vec_obs_size * 2 if stack else vec_obs_size  # todo cleanup
     return BrainParameters(
         vector_observation_space_size=vec_obs_size,
         camera_resolutions=resolutions,
