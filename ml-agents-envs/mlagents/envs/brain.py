@@ -273,11 +273,8 @@ class BrainInfo:
                 for vo in vec_obs:
                     # TODO consider itertools.chain here
                     proto_vector_obs.extend(vo.float_data.data)
-                if proto_vector_obs:
-                    # assert proto_vector_obs == x.stacked_vector_observation
-                    np_obs = np.array(proto_vector_obs)
-                else:
-                    np_obs = np.array(x.stacked_vector_observation)
+                np_obs = np.array(proto_vector_obs)
+
                 # Check for NaNs or infs in the observations
                 # If there's a NaN in the observations, the dot() result will be NaN
                 # If there's an Inf (either sign) then the result will be Inf

@@ -65,9 +65,9 @@ class MockCommunicator(Communicator):
         else:
             vector_action = [1, 2]
         list_agent_info = []
-        observation = [1, 2, 3]
+        vector_obs = [1, 2, 3]
 
-        compressed_obs = [
+        observations = [
             ObservationProto(
                 compressed_data=None,
                 shape=[30, 40, 3],
@@ -75,23 +75,22 @@ class MockCommunicator(Communicator):
             )
             for _ in range(self.visual_inputs)
         ]
-        vector_obs = ObservationProto(
-            float_data=ObservationProto.FloatData(data=observation),
-            shape=[len(observation)],
+        vector_obs_proto = ObservationProto(
+            float_data=ObservationProto.FloatData(data=vector_obs),
+            shape=[len(vector_obs)],
             compression_type=CompressionTypeProto.NONE,
         )
-        compressed_obs.append(vector_obs)
+        observations.append(vector_obs_proto)
 
         for i in range(self.num_agents):
             list_agent_info.append(
                 AgentInfoProto(
-                    stacked_vector_observation=observation,
                     reward=1,
                     stored_vector_actions=vector_action,
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,
-                    observations=compressed_obs,
+                    observations=observations,
                 )
             )
         dict_agent_info["RealFakeBrain"] = UnityRLOutputProto.ListAgentInfoProto(
