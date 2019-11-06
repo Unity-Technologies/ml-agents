@@ -167,26 +167,7 @@ class BrainInfo:
         """
         Converts list of agent infos to BrainInfo.
         """
-        vis_obs: List[np.ndarray] = []
-        vector_observation_protos: List[List[ObservationProto]] = []
-        visual_observation_protos: List[List[ObservationProto]] = []
-
-        # Split the observations into vector (len(shape)==1) and visual (len(shape)==3) lists
-        for agent in agent_info_list:
-            agent_vis: List[ObservationProto] = []
-            agent_vec: List[ObservationProto] = []
-            for proto_obs in agent.observations:
-                is_visual = len(proto_obs.shape) == 3
-                if is_visual:
-                    agent_vis.append(proto_obs)
-                else:
-                    agent_vec.append(proto_obs)
-            vector_observation_protos.append(agent_vec)
-            visual_observation_protos.append(agent_vis)
-
-        vis_obs = BrainInfo._process_visual_observations(
-            brain_params, visual_observation_protos
-        )
+        vis_obs = BrainInfo._process_visual_observations(brain_params, agent_info_list)
 
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
@@ -203,7 +184,7 @@ class BrainInfo:
             )
 
         vector_obs = BrainInfo._process_vector_observations(
-            brain_params, agent_info_list, vector_observation_protos
+            brain_params, agent_info_list
         )
 
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
@@ -221,8 +202,20 @@ class BrainInfo:
 
     @staticmethod
     def _process_visual_observations(
-        brain_params: BrainParameters, visual_observations: List[List[ObservationProto]]
+        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
     ) -> List[np.ndarray]:
+
+        visual_observation_protos: List[List[ObservationProto]] = []
+
+        # Grab the visual observations - need this together so we can iterate with the camera observations
+        for agent in agent_info_list:
+            agent_vis: List[ObservationProto] = []
+            for proto_obs in agent.observations:
+                is_visual = len(proto_obs.shape) == 3
+                if is_visual:
+                    agent_vis.append(proto_obs)
+            visual_observation_protos.append(agent_vis)
+
         vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
             # TODO check compression type, handle uncompressed visuals
@@ -231,16 +224,14 @@ class BrainInfo:
                     agent_obs[i].compressed_data,
                     brain_params.camera_resolutions[i].gray_scale,
                 )
-                for agent_obs in visual_observations
+                for agent_obs in visual_observation_protos
             ]
             vis_obs += [obs]
         return vis_obs
 
     @staticmethod
     def _process_vector_observations(
-        brain_params: BrainParameters,
-        agent_info_list: List[AgentInfoProto],
-        vector_observations: List[List[ObservationProto]],
+        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
             vector_obs = np.zeros((0, brain_params.vector_observation_space_size))
@@ -248,7 +239,10 @@ class BrainInfo:
             stacked_obs = []
             has_nan = False
             has_inf = False
-            for x, vec_obs in zip(agent_info_list, vector_observations):
+            for agent_info in agent_info_list:
+                vec_obs = [
+                    obs for obs in agent_info.observations if len(obs.shape) == 1
+                ]
                 # Concatenate vector obs
                 proto_vector_obs: List[float] = []
                 for vo in vec_obs:
