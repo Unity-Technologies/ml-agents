@@ -11,7 +11,7 @@ from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
+from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
     CompressionTypeProto,
 )

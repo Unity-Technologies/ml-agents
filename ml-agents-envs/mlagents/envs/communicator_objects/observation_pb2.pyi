@@ -50,27 +50,6 @@ class CompressionTypeProto(builtin___int):
 NONE = typing___cast('CompressionTypeProto', 0)
 PNG = typing___cast('CompressionTypeProto', 1)
 
-class CompressedObservationProto(google___protobuf___message___Message):
-    DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    shape = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
-    compression_type = ... # type: CompressionTypeProto
-    data = ... # type: builtin___bytes
-
-    def __init__(self,
-        *,
-        shape : typing___Optional[typing___Iterable[builtin___int]] = None,
-        compression_type : typing___Optional[CompressionTypeProto] = None,
-        data : typing___Optional[builtin___bytes] = None,
-        ) -> None: ...
-    @classmethod
-    def FromString(cls, s: builtin___bytes) -> CompressedObservationProto: ...
-    def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
-    def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
-    if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"compression_type",u"data",u"shape"]) -> None: ...
-    else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"compression_type",b"compression_type",u"data",b"data",u"shape",b"shape"]) -> None: ...
-
 class ObservationProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     class FloatData(google___protobuf___message___Message):

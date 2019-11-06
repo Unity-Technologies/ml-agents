@@ -4,9 +4,7 @@ import io
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
-    ObservationProto,
-)
+from mlagents.envs.communicator_objects.observation_pb2 import ObservationProto
 from mlagents.envs.timers import hierarchical_timer, timed
 from typing import Dict, List, NamedTuple, Optional
 from PIL import Image

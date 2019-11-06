@@ -8,7 +8,7 @@ from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 impor
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
+from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
     CompressionTypeProto,
 )

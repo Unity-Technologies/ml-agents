@@ -8,13 +8,6 @@ enum CompressionTypeProto {
     PNG = 1;
 }
 
-message CompressedObservationProto {
-    repeated int32 shape = 1;
-    CompressionTypeProto compression_type = 2;
-    bytes data = 3;
-}
-
-// TODO remove compressed
 message ObservationProto {
     message FloatData {
         repeated float data = 1;

@@ -25,17 +25,17 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjNtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
-            "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGj9tbGFnZW50cy9lbnZz",
-            "L2NvbW11bmljYXRvcl9vYmplY3RzL2NvbXByZXNzZWRfb2JzZXJ2YXRpb24u",
-            "cHJvdG8iiAIKDkFnZW50SW5mb1Byb3RvEiIKGnN0YWNrZWRfdmVjdG9yX29i",
-            "c2VydmF0aW9uGAEgAygCEh0KFXN0b3JlZF92ZWN0b3JfYWN0aW9ucxgEIAMo",
-            "AhIOCgZyZXdhcmQYByABKAISDAoEZG9uZRgIIAEoCBIYChBtYXhfc3RlcF9y",
-            "ZWFjaGVkGAkgASgIEgoKAmlkGAogASgFEhMKC2FjdGlvbl9tYXNrGAsgAygI",
-            "EjwKDG9ic2VydmF0aW9ucxgNIAMoCzImLmNvbW11bmljYXRvcl9vYmplY3Rz",
-            "Lk9ic2VydmF0aW9uUHJvdG9KBAgCEANKBAgDEARKBAgFEAZKBAgGEAdKBAgM",
-            "EA1CH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjRtbGFnZW50cy9lbnZz",
+            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIogCCg5B",
+            "Z2VudEluZm9Qcm90bxIiChpzdGFja2VkX3ZlY3Rvcl9vYnNlcnZhdGlvbhgB",
+            "IAMoAhIdChVzdG9yZWRfdmVjdG9yX2FjdGlvbnMYBCADKAISDgoGcmV3YXJk",
+            "GAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVhY2hlZBgJIAEo",
+            "CBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCBI8CgxvYnNlcnZh",
+            "dGlvbnMYDSADKAsyJi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5PYnNlcnZhdGlv",
+            "blByb3RvSgQIAhADSgQIAxAESgQIBRAGSgQIBhAHSgQIDBANQh+qAhxNTEFn",
+            "ZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CompressedObservationReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StackedVectorObservation", "StoredVectorActions", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
           }));

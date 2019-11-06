@@ -5,7 +5,7 @@ import sys
 from unittest import mock
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
+from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
     CompressionTypeProto,
 )
