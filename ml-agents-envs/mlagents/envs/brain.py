@@ -4,7 +4,9 @@ import io
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import ObservationProto
+from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
+    ObservationProto,
+)
 from mlagents.envs.timers import hierarchical_timer, timed
 from typing import Dict, List, NamedTuple, Optional
 from PIL import Image
@@ -75,7 +77,8 @@ class BrainParameters:
         """
         resolutions = [
             CameraResolution(x.shape[0], x.shape[1], x.shape[2])
-            for x in agent_info.observations if len(x.shape) >= 3
+            for x in agent_info.observations
+            if len(x.shape) >= 3
         ]
 
         brain_params = BrainParameters(
@@ -177,7 +180,9 @@ class BrainInfo:
             vector_observation_protos.append(agent_vec)
             visual_observation_protos.append(agent_vis)
 
-        vis_obs = BrainInfo._process_visual_observations(brain_params, visual_observation_protos)
+        vis_obs = BrainInfo._process_visual_observations(
+            brain_params, visual_observation_protos
+        )
 
         total_num_actions = sum(brain_params.vector_action_space_size)
         mask_actions = np.ones((len(agent_info_list), total_num_actions))
@@ -193,7 +198,9 @@ class BrainInfo:
                 "An agent had a NaN reward for brain " + brain_params.brain_name
             )
 
-        vector_obs = BrainInfo._process_vector_observations(brain_params, agent_info_list, vector_observation_protos)
+        vector_obs = BrainInfo._process_vector_observations(
+            brain_params, agent_info_list, vector_observation_protos
+        )
 
         agents = [f"${worker_id}-{x.id}" for x in agent_info_list]
         brain_info = BrainInfo(
@@ -210,8 +217,7 @@ class BrainInfo:
 
     @staticmethod
     def _process_visual_observations(
-        brain_params: BrainParameters,
-        visual_observations: List[List[ObservationProto]]
+        brain_params: BrainParameters, visual_observations: List[List[ObservationProto]]
     ) -> List[np.ndarray]:
         vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
@@ -230,7 +236,7 @@ class BrainInfo:
     def _process_vector_observations(
         brain_params: BrainParameters,
         agent_info_list: List[AgentInfoProto],
-        vector_observations: List[List[ObservationProto]]
+        vector_observations: List[List[ObservationProto]],
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
             vector_obs = np.zeros(
@@ -246,11 +252,12 @@ class BrainInfo:
             has_inf = False
             for x, vec_obs in zip(agent_info_list, vector_observations):
                 # Concatenate vector obs
-                proto_vector_obs = []
+                proto_vector_obs: List[float] = []
                 for vo in vec_obs:
+                    # TODO consider itertools.chain here
                     proto_vector_obs.extend(vo.float_data.data)
                 if proto_vector_obs:
-                    #assert proto_vector_obs == x.stacked_vector_observation
+                    # assert proto_vector_obs == x.stacked_vector_observation
                     np_obs = np.array(proto_vector_obs)
                 else:
                     np_obs = np.array(x.stacked_vector_observation)
