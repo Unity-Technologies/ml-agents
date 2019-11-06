@@ -522,14 +522,12 @@ namespace MLAgents
             int numFloatObservations = 0;
             for (var i = 0; i < sensors.Count; i++)
             {
-                Debug.Log($"compression = {sensors[i].GetCompressionType()}");
                 if (sensors[i].GetCompressionType() == SensorCompressionType.None)
                 {
                     numFloatObservations += sensors[i].ObservationSize();
                 }
             }
 
-            Debug.Log($"numFloatObservations={numFloatObservations}  sensors.Count={sensors.Count}");
             m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
