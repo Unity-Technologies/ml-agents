@@ -9,7 +9,7 @@ from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
-    CompressedObservationProto,
+    ObservationProto,
     CompressionTypeProto,
 )
 
@@ -75,11 +75,19 @@ class MockCommunicator(Communicator):
             observation = [1, 2, 3, 1, 2, 3]
 
         compressed_obs = [
-            CompressedObservationProto(
-                data=None, shape=[30, 40, 3], compression_type=CompressionTypeProto.PNG
+            ObservationProto(
+                compressed_data=None,
+                shape=[30, 40, 3],
+                compression_type=CompressionTypeProto.PNG,
             )
             for _ in range(self.visual_inputs)
         ]
+        vector_obs = ObservationProto(
+            float_data=ObservationProto.FloatData(data=observation),
+            shape=[len(observation)],
+            compression_type=CompressionTypeProto.NONE,
+        )
+        compressed_obs.append(vector_obs)
 
         for i in range(self.num_agents):
             list_agent_info.append(
@@ -90,7 +98,7 @@ class MockCommunicator(Communicator):
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,
-                    compressed_observations=compressed_obs,
+                    observations=compressed_obs,
                 )
             )
         dict_agent_info["RealFakeBrain"] = UnityRLOutputProto.ListAgentInfoProto(
