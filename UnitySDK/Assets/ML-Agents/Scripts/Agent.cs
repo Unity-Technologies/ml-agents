@@ -227,10 +227,21 @@ namespace MLAgents
         /// </summary>
         DemonstrationRecorder m_Recorder;
 
+        /// <summary>
+        /// List of sensors used to generate observations.
+        /// Currently generated from attached SensorComponents, and a legacy VectorSensor
+        /// </summary>
         [FormerlySerializedAs("m_Sensors")]
         public List<ISensor> sensors;
 
+        /// <summary>
+        /// VectorSensor which is written to by AddVectorObs
+        /// </summary>
         public VectorSensor collectObservationsSensor;
+
+        /// <summary>
+        /// Internal buffer used for generating float observations.
+        /// </summary>
         float[] m_VectorSensorBuffer;
 
         WriteAdapter m_WriteAdapter = new WriteAdapter();

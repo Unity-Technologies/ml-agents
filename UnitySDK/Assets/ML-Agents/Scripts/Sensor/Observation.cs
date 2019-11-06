@@ -6,10 +6,13 @@ namespace MLAgents.Sensor
     public struct Observation
     {
         /// <summary>
-        /// The compressed data.
+        /// The compressed sensor data. Assumed to be non-null if CompressionType != CompressionType.None
         /// </summary>
         public byte[] CompressedData;
 
+        /// <summary>
+        /// Uncompressed sensor data. Assumed to be non-empty if CompressionType == CompressionType.None
+        /// </summary>
         public ArraySegment<float> FloatData;
 
         /// <summary>

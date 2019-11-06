@@ -171,7 +171,12 @@ namespace MLAgents
 
             if (obs.CompressedData != null)
             {
-                // TODO check obs.FloatData.Empty()
+                // Make sure that uncompressed data is empty
+                if (obs.FloatData.Count != 0)
+                {
+                    Debug.LogWarning("Observation has both compressed and uncompressed data set. Using compressed.");
+                }
+
                 obsProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(obs.CompressedData),
