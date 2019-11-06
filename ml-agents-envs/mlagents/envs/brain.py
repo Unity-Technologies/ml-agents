@@ -23,6 +23,9 @@ class CameraResolution(NamedTuple):
     def gray_scale(self) -> bool:
         return self.num_channels == 1
 
+    def __str__(self):
+        return f"CameraResolution({self.height}, {self.width}, {self.num_channels})"
+
 
 class BrainParameters:
     def __init__(
@@ -52,6 +55,7 @@ class BrainParameters:
     def __str__(self):
         return """Unity brain name: {}
         Number of Visual Observations (per agent): {}
+        Camera Resolutions: {}
         Vector Observation space size (per agent): {}
         Number of stacked Vector Observation: {}
         Vector Action space type: {}
@@ -59,6 +63,7 @@ class BrainParameters:
         Vector Action descriptions: {}""".format(
             self.brain_name,
             str(self.number_visual_observations),
+            str([str(cr) for cr in self.camera_resolutions]),
             str(self.vector_observation_space_size),
             str(self.num_stacked_vector_observations),
             self.vector_action_space_type,
@@ -76,19 +81,31 @@ class BrainParameters:
         :return: BrainParameter object.
         """
         resolutions = [
-            CameraResolution(x.shape[0], x.shape[1], x.shape[2])
-            for x in agent_info.observations
-            if len(x.shape) >= 3
+            CameraResolution(obs.shape[0], obs.shape[1], obs.shape[2])
+            for obs in agent_info.observations
+            if len(obs.shape) >= 3
         ]
 
+        total_vector_obs = sum(
+            obs.shape[0] for obs in agent_info.observations if len(obs.shape) == 1
+        )
+
+        assert (
+            total_vector_obs
+            == brain_param_proto.vector_observation_size
+            * brain_param_proto.num_stacked_vector_observations
+        ), f"total_vector_obs = {total_vector_obs}. brain_param_proto.vector_observation_size={brain_param_proto.vector_observation_size} brain_param_proto.num_stacked_vector_observations={brain_param_proto.num_stacked_vector_observations}"  # noqa
+
         brain_params = BrainParameters(
-            brain_param_proto.brain_name,
-            brain_param_proto.vector_observation_size,
-            brain_param_proto.num_stacked_vector_observations,
-            resolutions,
-            list(brain_param_proto.vector_action_size),
-            list(brain_param_proto.vector_action_descriptions),
-            brain_param_proto.vector_action_space_type,
+            brain_name=brain_param_proto.brain_name,
+            vector_observation_space_size=brain_param_proto.vector_observation_size,
+            num_stacked_vector_observations=brain_param_proto.num_stacked_vector_observations,
+            camera_resolutions=resolutions,
+            vector_action_space_size=list(brain_param_proto.vector_action_size),
+            vector_action_descriptions=list(
+                brain_param_proto.vector_action_descriptions
+            ),
+            vector_action_space_type=brain_param_proto.vector_action_space_type,
         )
         return brain_params
 
