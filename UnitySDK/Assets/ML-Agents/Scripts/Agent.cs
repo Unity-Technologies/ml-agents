@@ -544,6 +544,7 @@ namespace MLAgents
             m_Info.storedVectorActions = m_Action.vectorActions;
             m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
+            UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
                 CollectObservations();
@@ -571,6 +572,14 @@ namespace MLAgents
                 m_Recorder.WriteExperience(m_Info);
             }
 
+        }
+
+        void UpdateSensors()
+        {
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                sensors[i].Update();
+            }
         }
 
         /// <summary>

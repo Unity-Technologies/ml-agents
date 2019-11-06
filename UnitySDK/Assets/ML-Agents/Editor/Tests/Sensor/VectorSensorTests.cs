@@ -53,6 +53,13 @@ namespace MLAgents.Tests
             sensor.AddObservation(4f);
 
             SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
+            // Check that if we don't call Update(), the same observations are produced
+            SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
+
+            // Check that Update() clears the data
+            sensor.Update();
+            SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f });
+
         }
 
         [Test]
