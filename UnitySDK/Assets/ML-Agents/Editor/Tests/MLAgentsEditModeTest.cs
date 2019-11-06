@@ -105,6 +105,8 @@ namespace MLAgents.Tests
         {
             return sensorName;
         }
+
+        public void Update() { }
     }
 
     public class EditModeTestGeneration

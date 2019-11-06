@@ -1,5 +1,6 @@
-using UnityEngine;
+using System.IO.Abstractions;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace MLAgents
 {
@@ -35,15 +36,16 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        void InitializeDemoStore()
+        public void InitializeDemoStore(IFileSystem fileSystem = null)
         {
             m_RecordingAgent = GetComponent<Agent>();
-            m_DemoStore = new DemonstrationStore();
+            m_DemoStore = new DemonstrationStore(fileSystem);
+            var behaviorParams = GetComponent<BehaviorParameters>();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             m_DemoStore.Initialize(
                 demonstrationName,
-                GetComponent<BehaviorParameters>().brainParameters,
-                GetComponent<BehaviorParameters>().behaviorName);
+                behaviorParams.brainParameters,
+                behaviorParams.behaviorName);
             Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 
@@ -71,14 +73,23 @@ namespace MLAgents
             m_DemoStore.Record(info);
         }
 
+        public void Close()
+        {
+            if (m_DemoStore != null)
+            {
+                m_DemoStore.Close();
+                m_DemoStore = null;
+            }
+        }
+
         /// <summary>
         /// Closes Demonstration store.
         /// </summary>
         void OnApplicationQuit()
         {
-            if (Application.isEditor && record && m_DemoStore != null)
+            if (Application.isEditor && record)
             {
-                m_DemoStore.Close();
+                Close();
             }
         }
     }

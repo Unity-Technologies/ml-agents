@@ -1,6 +1,7 @@
 using System.IO;
 using System.IO.Abstractions;
 using Google.Protobuf;
+using UnityEngine;
 
 namespace MLAgents
 {
@@ -21,12 +22,14 @@ namespace MLAgents
 
         public DemonstrationStore(IFileSystem fileSystem)
         {
-            m_FileSystem = fileSystem;
-        }
-
-        public DemonstrationStore()
-        {
-            m_FileSystem = new FileSystem();
+            if (fileSystem != null)
+            {
+                m_FileSystem = fileSystem;
+            }
+            else
+            {
+                m_FileSystem = new FileSystem();
+            }
         }
 
         /// <summary>

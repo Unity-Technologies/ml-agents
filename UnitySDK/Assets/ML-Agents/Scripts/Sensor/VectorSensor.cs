@@ -48,8 +48,12 @@ namespace MLAgents.Sensor
                 }
             }
             adapter.AddRange(m_Observations);
-            Clear();
             return expectedObservations;
+        }
+
+        public void Update()
+        {
+            Clear();
         }
 
         public int[] GetFloatObservationShape()

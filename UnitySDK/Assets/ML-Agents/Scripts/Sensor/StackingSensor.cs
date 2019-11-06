@@ -78,9 +78,16 @@ namespace MLAgents.Sensor
                 numWritten += m_UnstackedObservationSize;
             }
 
-            // Finally update the index of the "current" buffer.
-            m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
             return numWritten;
+        }
+
+        /// <summary>
+        /// Updates the index of the "current" buffer.
+        /// </summary>
+        public void Update()
+        {
+            m_WrappedSensor.Update();
+            m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
         }
 
         public int[] GetFloatObservationShape()
