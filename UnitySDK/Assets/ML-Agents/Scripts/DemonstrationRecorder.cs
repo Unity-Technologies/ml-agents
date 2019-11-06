@@ -78,6 +78,7 @@ namespace MLAgents
             if (m_DemoStore != null)
             {
                 m_DemoStore.Close();
+                m_DemoStore = null;
             }
         }
 
