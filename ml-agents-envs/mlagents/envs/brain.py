@@ -86,10 +86,6 @@ class BrainParameters:
             obs.shape[0] for obs in agent_info.observations if len(obs.shape) == 1
         )
 
-        assert (
-            total_vector_obs == brain_param_proto.vector_observation_size
-        ), f"total_vector_obs = {total_vector_obs}. brain_param_proto.vector_observation_size={brain_param_proto.vector_observation_size}"  # noqa
-
         brain_params = BrainParameters(
             brain_name=brain_param_proto.brain_name,
             vector_observation_space_size=total_vector_obs,

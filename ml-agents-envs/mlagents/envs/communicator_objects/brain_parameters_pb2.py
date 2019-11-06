@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/brain_parameters.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n9mlagents/envs/communicator_objects/brain_parameters.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents/envs/communicator_objects/space_type.proto\"\x97\x02\n\x14\x42rainParametersProto\x12\x1f\n\x17vector_observation_size\x18\x01 \x01(\x05\x12\'\n\x1fnum_stacked_vector_observations\x18\x02 \x01(\x05\x12\x1a\n\x12vector_action_size\x18\x03 \x03(\x05\x12\"\n\x1avector_action_descriptions\x18\x05 \x03(\t\x12\x46\n\x18vector_action_space_type\x18\x06 \x01(\x0e\x32$.communicator_objects.SpaceTypeProto\x12\x12\n\nbrain_name\x18\x07 \x01(\t\x12\x13\n\x0bis_training\x18\x08 \x01(\x08J\x04\x08\x04\x10\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n9mlagents/envs/communicator_objects/brain_parameters.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents/envs/communicator_objects/space_type.proto\"\xd9\x01\n\x14\x42rainParametersProto\x12\x1a\n\x12vector_action_size\x18\x03 \x03(\x05\x12\"\n\x1avector_action_descriptions\x18\x05 \x03(\t\x12\x46\n\x18vector_action_space_type\x18\x06 \x01(\x0e\x32$.communicator_objects.SpaceTypeProto\x12\x12\n\nbrain_name\x18\x07 \x01(\t\x12\x13\n\x0bis_training\x18\x08 \x01(\x08J\x04\x08\x01\x10\x02J\x04\x08\x02\x10\x03J\x04\x08\x04\x10\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_space__type__pb2.DESCRIPTOR,])
 
@@ -35,49 +35,35 @@ _BRAINPARAMETERSPROTO = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='vector_observation_size', full_name='communicator_objects.BrainParametersProto.vector_observation_size', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='num_stacked_vector_observations', full_name='communicator_objects.BrainParametersProto.num_stacked_vector_observations', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='vector_action_size', full_name='communicator_objects.BrainParametersProto.vector_action_size', index=2,
+      name='vector_action_size', full_name='communicator_objects.BrainParametersProto.vector_action_size', index=0,
       number=3, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='vector_action_descriptions', full_name='communicator_objects.BrainParametersProto.vector_action_descriptions', index=3,
+      name='vector_action_descriptions', full_name='communicator_objects.BrainParametersProto.vector_action_descriptions', index=1,
       number=5, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='vector_action_space_type', full_name='communicator_objects.BrainParametersProto.vector_action_space_type', index=4,
+      name='vector_action_space_type', full_name='communicator_objects.BrainParametersProto.vector_action_space_type', index=2,
       number=6, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='brain_name', full_name='communicator_objects.BrainParametersProto.brain_name', index=5,
+      name='brain_name', full_name='communicator_objects.BrainParametersProto.brain_name', index=3,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='is_training', full_name='communicator_objects.BrainParametersProto.is_training', index=6,
+      name='is_training', full_name='communicator_objects.BrainParametersProto.is_training', index=4,
       number=8, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -96,7 +82,7 @@ _BRAINPARAMETERSPROTO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=137,
-  serialized_end=416,
+  serialized_end=354,
 )
 
 _BRAINPARAMETERSPROTO.fields_by_name['vector_action_space_type'].enum_type = mlagents_dot_envs_dot_communicator__objects_dot_space__type__pb2._SPACETYPEPROTO

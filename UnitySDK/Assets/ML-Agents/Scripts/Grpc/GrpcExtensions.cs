@@ -54,8 +54,6 @@ namespace MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorObservationSize = bp.vectorObservationSize,
-                NumStackedVectorObservations = bp.numStackedVectorObservations,
                 VectorActionSize = { bp.vectorActionSize },
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
@@ -110,8 +108,6 @@ namespace MLAgents
         {
             var bp = new BrainParameters
             {
-                vectorObservationSize = bpp.VectorObservationSize,
-                numStackedVectorObservations = bpp.NumStackedVectorObservations,
                 vectorActionSize = bpp.VectorActionSize.ToArray(),
                 vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
                 vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
@@ -172,16 +168,11 @@ namespace MLAgents
 
         public static ObservationProto ToProto(this Observation obs)
         {
-            if (obs.CompressedData != null && obs.FloatData != null)
-            {
-                // TODO XOR
-
-            }
-
             ObservationProto obsProto = null;
-            ;
+
             if (obs.CompressedData != null)
             {
+                // TODO check obs.FloatData.Empty()
                 obsProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(obs.CompressedData),

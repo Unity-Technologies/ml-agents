@@ -40,7 +40,6 @@ class MockCommunicator(Communicator):
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         bp = BrainParametersProto(
-            vector_observation_size=self.vec_obs_size,
             vector_action_size=[2],
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
