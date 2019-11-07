@@ -6,6 +6,8 @@ namespace MLAgents.Sensor
 {
     public class RayPerceptionSensorComponent : SensorComponent
     {
+        public string sensorName = "RayPerceptionSensor";
+
         [Tooltip("List of tags in the scene to compare against.")]
         public List<string> detectableTags;
 
@@ -14,23 +16,45 @@ namespace MLAgents.Sensor
         public int raysPerDirection = 3;
 
         [Range(0, 180)]
-        [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. Greater than 90 degrees will go backwards")]
+        [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. Greater than 90 degrees will go backwards.")]
         public float maxRayDegrees = 70;
 
-        [Tooltip("Whether to use 3D or 2D raycasts.")]
-        public bool is3D = true;
-        // TODO start/end offsets
-        // TODP sphere radius (or 0 for raycasts)
+        [Range(-10f, 10f)]
+        [Tooltip("Ray start is offset up or down by this amount.")]
+        public float startVerticalOffset;
+
+        [Range(-10f, 10f)]
+        [Tooltip("Ray end is offset up or down by this amount.")]
+        public float endVerticalOffset;
+
+        [Range(0f, 10f)]
+        [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
+        public float sphereCastRadius = 0.5f;
+
+        [Range(1, 1000)]
+        [Tooltip("Length of the rays to cast.")]
+        public float rayLength = 20f;
+
+        [Range(1, 50)]
+        [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
+        public int observationStacks = 1;
+
         // TODO layerMask for raycasts
-        // TODO rayLenfgh
-        // TODO NAME
 
         public override ISensor CreateSensor()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-            var name = "raycaster";
-            var rayLength = 20.0f;
-            return new RayPerceptionSensor(name, transform, rayLength, detectableTags, rayAngles, is3D);
+            var raySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
+                transform, startVerticalOffset, endVerticalOffset, sphereCastRadius
+            );
+
+            if (observationStacks != 1)
+            {
+                var stackingSensor = new StackingSensor(raySensor, observationStacks);
+                return stackingSensor;
+            }
+
+            return raySensor;
         }
 
         static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)

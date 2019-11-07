@@ -10,8 +10,6 @@ namespace MLAgents
     /// </summary>
     public class RayPerception3D : RayPerception
     {
-        RaycastHit m_Hit;
-
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
         /// Each ray in the rayAngles array adds a sublist of data to the observation.
@@ -40,9 +38,11 @@ namespace MLAgents
                 m_PerceptionBuffer = new float[perceptionSize];
             }
 
+            const float castRadius = 0.5f;
+            const bool legacyHitFractionBehavior = true;
             PerceiveStatic(
-                rayDistance, rayAngles, detectableObjects, startOffset, endOffset,
-                transform, m_Hit, m_PerceptionBuffer
+                rayDistance, rayAngles, detectableObjects, startOffset, endOffset, castRadius,
+                transform, m_PerceptionBuffer, legacyHitFractionBehavior
             );
 
             return m_PerceptionBuffer;
@@ -50,7 +50,9 @@ namespace MLAgents
 
         public static void PerceiveStatic(float rayDistance,
             IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
-            float startOffset, float endOffset, Transform transform, RaycastHit rayHit, float[] perceptionBuffer)
+            float startOffset, float endOffset, float castRadius,
+            Transform transform, float[] perceptionBuffer,
+            bool legacyHitFractionBehavior = false)
         {
             Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
 
@@ -68,15 +70,29 @@ namespace MLAgents
 
                 var rayDirection = endPositionWorld - startPositionWorld;
 
-                // Do the raycast and assign the hit information for each detectable object.
-                //   sublist[0           ] <- did hit detectableObjects[0]
-                //   ...
-                //   sublist[numObjects-1] <- did hit detectableObjects[numObjects-1]
-                //   sublist[numObjects  ] <- 1 if missed else 0
-                //   sublist[numObjects+1] <- hit fraction if hit else 0
-                // Note that if the raycast hits a object that's not in the detectableObjects list, all results are 0
+                // Do the cast and assign the hit information for each detectable object.
+                //     sublist[0           ] <- did hit detectableObjects[0]
+                //     ...
+                //     sublist[numObjects-1] <- did hit detectableObjects[numObjects-1]
+                //     sublist[numObjects  ] <- 1 if missed else 0
+                //     sublist[numObjects+1] <- hit fraction (or 1 if no hit)
+                // The legacyHitFractionBehavior changes the behavior to be backwards compatible but has some
+                // counter-intuitive behavior:
+                //  * if the cast hits a object that's not in the detectableObjects list, all results are 0
+                //  * if the cast doesn't hit, the hit fraction field is 0
 
-                if (Physics.SphereCast(startPositionWorld, 0.5f, rayDirection, out rayHit, rayDistance))
+                bool castHit;
+                RaycastHit rayHit;
+                if (castRadius > 0f)
+                {
+                    castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit, rayDistance);
+                }
+                else
+                {
+                    castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit, rayDistance);
+                }
+
+                if (castHit)
                 {
                     for (var i = 0; i < detectableObjects.Count; i++)
                     {
@@ -86,14 +102,25 @@ namespace MLAgents
                             perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = rayHit.distance / rayDistance;
                             break;
                         }
+
+                        if (!legacyHitFractionBehavior)
+                        {
+                            // Something was hit but not on the list. Still set the hit fraction.
+                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = rayHit.distance / rayDistance;
+                        }
                     }
                 }
                 else
                 {
-                    perceptionBuffer[bufferOffset +detectableObjects.Count] = 1f;
+                    perceptionBuffer[bufferOffset + detectableObjects.Count] = 1f;
+                    if (!legacyHitFractionBehavior)
+                    {
+                        // Nothing was hit, so there's full clearance in front of the agent.
+                        perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = 1.0f;
+                    }
                 }
 
-                bufferOffset += (detectableObjects.Count + 2);
+                bufferOffset += detectableObjects.Count + 2;
             }
         }
 

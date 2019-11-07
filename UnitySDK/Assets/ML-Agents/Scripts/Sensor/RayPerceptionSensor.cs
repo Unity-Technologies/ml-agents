@@ -10,22 +10,21 @@ namespace MLAgents.Sensor
         int[] m_Shape;
         string m_Name;
 
-        bool m_Is3D;
         float m_RayDistance;
         List<string> m_DetectableObjects;
         float[] m_Angles;
 
         float m_StartOffset = 0.0f;
         float m_EndOffset = 0.0f;
-        RaycastHit m_Hit;
+        float m_CastRadius = 0.5f;
         Transform m_Transform;
 
-        public RayPerceptionSensor(string name, Transform transform, float rayDistance, List<string> detectableObjects, float[] angles, bool is3D)
+        public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
+            Transform transform, float startOffset, float endOffset, float castRadius)
         {
             var numObservations = (detectableObjects.Count + 2) * angles.Length;
             m_Shape = new[] { numObservations };
             m_Name = name;
-            m_Is3D = is3D;
 
             m_Observations = new float[numObservations];
 
@@ -44,7 +43,10 @@ namespace MLAgents.Sensor
 
         void DoRaycasts()
         {
-            RayPerception3D.PerceiveStatic(m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset, null, m_Hit, m_Observations);
+            RayPerception3D.PerceiveStatic(
+                m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
+                m_CastRadius, m_Transform, m_Observations
+            );
             // TODO 2D case too
 
         }
