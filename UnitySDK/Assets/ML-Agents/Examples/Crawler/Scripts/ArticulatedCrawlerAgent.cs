@@ -1,7 +1,7 @@
 using UnityEngine;
 using MLAgents;
 
-[RequireComponent(typeof(JointDriveController))] // Required to set joint forces
+[RequireComponent(typeof(ArticulatedJointDriveController))] // Required to set joint forces
 public class ArticulatedCrawlerAgent : Agent
 {
     [Header("Target To Walk Towards")][Space(10)]
@@ -102,9 +102,8 @@ public class ArticulatedCrawlerAgent : Agent
 
         if (bp.arb.transform != body)
         {
-            // Will need to rewrite this because body parts are in hiearchy, not flat like in RigidBody case
-            //var localPosRelToBody = body.InverseTransformPoint(arb.position);
-            //AddVectorObs(localPosRelToBody);
+            var localPosRelToBody = body.InverseTransformPoint(arb.transform.TransformPoint(arb.transform.position)); // Translate from world space to body local space, since all articulations are children of body in hiearchy
+            AddVectorObs(localPosRelToBody);
             AddVectorObs(bp.currentXNormalizedRot); // Current x rot
             AddVectorObs(bp.currentYNormalizedRot); // Current y rot
             AddVectorObs(bp.currentZNormalizedRot); // Current z rot

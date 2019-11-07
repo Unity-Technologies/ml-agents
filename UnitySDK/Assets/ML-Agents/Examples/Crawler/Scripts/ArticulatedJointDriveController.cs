@@ -84,9 +84,8 @@ namespace MLAgents
             currentXNormalizedRot =
                 Mathf.InverseLerp(xDrive.lowerLimit, xDrive.upperLimit, xRot);
             
-            // What is this ? Vilmantas Why lowerLimit is not used ?
-            currentYNormalizedRot = Mathf.InverseLerp(-yDrive.upperLimit, yDrive.upperLimit, yRot);
-            currentZNormalizedRot = Mathf.InverseLerp(-zDrive.upperLimit, zDrive.upperLimit, zRot);
+            currentYNormalizedRot = Mathf.InverseLerp(yDrive.lowerLimit, yDrive.upperLimit, yRot);
+            currentZNormalizedRot = Mathf.InverseLerp(zDrive.lowerLimit, zDrive.upperLimit, zRot);
 
             //joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot); // Original code
             xDrive.target = xRot; yDrive.target = yRot; zDrive.target = zRot;
@@ -135,9 +134,14 @@ namespace MLAgents
         /// </summary>
         public void SetupBodyPart(Transform t)
         {
+            // Either parent(in case of legs) or game object itself(in case of body) must have ArticulationBody
+            var arb = t.GetComponent<ArticulationBody>();
+            if (arb == null)
+                arb = t.parent.GetComponent<ArticulationBody>();
+            
             var bp = new ArticulationBodyPart()
             {
-                arb = t.GetComponent<ArticulationBody>(),
+                arb =  arb,
                 startingPos = t.position,
                 startingRot = t.rotation
             };
