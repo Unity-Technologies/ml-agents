@@ -13,7 +13,7 @@ from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
-    CompressionTypeProto,
+    NONE as COMPRESSION_TYPE_NONE,
 )
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
@@ -85,7 +85,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         vector_obs_proto = ObservationProto(
             float_data=ObservationProto.FloatData(data=vector_obs),
             shape=[len(vector_obs)],
-            compression_type=CompressionTypeProto.NONE,
+            compression_type=COMPRESSION_TYPE_NONE,
         )
         agent_info = AgentInfoProto(reward=reward, done=done)
         agent_info.observations.append(vector_obs_proto)
@@ -116,7 +116,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         vector_obs_proto = ObservationProto(
             float_data=ObservationProto.FloatData(data=vector_obs),
             shape=[len(vector_obs)],
-            compression_type=CompressionTypeProto.NONE,
+            compression_type=COMPRESSION_TYPE_NONE,
         )
         agent_info = AgentInfoProto(done=False, max_step_reached=False)
         agent_info.observations.append(vector_obs_proto)

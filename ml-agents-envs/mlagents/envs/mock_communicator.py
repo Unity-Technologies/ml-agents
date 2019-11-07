@@ -10,7 +10,8 @@ from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
-    CompressionTypeProto,
+    NONE as COMPRESSION_TYPE_NONE,
+    PNG as COMPRESSION_TYPE_PNG,
 )
 
 
@@ -68,14 +69,14 @@ class MockCommunicator(Communicator):
             ObservationProto(
                 compressed_data=None,
                 shape=[30, 40, 3],
-                compression_type=CompressionTypeProto.PNG,
+                compression_type=COMPRESSION_TYPE_PNG,
             )
             for _ in range(self.visual_inputs)
         ]
         vector_obs_proto = ObservationProto(
             float_data=ObservationProto.FloatData(data=vector_obs),
             shape=[len(vector_obs)],
-            compression_type=CompressionTypeProto.NONE,
+            compression_type=COMPRESSION_TYPE_NONE,
         )
         observations.append(vector_obs_proto)
 

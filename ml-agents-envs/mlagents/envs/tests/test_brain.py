@@ -7,7 +7,7 @@ from unittest import mock
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
-    CompressionTypeProto,
+    NONE as COMPRESSION_TYPE_NONE,
 )
 from mlagents.envs.brain import BrainInfo, BrainParameters
 
@@ -26,7 +26,7 @@ def _make_agent_info_proto(vector_obs: List[float]) -> AgentInfoProto:
     obs = ObservationProto(
         float_data=ObservationProto.FloatData(data=vector_obs),
         shape=[len(vector_obs)],
-        compression_type=CompressionTypeProto.NONE,
+        compression_type=COMPRESSION_TYPE_NONE,
     )
     agent_info_proto.observations.append(obs)
     return agent_info_proto
