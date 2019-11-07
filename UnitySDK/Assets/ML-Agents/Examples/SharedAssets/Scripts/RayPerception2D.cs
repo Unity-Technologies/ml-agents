@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -9,7 +10,6 @@ namespace MLAgents
     /// </summary>
     public class RayPerception2D : RayPerception
     {
-        Vector2 m_EndPosition;
         RaycastHit2D m_Hit;
 
         /// <summary>
@@ -30,43 +30,49 @@ namespace MLAgents
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         /// <param name="startOffset">Unused</param>
         /// <param name="endOffset">Unused</param>
-        public override List<float> Perceive(float rayDistance,
+        public override IList<float> Perceive(float rayDistance,
             float[] rayAngles, string[] detectableObjects,
             float startOffset=0.0f, float endOffset=0.0f)
         {
-            m_PerceptionBuffer.Clear();
+
+            var perceptionSize = (detectableObjects.Length + 2) * rayAngles.Length;
+            if (m_PerceptionBuffer == null || m_PerceptionBuffer.Length != perceptionSize)
+            {
+                m_PerceptionBuffer = new float[perceptionSize];
+            }
+            Array.Clear(m_PerceptionBuffer, 0, m_PerceptionBuffer.Length);
+
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
+            var bufferOffset = 0;
             foreach (var angle in rayAngles)
             {
-                m_EndPosition = transform.TransformDirection(
-                    PolarToCartesian(rayDistance, angle));
+                Vector2 rayDirection = transform.TransformDirection(PolarToCartesian(rayDistance, angle));
                 if (Application.isEditor)
                 {
                     Debug.DrawRay(transform.position,
-                        m_EndPosition, Color.black, 0.01f, true);
+                        rayDirection, Color.black, 0.01f, true);
                 }
 
-                var subList = new float[detectableObjects.Length + 2];
-                m_Hit = Physics2D.CircleCast(transform.position, 0.5f, m_EndPosition, rayDistance);
+                m_Hit = Physics2D.CircleCast(transform.position, 0.5f, rayDirection, rayDistance);
                 if (m_Hit)
                 {
                     for (var i = 0; i < detectableObjects.Length; i++)
                     {
                         if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
                         {
-                            subList[i] = 1;
-                            subList[detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
+                            m_PerceptionBuffer[bufferOffset + i] = 1;
+                            m_PerceptionBuffer[bufferOffset + detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
                             break;
                         }
                     }
                 }
                 else
                 {
-                    subList[detectableObjects.Length] = 1f;
+                    m_PerceptionBuffer[bufferOffset + detectableObjects.Length] = 1f;
                 }
 
-                m_PerceptionBuffer.AddRange(subList);
+                bufferOffset += detectableObjects.Length + 2;
             }
 
             return m_PerceptionBuffer;

@@ -11,7 +11,6 @@ namespace MLAgents
     public class RayPerception3D : RayPerception
     {
         RaycastHit m_Hit;
-        float[] m_SubList;
 
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
@@ -31,18 +30,33 @@ namespace MLAgents
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
         /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
-        public override List<float> Perceive(float rayDistance,
+        public override IList<float> Perceive(float rayDistance,
             float[] rayAngles, string[] detectableObjects,
             float startOffset=0.0f, float endOffset=0.0f)
         {
-            if (m_SubList == null || m_SubList.Length != detectableObjects.Length + 2)
-                m_SubList = new float[detectableObjects.Length + 2];
+            var perceptionSize = (detectableObjects.Length + 2) * rayAngles.Length;
+            if (m_PerceptionBuffer == null || m_PerceptionBuffer.Length != perceptionSize)
+            {
+                m_PerceptionBuffer = new float[perceptionSize];
+            }
 
-            m_PerceptionBuffer.Clear();
-            m_PerceptionBuffer.Capacity = m_SubList.Length * rayAngles.Length;
+            PerceiveStatic(
+                rayDistance, rayAngles, detectableObjects, startOffset, endOffset,
+                transform, m_Hit, m_PerceptionBuffer
+            );
+
+            return m_PerceptionBuffer;
+        }
+
+        public static void PerceiveStatic(float rayDistance,
+            IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
+            float startOffset, float endOffset, Transform transform, RaycastHit rayHit, float[] perceptionBuffer)
+        {
+            Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
 
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
+            int bufferOffset = 0;
             foreach (var angle in rayAngles)
             {
                 Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
@@ -53,34 +67,34 @@ namespace MLAgents
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
                 var rayDirection = endPositionWorld - startPositionWorld;
-                if (Application.isEditor)
-                {
-                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
-                }
 
-                Array.Clear(m_SubList, 0, m_SubList.Length);
+                // Do the raycast and assign the hit information for each detectable object.
+                //   sublist[0           ] <- did hit detectableObjects[0]
+                //   ...
+                //   sublist[numObjects-1] <- did hit detectableObjects[numObjects-1]
+                //   sublist[numObjects  ] <- 1 if missed else 0
+                //   sublist[numObjects+1] <- hit fraction if hit else 0
+                // Note that if the raycast hits a object that's not in the detectableObjects list, all results are 0
 
-                if (Physics.SphereCast(startPositionWorld, 0.5f, rayDirection, out m_Hit, rayDistance))
+                if (Physics.SphereCast(startPositionWorld, 0.5f, rayDirection, out rayHit, rayDistance))
                 {
-                    for (var i = 0; i < detectableObjects.Length; i++)
+                    for (var i = 0; i < detectableObjects.Count; i++)
                     {
-                        if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
+                        if (rayHit.collider.gameObject.CompareTag(detectableObjects[i]))
                         {
-                            m_SubList[i] = 1;
-                            m_SubList[detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
+                            perceptionBuffer[bufferOffset + i] = 1;
+                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = rayHit.distance / rayDistance;
                             break;
                         }
                     }
                 }
                 else
                 {
-                    m_SubList[detectableObjects.Length] = 1f;
+                    perceptionBuffer[bufferOffset +detectableObjects.Count] = 1f;
                 }
 
-                Utilities.AddRangeNoAlloc(m_PerceptionBuffer, m_SubList);
+                bufferOffset += (detectableObjects.Count + 2);
             }
-
-            return m_PerceptionBuffer;
         }
 
         /// <summary>
