@@ -47,11 +47,10 @@ namespace MLAgents.Sensor
             var shape = wrapped.GetFloatObservationShape();
             m_Shape = new int[shape.Length];
 
-            m_UnstackedObservationSize = 1;
+            m_UnstackedObservationSize = wrapped.ObservationSize();
             for (int d = 0; d < shape.Length; d++)
             {
                 m_Shape[d] = shape[d];
-                m_UnstackedObservationSize *= shape[d];
             }
 
             // TODO support arbitrary stacking dimension

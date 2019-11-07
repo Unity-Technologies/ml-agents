@@ -89,7 +89,6 @@ def test_gym_wrapper_visual(mock_env, use_uint8):
 
 def create_mock_brainparams(
     number_visual_observations=0,
-    num_stacked_vector_observations=1,
     vector_action_space_type="continuous",
     vector_observation_space_size=3,
     vector_action_space_size=None,
@@ -107,9 +106,7 @@ def create_mock_brainparams(
             CameraResolution(width=8, height=8, num_channels=3)
             for _ in range(number_visual_observations)
         ]
-    mock_brain.return_value.num_stacked_vector_observations = (
-        num_stacked_vector_observations
-    )
+
     mock_brain.return_value.vector_action_space_type = vector_action_space_type
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size

@@ -19,7 +19,6 @@ namespace MLAgents
         {
             var agentInfoProto = new AgentInfoProto
             {
-                StackedVectorObservation = { ai.floatObservations },
                 StoredVectorActions = { ai.storedVectorActions },
                 Reward = ai.reward,
                 MaxStepReached = ai.maxStepReached,
@@ -32,11 +31,11 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            if (ai.compressedObservations != null)
+            if (ai.observations != null)
             {
-                foreach (var obs in ai.compressedObservations)
+                foreach (var obs in ai.observations)
                 {
-                    agentInfoProto.CompressedObservations.Add(obs.ToProto());
+                    agentInfoProto.Observations.Add(obs.ToProto());
                 }
             }
 
@@ -54,8 +53,6 @@ namespace MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorObservationSize = bp.vectorObservationSize,
-                NumStackedVectorObservations = bp.numStackedVectorObservations,
                 VectorActionSize = { bp.vectorActionSize },
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
@@ -110,8 +107,6 @@ namespace MLAgents
         {
             var bp = new BrainParameters
             {
-                vectorObservationSize = bpp.VectorObservationSize,
-                numStackedVectorObservations = bpp.NumStackedVectorObservations,
                 vectorActionSize = bpp.VectorActionSize.ToArray(),
                 vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
                 vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
@@ -170,13 +165,38 @@ namespace MLAgents
             return agentActions;
         }
 
-        public static CompressedObservationProto ToProto(this CompressedObservation obs)
+        public static ObservationProto ToProto(this Observation obs)
         {
-            var obsProto = new CompressedObservationProto
+            ObservationProto obsProto = null;
+
+            if (obs.CompressedData != null)
             {
-                Data = ByteString.CopyFrom(obs.Data),
-                CompressionType = (CompressionTypeProto)obs.CompressionType,
-            };
+                // Make sure that uncompressed data is empty
+                if (obs.FloatData.Count != 0)
+                {
+                    Debug.LogWarning("Observation has both compressed and uncompressed data set. Using compressed.");
+                }
+
+                obsProto = new ObservationProto
+                {
+                    CompressedData = ByteString.CopyFrom(obs.CompressedData),
+                    CompressionType = (CompressionTypeProto)obs.CompressionType,
+                };
+            }
+            else
+            {
+                var floatDataProto = new ObservationProto.Types.FloatData
+                {
+                    Data = { obs.FloatData },
+                };
+
+                obsProto = new ObservationProto
+                {
+                    FloatData = floatDataProto,
+                    CompressionType = (CompressionTypeProto)obs.CompressionType,
+                };
+            }
+
             obsProto.Shape.AddRange(obs.Shape);
             return obsProto;
         }
