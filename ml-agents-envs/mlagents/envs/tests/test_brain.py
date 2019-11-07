@@ -22,13 +22,12 @@ test_brain = BrainParameters(
 
 
 def _make_agent_info_proto(vector_obs: List[float]) -> AgentInfoProto:
-    agent_info_proto = AgentInfoProto()
     obs = ObservationProto(
         float_data=ObservationProto.FloatData(data=vector_obs),
         shape=[len(vector_obs)],
         compression_type=COMPRESSION_TYPE_NONE,
     )
-    agent_info_proto.observations.append(obs)
+    agent_info_proto = AgentInfoProto(observations=[obs])
     return agent_info_proto
 
 

@@ -87,8 +87,9 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             shape=[len(vector_obs)],
             compression_type=COMPRESSION_TYPE_NONE,
         )
-        agent_info = AgentInfoProto(reward=reward, done=done)
-        agent_info.observations.append(vector_obs_proto)
+        agent_info = AgentInfoProto(
+            reward=reward, done=done, observations=[vector_obs_proto]
+        )
 
         if done:
             self._reset_agent()
@@ -118,8 +119,9 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             shape=[len(vector_obs)],
             compression_type=COMPRESSION_TYPE_NONE,
         )
-        agent_info = AgentInfoProto(done=False, max_step_reached=False)
-        agent_info.observations.append(vector_obs_proto)
+        agent_info = AgentInfoProto(
+            done=False, max_step_reached=False, observations=[vector_obs_proto]
+        )
 
         return {
             BRAIN_NAME: BrainInfo.from_agent_proto(
