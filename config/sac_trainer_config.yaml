@@ -58,7 +58,7 @@ SmallWallJumpLearning:
 
 BigWallJumpLearning:
     max_steps: 1.0e6
-    batch_size: 64
+    batch_size: 128
     hidden_units: 256
     summary_freq: 2000
     time_horizon: 128
@@ -68,11 +68,11 @@ BigWallJumpLearning:
     reward_signals:
         extrinsic:
             strength: 1.0
-            gamma: 0.99
-        curiosity:
-            strength: 0.02
-            gamma: 0.99
-            encoding_size: 256
+            gamma: 0.998
+        # curiosity:
+        #     strength: 0.02
+        #     gamma: 0.99
+        #     encoding_size: 256
 
 StrikerLearning:
     max_steps: 5.0e5
