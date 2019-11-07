@@ -103,12 +103,6 @@ class UnityEnv(gym.Env):
                 "Otherwise, please note that only the first will be provided in the observation."
             )
 
-        if brain.num_stacked_vector_observations != 1:
-            raise UnityGymException(
-                "There can only be one stacked vector observation in a UnityEnvironment "
-                "if it is wrapped in a gym."
-            )
-
         # Check for number of agents in scene.
         initial_info = self._env.reset()[self.brain_name]
         self._check_agents(len(initial_info.agents))

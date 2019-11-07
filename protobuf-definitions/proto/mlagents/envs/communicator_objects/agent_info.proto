@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-import "mlagents/envs/communicator_objects/compressed_observation.proto";
+import "mlagents/envs/communicator_objects/observation.proto";
 
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 message AgentInfoProto {
-    repeated float stacked_vector_observation = 1;
+    reserved 1; // deprecated repeated float stacked_vector_observation = 1;
     reserved 2; // deprecated repeated bytes visual_observations = 2;
     reserved 3; // deprecated string text_observation = 3;
     repeated float stored_vector_actions = 4;
@@ -18,5 +18,5 @@ message AgentInfoProto {
     int32 id = 10;
     repeated bool action_mask = 11;
     reserved 12; // deprecated CustomObservationProto custom_observation = 12;
-    repeated CompressedObservationProto compressed_observations = 13;
+    repeated ObservationProto observations = 13;
 }

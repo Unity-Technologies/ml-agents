@@ -8,9 +8,10 @@ from mlagents.envs.communicator_objects.unity_rl_initialization_output_pb2 impor
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.compressed_observation_pb2 import (
-    CompressedObservationProto,
-    CompressionTypeProto,
+from mlagents.envs.communicator_objects.observation_pb2 import (
+    ObservationProto,
+    NONE as COMPRESSION_TYPE_NONE,
+    PNG as COMPRESSION_TYPE_PNG,
 )
 
 
@@ -19,7 +20,6 @@ class MockCommunicator(Communicator):
         self,
         discrete_action=False,
         visual_inputs=0,
-        stack=True,
         num_agents=3,
         brain_name="RealFakeBrain",
         vec_obs_size=3,
@@ -38,15 +38,9 @@ class MockCommunicator(Communicator):
         self.num_agents = num_agents
         self.brain_name = brain_name
         self.vec_obs_size = vec_obs_size
-        if stack:
-            self.num_stacks = 2
-        else:
-            self.num_stacks = 1
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         bp = BrainParametersProto(
-            vector_observation_size=self.vec_obs_size,
-            num_stacked_vector_observations=self.num_stacks,
             vector_action_size=[2],
             vector_action_descriptions=["", ""],
             vector_action_space_type=int(not self.is_discrete),
@@ -69,28 +63,32 @@ class MockCommunicator(Communicator):
         else:
             vector_action = [1, 2]
         list_agent_info = []
-        if self.num_stacks == 1:
-            observation = [1, 2, 3]
-        else:
-            observation = [1, 2, 3, 1, 2, 3]
+        vector_obs = [1, 2, 3]
 
-        compressed_obs = [
-            CompressedObservationProto(
-                data=None, shape=[30, 40, 3], compression_type=CompressionTypeProto.PNG
+        observations = [
+            ObservationProto(
+                compressed_data=None,
+                shape=[30, 40, 3],
+                compression_type=COMPRESSION_TYPE_PNG,
             )
             for _ in range(self.visual_inputs)
         ]
+        vector_obs_proto = ObservationProto(
+            float_data=ObservationProto.FloatData(data=vector_obs),
+            shape=[len(vector_obs)],
+            compression_type=COMPRESSION_TYPE_NONE,
+        )
+        observations.append(vector_obs_proto)
 
         for i in range(self.num_agents):
             list_agent_info.append(
                 AgentInfoProto(
-                    stacked_vector_observation=observation,
                     reward=1,
                     stored_vector_actions=vector_action,
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,
-                    compressed_observations=compressed_obs,
+                    observations=observations,
                 )
             )
         dict_agent_info["RealFakeBrain"] = UnityRLOutputProto.ListAgentInfoProto(

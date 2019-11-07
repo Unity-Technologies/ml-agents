@@ -53,7 +53,6 @@ namespace MLAgents.Tests
                 done = true,
                 id = 5,
                 maxStepReached = true,
-                floatObservations = new List<float>() { 1f, 1f, 1f },
                 storedVectorActions = new[] { 0f, 1f },
             };
 
@@ -120,12 +119,16 @@ namespace MLAgents.Tests
             BrainParametersProto.Parser.ParseDelimitedFrom(reader);
 
             var agentInfoProto = AgentInfoProto.Parser.ParseDelimitedFrom(reader);
-            var obs = agentInfoProto.StackedVectorObservation;
-            Assert.AreEqual(obs.Count, bpA.brainParameters.vectorObservationSize);
-            for (var i = 0; i < obs.Count; i++)
+            var obs = agentInfoProto.Observations[2]; // skip dummy sensors
             {
-                Assert.AreEqual((float) i+1, obs[i]);
+                var vecObs = obs.FloatData.Data;
+                Assert.AreEqual(bpA.brainParameters.vectorObservationSize, vecObs.Count);
+                for (var i = 0; i < vecObs.Count; i++)
+                {
+                    Assert.AreEqual((float) i+1, vecObs[i]);
+                }
             }
+
 
         }
     }

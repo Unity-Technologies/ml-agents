@@ -23,13 +23,7 @@ namespace MLAgents.Sensor
         public virtual int Write(WriteAdapter adapter)
         {
             // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()
-            int[] shape = GetFloatObservationShape();
-            int numFloats = 1;
-            foreach (var dim in shape)
-            {
-                numFloats *= dim;
-            }
-
+            var numFloats = this.ObservationSize();
             float[] buffer = new float[numFloats];
             WriteObservation(buffer);
 

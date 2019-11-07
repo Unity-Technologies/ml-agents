@@ -11,6 +11,10 @@ from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.observation_pb2 import (
+    ObservationProto,
+    NONE as COMPRESSION_TYPE_NONE,
+)
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
 
@@ -41,7 +45,6 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         brain_params = BrainParameters(
             brain_name=BRAIN_NAME,
             vector_observation_space_size=OBS_SIZE,
-            num_stacked_vector_observations=1,
             camera_resolutions=[],
             vector_action_space_size=[2] if use_discrete else [1],
             vector_action_descriptions=["moveDirection"],
@@ -78,8 +81,14 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         else:
             reward = -TIME_PENALTY
 
+        vector_obs = [self.goal] * OBS_SIZE
+        vector_obs_proto = ObservationProto(
+            float_data=ObservationProto.FloatData(data=vector_obs),
+            shape=[len(vector_obs)],
+            compression_type=COMPRESSION_TYPE_NONE,
+        )
         agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.goal] * OBS_SIZE, reward=reward, done=done
+            reward=reward, done=done, observations=[vector_obs_proto]
         )
 
         if done:
@@ -104,11 +113,16 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     ) -> AllBrainInfo:  # type: ignore
         self._reset_agent()
 
-        agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.goal] * OBS_SIZE,
-            done=False,
-            max_step_reached=False,
+        vector_obs = [self.goal] * OBS_SIZE
+        vector_obs_proto = ObservationProto(
+            float_data=ObservationProto.FloatData(data=vector_obs),
+            shape=[len(vector_obs)],
+            compression_type=COMPRESSION_TYPE_NONE,
         )
+        agent_info = AgentInfoProto(
+            done=False, max_step_reached=False, observations=[vector_obs_proto]
+        )
+
         return {
             BRAIN_NAME: BrainInfo.from_agent_proto(
                 0, [agent_info], self._brains[BRAIN_NAME]

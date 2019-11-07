@@ -7,7 +7,6 @@ from mlagents.trainers.buffer import Buffer
 
 def create_mock_brainparams(
     number_visual_observations=0,
-    num_stacked_vector_observations=1,
     vector_action_space_type="continuous",
     vector_observation_space_size=3,
     vector_action_space_size=None,
@@ -20,9 +19,6 @@ def create_mock_brainparams(
         vector_action_space_size = [2]
     mock_brain = mock.Mock()
     mock_brain.return_value.number_visual_observations = number_visual_observations
-    mock_brain.return_value.num_stacked_vector_observations = (
-        num_stacked_vector_observations
-    )
     mock_brain.return_value.vector_action_space_type = vector_action_space_type
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size
@@ -238,9 +234,8 @@ def create_mock_banana_brain():
 def make_brain_parameters(
     discrete_action: bool = False,
     visual_inputs: int = 0,
-    stack: bool = True,
     brain_name: str = "RealFakeBrain",
-    vec_obs_size: int = 3,
+    vec_obs_size: int = 6,
 ) -> BrainParameters:
     resolutions = [
         CameraResolution(width=30, height=40, num_channels=3)
@@ -249,7 +244,6 @@ def make_brain_parameters(
 
     return BrainParameters(
         vector_observation_space_size=vec_obs_size,
-        num_stacked_vector_observations=2 if stack else 1,
         camera_resolutions=resolutions,
         vector_action_space_size=[2],
         vector_action_descriptions=["", ""],
