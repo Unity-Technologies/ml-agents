@@ -28,7 +28,6 @@
   * [Using the Monitor](Feature-Monitor.md)
   * [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
   * [Using an Executable Environment](Learning-Environment-Executable.md)
-  * [Creating Custom Protobuf Messages](Creating-Custom-Protobuf-Messages.md)
 
 ## Training
 
@@ -69,4 +68,3 @@ you.
 * [API Reference](API-Reference.md)
 * [How to use the Python API](Python-API.md)
 * [Wrapping Learning Environment as a Gym (+Baselines/Dopamine Integration)](../gym-unity/README.md)
-* [Creating custom protobuf messages](Creating-Custom-Protobuf-Messages.md)

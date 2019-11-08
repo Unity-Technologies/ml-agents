@@ -248,9 +248,7 @@ class Trainer(object):
         :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
-        raise UnityTrainerException(
-            "The process_experiences method was not implemented."
-        )
+        raise UnityTrainerException("The add_experiences method was not implemented.")
 
     def process_experiences(
         self, current_info: AllBrainInfo, next_info: AllBrainInfo

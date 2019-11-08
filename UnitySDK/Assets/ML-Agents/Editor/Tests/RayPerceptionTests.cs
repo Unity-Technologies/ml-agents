@@ -15,7 +15,6 @@ namespace MLAgents.Tests
             var go = new GameObject("MyGameObject");
             var rayPer3D = go.AddComponent<RayPerception3D>();
             var result = rayPer3D.Perceive(1f, angles, tags);
-            Debug.Log(result.Count);
             Assert.IsTrue(result.Count == angles.Length * (tags.Length + 2));
         }
 

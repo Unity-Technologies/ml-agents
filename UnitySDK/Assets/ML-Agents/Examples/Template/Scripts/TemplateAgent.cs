@@ -7,7 +7,7 @@ public class TemplateAgent : Agent
     {
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
     }
 

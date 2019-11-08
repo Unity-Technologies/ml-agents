@@ -103,7 +103,7 @@ public class WalkerAgent : Agent
         }
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
 

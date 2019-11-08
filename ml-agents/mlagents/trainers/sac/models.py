@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from typing import Dict, List, Optional
 
 from mlagents.trainers import tf, tf_variance_scaling
 
@@ -43,6 +44,43 @@ class SACNetwork(LearningModel):
         self.stream_names = stream_names
         self.h_size = h_size
         self.activ_fn = self.swish
+
+        self.policy_memory_in: Optional[tf.Tensor] = None
+        self.policy_memory_out: Optional[tf.Tensor] = None
+        self.value_memory_in: Optional[tf.Tensor] = None
+        self.value_memory_out: Optional[tf.Tensor] = None
+        self.q1: Optional[tf.Tensor] = None
+        self.q2: Optional[tf.Tensor] = None
+        self.q1_p: Optional[tf.Tensor] = None
+        self.q2_p: Optional[tf.Tensor] = None
+        self.q1_memory_in: Optional[tf.Tensor] = None
+        self.q2_memory_in: Optional[tf.Tensor] = None
+        self.q1_memory_out: Optional[tf.Tensor] = None
+        self.q2_memory_out: Optional[tf.Tensor] = None
+        self.action_holder: Optional[tf.Tensor] = None
+        self.prev_action: Optional[tf.Tensor] = None
+        self.action_masks: Optional[tf.Tensor] = None
+        self.external_action_in: Optional[tf.Tensor] = None
+        self.log_sigma_sq: Optional[tf.Tensor] = None
+        self.entropy: Optional[tf.Tensor] = None
+        self.deterministic_output: Optional[tf.Tensor] = None
+        self.all_log_probs: Optional[tf.Tensor] = None
+        self.normalized_logprobs: Optional[tf.Tensor] = None
+        self.action_probs: Optional[tf.Tensor] = None
+        self.selected_actions: Optional[tf.Tensor] = None
+        self.output: Optional[tf.Tensor] = None
+        self.output_oh: Optional[tf.Tensor] = None
+        self.output_pre: Optional[tf.Tensor] = None
+
+        self.value_vars = None
+        self.q_vars = None
+        self.critic_vars = None
+        self.policy_vars = None
+
+        self.q1_heads: Optional[Dict[str, tf.Tensor]] = None
+        self.q2_heads: Optional[Dict[str, tf.Tensor]] = None
+        self.q1_pheads: Optional[Dict[str, tf.Tensor]] = None
+        self.q2_pheads: Optional[Dict[str, tf.Tensor]] = None
 
     def get_vars(self, scope):
         return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope)
@@ -342,7 +380,6 @@ class SACNetwork(LearningModel):
         :param h_size: size of hidden layers for value network
         :param scope: TF scope for value network.
         """
-        self.value_heads = {}
         with tf.variable_scope(scope):
             value_hidden = self.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "encoder", False
@@ -667,6 +704,12 @@ class SACModel(LearningModel):
         )
         if num_layers < 1:
             num_layers = 1
+
+        self.target_init_op: List[tf.Tensor] = []
+        self.target_update_op: List[tf.Tensor] = []
+        self.update_batch_policy: Optional[tf.Operation] = None
+        self.update_batch_value: Optional[tf.Operation] = None
+        self.update_batch_entropy: Optional[tf.Operation] = None
 
         self.policy_network = SACPolicyNetwork(
             brain=brain,

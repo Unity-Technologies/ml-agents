@@ -3,12 +3,17 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    public struct CompressedObservation
+    public struct Observation
     {
         /// <summary>
-        /// The compressed data.
+        /// The compressed sensor data. Assumed to be non-null if CompressionType != CompressionType.None
         /// </summary>
-        public byte[] Data;
+        public byte[] CompressedData;
+
+        /// <summary>
+        /// Uncompressed sensor data. Assumed to be non-empty if CompressionType == CompressionType.None
+        /// </summary>
+        public ArraySegment<float> FloatData;
 
         /// <summary>
         /// The format of the compressed data

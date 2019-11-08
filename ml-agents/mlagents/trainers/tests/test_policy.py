@@ -20,7 +20,7 @@ def test_take_action_returns_empty_with_no_agents():
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
     no_agent_brain_info = BrainInfo([], [], [], agents=[])
     result = policy.get_action(no_agent_brain_info)
-    assert result == ActionInfo([], [], [], None)
+    assert result == ActionInfo([], [], None)
 
 
 def test_take_action_returns_nones_on_missing_values():
@@ -32,7 +32,7 @@ def test_take_action_returns_nones_on_missing_values():
         [], [], [], agents=["an-agent-id"], local_done=[False]
     )
     result = policy.get_action(brain_info_with_agents)
-    assert result == ActionInfo(None, None, None, {})
+    assert result == ActionInfo(None, None, {})
 
 
 def test_take_action_returns_action_info_when_available():
@@ -49,6 +49,6 @@ def test_take_action_returns_action_info_when_available():
     )
     result = policy.get_action(brain_info_with_agents)
     expected = ActionInfo(
-        policy_eval_out["action"], None, policy_eval_out["value"], policy_eval_out
+        policy_eval_out["action"], policy_eval_out["value"], policy_eval_out
     )
     assert result == expected

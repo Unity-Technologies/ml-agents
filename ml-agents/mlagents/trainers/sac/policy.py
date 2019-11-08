@@ -188,7 +188,7 @@ class SACPolicy(TFPolicy):
 
     @timed
     def update(
-        self, mini_batch: Dict[str, Any], num_sequences: int, update_target: bool = True
+        self, mini_batch: Dict[str, Any], num_sequences: int
     ) -> Dict[str, float]:
         """
         Updates model using buffer.
@@ -205,8 +205,8 @@ class SACPolicy(TFPolicy):
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
-        if update_target:
-            self.sess.run(self.model.target_update_op)
+        # Update target network. By default, target update happens at every policy update.
+        self.sess.run(self.model.target_update_op)
         return update_stats
 
     def update_reward_signals(

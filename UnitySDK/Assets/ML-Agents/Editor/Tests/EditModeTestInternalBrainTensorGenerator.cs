@@ -1,36 +1,60 @@
 using System.Collections.Generic;
-using System.Linq;
 using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
 using MLAgents.InferenceBrain;
+using System.Reflection;
+
 
 namespace MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorGenerator
     {
-        static IEnumerable<Agent> GetFakeAgentInfos()
+        static IEnumerable<Agent> GetFakeAgents()
         {
+            var acaGo = new GameObject("TestAcademy");
+            acaGo.AddComponent<TestAcademy>();
+            var aca = acaGo.GetComponent<TestAcademy>();
+            aca.resetParameters = new ResetParameters();
+
             var goA = new GameObject("goA");
+            var bpA = goA.AddComponent<BehaviorParameters>();
+            bpA.brainParameters.vectorObservationSize = 3;
+            bpA.brainParameters.numStackedVectorObservations = 1;
             var agentA = goA.AddComponent<TestAgent>();
+
+            var goB = new GameObject("goB");
+            var bpB = goB.AddComponent<BehaviorParameters>();
+            bpB.brainParameters.vectorObservationSize = 3;
+            bpB.brainParameters.numStackedVectorObservations = 1;
+            var agentB = goB.AddComponent<TestAgent>();
+
+            var agents = new List<Agent> { agentA, agentB };
+            foreach (var agent in agents)
+            {
+                var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                agentEnableMethod?.Invoke(agent, new object[] { aca });
+            }
+            agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
+            agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));
+
             var infoA = new AgentInfo
             {
-                stackedVectorObservation = new[] { 1f, 2f, 3f }.ToList(),
                 storedVectorActions = new[] { 1f, 2f },
                 actionMasks = null
             };
-            var goB = new GameObject("goB");
-            var agentB = goB.AddComponent<TestAgent>();
+
             var infoB = new AgentInfo
             {
-                stackedVectorObservation = new[] { 4f, 5f, 6f }.ToList(),
                 storedVectorActions = new[] { 3f, 4f },
                 actionMasks = new[] { true, false, false, false, false },
             };
+
             agentA.Info = infoA;
             agentB.Info = infoB;
 
-            return new List<Agent> { agentA, agentB };
+            return agents;
         }
 
         [Test]
@@ -77,9 +101,12 @@ namespace MLAgents.Tests
                 shape = new long[] { 2, 3 }
             };
             const int batchSize = 4;
-            var agentInfos = GetFakeAgentInfos();
+            var agentInfos = GetFakeAgents();
             var alloc = new TensorCachingAllocator();
             var generator = new VectorObservationGenerator(alloc);
+            generator.AddSensorIndex(0);
+            generator.AddSensorIndex(1);
+            generator.AddSensorIndex(2);
             generator.Generate(inputTensor, batchSize, agentInfos);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(inputTensor.data[0, 0], 1);
@@ -98,7 +125,7 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.Integer
             };
             const int batchSize = 4;
-            var agentInfos = GetFakeAgentInfos();
+            var agentInfos = GetFakeAgents();
             var alloc = new TensorCachingAllocator();
             var generator = new PreviousActionInputGenerator(alloc);
 
@@ -120,7 +147,7 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
             const int batchSize = 4;
-            var agentInfos = GetFakeAgentInfos();
+            var agentInfos = GetFakeAgents();
             var alloc = new TensorCachingAllocator();
             var generator = new ActionMaskInputGenerator(alloc);
             generator.Generate(inputTensor, batchSize, agentInfos);

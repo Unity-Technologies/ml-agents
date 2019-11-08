@@ -233,7 +233,7 @@ public class WallJumpAgent : Agent
         jumpingTime -= Time.fixedDeltaTime;
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         MoveAgent(vectorAction);
         if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))

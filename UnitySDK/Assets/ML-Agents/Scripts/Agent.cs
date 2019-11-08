@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
@@ -13,36 +14,14 @@ namespace MLAgents
     public struct AgentInfo
     {
         /// <summary>
-        /// Most recent agent vector (i.e. numeric) observation.
+        /// Most recent observations.
         /// </summary>
-        public List<float> vectorObservation;
-
-        /// <summary>
-        /// The previous agent vector observations, stacked. The length of the
-        /// history (i.e. number of vector observations to stack) is specified
-        /// in the Brain parameters.
-        /// </summary>
-        public List<float> stackedVectorObservation;
-
-        /// <summary>
-        /// Most recent compressed observations.
-        /// </summary>
-        public List<CompressedObservation> compressedObservations;
-
-        /// <summary>
-        /// Most recent text observation.
-        /// </summary>
-        public string textObservation;
+        public List<Observation> observations;
 
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
         /// </summary>
         public float[] storedVectorActions;
-
-        /// <summary>
-        /// Keeps track of the last text action taken by the Brain.
-        /// </summary>
-        public string storedTextActions;
 
         /// <summary>
         /// For discrete control, specifies the actions that the agent cannot take. Is true if
@@ -70,13 +49,6 @@ namespace MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int id;
-
-        /// <summary>
-        /// User-customizable object for sending structured output from Unity to Python in response
-        /// to an action in addition to a scalar reward.
-        /// TODO(cgoy): All references to protobuf objects should be removed.
-        /// </summary>
-        public CommunicatorObjects.CustomObservationProto customObservation;
     }
 
     /// <summary>
@@ -86,10 +58,7 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
-        public string textActions;
         public float value;
-        /// TODO(cgoy): All references to protobuf objects should be removed.
-        public CommunicatorObjects.CustomActionProto customAction;
     }
 
     /// <summary>
@@ -258,8 +227,24 @@ namespace MLAgents
         /// </summary>
         DemonstrationRecorder m_Recorder;
 
+        /// <summary>
+        /// List of sensors used to generate observations.
+        /// Currently generated from attached SensorComponents, and a legacy VectorSensor
+        /// </summary>
         [FormerlySerializedAs("m_Sensors")]
         public List<ISensor> sensors;
+
+        /// <summary>
+        /// VectorSensor which is written to by AddVectorObs
+        /// </summary>
+        public VectorSensor collectObservationsSensor;
+
+        /// <summary>
+        /// Internal buffer used for generating float observations.
+        /// </summary>
+        float[] m_VectorSensorBuffer;
+
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -472,20 +457,7 @@ namespace MLAgents
                 }
             }
 
-            if (m_Info.textObservation == null)
-                m_Info.textObservation = "";
-            m_Action.textActions = "";
-            m_Info.vectorObservation =
-                new List<float>(param.vectorObservationSize);
-            m_Info.stackedVectorObservation =
-                new List<float>(param.vectorObservationSize
-                    * param.numStackedVectorObservations);
-            m_Info.stackedVectorObservation.AddRange(
-                new float[param.vectorObservationSize
-                          * param.numStackedVectorObservations]);
-
-            m_Info.compressedObservations = new List<CompressedObservation>();
-            m_Info.customObservation = null;
+            m_Info.observations = new List<Observation>();
         }
 
         /// <summary>
@@ -523,11 +495,28 @@ namespace MLAgents
         /// </summary>
         public void InitializeSensors()
         {
+            // Get all attached sensor components
             var attachedSensorComponents = GetComponents<SensorComponent>();
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {
                 sensors.Add(component.CreateSensor());
+            }
+
+            // Support legacy CollectObservations
+            var param = m_PolicyFactory.brainParameters;
+            if (param.vectorObservationSize > 0)
+            {
+                collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
+                if (param.numStackedVectorObservations > 1)
+                {
+                    var stackingSensor = new StackingSensor(collectObservationsSensor, param.numStackedVectorObservations);
+                    sensors.Add(stackingSensor);
+                }
+                else
+                {
+                    sensors.Add(collectObservationsSensor);
+                }
             }
 
             // Sort the Sensors by name to ensure determinism
@@ -540,6 +529,17 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
+            // Create a buffer for writing vector sensor data too
+            int numFloatObservations = 0;
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                {
+                    numFloatObservations += sensors[i].ObservationSize();
+                }
+            }
+
+            m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -553,31 +553,16 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.storedTextActions = m_Action.textActions;
-            m_Info.vectorObservation.Clear();
-            m_Info.compressedObservations.Clear();
+            m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
+            UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
                 CollectObservations();
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            var param = m_PolicyFactory.brainParameters;
-            if (m_Info.vectorObservation.Count != param.vectorObservationSize)
-            {
-                throw new UnityAgentsException(string.Format(
-                    "Vector Observation size mismatch in continuous " +
-                    "agent {0}. " +
-                    "Was Expecting {1} but received {2}. ",
-                    gameObject.name,
-                    param.vectorObservationSize,
-                    m_Info.vectorObservation.Count));
-            }
-
-            Utilities.ShiftLeft(m_Info.stackedVectorObservation, param.vectorObservationSize);
-            Utilities.ReplaceRange(m_Info.stackedVectorObservation, m_Info.vectorObservation,
-                m_Info.stackedVectorObservation.Count - m_Info.vectorObservation.Count);
+            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
@@ -588,9 +573,9 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-                // This is a bit of a hack - if we're in inference mode, compressed observations won't be generated
+                // This is a bit of a hack - if we're in inference mode, observations won't be generated
                 // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.compressedObservations.Count == 0)
+                if (m_Info.observations.Count == 0)
                 {
                     GenerateSensorData();
                 }
@@ -598,7 +583,14 @@ namespace MLAgents
                 m_Recorder.WriteExperience(m_Info);
             }
 
-            m_Info.textObservation = "";
+        }
+
+        void UpdateSensors()
+        {
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                sensors[i].Update();
+            }
         }
 
         /// <summary>
@@ -609,23 +601,41 @@ namespace MLAgents
         /// </summary>
         public void GenerateSensorData()
         {
+            int floatsWritten = 0;
             // Generate data for all Sensors
-            // TODO add bool argument indicating when to compress? For now, we always will compress.
             for (var i = 0; i < sensors.Count; i++)
             {
                 var sensor = sensors[i];
-                var compressedObs = new CompressedObservation
+                if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    Data = sensor.GetCompressedObservation(),
-                    Shape = sensor.GetFloatObservationShape(),
-                    CompressionType = sensor.GetCompressionType()
-                };
-                m_Info.compressedObservations.Add(compressedObs);
+                    // only handles 1D
+                    // TODO handle in communicator code instead
+                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
+                    var numFloats = sensor.Write(m_WriteAdapter);
+                    var floatObs = new Observation
+                    {
+                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
+                        Shape = sensor.GetFloatObservationShape(),
+                        CompressionType = sensor.GetCompressionType()
+                    };
+                    m_Info.observations.Add(floatObs);
+                    floatsWritten += numFloats;
+                }
+                else
+                {
+                    var compressedObs = new Observation
+                    {
+                        CompressedData = sensor.GetCompressedObservation(),
+                        Shape = sensor.GetFloatObservationShape(),
+                        CompressionType = sensor.GetCompressionType()
+                    };
+                    m_Info.observations.Add(compressedObs);
+                }
             }
         }
 
         /// <summary>
-        /// Collects the (vector, visual, text) observations of the agent.
+        /// Collects the (vector, visual) observations of the agent.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
@@ -634,7 +644,7 @@ namespace MLAgents
         /// the Agent acheive its goal. For example, for a fighting Agent, its
         /// observation could include distances to friends or enemies, or the
         /// current level of ammunition at its disposal.
-        /// Recall that an Agent may attach vector, visual or textual observations.
+        /// Recall that an Agent may attach vector or visual observations.
         /// Vector observations are added by calling the provided helper methods:
         ///     - <see cref="AddVectorObs(int)"/>
         ///     - <see cref="AddVectorObs(float)"/>
@@ -655,8 +665,6 @@ namespace MLAgents
         /// needs to match the vectorObservationSize attribute of the linked Brain.
         /// Visual observations are implicitly added from the cameras attached to
         /// the Agent.
-        /// Lastly, textual observations are added using
-        /// <see cref="SetTextObs(string)"/>.
         /// </remarks>
         public virtual void CollectObservations()
         {
@@ -719,7 +727,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(float observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -729,7 +737,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(int observation)
         {
-            m_Info.vectorObservation.Add(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -739,9 +747,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector3 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -751,8 +757,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Vector2 observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -762,7 +767,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(IEnumerable<float> observation)
         {
-            m_Info.vectorObservation.AddRange(observation);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -772,10 +777,7 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         protected void AddVectorObs(Quaternion observation)
         {
-            m_Info.vectorObservation.Add(observation.x);
-            m_Info.vectorObservation.Add(observation.y);
-            m_Info.vectorObservation.Add(observation.z);
-            m_Info.vectorObservation.Add(observation.w);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         /// <summary>
@@ -785,23 +787,12 @@ namespace MLAgents
         /// <param name="observation"></param>
         protected void AddVectorObs(bool observation)
         {
-            m_Info.vectorObservation.Add(observation ? 1f : 0f);
+            collectObservationsSensor.AddObservation(observation);
         }
 
         protected void AddVectorObs(int observation, int range)
         {
-            var oneHotVector = new float[range];
-            oneHotVector[observation] = 1;
-            m_Info.vectorObservation.AddRange(oneHotVector);
-        }
-
-        /// <summary>
-        /// Sets the text observation.
-        /// </summary>
-        /// <param name="textObservation">The text observation.</param>
-        public void SetTextObs(string textObservation)
-        {
-            m_Info.textObservation = textObservation;
+            collectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>
@@ -812,28 +803,8 @@ namespace MLAgents
         /// Vector action. Note that for discrete actions, the provided array
         /// will be of length 1.
         /// </param>
-        /// <param name="textAction">Text action.</param>
-        public virtual void AgentAction(float[] vectorAction, string textAction)
+        public virtual void AgentAction(float[] vectorAction)
         {
-        }
-
-        /// <summary>
-        /// Specifies the agent behavior at every step based on the provided
-        /// action.
-        /// </summary>
-        /// <param name="vectorAction">
-        /// Vector action. Note that for discrete actions, the provided array
-        /// will be of length 1.
-        /// </param>
-        /// <param name="textAction">Text action.</param>
-        /// <param name="customAction">
-        /// A custom action, defined by the user as custom protobuf message. Useful if the action is hard to encode
-        /// as either a flat vector or a single string.
-        /// </param>
-        public virtual void AgentAction(float[] vectorAction, string textAction, CommunicatorObjects.CustomActionProto customAction)
-        {
-            // We fall back to not using the custom action if the subclassed Agent doesn't override this method.
-            AgentAction(vectorAction, textAction);
         }
 
         /// <summary>
@@ -998,7 +969,7 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                AgentAction(m_Action.vectorActions, m_Action.textActions, m_Action.customAction);
+                AgentAction(m_Action.vectorActions);
             }
 
             if ((m_StepCount >= agentParameters.maxStep)
@@ -1033,15 +1004,6 @@ namespace MLAgents
         void DecideAction()
         {
             m_Brain?.DecideAction();
-        }
-
-        /// <summary>
-        /// Sets the custom observation for the agent for this episode.
-        /// </summary>
-        /// <param name="customObservation">New value of the agent's custom observation.</param>
-        public void SetCustomObservation(CommunicatorObjects.CustomObservationProto customObservation)
-        {
-            m_Info.customObservation = customObservation;
         }
     }
 }

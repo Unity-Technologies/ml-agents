@@ -1,5 +1,4 @@
 using System;
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor
@@ -45,15 +44,18 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
+        public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
+                return numWritten;
             }
         }
+
+        public void Update() { }
 
         public SensorCompressionType GetCompressionType()
         {

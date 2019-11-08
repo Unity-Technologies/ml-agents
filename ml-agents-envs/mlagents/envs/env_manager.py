@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NamedTuple, Optional
+from typing import Any, List, Dict, NamedTuple, Optional
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 from mlagents.envs.policy import Policy
 from mlagents.envs.action_info import ActionInfo
@@ -24,7 +24,10 @@ class EnvManager(ABC):
 
     @abstractmethod
     def reset(
-        self, config: Dict = None, train_mode: bool = True
+        self,
+        config: Dict = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
         pass
 

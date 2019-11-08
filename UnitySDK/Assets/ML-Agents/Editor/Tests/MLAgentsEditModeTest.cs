@@ -2,7 +2,6 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using MLAgents.Sensor;
-using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -50,7 +49,7 @@ namespace MLAgents.Tests
             AddVectorObs(0f);
         }
 
-        public override void AgentAction(float[] vectorAction, string textAction)
+        public override void AgentAction(float[] vectorAction)
         {
             agentActionCalls += 1;
             AddReward(0.1f);
@@ -83,10 +82,14 @@ namespace MLAgents.Tests
 
         public int[] GetFloatObservationShape()
         {
-            return new[] { 1 };
+            return new[] { 0 };
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+        public int Write(WriteAdapter adapter)
+        {
+            // No-op
+            return 0;
+        }
 
         public byte[] GetCompressedObservation()
         {
@@ -102,6 +105,8 @@ namespace MLAgents.Tests
         {
             return sensorName;
         }
+
+        public void Update() { }
     }
 
     public class EditModeTestGeneration
