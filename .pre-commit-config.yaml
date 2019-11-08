@@ -68,7 +68,7 @@ repos:
             )$
         args: [--score=n]
 
-    # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
+# "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
     -   id: markdown-link-check
