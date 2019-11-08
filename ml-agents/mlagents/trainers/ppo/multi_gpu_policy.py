@@ -1,12 +1,14 @@
-# pylint: disable=attribute-defined-outside-init
 import logging
+from typing import Any, Dict, List, Optional
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
+from mlagents.envs.brain import BrainParameters
 from mlagents.envs.timers import timed
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
@@ -18,6 +20,23 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class MultiGpuPPOPolicy(PPOPolicy):
+    def __init__(
+        self,
+        seed: int,
+        brain: BrainParameters,
+        trainer_params: Dict[str, Any],
+        is_training: bool,
+        load: bool,
+    ):
+        self.towers: List[PPOModel] = []
+        self.devices: List[str] = []
+        self.model: Optional[PPOModel] = None
+        self.total_policy_loss: Optional[tf.Tensor] = None
+        self.reward_signal_towers: List[Dict[str, RewardSignal]] = []
+        self.reward_signals: Dict[str, RewardSignal] = {}
+
+        super().__init__(seed, brain, trainer_params, is_training, load)
+
     def create_model(
         self, brain, trainer_params, reward_signal_configs, is_training, load, seed
     ):
@@ -30,6 +49,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
         """
         self.devices = get_devices()
         self.towers = []
+
         with self.graph.as_default():
             with tf.variable_scope("", reuse=tf.AUTO_REUSE):
                 for device in self.devices:
@@ -106,7 +126,6 @@ class MultiGpuPPOPolicy(PPOPolicy):
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
-        self.reward_signal_towers = []
         with self.graph.as_default():
             with tf.variable_scope(TOWER_SCOPE_NAME, reuse=tf.AUTO_REUSE):
                 for device_id, device in enumerate(self.devices):
@@ -191,7 +210,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
         return average_grads
 
 
-def get_devices():
+def get_devices() -> List[str]:
     """
     Get all available GPU devices
     """
