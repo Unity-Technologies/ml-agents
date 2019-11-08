@@ -57,7 +57,7 @@ namespace MLAgents.Sensor
             return raySensor;
         }
 
-        static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
+        public static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
         {
             // Example:
             // { 90, 90 - delta, 90 + delta, 90 - 2*delta, 90 + 2*delta }
