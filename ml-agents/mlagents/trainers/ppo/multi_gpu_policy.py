@@ -48,7 +48,6 @@ class MultiGpuPPOPolicy(PPOPolicy):
         :param seed: Random seed.
         """
         self.devices = get_devices()
-        self.towers = []
 
         with self.graph.as_default():
             with tf.variable_scope("", reuse=tf.AUTO_REUSE):
