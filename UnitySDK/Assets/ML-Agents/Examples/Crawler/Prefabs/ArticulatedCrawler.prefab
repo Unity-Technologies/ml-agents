@@ -123,7 +123,6 @@ GameObject:
   - component: {fileID: 4283901937423508}
   - component: {fileID: 201389242582710296}
   - component: {fileID: 7737080709538424164}
-  - component: {fileID: 660832040}
   m_Layer: 0
   m_Name: ArticulatedCrawler
   m_TagString: Untagged
@@ -139,7 +138,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1129387478859796}
   m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 2.1, z: 6.3}
+  m_LocalPosition: {x: -400, y: 2.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4415045083540138}
@@ -158,8 +157,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8020ed16eb94c9aac4589a46facb1fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxJointSpring: 80
-  jointDampen: 10
+  maxJointSpring: 200
+  jointDampen: 20
   maxJointForceLimit: 1000
   bodyPartsList: []
 --- !u!114 &7737080709538424164
@@ -207,27 +206,6 @@ MonoBehaviour:
   foot3: {fileID: 4401195584138594589}
   groundedMaterial: {fileID: 0}
   unGroundedMaterial: {fileID: 0}
---- !u!114 &660832040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1129387478859796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1183164ed37748bf9cc8441ceb64df13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  upperLeg0: {fileID: 1375085644099298951}
-  upperLeg1: {fileID: 9138266637015102719}
-  foreLeg0: {fileID: 8645302927567461119}
-  foreLeg1: {fileID: 8600072863197404167}
-  useAlternativeKeySetForInput: 0
-  maxJointForceLimit: 1000
-  maxJointSpring: 60
-  jointDampen: 10
-  currentStrength: 0
 --- !u!1 &1374302196839222
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,7 +1019,7 @@ ArticulationBody:
   m_GameObject: {fileID: 1375085644099298951}
   m_Enabled: 1
   m_Mass: 3
-  m_ParentAnchorPosition: {x: 0.34000003, y: -0.16999991, z: -0.34000003}
+  m_ParentAnchorPosition: {x: 0.34, y: -0.16999991, z: -0.33999467}
   m_ParentAnchorRotation: {x: 0, y: 0.92387974, z: 0, w: -0.38268343}
   m_AnchorPosition: {x: -0.34, y: -0.17, z: -0.34}
   m_AnchorRotation: {x: 0, y: 0.3826835, z: 0, w: -0.9238795}
@@ -1236,10 +1214,10 @@ ArticulationBody:
   m_GameObject: {fileID: 1608323988796809829}
   m_Enabled: 1
   m_Mass: 3
-  m_ParentAnchorPosition: {x: -0.34000015, y: -0.16999991, z: -0.33999997}
-  m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_ParentAnchorPosition: {x: -0.34000003, y: -0.16999991, z: -0.3399946}
+  m_ParentAnchorRotation: {x: 0, y: 0.38268355, z: 0, w: -0.9238796}
   m_AnchorPosition: {x: -0.34, y: -0.17, z: -0.34}
-  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
+  m_AnchorRotation: {x: 0, y: 0.3826835, z: 0, w: -0.9238795}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 3
   m_LinearX: 0
@@ -1926,7 +1904,7 @@ ArticulationBody:
   m_GameObject: {fileID: 6436309409552997484}
   m_Enabled: 1
   m_Mass: 3
-  m_ParentAnchorPosition: {x: -0.34000003, y: -0.16999991, z: 0.34000003}
+  m_ParentAnchorPosition: {x: -0.34000003, y: -0.16999991, z: 0.33999476}
   m_ParentAnchorRotation: {x: 0, y: -0.38268343, z: 0, w: -0.92387974}
   m_AnchorPosition: {x: -0.34, y: -0.17, z: -0.34}
   m_AnchorRotation: {x: 0, y: 0.3826835, z: 0, w: -0.9238795}
@@ -2119,7 +2097,7 @@ ArticulationBody:
   m_GameObject: {fileID: 8599193235947197219}
   m_Enabled: 1
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.9852708, y: -0.15444617, z: -0.94548213}
+  m_ParentAnchorPosition: {x: -0.98528135, y: -0.15444617, z: -0.9454819}
   m_ParentAnchorRotation: {x: 0, y: 0.38268355, z: 0, w: 0.92387974}
   m_AnchorPosition: {x: -0.62, y: -0, z: -0.82}
   m_AnchorRotation: {x: 0, y: 0.38268346, z: 0, w: 0.9238795}
@@ -2200,7 +2178,7 @@ ArticulationBody:
   m_GameObject: {fileID: 8600072863197404167}
   m_Enabled: 1
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.98527044, y: -0.15444617, z: -0.94548166}
+  m_ParentAnchorPosition: {x: -0.98527056, y: -0.15444617, z: -0.9454919}
   m_ParentAnchorRotation: {x: 0, y: 0.38268352, z: 0, w: 0.9238796}
   m_AnchorPosition: {x: -0.62, y: -0, z: -0.82}
   m_AnchorRotation: {x: 0, y: 0.38268346, z: 0, w: 0.9238795}
@@ -2281,10 +2259,10 @@ ArticulationBody:
   m_GameObject: {fileID: 8640153343578765727}
   m_Enabled: 1
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.36527064, y: -0.15444617, z: -0.12548165}
-  m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
+  m_ParentAnchorPosition: {x: -0.98527056, y: -0.15444617, z: -0.9454919}
+  m_ParentAnchorRotation: {x: 0, y: 0.38268352, z: 0, w: 0.9238796}
+  m_AnchorPosition: {x: -0.62, y: 0, z: -0.82}
+  m_AnchorRotation: {x: 0, y: 0.38268346, z: 0, w: 0.9238795}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 0
@@ -2292,7 +2270,7 @@ ArticulationBody:
   m_LinearZ: 0
   m_Swing1: 1
   m_Swing2: 0
-  m_Twist: 0
+  m_Twist: 1
   m_XDrive:
     lowerLimit: -120
     upperLimit: 120
@@ -2362,7 +2340,7 @@ ArticulationBody:
   m_GameObject: {fileID: 8645302927567461119}
   m_Enabled: 1
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.9852708, y: -0.15444617, z: -0.94548196}
+  m_ParentAnchorPosition: {x: -0.9852817, y: -0.15444617, z: -0.945482}
   m_ParentAnchorRotation: {x: 0, y: 0.38268355, z: 0, w: 0.92387974}
   m_AnchorPosition: {x: -0.62, y: -0, z: -0.82}
   m_AnchorRotation: {x: 0, y: 0.38268346, z: 0, w: 0.9238795}
@@ -2444,7 +2422,7 @@ ArticulationBody:
   m_GameObject: {fileID: 9138266637015102719}
   m_Enabled: 1
   m_Mass: 3
-  m_ParentAnchorPosition: {x: 0.34000015, y: -0.16999991, z: 0.33999997}
+  m_ParentAnchorPosition: {x: 0.34000003, y: -0.16999991, z: 0.3399946}
   m_ParentAnchorRotation: {x: 0, y: -0.9238796, z: 0, w: -0.38268355}
   m_AnchorPosition: {x: -0.34, y: -0.17, z: -0.34}
   m_AnchorRotation: {x: 0, y: 0.3826835, z: 0, w: -0.9238795}

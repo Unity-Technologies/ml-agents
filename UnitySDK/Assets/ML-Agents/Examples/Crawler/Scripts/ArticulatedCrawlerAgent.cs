@@ -113,8 +113,6 @@ public class ArticulatedCrawlerAgent : Agent
 
     public override void CollectObservations()
     {
-        m_JdController.GetCurrentJointForces();
-
         // Update pos to target
         m_DirToTarget = target.position - body.position;
         m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
@@ -202,10 +200,10 @@ public class ArticulatedCrawlerAgent : Agent
 
             var i = -1;
             // Pick a new target joint rotation
-            bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+            bpDict[leg0Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg1Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg2Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg3Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
             bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
             bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);

@@ -31,15 +31,6 @@ namespace MLAgents
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
 
-        [Header("Other Debug Info")][Space(10)]
-        public Vector3 currentJointForce;
-
-        public float currentJointForceSqrMag;
-        public Vector3 currentJointTorque;
-        public float currentJointTorqueSqrMag;
-        public AnimationCurve jointForceCurve = new AnimationCurve();
-        public AnimationCurve jointTorqueCurve = new AnimationCurve();
-
         /// <summary>
         /// Reset body part to initial configuration.
         /// </summary>
@@ -171,38 +162,6 @@ namespace MLAgents
             bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
-        }
-
-        public void GetCurrentJointForces()
-        {
-            /*
-            foreach (var bodyPart in bodyPartsDict.Values)
-            {
-                if (!bodyPart.arb.isRoot)
-                {
-                    // Why do we need a force here ?
-                    //bodyPart.currentJointForce = bodyPart.arb;
-                    bodyPart.currentJointForceSqrMag = bodyPart.joint.currentForce.magnitude;
-                    bodyPart.currentJointTorque = bodyPart.joint.currentTorque;
-                    bodyPart.currentJointTorqueSqrMag = bodyPart.joint.currentTorque.magnitude;
-                    if (Application.isEditor)
-                    {
-                        if (bodyPart.jointForceCurve.length > 1000)
-                        {
-                            bodyPart.jointForceCurve = new AnimationCurve();
-                        }
-
-                        if (bodyPart.jointTorqueCurve.length > 1000)
-                        {
-                            bodyPart.jointTorqueCurve = new AnimationCurve();
-                        }
-
-                        bodyPart.jointForceCurve.AddKey(Time.time, bodyPart.currentJointForceSqrMag);
-                        bodyPart.jointTorqueCurve.AddKey(Time.time, bodyPart.currentJointTorqueSqrMag);
-                    }
-                }
-            }
-            */
         }
     }
 }
