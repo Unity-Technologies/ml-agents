@@ -30,7 +30,6 @@ public class WallJumpAgent : Agent
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
     WallJumpAcademy m_Academy;
-    RayPerception m_RayPer;
 
     public float jumpingTime;
     public float jumpTime;
@@ -42,14 +41,10 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
-    string[] m_DetectableObjects;
-
     public override void InitializeAgent()
     {
         m_Academy = FindObjectOfType<WallJumpAcademy>();
-        m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
-        m_DetectableObjects = new[] { "wall", "goal", "block" };
 
         m_AgentRb = GetComponent<Rigidbody>();
         m_ShortBlockRb = shortBlock.GetComponent<Rigidbody>();
@@ -139,12 +134,6 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-//        var rayDistance = 20f;
-//        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-//        AddVectorObs(m_RayPer.Perceive(
-//            rayDistance, rayAngles, m_DetectableObjects));
-//        AddVectorObs(m_RayPer.Perceive(
-//            rayDistance, rayAngles, m_DetectableObjects, 2.5f, 5.0f));
         var agentPos = m_AgentRb.position - ground.transform.position;
 
         AddVectorObs(agentPos / 20f);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -78,13 +79,15 @@ namespace MLAgents
             return m_PerceptionBuffer;
         }
 
+
+
         /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
         public static Vector2 PolarToCartesian(float radius, float angle)
         {
-            var x = radius * Mathf.Cos(DegreeToRadian(angle));
-            var y = radius * Mathf.Sin(DegreeToRadian(angle));
+            var x = radius * Mathf.Cos(RayPerceptionSensor.DegreeToRadian(angle));
+            var y = radius * Mathf.Sin(RayPerceptionSensor.DegreeToRadian(angle));
             return new Vector2(x, y);
         }
     }

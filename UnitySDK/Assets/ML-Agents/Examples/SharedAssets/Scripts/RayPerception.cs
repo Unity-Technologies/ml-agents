@@ -9,11 +9,5 @@ public abstract class RayPerception : MonoBehaviour
         float[] rayAngles, string[] detectableObjects,
         float startOffset=0.0f, float endOffset=0.0f);
 
-    /// <summary>
-    /// Converts degrees to radians.
-    /// </summary>
-    public static float DegreeToRadian(float degree)
-    {
-        return degree * Mathf.PI / 180f;
-    }
+
 }

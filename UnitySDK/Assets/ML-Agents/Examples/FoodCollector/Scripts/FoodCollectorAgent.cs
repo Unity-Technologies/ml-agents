@@ -1,5 +1,6 @@
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensor;
 
 public class FoodCollectorAgent : Agent
 {
@@ -150,7 +151,7 @@ public class FoodCollectorAgent : Agent
         {
             var myTransform = transform;
             myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
-            var position = myTransform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
+            var position = myTransform.TransformDirection(RayPerceptionSensor.PolarToCartesian(25f, 90f));
             Debug.DrawRay(myTransform.position, position, Color.red, 0f, true);
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
