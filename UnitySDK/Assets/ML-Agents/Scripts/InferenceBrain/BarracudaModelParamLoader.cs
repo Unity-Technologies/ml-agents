@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
+using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
@@ -103,8 +105,9 @@ namespace MLAgents.InferenceBrain
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
+        /// <param name="sensorComponents">Attached sensor components</param>
         /// <returns>The list the error messages of the checks that failed</returns>
-        public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters)
+        public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters, SensorComponent[] sensorComponents)
         {
             List<string> failedModelChecks = new List<string>();
             if (model == null)
@@ -150,7 +153,7 @@ namespace MLAgents.InferenceBrain
                 CheckOutputTensorPresence(model, memorySize))
             ;
             failedModelChecks.AddRange(
-                CheckInputTensorShape(model, brainParameters)
+                CheckInputTensorShape(model, brainParameters, sensorComponents)
             );
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
@@ -311,25 +314,26 @@ namespace MLAgents.InferenceBrain
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
+        /// <param name="sensorComponents">Attached sensors</param>
         /// <returns>The list the error messages of the checks that failed</returns>
         static IEnumerable<string> CheckInputTensorShape(
-            Model model, BrainParameters brainParameters)
+            Model model, BrainParameters brainParameters, SensorComponent[] sensorComponents)
         {
             var failedModelChecks = new List<string>();
             var tensorTester =
-                new Dictionary<string, Func<BrainParameters, TensorProxy, string>>()
+                new Dictionary<string, Func<BrainParameters, TensorProxy, SensorComponent[], string>>()
             {
                 {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
                 {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
-                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor) => null)},
-                {TensorNames.ActionMaskPlaceholder, ((bp, tensor) => null)},
-                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor) => null)},
-                {TensorNames.RecurrentInPlaceholder, ((bp, tensor) => null)},
+                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs) => null)},
+                {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs) => null)},
+                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor, scs) => null)},
+                {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs) => null)},
             };
 
             foreach (var mem in model.memories)
             {
-                tensorTester[mem.input] = ((bp, tensor) => null);
+                tensorTester[mem.input] = ((bp, tensor, scs) => null);
             }
 
             // TODO reenable checks on visual observation shapes.
@@ -348,7 +352,7 @@ namespace MLAgents.InferenceBrain
                 else
                 {
                     var tester = tensorTester[tensor.name];
-                    var error = tester.Invoke(brainParameters, tensor);
+                    var error = tester.Invoke(brainParameters, tensor, sensorComponents);
                     if (error != null)
                     {
                         failedModelChecks.Add(error);
@@ -371,15 +375,46 @@ namespace MLAgents.InferenceBrain
         /// check failed. If the check passed, returns null.
         /// </returns>
         static string CheckVectorObsShape(
-            BrainParameters brainParameters, TensorProxy tensorProxy)
+            BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents)
         {
             var vecObsSizeBp = brainParameters.vectorObservationSize;
             var numStackedVector = brainParameters.numStackedVectorObservations;
             var totalVecObsSizeT = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            if (vecObsSizeBp * numStackedVector != totalVecObsSizeT)
+
+            var totalVectorSensorSize = 0;
+            foreach (var sensorComp in sensorComponents)
             {
-                return "Vector Observation Size of the model does not match. Received " +
-                    $"{vecObsSizeBp} x {numStackedVector} but was expecting {totalVecObsSizeT}.";
+                var shape = sensorComp.GetObservationShape();
+                if (shape.Length == 1)
+                {
+                    totalVectorSensorSize += shape[0];
+                }
+            }
+
+            if (vecObsSizeBp * numStackedVector + totalVectorSensorSize != totalVecObsSizeT)
+            {
+                var sensorSizes = "";
+                foreach (var sensorComp in sensorComponents)
+                {
+                    var shape = sensorComp.GetObservationShape();
+                    if (shape.Length == 1)
+                    {
+                        var vecSize = shape[0];
+                        if (sensorSizes.Length == 0)
+                        {
+                            sensorSizes = $"[{vecSize}";
+                        }
+                        else
+                        {
+                            sensorSizes += $", {vecSize}";
+                        }
+                    }
+                }
+
+                sensorSizes += "]";
+                return $"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
+                    $"but received {vecObsSizeBp} x {numStackedVector} vector observations and " +
+                    $"SensorComponent sizes: {sensorSizes}.";
             }
             return null;
         }
@@ -395,7 +430,7 @@ namespace MLAgents.InferenceBrain
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckPreviousActionShape(
-            BrainParameters brainParameters, TensorProxy tensorProxy)
+            BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents)
         {
             var numberActionsBp = brainParameters.vectorActionSize.Length;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];

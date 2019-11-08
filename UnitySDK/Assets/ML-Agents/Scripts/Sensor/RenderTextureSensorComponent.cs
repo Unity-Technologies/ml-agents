@@ -15,5 +15,10 @@ namespace MLAgents.Sensor
         {
             return new RenderTextureSensor(renderTexture, width, height, grayscale, sensorName);
         }
+
+        public override int[] GetObservationShape()
+        {
+            return new[] { width, height, grayscale ? 1 : 3 };
+        }
     }
 }

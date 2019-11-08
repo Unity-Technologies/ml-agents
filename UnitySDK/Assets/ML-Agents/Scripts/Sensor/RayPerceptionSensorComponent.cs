@@ -71,5 +71,14 @@ namespace MLAgents.Sensor
             }
             return anglesOut;
         }
+
+        public override int[] GetObservationShape()
+        {
+            var numRays = 2 * raysPerDirection + 1;
+            var numTags = detectableTags.Count;
+            var obsSize = (numTags + 2) * numRays;
+            var stacks = observationStacks > 1 ? observationStacks : 1;
+            return new[] { obsSize * stacks };
+        }
     }
 }

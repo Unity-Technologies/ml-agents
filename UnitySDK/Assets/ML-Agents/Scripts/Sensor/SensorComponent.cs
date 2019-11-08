@@ -14,5 +14,11 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns></returns>
         public abstract ISensor CreateSensor();
+
+        /// <summary>
+        /// Returns the shape of the sensor observations that will be created.
+        /// </summary>
+        /// <returns></returns>
+        public abstract int[] GetObservationShape();
     }
 }
