@@ -81,6 +81,11 @@ namespace MLAgents
                 //  * if the cast hits a object that's not in the detectableObjects list, all results are 0
                 //  * if the cast doesn't hit, the hit fraction field is 0
 
+                if (Application.isEditor)
+                {
+                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
+                }
+
                 bool castHit;
                 RaycastHit rayHit;
                 if (castRadius > 0f)

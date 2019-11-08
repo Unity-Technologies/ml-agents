@@ -32,6 +32,9 @@ namespace MLAgents.Sensor
             m_DetectableObjects = detectableObjects;
             m_Angles = angles;
             m_Transform = transform;
+            m_StartOffset = startOffset;
+            m_EndOffset = endOffset;
+            m_CastRadius = castRadius;
         }
 
         public int Write(WriteAdapter adapter)

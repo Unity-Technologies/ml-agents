@@ -66,8 +66,8 @@ namespace MLAgents.Sensor
             anglesOut[0] = 90f;
             for (var i = 0; i < raysPerDirection; i++)
             {
-                anglesOut[2 * i + 1] = 90 - i * delta;
-                anglesOut[2 * i + 2] = 90 + i * delta;
+                anglesOut[2 * i + 1] = 90 - (i+1) * delta;
+                anglesOut[2 * i + 2] = 90 + (i+1) * delta;
             }
             return anglesOut;
         }
