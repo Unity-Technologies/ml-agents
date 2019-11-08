@@ -60,13 +60,11 @@ setup(
         "jupyter",
         "matplotlib",
         "mlagents_envs=={}".format(VERSION),
-        # "numpy>=1.13.3,<2.0",
-        "numpy>=1.16.0,<2.0",  # TEMP FOR TRAINING
+        "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
-        # "tensorflow>=1.7,<2.1", # TEMP FOR TRAINING
-        "tensorflow==2.0.0",
+        "tensorflow>=1.7,<2.1",
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",
