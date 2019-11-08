@@ -20,5 +20,17 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns></returns>
         public abstract int[] GetObservationShape();
+
+        public virtual bool IsVisual()
+        {
+            var shape = GetObservationShape();
+            return shape.Length == 3;
+        }
+
+        public virtual bool IsVector()
+        {
+            var shape = GetObservationShape();
+            return shape.Length == 1;
+        }
     }
 }

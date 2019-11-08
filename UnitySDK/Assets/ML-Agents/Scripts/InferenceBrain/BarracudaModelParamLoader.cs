@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
 using MLAgents.Sensor;
+using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
@@ -61,6 +61,26 @@ namespace MLAgents.InferenceBrain
             tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
 
             return tensors;
+        }
+
+        public static int GetNumVisualInputs(Model model)
+        {
+            var count = 0;
+            if (model == null)
+                return count;
+
+            foreach (var input in model.inputs)
+            {
+                if (input.shape.Length == 4)
+                {
+                    if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -147,7 +167,7 @@ namespace MLAgents.InferenceBrain
                 })
             );
             failedModelChecks.AddRange(
-                CheckInputTensorPresence(model, brainParameters, memorySize, isContinuous)
+                CheckInputTensorPresence(model, brainParameters, memorySize, isContinuous, sensorComponents)
             );
             failedModelChecks.AddRange(
                 CheckOutputTensorPresence(model, memorySize))
@@ -223,6 +243,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="isContinuous">
         /// Whether the model is expecting continuous or discrete control.
         /// </param>
+        /// <param name="sensorComponents">Array of attached sensor components</param>
         /// <returns>
         /// A IEnumerable of string corresponding to the failed input presence checks.
         /// </returns>
@@ -230,7 +251,9 @@ namespace MLAgents.InferenceBrain
             Model model,
             BrainParameters brainParameters,
             int memory,
-            ModelActionType isContinuous)
+            ModelActionType isContinuous,
+            SensorComponent[] sensorComponents
+            )
         {
             var failedModelChecks = new List<string>();
             var tensorsNames = GetInputTensors(model).Select(x => x.name).ToList();
@@ -244,7 +267,36 @@ namespace MLAgents.InferenceBrain
                     "You must set the Vector Observation Space Size to 0.");
             }
 
-            // TODO reenable checks there are enough Visual Observation Placeholder in the model.
+            // If there are not enough Visual Observation Input compared to what the
+            // sensors expect.
+            var visObsIndex = 0;
+            for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
+            {
+                var sensor = sensorComponents[sensorIndex];
+                if (!sensor.IsVisual())
+                {
+                    continue;
+                }
+                if (!tensorsNames.Contains(
+                    TensorNames.VisualObservationPlaceholderPrefix + visObsIndex))
+                {
+                    failedModelChecks.Add(
+                        "The model does not contain a Visual Observation Placeholder Input " +
+                        $"for sensor component {visObsIndex} ({sensor.GetType().Name}).");
+                }
+
+                visObsIndex++;
+            }
+
+            var expectedVisualObs = GetNumVisualInputs(model);
+            // Check if there's not enough visual sensors (too many would be handled above)
+            if (expectedVisualObs > visObsIndex)
+            {
+                failedModelChecks.Add(
+                    $"The model expects {expectedVisualObs} visual inputs," +
+                    $" but only found {visObsIndex} visual sensors."
+                );
+            }
 
             // If the model has a non-negative memory size but requires a recurrent input
             if (memory > 0)
@@ -305,6 +357,34 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
+        /// Checks that the shape of the visual observation input placeholder is the same as the corresponding sensor.
+        /// </summary>
+        /// <param name="tensorProxy">The tensor that is expected by the model</param>
+        /// <param name="sensorComponent">The sensor that produces the visual observation.</param>
+        /// <returns>
+        /// If the Check failed, returns a string containing information about why the
+        /// check failed. If the check passed, returns null.
+        /// </returns>
+        static string CheckVisualObsShape(
+            TensorProxy tensorProxy, SensorComponent sensorComponent)
+        {
+            var shape = sensorComponent.GetObservationShape();
+            var widthBp = shape[0];
+            var heightBp = shape[1];
+            var pixelBp = shape[2];
+            var heightT = tensorProxy.shape[1];
+            var widthT = tensorProxy.shape[2];
+            var pixelT = tensorProxy.shape[3];
+            if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
+            {
+                return $"The visual Observation of the model does not match. " +
+                    $"Received TensorProxy of shape [?x{widthBp}x{heightBp}x{pixelBp}] but " +
+                    $"was expecting [?x{widthT}x{heightT}x{pixelT}].";
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Generates failed checks that correspond to inputs shapes incompatibilities between
         /// the model and the BrainParameters.
         /// </summary>
@@ -336,7 +416,18 @@ namespace MLAgents.InferenceBrain
                 tensorTester[mem.input] = ((bp, tensor, scs) => null);
             }
 
-            // TODO reenable checks on visual observation shapes.
+            var visObsIndex = 0;
+            for (var sensorIndex = 0; sensorIndex < sensorComponents.Length; sensorIndex++)
+            {
+                var sensorComponent = sensorComponents[sensorIndex];
+                if (!sensorComponent.IsVisual())
+                {
+                    continue;
+                }
+                tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
+                    (bp, tensor, scs) => CheckVisualObsShape(tensor, sensorComponent);
+                visObsIndex++;
+            }
 
             // If the model expects an input but it is not in this list
             foreach (var tensor in GetInputTensors(model))
@@ -370,6 +461,7 @@ namespace MLAgents.InferenceBrain
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="tensorProxy">The tensor that is expected by the model</param>
+        /// <param name="sensorComponents">Array of attached sensor components</param>
         /// <returns>
         /// If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.
@@ -384,10 +476,9 @@ namespace MLAgents.InferenceBrain
             var totalVectorSensorSize = 0;
             foreach (var sensorComp in sensorComponents)
             {
-                var shape = sensorComp.GetObservationShape();
-                if (shape.Length == 1)
+                if (sensorComp.IsVector())
                 {
-                    totalVectorSensorSize += shape[0];
+                    totalVectorSensorSize += sensorComp.GetObservationShape()[0];
                 }
             }
 
@@ -396,10 +487,9 @@ namespace MLAgents.InferenceBrain
                 var sensorSizes = "";
                 foreach (var sensorComp in sensorComponents)
                 {
-                    var shape = sensorComp.GetObservationShape();
-                    if (shape.Length == 1)
+                    if (sensorComp.IsVector())
                     {
-                        var vecSize = shape[0];
+                        var vecSize = sensorComp.GetObservationShape()[0];
                         if (sensorSizes.Length == 0)
                         {
                             sensorSizes = $"[{vecSize}";
@@ -427,6 +517,7 @@ namespace MLAgents.InferenceBrain
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="tensorProxy"> The tensor that is expected by the model</param>
+        /// <param name="sensorComponents">Array of attached sensor components</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckPreviousActionShape(

@@ -16,7 +16,7 @@ namespace MLAgents.Sensor
 
         float m_StartOffset;
         float m_EndOffset;
-        float m_CastRadius = 0.5f;
+        float m_CastRadius;
         Transform m_Transform;
 
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
