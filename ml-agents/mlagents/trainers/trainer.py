@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List, Deque, Any
 import os
 
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 import numpy as np
 from collections import deque, defaultdict

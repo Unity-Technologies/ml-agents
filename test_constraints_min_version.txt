@@ -3,6 +3,4 @@ grpcio==1.11.0
 numpy==1.16.0  # TEMP
 Pillow==4.2.1
 protobuf==3.6
-# TEMPORARY
-#tensorflow==1.7
-tensorflow==2.0.0
+tensorflow==1.7

@@ -3,7 +3,7 @@ import pytest
 import yaml
 
 import numpy as np
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 
 from mlagents.trainers.sac.models import SACModel

@@ -3,7 +3,7 @@ import pytest
 import os
 
 import numpy as np
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.bc.models import BehavioralCloningModel

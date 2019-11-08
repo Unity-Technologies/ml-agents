@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, Mock, patch
 
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 import yaml
 import pytest

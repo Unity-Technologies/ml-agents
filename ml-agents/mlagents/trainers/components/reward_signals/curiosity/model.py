@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 from mlagents.trainers.models import LearningModel
 

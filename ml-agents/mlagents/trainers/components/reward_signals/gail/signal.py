@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 import logging
 import numpy as np
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult

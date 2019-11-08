@@ -8,7 +8,7 @@ import logging
 from typing import Dict, List, Optional, Set
 
 import numpy as np
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 from time import time
 
 from mlagents.envs.env_manager import EnvironmentStep

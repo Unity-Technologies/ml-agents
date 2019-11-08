@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Callable, Dict, List, Optional
 
 import numpy as np
-from mlagents.trainers import tf, tf_variance_scaling, tf_rnn, tf_flatten
+from mlagents.tf_utils import tf, tf_variance_scaling, tf_rnn, tf_flatten
 
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.envs.brain import CameraResolution

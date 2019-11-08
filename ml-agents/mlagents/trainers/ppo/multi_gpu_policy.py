@@ -1,6 +1,6 @@
 import logging
 
-from mlagents.trainers import tf
+from mlagents.tf_utils import tf
 
 from tensorflow.python.client import device_lib
 from mlagents.envs.timers import timed

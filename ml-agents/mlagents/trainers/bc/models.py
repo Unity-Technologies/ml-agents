@@ -1,4 +1,4 @@
-from mlagents.trainers import tf, tf_variance_scaling
+from mlagents.tf_utils import tf, tf_variance_scaling
 
 from mlagents.trainers.models import LearningModel
 
