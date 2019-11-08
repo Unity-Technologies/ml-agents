@@ -16,15 +16,7 @@ from mlagents.trainers.components.bc.module import BCModule
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PolicyNetwork(tf.keras.layers.Layer):
-    def __init__(self, *args, **kwargs):
-        super(PolicyNetwork, self).__init__(*args, **kwargs)
-
-    def build(self, input_shape, output_shape):
-        pass
-
-
-class PPOPolicy(object):
+class PPOPolicy(TFPolicy):
     def __init__(
         self,
         seed: int,
