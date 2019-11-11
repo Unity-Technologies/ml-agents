@@ -272,9 +272,9 @@ public class ArticulatedCrawlerAgent : Agent
     {
         if (m_DirToTarget != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
+            body.transform.rotation = Quaternion.LookRotation(m_DirToTarget);
         }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+        body.transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {

@@ -36,8 +36,12 @@ namespace MLAgents
         /// </summary>
         public void Reset(ArticulationBodyPart bp)
         {
-            bp.arb.transform.position = bp.startingPos;
-            bp.arb.transform.rotation = bp.startingRot;
+            // Can't assign transforms for articulation bodies: transform changes are ignored, simulations goes on.
+            // No way to reset velocities for articulation bodies now
+            if (bp.arb.isRoot)
+                bp.arb.TeleportRoot(bp.startingPos, bp.startingRot);
+            //bp.arb.transform.position = bp.startingPos;
+            //bp.arb.transform.rotation = bp.startingRot;
             
             // Can't assigned articulation body velocitys/angularVelocities
             //bp.arb.velocity = Vector3.zero;
