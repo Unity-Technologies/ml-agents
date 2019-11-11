@@ -20,6 +20,7 @@ namespace MLAgents
             var newPosition = new Vector3(target.position.x + m_Offset.x, transform.position.y,
                 target.position.z + m_Offset.z);
             gameObject.transform.position = newPosition;
+            gameObject.transform.LookAt(target);
         }
     }
 }
