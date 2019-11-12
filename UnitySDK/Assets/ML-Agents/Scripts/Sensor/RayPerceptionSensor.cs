@@ -19,6 +19,44 @@ namespace MLAgents.Sensor
         float m_CastRadius;
         Transform m_Transform;
 
+        /// <summary>
+        /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
+        /// </summary>
+        public class DebugDisplayInfo
+        {
+            public struct RayInfo
+            {
+                public Vector3 localStart;
+                public Vector3 localEnd;
+                public bool castHit;
+                public float hitFraction;
+            }
+
+            public void Reset()
+            {
+                m_Frame = Time.frameCount;
+            }
+
+            /// <summary>
+            /// "Age" of the results in number of frames. This is used to adjust the alpha when drawing.
+            /// </summary>
+            public int age
+            {
+                get { return Time.frameCount - m_Frame; }
+            }
+
+            public RayInfo[] rayInfos;
+
+            private int m_Frame;
+        }
+
+        DebugDisplayInfo m_DebugDisplayInfo;
+
+        public DebugDisplayInfo debugDisplayInfo
+        {
+            get { return m_DebugDisplayInfo; }
+        }
+
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
             Transform transform, float startOffset, float endOffset, float castRadius)
         {
@@ -36,13 +74,18 @@ namespace MLAgents.Sensor
             m_StartOffset = startOffset;
             m_EndOffset = endOffset;
             m_CastRadius = castRadius;
+
+            if (Application.isEditor)
+            {
+                m_DebugDisplayInfo = new DebugDisplayInfo();
+            }
         }
 
         public int Write(WriteAdapter adapter)
         {
             PerceiveStatic(
                 m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                m_CastRadius, m_Transform, m_Observations
+                m_CastRadius, m_Transform, m_Observations, false, m_DebugDisplayInfo
             );
             adapter.AddRange(m_Observations);
             return m_Observations.Length;
@@ -88,7 +131,6 @@ namespace MLAgents.Sensor
         /// counter-intuitive behavior:
         ///  * if the cast hits a object that's not in the detectableObjects list, all results are 0
         ///  * if the cast doesn't hit, the hit fraction field is 0
-
         /// </summary>
         /// <param name="rayLength"></param>
         /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
@@ -101,19 +143,31 @@ namespace MLAgents.Sensor
         /// <param name="transform">Transform of the GameObject</param>
         /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
         /// <param name="legacyHitFractionBehavior">Whether to use the legacy behavior for hit fractions.</param>
+        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
+        ///
         public static void PerceiveStatic(float rayLength,
             IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
             float startOffset, float endOffset, float castRadius,
             Transform transform, float[] perceptionBuffer,
-            bool legacyHitFractionBehavior = false)
+            bool legacyHitFractionBehavior = false,
+            DebugDisplayInfo debugInfo = null)
         {
             Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
+            if (debugInfo != null)
+            {
+                debugInfo.Reset();
+                if (debugInfo.rayInfos == null || debugInfo.rayInfos.Length != rayAngles.Count)
+                {
+                    debugInfo.rayInfos = new DebugDisplayInfo.RayInfo[rayAngles.Count];
+                }
+            }
 
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
             int bufferOffset = 0;
-            foreach (var angle in rayAngles)
+            for (var rayIndex = 0; rayIndex<rayAngles.Count; rayIndex++)
             {
+                var angle = rayAngles[rayIndex];
                 Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
                 Vector3 endPositionLocal = PolarToCartesian(rayLength, angle);
                 endPositionLocal.y += endOffset;
@@ -122,10 +176,6 @@ namespace MLAgents.Sensor
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
                 var rayDirection = endPositionWorld - startPositionWorld;
-                if (Application.isEditor)
-                {
-                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
-                }
 
                 // Do the cast and assign the hit information for each detectable object.
                 //     sublist[0           ] <- did hit detectableObjects[0]
@@ -149,6 +199,21 @@ namespace MLAgents.Sensor
                     castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit, rayLength);
                 }
 
+                var hitFraction = castHit ? rayHit.distance / rayLength : 1.0f;
+
+                if (debugInfo != null)
+                {
+                    debugInfo.rayInfos[rayIndex].localStart = startPositionLocal;
+                    debugInfo.rayInfos[rayIndex].localEnd = endPositionLocal;
+                    debugInfo.rayInfos[rayIndex].castHit = castHit;
+                    debugInfo.rayInfos[rayIndex].hitFraction = hitFraction;
+                }
+                else if (Application.isEditor)
+                {
+                    // Legacy drawing
+                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
+                }
+
                 if (castHit)
                 {
                     for (var i = 0; i < detectableObjects.Count; i++)
@@ -156,14 +221,14 @@ namespace MLAgents.Sensor
                         if (rayHit.collider.gameObject.CompareTag(detectableObjects[i]))
                         {
                             perceptionBuffer[bufferOffset + i] = 1;
-                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = rayHit.distance / rayLength;
+                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
                             break;
                         }
 
                         if (!legacyHitFractionBehavior)
                         {
                             // Something was hit but not on the list. Still set the hit fraction.
-                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = rayHit.distance / rayLength;
+                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
                         }
                     }
                 }
@@ -186,7 +251,7 @@ namespace MLAgents.Sensor
         /// </summary>
         public static float DegreeToRadian(float degree)
         {
-            return degree * Mathf.PI / 180f;
+            return degree * Mathf.Deg2Rad;
         }
 
         /// <summary>

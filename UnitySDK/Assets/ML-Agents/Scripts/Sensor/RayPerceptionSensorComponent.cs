@@ -39,22 +39,25 @@ namespace MLAgents.Sensor
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
 
+        [NonSerialized]
+        RayPerceptionSensor m_RaySensor;
+
         // TODO layerMask for raycasts
 
         public override ISensor CreateSensor()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-            var raySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
+            m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
                 transform, startVerticalOffset, endVerticalOffset, sphereCastRadius
             );
 
             if (observationStacks != 1)
             {
-                var stackingSensor = new StackingSensor(raySensor, observationStacks);
+                var stackingSensor = new StackingSensor(m_RaySensor, observationStacks);
                 return stackingSensor;
             }
 
-            return raySensor;
+            return m_RaySensor;
         }
 
         public static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
@@ -79,6 +82,44 @@ namespace MLAgents.Sensor
             var obsSize = (numTags + 2) * numRays;
             var stacks = observationStacks > 1 ? observationStacks : 1;
             return new[] { obsSize * stacks };
+        }
+
+        /// <summary>
+        /// Draw the debug information from the sensor (if available).
+        /// </summary>
+        public void OnDrawGizmos()
+        {
+            if (m_RaySensor?.debugDisplayInfo?.rayInfos == null)
+            {
+                return;
+            }
+            var debugInfo = m_RaySensor.debugDisplayInfo;
+
+            // Draw "old" observations in a lighter color.
+            // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
+            var alpha = Mathf.Pow(.5f, debugInfo.age);
+
+            foreach (var rayInfo in debugInfo.rayInfos)
+            {
+                var startPositionWorld = transform.TransformPoint(rayInfo.localStart);
+                var endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
+                var rayDirection = endPositionWorld - startPositionWorld;
+                rayDirection *= rayInfo.hitFraction;
+
+                var color = rayInfo.castHit ? Color.yellow : Color.blue;
+                color.a = alpha;
+                Gizmos.color = color;
+                Gizmos.DrawRay(startPositionWorld,rayDirection);
+
+                // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
+                if (rayInfo.castHit)
+                {
+                    var hitRadius = Mathf.Max(sphereCastRadius, .05f);
+                    Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
+
+                }
+            }
+
         }
     }
 }
