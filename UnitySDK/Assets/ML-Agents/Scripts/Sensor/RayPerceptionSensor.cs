@@ -47,7 +47,7 @@ namespace MLAgents.Sensor
 
             public RayInfo[] rayInfos;
 
-            private int m_Frame;
+            int m_Frame;
         }
 
         DebugDisplayInfo m_DebugDisplayInfo;

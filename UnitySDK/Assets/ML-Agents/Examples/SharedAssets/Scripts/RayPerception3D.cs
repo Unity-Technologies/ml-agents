@@ -9,6 +9,7 @@ namespace MLAgents
     /// Ray perception component. Attach this to agents to enable "local perception"
     /// via the use of ray casts directed outward from the agent.
     /// </summary>
+    [Obsolete("The RayPerception MonoBehaviour is deprecated. Use the RayPerceptionSensorComponent instead")]
     public class RayPerception3D : RayPerception
     {
         /// <summary>
