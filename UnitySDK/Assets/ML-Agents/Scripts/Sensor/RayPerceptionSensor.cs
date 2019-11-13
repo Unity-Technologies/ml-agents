@@ -251,20 +251,12 @@ namespace MLAgents.Sensor
         }
 
         /// <summary>
-        /// Converts degrees to radians.
-        /// </summary>
-        public static float DegreeToRadian(float degree)
-        {
-            return degree * Mathf.Deg2Rad;
-        }
-
-        /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
-        public static Vector3 PolarToCartesian(float radius, float angle)
+        static Vector3 PolarToCartesian(float radius, float angleDegrees)
         {
-            var x = radius * Mathf.Cos(DegreeToRadian(angle));
-            var z = radius * Mathf.Sin(DegreeToRadian(angle));
+            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
+            var z = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
             return new Vector3(x, 0f, z);
         }
     }

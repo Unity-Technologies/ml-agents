@@ -48,7 +48,8 @@ namespace MLAgents
             var bufferOffset = 0;
             foreach (var angle in rayAngles)
             {
-                Vector2 rayDirection = transform.TransformDirection(PolarToCartesian(rayDistance, angle));
+                Vector2 temp = PolarToCartesian(rayDistance, angle);
+                Vector2 rayDirection = transform.TransformDirection(temp);
                 if (Application.isEditor)
                 {
                     Debug.DrawRay(transform.position,
@@ -84,10 +85,10 @@ namespace MLAgents
         /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
-        public static Vector2 PolarToCartesian(float radius, float angle)
+        static Vector2 PolarToCartesian(float radius, float angleDegrees)
         {
-            var x = radius * Mathf.Cos(RayPerceptionSensor.DegreeToRadian(angle));
-            var y = radius * Mathf.Sin(RayPerceptionSensor.DegreeToRadian(angle));
+            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
+            var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
             return new Vector2(x, y);
         }
     }

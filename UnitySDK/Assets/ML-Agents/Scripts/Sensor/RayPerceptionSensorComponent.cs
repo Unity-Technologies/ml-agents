@@ -38,7 +38,7 @@ namespace MLAgents.Sensor
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
-
+        
         [Header("Debug Gizmos")]
         public Color rayHitColor = Color.yellow;
         public Color rayMissColor = Color.blue;
