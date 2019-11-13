@@ -51,6 +51,8 @@ namespace MLAgents.InferenceBrain
                 new BatchSizeGenerator(allocator);
             m_Dict[TensorNames.SequenceLengthPlaceholder] =
                 new SequenceLengthGenerator(allocator);
+            m_Dict[TensorNames.RecurrentInPlaceholder] =
+                new RecurrentInputGenerator(allocator, memories);
 
             if (barracudaModel != null)
             {

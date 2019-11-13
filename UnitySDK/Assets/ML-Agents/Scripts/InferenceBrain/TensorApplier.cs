@@ -61,6 +61,7 @@ namespace MLAgents.InferenceBrain
                 m_Dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
             if (barracudaModel != null)
             {
