@@ -47,7 +47,7 @@ class PPOPolicy(TFPolicy):
             brain, trainer_params, reward_signal_configs, is_training, load, seed
         )
         self.create_reward_signals(reward_signal_configs)
-
+        self.trainer_params = trainer_params
         with self.graph.as_default():
             self.bc_module: Optional[BCModule] = None
             # Create pretrainer if needed

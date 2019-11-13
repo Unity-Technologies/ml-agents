@@ -88,8 +88,8 @@ class PPOTrainer(RLTrainer):
         :param next_info: Dictionary of all next brains and corresponding BrainInfo.
         """
         info = next_info[self.brain_name]
-        if self.is_training:
-            self.policy.update_normalization(info.vector_observations)
+        # if self.is_training:
+        #     self.policy.update_normalization(info.vector_observations)
         for l in range(len(info.agents)):
             agent_actions = self.training_buffer[info.agents[l]]["actions"]
             if (
@@ -178,13 +178,13 @@ class PPOTrainer(RLTrainer):
         Takes the output of the last action and store it into the training buffer.
         """
         actions = take_action_outputs["action"]
-        if self.policy.use_continuous_act:
-            actions_pre = take_action_outputs["pre_action"]
-            self.training_buffer[agent_id]["actions_pre"].append(actions_pre[agent_idx])
-            epsilons = take_action_outputs["random_normal_epsilon"]
-            self.training_buffer[agent_id]["random_normal_epsilon"].append(
-                epsilons[agent_idx]
-            )
+        # if self.policy.use_continuous_act:
+        #     actions_pre = take_action_outputs["pre_action"]
+        #     self.training_buffer[agent_id]["actions_pre"].append(actions_pre[agent_idx])
+        #     epsilons = take_action_outputs["random_normal_epsilon"]
+        #     self.training_buffer[agent_id]["random_normal_epsilon"].append(
+        #         epsilons[agent_idx]
+        #     )
         a_dist = take_action_outputs["log_probs"]
         # value is a dictionary from name of reward to value estimate of the value head
         self.training_buffer[agent_id]["actions"].append(actions[agent_idx])
@@ -265,10 +265,10 @@ class PPOTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self.stats[stat].append(np.mean(stat_list))
 
-        if self.policy.bc_module:
-            update_stats = self.policy.bc_module.update()
-            for stat, val in update_stats.items():
-                self.stats[stat].append(val)
+        # if self.policy.bc_module:
+        #     update_stats = self.policy.bc_module.update()
+        #     for stat, val in update_stats.items():
+        #         self.stats[stat].append(val)
         self.clear_update_buffer()
         self.trainer_metrics.end_policy_update()
 

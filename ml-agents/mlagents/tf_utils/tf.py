@@ -17,7 +17,7 @@ if _is_tensorflow2:
     tf_flatten = tf.layers.flatten
     tf_rnn = tf.nn.rnn_cell
 
-    tf.disable_v2_behavior()
+    # tf.disable_v2_behavior()
 else:
     import tensorflow.contrib.layers as c_layers
 

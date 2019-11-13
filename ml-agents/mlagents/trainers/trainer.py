@@ -2,8 +2,7 @@
 import logging
 from typing import Dict, List, Deque, Any
 import os
-
-from mlagents.tf_utils import tf
+import tensorflow as tf
 
 import numpy as np
 from collections import deque, defaultdict
@@ -58,7 +57,7 @@ class Trainer(object):
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
-        self.summary_writer = tf.summary.FileWriter(self.summary_path)
+        self.summary_writer = tf.summary.create_file_writer(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None
         self.step: int = 0
@@ -203,15 +202,13 @@ class Trainer(object):
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag="{}".format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
-            self.summary_writer.add_summary(summary, step)
-            self.summary_writer.flush()
+            with self.summary_writer.as_default():
+                for key in self.stats:
+                    if len(self.stats[key]) > 0:
+                        stat_mean = float(np.mean(self.stats[key]))
+                        tf.summary.scalar("{}".format(key), stat_mean, step=step)
+                        self.stats[key] = []
+                tf.summary.scalar("Environment/Lesson", lesson_num, step)
 
     def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
         """
