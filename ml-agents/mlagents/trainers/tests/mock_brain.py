@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import numpy as np
 
-from mlagents.envs.brain import CameraResolution, BrainParameters
+from mlagentsenvs.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import Buffer
 
 

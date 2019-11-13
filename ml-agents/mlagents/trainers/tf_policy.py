@@ -4,13 +4,13 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs.exception import UnityException
-from mlagents.envs.policy import Policy
-from mlagents.envs.action_info import ActionInfo
+from mlagentsenvs.envs.exception import UnityException
+from mlagentsenvs.envs.policy import Policy
+from mlagentsenvs.envs.action_info import ActionInfo
 from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.envs.brain import BrainInfo
+from mlagentsenvs.envs.brain import BrainInfo
 
 
 logger = logging.getLogger("mlagents.trainers")

@@ -6,12 +6,12 @@ import tensorflow as tf
 import numpy as np
 from collections import deque, defaultdict
 
-from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.envs.exception import UnityException
-from mlagents.envs.timers import set_gauge
+from mlagentsenvs.envs.action_info import ActionInfoOutputs
+from mlagentsenvs.envs.exception import UnityException
+from mlagentsenvs.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainParameters, AllBrainInfo
+from mlagentsenvs.envs.brain import BrainParameters, AllBrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -25,7 +25,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the base class for the mlagents.envs.trainers"""
+    """This class is the base class for the mlagentsenvs.envs.trainers"""
 
     def __init__(
         self,

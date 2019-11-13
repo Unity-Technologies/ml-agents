@@ -8,15 +8,15 @@ from typing import Any, Dict
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.observation_pb2 import (
+from mlagentsenvs.envs.base_unity_environment import BaseUnityEnvironment
+from mlagentsenvs.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
+from mlagentsenvs.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagentsenvs.envs.communicator_objects.observation_pb2 import (
     ObservationProto,
     NONE as COMPRESSION_TYPE_NONE,
 )
-from mlagents.envs.simple_env_manager import SimpleEnvManager
-from mlagents.envs.sampler_class import SamplerManager
+from mlagentsenvs.envs.simple_env_manager import SimpleEnvManager
+from mlagentsenvs.envs.sampler_class import SamplerManager
 
 
 BRAIN_NAME = __name__

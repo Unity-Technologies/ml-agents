@@ -7,7 +7,7 @@ import tensorflow as tf
 import tensorflow.contrib.layers as c_layers
 
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.envs.brain import CameraResolution
+from mlagentsenvs.envs.brain import CameraResolution
 
 logger = logging.getLogger("mlagents.trainers")
 

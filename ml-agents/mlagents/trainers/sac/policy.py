@@ -3,8 +3,8 @@ from typing import Dict, Any, Optional
 import numpy as np
 import tensorflow as tf
 
-from mlagents.envs.timers import timed
-from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagentsenvs.envs.timers import timed
+from mlagentsenvs.envs.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy

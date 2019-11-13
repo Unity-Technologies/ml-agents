@@ -4,8 +4,8 @@ import yaml
 import pytest
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.envs.subprocess_env_manager import EnvironmentStep
-from mlagents.envs.sampler_class import SamplerManager
+from mlagentsenvs.envs.subprocess_env_manager import EnvironmentStep
+from mlagentsenvs.envs.sampler_class import SamplerManager
 
 
 @pytest.fixture

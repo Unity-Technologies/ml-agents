@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
 import tensorflow as tf
-from mlagents.envs.brain import BrainInfo
+from mlagentsenvs.envs.brain import BrainInfo
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel

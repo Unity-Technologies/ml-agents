@@ -3,8 +3,8 @@ import logging
 from typing import Dict, List, Any, NamedTuple
 import numpy as np
 
-from mlagents.envs.brain import AllBrainInfo, BrainInfo
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagentsenvs.envs.brain import AllBrainInfo, BrainInfo
+from mlagentsenvs.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult

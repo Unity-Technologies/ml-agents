@@ -10,8 +10,8 @@ from mlagents.trainers.bc.models import BehavioralCloningModel
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.bc.offline_trainer import BCTrainer
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.mock_communicator import MockCommunicator
+from mlagentsenvs.envs.environment import UnityEnvironment
+from mlagentsenvs.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 
 
@@ -106,8 +106,8 @@ def test_bc_trainer_end_episode(dummy_config):
         assert trainer.cumulative_rewards[agent_id] == 0
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagentsenvs.envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagentsenvs.envs.environment.UnityEnvironment.get_communicator")
 def test_bc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(

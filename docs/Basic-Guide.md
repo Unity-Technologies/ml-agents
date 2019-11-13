@@ -145,7 +145,7 @@ INFO:mlagents.learn:{'--curriculum': 'None',
  '--train': True,
  '--worker-id': '0',
  '<trainer-config-path>': 'config/trainer_config.yaml'}
-INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
+INFO:mlagentsenvs.envs:Start training by pressing the Play button in the Unity Editor.
  ```
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
@@ -155,7 +155,7 @@ If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
 ```console
-INFO:mlagents.envs:
+INFO:mlagentsenvs.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
         Number of Brains: 1
@@ -169,7 +169,7 @@ Unity brain name: 3DBallLearning
         Vector Action space type: continuous
         Vector Action space size (per agent): [2]
         Vector Action descriptions: ,
-INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
+INFO:mlagentsenvs.envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         batch_size:          64
         beta:                0.001
         buffer_size:         12000

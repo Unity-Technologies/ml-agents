@@ -10,9 +10,9 @@ import os
 
 import numpy as np
 
-from mlagents.envs.brain import AllBrainInfo
-from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.envs.timers import timed
+from mlagentsenvs.envs.brain import AllBrainInfo
+from mlagentsenvs.envs.action_info import ActionInfoOutputs
+from mlagentsenvs.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 

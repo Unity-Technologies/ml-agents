@@ -6,12 +6,12 @@ Python API that allows direct interaction with the Unity game engine as well as
 a collection of trainers and algorithms to train agents in Unity environments.
 
 The `mlagents` Python package contains two components: a low level API which
-allows you to interact directly with a Unity Environment (`mlagents.envs`) and
+allows you to interact directly with a Unity Environment (`mlagentsenvs.envs`) and
 an entry point to train (`mlagents-learn`) which allows you to train agents in
 Unity Environments using our implementations of reinforcement learning or
 imitation learning.
 
-## mlagents.envs
+## mlagentsenvs.envs
 
 The ML-Agents Toolkit provides a Python API for controlling the Agent simulation
 loop of an environment or game built with Unity. This API is used by the
@@ -50,7 +50,7 @@ file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.envs.environment import UnityEnvironment
+from mlagentsenvs.envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", worker_id=0, seed=1)
 ```
 

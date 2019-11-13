@@ -15,11 +15,11 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import SamplerException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+from mlagentsenvs.envs.environment import UnityEnvironment
+from mlagentsenvs.envs.sampler_class import SamplerManager
+from mlagentsenvs.envs.exception import SamplerException
+from mlagentsenvs.envs.base_unity_environment import BaseUnityEnvironment
+from mlagentsenvs.envs.subprocess_env_manager import SubprocessEnvManager
 
 
 class CommandLineOptions(NamedTuple):
@@ -384,7 +384,7 @@ def main():
         print("\n\n\tUnity Technologies\n")
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
-    env_logger = logging.getLogger("mlagents.envs")
+    env_logger = logging.getLogger("mlagentsenvs.envs")
     trainer_logger.info(options)
     if options.debug:
         trainer_logger.setLevel("DEBUG")

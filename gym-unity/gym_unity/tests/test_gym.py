@@ -4,7 +4,7 @@ import numpy as np
 
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
-from mlagents.envs.brain import CameraResolution
+from mlagentsenvs.envs.brain import CameraResolution
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")

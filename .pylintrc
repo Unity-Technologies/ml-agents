@@ -40,4 +40,5 @@ disable =
     # E0401: Unable to import...
     # E0611: No name '...' in module '...'
     # need to look into these, probably namespace packages
-    E0401, E0611
+    E0401,
+    #E0611,

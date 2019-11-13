@@ -9,7 +9,7 @@ from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagentsenvs.envs.exception import UnityEnvironmentException
 
 
 @pytest.fixture
@@ -113,7 +113,7 @@ def dummy_bad_config():
     )
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagentsenvs.envs.brain.BrainParameters")
 def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -162,7 +162,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         assert isinstance(trainers["testbrain"], OfflineBCTrainer)
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagentsenvs.envs.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     BrainParametersMock.return_value.brain_name = "testbrain"
@@ -221,7 +221,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagentsenvs.envs.brain.BrainParameters")
 def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"

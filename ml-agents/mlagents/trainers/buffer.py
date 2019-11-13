@@ -1,7 +1,7 @@
 import numpy as np
 import h5py
 
-from mlagents.envs.exception import UnityException
+from mlagentsenvs.envs.exception import UnityException
 
 
 class BufferException(UnityException):

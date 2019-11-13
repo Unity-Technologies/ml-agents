@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Optional
 
 import tensorflow as tf
 from tensorflow.python.client import device_lib
-from mlagents.envs.brain import BrainParameters
-from mlagents.envs.timers import timed
+from mlagentsenvs.envs.brain import BrainParameters
+from mlagentsenvs.envs.timers import timed
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.models import PPOModel

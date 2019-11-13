@@ -40,7 +40,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["mlagents.envs", "mlagents.envs.communicator_objects"],  # Required
+    packages=["mlagentsenvs.envs", "mlagentsenvs.envs.communicator_objects"],  # Required
     zip_safe=False,
     install_requires=[
         "cloudpickle",
