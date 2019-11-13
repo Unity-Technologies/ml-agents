@@ -28,6 +28,8 @@ namespace MLAgents.Sensor
             {
                 public Vector3 localStart;
                 public Vector3 localEnd;
+                public Vector3 worldStart;
+                public Vector3 worldEnd;
                 public bool castHit;
                 public float hitFraction;
             }
@@ -205,6 +207,8 @@ namespace MLAgents.Sensor
                 {
                     debugInfo.rayInfos[rayIndex].localStart = startPositionLocal;
                     debugInfo.rayInfos[rayIndex].localEnd = endPositionLocal;
+                    debugInfo.rayInfos[rayIndex].worldStart = startPositionWorld;
+                    debugInfo.rayInfos[rayIndex].worldEnd = endPositionWorld;
                     debugInfo.rayInfos[rayIndex].castHit = castHit;
                     debugInfo.rayInfos[rayIndex].hitFraction = hitFraction;
                 }

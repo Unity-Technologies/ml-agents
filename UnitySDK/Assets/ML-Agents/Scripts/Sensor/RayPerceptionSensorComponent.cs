@@ -39,6 +39,13 @@ namespace MLAgents.Sensor
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
 
+        [Header("Debug Gizmos")]
+        public Color rayHitColor = Color.yellow;
+        public Color rayMissColor = Color.blue;
+        [Tooltip("Whether to draw the raycasts in the world space of when they happened, or using the Agent's current transform'")]
+        public bool useWorldPositions = true;
+
+
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
 
@@ -78,7 +85,7 @@ namespace MLAgents.Sensor
         public override int[] GetObservationShape()
         {
             var numRays = 2 * raysPerDirection + 1;
-            var numTags = detectableTags.Count;
+            var numTags = detectableTags == null ? 0 : detectableTags.Count;
             var obsSize = (numTags + 2) * numRays;
             var stacks = observationStacks > 1 ? observationStacks : 1;
             return new[] { obsSize * stacks };
@@ -101,12 +108,20 @@ namespace MLAgents.Sensor
 
             foreach (var rayInfo in debugInfo.rayInfos)
             {
-                var startPositionWorld = transform.TransformPoint(rayInfo.localStart);
-                var endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
+                // Either use the original world-space coordinates of the raycast, or transform the agent-local
+                // coordinates of the rays to the current transform of the agent. If the agent acts every frame,
+                // these should be the same.
+                var startPositionWorld = rayInfo.worldStart;
+                var endPositionWorld = rayInfo.worldEnd;
+                if (!useWorldPositions)
+                {
+                    startPositionWorld = transform.TransformPoint(rayInfo.localStart);
+                    endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
+                }
                 var rayDirection = endPositionWorld - startPositionWorld;
                 rayDirection *= rayInfo.hitFraction;
 
-                var color = rayInfo.castHit ? Color.yellow : Color.blue;
+                var color = rayInfo.castHit ? rayHitColor : rayMissColor;
                 color.a = alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld,rayDirection);
