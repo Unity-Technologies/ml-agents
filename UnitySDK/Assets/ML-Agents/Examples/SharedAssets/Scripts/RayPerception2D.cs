@@ -9,6 +9,7 @@ namespace MLAgents
     /// Ray 2D perception component. Attach this to agents to enable "local perception"
     /// via the use of ray casts directed outward from the agent.
     /// </summary>
+    [Obsolete("The RayPerception MonoBehaviour is deprecated. Use the RayPerceptionSensorComponent instead")]
     public class RayPerception2D : RayPerception
     {
         RaycastHit2D m_Hit;
@@ -35,61 +36,21 @@ namespace MLAgents
             float[] rayAngles, string[] detectableObjects,
             float startOffset=0.0f, float endOffset=0.0f)
         {
-
             var perceptionSize = (detectableObjects.Length + 2) * rayAngles.Length;
             if (m_PerceptionBuffer == null || m_PerceptionBuffer.Length != perceptionSize)
             {
                 m_PerceptionBuffer = new float[perceptionSize];
             }
-            Array.Clear(m_PerceptionBuffer, 0, m_PerceptionBuffer.Length);
 
-            // For each ray sublist stores categorical information on detected object
-            // along with object distance.
-            var bufferOffset = 0;
-            foreach (var angle in rayAngles)
-            {
-                Vector2 temp = PolarToCartesian(rayDistance, angle);
-                Vector2 rayDirection = transform.TransformDirection(temp);
-                if (Application.isEditor)
-                {
-                    Debug.DrawRay(transform.position,
-                        rayDirection, Color.black, 0.01f, true);
-                }
-
-                m_Hit = Physics2D.CircleCast(transform.position, 0.5f, rayDirection, rayDistance);
-                if (m_Hit)
-                {
-                    for (var i = 0; i < detectableObjects.Length; i++)
-                    {
-                        if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
-                        {
-                            m_PerceptionBuffer[bufferOffset + i] = 1;
-                            m_PerceptionBuffer[bufferOffset + detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    m_PerceptionBuffer[bufferOffset + detectableObjects.Length] = 1f;
-                }
-
-                bufferOffset += detectableObjects.Length + 2;
-            }
+            const float castRadius = 0.5f;
+            const bool legacyHitFractionBehavior = true;
+            RayPerceptionSensor.PerceiveStatic(
+                rayDistance, rayAngles, detectableObjects, startOffset, endOffset, castRadius,
+                transform, RayPerceptionSensor.CastType.Cast3D, m_PerceptionBuffer, legacyHitFractionBehavior
+            );
 
             return m_PerceptionBuffer;
         }
 
-
-
-        /// <summary>
-        /// Converts polar coordinate to cartesian coordinate.
-        /// </summary>
-        static Vector2 PolarToCartesian(float radius, float angleDegrees)
-        {
-            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
-            var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
-            return new Vector2(x, y);
-        }
     }
 }

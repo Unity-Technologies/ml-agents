@@ -38,7 +38,9 @@ namespace MLAgents.Sensor
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
-        
+
+        public RayPerceptionSensor.CastType castType = RayPerceptionSensor.CastType.Cast3D;
+
         [Header("Debug Gizmos")]
         public Color rayHitColor = Color.yellow;
         public Color rayMissColor = Color.blue;
@@ -55,7 +57,7 @@ namespace MLAgents.Sensor
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
             m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, startVerticalOffset, endVerticalOffset, sphereCastRadius
+                transform, startVerticalOffset, endVerticalOffset, sphereCastRadius, castType
             );
 
             if (observationStacks != 1)

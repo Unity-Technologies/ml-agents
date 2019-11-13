@@ -1,6 +1,5 @@
 using UnityEngine;
 using MLAgents;
-using MLAgents.Sensor;
 
 public class FoodCollectorAgent : Agent
 {

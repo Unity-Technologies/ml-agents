@@ -44,7 +44,7 @@ namespace MLAgents
             const bool legacyHitFractionBehavior = true;
             RayPerceptionSensor.PerceiveStatic(
                 rayDistance, rayAngles, detectableObjects, startOffset, endOffset, castRadius,
-                transform, m_PerceptionBuffer, legacyHitFractionBehavior
+                transform, RayPerceptionSensor.CastType.Cast3D, m_PerceptionBuffer, legacyHitFractionBehavior
             );
 
             return m_PerceptionBuffer;

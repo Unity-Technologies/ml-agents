@@ -6,6 +6,12 @@ namespace MLAgents.Sensor
 {
     public class RayPerceptionSensor : ISensor
     {
+        public enum CastType
+        {
+            Cast2D,
+            Cast3D,
+        }
+
         float[] m_Observations;
         int[] m_Shape;
         string m_Name;
@@ -17,6 +23,7 @@ namespace MLAgents.Sensor
         float m_StartOffset;
         float m_EndOffset;
         float m_CastRadius;
+        CastType m_CastType;
         Transform m_Transform;
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace MLAgents.Sensor
         }
 
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
-            Transform transform, float startOffset, float endOffset, float castRadius)
+            Transform transform, float startOffset, float endOffset, float castRadius, CastType castType)
         {
             var numObservations = (detectableObjects.Count + 2) * angles.Length;
             m_Shape = new[] { numObservations };
@@ -76,6 +83,7 @@ namespace MLAgents.Sensor
             m_StartOffset = startOffset;
             m_EndOffset = endOffset;
             m_CastRadius = castRadius;
+            m_CastType = castType;
 
             if (Application.isEditor)
             {
@@ -87,7 +95,7 @@ namespace MLAgents.Sensor
         {
             PerceiveStatic(
                 m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                m_CastRadius, m_Transform, m_Observations, false, m_DebugDisplayInfo
+                m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_DebugDisplayInfo
             );
             adapter.AddRange(m_Observations);
             return m_Observations.Length;
@@ -150,7 +158,7 @@ namespace MLAgents.Sensor
         public static void PerceiveStatic(float rayLength,
             IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
             float startOffset, float endOffset, float castRadius,
-            Transform transform, float[] perceptionBuffer,
+            Transform transform, CastType castType, float[] perceptionBuffer,
             bool legacyHitFractionBehavior = false,
             DebugDisplayInfo debugInfo = null)
         {
@@ -170,9 +178,19 @@ namespace MLAgents.Sensor
             for (var rayIndex = 0; rayIndex<rayAngles.Count; rayIndex++)
             {
                 var angle = rayAngles[rayIndex];
-                Vector3 startPositionLocal = new Vector3(0, startOffset, 0);
-                Vector3 endPositionLocal = PolarToCartesian(rayLength, angle);
-                endPositionLocal.y += endOffset;
+                Vector3 startPositionLocal, endPositionLocal;
+                if (castType == CastType.Cast3D)
+                {
+                    startPositionLocal = new Vector3(0, startOffset, 0);
+                    endPositionLocal = PolarToCartesian3D(rayLength, angle);
+                    endPositionLocal.y += endOffset;
+                }
+                else
+                {
+                    // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
+                    startPositionLocal = new Vector2();
+                    endPositionLocal = PolarToCartesian2D(rayLength, angle);
+                }
 
                 var startPositionWorld = transform.TransformPoint(startPositionLocal);
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
@@ -191,17 +209,40 @@ namespace MLAgents.Sensor
                 //  * if the cast doesn't hit, the hit fraction field is 0
 
                 bool castHit;
-                RaycastHit rayHit;
-                if (castRadius > 0f)
+                float hitFraction;
+                GameObject hitObject;
+
+                if(castType == CastType.Cast3D)
                 {
-                    castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit, rayLength);
+                    RaycastHit rayHit;
+                    if (castRadius > 0f)
+                    {
+                        castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit, rayLength);
+                    }
+                    else
+                    {
+                        castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit, rayLength);
+                    }
+
+                    hitFraction = castHit ? rayHit.distance / rayLength : 1.0f;
+                    hitObject = castHit ? rayHit.collider.gameObject : null;
                 }
                 else
                 {
-                    castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit, rayLength);
-                }
+                    RaycastHit2D rayHit;
+                    if (castRadius > 0f)
+                    {
+                        rayHit = Physics2D.CircleCast(startPositionWorld, castRadius, rayDirection, rayLength);
+                    }
+                    else
+                    {
+                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, rayLength);
+                    }
 
-                var hitFraction = castHit ? rayHit.distance / rayLength : 1.0f;
+                    castHit = rayHit;
+                    hitFraction = castHit ? rayHit.fraction : 1.0f;
+                    hitObject = castHit ? rayHit.collider.gameObject : null;
+                }
 
                 if (debugInfo != null)
                 {
@@ -222,7 +263,7 @@ namespace MLAgents.Sensor
                 {
                     for (var i = 0; i < detectableObjects.Count; i++)
                     {
-                        if (rayHit.collider.gameObject.CompareTag(detectableObjects[i]))
+                        if (hitObject.CompareTag(detectableObjects[i]))
                         {
                             perceptionBuffer[bufferOffset + i] = 1;
                             perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
@@ -253,11 +294,21 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
-        static Vector3 PolarToCartesian(float radius, float angleDegrees)
+        static Vector3 PolarToCartesian3D(float radius, float angleDegrees)
         {
             var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
             var z = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
             return new Vector3(x, 0f, z);
+        }
+
+        /// <summary>
+        /// Converts polar coordinate to cartesian coordinate.
+        /// </summary>
+        static Vector2 PolarToCartesian2D(float radius, float angleDegrees)
+        {
+            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
+            var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
+            return new Vector2(x, y);
         }
     }
 }
