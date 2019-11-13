@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "mlagents/envs/communicator_objects/brain_parameters.proto";
-import "mlagents/envs/communicator_objects/environment_parameters.proto";
+import "mlagentsenvs/envs/communicator_objects/brain_parameters.proto";
+import "mlagentsenvs/envs/communicator_objects/environment_parameters.proto";
 
 option csharp_namespace = "MLAgents.CommunicatorObjects";
 package communicator_objects;

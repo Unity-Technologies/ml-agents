@@ -13,7 +13,7 @@ from google.protobuf.message import (
 )
 
 from mlagentsenvs.envs.communicator_objects.space_type_pb2 import (
-    SpaceTypeProto as mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto,
+    SpaceTypeProto as mlagentsenvs___envs___communicator_objects___space_type_pb2___SpaceTypeProto,
 )
 
 from typing import (
@@ -37,7 +37,7 @@ class BrainParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
     vector_action_descriptions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
-    vector_action_space_type = ... # type: mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto
+    vector_action_space_type = ... # type: mlagentsenvs___envs___communicator_objects___space_type_pb2___SpaceTypeProto
     brain_name = ... # type: typing___Text
     is_training = ... # type: builtin___bool
 
@@ -45,7 +45,7 @@ class BrainParametersProto(google___protobuf___message___Message):
         *,
         vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
         vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
-        vector_action_space_type : typing___Optional[mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
+        vector_action_space_type : typing___Optional[mlagentsenvs___envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
         brain_name : typing___Optional[typing___Text] = None,
         is_training : typing___Optional[builtin___bool] = None,
         ) -> None: ...

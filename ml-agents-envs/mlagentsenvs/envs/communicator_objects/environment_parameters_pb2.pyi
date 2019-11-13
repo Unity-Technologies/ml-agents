@@ -9,7 +9,7 @@ from google.protobuf.message import (
 )
 
 from mlagentsenvs.envs.communicator_objects.custom_reset_parameters_pb2 import (
-    CustomResetParametersProto as mlagents___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto,
+    CustomResetParametersProto as mlagentsenvs___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto,
 )
 
 from typing import (
@@ -56,12 +56,12 @@ class EnvironmentParametersProto(google___protobuf___message___Message):
     def float_parameters(self) -> typing___MutableMapping[typing___Text, builtin___float]: ...
 
     @property
-    def custom_reset_parameters(self) -> mlagents___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto: ...
+    def custom_reset_parameters(self) -> mlagentsenvs___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto: ...
 
     def __init__(self,
         *,
         float_parameters : typing___Optional[typing___Mapping[typing___Text, builtin___float]] = None,
-        custom_reset_parameters : typing___Optional[mlagents___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto] = None,
+        custom_reset_parameters : typing___Optional[mlagentsenvs___envs___communicator_objects___custom_reset_parameters_pb2___CustomResetParametersProto] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> EnvironmentParametersProto: ...

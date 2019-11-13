@@ -14,7 +14,7 @@ from google.protobuf.message import (
 )
 
 from mlagentsenvs.envs.communicator_objects.observation_pb2 import (
-    ObservationProto as mlagents___envs___communicator_objects___observation_pb2___ObservationProto,
+    ObservationProto as mlagentsenvs___envs___communicator_objects___observation_pb2___ObservationProto,
 )
 
 from typing import (
@@ -43,7 +43,7 @@ class AgentInfoProto(google___protobuf___message___Message):
     action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
 
     @property
-    def observations(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___observation_pb2___ObservationProto]: ...
+    def observations(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagentsenvs___envs___communicator_objects___observation_pb2___ObservationProto]: ...
 
     def __init__(self,
         *,
@@ -53,7 +53,7 @@ class AgentInfoProto(google___protobuf___message___Message):
         max_step_reached : typing___Optional[builtin___bool] = None,
         id : typing___Optional[builtin___int] = None,
         action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
-        observations : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___observation_pb2___ObservationProto]] = None,
+        observations : typing___Optional[typing___Iterable[mlagentsenvs___envs___communicator_objects___observation_pb2___ObservationProto]] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> AgentInfoProto: ...
