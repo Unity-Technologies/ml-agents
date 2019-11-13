@@ -139,7 +139,11 @@ class PPOPolicy(object):
         self.optimizer = tf.keras.optimizers.Adam(
             lr=self.trainer_params["learning_rate"]
         )
-        self.sequence_length = 1 if not self.trainer_params["use_recurrent"] else self.trainer_params["sequence_length"]
+        self.sequence_length = (
+            1
+            if not self.trainer_params["use_recurrent"]
+            else self.trainer_params["sequence_length"]
+        )
         self.global_step = tf.Variable(0)
         self.create_reward_signals(reward_signal_configs)
 
@@ -262,7 +266,9 @@ class PPOPolicy(object):
                 -decay_epsilon,
                 decay_epsilon,
             )
-            v_opt_a = tf.math.squared_difference(returns[name], tf.reduce_sum(head, axis=1))
+            v_opt_a = tf.math.squared_difference(
+                returns[name], tf.reduce_sum(head, axis=1)
+            )
             v_opt_b = tf.math.squared_difference(returns[name], clipped_value_estimate)
             value_loss = tf.reduce_mean(
                 tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), masks, 2)[1]
@@ -280,11 +286,7 @@ class PPOPolicy(object):
         # For cleaner stats reporting
         # abs_policy_loss = tf.abs(policy_loss)
 
-        loss = (
-            policy_loss
-            + 0.5 * value_loss
-            - decay_beta * tf.reduce_mean(entropy)
-        )
+        loss = policy_loss + 0.5 * value_loss - decay_beta * tf.reduce_mean(entropy)
         return loss
 
     def create_reward_signals(self, reward_signal_configs):
@@ -445,7 +447,9 @@ class PPOPolicy(object):
         #     feed_dict[self.model.prev_action] = [
         #         brain_info.previous_vector_actions[idx]
         #     ]
-        value_estimates = self.model.get_values(np.expand_dims(brain_info.vector_observations[idx],0))
+        value_estimates = self.model.get_values(
+            np.expand_dims(brain_info.vector_observations[idx], 0)
+        )
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
 
