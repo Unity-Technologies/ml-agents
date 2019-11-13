@@ -2,7 +2,7 @@ import logging
 
 # import numpy as np
 from typing import Any, Dict  # , Optional
-import tensorflow as tf
+from mlagents.tf_utils import tf
 import tensorflow_probability as tfp
 
 from mlagents.envs.timers import timed

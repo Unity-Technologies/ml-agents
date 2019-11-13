@@ -1,18 +1,16 @@
 using System;
-using System.Threading;
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class RenderTextureSensor : ISensor
+    public class RenderTextureSensor : ISensor
     {
-        private RenderTexture m_RenderTexture;
-        private int m_Width;
-        private int m_Height;
-        private bool m_Grayscale;
-        private string m_Name;
-        private int[] m_Shape;
+        RenderTexture m_RenderTexture;
+        int m_Width;
+        int m_Height;
+        bool m_Grayscale;
+        string m_Name;
+        int[] m_Shape;
 
         public RenderTextureSensor(RenderTexture renderTexture, int width, int height, bool grayscale, string name)
         {
@@ -46,19 +44,22 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int index)
+        public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
                 var texture = ObservationToTexture(m_RenderTexture, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, index);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
+                return numWritten;
             }
         }
 
-        public CompressionType GetCompressionType()
+        public void Update() { }
+
+        public SensorCompressionType GetCompressionType()
         {
-            return CompressionType.PNG;
+            return SensorCompressionType.PNG;
         }
 
         /// <summary>

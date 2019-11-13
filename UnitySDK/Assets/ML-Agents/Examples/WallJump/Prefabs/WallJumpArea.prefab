@@ -1078,10 +1078,9 @@ MonoBehaviour:
     vectorObservationSize: 74
     numStackedVectorObservations: 6
     vectorActionSize: 03000000030000000300000002000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
+  m_Model: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: SmallWallJump
@@ -1097,15 +1096,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 2000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  noWallBrain: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
-  smallWallBrain: {fileID: 11400000, guid: ef4a2c4f314e94d718e08c7c71b3c5f0, type: 3}
-  bigWallBrain: {fileID: 11400000, guid: b036370dc05b9481bbcee7db40d40b5d, type: 3}
+  noWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  smallWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  bigWallBrain: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
   ground: {fileID: 1324926338613664}
   spawnArea: {fileID: 1886170194660384}
   goal: {fileID: 1982078136115924}

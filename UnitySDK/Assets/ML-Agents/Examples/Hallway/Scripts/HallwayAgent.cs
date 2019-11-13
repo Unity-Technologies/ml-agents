@@ -36,7 +36,7 @@ public class HallwayAgent : Agent
             float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
             string[] detectableObjects = { "symbol_O_Goal", "symbol_X_Goal", "symbol_O", "symbol_X", "wall" };
             AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects));
         }
     }
 
@@ -72,7 +72,7 @@ public class HallwayAgent : Agent
         m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);

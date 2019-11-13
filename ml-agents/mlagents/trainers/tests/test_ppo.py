@@ -2,7 +2,8 @@ import unittest.mock as mock
 import pytest
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
@@ -298,7 +299,14 @@ def test_rl_functions():
 
 def test_trainer_increment_step(dummy_config):
     trainer_params = dummy_config
-    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
 
     trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
     policy_mock = mock.Mock()
@@ -355,7 +363,14 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
 
 
 def test_add_rewards_output(dummy_config):
-    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)

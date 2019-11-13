@@ -92,23 +92,23 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        private const string k_ApiVersion = "API-10";
+        const string k_ApiVersion = "API-11";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
-        private Vector3 m_OriginalGravity;
+        Vector3 m_OriginalGravity;
 
         /// Temporary storage for global fixedDeltaTime value
         /// Used to restore original value when deriving Academy modifies it
-        private float m_OriginalFixedDeltaTime;
+        float m_OriginalFixedDeltaTime;
 
         /// Temporary storage for global maximumDeltaTime value
         /// Used to restore original value when deriving Academy modifies it
-        private float m_OriginalMaximumDeltaTime;
+        float m_OriginalMaximumDeltaTime;
 
         // Fields provided in the Inspector
 
-        [FormerlySerializedAs("maxSteps")]
+        [FormerlySerializedAs("trainingConfiguration")]
         [SerializeField]
         [Tooltip("The engine-level settings which correspond to rendering " +
             "quality and engine speed during Training.")]
@@ -178,8 +178,8 @@ namespace MLAgents
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
 
-        private bool m_Initialized;
-        private List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
+        bool m_Initialized;
+        List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
@@ -240,7 +240,7 @@ namespace MLAgents
         }
 
         // Used to read Python-provided environment parameters
-        private static int ReadArgs()
+        static int ReadArgs()
         {
             var args = System.Environment.GetCommandLineArgs();
             var inputPort = "";
@@ -258,7 +258,7 @@ namespace MLAgents
         /// <summary>
         /// Initializes the environment, configures it and initialized the Academy.
         /// </summary>
-        private void InitializeEnvironment()
+        void InitializeEnvironment()
         {
             m_OriginalGravity = Physics.gravity;
             m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
@@ -344,7 +344,7 @@ namespace MLAgents
             Application.Quit();
         }
 
-        private void OnResetCommand(EnvironmentResetParameters newResetParameters)
+        void OnResetCommand(EnvironmentResetParameters newResetParameters)
         {
             UpdateResetParameters(newResetParameters);
             ForcedFullReset();
@@ -355,7 +355,7 @@ namespace MLAgents
             m_IsInference = !inputParams.isTraining;
         }
 
-        private void UpdateResetParameters(EnvironmentResetParameters newResetParameters)
+        void UpdateResetParameters(EnvironmentResetParameters newResetParameters)
         {
             if (newResetParameters.resetParameters != null)
             {

@@ -13,16 +13,14 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-from mlagents.envs.communicator_objects import custom_action_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_custom__action__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/agent_action.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n5mlagents/envs/communicator_objects/agent_action.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents/envs/communicator_objects/custom_action.proto\"\xa1\x01\n\x10\x41gentActionProto\x12\x16\n\x0evector_actions\x18\x01 \x03(\x02\x12\x14\n\x0ctext_actions\x18\x02 \x01(\t\x12\x10\n\x08memories\x18\x03 \x03(\x02\x12\r\n\x05value\x18\x04 \x01(\x02\x12>\n\rcustom_action\x18\x05 \x01(\x0b\x32\'.communicator_objects.CustomActionProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
-  ,
-  dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_custom__action__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n5mlagents/envs/communicator_objects/agent_action.proto\x12\x14\x63ommunicator_objects\"K\n\x10\x41gentActionProto\x12\x16\n\x0evector_actions\x18\x01 \x03(\x02\x12\r\n\x05value\x18\x04 \x01(\x02J\x04\x08\x02\x10\x03J\x04\x08\x03\x10\x04J\x04\x08\x05\x10\x06\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+)
 
 
 
@@ -42,30 +40,9 @@ _AGENTACTIONPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='text_actions', full_name='communicator_objects.AgentActionProto.text_actions', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='memories', full_name='communicator_objects.AgentActionProto.memories', index=2,
-      number=3, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='communicator_objects.AgentActionProto.value', index=3,
+      name='value', full_name='communicator_objects.AgentActionProto.value', index=1,
       number=4, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='custom_action', full_name='communicator_objects.AgentActionProto.custom_action', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -81,11 +58,10 @@ _AGENTACTIONPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=136,
-  serialized_end=297,
+  serialized_start=79,
+  serialized_end=154,
 )
 
-_AGENTACTIONPROTO.fields_by_name['custom_action'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_custom__action__pb2._CUSTOMACTIONPROTO
 DESCRIPTOR.message_types_by_name['AgentActionProto'] = _AGENTACTIONPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

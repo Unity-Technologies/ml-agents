@@ -1,6 +1,14 @@
 # Migrating
 
-## Migrating from ML-Agents toolkit v0.10 to v0.11
+## Migrating from ML-Agents toolkit v0.11.0
+
+### Important Changes
+Text actions and observations, and custom action and observation protos have been removed.
+
+### Steps to Migrate
+* We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
+
+## Migrating from ML-Agents toolkit v0.10 to v0.11.0
 
 ### Important Changes
 * The definition of the gRPC service has changed.
@@ -15,6 +23,7 @@
 #### Steps to Migrate
 * In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
 * If your Agents used visual observations, you must add a CameraSensorComponent corresponding to each old Camera in the Agent's camera list (and similarly for RenderTextures).
+* Since Brain ScriptableObjects have been removed, you will need to delete all the Brain ScriptableObjects from your `Assets` folder. Then, add a `Behavior Parameters` component to each `Agent` GameObject. You will then need to complete the fields on the new `Behavior Parameters` component with the BrainParameters of the old Brain.
 
 ## Migrating from ML-Agents toolkit v0.9 to v0.10
 

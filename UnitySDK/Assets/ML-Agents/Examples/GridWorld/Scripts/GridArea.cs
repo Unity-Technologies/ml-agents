@@ -13,7 +13,7 @@ public class GridArea : MonoBehaviour
 
     public GameObject trueAgent;
 
-    private ResetParameters m_ResetParameters;
+    ResetParameters m_ResetParameters;
 
     Camera m_AgentCam;
 
@@ -27,7 +27,7 @@ public class GridArea : MonoBehaviour
     GameObject m_Se;
     GameObject m_Sw;
 
-    private Vector3 m_InitialPosition;
+    Vector3 m_InitialPosition;
 
     public void Awake()
     {

@@ -40,7 +40,7 @@ Navigate to your installation of nuget and run the following:
 
 ## Running
 
-Whenever you change the fields of a custom message, you must follow the steps below to create C# and Python files corresponding to the new message.
+Whenever you change the fields of a message, you must follow the steps below to create C# and Python files corresponding to the new message.
 
 1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 2. Un-comment line 7 in `make.sh` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.

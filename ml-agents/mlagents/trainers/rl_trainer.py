@@ -57,14 +57,11 @@ class RLTrainer(Trainer):
             [] for _ in next_info.visual_observations
         ]  # TODO add types to brain.py methods
         vector_observations = []
-        text_observations = []
-        memories = []
         rewards = []
         local_dones = []
         max_reacheds = []
         agents = []
         prev_vector_actions = []
-        prev_text_actions = []
         action_masks = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
@@ -78,12 +75,6 @@ class RLTrainer(Trainer):
             vector_observations.append(
                 agent_brain_info.vector_observations[agent_index]
             )
-            text_observations.append(agent_brain_info.text_observations[agent_index])
-            if self.policy.use_recurrent:
-                if len(agent_brain_info.memories) > 0:
-                    memories.append(agent_brain_info.memories[agent_index])
-                else:
-                    memories.append(self.policy.make_empty_memory(1))
             rewards.append(agent_brain_info.rewards[agent_index])
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
@@ -91,23 +82,14 @@ class RLTrainer(Trainer):
             prev_vector_actions.append(
                 agent_brain_info.previous_vector_actions[agent_index]
             )
-            prev_text_actions.append(
-                agent_brain_info.previous_text_actions[agent_index]
-            )
             action_masks.append(agent_brain_info.action_masks[agent_index])
-        # Check if memories exists (i.e. next_info is not empty) before attempting vstack
-        if self.policy.use_recurrent and memories:
-            memories = np.vstack(memories)
         curr_info = BrainInfo(
             visual_observations,
             vector_observations,
-            text_observations,
-            memories,
             rewards,
             agents,
             local_dones,
             prev_vector_actions,
-            prev_text_actions,
             max_reacheds,
             action_masks,
         )
@@ -185,14 +167,9 @@ class RLTrainer(Trainer):
                             next_info.vector_observations[next_idx]
                         )
                     if self.policy.use_recurrent:
-                        if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros(
-                                (len(stored_info.agents), self.policy.m_size)
-                            )
                         self.training_buffer[agent_id]["memory"].append(
-                            stored_info.memories[idx]
+                            self.policy.retrieve_memories([agent_id])[0, :]
                         )
-
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[next_idx]
@@ -263,7 +240,7 @@ class RLTrainer(Trainer):
         :param agent_idx: the index of the Agent agent_id
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_policy_outputs method was not implemented."
         )
 
     def add_rewards_outputs(
@@ -285,5 +262,5 @@ class RLTrainer(Trainer):
         :param agent_next_idx: the index of the Agent agent_id in the next brain info
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_rewards_outputs method was not implemented."
         )

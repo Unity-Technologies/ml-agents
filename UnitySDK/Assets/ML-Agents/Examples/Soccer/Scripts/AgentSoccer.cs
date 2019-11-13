@@ -93,8 +93,8 @@ public class AgentSoccer : Agent
         {
             detectableObjects = m_DetectableObjectsBlue;
         }
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 0f));
+        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects));
+        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 1f));
     }
 
     public void MoveAgent(float[] act)
@@ -156,7 +156,7 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
         if (agentRole == AgentRole.Striker)

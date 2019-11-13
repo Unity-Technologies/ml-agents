@@ -3,7 +3,8 @@ import pytest
 import yaml
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy

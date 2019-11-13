@@ -27,11 +27,11 @@ public class WalkerAgent : Agent
     bool m_IsNewDecisionStep;
     int m_CurrentDecisionStep;
 
-    private Rigidbody m_HipsRb;
-    private Rigidbody m_ChestRb;
-    private Rigidbody m_SpineRb;
+    Rigidbody m_HipsRb;
+    Rigidbody m_ChestRb;
+    Rigidbody m_SpineRb;
 
-    private ResetParameters m_ResetParams;
+    ResetParameters m_ResetParams;
 
     public override void InitializeAgent()
     {
@@ -103,7 +103,7 @@ public class WalkerAgent : Agent
         }
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
 

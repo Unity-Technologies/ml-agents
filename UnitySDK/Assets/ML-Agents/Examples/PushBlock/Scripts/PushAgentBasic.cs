@@ -84,8 +84,8 @@ public class PushAgentBasic : Agent
         {
             var rayDistance = 12f;
 
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 0f, 0f));
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 1.5f));
         }
     }
 
@@ -177,7 +177,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);

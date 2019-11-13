@@ -367,7 +367,7 @@ With the action and reward logic outlined above, the final version of the
 
 ```csharp
 public float speed = 10;
-public override void AgentAction(float[] vectorAction, string textAction)
+public override void AgentAction(float[] vectorAction)
 {
     // Actions, size = 2
     Vector3 controlSignal = Vector3.zero;

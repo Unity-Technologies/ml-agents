@@ -103,12 +103,6 @@ class UnityEnv(gym.Env):
                 "Otherwise, please note that only the first will be provided in the observation."
             )
 
-        if brain.num_stacked_vector_observations != 1:
-            raise UnityGymException(
-                "There can only be one stacked vector observation in a UnityEnvironment "
-                "if it is wrapped in a gym."
-            )
-
         # Check for number of agents in scene.
         initial_info = self._env.reset()[self.brain_name]
         self._check_agents(len(initial_info.agents))
@@ -241,7 +235,7 @@ class UnityEnv(gym.Env):
             default_observation,
             info.rewards[0],
             info.local_done[0],
-            {"text_observation": info.text_observations[0], "brain_info": info},
+            {"text_observation": None, "brain_info": info},
         )
 
     def _preprocess_single(self, single_visual_obs):
@@ -260,7 +254,7 @@ class UnityEnv(gym.Env):
             list(default_observation),
             info.rewards,
             info.local_done,
-            {"text_observation": info.text_observations, "brain_info": info},
+            {"text_observation": None, "brain_info": info},
         )
 
     def _preprocess_multi(self, multiple_visual_obs):
@@ -289,7 +283,7 @@ class UnityEnv(gym.Env):
         """Sets the seed for this env's random number generator(s).
         Currently not implemented.
         """
-        logger.warn("Could not seed environment %s", self.name)
+        logger.warning("Could not seed environment %s", self.name)
         return
 
     def _check_agents(self, n_agents):

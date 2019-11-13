@@ -1,24 +1,25 @@
-name: Mac Edit Mode Tests
-triggers:
-    branches:
-      only:
-      - "/develop-.*/"
-    targets:
-      only:
-      - "develop"
+test_editors:
+  - version: 2017.4
+  - version: 2018.4
+  - version: 2019.3
+---
+{% for editor in test_editors %}
+test_mac_editmode_{{ editor.version }}:
+  name: Test Mac EditMode {{ editor.version }}
+  agent:
+    type: Unity::VM::osx
+    image: ml-agents/ml-agents-bokken-mac:v0.1.2-440635
+    flavor: i1.small
+  variables:
+    UNITY_VERSION: {{ editor.version }}
+  commands:
+    - ./run-tests-editmode-osx-editor.sh
+  triggers:
     pull_requests:
       - targets:
           only:
+            - "develop"
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"
-
-agent:
-  type: Unity::VM::osx
-  image: ml-agents/ml-agents-bokken-mac:latest
-  flavor: i1.small
-
-variables:
-  LC_ALL: "en_US.UTF-8"
-commands:
-  - ./run-tests-editmode-osx-editor.sh
+{% endfor %}

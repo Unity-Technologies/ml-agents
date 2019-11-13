@@ -35,8 +35,6 @@ builtin___int = int
 
 class BrainParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_observation_size = ... # type: builtin___int
-    num_stacked_vector_observations = ... # type: builtin___int
     vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
     vector_action_descriptions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
     vector_action_space_type = ... # type: mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto
@@ -45,8 +43,6 @@ class BrainParametersProto(google___protobuf___message___Message):
 
     def __init__(self,
         *,
-        vector_observation_size : typing___Optional[builtin___int] = None,
-        num_stacked_vector_observations : typing___Optional[builtin___int] = None,
         vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
         vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
         vector_action_space_type : typing___Optional[mlagents___envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
@@ -58,6 +54,6 @@ class BrainParametersProto(google___protobuf___message___Message):
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",u"is_training",u"num_stacked_vector_observations",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type",u"vector_observation_size"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",u"is_training",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"is_training",b"is_training",u"num_stacked_vector_observations",b"num_stacked_vector_observations",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type",u"vector_observation_size",b"vector_observation_size"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"is_training",b"is_training",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type"]) -> None: ...

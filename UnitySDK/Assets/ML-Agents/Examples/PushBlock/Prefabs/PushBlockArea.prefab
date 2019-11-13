@@ -949,10 +949,9 @@ MonoBehaviour:
     vectorObservationSize: 70
     numStackedVectorObservations: 3
     vectorActionSize: 07000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: c60a63ad5dc0c4a029d7360054667457, type: 3}
+  m_Model: {fileID: 11400000, guid: 70db47ab276e44fe0beb677ff8d69382, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: PushBlock
@@ -979,8 +978,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

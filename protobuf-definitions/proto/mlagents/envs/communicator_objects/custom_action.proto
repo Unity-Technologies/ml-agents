@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-option csharp_namespace = "MLAgents.CommunicatorObjects";
-package communicator_objects;
-
-message CustomActionProto {    
-}
