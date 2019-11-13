@@ -1,5 +1,5 @@
 # Upgrading
-## :warning: Warning :warning: 
+## :warning: Warning :warning:
 The C# editor code and python trainer code are not compatible between releases. This means that if you upgrade one, you *must* upgrade the other as well. If you experience new errors or unable to connect to training after updating, please double-check that the versions are in the same.
 
 # Migrating
