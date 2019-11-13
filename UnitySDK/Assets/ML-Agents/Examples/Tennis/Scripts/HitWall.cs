@@ -4,6 +4,7 @@ public class HitWall : MonoBehaviour
 {
     public GameObject areaObject;
     public int lastAgentHit;
+    public int lastFloorHit;
 
     private TennisArea m_Area;
     private TennisAgent m_AgentA;
@@ -17,20 +18,27 @@ public class HitWall : MonoBehaviour
         m_AgentB = m_Area.agentB.GetComponent<TennisAgent>();
     }
 
-    private void OnTriggerExit(Collider other)
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.name == "over")
+    //    {
+    //        if (lastAgentHit == 0)
+    //        {
+    //            m_AgentA.AddReward(0.1f);
+    //        }
+    //        else
+    //        {
+    //            m_AgentB.AddReward(0.1f);
+    //        }
+    //        lastAgentHit = 0;
+    //    }
+    //}
+    private void reset()
     {
-        if (other.name == "over")
-        {
-            if (lastAgentHit == 0)
-            {
-                m_AgentA.AddReward(0.1f);
-            }
-            else
-            {
-                m_AgentB.AddReward(0.1f);
-            }
-            lastAgentHit = 0;
-        }
+        m_AgentA.Done();
+        m_AgentB.Done();
+        m_Area.MatchReset();
+        lastFloorHit = -1;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -39,87 +47,70 @@ public class HitWall : MonoBehaviour
         {
             if (collision.gameObject.name == "wallA")
             {
-                if (lastAgentHit == 0)
+                if (lastAgentHit == 0 || lastFloorHit == 0)
                 {
-                    m_AgentA.AddReward(-0.01f);
-                    m_AgentB.SetReward(0);
+                    m_AgentA.SetReward(-1);
+                    m_AgentB.SetReward(1);
                     m_AgentB.score += 1;
                 }
                 else
                 {
-                    m_AgentA.SetReward(0);
-                    m_AgentB.AddReward(-0.01f);
+                    m_AgentA.SetReward(1);
+                    m_AgentB.SetReward(-1);
                     m_AgentA.score += 1;
                 }
+                reset();
             }
             else if (collision.gameObject.name == "wallB")
             {
-                if (lastAgentHit == 0)
+                if (lastAgentHit == 1 || lastFloorHit == 1)
                 {
-                    m_AgentA.AddReward(-0.01f);
-                    m_AgentB.SetReward(0);
+                    m_AgentA.SetReward(1);
+                    m_AgentB.SetReward(-1);
                     m_AgentB.score += 1;
                 }
                 else
                 {
-                    m_AgentA.SetReward(0);
-                    m_AgentB.AddReward(-0.01f);
+                    m_AgentA.SetReward(-1);
+                    m_AgentB.SetReward(1);
                     m_AgentA.score += 1;
                 }
+                reset();
             }
             else if (collision.gameObject.name == "floorA")
             {
-                if (lastAgentHit == 0 || lastAgentHit == -1)
+                if (lastAgentHit == 0 || lastFloorHit == 0)
                 {
-                    m_AgentA.AddReward(-0.01f);
-                    m_AgentB.SetReward(0);
+                    m_AgentA.SetReward(-1);
+                    m_AgentB.SetReward(1);
                     m_AgentB.score += 1;
+                    reset();
                 }
                 else
                 {
-                    m_AgentA.AddReward(-0.01f);
-                    m_AgentB.SetReward(0);
-                    m_AgentB.score += 1;
+                    lastFloorHit = 0;
                 }
-            }
+            } 
             else if (collision.gameObject.name == "floorB")
             {
-                if (lastAgentHit == 1 || lastAgentHit == -1)
+                if (lastAgentHit == 1 || lastFloorHit == 1)
                 {
-                    m_AgentA.SetReward(0);
-                    m_AgentB.AddReward(-0.01f);
-                    m_AgentA.score += 1;
-                }
-                else
-                {
-                    m_AgentA.SetReward(0);
-                    m_AgentB.AddReward(-0.01f);
-                    m_AgentA.score += 1;
-                }
-            }
-            else if (collision.gameObject.name == "net")
-            {
-                if (lastAgentHit == 0)
-                {
-                    m_AgentA.AddReward(-0.01f);
-                    m_AgentB.SetReward(0);
+                    m_AgentA.SetReward(1);
+                    m_AgentB.SetReward(-1);
                     m_AgentB.score += 1;
+                    reset();
                 }
                 else
                 {
-                    m_AgentA.SetReward(0);
-                    m_AgentB.AddReward(-0.01f);
-                    m_AgentA.score += 1;
+                    lastFloorHit = 1;
                 }
             }
-            m_AgentA.Done();
-            m_AgentB.Done();
-            m_Area.MatchReset();
-        }
+       }
 
         if (collision.gameObject.CompareTag("agent"))
         {
             lastAgentHit = collision.gameObject.name == "AgentA" ? 0 : 1;
+            lastFloorHit = -1;
         }
     }
 }

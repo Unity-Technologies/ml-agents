@@ -14,6 +14,7 @@ from mlagents.envs.brain import BrainInfo, AllBrainInfo
 # from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -139,7 +140,9 @@ def create_ghost_trainer(
                 for i, (action, value) in enumerate(
                     zip(ghost_run_out["action"], ghost_run_out["value"])
                 ):
-                    all_team_actions[indices[ghost + 1][i]] = np.zeros(action.shape)
+                    all_team_actions[
+                        indices[ghost + 1][i]
+                    ] = action  # np.zeros(action.shape)
                     all_team_values[indices[ghost + 1][i]] = value
                 # run_out_copy["action"] = np.concatenate(
                 #     (run_out_copy["action"], ghost_run_out["action"]), axis=0
@@ -175,7 +178,19 @@ def create_ghost_trainer(
                 )
             self.policy = GhostPolicy(self.ghosts)
 
+            # Gets TF variables of learning policy
+            with self.policy.graph.as_default():
+                self.policy.tfvars = TensorFlowVariables(
+                    self.policy.model.output, self.policy.sess
+                )
+
+            # Gets TF variables of ghosts policy
+            for ghost in self.policy.ghosts:
+                with ghost.graph.as_default():
+                    ghost.tfvars = TensorFlowVariables(ghost.model.output, ghost.sess)
+
             self.policy_snapshots = []
+            self.last_step = 0
 
         def process_experiences(
             self, current_info: AllBrainInfo, new_info: AllBrainInfo
@@ -216,15 +231,31 @@ def create_ghost_trainer(
             new_next_all_info[self.brain_name] = filter_by_indices(
                 next_all_info[self.brain_name], indices
             )
-
             super(GhostTrainer, self).add_experiences(
                 new_all_info, new_next_all_info, take_action_outputs
             )
 
-        def save_snapshot(self):
-            pass
+        def update_policy(self):
+            super(GhostTrainer, self).update_policy()
+            if self.get_step - self.last_step > 10000:
+                self.save_snapshot()
+                self.swap_snapshot()
+                self.last_step = self.get_step
 
-        def swap_snapshot(self):
-            pass
+        def save_snapshot(self):
+            with self.policy.graph.as_default():
+                weights = self.policy.tfvars.get_weights()
+                self.policy_snapshots.append(weights)
+
+        # swap ghosts snapshots
+        def swap_snapshot(self, ghost_index=0):
+            # get ghost
+            policy = self.policy.ghosts[ghost_index]
+
+            # randomly sample snapshot
+            snapshot = np.random.randint(len(self.policy_snapshots))
+            print("Step {}: Swapping snapshot {}".format(self.get_step, snapshot))
+            with policy.graph.as_default():
+                policy.tfvars.set_weights(self.policy_snapshots[snapshot])
 
     return GhostTrainer()
