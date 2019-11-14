@@ -57,8 +57,14 @@ class Critic(tf.keras.layers.Layer):
 class GaussianDistribution(tf.keras.layers.Layer):
     def __init__(self, num_outputs, **kwargs):
         super(GaussianDistribution, self).__init__(**kwargs)
-        self.mu = tf.keras.layers.Dense(num_outputs)
-        self.log_sigma_sq = tf.keras.layers.Dense(num_outputs)
+        self.mu = tf.keras.layers.Dense(
+            num_outputs,
+            kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
+        )
+        self.log_sigma_sq = tf.keras.layers.Dense(
+            num_outputs,
+            kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
+        )
 
     def call(self, inputs):
         mu = self.mu(inputs)
@@ -72,6 +78,56 @@ class GaussianDistribution(tf.keras.layers.Layer):
     #         - 0.5 * tf.log(2.0 * np.pi)
     #         - 0.5 * self.log_sigma_sq
     #     )
+
+
+class Normalizer(tf.keras.layers.Layer):
+    def __init__(self, vec_obs_size, **kwargs):
+        super(Normalizer, self).__init__(**kwargs)
+        print(vec_obs_size)
+        self.normalization_steps = tf.Variable(
+            name="normalization_steps", trainable=False, dtype=tf.int32, initial_value=1
+        )
+        self.running_mean = tf.Variable(
+            name="running_mean",
+            shape=[vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initial_value=tf.zeros([vec_obs_size]),
+        )
+        self.running_variance = tf.Variable(
+            name="running_variance",
+            shape=[vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initial_value=tf.ones([vec_obs_size]),
+        )
+
+    def call(self, inputs):
+        normalized_state = tf.clip_by_value(
+            (inputs - self.running_mean)
+            / tf.sqrt(
+                self.running_variance
+                / (tf.cast(self.normalization_steps, tf.float32) + 1)
+            ),
+            -5,
+            5,
+            name="normalized_state",
+        )
+        return normalized_state
+
+    def update(self, vector_input):
+        mean_current_observation = tf.cast(
+            tf.reduce_mean(vector_input, axis=0), tf.float32
+        )
+        new_mean = self.running_mean + (
+            mean_current_observation - self.running_mean
+        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
+        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
+            mean_current_observation - self.running_mean
+        )
+        self.running_mean.assign(new_mean)
+        self.running_variance.assign(new_variance)
+        self.normalization_steps.assign(self.normalization_steps + 1)
 
 
 class ActorCriticPolicy(tf.keras.Model):
@@ -90,18 +146,29 @@ class ActorCriticPolicy(tf.keras.Model):
         self.distribution = GaussianDistribution(act_size)
         self.critic = Critic(stream_names, VectorEncoder(h_size, num_layers))
         self.act_size = act_size
+        self.normalize = normalize
 
-    def act(self, input):
-        _hidden = self.encoder(input)
+    def build(self, input_size):
+        self.normalizer = Normalizer(input_size[1])
+
+    def call(self, inputs):
+        if self.normalize:
+            norm_inputs = self.normalizer(inputs)
+        _hidden = self.encoder(norm_inputs)
         # epsilon = np.random.normal(size=(input.shape[0], self.act_size))
         dist = self.distribution(_hidden)
-        action = dist.sample()
-        log_prob = dist.log_prob(action)
+        raw_action = dist.sample()
+        action = tf.clip_by_value(raw_action, -3, 3) / 3
+        log_prob = dist.log_prob(raw_action)
         entropy = dist.entropy()
         return action, log_prob, entropy
 
-    def get_values(self, input):
-        return self.critic(input)
+    def update_normalization(self, inputs):
+        if self.normalize:
+            self.normalizer.update(inputs)
+
+    def get_values(self, inputs):
+        return self.critic(inputs)
 
 
 class PPOPolicy(object):
@@ -186,31 +253,6 @@ class PPOPolicy(object):
                 trainer_params.get("vis_encode_type", "simple")
             ),
         )
-        # self.model.create_ppo_optimizer()
-
-        # self.inference_dict.update(
-        #     {
-        #         "action": self.model.output,
-        #         "log_probs": self.model.all_log_probs,
-        #         "value_heads": self.model.value_heads,
-        #         "value": self.model.value,
-        #         "entropy": self.model.entropy,
-        #         "learning_rate": self.model.learning_rate,
-        #     }
-        # )
-        # if self.use_continuous_act:
-        #     self.inference_dict["pre_action"] = self.model.output_pre
-        # if self.use_recurrent:
-        #     self.inference_dict["memory_out"] = self.model.memory_out
-
-        # self.total_policy_loss = self.model.abs_policy_loss
-        # self.update_dict.update(
-        #     {
-        #         "value_loss": self.model.value_loss,
-        #         "policy_loss": self.total_policy_loss,
-        #         "update_batch": self.model.update_batch,
-        #     }
-        # )
 
     def ppo_loss(
         self,
@@ -256,7 +298,7 @@ class PPOPolicy(object):
         #     beta, self.global_step, max_step, 1e-5, power=1.0
         # )
         decay_epsilon = self.trainer_params["epsilon"]
-        decay_beta = self.trainer_params["beta"]
+        decay_beta = self.trainer_params["beta"] / 10
         # max_step = self.trainer_params["max_step"]
 
         value_losses = []
@@ -270,12 +312,9 @@ class PPOPolicy(object):
                 returns[name], tf.reduce_sum(head, axis=1)
             )
             v_opt_b = tf.math.squared_difference(returns[name], clipped_value_estimate)
-            value_loss = tf.reduce_mean(
-                tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), masks, 2)[1]
-            )
+            value_loss = tf.reduce_mean(tf.maximum(v_opt_a, v_opt_b))
             value_losses.append(value_loss)
         value_loss = tf.reduce_mean(value_losses)
-
         r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
@@ -312,7 +351,7 @@ class PPOPolicy(object):
         """
 
         run_out = {}
-        action, log_probs, entropy = self.model.act(brain_info.vector_observations)
+        action, log_probs, entropy = self.model(brain_info.vector_observations)
         run_out["action"] = action.numpy()
         run_out["log_probs"] = log_probs.numpy()
         run_out["entropy"] = entropy.numpy()
@@ -321,8 +360,8 @@ class PPOPolicy(object):
             for name, t in self.model.get_values(brain_info.vector_observations).items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
-        print(run_out["value_heads"])
         run_out["learning_rate"] = 0.0
+        self.model.update_normalization(brain_info.vector_observations)
         return run_out
 
     def get_action(self, brain_info: BrainInfo) -> ActionInfo:
@@ -356,11 +395,11 @@ class PPOPolicy(object):
 
             obs = np.array(mini_batch["vector_obs"])
             values = self.model.get_values(obs)
-            action, probs, entropy = self.model.act(obs)
+            action, probs, entropy = self.model(obs)
             loss = self.ppo_loss(
-                mini_batch["advantages"],
+                np.array(mini_batch["advantages"]),
                 probs,
-                mini_batch["action_probs"],
+                np.array(mini_batch["action_probs"]),
                 values,
                 old_values,
                 returns,
@@ -369,53 +408,13 @@ class PPOPolicy(object):
                 1e-3,
                 1000,
             )
-
         grads = tape.gradient(loss, self.model.trainable_weights)
-        print(grads)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
-
         update_stats = {}
-        update_stats["loss"] = loss
+        update_stats["Policy/Loss"] = loss
         # for stat_name, update_name in stats_needed.items():
         #     update_stats[stat_name] = update_vals[update_name]
         return update_stats
-
-    def construct_feed_dict(self, model, mini_batch, num_sequences):
-        feed_dict = {
-            model.batch_size: num_sequences,
-            model.sequence_length: self.sequence_length,
-            model.mask_input: mini_batch["masks"],
-            model.advantage: mini_batch["advantages"],
-            model.all_old_log_probs: mini_batch["action_probs"],
-        }
-        for name in self.reward_signals:
-            feed_dict[model.returns_holders[name]] = mini_batch[
-                "{}_returns".format(name)
-            ]
-            feed_dict[model.old_values[name]] = mini_batch[
-                "{}_value_estimates".format(name)
-            ]
-
-        if self.use_continuous_act:
-            feed_dict[model.output_pre] = mini_batch["actions_pre"]
-            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
-        else:
-            feed_dict[model.action_holder] = mini_batch["actions"]
-            if self.use_recurrent:
-                feed_dict[model.prev_action] = mini_batch["prev_action"]
-            feed_dict[model.action_masks] = mini_batch["action_mask"]
-        if self.use_vec_obs:
-            feed_dict[model.vector_in] = mini_batch["vector_obs"]
-        if self.model.vis_obs_size > 0:
-            for i, _ in enumerate(self.model.visual_in):
-                feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
-        if self.use_recurrent:
-            mem_in = [
-                mini_batch["memory"][i]
-                for i in range(0, len(mini_batch["memory"]), self.sequence_length)
-            ]
-            feed_dict[model.memory_in] = mem_in
-        return feed_dict
 
     def get_value_estimates(
         self, brain_info: BrainInfo, idx: int, done: bool
@@ -428,25 +427,6 @@ class PPOPolicy(object):
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.
         """
-
-        # feed_dict: Dict[tf.Tensor, Any] = {
-        #     self.model.batch_size: 1,
-        #     self.model.sequence_length: 1,
-        # }
-        # for i in range(len(brain_info.visual_observations)):
-        #     feed_dict[self.model.visual_in[i]] = [
-        #         brain_info.visual_observations[i][idx]
-        #     ]
-        # if self.use_vec_obs:
-        #     feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
-        # if self.use_recurrent:
-        #     if brain_info.memories.shape[1] == 0:
-        #         brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-        #     feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
-        # if not self.use_continuous_act and self.use_recurrent:
-        #     feed_dict[self.model.prev_action] = [
-        #         brain_info.previous_vector_actions[idx]
-        #     ]
         value_estimates = self.model.get_values(
             np.expand_dims(brain_info.vector_observations[idx], 0)
         )
