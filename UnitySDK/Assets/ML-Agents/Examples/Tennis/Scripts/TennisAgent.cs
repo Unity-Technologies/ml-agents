@@ -55,12 +55,15 @@ public class TennisAgent : Agent
         AddVectorObs(ball.transform.position.y - myArea.transform.position.y);
         AddVectorObs(m_InvertMult * m_BallRb.velocity.x);
         AddVectorObs(m_BallRb.velocity.y);
+
+        AddVectorObs(m_InvertMult * gameObject.transform.rotation.z);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * m_InvertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
+        var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
         if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
@@ -68,6 +71,8 @@ public class TennisAgent : Agent
         }
 
         m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
+
+        m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
 
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)

@@ -18,73 +18,67 @@ public class HitWall : MonoBehaviour
         m_AgentB = m_Area.agentB.GetComponent<TennisAgent>();
     }
 
-    //private void OnTriggerExit(Collider other)
-    //{
-    //    if (other.name == "over")
-    //    {
-    //        if (lastAgentHit == 0)
-    //        {
-    //            m_AgentA.AddReward(0.1f);
-    //        }
-    //        else
-    //        {
-    //            m_AgentB.AddReward(0.1f);
-    //        }
-    //        lastAgentHit = 0;
-    //    }
-    //}
-    private void reset()
+    private void Reset()
     {
         m_AgentA.Done();
         m_AgentB.Done();
         m_Area.MatchReset();
         lastFloorHit = -1;
     }
+    
+    private void AgentAWins()
+    {
+        m_AgentA.SetReward(1);
+        m_AgentB.SetReward(-1);
+        m_AgentA.score += 1;
+        Reset();
 
+    }
+
+    private void AgentBWins()
+    {
+        m_AgentA.SetReward(-1);
+        m_AgentB.SetReward(1);
+        m_AgentB.score += 1;
+        Reset();
+
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("iWall"))
         {
             if (collision.gameObject.name == "wallA")
             {
+                //Agent A hits into wall or agent B hit a winner
                 if (lastAgentHit == 0 || lastFloorHit == 0)
                 {
-                    m_AgentA.SetReward(-1);
-                    m_AgentB.SetReward(1);
-                    m_AgentB.score += 1;
+                    AgentBWins();
                 }
+                //Agent B hits long
                 else
                 {
-                    m_AgentA.SetReward(1);
-                    m_AgentB.SetReward(-1);
-                    m_AgentA.score += 1;
+                    AgentAWins();
                 }
-                reset();
             }
             else if (collision.gameObject.name == "wallB")
             {
+                //Agent B hits into wall or agent A hit a winner
                 if (lastAgentHit == 1 || lastFloorHit == 1)
                 {
-                    m_AgentA.SetReward(1);
-                    m_AgentB.SetReward(-1);
-                    m_AgentB.score += 1;
+                    AgentAWins();
                 }
+                //Agent A hits long
                 else
                 {
-                    m_AgentA.SetReward(-1);
-                    m_AgentB.SetReward(1);
-                    m_AgentA.score += 1;
+                    AgentBWins();
                 }
-                reset();
             }
             else if (collision.gameObject.name == "floorA")
             {
+                //Agent A hits into floor or double bounce
                 if (lastAgentHit == 0 || lastFloorHit == 0)
                 {
-                    m_AgentA.SetReward(-1);
-                    m_AgentB.SetReward(1);
-                    m_AgentB.score += 1;
-                    reset();
+                    AgentBWins();
                 }
                 else
                 {
@@ -93,24 +87,42 @@ public class HitWall : MonoBehaviour
             } 
             else if (collision.gameObject.name == "floorB")
             {
+                //Agent B hits into floor or double bounce
                 if (lastAgentHit == 1 || lastFloorHit == 1)
                 {
-                    m_AgentA.SetReward(1);
-                    m_AgentB.SetReward(-1);
-                    m_AgentB.score += 1;
-                    reset();
+                    AgentAWins();
                 }
                 else
                 {
                     lastFloorHit = 1;
                 }
             }
-       }
-
-        if (collision.gameObject.CompareTag("agent"))
+        }
+        else if (collision.gameObject.name == "AgentA")
         {
-            lastAgentHit = collision.gameObject.name == "AgentA" ? 0 : 1;
-            lastFloorHit = -1;
+            //Agent A double hit
+            if (lastAgentHit == 0)
+            {
+                AgentBWins();
+            }
+            else
+            {
+                lastAgentHit = 0;
+                lastFloorHit = -1;
+            }
+        }
+        else if (collision.gameObject.name == "AgentB")
+        {
+            //Agent B double hit
+            if (lastAgentHit == 1)
+            {
+                AgentAWins();
+            }
+            else
+            {
+                lastAgentHit = 1;
+                lastFloorHit = -1;
+            }
         }
     }
 }

@@ -157,7 +157,7 @@ VisualPyramids:
 Tennis:
     trainer: ppo
     normalize: true
-    max_steps: 1e6
+    max_steps: 5e6
     ghosts: 1
 
 CrawlerStatic:
