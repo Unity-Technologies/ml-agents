@@ -19,14 +19,6 @@ namespace MLAgents.Sensor
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. Greater than 90 degrees will go backwards.")]
         public float maxRayDegrees = 70;
 
-        [Range(-10f, 10f)]
-        [Tooltip("Ray start is offset up or down by this amount.")]
-        public float startVerticalOffset;
-
-        [Range(-10f, 10f)]
-        [Tooltip("Ray end is offset up or down by this amount.")]
-        public float endVerticalOffset;
-
         [Range(0f, 10f)]
         [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
         public float sphereCastRadius = 0.5f;
@@ -35,14 +27,11 @@ namespace MLAgents.Sensor
         [Tooltip("Length of the rays to cast.")]
         public float rayLength = 20f;
 
-        [Tooltip("Whether to use 3D or 2D Physics casts. Only use 2D if you use Physics2d.")]
-        public RayPerceptionSensor.CastType castType = RayPerceptionSensor.CastType.Cast3D;
-
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
 
-        [Header("Debug Gizmos")]
+        [Header("Debug Gizmos", order = 999)]
         public Color rayHitColor = Color.red;
         public Color rayMissColor = Color.white;
         [Tooltip("Whether to draw the raycasts in the world space of when they happened, or using the Agent's current transform'")]
@@ -52,15 +41,23 @@ namespace MLAgents.Sensor
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
 
-        // TODO layerMask for raycasts
-
         public abstract RayPerceptionSensor.CastType GetCastType();
+
+        public virtual float GetStartVerticalOffset()
+        {
+            return 0f;
+        }
+
+        public virtual float GetEndVerticalOffset()
+        {
+            return 0f;
+        }
 
         public override ISensor CreateSensor()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
             m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, startVerticalOffset, endVerticalOffset, sphereCastRadius, castType
+                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType()
             );
 
             if (observationStacks != 1)

@@ -9,7 +9,7 @@ namespace MLAgents.Tests
         [Test]
         public void TestGetRayAngles()
         {
-            var angles = RayPerceptionSensorComponent.GetRayAngles(3, 90f);
+            var angles = RayPerceptionSensorComponentBase.GetRayAngles(3, 90f);
             var expectedAngles = new [] { 90f, 60f, 120f, 30f, 150f, 0f, 180f };
             Assert.AreEqual(expectedAngles.Length, angles.Length);
             for (var i = 0; i < angles.Length; i++)
