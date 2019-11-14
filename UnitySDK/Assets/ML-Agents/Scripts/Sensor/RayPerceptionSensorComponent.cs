@@ -35,11 +35,12 @@ namespace MLAgents.Sensor
         [Tooltip("Length of the rays to cast.")]
         public float rayLength = 20f;
 
+        [Tooltip("Whether to use 3D or 2D Physics casts. Only use 2D if you use Physics2d.")]
+        public RayPerceptionSensor.CastType castType = RayPerceptionSensor.CastType.Cast3D;
+
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
-
-        public RayPerceptionSensor.CastType castType = RayPerceptionSensor.CastType.Cast3D;
 
         [Header("Debug Gizmos")]
         public Color rayHitColor = Color.red;
