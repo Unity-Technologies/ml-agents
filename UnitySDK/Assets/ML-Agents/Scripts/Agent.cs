@@ -66,7 +66,7 @@ namespace MLAgents
     /// Editor. This excludes the Brain linked to the Agent since it can be
     /// modified programmatically.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class AgentParameters
     {
         /// <summary>
@@ -153,7 +153,7 @@ namespace MLAgents
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Agents.md")]
-    [System.Serializable]
+    [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
     public abstract class Agent : MonoBehaviour
     {

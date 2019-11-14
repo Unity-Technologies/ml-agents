@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
-using Google.Protobuf;
 
 namespace MLAgents.Tests
 {

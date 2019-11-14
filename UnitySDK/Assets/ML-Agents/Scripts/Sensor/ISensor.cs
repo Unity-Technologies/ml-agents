@@ -56,7 +56,7 @@ namespace MLAgents.Sensor
         string GetName();
     }
 
-    public static class ISensorExtensions
+    public static class SensorExtensions
     {
         /// <summary>
         /// Get the total number of elements in the ISensor's observation (i.e. the product of the shape elements).

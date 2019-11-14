@@ -39,7 +39,8 @@ GameObject:
   - component: {fileID: 54678503543725326}
   - component: {fileID: 114898893333200490}
   - component: {fileID: 114925928594762506}
-  - component: {fileID: 114092229367912210}
+  - component: {fileID: 114458838850320084}
+  - component: {fileID: 114227939525648256}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1052,7 +1053,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114092229367912210
+--- !u!114 &114227939525648256
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1060,9 +1061,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 1195095783991828}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: OffsetRayPerceptionSensor
+  detectableTags:
+  - wall
+  - goal
+  - block
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  startVerticalOffset: 2.5
+  endVerticalOffset: 5
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 6
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+--- !u!114 &114458838850320084
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1195095783991828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - wall
+  - goal
+  - block
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  startVerticalOffset: 0
+  endVerticalOffset: 0
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 6
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
 --- !u!114 &114898893333200490
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1075,12 +1117,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 74
+    vectorObservationSize: 4
     numStackedVectorObservations: 6
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
+  m_Model: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: SmallWallJump
