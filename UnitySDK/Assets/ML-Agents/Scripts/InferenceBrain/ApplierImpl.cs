@@ -169,6 +169,39 @@ namespace MLAgents.InferenceBrain
         }
     }
 
+    /// <summary>
+    /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
+    /// memory data of the agents in the batch.
+    /// </summary>
+    public class MemoryOutputApplier : TensorApplier.IApplier
+    {
+        Dictionary<int, List<float>> m_Memories;
+
+        public MemoryOutputApplier(
+            Dictionary<int, List<float>> memories)
+        {
+            m_Memories = memories;
+        }
+        public void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents)
+        {
+            var agentIndex = 0;
+            var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
+            foreach (var agent in agents)
+            {
+                List<float> memory = null;
+                if (!m_Memories.TryGetValue(agent.Info.id, out memory)
+                    || memory.Count < memorySize)
+                {
+                    memory = new List<float>();
+                    memory.AddRange(Enumerable.Repeat(0f, memorySize));
+                }
+
+                m_Memories[agent.Info.id] = memory;
+                agentIndex++;
+            }
+        }
+    }
+
     public class BarracudaMemoryOutputApplier : TensorApplier.IApplier
     {
         readonly int m_MemoriesCount;
