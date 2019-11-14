@@ -165,6 +165,7 @@ class RLTrainer(Trainer):
                         self.training_buffer[agent_id]["memory"].append(
                             self.policy.retrieve_memories([agent_id])[0, :]
                         )
+
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[next_idx]
@@ -202,6 +203,9 @@ class RLTrainer(Trainer):
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
+        self.policy.save_previous_action(
+            curr_info.agents, take_action_outputs["action"]
+        )
         self.trainer_metrics.end_experience_collection_timer()
 
     def end_episode(self) -> None:

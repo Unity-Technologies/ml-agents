@@ -142,7 +142,6 @@ class TFPolicy(Policy):
         )
         run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
-        self.save_previous_action(brain_info.agents, run_out.get("action"))
         return ActionInfo(
             action=run_out.get("action"), value=run_out.get("value"), outputs=run_out
         )
@@ -223,7 +222,7 @@ class TFPolicy(Policy):
     def retrieve_previous_action(self, agent_ids: List[int]) -> np.ndarray:
         action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
         for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.memory_dict:
+            if agent_id in self.previous_action_dict:
                 action_matrix[index, :] = self.previous_action_dict[agent_id]
         return action_matrix
 
