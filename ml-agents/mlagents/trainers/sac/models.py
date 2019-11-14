@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import Dict, List, Optional
 
-from mlagents.tf_utils import tf, tf_variance_scaling
+from mlagents.tf_utils import tf
 
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
 
@@ -313,7 +313,7 @@ class SACNetwork(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=tf_variance_scaling(0.01),
+                        kernel_initializer=tf.initializers.variance_scaling(0.01),
                     )
                 )
             all_logits = tf.concat(

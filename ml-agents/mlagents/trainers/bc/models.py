@@ -1,4 +1,4 @@
-from mlagents.tf_utils import tf, tf_variance_scaling
+from mlagents.tf_utils import tf
 
 from mlagents.trainers.models import LearningModel
 
@@ -44,7 +44,7 @@ class BehavioralCloningModel(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=tf_variance_scaling(0.01),
+                        kernel_initializer=tf.initializers.variance_scaling(0.01),
                     )
                 )
             self.action_probs = tf.concat(
@@ -91,7 +91,7 @@ class BehavioralCloningModel(LearningModel):
                 activation=None,
                 use_bias=False,
                 name="pre_action",
-                kernel_initializer=tf_variance_scaling(0.01),
+                kernel_initializer=tf.initializers.variance_scaling(0.01),
             )
             self.clipped_sample_action = tf.clip_by_value(self.policy, -1, 1)
             self.sample_action = tf.identity(self.clipped_sample_action, name="action")
