@@ -151,6 +151,7 @@ namespace MLAgents.Sensor
         /// <param name="castRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
         /// instead - this may be faster, especially for complex environments.</param>
         /// <param name="transform">Transform of the GameObject</param>
+        /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
         /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
         /// <param name="legacyHitFractionBehavior">Whether to use the legacy behavior for hit fractions.</param>
         /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>

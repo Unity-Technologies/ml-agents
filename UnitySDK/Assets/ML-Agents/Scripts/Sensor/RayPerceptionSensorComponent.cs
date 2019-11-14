@@ -42,8 +42,8 @@ namespace MLAgents.Sensor
         public RayPerceptionSensor.CastType castType = RayPerceptionSensor.CastType.Cast3D;
 
         [Header("Debug Gizmos")]
-        public Color rayHitColor = Color.yellow;
-        public Color rayMissColor = Color.blue;
+        public Color rayHitColor = Color.red;
+        public Color rayMissColor = Color.white;
         [Tooltip("Whether to draw the raycasts in the world space of when they happened, or using the Agent's current transform'")]
         public bool useWorldPositions = true;
 
@@ -123,7 +123,9 @@ namespace MLAgents.Sensor
                 var rayDirection = endPositionWorld - startPositionWorld;
                 rayDirection *= rayInfo.hitFraction;
 
-                var color = rayInfo.castHit ? rayHitColor : rayMissColor;
+                // hit fraction ^2 will shift "far" hits closer to the hit color
+                var lerpT = rayInfo.hitFraction * rayInfo.hitFraction;
+                var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
                 color.a = alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld,rayDirection);
@@ -133,7 +135,6 @@ namespace MLAgents.Sensor
                 {
                     var hitRadius = Mathf.Max(sphereCastRadius, .05f);
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
-
                 }
             }
 
