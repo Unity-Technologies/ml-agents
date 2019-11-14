@@ -1,7 +1,8 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 from tensorflow.python.client import device_lib
 from mlagents.envs.brain import BrainParameters
 from mlagents.envs.timers import timed

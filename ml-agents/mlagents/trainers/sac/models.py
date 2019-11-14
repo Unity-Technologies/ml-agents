@@ -2,9 +2,9 @@ import logging
 import numpy as np
 from typing import Dict, List, Optional
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
-import tensorflow.contrib.layers as c_layers
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
@@ -313,9 +313,7 @@ class SACNetwork(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=c_layers.variance_scaling_initializer(
-                            factor=0.01
-                        ),
+                        kernel_initializer=tf.initializers.variance_scaling(0.01),
                     )
                 )
             all_logits = tf.concat(

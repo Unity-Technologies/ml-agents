@@ -2,7 +2,9 @@
 import logging
 from typing import Dict, List, Deque, Any
 import os
-import tensorflow as tf
+
+from mlagents.tf_utils import tf
+
 import numpy as np
 from collections import deque, defaultdict
 

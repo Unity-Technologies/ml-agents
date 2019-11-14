@@ -2,8 +2,7 @@ import logging
 from typing import Optional
 
 import numpy as np
-import tensorflow as tf
-
+from mlagents.tf_utils import tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 
 logger = logging.getLogger("mlagents.trainers")
