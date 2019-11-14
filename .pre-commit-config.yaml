@@ -49,6 +49,8 @@ repos:
     -   id: trailing-whitespace
         name: trailing-whitespace-markdown
         types: [markdown]
+    -   id: check-merge-conflict
+        args: [--assume-in-merge]
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.4.1  # Use the ref you want to point at
