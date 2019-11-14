@@ -61,7 +61,6 @@ class RLTrainer(Trainer):
         local_dones = []
         max_reacheds = []
         agents = []
-        prev_vector_actions = []
         action_masks = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
@@ -79,9 +78,6 @@ class RLTrainer(Trainer):
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
             agents.append(agent_brain_info.agents[agent_index])
-            prev_vector_actions.append(
-                agent_brain_info.previous_vector_actions[agent_index]
-            )
             action_masks.append(agent_brain_info.action_masks[agent_index])
         curr_info = BrainInfo(
             visual_observations,
@@ -89,7 +85,6 @@ class RLTrainer(Trainer):
             rewards,
             agents,
             local_dones,
-            prev_vector_actions,
             max_reacheds,
             action_masks,
         )
@@ -182,7 +177,7 @@ class RLTrainer(Trainer):
                             stored_info.action_masks[idx], padding_value=1
                         )
                     self.training_buffer[agent_id]["prev_action"].append(
-                        stored_info.previous_vector_actions[idx]
+                        self.policy.retrieve_previous_action([agent_id])[0, :]
                     )
 
                     values = stored_take_action_outputs["value_heads"]

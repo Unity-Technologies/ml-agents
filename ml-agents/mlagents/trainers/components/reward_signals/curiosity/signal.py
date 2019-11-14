@@ -57,7 +57,9 @@ class CuriosityRewardSignal(RewardSignal):
             return RewardSignalResult([], [])
         mini_batch: Dict[str, np.array] = {}
         # Construct the batch and use evaluate_batch
-        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["actions"] = self.policy.retrieve_previous_action(
+            next_info.agent_ids
+        )
         mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
         for i in range(len(current_info.visual_observations)):
             mini_batch["visual_obs%d" % i] = current_info.visual_observations[i]
