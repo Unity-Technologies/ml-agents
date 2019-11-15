@@ -74,7 +74,6 @@ or RenderTextures will provide images and the base Agent class handles the rest.
 You do not need to implement the `CollectObservations()` method when your Agent
 uses visual observations (unless it also uses vector observations).
 
-
 ### Vector Observation Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to
