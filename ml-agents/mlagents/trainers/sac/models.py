@@ -318,7 +318,7 @@ class SACNetwork(LearningModel):
                 )
             all_logits = tf.concat(policy_branches, axis=1, name="action_probs")
 
-            output, normalized_probs, normalized_logprobs, = self.create_discrete_action_masking_layer(
+            output, normalized_probs, normalized_logprobs = self.create_discrete_action_masking_layer(
                 all_logits, self.action_masks, self.act_size
             )
 

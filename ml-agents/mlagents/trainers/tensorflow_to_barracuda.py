@@ -1548,7 +1548,7 @@ def convert(
 
     # Convert
     o_model = barracuda.Model()
-    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals, = process_model(
+    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals = process_model(
         i_model, args
     )
 

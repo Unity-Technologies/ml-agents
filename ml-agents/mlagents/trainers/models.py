@@ -35,7 +35,7 @@ class LearningModel(object):
         tf.set_random_seed(seed)
         self.brain = brain
         self.vector_in = None
-        self.global_step, self.increment_step, self.steps_to_increment, = (
+        self.global_step, self.increment_step, self.steps_to_increment = (
             self.create_global_steps()
         )
         self.visual_in = []
