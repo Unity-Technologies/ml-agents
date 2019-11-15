@@ -495,8 +495,8 @@ GameObject:
   - component: {fileID: 65550728419070768}
   - component: {fileID: 54936164982484646}
   - component: {fileID: 114374774605792098}
-  - component: {fileID: 114762047763154270}
   - component: {fileID: 114176228333253036}
+  - component: {fileID: 114725457980523372}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -549,8 +549,8 @@ GameObject:
   - component: {fileID: 65905012397919158}
   - component: {fileID: 54504078365531932}
   - component: {fileID: 114522573150607728}
-  - component: {fileID: 114416645532260476}
   - component: {fileID: 114711827726849508}
+  - component: {fileID: 114443152683847924}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -604,8 +604,8 @@ GameObject:
   - component: {fileID: 65152194455140476}
   - component: {fileID: 54961653455021136}
   - component: {fileID: 114980787530065684}
-  - component: {fileID: 114192565006091356}
   - component: {fileID: 114542632553128056}
+  - component: {fileID: 114986980423924774}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -725,8 +725,8 @@ GameObject:
   - component: {fileID: 65761952312736034}
   - component: {fileID: 54819001862035794}
   - component: {fileID: 114878550018296316}
-  - component: {fileID: 114661830999747712}
   - component: {fileID: 114189751434580810}
+  - component: {fileID: 114644889237473510}
   m_Layer: 0
   m_Name: Agent (4)
   m_TagString: agent
@@ -779,8 +779,8 @@ GameObject:
   - component: {fileID: 65367560123033576}
   - component: {fileID: 54895479068989492}
   - component: {fileID: 114035338027591536}
-  - component: {fileID: 114821937036444478}
   - component: {fileID: 114235147148547996}
+  - component: {fileID: 114276061479012222}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -3683,7 +3683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 53
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
@@ -3761,17 +3761,6 @@ MonoBehaviour:
   myLaser: {fileID: 1617924810425504}
   contribute: 0
   useVectorObs: 1
---- !u!114 &114192565006091356
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1601500200010266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114235147148547996
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3798,6 +3787,34 @@ MonoBehaviour:
   myLaser: {fileID: 1045923826166930}
   contribute: 0
   useVectorObs: 1
+--- !u!114 &114276061479012222
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1706274796045088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - food
+  - agent
+  - wall
+  - badFood
+  - frozenAgent
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 50
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114374774605792098
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3810,7 +3827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 53
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
@@ -3819,7 +3836,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: FoodCollector
---- !u!114 &114416645532260476
+--- !u!114 &114443152683847924
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -3827,9 +3844,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1495617568563208}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - food
+  - agent
+  - wall
+  - badFood
+  - frozenAgent
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 50
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114522573150607728
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3842,7 +3876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 53
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
@@ -3877,7 +3911,7 @@ MonoBehaviour:
   myLaser: {fileID: 1421240237750412}
   contribute: 0
   useVectorObs: 1
---- !u!114 &114661830999747712
+--- !u!114 &114644889237473510
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -3885,9 +3919,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1672905243433088}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - food
+  - agent
+  - wall
+  - badFood
+  - frozenAgent
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 50
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114711827726849508
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3914,7 +3965,7 @@ MonoBehaviour:
   myLaser: {fileID: 1941433838307300}
   contribute: 0
   useVectorObs: 1
---- !u!114 &114762047763154270
+--- !u!114 &114725457980523372
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -3922,20 +3973,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1464820575638702}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114821937036444478
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1706274796045088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - food
+  - agent
+  - wall
+  - badFood
+  - frozenAgent
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 50
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114878550018296316
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3948,7 +4005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 53
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
@@ -3969,7 +4026,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 53
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
@@ -3978,3 +4035,31 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: FoodCollector
+--- !u!114 &114986980423924774
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1601500200010266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - food
+  - agent
+  - wall
+  - badFood
+  - frozenAgent
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 50
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
