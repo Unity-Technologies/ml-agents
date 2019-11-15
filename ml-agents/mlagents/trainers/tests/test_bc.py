@@ -77,19 +77,20 @@ def test_bc_trainer_add_proc_experiences(dummy_config):
     trainer, env = create_bc_trainer(dummy_config)
     # Test add_experiences
     returned_braininfo = env.step()
+    brain_name = "Ball3DBrain"
     trainer.add_experiences(
-        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"], {}
+        returned_braininfo[brain_name], returned_braininfo[brain_name], {}
     )  # Take action outputs is not used
-    for agent_id in returned_braininfo["Ball3DBrain"].agents:
+    for agent_id in returned_braininfo[brain_name].agents:
         assert trainer.evaluation_buffer[agent_id].last_brain_info is not None
         assert trainer.episode_steps[agent_id] > 0
         assert trainer.cumulative_rewards[agent_id] > 0
     # Test process_experiences by setting done
-    returned_braininfo["Ball3DBrain"].local_done = 12 * [True]
+    returned_braininfo[brain_name].local_done = 12 * [True]
     trainer.process_experiences(
-        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"]
+        returned_braininfo[brain_name], returned_braininfo[brain_name]
     )
-    for agent_id in returned_braininfo["Ball3DBrain"].agents:
+    for agent_id in returned_braininfo[brain_name].agents:
         assert trainer.episode_steps[agent_id] == 0
         assert trainer.cumulative_rewards[agent_id] == 0
 
@@ -97,15 +98,16 @@ def test_bc_trainer_add_proc_experiences(dummy_config):
 def test_bc_trainer_end_episode(dummy_config):
     trainer, env = create_bc_trainer(dummy_config)
     returned_braininfo = env.step()
+    brain_name = "Ball3DBrain"
     trainer.add_experiences(
-        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"], {}
+        returned_braininfo[brain_name], returned_braininfo[brain_name], {}
     )  # Take action outputs is not used
     trainer.process_experiences(
-        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"]
+        returned_braininfo[brain_name], returned_braininfo[brain_name]
     )
     # Should set everything to 0
     trainer.end_episode()
-    for agent_id in returned_braininfo["Ball3DBrain"].agents:
+    for agent_id in returned_braininfo[brain_name].agents:
         assert trainer.episode_steps[agent_id] == 0
         assert trainer.cumulative_rewards[agent_id] == 0
 
