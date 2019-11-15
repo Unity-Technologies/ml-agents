@@ -1,4 +1,5 @@
 # pylint: skip-file
+# flake8: noqa
 from __future__ import print_function
 from collections import defaultdict
 import numpy as np
@@ -44,8 +45,9 @@ def parse_args(description, source_extension, help):
     parser.add_argument("--print-supported-ops", action="store_true")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
-    # TEMP: disabled, until properly implemented parser.add_argument('-f16', '--compress-f16', action='store_true')
-    args.compress_f16 = False
+    args.compress_f16 = (
+        False
+    )  # TEMP: disabled, until properly implemented parser.add_argument('-f16', '--compress-f16', action='store_true')
 
     output_extension = ".bc" if not args.compress_f16 else ".f16.bc"
 
@@ -183,7 +185,7 @@ def trim(model, criteria_regexp_string, verbose):
 
     def trim_model(model, outputs):
         layers = {l.name: l for l in model}
-        connected = set(outputs)
+        connected = {o for o in outputs}
         while len(outputs) > 0:
             outputs = set(flatten([layers[o].inputs for o in outputs if o in layers]))
             if verbose and len(outputs) > 0:
