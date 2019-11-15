@@ -209,9 +209,7 @@ class PPOModel(LearningModel):
                 )
             )
 
-        self.all_log_probs = tf.concat(
-            [branch for branch in policy_branches], axis=1, name="action_probs"
-        )
+        self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
