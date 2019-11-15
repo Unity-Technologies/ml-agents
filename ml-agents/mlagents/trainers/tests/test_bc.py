@@ -78,7 +78,7 @@ def test_bc_trainer_add_proc_experiences(dummy_config):
     # Test add_experiences
     returned_braininfo = env.step()
     trainer.add_experiences(
-        returned_braininfo, returned_braininfo, {}
+        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"], {}
     )  # Take action outputs is not used
     for agent_id in returned_braininfo["Ball3DBrain"].agents:
         assert trainer.evaluation_buffer[agent_id].last_brain_info is not None
@@ -86,7 +86,9 @@ def test_bc_trainer_add_proc_experiences(dummy_config):
         assert trainer.cumulative_rewards[agent_id] > 0
     # Test process_experiences by setting done
     returned_braininfo["Ball3DBrain"].local_done = 12 * [True]
-    trainer.process_experiences(returned_braininfo, returned_braininfo)
+    trainer.process_experiences(
+        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"]
+    )
     for agent_id in returned_braininfo["Ball3DBrain"].agents:
         assert trainer.episode_steps[agent_id] == 0
         assert trainer.cumulative_rewards[agent_id] == 0
@@ -96,9 +98,11 @@ def test_bc_trainer_end_episode(dummy_config):
     trainer, env = create_bc_trainer(dummy_config)
     returned_braininfo = env.step()
     trainer.add_experiences(
-        returned_braininfo, returned_braininfo, {}
+        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"], {}
     )  # Take action outputs is not used
-    trainer.process_experiences(returned_braininfo, returned_braininfo)
+    trainer.process_experiences(
+        returned_braininfo["Ball3DBrain"], returned_braininfo["Ball3DBrain"]
+    )
     # Should set everything to 0
     trainer.end_episode()
     for agent_id in returned_braininfo["Ball3DBrain"].agents:

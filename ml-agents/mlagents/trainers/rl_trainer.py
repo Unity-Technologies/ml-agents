@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List, Any, NamedTuple
 import numpy as np
 
-from mlagents.envs.brain import AllBrainInfo, BrainInfo
+from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -97,14 +97,14 @@ class RLTrainer(Trainer):
 
     def add_experiences(
         self,
-        curr_all_info: AllBrainInfo,
-        next_all_info: AllBrainInfo,
+        curr_info: BrainInfo,
+        next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param curr_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
         self.trainer_metrics.start_experience_collection_timer()
@@ -117,9 +117,6 @@ class RLTrainer(Trainer):
                 self.stats[signal.value_name].append(
                     np.mean(take_action_outputs["value_heads"][name])
                 )
-
-        curr_info = curr_all_info[self.brain_name]
-        next_info = next_all_info[self.brain_name]
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
