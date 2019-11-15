@@ -492,28 +492,26 @@ transform_patterns = {
     ),
     "BatchNormalization": lambda nodes, inputs, tensors, _: Struct(
         op="BatchNormalization",
-        input=[i for i in inputs]
+        input=list(inputs)
         + order_by([t.name for t in tensors], ["gamma", "beta", "mean", "variance"]),
     ),
     "InstanceNormalization_ByTensorName": lambda nodes, inputs, tensors, _: Struct(
         op="InstanceNormalization",
-        input=[i for i in inputs]
-        + order_by([t.name for t in tensors], ["scale", "offset"]),
+        input=list(inputs) + order_by([t.name for t in tensors], ["scale", "offset"]),
     ),
     "InstanceNormalization_ByTensorOrder": lambda nodes, inputs, tensors, _: Struct(
-        op="InstanceNormalization",
-        input=[i for i in inputs] + [t.name for t in tensors][-2:],
+        op="InstanceNormalization", input=list(inputs) + [t.name for t in tensors][-2:],
     ),
     "Dense": lambda nodes, inputs, tensors, _: Struct(
         op="Dense",
-        input=[i for i in inputs] + [t.name for t in tensors],
+        input=list(inputs) + [t.name for t in tensors],
         data_frmt=get_attr(
             by_op(nodes, "Dense") or by_op(nodes, "MatMul"), "data_format"
         ),
     ),
     "Conv2D": lambda nodes, inputs, tensors, _: Struct(
         op="Conv2D",
-        input=[i for i in inputs] + [t.name for t in tensors],
+        input=list(inputs) + [t.name for t in tensors],
         padding=get_attr(by_op(nodes, "Conv2D"), "padding"),
         strides=get_attr(by_op(nodes, "Conv2D"), "strides"),
         dilations=get_attr(by_op(nodes, "Conv2D"), "dilations"),
@@ -521,7 +519,7 @@ transform_patterns = {
     ),
     "DepthwiseConv2dNative": lambda nodes, inputs, tensors, _: Struct(
         op="DepthwiseConv2dNative",
-        input=[i for i in inputs] + [t.name for t in tensors],
+        input=list(inputs) + [t.name for t in tensors],
         padding=get_attr(by_op(nodes, "DepthwiseConv2dNative"), "padding"),
         strides=get_attr(by_op(nodes, "DepthwiseConv2dNative"), "strides"),
         dilations=get_attr(by_op(nodes, "DepthwiseConv2dNative"), "dilations"),
@@ -529,7 +527,7 @@ transform_patterns = {
     ),
     "Conv2DBackpropInput": lambda nodes, inputs, tensors, _: Struct(
         op="Conv2DBackpropInput",
-        input=[i for i in inputs]
+        input=list(inputs)
         + [t.name for t in tensors][1:][
             -2:
         ],  # [1:]  - skips the 0th tensor, since Conv2DBackpropInput 0th tensor is 'input_sizes'
@@ -542,7 +540,7 @@ transform_patterns = {
     ),
     "ResizeNearestNeighbor": lambda nodes, inputs, tensors, _: Struct(
         op="ResizeNearestNeighbor",
-        input=[i for i in inputs],
+        input=list(inputs),
         ksize=[int(tensors[0].data[0]), int(tensors[0].data[1])]
         if len(tensors) == 1 and len(tensors[0].data) == 2
         else [int(tensors[-1].data[0]), int(tensors[-1].data[1])]
@@ -1242,7 +1240,7 @@ def process_model(model, args):
     o_context = ModelBuilderContext()
 
     # Find node patterns
-    nodes_as_array = [node for node in model.node]
+    nodes_as_array = list(model.node)
     nodes_as_array = slow_but_stable_topological_sort(nodes_as_array, verbose=True)
 
     node_index = 0
@@ -1550,9 +1548,13 @@ def convert(
 
     # Convert
     o_model = barracuda.Model()
-    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals = process_model(
-        i_model, args
-    )
+    (
+        o_model.layers,
+        o_input_shapes,
+        o_model.tensors,
+        o_model.memories,
+        o_model.globals,
+    ) = process_model(i_model, args)
 
     # Cleanup unconnected Identities (they might linger after processing complex node patterns like LSTM)
     def cleanup_layers(layers):
