@@ -10,13 +10,9 @@ from mlagents.envs.brain import BrainInfo, BrainParameters
 from mlagents.envs.action_info import ActionInfo
 from mlagents.trainers.models import EncoderType  # , LearningRateSchedule
 
-# from mlagents.trainers.ppo.models import PPOModel
-# from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-
-# from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -61,23 +57,20 @@ class GaussianDistribution(tf.keras.layers.Layer):
             num_outputs,
             kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
         )
-        self.log_sigma_sq = tf.keras.layers.Dense(
-            num_outputs,
-            kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
+        # self.log_sigma_sq = tf.keras.layers.Dense(
+        #     num_outputs,
+        #     kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
+        # )
+        self.log_sigma_sq = tf.Variable(
+            name="log_sig_sq", dtype=tf.float32, initial_value=tf.zeros([num_outputs])
         )
 
     def call(self, inputs):
         mu = self.mu(inputs)
-        log_sig = self.log_sigma_sq(inputs)
-        return tfp.distributions.Normal(loc=mu, scale=tf.sqrt(tf.exp(log_sig)))
-        # action = mu + tf.sqrt(tf.exp(log_sig)) + epsilon
-
-    # def log_probs(self, inputs)        # Compute probability of model output.
-    #     probs = (
-    #         -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
-    #         - 0.5 * tf.log(2.0 * np.pi)
-    #         - 0.5 * self.log_sigma_sq
-    #     )
+        log_sig = self.log_sigma_sq
+        return tfp.distributions.MultivariateNormalDiag(
+            loc=mu, scale_diag=tf.sqrt(tf.exp(log_sig))
+        )
 
 
 class Normalizer(tf.keras.layers.Layer):
@@ -147,27 +140,30 @@ class ActorCriticPolicy(tf.keras.Model):
         self.critic = Critic(stream_names, VectorEncoder(h_size, num_layers))
         self.act_size = act_size
         self.normalize = normalize
+        self.normalizer = None
 
     def build(self, input_size):
         self.normalizer = Normalizer(input_size[1])
 
     def call(self, inputs):
         if self.normalize:
-            norm_inputs = self.normalizer(inputs)
-        _hidden = self.encoder(norm_inputs)
+            inputs = self.normalizer(inputs)
+        _hidden = self.encoder(inputs)
         # epsilon = np.random.normal(size=(input.shape[0], self.act_size))
         dist = self.distribution(_hidden)
-        raw_action = dist.sample()
-        action = tf.clip_by_value(raw_action, -3, 3) / 3
-        log_prob = dist.log_prob(raw_action)
-        entropy = dist.entropy()
-        return action, log_prob, entropy
+        # raw_action = dist.sample()
+        # action = tf.clip_by_value(raw_action, -3, 3) / 3
+        # log_prob = dist.log_prob(raw_action)
+        # entropy = dist.entropy()
+        return dist
 
     def update_normalization(self, inputs):
         if self.normalize:
             self.normalizer.update(inputs)
 
     def get_values(self, inputs):
+        if self.normalize:
+            inputs = self.normalizer(inputs)
         return self.critic(inputs)
 
 
@@ -214,24 +210,6 @@ class PPOPolicy(object):
         self.global_step = tf.Variable(0)
         self.create_reward_signals(reward_signal_configs)
 
-        # with self.graph.as_default():
-        #     self.bc_module: Optional[BCModule] = None
-        #     # Create pretrainer if needed
-        #     if "pretraining" in trainer_params:
-        #         BCModule.check_config(trainer_params["pretraining"])
-        #         self.bc_module = BCModule(
-        #             self,
-        #             policy_learning_rate=trainer_params["learning_rate"],
-        #             default_batch_size=trainer_params["batch_size"],
-        #             default_num_epoch=trainer_params["num_epoch"],
-        #             **trainer_params["pretraining"],
-        #         )
-
-        # if load:
-        #     self._load_graph()
-        # else:
-        #     self._initialize_graph()
-
     def create_model(
         self, brain, trainer_params, reward_signal_configs, is_training, load, seed
     ):
@@ -254,19 +232,7 @@ class PPOPolicy(object):
             ),
         )
 
-    def ppo_loss(
-        self,
-        advantages,
-        probs,
-        old_probs,
-        values,
-        old_values,
-        returns,
-        masks,
-        entropy,
-        beta,
-        epsilon,
-    ):
+    def ppo_value_loss(self, values, old_values, returns):
         """
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
@@ -278,28 +244,8 @@ class PPOPolicy(object):
         :param lr: Learning rate
         :param max_step: Total number of training steps.
         """
-        self.returns_holders = {}
-        # self.old_values = {}
-        # for name in value_heads.keys():
-        #     returns_holder = tf.placeholder(
-        #         shape=[None], dtype=tf.float32, name="{}_returns".format(name)
-        #     )
-        #     old_value = tf.placeholder(
-        #         shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
-        #     )
-        #     self.returns_holders[name] = returns_holder
-        #     self.old_values[name] = old_value
-        advantage = tf.expand_dims(advantages, -1)
 
-        # decay_epsilon = tf.train.polynomial_decay(
-        #     epsilon, self.global_step, max_step, 0.1, power=1.0
-        # )
-        # decay_beta = tf.train.polynomial_decay(
-        #     beta, self.global_step, max_step, 1e-5, power=1.0
-        # )
         decay_epsilon = self.trainer_params["epsilon"]
-        decay_beta = self.trainer_params["beta"] / 10
-        # max_step = self.trainer_params["max_step"]
 
         value_losses = []
         for name, head in values.items():
@@ -315,6 +261,24 @@ class PPOPolicy(object):
             value_loss = tf.reduce_mean(tf.maximum(v_opt_a, v_opt_b))
             value_losses.append(value_loss)
         value_loss = tf.reduce_mean(value_losses)
+        return value_loss
+
+    def ppo_policy_loss(self, advantages, probs, old_probs, masks, epsilon):
+        """
+        Creates training-specific Tensorflow ops for PPO models.
+        :param probs: Current policy probabilities
+        :param old_probs: Past policy probabilities
+        :param value_heads: Value estimate tensors from each value stream
+        :param beta: Entropy regularization strength
+        :param entropy: Current policy entropy
+        :param epsilon: Value for policy-divergence threshold
+        :param lr: Learning rate
+        :param max_step: Total number of training steps.
+        """
+        advantage = tf.expand_dims(advantages, -1)
+
+        decay_epsilon = self.trainer_params["epsilon"]
+
         r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
@@ -324,9 +288,7 @@ class PPOPolicy(object):
         policy_loss = -tf.reduce_mean(tf.minimum(p_opt_a, p_opt_b))
         # For cleaner stats reporting
         # abs_policy_loss = tf.abs(policy_loss)
-
-        loss = policy_loss + 0.5 * value_loss - decay_beta * tf.reduce_mean(entropy)
-        return loss
+        return policy_loss
 
     def create_reward_signals(self, reward_signal_configs):
         """
@@ -351,7 +313,10 @@ class PPOPolicy(object):
         """
 
         run_out = {}
-        action, log_probs, entropy = self.model(brain_info.vector_observations)
+        action_dist = self.model(brain_info.vector_observations)
+        action = action_dist.sample()
+        log_probs = action_dist.log_prob(action)
+        entropy = action_dist.entropy()
         run_out["action"] = action.numpy()
         run_out["log_probs"] = log_probs.numpy()
         run_out["entropy"] = entropy.numpy()
@@ -395,23 +360,30 @@ class PPOPolicy(object):
 
             obs = np.array(mini_batch["vector_obs"])
             values = self.model.get_values(obs)
-            action, probs, entropy = self.model(obs)
-            loss = self.ppo_loss(
+            dist = self.model(obs)
+            probs = dist.log_prob(np.array(mini_batch["actions"]))
+            entropy = dist.entropy()
+            value_loss = self.ppo_value_loss(values, old_values, returns)
+            policy_loss = self.ppo_policy_loss(
                 np.array(mini_batch["advantages"]),
                 probs,
                 np.array(mini_batch["action_probs"]),
-                values,
-                old_values,
-                returns,
                 np.array(mini_batch["masks"], dtype=np.uint32),
-                entropy,
                 1e-3,
-                1000,
+            )
+            loss = (
+                policy_loss
+                + 0.5 * value_loss
+                - self.trainer_params["beta"] * tf.reduce_mean(entropy)
             )
         grads = tape.gradient(loss, self.model.trainable_weights)
+        # for grad,weight in zip(grads, self.model.trainable_weights):
+        #     if "critic/" in weight.name:
+        #         print(grad,weight.name)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
         update_stats = {}
-        update_stats["Policy/Loss"] = loss
+        update_stats["Losses/Policy Loss"] = policy_loss
+        update_stats["Losses/Value Loss"] = value_loss
         # for stat_name, update_name in stats_needed.items():
         #     update_stats[stat_name] = update_vals[update_name]
         return update_stats
