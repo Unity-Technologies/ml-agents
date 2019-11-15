@@ -278,13 +278,13 @@ class TrainerController(object):
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 if brain_name in step_info.brain_name_to_action_info:
                     trainer.add_experiences(
-                        step_info.previous_all_brain_info,
-                        step_info.current_all_brain_info,
+                        step_info.previous_all_brain_info[brain_name],
+                        step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
                     )
                     trainer.process_experiences(
-                        step_info.previous_all_brain_info,
-                        step_info.current_all_brain_info,
+                        step_info.previous_all_brain_info[brain_name],
+                        step_info.current_all_brain_info[brain_name],
                     )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:

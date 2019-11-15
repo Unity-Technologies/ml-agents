@@ -316,9 +316,8 @@ class SACNetwork(LearningModel):
                         kernel_initializer=tf.initializers.variance_scaling(0.01),
                     )
                 )
-            all_logits = tf.concat(
-                [branch for branch in policy_branches], axis=1, name="action_probs"
-            )
+            all_logits = tf.concat(policy_branches, axis=1, name="action_probs")
+
             output, normalized_probs, normalized_logprobs = self.create_discrete_action_masking_layer(
                 all_logits, self.action_masks, self.act_size
             )
