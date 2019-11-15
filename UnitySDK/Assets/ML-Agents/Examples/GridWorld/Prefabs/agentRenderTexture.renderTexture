@@ -12,7 +12,7 @@ RenderTexture:
   m_ForcedFallbackFormat: 4
   m_DownscaleFallback: 0
   m_Width: 84
-  m_Height: 84
+  m_Height: 64
   m_AntiAliasing: 1
   m_DepthFormat: 1
   m_ColorFormat: 0

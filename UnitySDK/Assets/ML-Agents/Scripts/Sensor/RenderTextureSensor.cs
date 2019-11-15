@@ -19,7 +19,7 @@ namespace MLAgents.Sensor
             m_Height = height;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = new[] { width, height, grayscale ? 1 : 3 };
+            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
         }
 
         public string GetName()
