@@ -22,6 +22,16 @@ namespace MLAgents
         bool m_UseHeuristic;
         [HideInInspector] [SerializeField]
         string m_BehaviorName = "My Behavior";
+        [HideInInspector] [SerializeField]
+        int m_TeamID = 0;
+        //[HideInInspector] [SerializeField]
+        //string m_BehaviorIdentifier;
+
+        
+        private string concatBehaviorIdentifiers()
+        {
+           return m_BehaviorName + "?team=" + m_TeamID;
+        }
 
         public BrainParameters brainParameters
         {
@@ -30,7 +40,9 @@ namespace MLAgents
 
         public string behaviorName
         {
-            get { return m_BehaviorName; }
+            
+            get { return concatBehaviorIdentifiers();}
+
         }
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)
@@ -41,7 +53,8 @@ namespace MLAgents
             }
             if (FindObjectOfType<Academy>().IsCommunicatorOn)
             {
-                return new RemotePolicy(m_BrainParameters, m_BehaviorName);
+                
+                return new RemotePolicy(m_BrainParameters, concatBehaviorIdentifiers());
             }
             if (m_Model != null)
             {
