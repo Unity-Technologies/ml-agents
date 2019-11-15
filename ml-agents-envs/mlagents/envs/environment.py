@@ -72,12 +72,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         self.port = base_port + worker_id
         self._buffer_size = 12000
         self._version_ = UnityEnvironment.API_VERSION
-        self._loaded = (
-            False  # If true, this means the environment was successfully loaded
-        )
-        self.proc1 = (
-            None  # The process that is started. If None, no process was started
-        )
+        # If true, this means the environment was successfully loaded
+        self._loaded = False
+        # The process that is started. If None, no process was started
+        self.proc1 = None
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id

@@ -62,7 +62,8 @@ class UnityEnv(gym.Env):
         self._n_agents = None
         self._multiagent = multiagent
         self._flattener = None
-        self.game_over = False  # Hidden flag used by Atari environments to determine if the game is over
+        # Hidden flag used by Atari environments to determine if the game is over
+        self.game_over = False
         self._allow_multiple_visual_obs = allow_multiple_visual_obs
 
         # Check brain configuration

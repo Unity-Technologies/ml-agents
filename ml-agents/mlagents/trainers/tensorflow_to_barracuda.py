@@ -500,7 +500,7 @@ transform_patterns = {
         input=list(inputs) + order_by([t.name for t in tensors], ["scale", "offset"]),
     ),
     "InstanceNormalization_ByTensorOrder": lambda nodes, inputs, tensors, _: Struct(
-        op="InstanceNormalization", input=list(inputs) + [t.name for t in tensors][-2:],
+        op="InstanceNormalization", input=list(inputs) + [t.name for t in tensors][-2:]
     ),
     "Dense": lambda nodes, inputs, tensors, _: Struct(
         op="Dense",
@@ -1548,13 +1548,10 @@ def convert(
 
     # Convert
     o_model = barracuda.Model()
-    (
-        o_model.layers,
-        o_input_shapes,
-        o_model.tensors,
-        o_model.memories,
-        o_model.globals,
-    ) = process_model(i_model, args)
+
+    o_model.layers, o_input_shapes, o_model.tensors, o_model.memories, o_model.globals, = process_model(
+        i_model, args
+    )
 
     # Cleanup unconnected Identities (they might linger after processing complex node patterns like LSTM)
     def cleanup_layers(layers):
