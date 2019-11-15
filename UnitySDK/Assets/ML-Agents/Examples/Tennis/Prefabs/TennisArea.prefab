@@ -404,7 +404,7 @@ Transform:
   m_GameObject: {fileID: 1273406647218856}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.020000458, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4172342666475122}
   m_RootOrder: 0
@@ -446,7 +446,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1730923431341952}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.07, y: -3.3, z: 0}
+  m_LocalPosition: {x: 6.07, y: -3, z: 0}
   m_LocalScale: {x: 1.0919912, y: 1, z: 1.1119019}
   m_Children: []
   m_Father: {fileID: 4275308033819996}
@@ -459,8 +459,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1170495812642400}
   m_LocalRotation: {x: -0.30070576, y: -0.953717, z: -0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: -7, y: -6.5, z: -3.5}
-  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
+  m_LocalPosition: {x: -7, y: -6.5, z: -1.8}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_Children:
   - {fileID: 4370649305674928}
   - {fileID: 4715306824276108}
@@ -500,7 +500,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1485570486708108}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.9507, y: -3.3, z: 0}
+  m_LocalPosition: {x: -5.9507, y: -3, z: 0}
   m_LocalScale: {x: 1.0831101, y: 1, z: 1.1727886}
   m_Children: []
   m_Father: {fileID: 4275308033819996}
@@ -539,8 +539,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1882383181950958}
   m_LocalRotation: {x: 0.30070576, y: -0.953717, z: 0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: 7, y: -6.5, z: -3.5}
-  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
+  m_LocalPosition: {x: 7, y: -6.5, z: -1.8}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_Children:
   - {fileID: 4116541575334976}
   - {fileID: 4937969699028734}
@@ -1191,13 +1191,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 8
+    vectorObservationSize: 9
     numStackedVectorObservations: 3
-    vectorActionSize: 02000000
-    cameraResolutions: []
+    vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: c85010de4f32e4c88bac16d9688aaadc, type: 3}
+  m_Model: {fileID: 11400000, guid: 93542d59021b847d6baf8de9cd4b1e40, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Tennis
@@ -1213,13 +1212,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 8
+    vectorObservationSize: 9
     numStackedVectorObservations: 3
-    vectorActionSize: 02000000
-    cameraResolutions: []
+    vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: c85010de4f32e4c88bac16d9688aaadc, type: 3}
+  m_Model: {fileID: 11400000, guid: 93542d59021b847d6baf8de9cd4b1e40, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Tennis
@@ -1235,12 +1233,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
+    teamId: 1
   ball: {fileID: 1273406647218856}
   invertX: 1
   score: 0
@@ -1260,6 +1257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   areaObject: {fileID: 1541947554534326}
   lastAgentHit: 0
+  lastFloorHit: 0
 --- !u!114 &114915946461826994
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1272,12 +1270,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
-    maxStep: 5000
+    maxStep: 5021
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
+    teamId: 0
   ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0
