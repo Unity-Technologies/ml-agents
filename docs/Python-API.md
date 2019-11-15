@@ -85,9 +85,6 @@ A BrainInfo object contains the following fields:
 - **`max_reached`** : A list as long as the number of Agents using the Brain
   containing true if the Agents reached their max steps.
 - **`agents`** : A list of the unique ids of the Agents using the Brain.
-- **`previous_actions`** : A two dimensional numpy array of dimension `(batch
-  size, vector action size)` if the vector action space is continuous and
-  `(batch size, number of branches)` if the vector action space is discrete.
 
 Once loaded, you can use your UnityEnvironment object, which referenced by a
 variable named `env` in this example, can be used in the following way:
