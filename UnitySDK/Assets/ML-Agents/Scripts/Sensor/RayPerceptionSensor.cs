@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Timers;
 using UnityEngine;
 
 namespace MLAgents.Sensor
@@ -93,11 +94,14 @@ namespace MLAgents.Sensor
 
         public int Write(WriteAdapter adapter)
         {
-            PerceiveStatic(
-                m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_DebugDisplayInfo
-            );
-            adapter.AddRange(m_Observations);
+            using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
+            {
+                PerceiveStatic(
+                    m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
+                    m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_DebugDisplayInfo
+                );
+                adapter.AddRange(m_Observations);
+            }
             return m_Observations.Length;
         }
 
