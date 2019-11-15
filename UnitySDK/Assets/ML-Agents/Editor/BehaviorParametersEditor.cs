@@ -35,6 +35,7 @@ namespace MLAgents
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
             EditorGUILayout.PropertyField(so.FindProperty("m_TeamID"));
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_TeamID"));
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())
             {
