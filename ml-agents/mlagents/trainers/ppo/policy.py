@@ -57,20 +57,18 @@ class GaussianDistribution(tf.keras.layers.Layer):
             num_outputs,
             kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
         )
-        # self.log_sigma_sq = tf.keras.layers.Dense(
-        #     num_outputs,
-        #     kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
-        # )
-        self.log_sigma_sq = tf.Variable(
-            name="log_sig_sq", dtype=tf.float32, initial_value=tf.zeros([num_outputs])
+        self.log_sigma_sq = tf.keras.layers.Dense(
+            num_outputs,
+            kernel_initializer=tf.keras.initializers.VarianceScaling(scale=0.01),
         )
+        # self.log_sigma_sq = tf.Variable(
+        #     name="log_sig_sq", dtype=tf.float32, initial_value=tf.zeros([num_outputs]), trainable=True
+        # )
 
     def call(self, inputs):
         mu = self.mu(inputs)
-        log_sig = self.log_sigma_sq
-        return tfp.distributions.MultivariateNormalDiag(
-            loc=mu, scale_diag=tf.sqrt(tf.exp(log_sig))
-        )
+        log_sig = self.log_sigma_sq(inputs)
+        return tfp.distributions.Normal(loc=mu, scale=tf.sqrt(tf.exp(log_sig)))
 
 
 class Normalizer(tf.keras.layers.Layer):
@@ -157,6 +155,7 @@ class ActorCriticPolicy(tf.keras.Model):
         # entropy = dist.entropy()
         return dist
 
+    @tf.function
     def update_normalization(self, inputs):
         if self.normalize:
             self.normalizer.update(inputs)
@@ -285,6 +284,7 @@ class PPOPolicy(object):
             tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon)
             * advantage
         )
+        # print(tf.reduce_mean(p_opt_a), tf.reduce_mean(p_opt_b))
         policy_loss = -tf.reduce_mean(tf.minimum(p_opt_a, p_opt_b))
         # For cleaner stats reporting
         # abs_policy_loss = tf.abs(policy_loss)
@@ -304,6 +304,15 @@ class PPOPolicy(object):
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
+    @tf.function
+    def execute_model(self, observations):
+        action_dist = self.model(observations)
+        action = action_dist.sample()
+        log_probs = action_dist.log_prob(action)
+        entropy = action_dist.entropy()
+        value_heads = self.model.get_values(observations)
+        return action, log_probs, entropy, value_heads
+
     @timed
     def evaluate(self, brain_info):
         """
@@ -313,17 +322,13 @@ class PPOPolicy(object):
         """
 
         run_out = {}
-        action_dist = self.model(brain_info.vector_observations)
-        action = action_dist.sample()
-        log_probs = action_dist.log_prob(action)
-        entropy = action_dist.entropy()
-        run_out["action"] = action.numpy()
-        run_out["log_probs"] = log_probs.numpy()
-        run_out["entropy"] = entropy.numpy()
-        run_out["value_heads"] = {
-            name: t.numpy()
-            for name, t in self.model.get_values(brain_info.vector_observations).items()
-        }
+        action, log_probs, entropy, value_heads = self.execute_model(
+            brain_info.vector_observations
+        )
+        run_out["action"] = np.array(action)
+        run_out["log_probs"] = np.array(log_probs)
+        run_out["entropy"] = np.array(entropy)
+        run_out["value_heads"] = {name: np.array(t) for name, t in value_heads.items()}
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         self.model.update_normalization(brain_info.vector_observations)
@@ -382,7 +387,7 @@ class PPOPolicy(object):
         #         print(grad,weight.name)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
         update_stats = {}
-        update_stats["Losses/Policy Loss"] = policy_loss
+        update_stats["Losses/Policy Loss"] = abs(policy_loss)
         update_stats["Losses/Value Loss"] = value_loss
         # for stat_name, update_name in stats_needed.items():
         #     update_stats[stat_name] = update_vals[update_name]
