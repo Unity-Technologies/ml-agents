@@ -365,15 +365,12 @@ class PPOPolicy(object):
         )
         self.optimizer.zero_grad()
         loss.backward()
-        # for grad,weight in zip(grads, self.model.trainable_weights):
-        #     if "critic/" in weight.name:
-        #         print(grad,weight.name)
+
         self.optimizer.step()
         update_stats = {}
         update_stats["Losses/Policy Loss"] = abs(policy_loss.detach().numpy())
         update_stats["Losses/Value Loss"] = value_loss.detach().numpy()
-        # for stat_name, update_name in stats_needed.items():
-        #     update_stats[stat_name] = update_vals[update_name]
+
         return update_stats
 
     def get_value_estimates(
