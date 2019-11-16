@@ -22,7 +22,9 @@ class VectorEncoder(tf.keras.layers.Layer):
         super(VectorEncoder, self).__init__(**kwargs)
         self.layers = []
         for i in range(num_layers):
-            self.layers.append(tf.keras.layers.Dense(hidden_size))
+            self.layers.append(
+                tf.keras.layers.Dense(hidden_size, activation=tf.keras.activations.relu)
+            )
 
     def call(self, inputs):
         x = inputs
