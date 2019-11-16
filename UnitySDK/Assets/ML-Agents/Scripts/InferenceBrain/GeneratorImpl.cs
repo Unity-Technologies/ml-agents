@@ -151,8 +151,17 @@ namespace MLAgents.InferenceBrain
             {
                 var info = agent.Info;
                 List<float> memory;
+
+                if (agent.Info.done)
+                {
+                    m_Memories.Remove(agent.Info.id);
+                }
                 if (!m_Memories.TryGetValue(agent.Info.id, out memory))
                 {
+                    for (var j = 0; j < memorySize; j++)
+                    {
+                        tensorProxy.data[agentIndex, j] = 0;
+                    }
                     agentIndex++;
                     continue;
                 }
@@ -198,8 +207,18 @@ namespace MLAgents.InferenceBrain
             {
                 var offset = memorySize * m_MemoryIndex;
                 List<float> memory;
+                //Debug.Log("Memories used");
+                if (agent.Info.done)
+                {
+                    m_Memories.Remove(agent.Info.id);
+                }
                 if (!m_Memories.TryGetValue(agent.Info.id, out memory))
                 {
+
+                    for (var j = 0; j < memorySize; j++)
+                    {
+                        tensorProxy.data[agentIndex, j] = 0;
+                    }
                     agentIndex++;
                     continue;
                 }

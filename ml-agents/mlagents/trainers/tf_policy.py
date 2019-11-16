@@ -126,20 +126,15 @@ class TFPolicy(Policy):
         if len(brain_info.agents) == 0:
             return ActionInfo([], [], None)
 
-        self.remove_memories(
-            [
-                agent
-                for agent, done in zip(brain_info.agents, brain_info.local_done)
-                if done
-            ]
-        )
-        self.remove_previous_action(
-            [
-                agent
-                for agent, done in zip(brain_info.agents, brain_info.local_done)
-                if done
-            ]
-        )
+        agents_done = [
+            agent
+            for agent, done in zip(brain_info.agents, brain_info.local_done)
+            if done
+        ]
+
+        self.remove_memories(agents_done)
+        self.remove_previous_action(agents_done)
+
         run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
