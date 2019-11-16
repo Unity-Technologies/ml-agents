@@ -21,8 +21,8 @@ it means that there is no version of TensorFlow for your python environment. Som
   (see the [release notes](https://github.com/tensorflow/tensorflow/issues/33374) for more details.)
  * You're on another architecture (e.g. ARM) which requires vendor provided packages.
 
-In all of these cases, this is not a problem with ml-agents; you should look for support on TensorFlow instead of
-submitting an issue here.
+In all of these cases, the issue is a pip/python environment setup issue.  Please search the tensorflow github issues
+for similar problems and solutions before creating a new issue.
 
 ## Scripting Runtime Environment not setup correctly
 
