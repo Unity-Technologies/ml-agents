@@ -740,7 +740,7 @@ MonoBehaviour:
     width: 1280
     height: 720
     qualityLevel: 5
-    timeScale: 1
+    timeScale: 2
     targetFrameRate: 60
   resetParameters:
     m_ResetParameters:
