@@ -1222,7 +1222,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Tennis
-  m_TeamID: 0
+  m_TeamID: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
   m_ObjectHideFlags: 1
