@@ -82,7 +82,7 @@ def initialize_trainer(
     :return:
     """
     trainer_parameters = trainer_config["default"].copy()
-    brain_name = brain_parameters.brain_name
+    brain_name, brain_name_identifiers = brain_parameters.brain_name.split("?")
     trainer_parameters["summary_path"] = "{basedir}/{name}".format(
         basedir=summaries_dir, name=str(run_id) + "_" + brain_name
     )
