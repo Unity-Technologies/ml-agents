@@ -458,3 +458,9 @@ class PPOPolicy(object):
         """
         self.global_step.assign(self.global_step + n_steps)
         return self.get_current_step()
+
+    def save_model(self, step):
+        pass
+
+    def export_model(self):
+        pass
