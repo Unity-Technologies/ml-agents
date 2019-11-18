@@ -2,9 +2,12 @@ import pathlib
 import logging
 import os
 from typing import List, Tuple
+import numpy as np
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
-from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
@@ -16,15 +19,26 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 def make_demo_buffer(
-    brain_infos: List[BrainInfo], brain_params: BrainParameters, sequence_length: int
+    pair_infos: List[AgentInfoActionPairProto],
+    brain_params: BrainParameters,
+    sequence_length: int,
 ) -> Buffer:
     # Create and populate buffer using experiences
     demo_buffer = Buffer()
-    for idx, experience in enumerate(brain_infos):
-        if idx > len(brain_infos) - 2:
+    for idx, experience in enumerate(pair_infos):
+        if idx > len(pair_infos) - 2:
             break
-        current_brain_info = brain_infos[idx]
-        next_brain_info = brain_infos[idx + 1]
+        current_pair_info = pair_infos[idx]
+        next_pair_info = pair_infos[idx + 1]
+        current_brain_info = BrainInfo.from_agent_proto(
+            0, [current_pair_info.agent_info], brain_params
+        )
+        next_brain_info = BrainInfo.from_agent_proto(
+            0, [next_pair_info.agent_info], brain_params
+        )
+        previous_action = np.array(pair_infos[idx].action_info.vector_actions) * 0
+        if idx > 0:
+            previous_action = np.array(pair_infos[idx - 1].action_info.vector_actions)
         demo_buffer[0].last_brain_info = current_brain_info
         demo_buffer[0]["done"].append(next_brain_info.local_done[0])
         demo_buffer[0]["rewards"].append(next_brain_info.rewards[0])
@@ -36,11 +50,10 @@ def make_demo_buffer(
             demo_buffer[0]["vector_obs"].append(
                 current_brain_info.vector_observations[0]
             )
-        demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
-        demo_buffer[0]["prev_action"].append(
-            current_brain_info.previous_vector_actions[0]
-        )
-        if next_brain_info.local_done[0]:
+        # demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
+        demo_buffer[0]["actions"].append(current_pair_info.action_info.vector_actions)
+        demo_buffer[0]["prev_action"].append(previous_action)
+        if next_pair_info.local_done[0]:
             demo_buffer.append_update_buffer(
                 0, batch_size=None, training_length=sequence_length
             )
@@ -60,16 +73,18 @@ def demo_to_buffer(
     :param sequence_length: Length of trajectories to fill buffer.
     :return:
     """
-    brain_params, brain_infos, _ = load_demonstration(file_path)
-    demo_buffer = make_demo_buffer(brain_infos, brain_params, sequence_length)
+    brain_params, info_action_pair, _ = load_demonstration(file_path)
+    demo_buffer = make_demo_buffer(info_action_pair, brain_params, sequence_length)
     return brain_params, demo_buffer
 
 
-def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo], int]:
+def load_demonstration(
+    file_path: str
+) -> Tuple[BrainParameters, List[AgentInfoActionPairProto], int]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).
-    :return: BrainParameter and list of BrainInfos containing demonstration data.
+    :return: BrainParameter and list of AgentInfoActionPairProto containing demonstration data.
     """
 
     # First 32 bytes of file dedicated to meta-data.
@@ -97,7 +112,7 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
 
     brain_params = None
     brain_param_proto = None
-    brain_infos = []
+    info_action_pairs = []
     total_expected = 0
     for _file_path in file_paths:
         data = open(_file_path, "rb").read()
@@ -115,16 +130,15 @@ def load_demonstration(file_path: str) -> Tuple[BrainParameters, List[BrainInfo]
 
                 pos += next_pos
             if obs_decoded > 1:
-                agent_info = AgentInfoProto()
-                agent_info.ParseFromString(data[pos : pos + next_pos])
+                agent_info_action = AgentInfoActionPairProto()
+                agent_info_action.ParseFromString(data[pos : pos + next_pos])
                 if brain_params is None:
                     brain_params = BrainParameters.from_proto(
-                        brain_param_proto, agent_info
+                        brain_param_proto, agent_info_action
                     )
-                brain_info = BrainInfo.from_agent_proto(0, [agent_info], brain_params)
-                brain_infos.append(brain_info)
-                if len(brain_infos) == total_expected:
+                info_action_pairs.append(agent_info_action)
+                if len(info_action_pairs) == total_expected:
                     break
                 pos += next_pos
             obs_decoded += 1
-    return brain_params, brain_infos, total_expected
+    return brain_params, info_action_pairs, total_expected
