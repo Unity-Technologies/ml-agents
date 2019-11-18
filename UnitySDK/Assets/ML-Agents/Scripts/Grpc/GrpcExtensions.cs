@@ -42,7 +42,7 @@ namespace MLAgents
             var agentActionProto = new AgentActionProto
             {
                 VectorActions = { ai.storedVectorActions }
-            }
+            };
 
             return new AgentInfoActionPairProto
             {

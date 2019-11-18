@@ -53,7 +53,7 @@ def make_demo_buffer(
         # demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
         demo_buffer[0]["actions"].append(current_pair_info.action_info.vector_actions)
         demo_buffer[0]["prev_action"].append(previous_action)
-        if next_pair_info.local_done[0]:
+        if next_brain_info.local_done[0]:
             demo_buffer.append_update_buffer(
                 0, batch_size=None, training_length=sequence_length
             )
@@ -134,7 +134,7 @@ def load_demonstration(
                 agent_info_action.ParseFromString(data[pos : pos + next_pos])
                 if brain_params is None:
                     brain_params = BrainParameters.from_proto(
-                        brain_param_proto, agent_info_action
+                        brain_param_proto, agent_info_action.agent_info
                     )
                 info_action_pairs.append(agent_info_action)
                 if len(info_action_pairs) == total_expected:
