@@ -13,7 +13,12 @@ if _is_tensorflow2:
     tf.disable_v2_behavior()
     tf_logging = tf.logging
 else:
-    tf_logging = tf.compat.v1.logging
+    try:
+        # Newer versions of tf 1.x will complain that tf.logging is deprecated
+        tf_logging = tf.compat.v1.logging
+    except AttributeError:
+        # Fall back to the safe import, even if it might generate a warning or two.
+        tf_logging = tf.logging
 
 
 def set_warnings_enabled(is_enabled: bool) -> None:
