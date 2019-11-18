@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/agent_info_action_pair.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n?mlagents/envs/communicator_objects/agent_info_action_pair.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents/envs/communicator_objects/agent_info.proto\x1a\x35mlagents/envs/communicator_objects/agent_action.proto\"\x91\x01\n\x18\x41gentInfoActionPairProto\x12\x38\n\nagent_info\x18\x01 \x01(\x0b\x32$.communicator_objects.AgentInfoProto\x12;\n\x0b\x61gent_proto\x18\x02 \x01(\x0b\x32&.communicator_objects.AgentActionProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n?mlagents/envs/communicator_objects/agent_info_action_pair.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents/envs/communicator_objects/agent_info.proto\x1a\x35mlagents/envs/communicator_objects/agent_action.proto\"\x91\x01\n\x18\x41gentInfoActionPairProto\x12\x38\n\nagent_info\x18\x01 \x01(\x0b\x32$.communicator_objects.AgentInfoProto\x12;\n\x0b\x61\x63tion_info\x18\x02 \x01(\x0b\x32&.communicator_objects.AgentActionProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_agent__info__pb2.DESCRIPTOR,mlagents_dot_envs_dot_communicator__objects_dot_agent__action__pb2.DESCRIPTOR,])
 
@@ -43,7 +43,7 @@ _AGENTINFOACTIONPAIRPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='agent_proto', full_name='communicator_objects.AgentInfoActionPairProto.agent_proto', index=1,
+      name='action_info', full_name='communicator_objects.AgentInfoActionPairProto.action_info', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -66,7 +66,7 @@ _AGENTINFOACTIONPAIRPROTO = _descriptor.Descriptor(
 )
 
 _AGENTINFOACTIONPAIRPROTO.fields_by_name['agent_info'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_agent__info__pb2._AGENTINFOPROTO
-_AGENTINFOACTIONPAIRPROTO.fields_by_name['agent_proto'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_agent__action__pb2._AGENTACTIONPROTO
+_AGENTINFOACTIONPAIRPROTO.fields_by_name['action_info'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_agent__action__pb2._AGENTACTIONPROTO
 DESCRIPTOR.message_types_by_name['AgentInfoActionPairProto'] = _AGENTINFOACTIONPAIRPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

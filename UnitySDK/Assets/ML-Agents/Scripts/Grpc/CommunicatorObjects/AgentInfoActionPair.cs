@@ -30,13 +30,13 @@ namespace MLAgents.CommunicatorObjects {
             "cHJvdG8aNW1sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYWdl",
             "bnRfYWN0aW9uLnByb3RvIpEBChhBZ2VudEluZm9BY3Rpb25QYWlyUHJvdG8S",
             "OAoKYWdlbnRfaW5mbxgBIAEoCzIkLmNvbW11bmljYXRvcl9vYmplY3RzLkFn",
-            "ZW50SW5mb1Byb3RvEjsKC2FnZW50X3Byb3RvGAIgASgLMiYuY29tbXVuaWNh",
+            "ZW50SW5mb1Byb3RvEjsKC2FjdGlvbl9pbmZvGAIgASgLMiYuY29tbXVuaWNh",
             "dG9yX29iamVjdHMuQWdlbnRBY3Rpb25Qcm90b0IfqgIcTUxBZ2VudHMuQ29t",
             "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor, global::MLAgents.CommunicatorObjects.AgentActionReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto), global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto.Parser, new[]{ "AgentInfo", "AgentProto" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto), global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto.Parser, new[]{ "AgentInfo", "ActionInfo" }, null, null, null)
           }));
     }
     #endregion
@@ -69,7 +69,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoActionPairProto(AgentInfoActionPairProto other) : this() {
       AgentInfo = other.agentInfo_ != null ? other.AgentInfo.Clone() : null;
-      AgentProto = other.agentProto_ != null ? other.AgentProto.Clone() : null;
+      ActionInfo = other.actionInfo_ != null ? other.ActionInfo.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -89,14 +89,14 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "agent_proto" field.</summary>
-    public const int AgentProtoFieldNumber = 2;
-    private global::MLAgents.CommunicatorObjects.AgentActionProto agentProto_;
+    /// <summary>Field number for the "action_info" field.</summary>
+    public const int ActionInfoFieldNumber = 2;
+    private global::MLAgents.CommunicatorObjects.AgentActionProto actionInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.AgentActionProto AgentProto {
-      get { return agentProto_; }
+    public global::MLAgents.CommunicatorObjects.AgentActionProto ActionInfo {
+      get { return actionInfo_; }
       set {
-        agentProto_ = value;
+        actionInfo_ = value;
       }
     }
 
@@ -114,7 +114,7 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (!object.Equals(AgentInfo, other.AgentInfo)) return false;
-      if (!object.Equals(AgentProto, other.AgentProto)) return false;
+      if (!object.Equals(ActionInfo, other.ActionInfo)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -122,7 +122,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       if (agentInfo_ != null) hash ^= AgentInfo.GetHashCode();
-      if (agentProto_ != null) hash ^= AgentProto.GetHashCode();
+      if (actionInfo_ != null) hash ^= ActionInfo.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -140,9 +140,9 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(10);
         output.WriteMessage(AgentInfo);
       }
-      if (agentProto_ != null) {
+      if (actionInfo_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(AgentProto);
+        output.WriteMessage(ActionInfo);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -155,8 +155,8 @@ namespace MLAgents.CommunicatorObjects {
       if (agentInfo_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AgentInfo);
       }
-      if (agentProto_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(AgentProto);
+      if (actionInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ActionInfo);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -175,11 +175,11 @@ namespace MLAgents.CommunicatorObjects {
         }
         AgentInfo.MergeFrom(other.AgentInfo);
       }
-      if (other.agentProto_ != null) {
-        if (agentProto_ == null) {
-          agentProto_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
+      if (other.actionInfo_ != null) {
+        if (actionInfo_ == null) {
+          actionInfo_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
         }
-        AgentProto.MergeFrom(other.AgentProto);
+        ActionInfo.MergeFrom(other.ActionInfo);
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -200,10 +200,10 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 18: {
-            if (agentProto_ == null) {
-              agentProto_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
+            if (actionInfo_ == null) {
+              actionInfo_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
             }
-            input.ReadMessage(agentProto_);
+            input.ReadMessage(actionInfo_);
             break;
           }
         }
