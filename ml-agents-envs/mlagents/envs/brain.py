@@ -105,7 +105,6 @@ class BrainInfo:
         reward=None,
         agents=None,
         local_done=None,
-        vector_action=None,
         max_reached=None,
         action_mask=None,
     ):
@@ -118,7 +117,6 @@ class BrainInfo:
         self.local_done = local_done
         self.max_reached = max_reached
         self.agents = agents
-        self.previous_vector_actions = vector_action
         self.action_masks = action_mask
 
     @staticmethod
@@ -194,7 +192,6 @@ class BrainInfo:
             reward=[x.reward if not np.isnan(x.reward) else 0 for x in agent_info_list],
             agents=agents,
             local_done=[x.done for x in agent_info_list],
-            vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
             max_reached=[x.max_step_reached for x in agent_info_list],
             action_mask=mask_actions,
         )

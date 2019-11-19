@@ -1005,7 +1005,7 @@ MonoBehaviour:
   camera: {fileID: 20743940359151984}
   sensorName: CameraSensor
   width: 84
-  height: 84
+  height: 64
   grayscale: 0
 --- !u!114 &114935253044749092
 MonoBehaviour:

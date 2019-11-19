@@ -2,6 +2,7 @@ import unittest.mock as mock
 import pytest
 import yaml
 import os
+import numpy as np
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.sac.policy import SACPolicy
@@ -125,8 +126,9 @@ def reward_signal_eval(env, policy, reward_signal_name):
     brain_info = brain_infos[env.external_brain_names[0]]
     next_brain_info = env.step()[env.external_brain_names[0]]
     # Test evaluate
+    action = np.ones((len(brain_info.agents), policy.num_branches))
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
-        brain_info, next_brain_info
+        brain_info, action, next_brain_info
     )
     assert rsig_result.scaled_reward.shape == (NUM_AGENTS,)
     assert rsig_result.unscaled_reward.shape == (NUM_AGENTS,)
