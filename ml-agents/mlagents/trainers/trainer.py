@@ -31,7 +31,7 @@ class Trainer(object):
 
     def __init__(
         self,
-        brain: BrainParameters,
+        brain_name: str,
         trainer_parameters: dict,
         training: bool,
         run_id: str,
@@ -46,7 +46,7 @@ class Trainer(object):
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []
-        self.brain_name = brain.brain_name
+        self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
@@ -280,5 +280,17 @@ class Trainer(object):
     def update_policy(self):
         """
         Uses demonstration_buffer to update model.
+        """
+        raise UnityTrainerException("The update_model method was not implemented.")
+
+    def add_policy(self, brain_parameters: BrainParameters) -> None:
+        """
+        Adds policy to trainers list of policies
+        """
+        raise UnityTrainerException("The update_model method was not implemented.")
+
+    def get_policy(self, brain_name: str) -> TFPolicy:
+        """
+        Adds policy to trainers list of policies
         """
         raise UnityTrainerException("The update_model method was not implemented.")

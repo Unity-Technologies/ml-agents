@@ -4,7 +4,6 @@ from typing import Any, Dict, TextIO
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
@@ -35,10 +34,10 @@ class TrainerFactory:
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
 
-    def generate(self, brain_parameters: BrainParameters) -> Trainer:
+    def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
             self.trainer_config,
-            brain_parameters,
+            brain_name,
             self.summaries_dir,
             self.run_id,
             self.model_path,
@@ -53,7 +52,7 @@ class TrainerFactory:
 
 def initialize_trainer(
     trainer_config: Any,
-    brain_parameters: BrainParameters,
+    brain_name: str,
     summaries_dir: str,
     run_id: str,
     model_path: str,
@@ -69,7 +68,7 @@ def initialize_trainer(
     some general training session options.
 
     :param trainer_config: Original trainer configuration loaded from YAML
-    :param brain_parameters: BrainParameters provided by the Unity environment
+    :param brain_name: Name of the brain to be associated with trainer
     :param summaries_dir: Directory to store trainer summary statistics
     :param run_id: Run ID to associate with this training run
     :param model_path: Path to save the model
@@ -82,7 +81,6 @@ def initialize_trainer(
     :return:
     """
     trainer_parameters = trainer_config["default"].copy()
-    brain_name, brain_name_identifiers = brain_parameters.brain_name.split("?")
     trainer_parameters["summary_path"] = "{basedir}/{name}".format(
         basedir=summaries_dir, name=str(run_id) + "_" + brain_name
     )
@@ -99,11 +97,11 @@ def initialize_trainer(
     trainer = None
     if trainer_parameters["trainer"] == "offline_bc":
         trainer = OfflineBCTrainer(
-            brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
+            brain_name, trainer_parameters, train_model, load_model, seed, run_id
         )
     elif trainer_parameters["trainer"] == "ppo":
         trainer = PPOTrainer(
-            brain_parameters,
+            brain_name,
             meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
             if meta_curriculum
             else 1,
@@ -116,7 +114,7 @@ def initialize_trainer(
         )
     elif trainer_parameters["trainer"] == "sac":
         trainer = SACTrainer(
-            brain_parameters,
+            brain_name,
             meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
             if meta_curriculum
             else 1,

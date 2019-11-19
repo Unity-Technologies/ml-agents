@@ -1,4 +1,3 @@
-# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (SAC)
 # Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
 # and implemented in https://github.com/hill-a/stable-baselines
@@ -10,7 +9,7 @@ import os
 
 import numpy as np
 
-from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.brain import BrainParameters, BrainInfo
 from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
@@ -28,7 +27,14 @@ class SACTrainer(RLTrainer):
     """
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain_name,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        load,
+        seed,
+        run_id,
     ):
         """
         Responsible for collecting experiences and training SAC model.
@@ -38,7 +44,9 @@ class SACTrainer(RLTrainer):
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
+        super().__init__(
+            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+        )
         self.param_keys = [
             "batch_size",
             "buffer_size",
@@ -63,6 +71,9 @@ class SACTrainer(RLTrainer):
         ]
 
         self.check_param_keys()
+        self.load = load
+        self.seed = seed
+        self.policy = None
 
         self.step = 0
         self.train_interval = (
@@ -81,7 +92,6 @@ class SACTrainer(RLTrainer):
             if "save_replay_buffer" in trainer_parameters
             else False
         )
-        self.policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
 
         # Load the replay buffer if load
         if load and self.checkpoint_replay_buffer:
@@ -96,9 +106,6 @@ class SACTrainer(RLTrainer):
                     self.update_buffer.num_experiences
                 )
             )
-
-        for _reward_signal in self.policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = {}
 
         self.episode_steps = {}
 
@@ -245,6 +252,20 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
             self.trainer_metrics.end_policy_update()
+
+    def add_policy(self, brain_parameters: BrainParameters) -> None:
+        self.policy = SACPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_parameters,
+            self.is_training,
+            self.load,
+        )
+        for _reward_signal in self.policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = {}
+
+    def get_policy(self, brain_name: str) -> SACPolicy:
+        return self.policy
 
     def update_sac_policy(self) -> None:
         """
