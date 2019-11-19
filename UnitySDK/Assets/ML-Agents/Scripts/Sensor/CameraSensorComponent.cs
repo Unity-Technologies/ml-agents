@@ -18,7 +18,7 @@ namespace MLAgents.Sensor
 
         public override int[] GetObservationShape()
         {
-            return new[] { height, width, grayscale ? 1 : 3 };
+            return new[] { width, height, grayscale ? 1 : 3 };
         }
     }
 }

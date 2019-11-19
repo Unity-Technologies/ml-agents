@@ -57,12 +57,8 @@ class TFPolicy(Policy):
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[int, np.ndarray] = {}
-        self.num_branches = len(self.brain.vector_action_space_size)
-        self.previous_action_dict: Dict[int, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
-        if self.use_continuous_act:
-            self.num_branches = self.brain.vector_action_space_size[0]
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
@@ -128,15 +124,13 @@ class TFPolicy(Policy):
         if len(brain_info.agents) == 0:
             return ActionInfo([], [], None)
 
-        agents_done = [
-            agent
-            for agent, done in zip(brain_info.agents, brain_info.local_done)
-            if done
-        ]
-
-        self.remove_memories(agents_done)
-        self.remove_previous_action(agents_done)
-
+        self.remove_memories(
+            [
+                agent
+                for agent, done in zip(brain_info.agents, brain_info.local_done)
+                if done
+            ]
+        )
         run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
@@ -178,7 +172,7 @@ class TFPolicy(Policy):
         :param num_agents: Number of agents.
         :return: Numpy array of zeros.
         """
-        return np.zeros((num_agents, self.m_size), dtype=np.float)
+        return np.zeros((num_agents, self.m_size))
 
     def save_memories(
         self, agent_ids: List[int], memory_matrix: Optional[np.ndarray]
@@ -199,34 +193,6 @@ class TFPolicy(Policy):
         for agent_id in agent_ids:
             if agent_id in self.memory_dict:
                 self.memory_dict.pop(agent_id)
-
-    def make_empty_previous_action(self, num_agents):
-        """
-        Creates empty previous action for use with RNNs and discrete control
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.num_branches), dtype=np.int)
-
-    def save_previous_action(
-        self, agent_ids: List[int], action_matrix: Optional[np.ndarray]
-    ) -> None:
-        if action_matrix is None:
-            return
-        for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_matrix[index, :]
-
-    def retrieve_previous_action(self, agent_ids: List[int]) -> np.ndarray:
-        action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
-        for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.previous_action_dict:
-                action_matrix[index, :] = self.previous_action_dict[agent_id]
-        return action_matrix
-
-    def remove_previous_action(self, agent_ids):
-        for agent_id in agent_ids:
-            if agent_id in self.previous_action_dict:
-                self.previous_action_dict.pop(agent_id)
 
     def get_current_step(self):
         """

@@ -11,20 +11,5 @@ if _is_tensorflow2:
     import tensorflow.compat.v1 as tf
 
     tf.disable_v2_behavior()
-    tf_logging = tf.logging
 else:
-    try:
-        # Newer versions of tf 1.x will complain that tf.logging is deprecated
-        tf_logging = tf.compat.v1.logging
-    except AttributeError:
-        # Fall back to the safe import, even if it might generate a warning or two.
-        tf_logging = tf.logging
-
-
-def set_warnings_enabled(is_enabled: bool) -> None:
-    """
-    Enable or disable tensorflow warnings (notabley, this disables deprecation warnings.
-    :param is_enabled:
-    """
-    level = tf_logging.WARN if is_enabled else tf_logging.ERROR
-    tf_logging.set_verbosity(level)
+    pass

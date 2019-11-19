@@ -244,7 +244,7 @@ namespace MLAgents
                         {
                             // Update the sensor data on the AgentInfo
                             agent.GenerateSensorData();
-                            var agentInfoProto = agent.Info.ToAgentInfoProto();
+                            var agentInfoProto = agent.Info.ToProto();
                             m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                         }
 

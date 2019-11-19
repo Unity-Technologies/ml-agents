@@ -129,11 +129,8 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
             buffer[0]["next_vector_in"].append(
                 current_brain_info.vector_observations[0]
             )
-        fake_action_size = len(brain_params.vector_action_space_size)
-        if brain_params.vector_action_space_type == "continuous":
-            fake_action_size = brain_params.vector_action_space_size[0]
-        buffer[0]["actions"].append(np.zeros(fake_action_size))
-        buffer[0]["prev_action"].append(np.zeros(fake_action_size))
+        buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
+        buffer[0]["prev_action"].append(current_brain_info.previous_vector_actions[0])
         buffer[0]["masks"].append(1.0)
         buffer[0]["advantages"].append(1.0)
         if brain_params.vector_action_space_type == "discrete":

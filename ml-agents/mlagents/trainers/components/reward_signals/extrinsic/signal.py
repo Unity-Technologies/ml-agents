@@ -18,7 +18,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def evaluate(
-        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
+        self, current_info: BrainInfo, next_info: BrainInfo
     ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info

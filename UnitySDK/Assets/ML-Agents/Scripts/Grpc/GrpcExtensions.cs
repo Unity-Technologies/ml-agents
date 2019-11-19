@@ -11,35 +11,15 @@ namespace MLAgents
 {
     public static class GrpcExtensions
     {
-
-        /// <summary>
-        /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
-        /// </summary>
-        /// <returns>The protobuf version of the AgentInfoActionPairProto.</returns>
-        public static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai)
-        {
-            var agentInfoProto = ai.ToAgentInfoProto();
-
-            var agentActionProto = new AgentActionProto
-            {
-                VectorActions = { ai.storedVectorActions }
-            };
-
-            return new AgentInfoActionPairProto
-            {
-                AgentInfo = agentInfoProto,
-                ActionInfo = agentActionProto
-            };
-        }
-
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfo.</returns>
-        public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
+        public static AgentInfoProto ToProto(this AgentInfo ai)
         {
             var agentInfoProto = new AgentInfoProto
             {
+                StoredVectorActions = { ai.storedVectorActions },
                 Reward = ai.reward,
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,

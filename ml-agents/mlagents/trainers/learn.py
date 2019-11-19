@@ -10,7 +10,7 @@ import numpy as np
 
 from typing import Any, Callable, Optional, List, NamedTuple
 
-from mlagents import tf_utils
+
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -389,9 +389,6 @@ def main():
     if options.debug:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
-    else:
-        # disable noisy warnings from tensorflow.
-        tf_utils.set_warnings_enabled(False)
     if options.env_path is None and options.num_runs > 1:
         raise TrainerError(
             "It is not possible to launch more than one concurrent training session "

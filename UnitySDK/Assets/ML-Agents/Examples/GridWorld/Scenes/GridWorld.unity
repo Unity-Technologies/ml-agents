@@ -372,7 +372,7 @@ MonoBehaviour:
   renderTexture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
   sensorName: RenderTextureSensor
   width: 84
-  height: 64
+  height: 84
   grayscale: 0
 --- !u!1 &260425459
 GameObject:
@@ -1584,7 +1584,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -369.5, y: -197}
-  m_SizeDelta: {x: 200, y: 152}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1305247361
 MonoBehaviour:

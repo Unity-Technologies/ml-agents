@@ -9,7 +9,7 @@ message AgentInfoProto {
     reserved 1; // deprecated repeated float stacked_vector_observation = 1;
     reserved 2; // deprecated repeated bytes visual_observations = 2;
     reserved 3; // deprecated string text_observation = 3;
-    reserved 4; // repeated float stored_vector_actions = 4;
+    repeated float stored_vector_actions = 4;
     reserved 5; // deprecated string stored_text_actions = 5;
     reserved 6; //repeated float memories = 6;
     float reward = 7;

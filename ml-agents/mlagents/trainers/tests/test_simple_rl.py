@@ -88,7 +88,7 @@ class Simple1DEnvironment(BaseUnityEnvironment):
             compression_type=COMPRESSION_TYPE_NONE,
         )
         agent_info = AgentInfoProto(
-            reward=reward, done=bool(done), observations=[vector_obs_proto]
+            reward=reward, done=done, observations=[vector_obs_proto]
         )
 
         if done:
