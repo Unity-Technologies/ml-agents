@@ -9,8 +9,8 @@ import os
 
 import numpy as np
 
-from mlagents.trainers.brain import BrainParameters, BrainInfo
-from mlagents.trainers.action_info import ActionInfoOutputs
+from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
