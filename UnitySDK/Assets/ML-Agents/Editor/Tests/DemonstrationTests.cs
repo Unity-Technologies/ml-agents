@@ -118,14 +118,14 @@ namespace MLAgents.Tests
             reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
             BrainParametersProto.Parser.ParseDelimitedFrom(reader);
 
-            var agentInfoProto = AgentInfoProto.Parser.ParseDelimitedFrom(reader);
+            var agentInfoProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader).AgentInfo;
             var obs = agentInfoProto.Observations[2]; // skip dummy sensors
             {
                 var vecObs = obs.FloatData.Data;
                 Assert.AreEqual(bpA.brainParameters.vectorObservationSize, vecObs.Count);
                 for (var i = 0; i < vecObs.Count; i++)
                 {
-                    Assert.AreEqual((float) i+1, vecObs[i]);
+                    Assert.AreEqual((float)i + 1, vecObs[i]);
                 }
             }
 

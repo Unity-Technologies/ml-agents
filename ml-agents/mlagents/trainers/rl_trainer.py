@@ -130,7 +130,9 @@ class RLTrainer(Trainer):
         # Evaluate and store the reward signals
         tmp_reward_signal_outs = {}
         for name, signal in self.policy.reward_signals.items():
-            tmp_reward_signal_outs[name] = signal.evaluate(curr_to_use, next_info)
+            tmp_reward_signal_outs[name] = signal.evaluate(
+                curr_to_use, take_action_outputs["action"], next_info
+            )
         # Store the environment reward
         tmp_environment = np.array(next_info.rewards)
 
@@ -172,7 +174,7 @@ class RLTrainer(Trainer):
                     )
                     # Add the outputs of the last eval
                     self.add_policy_outputs(stored_take_action_outputs, agent_id, idx)
-                    # Store action masks if neccessary
+                    # Store action masks if necessary
                     if not self.policy.use_continuous_act:
                         self.training_buffer[agent_id]["action_mask"].append(
                             stored_info.action_masks[idx], padding_value=1

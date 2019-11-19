@@ -61,6 +61,8 @@ class TFPolicy(Policy):
         self.previous_action_dict: Dict[int, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
+        if self.use_continuous_act:
+            self.num_branches = self.brain.vector_action_space_size[0]
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()

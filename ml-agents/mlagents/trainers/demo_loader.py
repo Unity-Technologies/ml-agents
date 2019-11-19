@@ -50,7 +50,6 @@ def make_demo_buffer(
             demo_buffer[0]["vector_obs"].append(
                 current_brain_info.vector_observations[0]
             )
-        # demo_buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
         demo_buffer[0]["actions"].append(current_pair_info.action_info.vector_actions)
         demo_buffer[0]["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
@@ -127,7 +126,6 @@ def load_demonstration(
             if obs_decoded == 1:
                 brain_param_proto = BrainParametersProto()
                 brain_param_proto.ParseFromString(data[pos : pos + next_pos])
-
                 pos += next_pos
             if obs_decoded > 1:
                 agent_info_action = AgentInfoActionPairProto()
