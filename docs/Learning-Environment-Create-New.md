@@ -410,7 +410,7 @@ with our Agent code.
     window.
 2. Change **Decision Interval** from `1` to `10`.
 3. Drag the Target GameObject from the Hierarchy window to the RollerAgent
-    Target field.  
+    Target field.
 4. Add the BehaviorParameters Script from ML-Agents -> Scripts -> Policy to the RollerAgent.
 5. Modify the Behavior Parameters of the Agent :
   * `Behavior Name` to *RollerBallBrain*
