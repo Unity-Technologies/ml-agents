@@ -8,7 +8,7 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
@@ -22,7 +22,7 @@ class PPOTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain,
+        brain_name,
         reward_buff_cap,
         trainer_parameters,
         training,
@@ -41,7 +41,7 @@ class PPOTrainer(RLTrainer):
         :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(
-            brain, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_parameters, training, run_id, reward_buff_cap
         )
         self.param_keys = [
             "batch_size",
@@ -65,18 +65,10 @@ class PPOTrainer(RLTrainer):
             "reward_signals",
         ]
         self.check_param_keys()
-
-        if multi_gpu and len(get_devices()) > 1:
-            self.policy = MultiGpuPPOPolicy(
-                seed, brain, trainer_parameters, self.is_training, load
-            )
-        else:
-            self.policy = PPOPolicy(
-                seed, brain, trainer_parameters, self.is_training, load
-            )
-
-        for _reward_signal in self.policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = {}
+        self.load = load
+        self.multi_gpu = multi_gpu
+        self.seed = seed
+        self.policy = None
 
     def process_experiences(
         self, current_info: BrainInfo, next_info: BrainInfo
@@ -270,6 +262,30 @@ class PPOTrainer(RLTrainer):
                 self.stats[stat].append(val)
         self.clear_update_buffer()
         self.trainer_metrics.end_policy_update()
+
+    def add_policy(self, brain_parameters: BrainParameters) -> None:
+        if self.multi_gpu and len(get_devices()) > 1:
+            self.policy = MultiGpuPPOPolicy(
+                self.seed,
+                brain_parameters,
+                self.trainer_parameters,
+                self.is_training,
+                self.load,
+            )
+        else:
+            self.policy = PPOPolicy(
+                self.seed,
+                brain_parameters,
+                self.trainer_parameters,
+                self.is_training,
+                self.load,
+            )
+
+        for _reward_signal in self.policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = {}
+
+    def get_policy(self, brain_name: str) -> PPOPolicy:
+        return self.policy
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
