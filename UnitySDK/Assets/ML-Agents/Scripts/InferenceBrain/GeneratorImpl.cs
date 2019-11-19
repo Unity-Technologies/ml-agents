@@ -207,7 +207,6 @@ namespace MLAgents.InferenceBrain
             {
                 var offset = memorySize * m_MemoryIndex;
                 List<float> memory;
-                //Debug.Log("Memories used");
                 if (agent.Info.done)
                 {
                     m_Memories.Remove(agent.Info.id);

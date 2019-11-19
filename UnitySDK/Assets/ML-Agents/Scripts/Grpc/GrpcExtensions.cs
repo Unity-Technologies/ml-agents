@@ -18,26 +18,7 @@ namespace MLAgents
         /// <returns>The protobuf version of the AgentInfoActionPairProto.</returns>
         public static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai)
         {
-            var agentInfoProto = new AgentInfoProto
-            {
-                Reward = ai.reward,
-                MaxStepReached = ai.maxStepReached,
-                Done = ai.done,
-                Id = ai.id,
-            };
-
-            if (ai.actionMasks != null)
-            {
-                agentInfoProto.ActionMask.AddRange(ai.actionMasks);
-            }
-
-            if (ai.observations != null)
-            {
-                foreach (var obs in ai.observations)
-                {
-                    agentInfoProto.Observations.Add(obs.ToProto());
-                }
-            }
+            var agentInfoProto = ai.ToAgentInfoProto();
 
             var agentActionProto = new AgentActionProto
             {
