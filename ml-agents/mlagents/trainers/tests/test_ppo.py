@@ -2,7 +2,8 @@ import unittest.mock as mock
 import pytest
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 import yaml
 
 from mlagents.trainers.ppo.models import PPOModel

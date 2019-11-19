@@ -2,8 +2,7 @@ import logging
 from typing import Optional
 
 import numpy as np
-import tensorflow as tf
-
+from mlagents.tf_utils import tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 
 logger = logging.getLogger("mlagents.trainers")
@@ -210,9 +209,7 @@ class PPOModel(LearningModel):
                 )
             )
 
-        self.all_log_probs = tf.concat(
-            [branch for branch in policy_branches], axis=1, name="action_probs"
-        )
+        self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"

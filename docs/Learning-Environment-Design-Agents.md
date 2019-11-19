@@ -245,6 +245,49 @@ as observations directly, this is done automatically by the Agent.
 
 ![Agent RenderTexture Debug](images/gridworld.png)
 
+### Raycast Observations
+Raycasts are an alternative system for the Agent to provide observations based on
+the physical environment. This can be easily implemented by adding a
+RayPerceptionSensorComponent3D (or RayPerceptionSensorComponent2D) to the Agent.
+
+During observations, several rays (or spheres, depending on settings) are cast into
+the physics world, and the objects that are hit determine the observation vector that
+is produced.
+
+![Agent with two RayPerceptionSensorComponent3Ds](images/ray_perception.png)
+
+Both sensor components have several settings:
+ * _Detectable Tags_ A list of strings corresponding to the types of objects that the
+ Agent should be able to distinguish between. For example, in the WallJump example,
+ we use "wall", "goal", and "block" as the list of objects to detect.
+ * _Rays Per Direction_ Determines the number of rays that are cast. One ray is
+  always cast forward, and this many rays are cast to the left and right.
+ * _Max Ray Degrees_ The angle (in degrees) for the outermost rays. 90 degrees
+  corresponds to the left and right of the agent.
+ * _ Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
+  to 0, rays will be used instead of spheres. Rays may be more efficient,
+  especially in complex scenes.
+ * _Ray Length_ The length of the casts
+ * _Observation Stacks_ The number of previous results to "stack" with the cast
+  results. Note that this can be independent of the "Stacked Vectors" setting
+  in `Behavior Parameters`.
+ * _Start Vertical Offset_ (3D only) The vertical offset of the ray start point.
+ * _End Vertical Offset_ (3D only) The vertical offset of the ray end point.
+
+In the example image above, the Agent has two RayPerceptionSensorComponent3Ds.
+Both use 3 Rays Per Direction and 90 Max Ray Degrees. One of the components
+had a vertical offset, so the Agent can tell whether it's clear to jump over
+the wall.
+
+The total size of the created observations is
+```
+(Observation Stacks) * (1 + 2 * Rays Per Direction) * (Num Detectable Tags + 2)
+```
+so the number of rays and tags should be kept as small as possible to reduce the
+amount of data used. Note that this is separate from the State Size defined in
+`Behavior Parameters`, so you don't need to worry about the formula above when
+setting the State Size.
+
 ## Vector Actions
 
 An action is an instruction from the Policy that the agent carries out. The

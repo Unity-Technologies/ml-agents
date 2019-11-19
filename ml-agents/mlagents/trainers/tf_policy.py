@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
 
 from mlagents.envs.exception import UnityException
 from mlagents.envs.policy import Policy

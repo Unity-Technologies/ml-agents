@@ -15,5 +15,10 @@ namespace MLAgents.Sensor
         {
             return new CameraSensor(camera, width, height, grayscale, sensorName);
         }
+
+        public override int[] GetObservationShape()
+        {
+            return new[] { height, width, grayscale ? 1 : 3 };
+        }
     }
 }

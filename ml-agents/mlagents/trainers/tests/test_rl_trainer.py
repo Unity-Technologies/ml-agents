@@ -66,11 +66,7 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
-    trainer.add_experiences(
-        create_mock_all_brain_info(mock_braininfo),
-        create_mock_all_brain_info(mock_braininfo),
-        fake_action_outputs,
-    )
+    trainer.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
 
     # Remove one of the agents
     next_mock_braininfo = mb.create_mock_braininfo(

@@ -2,9 +2,9 @@ import logging
 import numpy as np
 from typing import Dict, List, Optional
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 from mlagents.trainers.models import LearningModel, LearningRateSchedule, EncoderType
-import tensorflow.contrib.layers as c_layers
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
@@ -313,14 +313,11 @@ class SACNetwork(LearningModel):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=c_layers.variance_scaling_initializer(
-                            factor=0.01
-                        ),
+                        kernel_initializer=tf.initializers.variance_scaling(0.01),
                     )
                 )
-            all_logits = tf.concat(
-                [branch for branch in policy_branches], axis=1, name="action_probs"
-            )
+            all_logits = tf.concat(policy_branches, axis=1, name="action_probs")
+
             output, normalized_probs, normalized_logprobs = self.create_discrete_action_masking_layer(
                 all_logits, self.action_masks, self.act_size
             )

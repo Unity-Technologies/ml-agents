@@ -4,7 +4,7 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException

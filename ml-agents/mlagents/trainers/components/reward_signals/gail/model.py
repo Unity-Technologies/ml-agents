@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 from mlagents.trainers.models import LearningModel
 
 EPSILON = 1e-7

@@ -195,7 +195,6 @@ example environments are included in the provided config file.
 | memory_size          | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC, BC             |
 | normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                 |
 | num_epoch            | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
-<<<<<<< HEAD
 | num_layers           | The number of hidden layers in the neural network.                                                                                                                                      | PPO, SAC, BC             |
 | pretraining          | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-pretraining-using-demonstrations).                           | PPO, SAC                 |
 | reward_signals       | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                         | PPO, SAC, BC             |

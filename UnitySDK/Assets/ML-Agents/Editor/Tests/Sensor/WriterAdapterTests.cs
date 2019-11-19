@@ -4,7 +4,6 @@ using MLAgents.Sensor;
 
 using Barracuda;
 using MLAgents.InferenceBrain;
-using MLAgents.InferenceBrain.Utils;
 
 
 namespace MLAgents.Tests

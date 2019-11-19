@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using Barracuda;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -56,7 +57,9 @@ namespace MLAgents
             D.logEnabled = false;
             Model barracudaModel = null;
             var model = (NNModel)serializedObject.FindProperty("m_Model").objectReferenceValue;
-            var brainParameters = ((BehaviorParameters)target).brainParameters;
+            var behaviorParameters = (BehaviorParameters)target;
+            var sensorComponents = behaviorParameters.GetComponents<SensorComponent>();
+            var brainParameters = behaviorParameters.brainParameters;
             if (model != null)
             {
                 barracudaModel = ModelLoader.Load(model.Value);
@@ -64,7 +67,7 @@ namespace MLAgents
             if (brainParameters != null)
             {
                 var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters);
+                    barracudaModel, brainParameters, sensorComponents);
                 foreach (var check in failedChecks)
                 {
                     if (check != null)

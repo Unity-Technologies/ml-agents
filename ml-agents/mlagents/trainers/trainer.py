@@ -2,7 +2,9 @@
 import logging
 from typing import Dict, List, Deque, Any
 import os
-import tensorflow as tf
+
+from mlagents.tf_utils import tf
+
 import numpy as np
 from collections import deque, defaultdict
 
@@ -11,7 +13,7 @@ from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainParameters, AllBrainInfo
+from mlagents.envs.brain import BrainParameters, BrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -236,26 +238,26 @@ class Trainer(object):
 
     def add_experiences(
         self,
-        curr_all_info: AllBrainInfo,
-        next_all_info: AllBrainInfo,
+        curr_info: BrainInfo,
+        next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param curr_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
     def process_experiences(
-        self, current_info: AllBrainInfo, next_info: AllBrainInfo
+        self, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
-        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
+        :param current_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         """
         raise UnityTrainerException(
             "The process_experiences method was not implemented."
