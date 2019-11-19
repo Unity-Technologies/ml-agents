@@ -76,8 +76,6 @@ A BrainInfo object contains the following fields:
   the list corresponds to the n<sup>th</sup> observation of the Brain.
 - **`vector_observations`** : A two dimensional numpy array of dimension `(batch
   size, vector observation size)`.
-- **`memories`** : A two dimensional numpy array of dimension `(batch size,
-  memory size)` which corresponds to the memories sent at the previous step.
 - **`rewards`** : A list as long as the number of Agents using the Brain
   containing the rewards they each obtained at the previous step.
 - **`local_done`** : A list as long as the number of Agents using the Brain
