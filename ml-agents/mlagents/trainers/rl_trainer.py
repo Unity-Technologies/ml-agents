@@ -61,7 +61,6 @@ class RLTrainer(Trainer):
         local_dones = []
         max_reacheds = []
         agents = []
-        prev_vector_actions = []
         action_masks = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
@@ -79,9 +78,6 @@ class RLTrainer(Trainer):
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
             agents.append(agent_brain_info.agents[agent_index])
-            prev_vector_actions.append(
-                agent_brain_info.previous_vector_actions[agent_index]
-            )
             action_masks.append(agent_brain_info.action_masks[agent_index])
         curr_info = BrainInfo(
             visual_observations,
@@ -89,7 +85,6 @@ class RLTrainer(Trainer):
             rewards,
             agents,
             local_dones,
-            prev_vector_actions,
             max_reacheds,
             action_masks,
         )
@@ -132,7 +127,9 @@ class RLTrainer(Trainer):
         # Evaluate and store the reward signals
         tmp_reward_signal_outs = {}
         for name, signal in self.policy.reward_signals.items():
-            tmp_reward_signal_outs[name] = signal.evaluate(curr_to_use, next_info)
+            tmp_reward_signal_outs[name] = signal.evaluate(
+                curr_to_use, take_action_outputs["action"], next_info
+            )
         # Store the environment reward
         tmp_environment = np.array(next_info.rewards)
 
@@ -167,19 +164,20 @@ class RLTrainer(Trainer):
                         self.training_buffer[agent_id]["memory"].append(
                             self.policy.retrieve_memories([agent_id])[0, :]
                         )
+
                     self.training_buffer[agent_id]["masks"].append(1.0)
                     self.training_buffer[agent_id]["done"].append(
                         next_info.local_done[next_idx]
                     )
                     # Add the outputs of the last eval
                     self.add_policy_outputs(stored_take_action_outputs, agent_id, idx)
-                    # Store action masks if neccessary
+                    # Store action masks if necessary
                     if not self.policy.use_continuous_act:
                         self.training_buffer[agent_id]["action_mask"].append(
                             stored_info.action_masks[idx], padding_value=1
                         )
                     self.training_buffer[agent_id]["prev_action"].append(
-                        stored_info.previous_vector_actions[idx]
+                        self.policy.retrieve_previous_action([agent_id])[0, :]
                     )
 
                     values = stored_take_action_outputs["value_heads"]
@@ -204,6 +202,9 @@ class RLTrainer(Trainer):
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
+        self.policy.save_previous_action(
+            curr_info.agents, take_action_outputs["action"]
+        )
         self.trainer_metrics.end_experience_collection_timer()
 
     def end_episode(self) -> None:
