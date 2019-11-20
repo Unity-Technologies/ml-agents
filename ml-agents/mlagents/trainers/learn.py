@@ -160,6 +160,10 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
 
+    parser.add_argument(
+        "--version", action="version", version=UnityEnvironment.API_VERSION
+    )
+
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
 
