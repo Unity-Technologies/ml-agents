@@ -14,9 +14,9 @@ namespace MLAgents
         [Serializable]
         private enum BehaviorType
         {
-            DEFAULT,
-            HEURISTIC_ONLY,
-            INFERENCE_ONLY
+            Default,
+            HeuristicOnly,
+            InferenceOnly
         }
 
         [HideInInspector]
@@ -49,11 +49,11 @@ namespace MLAgents
         {
             switch (m_BehaviorType)
             {
-                case BehaviorType.HEURISTIC_ONLY:
+                case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(heuristic);
-                case BehaviorType.INFERENCE_ONLY:
+                case BehaviorType.InferenceOnly:
                     return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
-                case BehaviorType.DEFAULT:
+                case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
                         return new RemotePolicy(m_BrainParameters, m_BehaviorName);
