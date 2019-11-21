@@ -1,6 +1,6 @@
 import unittest.mock as mock
 import pytest
-import numpy as np
+from mlagents.tf_utils import np
 
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException

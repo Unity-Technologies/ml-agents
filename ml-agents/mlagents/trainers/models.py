@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import Callable, Dict, List, Optional
 
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.trainer import UnityTrainerException
@@ -112,7 +112,7 @@ class LearningModel(object):
             learning_rate = tf.Variable(lr)
         elif lr_schedule == LearningRateSchedule.LINEAR:
             learning_rate = tf.train.polynomial_decay(
-                lr, global_step, max_step, 1e-10, power=1.0
+                np.float32(lr), global_step, np.float32(max_step), np.float32(1e-10), power=np.float32(1.0)
             )
         else:
             raise UnityTrainerException(

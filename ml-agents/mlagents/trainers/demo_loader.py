@@ -2,7 +2,7 @@ import pathlib
 import logging
 import os
 from typing import List, Tuple
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (

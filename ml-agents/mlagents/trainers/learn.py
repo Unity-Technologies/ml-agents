@@ -6,7 +6,7 @@ from multiprocessing import Process, Queue
 import os
 import glob
 import shutil
-import numpy as np
+from mlagents.tf_utils import np
 
 from typing import Any, Callable, Optional, List, NamedTuple
 

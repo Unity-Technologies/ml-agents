@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import pytest
 
-import numpy as np
+from mlagents.tf_utils import np
 
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.exception import UnityEnvironmentException, UnityActionException

@@ -1,5 +1,5 @@
 import logging
-import numpy as np
+from mlagents.tf_utils import np
 from typing import Dict, List, Optional
 
 from mlagents.tf_utils import tf

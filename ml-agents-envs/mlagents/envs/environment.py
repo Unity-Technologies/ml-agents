@@ -1,7 +1,7 @@
 import atexit
 import glob
 import logging
-import numpy as np
+from mlagents.tf_utils import np
 import os
 import subprocess
 from typing import Dict, List, Optional, Any

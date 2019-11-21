@@ -6,7 +6,7 @@ import logging
 from collections import defaultdict
 from typing import Dict
 
-import numpy as np
+from mlagents.tf_utils import np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy

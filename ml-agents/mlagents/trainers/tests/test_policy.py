@@ -2,7 +2,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfo
 from unittest.mock import MagicMock
-import numpy as np
+from mlagents.tf_utils import np
 
 
 def basic_mock_brain():

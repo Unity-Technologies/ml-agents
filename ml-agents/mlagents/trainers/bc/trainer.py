@@ -4,7 +4,7 @@
 
 import logging
 
-import numpy as np
+from mlagents.tf_utils import np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs

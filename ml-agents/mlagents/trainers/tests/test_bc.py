@@ -2,7 +2,7 @@ import unittest.mock as mock
 import pytest
 import os
 
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.tf_utils import tf
 import yaml
 

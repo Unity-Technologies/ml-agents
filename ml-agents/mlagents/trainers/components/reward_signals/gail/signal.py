@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 import logging
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.tf_utils import tf
 
 from mlagents.envs.brain import BrainInfo

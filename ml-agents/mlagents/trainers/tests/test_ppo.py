@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import pytest
 
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.tf_utils import tf
 
 import yaml
@@ -377,12 +377,12 @@ def test_add_rewards_output(dummy_config):
     rewardsout = AllRewardsOutput(
         reward_signals={
             "extrinsic": RewardSignalResult(
-                scaled_reward=np.array([1.0, 1.0]), unscaled_reward=np.array([1.0, 1.0])
+                scaled_reward=np.array([1.0, 1.0], dtype=np.float32), unscaled_reward=np.array([1.0, 1.0], dtype=np.float32)
             )
         },
-        environment=np.array([1.0, 1.0]),
+        environment=np.array([1.0, 1.0], dtype=np.float32),
     )
-    values = {"extrinsic": np.array([[2.0]])}
+    values = {"extrinsic": np.array([[2.0]], dtype=np.float32)}
     agent_id = "123"
     idx = 0
     # make sure that we're grabbing from the next_idx for rewards. If we're not, the test will fail.

@@ -28,3 +28,21 @@ def set_warnings_enabled(is_enabled: bool) -> None:
     """
     level = tf_logging.WARN if is_enabled else tf_logging.ERROR
     tf_logging.set_verbosity(level)
+
+
+# HACK numpy here for now
+import numpy as np
+# TODO condition on env variable
+__old_np_array = np.array
+__old_np_zeros = np.zeros
+
+used_dtypes = set()
+def np_array_no_float64(*args, **kwargs):
+    res = __old_np_array(*args, **kwargs)
+    if res.dtype not in used_dtypes:
+        used_dtypes.add(res.dtype)
+        print(f"****DTYPES = {used_dtypes}")
+    if res.dtype == np.float64:
+        raise ValueError("dtype={}".format(kwargs.get("dtype")))
+    return res
+np.array = np_array_no_float64

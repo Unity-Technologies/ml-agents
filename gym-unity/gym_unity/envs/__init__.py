@@ -1,7 +1,7 @@
 import logging
 import itertools
 import gym
-import numpy as np
+from mlagents.tf_utils import np
 from mlagents.envs.environment import UnityEnvironment
 from gym import error, spaces
 

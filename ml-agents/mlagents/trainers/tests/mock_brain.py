@@ -1,5 +1,5 @@
 import unittest.mock as mock
-import numpy as np
+from mlagents.tf_utils import np
 
 from mlagents.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import Buffer
@@ -51,23 +51,27 @@ def create_mock_braininfo(
     mock_braininfo = mock.Mock()
 
     mock_braininfo.return_value.visual_observations = num_vis_observations * [
-        np.ones((num_agents, 84, 84, 3))
+        np.ones((num_agents, 84, 84, 3), dtype=np.float32)
     ]
     mock_braininfo.return_value.vector_observations = np.array(
-        num_agents * [num_vector_observations * [1]]
+        num_agents * [num_vector_observations * [1]],
+        dtype=np.float32
     )
     if discrete:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_discrete_branches * [0.5]]
+            num_agents * [num_discrete_branches * [0.5]],
+            dtype=np.float32
         )
         mock_braininfo.return_value.action_masks = np.array(
-            num_agents * [num_vector_acts * [1.0]]
+            num_agents * [num_vector_acts * [1.0]],
+            dtype=np.float32
         )
     else:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_vector_acts * [0.5]]
+            num_agents * [num_vector_acts * [0.5]],
+            dtype=np.float32
         )
-    mock_braininfo.return_value.memories = np.ones((num_agents, 8))
+    mock_braininfo.return_value.memories = np.ones((num_agents, 8), dtype=np.float32)
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
     mock_braininfo.return_value.max_reached = num_agents * [100]

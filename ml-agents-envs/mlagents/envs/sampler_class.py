@@ -1,4 +1,4 @@
-import numpy as np
+from mlagents.tf_utils import np
 from typing import Union, Optional, Type, List, Dict, Any
 from abc import ABC, abstractmethod
 

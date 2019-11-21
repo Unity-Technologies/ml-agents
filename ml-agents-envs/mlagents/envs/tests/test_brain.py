@@ -1,6 +1,6 @@
 from typing import List
 import logging
-import numpy as np
+from mlagents.tf_utils import np
 import sys
 from unittest import mock
 
