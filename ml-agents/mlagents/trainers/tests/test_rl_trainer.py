@@ -57,7 +57,7 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     fake_action_outputs = {
         "action": [0.1, 0.1],
         "value_heads": {},
-        "entropy": np.array([1.0]),
+        "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
     }
     mock_braininfo = mb.create_mock_braininfo(

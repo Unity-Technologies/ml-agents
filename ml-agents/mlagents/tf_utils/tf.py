@@ -45,7 +45,7 @@ def np_array_no_float64(*args, **kwargs):
         # we want the calling function, so use tb[-2]
         filename = tb[-2].filename
         # HACK - only raise if this came from mlagents code, not tensorflow
-        if "ml-agents/mlagents" in filename:
+        if "ml-agents/mlagents" in filename and "tensorflow_to_barracuda.py" not in filename:
             #and "ml-agents/mlagents/trainers/tests" not in filename\
             raise ValueError(f"dtype={kwargs.get('dtype')}")
     return res

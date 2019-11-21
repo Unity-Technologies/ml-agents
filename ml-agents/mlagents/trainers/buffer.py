@@ -60,8 +60,12 @@ class Buffer(dict):
                 Sets the list of np.array to the input data
                 :param data: The np.array list to be set.
                 """
+                # Make sure we convert incoming data to float32 if it's a float
+                dtype=None
+                if data is not None and isinstance(data[0], float):
+                    dtype=np.float32
                 self[:] = []
-                self[:] = list(np.array(data))
+                self[:] = list(np.array(data, dtype=dtype))
 
             def get_batch(self, batch_size=None, training_length=1, sequential=True):
                 """

@@ -39,9 +39,9 @@ def test_take_action_returns_action_info_when_available():
     test_seed = 3
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
     policy_eval_out = {
-        "action": np.array([1.0]),
-        "memory_out": np.array([[2.5]]),
-        "value": np.array([1.1]),
+        "action": np.array([1.0], dtype=np.float32),
+        "memory_out": np.array([[2.5]], dtype=np.float32),
+        "value": np.array([1.1], dtype=np.float32),
     }
     policy.evaluate = MagicMock(return_value=policy_eval_out)
     brain_info_with_agents = BrainInfo(

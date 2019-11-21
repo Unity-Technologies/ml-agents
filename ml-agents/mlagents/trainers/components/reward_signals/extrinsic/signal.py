@@ -26,7 +26,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
-        unscaled_reward = np.array(next_info.rewards)
+        unscaled_reward = np.array(next_info.rewards, dtype=np.float32)
         scaled_reward = self.strength * unscaled_reward
         return RewardSignalResult(scaled_reward, unscaled_reward)
 
