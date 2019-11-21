@@ -195,7 +195,7 @@ class BrainInfo:
             agents=agents,
             local_done=[x.done for x in agent_info_list],
             vector_action=np.array([x.stored_vector_actions for x in agent_info_list]),
-            max_reached=[x.max_step_reached for x in agent_info_list],
+            max_reached=[False for x in agent_info_list],
             action_mask=mask_actions,
         )
         return brain_info
