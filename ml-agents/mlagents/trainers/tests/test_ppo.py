@@ -291,10 +291,10 @@ def test_ppo_model_cc_vector_rnn():
 
 
 def test_rl_functions():
-    rewards = np.array([0.0, 0.0, 0.0, 1.0])
+    rewards = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
     gamma = 0.9
     returns = discount_rewards(rewards, gamma, 0.0)
-    np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0]))
+    np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0], dtype=np.float32))
 
 
 def test_trainer_increment_step(dummy_config):

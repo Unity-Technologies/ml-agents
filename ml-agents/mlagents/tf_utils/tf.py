@@ -32,17 +32,22 @@ def set_warnings_enabled(is_enabled: bool) -> None:
 
 # HACK numpy here for now
 import numpy as np
+import traceback
 # TODO condition on env variable
 __old_np_array = np.array
 __old_np_zeros = np.zeros
 
-used_dtypes = set()
 def np_array_no_float64(*args, **kwargs):
     res = __old_np_array(*args, **kwargs)
-    if res.dtype not in used_dtypes:
-        used_dtypes.add(res.dtype)
-        print(f"****DTYPES = {used_dtypes}")
     if res.dtype == np.float64:
-        raise ValueError("dtype={}".format(kwargs.get("dtype")))
+        tb = traceback.extract_stack()
+        # last entry, tb[-1], in the stack is this file.
+        # we want the calling function, so use tb[-2]
+        filename = tb[-2].filename
+        # HACK - only raise if this came from mlagents code, not tensorflow
+        if "ml-agents/mlagents" in filename:
+            #and "ml-agents/mlagents/trainers/tests" not in filename\
+            raise ValueError(f"dtype={kwargs.get('dtype')}")
     return res
 np.array = np_array_no_float64
+

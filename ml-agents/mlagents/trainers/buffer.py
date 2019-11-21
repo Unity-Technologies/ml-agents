@@ -93,7 +93,7 @@ class Buffer(dict):
                             " too large given the current number of data points."
                         )
                     if batch_size * training_length > len(self):
-                        padding = np.array(self[-1]) * self.padding_value
+                        padding = np.array(self[-1], dtype=np.float32) * self.padding_value
                         return np.array(
                             [padding] * (training_length - leftover) + self[:],
                             dtype=np.float32,
