@@ -32,7 +32,7 @@ namespace MLAgents
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
-            EditorGUILayout.PropertyField(so.FindProperty("m_UseHeuristic"));
+            EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())

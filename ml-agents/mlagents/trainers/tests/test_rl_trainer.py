@@ -44,6 +44,7 @@ def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
     mock_policy.retrieve_memories.return_value = np.zeros((1, 1))
+    mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1))
     return mock_policy
 
 
@@ -80,7 +81,6 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     assert len(brain_info.agents) == 1
     assert len(brain_info.visual_observations) == num_vis_obs
     assert len(brain_info.vector_observations) == 1
-    assert len(brain_info.previous_vector_actions) == 1
 
     # Test end episode
     trainer.end_episode()

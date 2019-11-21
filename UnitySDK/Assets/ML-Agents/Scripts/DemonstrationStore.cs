@@ -72,7 +72,7 @@ namespace MLAgents
             }
 
             m_Writer = m_FileSystem.File.Create(m_FilePath);
-            m_MetaData = new DemonstrationMetaData {demonstrationName = demonstrationName};
+            m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
             var metaProto = m_MetaData.ToProto();
             metaProto.WriteDelimitedTo(m_Writer);
         }
@@ -102,7 +102,7 @@ namespace MLAgents
             }
 
             // Write AgentInfo to file.
-            var agentProto = info.ToProto();
+            var agentProto = info.ToInfoActionPairProto();
             agentProto.WriteDelimitedTo(m_Writer);
         }
 

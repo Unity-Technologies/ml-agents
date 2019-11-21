@@ -7,18 +7,19 @@ namespace MLAgents.Sensor
     {
         public RenderTexture renderTexture;
         public string sensorName = "RenderTextureSensor";
-        public int width = 84;
-        public int height = 84;
         public bool grayscale;
 
         public override ISensor CreateSensor()
         {
-            return new RenderTextureSensor(renderTexture, width, height, grayscale, sensorName);
+            return new RenderTextureSensor(renderTexture, grayscale, sensorName);
         }
 
         public override int[] GetObservationShape()
         {
-            return new[] { width, height, grayscale ? 1 : 3 };
+            var width = renderTexture != null ? renderTexture.width : 0;
+            var height = renderTexture != null ? renderTexture.height : 0;
+
+            return new[] { height, width, grayscale ? 1 : 3 };
         }
     }
 }

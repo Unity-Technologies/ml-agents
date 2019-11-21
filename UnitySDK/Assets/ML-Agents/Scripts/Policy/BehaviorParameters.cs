@@ -11,16 +11,28 @@ namespace MLAgents
     public class BehaviorParameters : MonoBehaviour
     {
 
+        [Serializable]
+        private enum BehaviorType
+        {
+            Default,
+            HeuristicOnly,
+            InferenceOnly
+        }
+
         [HideInInspector]
         [SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
-        [HideInInspector] [SerializeField]
+        [HideInInspector]
+        [SerializeField]
         NNModel m_Model;
-        [HideInInspector] [SerializeField]
+        [HideInInspector]
+        [SerializeField]
         InferenceDevice m_InferenceDevice;
-        [HideInInspector] [SerializeField]
-        bool m_UseHeuristic;
-        [HideInInspector] [SerializeField]
+        [HideInInspector]
+        [SerializeField]
+        BehaviorType m_BehaviorType;
+        [HideInInspector]
+        [SerializeField]
         string m_BehaviorName = "My Behavior";
 
         public BrainParameters brainParameters
@@ -35,21 +47,27 @@ namespace MLAgents
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
-            if (m_UseHeuristic)
+            switch (m_BehaviorType)
             {
-                return new HeuristicPolicy(heuristic);
-            }
-            if (FindObjectOfType<Academy>().IsCommunicatorOn)
-            {
-                return new RemotePolicy(m_BrainParameters, m_BehaviorName);
-            }
-            if (m_Model != null)
-            {
-                return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
-            }
-            else
-            {
-                return new HeuristicPolicy(heuristic);
+                case BehaviorType.HeuristicOnly:
+                    return new HeuristicPolicy(heuristic);
+                case BehaviorType.InferenceOnly:
+                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                case BehaviorType.Default:
+                    if (FindObjectOfType<Academy>().IsCommunicatorOn)
+                    {
+                        return new RemotePolicy(m_BrainParameters, m_BehaviorName);
+                    }
+                    if (m_Model != null)
+                    {
+                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                    }
+                    else
+                    {
+                        return new HeuristicPolicy(heuristic);
+                    }
+                default:
+                    return new HeuristicPolicy(heuristic);
             }
         }
 

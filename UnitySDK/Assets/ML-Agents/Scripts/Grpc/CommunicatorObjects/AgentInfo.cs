@@ -26,18 +26,17 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CjNtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2FnZW50X2lu",
             "Zm8ucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzGjRtbGFnZW50cy9lbnZz",
-            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvIuoBCg5B",
-            "Z2VudEluZm9Qcm90bxIdChVzdG9yZWRfdmVjdG9yX2FjdGlvbnMYBCADKAIS",
-            "DgoGcmV3YXJkGAcgASgCEgwKBGRvbmUYCCABKAgSGAoQbWF4X3N0ZXBfcmVh",
-            "Y2hlZBgJIAEoCBIKCgJpZBgKIAEoBRITCgthY3Rpb25fbWFzaxgLIAMoCBI8",
-            "CgxvYnNlcnZhdGlvbnMYDSADKAsyJi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5P",
-            "YnNlcnZhdGlvblByb3RvSgQIARACSgQIAhADSgQIAxAESgQIBRAGSgQIBhAH",
-            "SgQIDBANQh+qAhxNTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90",
-            "bzM="));
+            "L2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0aW9uLnByb3RvItEBCg5B",
+            "Z2VudEluZm9Qcm90bxIOCgZyZXdhcmQYByABKAISDAoEZG9uZRgIIAEoCBIY",
+            "ChBtYXhfc3RlcF9yZWFjaGVkGAkgASgIEgoKAmlkGAogASgFEhMKC2FjdGlv",
+            "bl9tYXNrGAsgAygIEjwKDG9ic2VydmF0aW9ucxgNIAMoCzImLmNvbW11bmlj",
+            "YXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG9KBAgBEAJKBAgCEANKBAgD",
+            "EARKBAgEEAVKBAgFEAZKBAgGEAdKBAgMEA1CH6oCHE1MQWdlbnRzLkNvbW11",
+            "bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.ObservationReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "StoredVectorActions", "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoProto), global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser, new[]{ "Reward", "Done", "MaxStepReached", "Id", "ActionMask", "Observations" }, null, null, null)
           }));
     }
     #endregion
@@ -69,7 +68,6 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto(AgentInfoProto other) : this() {
-      storedVectorActions_ = other.storedVectorActions_.Clone();
       reward_ = other.reward_;
       done_ = other.done_;
       maxStepReached_ = other.maxStepReached_;
@@ -82,16 +80,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoProto Clone() {
       return new AgentInfoProto(this);
-    }
-
-    /// <summary>Field number for the "stored_vector_actions" field.</summary>
-    public const int StoredVectorActionsFieldNumber = 4;
-    private static readonly pb::FieldCodec<float> _repeated_storedVectorActions_codec
-        = pb::FieldCodec.ForFloat(34);
-    private readonly pbc::RepeatedField<float> storedVectorActions_ = new pbc::RepeatedField<float>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<float> StoredVectorActions {
-      get { return storedVectorActions_; }
     }
 
     /// <summary>Field number for the "reward" field.</summary>
@@ -171,7 +159,6 @@ namespace MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!storedVectorActions_.Equals(other.storedVectorActions_)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Reward, other.Reward)) return false;
       if (Done != other.Done) return false;
       if (MaxStepReached != other.MaxStepReached) return false;
@@ -184,7 +171,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= storedVectorActions_.GetHashCode();
       if (Reward != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Reward);
       if (Done != false) hash ^= Done.GetHashCode();
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
@@ -204,7 +190,6 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      storedVectorActions_.WriteTo(output, _repeated_storedVectorActions_codec);
       if (Reward != 0F) {
         output.WriteRawTag(61);
         output.WriteFloat(Reward);
@@ -231,7 +216,6 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += storedVectorActions_.CalculateSize(_repeated_storedVectorActions_codec);
       if (Reward != 0F) {
         size += 1 + 4;
       }
@@ -257,7 +241,6 @@ namespace MLAgents.CommunicatorObjects {
       if (other == null) {
         return;
       }
-      storedVectorActions_.Add(other.storedVectorActions_);
       if (other.Reward != 0F) {
         Reward = other.Reward;
       }
@@ -283,11 +266,6 @@ namespace MLAgents.CommunicatorObjects {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 34:
-          case 37: {
-            storedVectorActions_.AddEntriesFrom(input, _repeated_storedVectorActions_codec);
-            break;
-          }
           case 61: {
             Reward = input.ReadFloat();
             break;

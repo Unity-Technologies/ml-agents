@@ -58,10 +58,6 @@ class MockCommunicator(Communicator):
 
     def _get_agent_infos(self):
         dict_agent_info = {}
-        if self.is_discrete:
-            vector_action = [1]
-        else:
-            vector_action = [1, 2]
         list_agent_info = []
         vector_obs = [1, 2, 3]
 
@@ -84,7 +80,6 @@ class MockCommunicator(Communicator):
             list_agent_info.append(
                 AgentInfoProto(
                     reward=1,
-                    stored_vector_actions=vector_action,
                     done=(i == 2),
                     max_step_reached=False,
                     id=i,

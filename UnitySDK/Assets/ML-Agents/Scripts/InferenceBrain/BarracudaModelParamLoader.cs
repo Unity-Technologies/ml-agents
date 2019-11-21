@@ -369,8 +369,8 @@ namespace MLAgents.InferenceBrain
             TensorProxy tensorProxy, SensorComponent sensorComponent)
         {
             var shape = sensorComponent.GetObservationShape();
-            var widthBp = shape[0];
-            var heightBp = shape[1];
+            var heightBp = shape[0];
+            var widthBp = shape[1];
             var pixelBp = shape[2];
             var heightT = tensorProxy.shape[1];
             var widthT = tensorProxy.shape[2];
