@@ -233,7 +233,7 @@ class PPOPolicy(object):
             ),
         )
 
-    def ppo_value_loss(self, values, old_values, returns):
+    def ppo_value_loss(self, values, old_values, returns, epsilon):
         """
         Creates training-specific Tensorflow ops for PPO models.
         :param probs: Current policy probabilities
@@ -246,7 +246,7 @@ class PPOPolicy(object):
         :param max_step: Total number of training steps.
         """
 
-        decay_epsilon = self.trainer_params["epsilon"]
+        decay_epsilon = epsilon
 
         value_losses = []
         for name, head in values.items():
@@ -264,6 +264,7 @@ class PPOPolicy(object):
         value_loss = tf.reduce_mean(value_losses)
         return value_loss
 
+    @tf.function
     def ppo_policy_loss(self, advantages, probs, old_probs, masks, epsilon):
         """
         Creates training-specific Tensorflow ops for PPO models.
@@ -278,7 +279,7 @@ class PPOPolicy(object):
         """
         advantage = tf.expand_dims(advantages, -1)
 
-        decay_epsilon = self.trainer_params["epsilon"]
+        decay_epsilon = epsilon
 
         r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * advantage
@@ -350,6 +351,14 @@ class PPOPolicy(object):
             action=run_out.get("action"), value=run_out.get("value"), outputs=run_out
         )
 
+    @tf.function
+    def update_computation(self, obs, actions):
+        values = self.model.get_values(obs)
+        dist = self.model(obs)
+        probs = dist.log_prob(actions)
+        entropy = dist.entropy()
+        return values, probs, entropy
+
     @timed
     def update(self, mini_batch, num_sequences):
         """
@@ -366,11 +375,12 @@ class PPOPolicy(object):
                 old_values[name] = mini_batch["{}_value_estimates".format(name)]
 
             obs = np.array(mini_batch["vector_obs"])
-            values = self.model.get_values(obs)
-            dist = self.model(obs)
-            probs = dist.log_prob(np.array(mini_batch["actions"]))
-            entropy = dist.entropy()
-            value_loss = self.ppo_value_loss(values, old_values, returns)
+            values, probs, entropy = self.update_computation(
+                obs, np.array(mini_batch["actions"])
+            )
+            value_loss = self.ppo_value_loss(
+                values, old_values, returns, self.trainer_params["epsilon"]
+            )
             policy_loss = self.ppo_policy_loss(
                 np.array(mini_batch["advantages"]),
                 probs,
