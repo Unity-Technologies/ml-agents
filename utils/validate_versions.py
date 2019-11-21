@@ -4,9 +4,13 @@ import os
 import sys
 from typing import Dict
 
-VERSION_LINE_START = "VERSION = "
+VERSION_LINE_START = "__version__ = "
 
-DIRECTORIES = ["ml-agents", "ml-agents-envs", "gym-unity"]
+DIRECTORIES = [
+    "ml-agents/mlagents/trainers",
+    "ml-agents-envs/mlagents/envs",
+    "gym-unity/gym_unity",
+]
 
 
 def extract_version_string(filename):
@@ -20,7 +24,7 @@ def extract_version_string(filename):
 def check_versions() -> bool:
     version_by_dir: Dict[str, str] = {}
     for directory in DIRECTORIES:
-        path = os.path.join(directory, "setup.py")
+        path = os.path.join(directory, "__init__.py")
         version = extract_version_string(path)
         print(f"Found version {version} for {directory}")
         version_by_dir[directory] = version
