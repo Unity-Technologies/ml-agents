@@ -3,7 +3,7 @@ import logging
 import os
 from typing import List, Tuple
 import numpy as np
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
@@ -22,9 +22,10 @@ def make_demo_buffer(
     pair_infos: List[AgentInfoActionPairProto],
     brain_params: BrainParameters,
     sequence_length: int,
-) -> Buffer:
+) -> AgentBuffer:
     # Create and populate buffer using experiences
-    demo_buffer = Buffer()
+    demo_buffer = AgentProcessorBuffer()
+    update_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
@@ -54,18 +55,18 @@ def make_demo_buffer(
         demo_buffer[0]["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
             demo_buffer.append_update_buffer(
-                0, batch_size=None, training_length=sequence_length
+                update_buffer, 0, batch_size=None, training_length=sequence_length
             )
             demo_buffer.reset_local_buffers()
     demo_buffer.append_update_buffer(
-        0, batch_size=None, training_length=sequence_length
+        update_buffer, 0, batch_size=None, training_length=sequence_length
     )
     return demo_buffer
 
 
 def demo_to_buffer(
     file_path: str, sequence_length: int
-) -> Tuple[BrainParameters, Buffer]:
+) -> Tuple[BrainParameters, AgentBuffer]:
     """
     Loads demonstration file and uses it to fill training buffer.
     :param file_path: Location of demonstration file (.demo).

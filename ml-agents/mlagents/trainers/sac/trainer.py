@@ -191,6 +191,7 @@ class SACTrainer(RLTrainer):
                     self.training_buffer[agent_id]["done"][-1] = False
 
                 self.training_buffer.append_update_buffer(
+                    self.update_buffer,
                     agent_id,
                     batch_size=None,
                     training_length=self.policy.sequence_length,

@@ -1,5 +1,5 @@
 import numpy as np
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.buffer import AgentProcessorBuffer, AgentBuffer
 
 
 def assert_array(a, b):
@@ -11,17 +11,17 @@ def assert_array(a, b):
 
 
 def construct_fake_buffer():
-    b = Buffer()
+    b = AgentProcessorBuffer()
     for fake_agent_id in range(4):
         for step in range(9):
-            b[fake_agent_id]["vector_observation"].append(
+            b["vector_observation"].append(
                 [
                     100 * fake_agent_id + 10 * step + 1,
                     100 * fake_agent_id + 10 * step + 2,
                     100 * fake_agent_id + 10 * step + 3,
                 ]
             )
-            b[fake_agent_id]["action"].append(
+            b["action"].append(
                 [
                     100 * fake_agent_id + 10 * step + 4,
                     100 * fake_agent_id + 10 * step + 5,
@@ -70,13 +70,14 @@ def test_buffer():
     )
     b[4].reset_agent()
     assert len(b[4]) == 0
-    b.append_update_buffer(3, batch_size=None, training_length=2)
-    b.append_update_buffer(2, batch_size=None, training_length=2)
-    assert len(b.update_buffer["action"]) == 20
-    assert np.array(b.update_buffer["action"]).shape == (20, 2)
+    update_buffer = AgentBuffer()
+    b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
+    b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
+    assert len(update_buffer["action"]) == 20
+    assert np.array(update_buffer["action"]).shape == (20, 2)
 
-    c = b.update_buffer.make_mini_batch(start=0, end=1)
-    assert c.keys() == b.update_buffer.keys()
+    c = update_buffer.make_mini_batch(start=0, end=1)
+    assert c.keys() == update_buffer.keys()
     assert np.array(c["action"]).shape == (1, 2)
 
 
@@ -86,31 +87,33 @@ def fakerandint(values):
 
 def test_buffer_sample():
     b = construct_fake_buffer()
-    b.append_update_buffer(3, batch_size=None, training_length=2)
-    b.append_update_buffer(2, batch_size=None, training_length=2)
+    update_buffer = AgentBuffer()
+    b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
+    b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test non-LSTM
-    mb = b.update_buffer.sample_mini_batch(batch_size=4, sequence_length=1)
-    assert mb.keys() == b.update_buffer.keys()
+    mb = update_buffer.sample_mini_batch(batch_size=4, sequence_length=1)
+    assert mb.keys() == update_buffer.keys()
     assert np.array(mb["action"]).shape == (4, 2)
 
     # Test LSTM
     # We need to check if we ever get a breaking start - this will maximize the probability
-    mb = b.update_buffer.sample_mini_batch(batch_size=20, sequence_length=19)
-    assert mb.keys() == b.update_buffer.keys()
+    mb = update_buffer.sample_mini_batch(batch_size=20, sequence_length=19)
+    assert mb.keys() == update_buffer.keys()
     # Should only return one sequence
     assert np.array(mb["action"]).shape == (19, 2)
 
 
 def test_buffer_truncate():
     b = construct_fake_buffer()
-    b.append_update_buffer(3, batch_size=None, training_length=2)
-    b.append_update_buffer(2, batch_size=None, training_length=2)
+    update_buffer = AgentBuffer()
+    b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
+    b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test non-LSTM
-    b.truncate_update_buffer(2)
+    update_buffer.truncate(2)
     assert len(b.update_buffer["action"]) == 2
 
-    b.append_update_buffer(3, batch_size=None, training_length=2)
-    b.append_update_buffer(2, batch_size=None, training_length=2)
+    b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
+    b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test LSTM, truncate should be some multiple of sequence_length
-    b.truncate_update_buffer(4, sequence_length=3)
-    assert len(b.update_buffer["action"]) == 3
+    update_buffer.truncate(4, sequence_length=3)
+    assert len(update_buffer["action"]) == 3

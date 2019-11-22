@@ -9,7 +9,7 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.bc.policy import BCPolicy
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
 from mlagents.trainers.trainer import Trainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -40,8 +40,8 @@ class BCTrainer(Trainer):
 
         self.batches_per_epoch = trainer_parameters["batches_per_epoch"]
 
-        self.demonstration_buffer = Buffer()
-        self.evaluation_buffer = Buffer()
+        self.demonstration_buffer = AgentBuffer()
+        self.evaluation_buffer = AgentProcessorBuffer()
 
     def add_experiences(
         self,
@@ -112,25 +112,23 @@ class BCTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return (
-            len(self.demonstration_buffer.update_buffer["actions"]) > self.n_sequences
-        )
+        return len(self.demonstration_buffer["actions"]) > self.n_sequences
 
     def update_policy(self):
         """
         Updates the policy.
         """
-        self.demonstration_buffer.update_buffer.shuffle(self.policy.sequence_length)
+        self.demonstration_buffer.shuffle(self.policy.sequence_length)
         batch_losses = []
         num_batches = min(
-            len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,
+            len(self.demonstration_buffer["actions"]) // self.n_sequences,
             self.batches_per_epoch,
         )
 
         batch_size = self.n_sequences * self.policy.sequence_length
 
         for i in range(0, num_batches * batch_size, batch_size):
-            update_buffer = self.demonstration_buffer.update_buffer
+            update_buffer = self.demonstration_buffer
             mini_batch = update_buffer.make_mini_batch(i, i + batch_size)
             run_out = self.policy.update(mini_batch, self.n_sequences)
             loss = run_out["policy_loss"]
