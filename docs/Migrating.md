@@ -1,6 +1,9 @@
 # Upgrading
 ## :warning: Warning :warning:
 The C# editor code and python trainer code are not compatible between releases. This means that if you upgrade one, you *must* upgrade the other as well. If you experience new errors or unable to connect to training after updating, please double-check that the versions are in the same.
+The versions can be found in
+* `Academy.k_ApiVersion` in Academy.cs ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/UnitySDK/Assets/ML-Agents/Scripts/Academy.cs#L95))
+* `UnityEnvironment.API_VERSION` in environment.py ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
 
 # Migrating
 
