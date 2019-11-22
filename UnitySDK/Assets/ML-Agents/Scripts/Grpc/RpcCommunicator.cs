@@ -289,8 +289,8 @@ namespace MLAgents
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
-            byte[] message_aggregated = GetSideChannelMessage(m_SideChannelsDict);
-            message.RlOutput.SideChannel = ByteString.CopyFrom(message_aggregated);
+            byte[] messageAggregated = GetSideChannelMessage(m_SideChannelsDict);
+            message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);
             UpdateSentBrainParameters(tempUnityRlInitializationOutput);
