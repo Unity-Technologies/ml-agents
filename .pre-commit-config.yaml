@@ -44,7 +44,8 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
-        additional_dependencies: [flake8-comprehensions]
+        # temporarily pin flake8-comprehensions
+        additional_dependencies: [flake8-comprehensions==3.0.1]
     -   id: trailing-whitespace
         name: trailing-whitespace-markdown
         types: [markdown]
