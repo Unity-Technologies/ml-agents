@@ -97,4 +97,4 @@ repos:
         name: validate library versions
         language: script
         entry: utils/validate_versions.py
-        files: ".*/setup.py"
+        files: ".*/__init__.py"
