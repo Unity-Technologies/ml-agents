@@ -7,8 +7,11 @@ namespace MLAgents
     {
         public GameObject upperLeg0, upperLeg1;
         public GameObject foreLeg0, foreLeg1;
+        public GameObject body;
+        
         private ArticulationBody m_AbUpper0, m_AbUpper1;
         private ArticulationBody m_AbFore0, m_AbFore1;
+        private ArticulationBody m_AbBody;
 
         private Vector3 m_rotationUpper0, m_rotationUpper1;
         private Vector3 m_rotationFore0, m_rotationFore1;
@@ -32,6 +35,7 @@ namespace MLAgents
             m_AbUpper1 = upperLeg1.GetComponent<ArticulationBody>();
             m_AbFore1 = foreLeg1.GetComponent<ArticulationBody>();
 
+            m_AbBody = body.GetComponent<ArticulationBody>();
 
             m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
         }
@@ -41,7 +45,12 @@ namespace MLAgents
         /// </summary>
         public void AgentReset()
         {
-            m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
+            Vector3 position = new Vector3(0.0f, 8.0f, 6.3f);
+            Quaternion rotation = Quaternion.identity;
+            m_AbBody.enabled = false;
+            //m_AbBody.TeleportRoot(position, rotation);
+            m_AbBody.enabled = true;
+            //m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
 
             /*
             m_AbUpper.transform.position = new Vector3(0f, -4f, 0f) + transform.position;

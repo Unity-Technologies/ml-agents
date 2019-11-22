@@ -157,7 +157,7 @@ public class ArticulatedCrawlerAgent : Agent
     public void GetRandomTargetPos()
     {
         var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
+        newTargetPos.y = 0.5f;
         target.position = newTargetPos + ground.position;
     }
 

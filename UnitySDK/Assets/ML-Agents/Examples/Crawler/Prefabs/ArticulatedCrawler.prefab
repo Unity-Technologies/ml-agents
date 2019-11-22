@@ -95,6 +95,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114805933462601644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,6 +303,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114245671031386664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,6 +400,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1528865102058454
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +480,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1726653501711894
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,6 +575,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1828705975967124
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +679,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114418822382166060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,8 +715,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 0
-  m_Swing2: 0
+  m_SwingY: 0
+  m_SwingZ: 0
   m_Twist: 0
   m_XDrive:
     lowerLimit: 0
@@ -819,6 +825,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1932904558829096
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,6 +905,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &74792054008867844
 GameObject:
   m_ObjectHideFlags: 0
@@ -977,6 +985,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1375085644099298951
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,8 +1037,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 1
-  m_Swing2: 1
+  m_SwingY: 1
+  m_SwingZ: 1
   m_Twist: 0
   m_XDrive:
     lowerLimit: -120
@@ -1155,6 +1164,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &8617053891981789506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1223,8 +1233,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 1
-  m_Swing2: 1
+  m_SwingY: 1
+  m_SwingZ: 1
   m_Twist: 0
   m_XDrive:
     lowerLimit: -120
@@ -1333,6 +1343,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2186961647629543809
 GameObject:
   m_ObjectHideFlags: 0
@@ -1428,6 +1439,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &3729430663587470931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1524,6 +1536,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3866106115563462531
 GameObject:
   m_ObjectHideFlags: 0
@@ -1620,6 +1633,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4108932900018414747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1733,6 +1747,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &1614554596081838312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1845,6 +1860,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &1490860231545480551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1913,8 +1929,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 1
-  m_Swing2: 1
+  m_SwingY: 1
+  m_SwingZ: 1
   m_Twist: 0
   m_XDrive:
     lowerLimit: -120
@@ -2039,6 +2055,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &142744381922245345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2106,8 +2123,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 2
-  m_Swing2: 2
+  m_SwingY: 0
+  m_SwingZ: 0
   m_Twist: 1
   m_XDrive:
     lowerLimit: -120
@@ -2187,8 +2204,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 2
-  m_Swing2: 2
+  m_SwingY: 0
+  m_SwingZ: 0
   m_Twist: 1
   m_XDrive:
     lowerLimit: -120
@@ -2268,8 +2285,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 1
-  m_Swing2: 0
+  m_SwingY: 0
+  m_SwingZ: 0
   m_Twist: 1
   m_XDrive:
     lowerLimit: -120
@@ -2349,8 +2366,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 2
-  m_Swing2: 2
+  m_SwingY: 0
+  m_SwingZ: 0
   m_Twist: 1
   m_XDrive:
     lowerLimit: -120
@@ -2431,8 +2448,8 @@ ArticulationBody:
   m_LinearX: 0
   m_LinearY: 0
   m_LinearZ: 0
-  m_Swing1: 1
-  m_Swing2: 1
+  m_SwingY: 1
+  m_SwingZ: 1
   m_Twist: 0
   m_XDrive:
     lowerLimit: -120

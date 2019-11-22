@@ -12,8 +12,13 @@ namespace MLAgents
     {
         //[Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
         public ArticulationBody arb;
+        public Transform t;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
+        [HideInInspector] public Vector3 startingArbPos;
+        [HideInInspector] public Quaternion startingArbRot;
+
+
 
         [Header("Ground & Target Contact")][Space(10)]
         public GroundContact groundContact;
@@ -38,11 +43,13 @@ namespace MLAgents
         {
             // Can't assign transforms for articulation bodies: transform changes are ignored, simulations goes on.
             // No way to reset velocities for articulation bodies now
-            if (bp.arb.isRoot)
-                bp.arb.TeleportRoot(bp.startingPos, bp.startingRot);
-            //bp.arb.transform.position = bp.startingPos;
-            //bp.arb.transform.rotation = bp.startingRot;
-            
+            //if (bp.arb.isRoot)
+            //{
+            //    bp.arb.TeleportRoot(bp.startingArbPos, bp.startingArbRot);
+            //    bp.t.position = bp.startingPos;
+            //    bp.t.rotation = bp.startingRot;
+            //}
+
             // Can't assigned articulation body velocitys/angularVelocities
             //bp.arb.velocity = Vector3.zero;
             //bp.arb.angularVelocity = Vector3.zero;
@@ -137,6 +144,9 @@ namespace MLAgents
             var bp = new ArticulationBodyPart()
             {
                 arb =  arb,
+                t = t,
+                startingArbPos = arb.transform.position,
+                startingArbRot = arb.transform.rotation,
                 startingPos = t.position,
                 startingRot = t.rotation
             };

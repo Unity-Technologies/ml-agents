@@ -233,6 +233,7 @@ MonoBehaviour:
   upperLeg1: {fileID: 384922840}
   foreLeg0: {fileID: 1541621532}
   foreLeg1: {fileID: 162708877}
+  body: {fileID: 1633365430}
   useAlternativeKeySetForInput: 0
   maxJointForceLimit: 1000
   maxJointSpring: 100
@@ -416,6 +417,12 @@ Transform:
 --- !u!1 &1541621532 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8640153343578765727, guid: 1661ce2a8a3cdfd3480c3d24bddd72f2,
+    type: 3}
+  m_PrefabInstance: {fileID: 671491189}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1633365430 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1828705975967124, guid: 1661ce2a8a3cdfd3480c3d24bddd72f2,
     type: 3}
   m_PrefabInstance: {fileID: 671491189}
   m_PrefabAsset: {fileID: 0}
