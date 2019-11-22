@@ -50,6 +50,8 @@ def set_version(new_version: str) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--new-version", default=None)
+    # unused, but allows precommit to pass filenames
+    parser.add_argument("files", nargs="*")
     args = parser.parse_args()
     if args.new_version:
         print(f"Updating to verison {args.new_version}")
