@@ -1,4 +1,3 @@
-import Queue
 from abc import ABC, abstractmethod
 
 ChannelType = int
@@ -14,14 +13,14 @@ class SideChannel(ABC):
     """
 
     def __init__(self):
-        self.message_queue = Queue.Queue()
+        self.message_queue = []
 
     def queue_message_to_send(self, data: bytearray) -> None:
         """
         Queues a message to be sent by the environment at the next call to
         step.
         """
-        self.message_queue.put(data)
+        self.message_queue.append(data)
 
     @abstractmethod
     def on_message_received(self, data: bytearray) -> None:

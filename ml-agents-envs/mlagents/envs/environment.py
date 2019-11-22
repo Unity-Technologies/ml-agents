@@ -6,6 +6,7 @@ import os
 import subprocess
 from typing import Dict, List, Optional, Any
 
+from mlagents.envs.side_channel.side_channel import SideChannel
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
 from .brain import AllBrainInfo, BrainInfo, BrainParameters
@@ -32,6 +33,7 @@ from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from .rpc_communicator import RpcCommunicator
 from sys import platform
 import signal
+import struct
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mlagents.envs")
@@ -52,6 +54,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         no_graphics: bool = False,
         timeout_wait: int = 60,
         args: Optional[List[str]] = None,
+        side_channels: Optional[List[SideChannel]] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -66,6 +69,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         :list args: Addition Unity command line arguments
+        :list side_channels: Additional side channel for no-rl communication with Unity
         """
         args = args or []
         atexit.register(self._close)
@@ -79,6 +83,16 @@ class UnityEnvironment(BaseUnityEnvironment):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
+        self.side_channels_dict: Dict[int, SideChannel] = {}
+        if side_channels is not None:
+            for _sc in side_channels:
+                if _sc.channel_type in self.side_channels_dict:
+                    raise UnityEnvironmentException(
+                        "There cannot be two side channels with the same channel type {0}.".format(
+                            _sc.channel_type
+                        )
+                    )
+                self.side_channels_dict[_sc.channel_type] = _sc
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -527,7 +541,30 @@ class UnityEnvironment(BaseUnityEnvironment):
             _data[brain_name] = BrainInfo.from_agent_proto(
                 self.worker_id, agent_info_list, self.brains[brain_name]
             )
+        self._parse_side_channel_message(output.side_channel)
         return _data
+
+    def _parse_side_channel_message(self, data: bytearray) -> None:
+        offset = 0
+        while offset < len(data):
+            channel_type = struct.unpack("i", data[offset : offset + 4])[0]
+            offset = offset + 4
+            message_len = struct.unpack("i", data[offset : offset + 4])[0]
+            offset = offset + 4
+            message_data = data[offset : offset + message_len]
+            offset = offset + message_len
+            if channel_type in self.side_channels_dict:
+                self.side_channels_dict[channel_type].on_message_received(message_data)
+
+    def _generate_side_channel_data(self) -> bytearray:
+        result = bytearray()
+        for channel_type, channel in self.side_channels_dict.items():
+            for message in channel.message_queue:
+                result += struct.pack("i", channel_type)
+                result += struct.pack("i", len(message))
+                result += message
+            channel.message_queue = []
+        return result
 
     def _update_brain_parameters(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
@@ -563,6 +600,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         action.value = float(value[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = 0
+        rl_in.side_channel = bytes(self._generate_side_channel_data())
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(
@@ -578,6 +616,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 custom_reset_parameters
             )
         rl_in.command = 1
+        rl_in.side_channel = bytes(self._generate_side_channel_data())
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(

@@ -15,5 +15,5 @@ message UnityRLInputProto {
     EnvironmentParametersProto environment_parameters = 2;
     bool is_training = 3;
     CommandProto command = 4;
-    repeated bytes side_channel = 5;
+    bytes side_channel = 5;
 }

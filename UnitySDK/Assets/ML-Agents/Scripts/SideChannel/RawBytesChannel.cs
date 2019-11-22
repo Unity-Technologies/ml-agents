@@ -1,15 +1,15 @@
-using System.Collections;
+using System.Collections.Generic;
 
 public class RawBytesChannel : SideChannel
 {
 
-    private Queue m_MessagesReceived = new Queue();
+    private List<byte[]> m_MessagesReceived = new List<byte[]>();
 
-    protected override int ChannelType() { return 0; }
+    public override int ChannelType() { return 0; }
 
-    protected override void OnMessageReceived(byte[] data)
+    public override void OnMessageReceived(byte[] data)
     {
-        m_MessagesReceived.Enqueue(data);
+        m_MessagesReceived.Add(data);
     }
 
     public void SendRawBytes(byte[] data)
@@ -17,14 +17,11 @@ public class RawBytesChannel : SideChannel
         QueueMessageToSend(data);
     }
 
-    public byte[] ReceiveRawBytes()
+    public IList<byte[]> ReceiveRawBytes()
     {
-        return (byte[])m_MessagesReceived.Dequeue();
+        var result = new List<byte[]>();
+        result.AddRange(m_MessagesReceived);
+        m_MessagesReceived.Clear();
+        return result;
     }
-
-    public int MessageReceivedCount()
-    {
-        return m_MessagesReceived.Count;
-    }
-
 }

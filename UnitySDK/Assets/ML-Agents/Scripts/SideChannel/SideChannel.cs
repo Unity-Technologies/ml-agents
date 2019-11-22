@@ -1,17 +1,17 @@
-using System.Collections;
+using System.Collections.Generic;
 
 
 public abstract class SideChannel
 {
 
-    public Queue MessageQueue = new Queue();
-    protected abstract int ChannelType();
+    public List<byte[]> MessageQueue = new List<byte[]>(); // List
+    public abstract int ChannelType();
 
-    protected abstract void OnMessageReceived(byte[] data);
+    public abstract void OnMessageReceived(byte[] data);
 
     protected void QueueMessageToSend(byte[] data)
     {
-        MessageQueue.Enqueue(data);
+        MessageQueue.Add(data);
     }
 
 }

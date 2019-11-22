@@ -1,5 +1,4 @@
-import Queue
-from mlagents.envs.side_channel import SideChannel, ChannelType
+from mlagents.envs.side_channel.side_channel import SideChannel, ChannelType
 from typing import List
 
 
@@ -10,7 +9,7 @@ class RawBytesChannel(SideChannel):
     """
 
     def __init__(self):
-        self.received_messages = Queue.Queue()
+        self.received_messages = []
         super().__init__()
 
     @property
@@ -23,15 +22,16 @@ class RawBytesChannel(SideChannel):
         multiple times per step if multiple messages are meant for that
         SideChannel.
         """
-        self.received_messages.put(data)
+        self.received_messages.append(data)
 
     def receive_raw_bytes(self) -> List[bytearray]:
         """
         returns a list of bytearray received from the environment.
         """
         result = []
-        while not self.received_messages.empty():
-            result.append(self.received_messages.get())
+        for m in self.received_messages:
+            result.append(m)
+        self.received_messages = []
         return result
 
     def send_raw_data(self, data: bytearray) -> None:

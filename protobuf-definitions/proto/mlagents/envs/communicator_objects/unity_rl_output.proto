@@ -11,6 +11,6 @@ message UnityRLOutputProto {
     }
     reserved 1; // deprecated bool global_done field
     map<string, ListAgentInfoProto> agentInfos = 2;
-    repeated bytes side_channel = 3;
+    bytes side_channel = 3;
 }
 
