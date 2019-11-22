@@ -57,7 +57,7 @@ namespace MLAgents.InferenceBrain
             if (barracudaModel != null)
             {
                 var model = (Model)barracudaModel;
-                for (var i = 0; i < model.memories.Length; i++)
+                for (var i = 0; i < model.memories.Count; i++)
                 {
                     m_Dict[model.memories[i].input] =
                         new BarracudaRecurrentInputGenerator(i, allocator, memories);
