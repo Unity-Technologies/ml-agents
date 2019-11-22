@@ -143,13 +143,10 @@ Mono path[0] = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/Resources/
 Mono config path = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/MonoBleedingEdge/etc'
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
-INFO:mlagents.envs:
-'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Number of Brains: 1
-        Number of Training Brains : 1
-        Reset Parameters :
+        Reset Parameters : {}
 
+INFO:mlagents.envs:Connected new brain:
 Unity brain name: Ball3DLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
