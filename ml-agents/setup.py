@@ -4,8 +4,9 @@ import sys
 
 from setuptools import setup, find_namespace_packages
 from setuptools.command.install import install
+import mlagents.trainers
 
-VERSION = "0.11.0"
+VERSION = mlagents.trainers.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
