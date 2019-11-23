@@ -137,7 +137,9 @@ class PPOTrainer(RLTrainer):
                     tmp_advantages.append(local_advantage)
                     tmp_returns.append(local_return)
 
-                global_advantages = list(np.mean(np.array(tmp_advantages), axis=0))
+                global_advantages = list(
+                    np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+                )
                 global_returns = list(
                     np.mean(np.array(tmp_returns, dtype=np.float32), axis=0)
                 )
