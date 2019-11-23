@@ -1,27 +1,29 @@
 using System.Collections.Generic;
-
-public class RawBytesChannel : SideChannel
+namespace MLAgents
 {
-
-    private List<byte[]> m_MessagesReceived = new List<byte[]>();
-
-    public override int ChannelType() { return 0; }
-
-    public override void OnMessageReceived(byte[] data)
+    public class RawBytesChannel : SideChannel
     {
-        m_MessagesReceived.Add(data);
-    }
 
-    public void SendRawBytes(byte[] data)
-    {
-        QueueMessageToSend(data);
-    }
+        private List<byte[]> m_MessagesReceived = new List<byte[]>();
 
-    public IList<byte[]> ReceiveRawBytes()
-    {
-        var result = new List<byte[]>();
-        result.AddRange(m_MessagesReceived);
-        m_MessagesReceived.Clear();
-        return result;
+        public override int ChannelType() { return 0; }
+
+        public override void OnMessageReceived(byte[] data)
+        {
+            m_MessagesReceived.Add(data);
+        }
+
+        public void SendRawBytes(byte[] data)
+        {
+            QueueMessageToSend(data);
+        }
+
+        public IList<byte[]> ReceiveRawBytes()
+        {
+            var result = new List<byte[]>();
+            result.AddRange(m_MessagesReceived);
+            m_MessagesReceived.Clear();
+            return result;
+        }
     }
 }

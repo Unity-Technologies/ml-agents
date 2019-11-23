@@ -547,14 +547,26 @@ class UnityEnvironment(BaseUnityEnvironment):
     def _parse_side_channel_message(self, data: bytearray) -> None:
         offset = 0
         while offset < len(data):
-            channel_type = struct.unpack("i", data[offset : offset + 4])[0]
-            offset = offset + 4
-            message_len = struct.unpack("i", data[offset : offset + 4])[0]
-            offset = offset + 4
-            message_data = data[offset : offset + message_len]
-            offset = offset + message_len
+            try:
+                channel_type = struct.unpack("i", data[offset : offset + 4])[0]
+                offset = offset + 4
+                message_len = struct.unpack("i", data[offset : offset + 4])[0]
+                offset = offset + 4
+                message_data = data[offset : offset + message_len]
+                offset = offset + message_len
+            except Exception:
+                raise UnityEnvironmentException(
+                    "There was a problem reading a message in a SideChannel. "
+                    + "Please make sure the version of MLAgents in Unity is "
+                    + "compatible with the Python version."
+                )
             if channel_type in self.side_channels_dict:
                 self.side_channels_dict[channel_type].on_message_received(message_data)
+            else:
+                logger.info(
+                    "Unknown side channel data received. Channel type "
+                    + ": {0}".format(channel_type)
+                )
 
     def _generate_side_channel_data(self) -> bytearray:
         result = bytearray()

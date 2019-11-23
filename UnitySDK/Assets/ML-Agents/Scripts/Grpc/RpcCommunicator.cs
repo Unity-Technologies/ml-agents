@@ -490,12 +490,22 @@ namespace MLAgents
                 {
                     while (memStream.Position < memStream.Length)
                     {
-                        var channelType = binaryReader.ReadInt32();
-                        var messageLength = binaryReader.ReadInt32();
-                        var message = binaryReader.ReadBytes(messageLength);
-                        if (sideChannels.ContainsKey(channelType))
+                        try
                         {
-                            sideChannels[channelType].OnMessageReceived(message);
+                            var channelType = binaryReader.ReadInt32();
+                            var messageLength = binaryReader.ReadInt32();
+                            var message = binaryReader.ReadBytes(messageLength);
+                            if (sideChannels.ContainsKey(channelType))
+                            {
+                                sideChannels[channelType].OnMessageReceived(message);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new UnityAgentsException(
+                                "There was a problem reading a message in a SideChannel. Please make sure the " +
+                                "version of MLAgents in Unity is compatible with the Python version. Original error : "
+                                + ex.Message);
                         }
                     }
                 }

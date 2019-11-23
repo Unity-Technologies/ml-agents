@@ -1,17 +1,19 @@
 using System.Collections.Generic;
 
-
-public abstract class SideChannel
+namespace MLAgents
 {
-
-    public List<byte[]> MessageQueue = new List<byte[]>(); // List
-    public abstract int ChannelType();
-
-    public abstract void OnMessageReceived(byte[] data);
-
-    protected void QueueMessageToSend(byte[] data)
+    public abstract class SideChannel
     {
-        MessageQueue.Add(data);
-    }
 
+        public List<byte[]> MessageQueue = new List<byte[]>(); // List
+        public abstract int ChannelType();
+
+        public abstract void OnMessageReceived(byte[] data);
+
+        protected void QueueMessageToSend(byte[] data)
+        {
+            MessageQueue.Add(data);
+        }
+
+    }
 }
