@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MLAgents
 {
-    public class EngineConfigurationSideChannel : SideChannel
+    public class EngineConfigurationChannel : SideChannel
     {
 
         public override int ChannelType() { return 1; }

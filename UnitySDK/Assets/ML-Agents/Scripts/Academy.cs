@@ -316,7 +316,7 @@ namespace MLAgents
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
-                    Communicator.RegisterSideChannel(new EngineConfigurationSideChannel());
+                    Communicator.RegisterSideChannel(new EngineConfigurationChannel());
                 }
             }
 
