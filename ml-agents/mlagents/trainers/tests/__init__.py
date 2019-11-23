@@ -2,7 +2,9 @@ import os
 
 # Opt-in checking mode to ensure that we always create numpy arrays using float32
 if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
-
+    # This file is importer by pytest multiple times, but this breaks the patching
+    # Removing the env variable seems the easiest way to prevent this.
+    del os.environ["TEST_ENFORCE_NUMPY_FLOAT32"]
     import numpy as np
     import traceback
 
@@ -19,7 +21,8 @@ if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
             filename = tb[-3].filename
             # Only raise if this came from mlagents code, not tensorflow
             if (
-                "ml-agents/mlagents" in filename or "ml-agents-envs/mlagents" in filename
+                "ml-agents/mlagents" in filename
+                or "ml-agents-envs/mlagents" in filename
             ) and "tensorflow_to_barracuda.py" not in filename:
                 raise ValueError(f"dtype={kwargs_dtype}")
 
