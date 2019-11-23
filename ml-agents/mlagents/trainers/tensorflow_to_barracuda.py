@@ -1,7 +1,7 @@
 # pylint: skip-file
 # flake8: noqa
 from __future__ import print_function
-from mlagents.tf_utils import np
+import numpy as np
 import struct  # convert from Python values and C structs
 from mlagents.tf_utils import tf
 import re

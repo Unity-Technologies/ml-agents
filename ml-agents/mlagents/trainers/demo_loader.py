@@ -2,7 +2,7 @@ import pathlib
 import logging
 import os
 from typing import List, Tuple
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.trainers.buffer import Buffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -36,9 +36,13 @@ def make_demo_buffer(
         next_brain_info = BrainInfo.from_agent_proto(
             0, [next_pair_info.agent_info], brain_params
         )
-        previous_action = np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
+        previous_action = (
+            np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
+        )
         if idx > 0:
-            previous_action = np.array(pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32)
+            previous_action = np.array(
+                pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
+            )
         demo_buffer[0].last_brain_info = current_brain_info
         demo_buffer[0]["done"].append(next_brain_info.local_done[0])
         demo_buffer[0]["rewards"].append(next_brain_info.rewards[0])

@@ -1,4 +1,4 @@
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.trainers.buffer import Buffer
 
 

@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.tf_utils import tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 

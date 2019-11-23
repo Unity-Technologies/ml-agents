@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any, Optional
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed

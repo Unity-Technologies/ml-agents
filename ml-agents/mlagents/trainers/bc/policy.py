@@ -1,6 +1,6 @@
 import logging
 
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.trainers.bc.models import BehavioralCloningModel
 from mlagents.trainers.tf_policy import TFPolicy
 

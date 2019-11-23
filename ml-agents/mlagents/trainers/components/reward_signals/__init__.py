@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List
 from collections import namedtuple
-from mlagents.tf_utils import np
+import numpy as np
 import abc
 
 from mlagents.tf_utils import tf

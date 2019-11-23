@@ -2,7 +2,7 @@ import unittest.mock as mock
 import pytest
 import yaml
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 

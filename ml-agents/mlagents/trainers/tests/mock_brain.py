@@ -1,5 +1,5 @@
 import unittest.mock as mock
-from mlagents.tf_utils import np
+import numpy as np
 
 from mlagents.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import Buffer

@@ -2,7 +2,7 @@
 # flake8: noqa
 from __future__ import print_function
 from collections import defaultdict
-from mlagents.tf_utils import np
+import numpy as np
 import json
 import struct  # convert from Python values and C structs
 import re

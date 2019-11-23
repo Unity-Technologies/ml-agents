@@ -6,7 +6,7 @@ import logging
 from collections import defaultdict
 from typing import Dict
 
-from mlagents.tf_utils import np
+import numpy as np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
@@ -137,8 +137,12 @@ class PPOTrainer(RLTrainer):
                     tmp_advantages.append(local_advantage)
                     tmp_returns.append(local_return)
 
-                global_advantages = list(np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0))
-                global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
+                global_advantages = list(
+                    np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+                )
+                global_returns = list(
+                    np.mean(np.array(tmp_returns, dtype=np.float32), axis=0)
+                )
                 self.training_buffer[agent_id]["advantages"].set(global_advantages)
                 self.training_buffer[agent_id]["discounted_returns"].set(global_returns)
 

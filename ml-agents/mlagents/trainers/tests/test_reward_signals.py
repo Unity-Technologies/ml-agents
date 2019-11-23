@@ -2,7 +2,7 @@ import unittest.mock as mock
 import pytest
 import yaml
 import os
-from mlagents.tf_utils import np
+import numpy as np
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.sac.policy import SACPolicy

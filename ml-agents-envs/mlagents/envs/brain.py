@@ -1,5 +1,5 @@
 import logging
-from mlagents.tf_utils import np
+import numpy as np
 import io
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto

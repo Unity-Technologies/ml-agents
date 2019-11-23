@@ -1,6 +1,6 @@
 from typing import List
 import logging
-from mlagents.tf_utils import np
+import numpy as np
 from unittest import mock
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto

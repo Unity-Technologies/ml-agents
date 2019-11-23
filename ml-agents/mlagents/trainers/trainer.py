@@ -5,7 +5,7 @@ import os
 
 from mlagents.tf_utils import tf
 
-from mlagents.tf_utils import np
+import numpy as np
 from collections import deque, defaultdict
 
 from mlagents.envs.action_info import ActionInfoOutputs

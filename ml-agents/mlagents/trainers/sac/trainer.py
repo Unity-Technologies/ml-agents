@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Dict
 import os
 
-from mlagents.tf_utils import np
+import numpy as np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs

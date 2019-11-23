@@ -7,7 +7,7 @@ import json
 import logging
 from typing import Dict, List, Optional, Set
 
-from mlagents.tf_utils import np
+import numpy as np
 from mlagents.tf_utils import tf
 from time import time
 

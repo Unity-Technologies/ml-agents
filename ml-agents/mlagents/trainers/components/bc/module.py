@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from mlagents.tf_utils import np
+import numpy as np
 
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import BCModel

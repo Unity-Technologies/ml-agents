@@ -1,4 +1,4 @@
-from mlagents.tf_utils import np
+import numpy as np
 import h5py
 
 from mlagents.envs.exception import UnityException
