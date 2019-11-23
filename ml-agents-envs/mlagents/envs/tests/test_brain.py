@@ -1,7 +1,6 @@
 from typing import List
 import logging
 from mlagents.tf_utils import np
-import sys
 from unittest import mock
 
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
@@ -50,8 +49,9 @@ def test_from_agent_proto_inf(mock_warning, mock_nan_to_num):
     agent_info_proto = _make_agent_info_proto([1.0, float("inf"), 0.0])
 
     brain_info = BrainInfo.from_agent_proto(1, [agent_info_proto], test_brain)
-    # inf should get set to float_max
-    expected = [1.0, sys.float_info.max, 0.0]
+    # inf should get set to float32_max
+    float32_max = np.finfo(np.float32).max
+    expected = [1.0, float32_max, 0.0]
     assert (brain_info.vector_observations == expected).all()
     mock_nan_to_num.assert_called()
     # We don't warn on inf, just NaN
