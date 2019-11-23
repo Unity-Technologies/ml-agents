@@ -126,7 +126,7 @@ def reward_signal_eval(env, policy, reward_signal_name):
     brain_info = brain_infos[env.external_brain_names[0]]
     next_brain_info = env.step()[env.external_brain_names[0]]
     # Test evaluate
-    action = np.ones((len(brain_info.agents), policy.num_branches))
+    action = np.ones((len(brain_info.agents), policy.num_branches), dtype=np.float32)
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
         brain_info, action, next_brain_info
     )

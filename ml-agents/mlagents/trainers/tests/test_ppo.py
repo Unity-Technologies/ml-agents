@@ -166,9 +166,9 @@ def test_ppo_model_cc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.epsilon: np.array([[0, 1], [2, 3]]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.epsilon: np.array([[0, 1], [2, 3]], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -194,9 +194,9 @@ def test_ppo_model_dc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.action_masks: np.ones([2, 2]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -222,7 +222,7 @@ def test_ppo_model_dc_vector():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([2, 2]),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -252,9 +252,9 @@ def test_ppo_model_dc_vector_rnn():
                 model.batch_size: 1,
                 model.sequence_length: 2,
                 model.prev_action: [[0], [0]],
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([1, 2]),
+                model.action_masks: np.ones([1, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -283,7 +283,7 @@ def test_ppo_model_cc_vector_rnn():
             feed_dict = {
                 model.batch_size: 1,
                 model.sequence_length: 2,
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
                 model.epsilon: np.array([[0, 1]]),
             }
@@ -294,7 +294,9 @@ def test_rl_functions():
     rewards = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
     gamma = 0.9
     returns = discount_rewards(rewards, gamma, 0.0)
-    np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0], dtype=np.float32))
+    np.testing.assert_array_almost_equal(
+        returns, np.array([0.729, 0.81, 0.9, 1.0], dtype=np.float32)
+    )
 
 
 def test_trainer_increment_step(dummy_config):
@@ -377,7 +379,8 @@ def test_add_rewards_output(dummy_config):
     rewardsout = AllRewardsOutput(
         reward_signals={
             "extrinsic": RewardSignalResult(
-                scaled_reward=np.array([1.0, 1.0], dtype=np.float32), unscaled_reward=np.array([1.0, 1.0], dtype=np.float32)
+                scaled_reward=np.array([1.0, 1.0], dtype=np.float32),
+                unscaled_reward=np.array([1.0, 1.0], dtype=np.float32),
             )
         },
         environment=np.array([1.0, 1.0], dtype=np.float32),

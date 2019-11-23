@@ -130,7 +130,7 @@ class BrainInfo:
             new_m1[0 : m1.shape[0], 0 : m1.shape[1]] = m1
             return np.append(new_m1, m2, axis=0)
         elif m1.shape[1] > m2.shape[1]:
-            new_m2 = np.zeros((m2.shape[0], m1.shape[1]))
+            new_m2 = np.zeros((m2.shape[0], m1.shape[1]), dtype=np.float32)
             new_m2[0 : m2.shape[0], 0 : m2.shape[1]] = m2
             return np.append(m1, new_m2, axis=0)
         return np.append(m1, m2, axis=0)

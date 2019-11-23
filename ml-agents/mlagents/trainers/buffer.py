@@ -61,9 +61,9 @@ class Buffer(dict):
                 :param data: The np.array list to be set.
                 """
                 # Make sure we convert incoming data to float32 if it's a float
-                dtype=None
-                if data is not None and isinstance(data[0], float):
-                    dtype=np.float32
+                dtype = None
+                if data is not None and len(data) and isinstance(data[0], float):
+                    dtype = np.float32
                 self[:] = []
                 self[:] = list(np.array(data, dtype=dtype))
 
@@ -97,7 +97,9 @@ class Buffer(dict):
                             " too large given the current number of data points."
                         )
                     if batch_size * training_length > len(self):
-                        padding = np.array(self[-1], dtype=np.float32) * self.padding_value
+                        padding = (
+                            np.array(self[-1], dtype=np.float32) * self.padding_value
+                        )
                         return np.array(
                             [padding] * (training_length - leftover) + self[:],
                             dtype=np.float32,

@@ -135,7 +135,8 @@ class BCModule:
                 (
                     self.n_sequences * self.policy.sequence_length,
                     sum(self.policy.model.brain.vector_action_space_size),
-                )
+                ),
+                dtype=np.float32,
             )
         if self.policy.model.brain.vector_observation_space_size > 0:
             feed_dict[self.policy.model.vector_in] = mini_batch_demo["vector_obs"]
@@ -145,7 +146,7 @@ class BCModule:
             ]
         if self.use_recurrent:
             feed_dict[self.policy.model.memory_in] = np.zeros(
-                [self.n_sequences, self.policy.m_size]
+                [self.n_sequences, self.policy.m_size], dtype=np.float32
             )
             if not self.policy.model.brain.vector_action_space_type == "continuous":
                 feed_dict[self.policy.model.prev_action] = mini_batch_demo[
