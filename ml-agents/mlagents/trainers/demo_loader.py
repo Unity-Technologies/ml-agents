@@ -24,8 +24,8 @@ def make_demo_buffer(
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
-    demo_buffer = AgentProcessorBuffer()
-    update_buffer = AgentBuffer()
+    demo_process_buffer = AgentProcessorBuffer()
+    demo_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
@@ -40,26 +40,28 @@ def make_demo_buffer(
         previous_action = np.array(pair_infos[idx].action_info.vector_actions) * 0
         if idx > 0:
             previous_action = np.array(pair_infos[idx - 1].action_info.vector_actions)
-        demo_buffer[0].last_brain_info = current_brain_info
-        demo_buffer[0]["done"].append(next_brain_info.local_done[0])
-        demo_buffer[0]["rewards"].append(next_brain_info.rewards[0])
+        demo_process_buffer[0].last_brain_info = current_brain_info
+        demo_process_buffer[0]["done"].append(next_brain_info.local_done[0])
+        demo_process_buffer[0]["rewards"].append(next_brain_info.rewards[0])
         for i in range(brain_params.number_visual_observations):
-            demo_buffer[0]["visual_obs%d" % i].append(
+            demo_process_buffer[0]["visual_obs%d" % i].append(
                 current_brain_info.visual_observations[i][0]
             )
         if brain_params.vector_observation_space_size > 0:
-            demo_buffer[0]["vector_obs"].append(
+            demo_process_buffer[0]["vector_obs"].append(
                 current_brain_info.vector_observations[0]
             )
-        demo_buffer[0]["actions"].append(current_pair_info.action_info.vector_actions)
-        demo_buffer[0]["prev_action"].append(previous_action)
+        demo_process_buffer[0]["actions"].append(
+            current_pair_info.action_info.vector_actions
+        )
+        demo_process_buffer[0]["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
-            demo_buffer.append_update_buffer(
-                update_buffer, 0, batch_size=None, training_length=sequence_length
+            demo_process_buffer.append_update_buffer(
+                demo_buffer, 0, batch_size=None, training_length=sequence_length
             )
-            demo_buffer.reset_local_buffers()
-    demo_buffer.append_update_buffer(
-        update_buffer, 0, batch_size=None, training_length=sequence_length
+            demo_process_buffer.reset_local_buffers()
+    demo_process_buffer.append_update_buffer(
+        demo_buffer, 0, batch_size=None, training_length=sequence_length
     )
     return demo_buffer
 
