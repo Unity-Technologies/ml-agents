@@ -7,7 +7,10 @@ namespace MLAgents
     public class EngineConfigurationChannel : SideChannel
     {
 
-        public override int ChannelType() { return 1; }
+        public override int ChannelType()
+        {
+            return (int)SideChannelType.EngineSettings;
+        }
 
         public override void OnMessageReceived(byte[] data)
         {

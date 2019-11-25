@@ -1,4 +1,4 @@
-from mlagents.envs.side_channel.side_channel import SideChannel, ChannelType
+from mlagents.envs.side_channel.side_channel import SideChannel, SideChannelType
 from mlagents.envs.exception import UnityCommunicationException
 import struct
 
@@ -15,8 +15,8 @@ class EngineConfigurationChannel(SideChannel):
     """
 
     @property
-    def channel_type(self) -> ChannelType:
-        return 1
+    def channel_type(self) -> int:
+        return SideChannelType.EngineSettings
 
     def on_message_received(self, data: bytearray) -> None:
         """

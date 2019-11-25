@@ -1,4 +1,4 @@
-from mlagents.envs.side_channel.side_channel import SideChannel, ChannelType
+from mlagents.envs.side_channel.side_channel import SideChannel, SideChannelType
 from typing import List
 
 
@@ -8,13 +8,14 @@ class RawBytesChannel(SideChannel):
     look like. Is meant to be used for general research purpose.
     """
 
-    def __init__(self):
+    def __init__(self, channel_id=0):
         self.received_messages = []
+        self.channel_id = channel_id
         super().__init__()
 
     @property
-    def channel_type(self) -> ChannelType:
-        return 0
+    def channel_type(self) -> int:
+        return SideChannelType.RawBytesChannelStart + self.channel_id
 
     def on_message_received(self, data: bytearray) -> None:
         """

@@ -1,6 +1,16 @@
 from abc import ABC, abstractmethod
+from enum import IntEnum
 
-ChannelType = int
+
+class SideChannelType(IntEnum):
+    FloatProperties = 1
+    EngineSettings = 2
+    # Raw bytes channels should start here to avoid conflicting with other
+    # Unity ones.
+    RawBytesChannelStart = 1000
+    # custom side channels should start here to avoid conflicting with Unity
+    # ones.
+    UserSideChannelStart = 2000
 
 
 class SideChannel(ABC):
@@ -33,7 +43,7 @@ class SideChannel(ABC):
 
     @property
     @abstractmethod
-    def channel_type(self) -> ChannelType:
+    def channel_type(self) -> int:
         """
         :return:The type of side channel used. Will influence how the data is
         processed in the environment.

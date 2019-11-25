@@ -5,8 +5,17 @@ namespace MLAgents
     {
 
         private List<byte[]> m_MessagesReceived = new List<byte[]>();
+        private int m_ChannelId;
 
-        public override int ChannelType() { return 0; }
+
+        public RawBytesChannel(int channelId = 0)
+        {
+            m_ChannelId = channelId;
+        }
+        public override int ChannelType()
+        {
+            return (int)SideChannelType.RawBytesChannelStart + m_ChannelId;
+        }
 
         public override void OnMessageReceived(byte[] data)
         {
