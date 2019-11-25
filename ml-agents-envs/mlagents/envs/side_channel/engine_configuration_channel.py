@@ -5,7 +5,7 @@ import struct
 
 class EngineConfigurationChannel(SideChannel):
     """
-    This is  the SideChannel for engine configuration exchange. The data in the
+    This is the SideChannel for engine configuration exchange. The data in the
     engine configuration is as follows :
      - int width;
      - int height;
