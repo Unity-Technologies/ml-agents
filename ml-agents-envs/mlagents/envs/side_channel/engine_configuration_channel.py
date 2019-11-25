@@ -14,10 +14,6 @@ class EngineConfigurationChannel(SideChannel):
      - int targetFrameRate;
     """
 
-    def __init__(self):
-        self.received_messages = []
-        super().__init__()
-
     @property
     def channel_type(self) -> ChannelType:
         return 1
