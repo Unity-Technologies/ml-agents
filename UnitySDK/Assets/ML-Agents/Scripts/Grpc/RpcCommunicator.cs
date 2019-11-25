@@ -499,6 +499,12 @@ namespace MLAgents
                             {
                                 sideChannels[channelType].OnMessageReceived(message);
                             }
+                            else
+                            {
+                                Debug.Log(string.Format(
+                                    "Unknown side channel data received. Channel type "
+                                    + ": {0}", channelType));
+                            }
                         }
                         catch (Exception ex)
                         {
