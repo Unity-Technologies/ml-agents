@@ -31,7 +31,7 @@ Pyramids:
     beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
-    pretraining:
+    behavioral_cloning:
         demo_path: ./demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000

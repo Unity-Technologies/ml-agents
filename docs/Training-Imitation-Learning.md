@@ -34,7 +34,7 @@ The ML-Agents toolkit provides several ways to learn from demonstrations.
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
 * To help bootstrap reinforcement learning, you can enable
-  [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations)
+  [behavioral_cloning](Training-PPO.md#optional-behavioral_cloning-using-demonstrations)
   on the PPO trainer, in addition to using a small GAIL reward signal.
 * To train an agent to exactly mimic demonstrations, you can use the
   [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be

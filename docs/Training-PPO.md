@@ -232,16 +232,16 @@ training operations that mimic a demonstration rather than attempting to maximiz
 It is essentially equivalent to running [behavioral cloning](Training-Behavioral-Cloning.md)
 in-line with PPO.
 
-To use pretraining, add a `pretraining` section to the trainer_config. For instance:
+To use behavioral_cloning, add a `behavioral_cloning` section to the trainer_config. For instance:
 
 ```
-    pretraining:
+    behavioral_cloning:
         demo_path: ./demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
 ```
 
-Below are the available hyperparameters for pretraining.
+Below are the available hyperparameters for behavioral_cloning.
 
 ### Strength
 
@@ -258,10 +258,10 @@ See the [imitation learning guide](Training-Imitation-Learning.md) for more on `
 
 ### Steps
 
-During pretraining, it is often desirable to stop using demonstrations after the agent has
+During behavioral_cloning, it is often desirable to stop using demonstrations after the agent has
 "seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
 outside of the provided demonstrations. `steps` corresponds to the training steps over which
-pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set
+behavioral_cloning is active. The learning rate of the pretrainer will anneal over the steps. Set
 the steps to 0 for constant imitation over the entire training run.
 
 ### (Optional) Batch Size

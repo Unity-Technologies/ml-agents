@@ -52,14 +52,14 @@ class PPOPolicy(TFPolicy):
         with self.graph.as_default():
             self.bc_module: Optional[BCModule] = None
             # Create pretrainer if needed
-            if "pretraining" in trainer_params:
-                BCModule.check_config(trainer_params["pretraining"])
+            if "behavioral_cloning" in trainer_params:
+                BCModule.check_config(trainer_params["behavioral_cloning"])
                 self.bc_module = BCModule(
                     self,
                     policy_learning_rate=trainer_params["learning_rate"],
                     default_batch_size=trainer_params["batch_size"],
                     default_num_epoch=3,
-                    **trainer_params["pretraining"],
+                    **trainer_params["behavioral_cloning"],
                 )
 
         if load:

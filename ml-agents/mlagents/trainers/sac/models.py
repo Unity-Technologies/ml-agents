@@ -788,7 +788,7 @@ class SACModel(LearningModel):
         self.dones_holder = tf.placeholder(
             shape=[None], dtype=tf.float32, name="dones_holder"
         )
-        # This is just a dummy to get pretraining to work. PPO has this but SAC doesn't.
+        # This is just a dummy to get behavioral_cloning to work. PPO has this but SAC doesn't.
         # TODO: Proper input and output specs for models
         self.epsilon = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
