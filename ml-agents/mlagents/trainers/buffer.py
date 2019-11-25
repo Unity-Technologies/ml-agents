@@ -236,7 +236,7 @@ class AgentBuffer(dict):
         we're not truncating at each update. Note that we must truncate an integer number of sequence_lengths
         param: max_length: The length at which to truncate the buffer.
         """
-        current_length = len(next(iter(self)))
+        current_length = len(next(iter(self.values())))
         # make max_length an integer number of sequence_lengths
         max_length -= max_length % sequence_length
         if current_length > max_length:

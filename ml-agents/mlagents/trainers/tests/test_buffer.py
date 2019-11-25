@@ -10,18 +10,18 @@ def assert_array(a, b):
         assert la[i] == lb[i]
 
 
-def construct_fake_buffer():
+def construct_fake_processing_buffer():
     b = AgentProcessorBuffer()
     for fake_agent_id in range(4):
         for step in range(9):
-            b["vector_observation"].append(
+            b[fake_agent_id]["vector_observation"].append(
                 [
                     100 * fake_agent_id + 10 * step + 1,
                     100 * fake_agent_id + 10 * step + 2,
                     100 * fake_agent_id + 10 * step + 3,
                 ]
             )
-            b["action"].append(
+            b[fake_agent_id]["action"].append(
                 [
                     100 * fake_agent_id + 10 * step + 4,
                     100 * fake_agent_id + 10 * step + 5,
@@ -31,7 +31,7 @@ def construct_fake_buffer():
 
 
 def test_buffer():
-    b = construct_fake_buffer()
+    b = construct_fake_processing_buffer()
     a = b[1]["vector_observation"].get_batch(
         batch_size=2, training_length=1, sequential=True
     )
@@ -86,7 +86,7 @@ def fakerandint(values):
 
 
 def test_buffer_sample():
-    b = construct_fake_buffer()
+    b = construct_fake_processing_buffer()
     update_buffer = AgentBuffer()
     b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
     b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
@@ -104,13 +104,13 @@ def test_buffer_sample():
 
 
 def test_buffer_truncate():
-    b = construct_fake_buffer()
+    b = construct_fake_processing_buffer()
     update_buffer = AgentBuffer()
     b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
     b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test non-LSTM
     update_buffer.truncate(2)
-    assert len(b.update_buffer["action"]) == 2
+    assert len(update_buffer["action"]) == 2
 
     b.append_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
     b.append_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
