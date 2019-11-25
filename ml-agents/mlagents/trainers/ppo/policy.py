@@ -58,7 +58,7 @@ class PPOPolicy(TFPolicy):
                     self,
                     policy_learning_rate=trainer_params["learning_rate"],
                     default_batch_size=trainer_params["batch_size"],
-                    default_num_epoch=trainer_params["num_epoch"],
+                    default_num_epoch=3,
                     **trainer_params["pretraining"],
                 )
 
