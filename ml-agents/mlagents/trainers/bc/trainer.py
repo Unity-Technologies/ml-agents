@@ -122,12 +122,13 @@ class BCTrainer(Trainer):
         """
         self.demonstration_buffer.update_buffer.shuffle(self.policy.sequence_length)
         batch_losses = []
+        batch_size = self.n_sequences * self.policy.sequence_length
+        # We either divide the entire buffer into num_batches batches, or limit the number
+        # of batches to batches_per_epoch.
         num_batches = min(
-            len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences,
+            len(self.demonstration_buffer.update_buffer["actions"]) // batch_size,
             self.batches_per_epoch,
         )
-
-        batch_size = self.n_sequences * self.policy.sequence_length
 
         for i in range(0, num_batches * batch_size, batch_size):
             update_buffer = self.demonstration_buffer.update_buffer
