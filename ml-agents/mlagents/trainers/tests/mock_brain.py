@@ -2,7 +2,7 @@ import unittest.mock as mock
 import numpy as np
 
 from mlagents.envs.brain import CameraResolution, BrainParameters
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.buffer import AgentProcessorBuffer, AgentBuffer
 
 
 def create_mock_brainparams(
@@ -101,13 +101,14 @@ def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     # If a key_list was given, remove those keys
     if exclude_key_list:
         for key in exclude_key_list:
-            if key in buffer.update_buffer:
-                buffer.update_buffer.pop(key)
+            if key in buffer:
+                buffer.pop(key)
     return buffer
 
 
 def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
-    buffer = Buffer()
+    buffer = AgentProcessorBuffer()
+    update_buffer = AgentBuffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):
         if idx > len(brain_infos) - 2:
@@ -151,8 +152,10 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
         )
         buffer[0]["memory"].append(np.ones(memory_size))
 
-    buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
-    return buffer
+    buffer.append_update_buffer(
+        update_buffer, 0, batch_size=None, training_length=sequence_length
+    )
+    return update_buffer
 
 
 def setup_mock_env_and_brains(
