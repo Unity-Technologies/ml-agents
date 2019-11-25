@@ -192,7 +192,7 @@ class SACTrainer(RLTrainer):
                         ] = bootstrapping_info.vector_observations[idx]
                     self.processing_buffer[agent_id]["done"][-1] = False
 
-                self.processing_buffer.append_update_buffer(
+                self.processing_buffer.append_to_update_buffer(
                     self.update_buffer,
                     agent_id,
                     batch_size=None,

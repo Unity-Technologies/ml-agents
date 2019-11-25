@@ -56,11 +56,11 @@ def make_demo_buffer(
         )
         demo_process_buffer[0]["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
-            demo_process_buffer.append_update_buffer(
+            demo_process_buffer.append_to_update_buffer(
                 demo_buffer, 0, batch_size=None, training_length=sequence_length
             )
             demo_process_buffer.reset_local_buffers()
-    demo_process_buffer.append_update_buffer(
+    demo_process_buffer.append_to_update_buffer(
         demo_buffer, 0, batch_size=None, training_length=sequence_length
     )
     return demo_buffer

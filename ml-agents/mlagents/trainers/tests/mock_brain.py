@@ -152,7 +152,7 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
         )
         buffer[0]["memory"].append(np.ones(memory_size))
 
-    buffer.append_update_buffer(
+    buffer.append_to_update_buffer(
         update_buffer, 0, batch_size=None, training_length=sequence_length
     )
     return update_buffer

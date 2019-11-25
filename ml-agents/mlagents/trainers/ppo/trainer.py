@@ -146,7 +146,7 @@ class PPOTrainer(RLTrainer):
                     global_returns
                 )
 
-                self.processing_buffer.append_update_buffer(
+                self.processing_buffer.append_to_update_buffer(
                     self.update_buffer,
                     agent_id,
                     batch_size=None,

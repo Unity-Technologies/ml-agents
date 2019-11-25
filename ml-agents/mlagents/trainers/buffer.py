@@ -276,7 +276,7 @@ class AgentProcessorBuffer(dict):
         for k in agent_ids:
             self[k].reset_agent()
 
-    def append_update_buffer(
+    def append_to_update_buffer(
         self,
         update_buffer: AgentBuffer,
         agent_id: str,
@@ -320,6 +320,6 @@ class AgentProcessorBuffer(dict):
         :param training_length: The length of the samples that must be appended. If None: only takes one element.
         """
         for agent_id in self.keys():
-            self.append_update_buffer(
+            self.append_to_update_buffer(
                 update_buffer, agent_id, key_list, batch_size, training_length
             )

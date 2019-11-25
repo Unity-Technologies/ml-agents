@@ -97,7 +97,7 @@ def test_clear_update_buffer():
     trainer = create_rl_trainer()
     trainer.processing_buffer = construct_fake_processing_buffer()
     trainer.update_buffer = AgentBuffer()
-    trainer.processing_buffer.append_update_buffer(
+    trainer.processing_buffer.append_to_update_buffer(
         trainer.update_buffer, 2, batch_size=None, training_length=2
     )
     trainer.clear_update_buffer()
