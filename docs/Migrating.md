@@ -19,6 +19,7 @@ Making this change will require retraining your model, since the observations th
 * The online BC training feature has been removed.
 * The BroadcastHub has been deprecated. If there is a training Python process, all LearningBrains in the scene will automatically be trained. If there is no Python process, inference will be used.
 * The Brain ScriptableObjects have been deprecated. The Brain Parameters are now on the Agent and are referred to as Behavior Parameters. Make sure the Behavior Parameters is attached to the Agent GameObject.
+* To use a heuristic behavior, implement the `Heuristic()` method in the Agent class and check the `use heuristic` checkbox in the Behavior Parameters.
 * Several changes were made to the setup for visual observations (i.e. using Cameras or RenderTextures):
   * Camera resolutions are no longer stored in the Brain Parameters.
   * AgentParameters no longer stores lists of Cameras and RenderTextures
