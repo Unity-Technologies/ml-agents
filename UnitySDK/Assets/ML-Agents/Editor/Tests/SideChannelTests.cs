@@ -70,8 +70,39 @@ namespace MLAgents.Tests
             Assert.AreEqual(messages.Count, 2);
             Assert.AreEqual(Encoding.ASCII.GetString(messages[0]), str1);
             Assert.AreEqual(Encoding.ASCII.GetString(messages[1]), str2);
-
         }
 
+        [Test]
+        public void TestFloatPropertiesSideChannel()
+        {
+            var k1 = "gravity";
+            var k2 = "length";
+            int wasCalled = 0;
+
+            var propA = new FloatPropertiesChannel();
+            var propB = new FloatPropertiesChannel();
+            var dictReceiver = new Dictionary<int, SideChannel> { { propA.ChannelType(), propA } };
+            var dictSender = new Dictionary<int, SideChannel> { { propB.ChannelType(), propB } };
+
+            propA.RegisterCallback(k1, f => { wasCalled++; });
+            var tmp = propB.GetPropertyWithDefault(k2, 3.0f);
+            Assert.AreEqual(tmp, 3.0f);
+            propB.SetProperty(k2, 1.0f);
+            tmp = propB.GetPropertyWithDefault(k2, 3.0f);
+            Assert.AreEqual(tmp, 1.0f);
+
+            byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
+            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+
+            tmp = propA.GetPropertyWithDefault(k2, 3.0f);
+            Assert.AreEqual(tmp, 1.0f);
+
+            Assert.AreEqual(wasCalled, 0);
+            propB.SetProperty(k1, 1.0f);
+            Assert.AreEqual(wasCalled, 0);
+            fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
+            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+            Assert.AreEqual(wasCalled, 1);
+        }
     }
 }
