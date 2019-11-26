@@ -140,7 +140,7 @@ namespace MLAgents
         {
             SendRLInputReceivedEvent(rlInput.IsTraining);
             SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
-            SendSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
+            ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
@@ -445,6 +445,11 @@ namespace MLAgents
 
         #region Handling side channels
 
+        /// <summary>
+        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// messages with its Python equivalent.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel sideChannel)
         {
             if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
@@ -456,6 +461,12 @@ namespace MLAgents
             m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
         }
 
+        /// <summary>
+        /// Grabs the messages that the registered side channels will send to Python at the current step
+        /// into a singe byte array.
+        /// </summary>
+        /// <param name="sideChannels"> A dictionary of channel type to channel.</param>
+        /// <returns></returns>
         public static byte[] GetSideChannelMessage(Dictionary<int, SideChannel> sideChannels)
         {
             using (var memStream = new MemoryStream())
@@ -478,7 +489,12 @@ namespace MLAgents
             }
         }
 
-        public static void SendSideChannelData(Dictionary<int, SideChannel> sideChannels, byte[] dataReceived)
+        /// <summary>
+        /// Separates the data received from Python into individual messages for each registered side channel.
+        /// </summary>
+        /// <param name="sideChannels">A dictionary of channel type to channel.</param>
+        /// <param name="dataReceived">The byte array of data received from Python.</param>
+        public static void ProcessSideChannelData(Dictionary<int, SideChannel> sideChannels, byte[] dataReceived)
         {
             if (dataReceived.Length == 0)
             {
