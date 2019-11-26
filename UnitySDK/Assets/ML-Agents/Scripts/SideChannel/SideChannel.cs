@@ -16,7 +16,7 @@ namespace MLAgents
 
     public abstract class SideChannel
     {
-        // The list of messages (bye arrays) that need to be sent to Python via the communicator.
+        // The list of messages (byte arrays) that need to be sent to Python via the communicator.
         // Should only ever be read and cleared by a ICommunicator object.
         public List<byte[]> MessageQueue = new List<byte[]>();
 
