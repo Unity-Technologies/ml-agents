@@ -46,17 +46,17 @@ class FloatPropertiesChannel(SideChannel):
     def serialize_float_prop(key: str, value: float) -> bytearray:
         result = bytearray()
         encoded_key = key.encode("ascii")
-        result += struct.pack("i", len(encoded_key))
+        result += struct.pack("<i", len(encoded_key))
         result += encoded_key
-        result += struct.pack("f", value)
+        result += struct.pack("<f", value)
         return result
 
     @staticmethod
     def deserialize_float_prop(data: bytearray) -> Tuple[str, float]:
         offset = 0
-        encoded_key_len = struct.unpack_from("i", data, offset)[0]
+        encoded_key_len = struct.unpack_from("<i", data, offset)[0]
         offset = offset + 4
         key = data[offset : offset + encoded_key_len].decode("ascii")
         offset = offset + encoded_key_len
-        value = struct.unpack_from("f", data, offset)[0]
+        value = struct.unpack_from("<f", data, offset)[0]
         return key, value

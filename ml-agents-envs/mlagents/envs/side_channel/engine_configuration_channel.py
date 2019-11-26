@@ -44,9 +44,9 @@ class EngineConfigurationChannel(SideChannel):
         engine.
         """
         data = bytearray()
-        data += struct.pack("i", width)
-        data += struct.pack("i", height)
-        data += struct.pack("i", quality_level)
-        data += struct.pack("f", time_scale)
-        data += struct.pack("i", target_frame_rate)
+        data += struct.pack("<i", width)
+        data += struct.pack("<i", height)
+        data += struct.pack("<i", quality_level)
+        data += struct.pack("<f", time_scale)
+        data += struct.pack("<i", target_frame_rate)
         super().queue_message_to_send(data)
