@@ -5,7 +5,7 @@
 import os
 import json
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -22,6 +22,11 @@ from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.agent_processor import AgentProcessor
+
+
+class AgentManager(NamedTuple):
+    processor: AgentProcessor
 
 
 class TrainerController(object):
@@ -51,6 +56,7 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
+        self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
