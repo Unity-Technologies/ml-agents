@@ -41,7 +41,7 @@ namespace MLAgents.Tests
             intSender.SendInt(6);
 
             byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.SendSideChannelData(dictReceiver, fakeData);
+            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
 
             Assert.AreEqual(intReceiver.m_MessagesReceived[0], 4);
             Assert.AreEqual(intReceiver.m_MessagesReceived[1], 5);
@@ -63,9 +63,9 @@ namespace MLAgents.Tests
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str2));
 
             byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.SendSideChannelData(dictReceiver, fakeData);
+            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
 
-            var messages = strReceiver.ReceiveRawBytes();
+            var messages = strReceiver.GetAndClearReceivedMessages();
 
             Assert.AreEqual(messages.Count, 2);
             Assert.AreEqual(Encoding.ASCII.GetString(messages[0]), str1);

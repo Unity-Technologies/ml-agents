@@ -27,11 +27,18 @@ namespace MLAgents
             QueueMessageToSend(data);
         }
 
-        public IList<byte[]> ReceiveRawBytes()
+        public IList<byte[]> GetAndClearReceivedMessages()
         {
             var result = new List<byte[]>();
             result.AddRange(m_MessagesReceived);
             m_MessagesReceived.Clear();
+            return result;
+        }
+
+        public IList<byte[]> GetReceivedMessages()
+        {
+            var result = new List<byte[]>();
+            result.AddRange(m_MessagesReceived);
             return result;
         }
     }
