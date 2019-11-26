@@ -3,7 +3,7 @@ from typing import Any, Dict, TextIO
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
@@ -96,7 +96,13 @@ def initialize_trainer(
         trainer_parameters.update(trainer_config[_brain_key])
 
     trainer = None
-    if trainer_parameters["trainer"] == "ppo":
+    if trainer_parameters["trainer"] == "offline_bc":
+        raise UnityTrainerException(
+            "The offline_bc trainer has been deprecated. To train with demonstrations, "
+            "please use a PPO or SAC trainer with the GAIL Reward Signal and/or the "
+            "Behavioral Cloning feature enabled."
+        )
+    elif trainer_parameters["trainer"] == "ppo":
         trainer = PPOTrainer(
             brain_parameters,
             meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
