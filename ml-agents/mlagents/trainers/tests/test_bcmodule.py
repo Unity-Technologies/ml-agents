@@ -108,7 +108,7 @@ def test_bcmodule_defaults(mock_env):
     env, policy = create_policy_with_bc_mock(
         mock_env, mock_brain, trainer_config, False, "test.demo"
     )
-    assert policy.bc_module.num_epoch == trainer_config["num_epoch"]
+    assert policy.bc_module.num_epoch == 3
     assert policy.bc_module.batch_size == trainer_config["batch_size"]
     env.close()
     # Assign strange values and see if it overrides properly
