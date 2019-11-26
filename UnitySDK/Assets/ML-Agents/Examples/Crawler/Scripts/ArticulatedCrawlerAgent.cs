@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using MLAgents;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(ArticulatedJointDriveController))] // Required to set joint forces
 public class ArticulatedCrawlerAgent : Agent
@@ -25,6 +27,17 @@ public class ArticulatedCrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
+    private string bodyName;
+    private string leg0UpperName;
+    private string leg0LowerName;
+    private string leg1UpperName;
+    private string leg1LowerName;
+    private string leg2UpperName;
+    private string leg2LowerName;
+    private string leg3UpperName;
+    private string leg3LowerName;
+    
+    
     [Header("Joint Settings")][Space(10)] ArticulatedJointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
@@ -59,6 +72,7 @@ public class ArticulatedCrawlerAgent : Agent
 
         m_JdController.Reset();
         SetupBodyParts();
+        SaveBodyPartNames();
     }
 
     /// <summary>
@@ -76,6 +90,19 @@ public class ArticulatedCrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+    }
+
+    private void SaveBodyPartNames()
+    {
+        bodyName = body.name;
+        leg0UpperName = leg0Upper.name;
+        leg0LowerName = leg0Lower.name;
+        leg1UpperName = leg1Upper.name;
+        leg1LowerName = leg1Lower.name;
+        leg2UpperName = leg2Upper.name;
+        leg2LowerName = leg2Lower.name;
+        leg3UpperName = leg3Upper.name;
+        leg3LowerName = leg3Lower.name;
     }
     
     /// <summary>
@@ -311,14 +338,14 @@ public class ArticulatedCrawlerAgent : Agent
     /// <param name="rootBody"></param>
     private void ResetLegTransforms(Transform rootBody)
     {
-        leg0Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg0");
-        leg1Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg1");
-        leg2Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg2");
-        leg3Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg3");
+        leg0Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg0UpperName);
+        leg1Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg1UpperName);
+        leg2Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg2UpperName);
+        leg3Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg3UpperName);
 
-        leg0Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg0");
-        leg1Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg1");
-        leg2Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg2");
-        leg3Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg3");
+        leg0Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg0LowerName);
+        leg1Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg1LowerName);
+        leg2Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg2LowerName);
+        leg3Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody, leg3LowerName);
     }
 }

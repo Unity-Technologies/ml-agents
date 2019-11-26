@@ -3,12 +3,21 @@ using MLAgents;
 
 public class ArticulatedReacherAgent : Agent
 {
+    public GameObject reacherRoot;
     public GameObject pendulumA;
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
+    public GameObject reacherRootPrefab;
+    
     private ReacherAcademy m_MyAcademy;
     float m_GoalDegree;
+
+    private string m_PendulumAName;
+    private string m_PendulumBName;
+    private string m_ReacherRootName;
+    private string m_HandName;
+    
     private ArticulationBody m_RbA;
     private ArticulationBody m_RbB;
     // speed of the goal zone around the arm (in radians)
@@ -30,6 +39,12 @@ public class ArticulatedReacherAgent : Agent
         m_RbB = pendulumB.GetComponent<ArticulationBody>();
         m_MyAcademy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
 
+        
+        m_PendulumAName = pendulumA.name;
+        m_PendulumBName = pendulumB.name; 
+        m_ReacherRootName = reacherRoot.name;
+        m_HandName = hand.name;
+        
         SetResetParameters();
     }
 
@@ -39,33 +54,33 @@ public class ArticulatedReacherAgent : Agent
     /// </summary>
     public override void CollectObservations()
     {
-        Vector3 pendulumAPosToLocalSpace = gameObject.transform.InverseTransformPoint(pendulumA.transform.position); 
+        Vector3 pendulumAPosToLocalSpace = transform.InverseTransformPoint(pendulumA.transform.position); 
         AddVectorObs(pendulumAPosToLocalSpace);
         AddVectorObs(pendulumA.transform.rotation);
         // Below resulted in 1.691 after 1 M steps
-        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbA.angularVelocity));
-        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbA.velocity));
+        AddVectorObs(transform.InverseTransformVector(m_RbA.angularVelocity));
+        AddVectorObs(transform.InverseTransformVector(m_RbA.velocity));
         // Below resulted in 0.0732 after 1 M steps, not learning
         //AddVectorObs(m_RbA.angularVelocity);
         //AddVectorObs(m_RbA.velocity);
 
         
         
-        Vector3 pendulumBPosToLocalSpace = gameObject.transform.InverseTransformPoint(pendulumB.transform.position);
+        Vector3 pendulumBPosToLocalSpace = transform.InverseTransformPoint(pendulumB.transform.position);
         AddVectorObs(pendulumBPosToLocalSpace);
         AddVectorObs(pendulumB.transform.rotation);
         
         // Below resulted in 1.691 after 1 M steps
-        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbB.angularVelocity));
-        AddVectorObs(gameObject.transform.InverseTransformVector(m_RbB.velocity));
+        AddVectorObs(transform.InverseTransformVector(m_RbB.angularVelocity));
+        AddVectorObs(transform.InverseTransformVector(m_RbB.velocity));
         // Below resulted in 0.0732 after 1 M steps, not learning
         //AddVectorObs(m_RbB.angularVelocity);
         //AddVectorObs(m_RbB.velocity);
 
-        Vector3 goalPosToLocalSpace = gameObject.transform.InverseTransformPoint(goal.transform.position); 
+        Vector3 goalPosToLocalSpace = transform.InverseTransformPoint(goal.transform.position); 
         AddVectorObs(goalPosToLocalSpace);
 
-        Vector3 handPosToLocalSpace = gameObject.transform.InverseTransformPoint(hand.transform.position); 
+        Vector3 handPosToLocalSpace = transform.InverseTransformPoint(hand.transform.position); 
         AddVectorObs(handPosToLocalSpace);
 
         //AddVectorObs(m_GoalSpeed);
@@ -112,20 +127,34 @@ public class ArticulatedReacherAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
-        pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        Vector3 position = reacherRoot.transform.position;
+        Quaternion rotation = Quaternion.identity;
         
-        pendulumB.transform.position = new Vector3(0f, -10f, 0f) + transform.position;
-        pendulumB.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        DestroyImmediate(reacherRoot);
+        reacherRoot = Instantiate(reacherRootPrefab, position, rotation);
+        reacherRoot.transform.parent = transform;
+        reacherRoot.name = m_ReacherRootName;
+
+        pendulumA = reacherRoot.transform.GetChild(0).Find(m_PendulumAName).gameObject;
+        pendulumB = pendulumA.transform.Find(m_PendulumBName).gameObject;
+        hand = pendulumB.transform.GetChild(0).Find(m_HandName).gameObject;
+        
+        
+        m_RbA = pendulumA.GetComponent<ArticulationBody>();
+        m_RbB = pendulumB.GetComponent<ArticulationBody>();
         
         m_GoalDegree = Random.Range(0, 360);
         UpdateGoalPosition();
 
         SetResetParameters();
 
-
         goal.transform.localScale = new Vector3(m_GoalSize, m_GoalSize, m_GoalSize);
+        
+        // Supply correct newly instantiated hand for collision checking
+        ArticulatedReacherGoal gc = goal.GetComponent<ArticulatedReacherGoal>();
+        gc.hand = hand;
     }
+    
 
     public void SetResetParameters()
     {
@@ -134,6 +163,5 @@ public class ArticulatedReacherAgent : Agent
         m_Deviation = m_MyAcademy.resetParameters["deviation"];
         m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
     }
-    
     
 }

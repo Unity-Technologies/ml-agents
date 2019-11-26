@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 0c9da8813ae6fd9dfafb2953273acfa9,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -128,9 +129,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1065277484498824, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1395682910799436, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
       propertyPath: m_Name
       value: ArticulatedAgent (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986879271678326, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4067321601414524, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -206,19 +215,6 @@ PrefabInstance:
       propertyPath: m_AngularDamping
       value: 0.05
       objectReference: {fileID: 0}
-    - target: {fileID: 7502585849089161407, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986879271678326, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1065277484498824, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7187870112728913865, guid: 142b1673ab3eef5f098717cab90c53bf,
         type: 3}
       propertyPath: m_Mass
@@ -228,6 +224,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Immovable
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502585849089161407, guid: 142b1673ab3eef5f098717cab90c53bf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
@@ -274,10 +275,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 156536e3d4854870b084a1f1de48e49e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  reacherRoot: {fileID: 1343193114}
   pendulumA: {fileID: 159831610}
   pendulumB: {fileID: 159831609}
   hand: {fileID: 159831608}
   goal: {fileID: 159831607}
+  reacherRootPrefab: {fileID: 4151261966004313255, guid: f517fb76e96ed5801877e6fed9d8e45e,
+    type: 3}
   useAlternativeKeySetForInput: 1
   useArticulations: 1
 --- !u!1 &277186347
@@ -374,6 +378,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Agent
       objectReference: {fileID: 0}
+    - target: {fileID: 1986879271678326, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4067321601414524, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -18.48
@@ -416,10 +424,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4067321601414524, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986879271678326, guid: 2f13abef2db804f96bdc7692a1dcf2b2, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 54174454281860166, guid: 2f13abef2db804f96bdc7692a1dcf2b2,
@@ -477,12 +481,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 156536e3d4854870b084a1f1de48e49e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  reacherRoot: {fileID: 0}
   pendulumA: {fileID: 1331339562}
   pendulumB: {fileID: 1331339561}
   hand: {fileID: 1331339560}
   goal: {fileID: 1331339559}
+  reacherRootPrefab: {fileID: 0}
   useAlternativeKeySetForInput: 0
   useArticulations: 0
+--- !u!1 &1343193114 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3423762949051111643, guid: 142b1673ab3eef5f098717cab90c53bf,
+    type: 3}
+  m_PrefabInstance: {fileID: 159831605}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1565872349
 GameObject:
   m_ObjectHideFlags: 0

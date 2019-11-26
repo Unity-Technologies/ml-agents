@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Net;
 using MLAgents;
 using UnityEngine;
 
 public class ManualControlReacherArm : MonoBehaviour
 {
+    public GameObject reacherRoot;
     public GameObject pendulumA;
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
+
+    public GameObject reacherRootPrefab;
+    
     private ArticulationBody m_AbA;
     private ArticulationBody m_AbB;
     
@@ -45,11 +50,26 @@ public class ManualControlReacherArm : MonoBehaviour
     /// </summary>
     public void AgentReset()
     {
-        pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
-        pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        if (!useArticulations)
+            return;
 
-        pendulumB.transform.position = new Vector3(0f, -10f, 0f) + transform.position;
-        pendulumB.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
+        string pendulumAName = pendulumA.name;
+        string pendulumBName = pendulumB.name; 
+        string reacherRootName = reacherRoot.name;
+        Vector3 position = reacherRoot.transform.position;
+        Quaternion rotation = Quaternion.identity;
+        
+        DestroyImmediate(reacherRoot);
+        reacherRoot = Instantiate(reacherRootPrefab, position, rotation);
+        reacherRoot.transform.parent = transform;
+        reacherRoot.name = reacherRootName;
+
+        pendulumA = reacherRoot.transform.GetChild(0).Find(pendulumAName).gameObject;
+        pendulumB = pendulumA.transform.Find(pendulumBName).gameObject;
+        
+        m_AbA = pendulumA.GetComponent<ArticulationBody>();
+        m_AbB = pendulumB.GetComponent<ArticulationBody>();
+
     }
 
     public void FixedUpdate()
@@ -109,6 +129,7 @@ public class ManualControlReacherArm : MonoBehaviour
         }
 
 
+        // Only for articulations
         if (Input.GetKey(KeyCode.Escape))
             AgentReset();
     }

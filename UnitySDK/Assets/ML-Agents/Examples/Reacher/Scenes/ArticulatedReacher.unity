@@ -266,41 +266,6 @@ PrefabInstance:
       propertyPath: m_ParentAnchorRotation.w
       value: 0.7071067
       objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.maxStep
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumA
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumB
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: hand
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: goal
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
 --- !u!1001 &49599877
@@ -1346,41 +1311,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.maxStep
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumA
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumB
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: hand
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: goal
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
 --- !u!1001 &1491983953
@@ -1507,41 +1437,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.maxStep
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumA
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumB
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: hand
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: goal
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
@@ -2064,41 +1959,6 @@ PrefabInstance:
     - target: {fileID: 4067321601414524, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: brain
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.maxStep
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: agentParameters.numberOfActionsBetweenDecisions
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumA
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: pendulumB
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: hand
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8825304141050044247, guid: 142b1673ab3eef5f098717cab90c53bf,
-        type: 3}
-      propertyPath: goal
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 142b1673ab3eef5f098717cab90c53bf, type: 3}

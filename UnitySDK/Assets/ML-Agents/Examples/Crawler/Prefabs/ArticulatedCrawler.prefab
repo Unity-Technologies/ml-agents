@@ -111,7 +111,7 @@ PrefabInstance:
     - target: {fileID: 1636700445481828705, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.9454816
+      value: -0.9454825
       objectReference: {fileID: 0}
     - target: {fileID: 1636700445481828705, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -126,7 +126,7 @@ PrefabInstance:
     - target: {fileID: 1636700445481828705, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.98528147
+      value: -0.9852709
       objectReference: {fileID: 0}
     - target: {fileID: 2922927341164267237, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -186,12 +186,12 @@ PrefabInstance:
     - target: {fileID: 4891424238010555550, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.98527044
+      value: -0.98526514
       objectReference: {fileID: 0}
     - target: {fileID: 4891424238010555550, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.9454927
+      value: -0.9454757
       objectReference: {fileID: 0}
     - target: {fileID: 4891424238010555550, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -206,7 +206,7 @@ PrefabInstance:
     - target: {fileID: 5065949469066816375, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.33999482
+      value: -0.34000033
       objectReference: {fileID: 0}
     - target: {fileID: 5065949469066816375, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -216,7 +216,7 @@ PrefabInstance:
     - target: {fileID: 5065949469066816375, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.34
+      value: -0.34000015
       objectReference: {fileID: 0}
     - target: {fileID: 5065949469066816375, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -231,7 +231,7 @@ PrefabInstance:
     - target: {fileID: 5734710256944527080, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.33999485
+      value: -0.34000584
       objectReference: {fileID: 0}
     - target: {fileID: 5734710256944527080, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -241,22 +241,22 @@ PrefabInstance:
     - target: {fileID: 5734710256944527080, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: 0.34
+      value: 0.34000576
       objectReference: {fileID: 0}
     - target: {fileID: 5734710256944527080, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorRotation.y
-      value: -0.3826835
+      value: -0.38268355
       objectReference: {fileID: 0}
     - target: {fileID: 5734710256944527080, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorRotation.w
-      value: -0.92387974
+      value: -0.9238798
       objectReference: {fileID: 0}
     - target: {fileID: 6072148052372686416, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: 0.33999485
+      value: 0.34000584
       objectReference: {fileID: 0}
     - target: {fileID: 6072148052372686416, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -266,17 +266,17 @@ PrefabInstance:
     - target: {fileID: 6072148052372686416, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.34
+      value: -0.34000576
       objectReference: {fileID: 0}
     - target: {fileID: 6072148052372686416, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorRotation.y
-      value: 0.92387974
+      value: 0.9238798
       objectReference: {fileID: 0}
     - target: {fileID: 6072148052372686416, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorRotation.w
-      value: -0.3826835
+      value: -0.38268355
       objectReference: {fileID: 0}
     - target: {fileID: 7640323869839153161, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -286,7 +286,7 @@ PrefabInstance:
     - target: {fileID: 7640323869839153161, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: 0.3400003
+      value: 0.33999994
       objectReference: {fileID: 0}
     - target: {fileID: 7640323869839153161, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -301,17 +301,17 @@ PrefabInstance:
     - target: {fileID: 7640323869839153161, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: 0.33999518
+      value: 0.33999988
       objectReference: {fileID: 0}
     - target: {fileID: 8103242485489587564, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.9852709
+      value: -0.9852654
       objectReference: {fileID: 0}
     - target: {fileID: 8103242485489587564, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.94549286
+      value: -0.94547635
       objectReference: {fileID: 0}
     - target: {fileID: 8103242485489587564, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
@@ -326,12 +326,12 @@ PrefabInstance:
     - target: {fileID: 8980568845972025383, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x
-      value: -0.9852818
+      value: -0.98527044
       objectReference: {fileID: 0}
     - target: {fileID: 8980568845972025383, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
       propertyPath: m_ParentAnchorPosition.z
-      value: -0.94548184
+      value: -0.94548273
       objectReference: {fileID: 0}
     - target: {fileID: 8980568845972025383, guid: fb461eb64f693b4639620566527873a1,
         type: 3}
