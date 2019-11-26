@@ -22,7 +22,7 @@ namespace MLAgents
         /// <param name="key"> The string identifier of the property.</param>
         /// <param name="defaultValue"> The default value of the property.</param>
         /// <returns></returns>
-        float GetPropertyWithDefault(string key, float defaultValue = 0f);
+        float GetPropertyWithDefault(string key, float defaultValue);
 
         /// <summary>
         /// Registers an action to be performed everytime the property is changed.
@@ -69,7 +69,7 @@ namespace MLAgents
             }
         }
 
-        public float GetPropertyWithDefault(string key, float defaultValue = 0f)
+        public float GetPropertyWithDefault(string key, float defaultValue)
         {
             if (m_FloatProperties.ContainsKey(key))
             {
