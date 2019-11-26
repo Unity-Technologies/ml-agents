@@ -567,7 +567,7 @@ class UnityEnvironment(BaseUnityEnvironment):
             if channel_type in self.side_channels_dict:
                 self.side_channels_dict[channel_type].on_message_received(message_data)
             else:
-                logger.info(
+                logger.warning(
                     "Unknown side channel data received. Channel type "
                     ": {0}.".format(channel_type)
                 )
