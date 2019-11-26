@@ -46,17 +46,16 @@ the latest pip version using `pip3 install --upgrade pip`
 
 ## Windows Setup
 
-1. Create a folder where the virtual environments will reside `$ md python-envs`
-1. To create a new environment named `sample-env` execute `$ python -m venv python-envs\sample-env`
-1. To activate the environment execute `$ python-envs\sample-env\Scripts\activate`
-1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to
-the latest pip version using `pip install --upgrade pip`
-1. Install ML-Agents package using `$ pip install mlagents`
-1. To deactivate the environment execute `$ deactivate`
+1. Create a folder where the virtual environments will reside `md python-envs`
+1. To create a new environment named `sample-env` execute `python -m venv python-envs\sample-env`
+1. To activate the environment execute `python-envs\sample-env\Scripts\activate`
+1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the 
+latest, upgrade to the latest pip version using `pip install --upgrade pip`
+1. Install ML-Agents package using `pip install mlagents`
+1. To deactivate the environment execute `deactivate`
 
 Note: 
-- Make sure that the `python` command in the terminal launches a Python3 interpreter. To verify
- this open a command prompt window and type `python` in it. The version is displayed on the first
- line.  
+- Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt using `cmd` and
+ execute `python --version` to verify the version.
 - Python3 installation may require admin privileges on Windows. 
 - This guide is for Windows 10 using a 64-bit architecture only.
