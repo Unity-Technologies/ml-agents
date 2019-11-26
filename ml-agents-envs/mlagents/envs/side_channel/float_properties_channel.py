@@ -30,16 +30,31 @@ class FloatPropertiesChannel(SideChannel):
         self._float_properties[k] = v
 
     def set_property(self, key: str, value: float) -> None:
+        """
+        Sets a property in the Unity Environment.
+        :param key: The string identifier of the property.
+        :param value: The float value of the property.
+        """
         self._float_properties[key] = value
         super().queue_message_to_send(self.serialize_float_prop(key, value))
 
     def get_property(self, key: str) -> Optional[float]:
+        """
+        Gets a property in the Unity Environment. If the property was not
+        found, will return None.
+        :param key: The string identifier of the property.
+        :return: The float value of the property or None.
+        """
         if key in self._float_properties:
             return self._float_properties[key]
         else:
             return None
 
     def list_properties(self) -> List[str]:
+        """
+        Returns a list of all the string identifiers of the properties
+        currently present in the Unity Environment.
+        """
         return self._float_properties.keys()
 
     @staticmethod

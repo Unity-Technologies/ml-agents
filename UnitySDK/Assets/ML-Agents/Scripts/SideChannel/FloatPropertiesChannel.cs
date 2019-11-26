@@ -8,9 +8,33 @@ namespace MLAgents
 
     public interface IFloatProperties
     {
+        /// <summary>
+        /// Sets one of the float properties of the environment. This data will be sent to Python.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="value"> The float value of the property.</param>
         void SetProperty(string key, float value);
+
+        /// <summary>
+        /// Get an Environment property with a default value. If there is a value for this property,
+        /// it will be returned, otherwise, the default value will be returned.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="defaultValue"> The default value of the property.</param>
+        /// <returns></returns>
         float GetPropertyWithDefault(string key, float defaultValue = 0f);
+
+        /// <summary>
+        /// Registers an action to be performed everytime the property is changed.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="action"> The action that ill be performed. Takes a float as input.</param>
         void RegisterCallback(string key, Action<float> action);
+
+        /// <summary>
+        /// Returns a list of all the string identifiers of the properties currently present.
+        /// </summary>
+        /// <returns> The list of string identifiers </returns>
         IList<string> ListProperties();
     }
 
@@ -39,6 +63,10 @@ namespace MLAgents
         {
             m_FloatProperties[key] = value;
             QueueMessageToSend(SerializeMessage(key, value));
+            if (m_RegisteredActions.ContainsKey(key))
+            {
+                m_RegisteredActions[key].Invoke(value);
+            }
         }
 
         public float GetPropertyWithDefault(string key, float defaultValue = 0f)
