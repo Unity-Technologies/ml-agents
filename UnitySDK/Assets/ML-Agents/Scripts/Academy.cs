@@ -136,6 +136,9 @@ namespace MLAgents
         [Tooltip("List of custom parameters that can be changed in the " +
             "environment when it resets.")]
         public ResetParameters resetParameters;
+
+        public IFloatProperties FloatProperties;
+
         public CommunicatorObjects.CustomResetParametersProto customResetParameters;
 
         // Fields not provided in the Inspector.
@@ -265,6 +268,8 @@ namespace MLAgents
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
 
             InitializeAcademy();
+            var floatProperties = new FloatPropertiesChannel();
+            FloatProperties = floatProperties;
 
             // Try to launch the communicator by using the arguments passed at launch
             try
@@ -316,6 +321,8 @@ namespace MLAgents
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
+                    Communicator.RegisterSideChannel(new EngineConfigurationChannel());
+                    Communicator.RegisterSideChannel(floatProperties);
                 }
             }
 

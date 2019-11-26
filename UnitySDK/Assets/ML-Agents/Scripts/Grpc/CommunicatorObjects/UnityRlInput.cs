@@ -29,22 +29,23 @@ namespace MLAgents.CommunicatorObjects {
             "ZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy9hZ2VudF9hY3Rpb24ucHJvdG8a",
             "P21sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvZW52aXJvbm1l",
             "bnRfcGFyYW1ldGVycy5wcm90bxowbWxhZ2VudHMvZW52cy9jb21tdW5pY2F0",
-            "b3Jfb2JqZWN0cy9jb21tYW5kLnByb3RvIsMDChFVbml0eVJMSW5wdXRQcm90",
+            "b3Jfb2JqZWN0cy9jb21tYW5kLnByb3RvItkDChFVbml0eVJMSW5wdXRQcm90",
             "bxJQCg1hZ2VudF9hY3Rpb25zGAEgAygLMjkuY29tbXVuaWNhdG9yX29iamVj",
             "dHMuVW5pdHlSTElucHV0UHJvdG8uQWdlbnRBY3Rpb25zRW50cnkSUAoWZW52",
             "aXJvbm1lbnRfcGFyYW1ldGVycxgCIAEoCzIwLmNvbW11bmljYXRvcl9vYmpl",
             "Y3RzLkVudmlyb25tZW50UGFyYW1ldGVyc1Byb3RvEhMKC2lzX3RyYWluaW5n",
             "GAMgASgIEjMKB2NvbW1hbmQYBCABKA4yIi5jb21tdW5pY2F0b3Jfb2JqZWN0",
-            "cy5Db21tYW5kUHJvdG8aTQoUTGlzdEFnZW50QWN0aW9uUHJvdG8SNQoFdmFs",
-            "dWUYASADKAsyJi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5BZ2VudEFjdGlvblBy",
-            "b3RvGnEKEUFnZW50QWN0aW9uc0VudHJ5EgsKA2tleRgBIAEoCRJLCgV2YWx1",
-            "ZRgCIAEoCzI8LmNvbW11bmljYXRvcl9vYmplY3RzLlVuaXR5UkxJbnB1dFBy",
-            "b3RvLkxpc3RBZ2VudEFjdGlvblByb3RvOgI4AUIfqgIcTUxBZ2VudHMuQ29t",
-            "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "cy5Db21tYW5kUHJvdG8SFAoMc2lkZV9jaGFubmVsGAUgASgMGk0KFExpc3RB",
+            "Z2VudEFjdGlvblByb3RvEjUKBXZhbHVlGAEgAygLMiYuY29tbXVuaWNhdG9y",
+            "X29iamVjdHMuQWdlbnRBY3Rpb25Qcm90bxpxChFBZ2VudEFjdGlvbnNFbnRy",
+            "eRILCgNrZXkYASABKAkSSwoFdmFsdWUYAiABKAsyPC5jb21tdW5pY2F0b3Jf",
+            "b2JqZWN0cy5Vbml0eVJMSW5wdXRQcm90by5MaXN0QWdlbnRBY3Rpb25Qcm90",
+            "bzoCOAFCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentActionReflection.Descriptor, global::MLAgents.CommunicatorObjects.EnvironmentParametersReflection.Descriptor, global::MLAgents.CommunicatorObjects.CommandReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Parser, new[]{ "AgentActions", "EnvironmentParameters", "IsTraining", "Command" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser, new[]{ "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Parser, new[]{ "AgentActions", "EnvironmentParameters", "IsTraining", "Command", "SideChannel" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser, new[]{ "Value" }, null, null, null),
             null, })
           }));
     }
@@ -81,6 +82,7 @@ namespace MLAgents.CommunicatorObjects {
       EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
       isTraining_ = other.isTraining_;
       command_ = other.command_;
+      sideChannel_ = other.sideChannel_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -132,6 +134,17 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "side_channel" field.</summary>
+    public const int SideChannelFieldNumber = 5;
+    private pb::ByteString sideChannel_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString SideChannel {
+      get { return sideChannel_; }
+      set {
+        sideChannel_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInputProto);
@@ -149,6 +162,7 @@ namespace MLAgents.CommunicatorObjects {
       if (!object.Equals(EnvironmentParameters, other.EnvironmentParameters)) return false;
       if (IsTraining != other.IsTraining) return false;
       if (Command != other.Command) return false;
+      if (SideChannel != other.SideChannel) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -159,6 +173,7 @@ namespace MLAgents.CommunicatorObjects {
       if (environmentParameters_ != null) hash ^= EnvironmentParameters.GetHashCode();
       if (IsTraining != false) hash ^= IsTraining.GetHashCode();
       if (Command != 0) hash ^= Command.GetHashCode();
+      if (SideChannel.Length != 0) hash ^= SideChannel.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -185,6 +200,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(32);
         output.WriteEnum((int) Command);
       }
+      if (SideChannel.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteBytes(SideChannel);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -202,6 +221,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (Command != 0) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Command);
+      }
+      if (SideChannel.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(SideChannel);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -226,6 +248,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.Command != 0) {
         Command = other.Command;
+      }
+      if (other.SideChannel.Length != 0) {
+        SideChannel = other.SideChannel;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -255,6 +280,10 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 32: {
             command_ = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
+            break;
+          }
+          case 42: {
+            SideChannel = input.ReadBytes();
             break;
           }
         }
