@@ -50,7 +50,7 @@ namespace MLAgents
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
 
-        Dictionary<int, SideChannel> m_SideChannelsDict = new Dictionary<int, SideChannel>();
+        Dictionary<int, SideChannel> m_SideChannels = new Dictionary<int, SideChannel>();
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
@@ -140,7 +140,7 @@ namespace MLAgents
         {
             SendRLInputReceivedEvent(rlInput.IsTraining);
             SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
-            SendSideChannelData(m_SideChannelsDict, rlInput.SideChannel.ToArray());
+            SendSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
@@ -289,7 +289,7 @@ namespace MLAgents
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
-            byte[] messageAggregated = GetSideChannelMessage(m_SideChannelsDict);
+            byte[] messageAggregated = GetSideChannelMessage(m_SideChannels);
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);
@@ -447,13 +447,13 @@ namespace MLAgents
 
         public void RegisterSideChannel(SideChannel sideChannel)
         {
-            if (m_SideChannelsDict.ContainsKey(sideChannel.ChannelType()))
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
             {
                 throw new UnityAgentsException(string.Format(
                 "A side channel with type index {} is already registered. You cannot register multiple " +
                 "side channels of the same type."));
             }
-            m_SideChannelsDict.Add(sideChannel.ChannelType(), sideChannel);
+            m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
         }
 
         public static byte[] GetSideChannelMessage(Dictionary<int, SideChannel> sideChannels)
