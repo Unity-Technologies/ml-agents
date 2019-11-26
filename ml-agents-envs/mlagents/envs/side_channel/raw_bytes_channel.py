@@ -29,9 +29,7 @@ class RawBytesChannel(SideChannel):
         """
         returns a list of bytearray received from the environment.
         """
-        result = []
-        for m in self._received_messages:
-            result.append(m)
+        result = list(self._received_messages)
         self._received_messages = []
         return result
 

@@ -555,15 +555,21 @@ class UnityEnvironment(BaseUnityEnvironment):
             except Exception:
                 raise UnityEnvironmentException(
                     "There was a problem reading a message in a SideChannel. "
-                    + "Please make sure the version of MLAgents in Unity is "
-                    + "compatible with the Python version."
+                    "Please make sure the version of MLAgents in Unity is "
+                    "compatible with the Python version."
+                )
+            if len(message_data) != message_len:
+                raise UnityEnvironmentException(
+                    "The message received by the side channel {0} was "
+                    "unexpectedly short. Make sure your Unity Environment "
+                    "sending side channel data properly.".format(channel_type)
                 )
             if channel_type in self.side_channels_dict:
                 self.side_channels_dict[channel_type].on_message_received(message_data)
             else:
                 logger.info(
                     "Unknown side channel data received. Channel type "
-                    + ": {0}".format(channel_type)
+                    ": {0}.".format(channel_type)
                 )
 
     def _generate_side_channel_data(self) -> bytearray:
