@@ -9,13 +9,13 @@ class RawBytesChannel(SideChannel):
     """
 
     def __init__(self, channel_id=0):
-        self.received_messages = []
-        self.channel_id = channel_id
+        self._received_messages = []
+        self._channel_id = channel_id
         super().__init__()
 
     @property
     def channel_type(self) -> int:
-        return SideChannelType.RawBytesChannelStart + self.channel_id
+        return SideChannelType.RawBytesChannelStart + self._channel_id
 
     def on_message_received(self, data: bytearray) -> None:
         """
@@ -23,16 +23,16 @@ class RawBytesChannel(SideChannel):
         multiple times per step if multiple messages are meant for that
         SideChannel.
         """
-        self.received_messages.append(data)
+        self._received_messages.append(data)
 
     def receive_raw_bytes(self) -> List[bytearray]:
         """
         returns a list of bytearray received from the environment.
         """
         result = []
-        for m in self.received_messages:
+        for m in self._received_messages:
             result.append(m)
-        self.received_messages = []
+        self._received_messages = []
         return result
 
     def send_raw_data(self, data: bytearray) -> None:
