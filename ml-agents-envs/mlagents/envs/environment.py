@@ -548,10 +548,8 @@ class UnityEnvironment(BaseUnityEnvironment):
         offset = 0
         while offset < len(data):
             try:
-                channel_type = struct.unpack("i", data[offset : offset + 4])[0]
-                offset = offset + 4
-                message_len = struct.unpack("i", data[offset : offset + 4])[0]
-                offset = offset + 4
+                channel_type, message_len = struct.unpack_from("ii", data, offset)
+                offset = offset + 8
                 message_data = data[offset : offset + message_len]
                 offset = offset + message_len
             except Exception:
@@ -572,8 +570,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         result = bytearray()
         for channel_type, channel in self.side_channels_dict.items():
             for message in channel.message_queue:
-                result += struct.pack("i", channel_type)
-                result += struct.pack("i", len(message))
+                result += struct.pack("ii", channel_type, len(message))
                 result += message
             channel.message_queue = []
         return result

@@ -54,9 +54,9 @@ class FloatPropertiesChannel(SideChannel):
     @staticmethod
     def deserialize_float_prop(data: bytearray) -> Tuple[str, float]:
         offset = 0
-        encoded_key_len = struct.unpack("i", data[offset : offset + 4])[0]
+        encoded_key_len = struct.unpack_from("i", data, offset)[0]
         offset = offset + 4
         key = data[offset : offset + encoded_key_len].decode("ascii")
         offset = offset + encoded_key_len
-        value = struct.unpack("f", data[offset : offset + 4])[0]
+        value = struct.unpack_from("f", data, offset)[0]
         return key, value
