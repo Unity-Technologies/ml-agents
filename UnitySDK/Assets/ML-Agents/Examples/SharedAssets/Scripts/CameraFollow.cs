@@ -4,23 +4,21 @@ namespace MLAgents
 {
     public class CameraFollow : MonoBehaviour
     {
-        public Transform target;
-        Vector3 m_Offset;
-
-        // Use this for initialization
-        void Start()
-        {
-            m_Offset = gameObject.transform.position - target.position;
-        }
-
+        Transform m_Target;
+        Vector3   m_Offset = new Vector3(5.0f, 7.0f, 5.0f);
+        
         // Update is called once per frame
         void Update()
         {
-            // gameObject.transform.position = target.position + offset;
-            var newPosition = new Vector3(target.position.x + m_Offset.x, transform.position.y,
-                target.position.z + m_Offset.z);
-            gameObject.transform.position = newPosition;
-            gameObject.transform.LookAt(target);
+            if (m_Target == null)
+            {
+                var targetGO = GameObject.Find("Body");
+                m_Target = targetGO.transform;
+                
+            }
+            
+            gameObject.transform.position = m_Target.position + m_Offset;
+            gameObject.transform.LookAt(m_Target);
         }
     }
 }

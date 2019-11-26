@@ -13,7 +13,9 @@ public class ArticulatedCrawlerAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    [Header("Body Parts")][Space(10)] public Transform body;
+    [Header("Body Parts")][Space(10)] 
+    public Transform rootBodyPrefab; 
+    public Transform body;
     public Transform leg0Upper;
     public Transform leg0Lower;
     public Transform leg1Upper;
@@ -55,7 +57,15 @@ public class ArticulatedCrawlerAgent : Agent
         m_CurrentDecisionStep = 1;
         m_DirToTarget = target.position - body.position;
 
+        m_JdController.Reset();
+        SetupBodyParts();
+    }
 
+    /// <summary>
+    /// Setup body parts - add body part and configure ArticulatedJoinDriveController
+    /// </summary>
+    private void SetupBodyParts()
+    {
         //Setup each body part
         m_JdController.SetupBodyPart(body);
         m_JdController.SetupBodyPart(leg0Upper);
@@ -67,7 +77,7 @@ public class ArticulatedCrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
     }
-
+    
     /// <summary>
     /// We only need to change the joint settings based on decision freq.
     /// </summary>
@@ -270,21 +280,45 @@ public class ArticulatedCrawlerAgent : Agent
     /// </summary>
     public override void AgentReset()
     {
-        if (m_DirToTarget != Vector3.zero)
-        {
-            body.transform.rotation = Quaternion.LookRotation(m_DirToTarget);
-        }
-        body.transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+        Vector3 position = m_JdController.bodyPartsDict[body].startingPos;
+        
+        // For starting position, make a random orientation
+        Quaternion rotation = Quaternion.identity;
+        rotation.SetLookRotation(Random.onUnitSphere * 10.0f + position, Vector3.up);
+        
+        m_JdController.Reset();
+        
+        string bodyName = body.name;
+        DestroyImmediate(body.gameObject);
+        body = Instantiate(rootBodyPrefab, position, rotation);
+        body.transform.parent = transform;
+        body.name = bodyName;
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
+        
+        ResetLegTransforms(body);
+        SetupBodyParts();
+        
         if (!targetIsStatic)
         {
             GetRandomTargetPos();
         }
         m_IsNewDecisionStep = true;
         m_CurrentDecisionStep = 1;
+    }
+    /// <summary>
+    /// After spawning new prefab, reinitialize transforms of body parts
+    /// </summary>
+    /// <param name="rootBody"></param>
+    private void ResetLegTransforms(Transform rootBody)
+    {
+        leg0Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg0");
+        leg1Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg1");
+        leg2Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg2");
+        leg3Upper = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"leg3");
+
+        leg0Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg0");
+        leg1Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg1");
+        leg2Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg2");
+        leg3Lower = ArticulatedJointDriveController.FindBodyPartByName(rootBody,"foreleg3");
     }
 }

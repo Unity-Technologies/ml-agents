@@ -10,15 +10,11 @@ namespace MLAgents
     [System.Serializable]
     public class ArticulationBodyPart
     {
-        //[Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
         public ArticulationBody arb;
         public Transform t;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
-        [HideInInspector] public Vector3 startingArbPos;
-        [HideInInspector] public Quaternion startingArbRot;
-
-
+        
 
         [Header("Ground & Target Contact")][Space(10)]
         public GroundContact groundContact;
@@ -36,34 +32,7 @@ namespace MLAgents
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
 
-        /// <summary>
-        /// Reset body part to initial configuration.
-        /// </summary>
-        public void Reset(ArticulationBodyPart bp)
-        {
-            // Can't assign transforms for articulation bodies: transform changes are ignored, simulations goes on.
-            // No way to reset velocities for articulation bodies now
-            //if (bp.arb.isRoot)
-            //{
-            //    bp.arb.TeleportRoot(bp.startingArbPos, bp.startingArbRot);
-            //    bp.t.position = bp.startingPos;
-            //    bp.t.rotation = bp.startingRot;
-            //}
-
-            // Can't assigned articulation body velocitys/angularVelocities
-            //bp.arb.velocity = Vector3.zero;
-            //bp.arb.angularVelocity = Vector3.zero;
-            if (bp.groundContact)
-            {
-                bp.groundContact.touchingGround = false;
-            }
-
-            if (bp.targetContact)
-            {
-                bp.targetContact.touchingTarget = false;
-            }
-        }
-
+        
         /// <summary>
         /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
         /// </summary>
@@ -89,7 +58,6 @@ namespace MLAgents
             currentYNormalizedRot = Mathf.InverseLerp(yDrive.lowerLimit, yDrive.upperLimit, yRot);
             currentZNormalizedRot = Mathf.InverseLerp(zDrive.lowerLimit, zDrive.upperLimit, zRot);
 
-            //joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot); // Original code
             xDrive.target = xRot; yDrive.target = yRot; zDrive.target = zRot;
 
             arb.xDrive = xDrive; arb.yDrive = yDrive; arb.zDrive = zDrive;
@@ -109,11 +77,9 @@ namespace MLAgents
             xDrive.damping = yDrive.damping = zDrive.damping = thisJdController.jointDampen;
             xDrive.forceLimit = yDrive.forceLimit = zDrive.forceLimit = rawVal;
 
-            // Slerp drive does not exist, so we try to set strength for each axis individually
             arb.xDrive = xDrive;
             arb.yDrive = yDrive;
             arb.zDrive = zDrive;
-            //joint.slerpDrive = jd;
             currentStrength = rawVal;
         }
     }
@@ -131,6 +97,15 @@ namespace MLAgents
 
         [HideInInspector] public List<ArticulationBodyPart> bodyPartsList = new List<ArticulationBodyPart>();
 
+        
+        /// <summary>
+        /// Reset BodyPart list and dictionary.
+        /// </summary>
+        public void Reset()
+        {
+            bodyPartsDict.Clear();
+            bodyPartsList.Clear();
+        }
         /// <summary>
         /// Create BodyPart object and add it to dictionary.
         /// </summary>
@@ -145,15 +120,11 @@ namespace MLAgents
             {
                 arb =  arb,
                 t = t,
-                startingArbPos = arb.transform.position,
-                startingArbRot = arb.transform.rotation,
                 startingPos = t.position,
                 startingRot = t.rotation
             };
             
-            // Does not exist in articulation body
-            //bp.rb.maxAngularVelocity = 100;
-
+            
             // Add & setup the ground contact script
             bp.groundContact = t.GetComponent<GroundContact>();
             if (!bp.groundContact)
@@ -176,6 +147,22 @@ namespace MLAgents
             bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
+        }
+        
+        
+        public static Transform FindBodyPartByName(Transform rootBody, string bodyPartName)
+        {
+            Queue<Transform> queue = new Queue<Transform>();
+            queue.Enqueue(rootBody);
+            while (queue.Count > 0)
+            {
+                Transform child = queue.Dequeue();
+                if (child.name == bodyPartName)
+                    return child;
+                foreach(Transform t in child)
+                    queue.Enqueue(t);
+            }
+            return null;
         }
     }
 }

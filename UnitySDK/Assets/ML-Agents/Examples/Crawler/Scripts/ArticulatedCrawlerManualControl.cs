@@ -8,6 +8,8 @@ namespace MLAgents
         public GameObject upperLeg0, upperLeg1;
         public GameObject foreLeg0, foreLeg1;
         public GameObject body;
+
+        public GameObject rootBodyPrefab;
         
         private ArticulationBody m_AbUpper0, m_AbUpper1;
         private ArticulationBody m_AbFore0, m_AbFore1;
@@ -23,11 +25,18 @@ namespace MLAgents
 
         public float currentStrength = 0.0f;
 
-        /// <summary>
-        /// Collect the rigidbodies of the reacher in order to resue them for
-        /// observations and actions.
-        /// </summary>
-        public void Start()
+
+
+        private void InitializeLegGameObjects()
+        {
+            string namePrefix = name + "/" + rootBodyPrefab.name + "/";
+            upperLeg0 = GameObject.Find(namePrefix + "UpperLegBone0");
+            upperLeg1 = GameObject.Find(namePrefix + "UpperLegBone1");
+            foreLeg0 = GameObject.Find(namePrefix + upperLeg0.name + "/" + "ForeLegBone0");
+            foreLeg1 = GameObject.Find(namePrefix + upperLeg1.name + "/" + "ForeLegBone1");
+
+        }
+        private void InitializeArticulationBodies()
         {
             m_AbUpper0 = upperLeg0.GetComponent<ArticulationBody>();
             m_AbFore0 = foreLeg0.GetComponent<ArticulationBody>();
@@ -37,6 +46,10 @@ namespace MLAgents
 
             m_AbBody = body.GetComponent<ArticulationBody>();
 
+        }
+        public void Start()
+        {
+            InitializeArticulationBodies();            
             m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
         }
 
@@ -45,12 +58,19 @@ namespace MLAgents
         /// </summary>
         public void AgentReset()
         {
+            
             Vector3 position = new Vector3(0.0f, 8.0f, 6.3f);
             Quaternion rotation = Quaternion.identity;
-            m_AbBody.enabled = false;
-            //m_AbBody.TeleportRoot(position, rotation);
-            m_AbBody.enabled = true;
-            //m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
+
+            string bodyName = body.name;
+            DestroyImmediate(body);
+            body = Instantiate(rootBodyPrefab, position, rotation);
+            body.transform.parent = transform;
+            body.name = bodyName;
+
+            InitializeLegGameObjects();
+            InitializeArticulationBodies();
+            m_rotationUpper0 = m_rotationFore0 = m_rotationUpper1 = m_rotationFore1 = Vector3.zero;
 
             /*
             m_AbUpper.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
@@ -249,6 +269,11 @@ namespace MLAgents
             arb.zDrive = zDrive;
             //joint.slerpDrive = jd;
             currentStrength = rawVal;
+        }
+
+        public void Update()
+        {
+            Debug.DrawLine(body.transform.position, body.transform.position + body.transform.forward * 10.0f);
         }
     }
 }
