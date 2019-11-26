@@ -135,7 +135,7 @@ discriminator is trained to better distinguish between demonstrations and agent 
 In this way, while the agent gets better and better at mimicing the demonstrations, the
 discriminator keeps getting stricter and stricter and the agent must try harder to "fool" it.
 
-This approach, when compared to [Behavioral Cloning](Training-Behavioral-Cloning.md), requires
+This approach, when compared to Behavioral Cloning, requires
 far fewer demonstrations to be provided. After all, we are still learning a policy that happens
 to be similar to the demonstrations, not directly copying the behavior of the demonstrations. It
 is especially effective when combined with an Extrinsic signal. However, the GAIL reward signal can
