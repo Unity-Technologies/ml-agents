@@ -506,21 +506,13 @@ namespace MLAgents
                 {
                     while (memStream.Position < memStream.Length)
                     {
+                        int channelType = 0;
+                        byte[] message = null;
                         try
                         {
-                            var channelType = binaryReader.ReadInt32();
+                            channelType = binaryReader.ReadInt32();
                             var messageLength = binaryReader.ReadInt32();
-                            var message = binaryReader.ReadBytes(messageLength);
-                            if (sideChannels.ContainsKey(channelType))
-                            {
-                                sideChannels[channelType].OnMessageReceived(message);
-                            }
-                            else
-                            {
-                                Debug.Log(string.Format(
-                                    "Unknown side channel data received. Channel type "
-                                    + ": {0}", channelType));
-                            }
+                            message = binaryReader.ReadBytes(messageLength);
                         }
                         catch (Exception ex)
                         {
@@ -528,6 +520,16 @@ namespace MLAgents
                                 "There was a problem reading a message in a SideChannel. Please make sure the " +
                                 "version of MLAgents in Unity is compatible with the Python version. Original error : "
                                 + ex.Message);
+                        }
+                        if (sideChannels.ContainsKey(channelType))
+                        {
+                            sideChannels[channelType].OnMessageReceived(message);
+                        }
+                        else
+                        {
+                            Debug.Log(string.Format(
+                                "Unknown side channel data received. Channel type "
+                                + ": {0}", channelType));
                         }
                     }
                 }

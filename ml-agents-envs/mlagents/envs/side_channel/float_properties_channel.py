@@ -45,10 +45,7 @@ class FloatPropertiesChannel(SideChannel):
         :param key: The string identifier of the property.
         :return: The float value of the property or None.
         """
-        if key in self._float_properties:
-            return self._float_properties[key]
-        else:
-            return None
+        return self._float_properties.get(key)
 
     def list_properties(self) -> List[str]:
         """

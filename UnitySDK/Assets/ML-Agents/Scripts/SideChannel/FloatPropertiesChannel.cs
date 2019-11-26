@@ -77,8 +77,6 @@ namespace MLAgents
             }
             else
             {
-                QueueMessageToSend(SerializeMessage(key, defaultValue));
-                m_FloatProperties[key] = defaultValue;
                 return defaultValue;
             }
         }

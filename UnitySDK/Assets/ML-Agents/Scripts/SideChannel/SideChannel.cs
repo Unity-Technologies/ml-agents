@@ -4,6 +4,8 @@ namespace MLAgents
 {
     public enum SideChannelType
     {
+        // Invalid side channel
+        Invalid = 0,
         // Reserved for the FloatPropertiesChannel. 
         FloatProperties = 1,
         //Reserved for the EngineConfigurationChannel.
