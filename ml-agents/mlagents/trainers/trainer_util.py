@@ -7,7 +7,6 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 
 
 class TrainerFactory:
@@ -97,11 +96,7 @@ def initialize_trainer(
         trainer_parameters.update(trainer_config[_brain_key])
 
     trainer = None
-    if trainer_parameters["trainer"] == "offline_bc":
-        trainer = OfflineBCTrainer(
-            brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
-        )
-    elif trainer_parameters["trainer"] == "ppo":
+    if trainer_parameters["trainer"] == "ppo":
         trainer = PPOTrainer(
             brain_parameters,
             meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
