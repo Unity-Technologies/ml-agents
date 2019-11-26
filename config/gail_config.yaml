@@ -59,6 +59,10 @@ CrawlerStatic:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    behavioral_cloning:
+        demo_path: ./demos/ExpertCrawlerSta.demo
+        strength: 0.5
+        steps: 5000
     reward_signals:
         gail:
             strength: 1.0
