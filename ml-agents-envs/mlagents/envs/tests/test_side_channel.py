@@ -82,10 +82,10 @@ def test_raw_bytes():
         {receiver.channel_type: receiver}, data
     )
 
-    messages = receiver.receive_raw_bytes()
+    messages = receiver.get_and_clear_received_messages()
     assert len(messages) == 2
     assert messages[0].decode("ascii") == "foo"
     assert messages[1].decode("ascii") == "bar"
 
-    messages = receiver.receive_raw_bytes()
+    messages = receiver.get_and_clear_received_messages()
     assert len(messages) == 0
