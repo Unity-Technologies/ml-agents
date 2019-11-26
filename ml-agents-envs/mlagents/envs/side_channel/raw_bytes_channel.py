@@ -25,7 +25,7 @@ class RawBytesChannel(SideChannel):
         """
         self._received_messages.append(data)
 
-    def receive_raw_bytes(self) -> List[bytearray]:
+    def get_and_clear_received_messages(self) -> List[bytearray]:
         """
         returns a list of bytearray received from the environment.
         """
