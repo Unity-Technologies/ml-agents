@@ -1,5 +1,11 @@
 # Migrating
 
+## Migrating from ML-Agents toolkit v0.12.0
+
+### Important Changes
+* Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
+Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
+
 ## Migrating from ML-Agents toolkit v0.11.0
 
 ### Important Changes
