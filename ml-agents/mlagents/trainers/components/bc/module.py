@@ -22,7 +22,7 @@ class BCModule:
         samples_per_update: int = 0,
     ):
         """
-        A BC trainer that can be used inline with RL, especially for behavioral_cloning.
+        A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
         :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate
             for the pretrainer.
@@ -33,7 +33,7 @@ class BCModule:
         :param demo_path: The path to the demonstration file.
         :param batch_size: The batch size to use during BC training.
         :param num_epoch: Number of epochs to train for during each update.
-        :param samples_per_update: Maximum number of samples to train on during each behavioral_cloning update.
+        :param samples_per_update: Maximum number of samples to train on during each BC update.
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
