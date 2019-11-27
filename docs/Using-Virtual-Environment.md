@@ -18,7 +18,7 @@ to run ML-Agents on (either local laptop/desktop or remote server). Python 3.6 c
 installed from [here](https://www.python.org/downloads/).
 
 ## Python Version Requirement (Required)
-This guide has been tested with Python 3.6 and 3.7. Python 3.8 is not supported at this time.  
+This guide has been tested with Python 3.6 and 3.7. Python 3.8 is not supported at this time.
 
 ## Installing Pip (Required)
 
@@ -49,13 +49,13 @@ the latest pip version using `$ pip3 install --upgrade pip`
 1. Create a folder where the virtual environments will reside `md python-envs`
 1. To create a new environment named `sample-env` execute `python -m venv python-envs\sample-env`
 1. To activate the environment execute `python-envs\sample-env\Scripts\activate`
-1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the 
+1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the
 latest, upgrade to the latest pip version using `pip install --upgrade pip`
 1. Install ML-Agents package using `pip install mlagents`
 1. To deactivate the environment execute `deactivate`
 
-Note: 
+Note:
 - Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt using `cmd` and
  execute `python --version` to verify the version.
-- Python3 installation may require admin privileges on Windows. 
+- Python3 installation may require admin privileges on Windows.
 - This guide is for Windows 10 using a 64-bit architecture only.
