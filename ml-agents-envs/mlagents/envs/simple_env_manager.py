@@ -6,10 +6,6 @@ from mlagents.envs.timers import timed
 from mlagents.envs.action_info import ActionInfo
 from mlagents.envs.brain import BrainParameters
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
-from mlagents.envs.side_channel.engine_configuration_channel import (
-    EngineConfigurationChannel,
-    EngineConfig,
-)
 
 
 class SimpleEnvManager(EnvManager):
@@ -18,11 +14,11 @@ class SimpleEnvManager(EnvManager):
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
     """
 
-    def __init__(self, env: BaseUnityEnvironment, engine_configuration: EngineConfig):
+    def __init__(
+        self, env: BaseUnityEnvironment, float_prop_channel: FloatPropertiesChannel
+    ):
         super().__init__()
-        self.shared_float_properties = FloatPropertiesChannel()
-        engine_configuration = EngineConfigurationChannel()
-        engine_configuration.set_configuration(engine_configuration)
+        self.shared_float_properties = float_prop_channel
         self.env = env
         self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}

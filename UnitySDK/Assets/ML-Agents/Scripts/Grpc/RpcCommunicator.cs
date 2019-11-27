@@ -76,8 +76,6 @@ namespace MLAgents
                 Version = initParameters.version
             };
 
-            academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
-
             UnityInputProto input;
             UnityInputProto initializationInput;
             try

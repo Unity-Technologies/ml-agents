@@ -20,9 +20,6 @@ from .exception import (
 from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
-from mlagents.envs.communicator_objects.environment_parameters_pb2 import (
-    EnvironmentParametersProto,
-)
 from mlagents.envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import (
     UnityRLInitializationInputProto,
@@ -578,8 +575,6 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
-        rl_in.is_training = True
-        rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
         rl_in.command = 1
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)

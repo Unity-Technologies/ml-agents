@@ -17,6 +17,7 @@ from mlagents.envs.communicator_objects.observation_pb2 import (
 )
 from mlagents.envs.simple_env_manager import SimpleEnvManager
 from mlagents.envs.sampler_class import SamplerManager
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 
 BRAIN_NAME = __name__
@@ -204,7 +205,7 @@ def _check_environment_trains(env, config):
         seed = 1337
 
         trainer_config = yaml.safe_load(config)
-        env_manager = SimpleEnvManager(env)
+        env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
             summaries_dir=dir,
@@ -226,7 +227,6 @@ def _check_environment_trains(env, config):
             meta_curriculum=None,
             train=True,
             training_seed=seed,
-            fast_simulation=True,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
             save_freq=save_freq,

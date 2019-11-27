@@ -27,19 +27,15 @@ namespace MLAgents.CommunicatorObjects {
             "CkdtbGFnZW50cy9lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX291dHB1dC5wcm90bxIUY29tbXVuaWNhdG9yX29i",
             "amVjdHMaOW1sYWdlbnRzL2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYnJh",
-            "aW5fcGFyYW1ldGVycy5wcm90bxo/bWxhZ2VudHMvZW52cy9jb21tdW5pY2F0",
-            "b3Jfb2JqZWN0cy9lbnZpcm9ubWVudF9wYXJhbWV0ZXJzLnByb3RvIusBCiBV",
-            "bml0eVJMSW5pdGlhbGl6YXRpb25PdXRwdXRQcm90bxIMCgRuYW1lGAEgASgJ",
-            "Eg8KB3ZlcnNpb24YAiABKAkSEAoIbG9nX3BhdGgYAyABKAkSRAoQYnJhaW5f",
-            "cGFyYW1ldGVycxgFIAMoCzIqLmNvbW11bmljYXRvcl9vYmplY3RzLkJyYWlu",
-            "UGFyYW1ldGVyc1Byb3RvElAKFmVudmlyb25tZW50X3BhcmFtZXRlcnMYBiAB",
-            "KAsyMC5jb21tdW5pY2F0b3Jfb2JqZWN0cy5FbnZpcm9ubWVudFBhcmFtZXRl",
-            "cnNQcm90b0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJv",
-            "dG8z"));
+            "aW5fcGFyYW1ldGVycy5wcm90byKfAQogVW5pdHlSTEluaXRpYWxpemF0aW9u",
+            "T3V0cHV0UHJvdG8SDAoEbmFtZRgBIAEoCRIPCgd2ZXJzaW9uGAIgASgJEhAK",
+            "CGxvZ19wYXRoGAMgASgJEkQKEGJyYWluX3BhcmFtZXRlcnMYBSADKAsyKi5j",
+            "b21tdW5pY2F0b3Jfb2JqZWN0cy5CcmFpblBhcmFtZXRlcnNQcm90b0oECAYQ",
+            "B0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, global::MLAgents.CommunicatorObjects.EnvironmentParametersReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters", "EnvironmentParameters" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters" }, null, null, null)
           }));
     }
     #endregion
@@ -78,7 +74,6 @@ namespace MLAgents.CommunicatorObjects {
       version_ = other.version_;
       logPath_ = other.logPath_;
       brainParameters_ = other.brainParameters_.Clone();
-      EnvironmentParameters = other.environmentParameters_ != null ? other.EnvironmentParameters.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -130,17 +125,6 @@ namespace MLAgents.CommunicatorObjects {
       get { return brainParameters_; }
     }
 
-    /// <summary>Field number for the "environment_parameters" field.</summary>
-    public const int EnvironmentParametersFieldNumber = 6;
-    private global::MLAgents.CommunicatorObjects.EnvironmentParametersProto environmentParameters_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.EnvironmentParametersProto EnvironmentParameters {
-      get { return environmentParameters_; }
-      set {
-        environmentParameters_ = value;
-      }
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInitializationOutputProto);
@@ -158,7 +142,6 @@ namespace MLAgents.CommunicatorObjects {
       if (Version != other.Version) return false;
       if (LogPath != other.LogPath) return false;
       if(!brainParameters_.Equals(other.brainParameters_)) return false;
-      if (!object.Equals(EnvironmentParameters, other.EnvironmentParameters)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -169,7 +152,6 @@ namespace MLAgents.CommunicatorObjects {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (LogPath.Length != 0) hash ^= LogPath.GetHashCode();
       hash ^= brainParameters_.GetHashCode();
-      if (environmentParameters_ != null) hash ^= EnvironmentParameters.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -196,10 +178,6 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteString(LogPath);
       }
       brainParameters_.WriteTo(output, _repeated_brainParameters_codec);
-      if (environmentParameters_ != null) {
-        output.WriteRawTag(50);
-        output.WriteMessage(EnvironmentParameters);
-      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -218,9 +196,6 @@ namespace MLAgents.CommunicatorObjects {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(LogPath);
       }
       size += brainParameters_.CalculateSize(_repeated_brainParameters_codec);
-      if (environmentParameters_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(EnvironmentParameters);
-      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -242,12 +217,6 @@ namespace MLAgents.CommunicatorObjects {
         LogPath = other.LogPath;
       }
       brainParameters_.Add(other.brainParameters_);
-      if (other.environmentParameters_ != null) {
-        if (environmentParameters_ == null) {
-          environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
-        }
-        EnvironmentParameters.MergeFrom(other.EnvironmentParameters);
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -273,13 +242,6 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 42: {
             brainParameters_.AddEntriesFrom(input, _repeated_brainParameters_codec);
-            break;
-          }
-          case 50: {
-            if (environmentParameters_ == null) {
-              environmentParameters_ = new global::MLAgents.CommunicatorObjects.EnvironmentParametersProto();
-            }
-            input.ReadMessage(environmentParameters_);
             break;
           }
         }
