@@ -1,5 +1,8 @@
 # Installing ML-Agents Toolkit for Windows (Deprecated)
 
+Note: We no longer use this guide ourselves and so it may not work correctly. We've decided to
+ keep it up just in case it is helpful to you.
+
 The ML-Agents toolkit supports Windows 10. While it might be possible to run the
 ML-Agents toolkit using other versions of Windows, it has not been tested on
 other versions. Furthermore, the ML-Agents toolkit has not been tested on a

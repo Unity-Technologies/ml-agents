@@ -1,5 +1,8 @@
 # Using Docker For ML-Agents (Deprecated)
 
+Note: We no longer use this guide ourselves and so it may not work correctly. We've decided to
+ keep it up just in case it is helpful to you.
+
 We currently offer a solution for Windows and Mac users who would like to do
 training or inference using Docker. This option may be appealing to those who
 would like to avoid installing Python and TensorFlow themselves. The current
