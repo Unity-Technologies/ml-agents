@@ -133,8 +133,8 @@ namespace MLAgents
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
             SendRLInputReceivedEvent(rlInput.IsTraining);
-            SendCommandEvent(rlInput.Command);
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
+            SendCommandEvent(rlInput.Command);
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
