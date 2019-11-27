@@ -18,6 +18,11 @@ from mlagents.envs.timers import (
 )
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 from mlagents.envs.action_info import ActionInfo
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents.envs.side_channel.engine_configuration_channel import (
+    EngineConfigurationChannel,
+)
+
 
 logger = logging.getLogger("mlagents.envs")
 
@@ -80,6 +85,8 @@ def worker(
         pickled_env_factory
     )
     env: BaseUnityEnvironment = env_factory(worker_id)
+    shared_float_properties = FloatPropertiesChannel()
+    engine_configuration = EngineConfigurationChannel()
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -106,11 +113,19 @@ def worker(
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)
             elif cmd.name == "reset_parameters":
-                _send_response("reset_parameters", env.reset_parameters)
+                reset_params = {}
+                for k in shared_float_properties.list_properties():
+                    reset_params[k] = shared_float_properties.get_property(k)
+
+                _send_response("reset_parameters", reset_params)
             elif cmd.name == "reset":
-                all_brain_info = env.reset(
-                    cmd.payload[0], cmd.payload[1], cmd.payload[2]
-                )
+                for k, v in cmd.payload[0]:
+                    shared_float_properties.set_property(k, v)
+                if cmd.payload[1]:
+                    engine_configuration.set_configuration(80, 80, 1, 20.0, -1)
+                else:
+                    engine_configuration.set_configuration(1280, 1280, 5, 1.0, -1)
+                all_brain_info = env.reset()
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
                 break
@@ -193,10 +208,7 @@ class SubprocessEnvManager(EnvManager):
         return step_infos
 
     def reset(
-        self,
-        config: Optional[Dict] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
+        self, config: Optional[Dict] = None, train_mode: bool = True
     ) -> List[EnvironmentStep]:
         while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
@@ -204,7 +216,7 @@ class SubprocessEnvManager(EnvManager):
                 self.env_workers[step.worker_id].waiting = False
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
-            ew.send("reset", (config, train_mode, custom_reset_parameters))
+            ew.send("reset", (config, train_mode))
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
             ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)

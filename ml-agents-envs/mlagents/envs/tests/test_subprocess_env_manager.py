@@ -45,7 +45,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         manager = SubprocessEnvManager(mock_env_factory, 1)
         params = {"test": "params"}
         manager.reset(params, False)
-        manager.env_workers[0].send.assert_called_with("reset", (params, False, None))
+        manager.env_workers[0].send.assert_called_with("reset", (params, False))
 
     def test_reset_collects_results_from_all_envs(self):
         SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
@@ -56,7 +56,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         params = {"test": "params"}
         res = manager.reset(params)
         for i, env in enumerate(manager.env_workers):
-            env.send.assert_called_with("reset", (params, True, None))
+            env.send.assert_called_with("reset", (params, True))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(

@@ -134,7 +134,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         self._external_brain_names: List[str] = []
         self._num_external_brains = 0
         self._update_brain_parameters(aca_output)
-        self._resetParameters = dict(aca_params.environment_parameters.float_parameters)
         logger.info(
             "\n'{0}' started successfully!\n{1}".format(self._academy_name, str(self))
         )
@@ -169,10 +168,6 @@ class UnityEnvironment(BaseUnityEnvironment):
         for brain_name in self.external_brain_names:
             external_brains[brain_name] = self.brains[brain_name]
         return external_brains
-
-    @property
-    def reset_parameters(self):
-        return self._resetParameters
 
     def executable_launcher(self, file_name, docker_training, no_graphics, args):
         cwd = os.getcwd()
@@ -290,57 +285,20 @@ class UnityEnvironment(BaseUnityEnvironment):
     def __str__(self):
         return (
             """Unity Academy name: {0}
-        Number of Training Brains : {1}
-        Reset Parameters :\n\t\t{2}""".format(
-                self._academy_name,
-                str(self._num_external_brains),
-                "\n\t\t".join(
-                    [
-                        str(k) + " -> " + str(self._resetParameters[k])
-                        for k in self._resetParameters
-                    ]
-                ),
+        Number of Training Brains : {1}""".format(
+                self._academy_name, str(self._num_external_brains)
             )
             + "\n"
             + "\n".join([str(self._brains[b]) for b in self._brains])
         )
 
-    def reset(
-        self,
-        config: Dict = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> AllBrainInfo:
+    def reset(self) -> AllBrainInfo:
         """
         Sends a signal to reset the unity environment.
         :return: AllBrainInfo  : A data structure corresponding to the initial reset state of the environment.
         """
-        if config is None:
-            config = self._resetParameters
-        elif config:
-            logger.info(
-                "Academy reset with parameters: {0}".format(
-                    ", ".join([str(x) + " -> " + str(config[x]) for x in config])
-                )
-            )
-        for k in config:
-            if (k in self._resetParameters) and (isinstance(config[k], (int, float))):
-                self._resetParameters[k] = config[k]
-            elif not isinstance(config[k], (int, float)):
-                raise UnityEnvironmentException(
-                    "The value for parameter '{0}'' must be an Integer or a Float.".format(
-                        k
-                    )
-                )
-            else:
-                raise UnityEnvironmentException(
-                    "The parameter '{0}' is not a valid parameter.".format(k)
-                )
-
         if self._loaded:
-            outputs = self.communicator.exchange(
-                self._generate_reset_input(train_mode, config, custom_reset_parameters)
-            )
+            outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
             self._update_brain_parameters(outputs)
@@ -622,18 +580,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
-    def _generate_reset_input(
-        self, training: bool, config: Dict, custom_reset_parameters: Any
-    ) -> UnityInputProto:
+    def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
-        rl_in.is_training = training
+        rl_in.is_training = True
         rl_in.environment_parameters.CopyFrom(EnvironmentParametersProto())
-        for key in config:
-            rl_in.environment_parameters.float_parameters[key] = config[key]
-        if custom_reset_parameters is not None:
-            rl_in.environment_parameters.custom_reset_parameters.CopyFrom(
-                custom_reset_parameters
-            )
         rl_in.command = 1
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)

@@ -1,10 +1,14 @@
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import timed
 from mlagents.envs.action_info import ActionInfo
 from mlagents.envs.brain import BrainParameters
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents.envs.side_channel.engine_configuration_channel import (
+    EngineConfigurationChannel,
+)
 
 
 class SimpleEnvManager(EnvManager):
@@ -15,6 +19,8 @@ class SimpleEnvManager(EnvManager):
 
     def __init__(self, env: BaseUnityEnvironment):
         super().__init__()
+        self.shared_float_properties = FloatPropertiesChannel()
+        self.engine_configuration = EngineConfigurationChannel()
         self.env = env
         self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
@@ -41,16 +47,16 @@ class SimpleEnvManager(EnvManager):
         return [step_info]
 
     def reset(
-        self,
-        config: Dict[str, float] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
+        self, config: Dict[str, float] = None, train_mode: bool = True
     ) -> List[EnvironmentStep]:  # type: ignore
-        all_brain_info = self.env.reset(
-            config=config,
-            train_mode=train_mode,
-            custom_reset_parameters=custom_reset_parameters,
-        )
+        if config is not None:
+            for k, v in config.items():
+                self.shared_float_properties.set_property(k, v)
+        if train_mode:
+            self.engine_configuration.set_configuration(80, 80, 1, 20.0, -1)
+        else:
+            self.engine_configuration.set_configuration(1280, 1280, 5, 1.0, -1)
+        all_brain_info = self.env.reset()
         self.previous_step = EnvironmentStep(None, all_brain_info, None)
         return [self.previous_step]
 
@@ -60,7 +66,10 @@ class SimpleEnvManager(EnvManager):
 
     @property
     def reset_parameters(self) -> Dict[str, float]:
-        return self.env.reset_parameters
+        reset_params = {}
+        for k in self.shared_float_properties.list_properties():
+            reset_params[k] = self.shared_float_properties.get_property(k)
+        return reset_params
 
     def close(self):
         self.env.close()
