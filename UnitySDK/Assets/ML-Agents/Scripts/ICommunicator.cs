@@ -102,11 +102,6 @@ namespace MLAgents
         event ResetCommandHandler ResetCommandReceived;
 
         /// <summary>
-        /// Unity RL Input was received by the communicator.
-        /// </summary>
-        event RLInputReceivedHandler RLInputReceived;
-
-        /// <summary>
         /// Sends the academy parameters through the Communicator.
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>

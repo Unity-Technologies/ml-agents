@@ -19,7 +19,6 @@ namespace MLAgents
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
-        public event RLInputReceivedHandler RLInputReceived;
 
         /// If true, the communication is active.
         bool m_IsOpen;
@@ -132,7 +131,6 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SendRLInputReceivedEvent(rlInput.IsTraining);
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
             SendCommandEvent(rlInput.Command);
         }
@@ -216,11 +214,6 @@ namespace MLAgents
                         return;
                     }
             }
-        }
-
-        void SendRLInputReceivedEvent(bool isTraining)
-        {
-            RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
 
         #endregion

@@ -22,57 +22,6 @@ using Barracuda;
 
 namespace MLAgents
 {
-    /// <summary>
-    /// Wraps the environment-level parameters that are provided within the
-    /// Editor. These parameters can be provided for training and inference
-    /// modes separately and represent screen resolution, rendering quality and
-    /// frame rate.
-    /// </summary>
-    [System.Serializable]
-    public class EnvironmentConfiguration
-    {
-        [Tooltip("Width of the environment window in pixels.")]
-        public int width;
-
-        [Tooltip("Height of the environment window in pixels.")]
-        public int height;
-
-        [Tooltip("Rendering quality of environment. (Higher is better quality.)")]
-        [Range(0, 5)]
-        public int qualityLevel;
-
-        [Tooltip("Speed at which environment is run. (Higher is faster.)")]
-        [Range(1f, 100f)]
-        public float timeScale;
-
-        [Tooltip("Frames per second (FPS) engine attempts to maintain.")]
-        public int targetFrameRate;
-
-        /// Initializes a new instance of the
-        /// <see cref="EnvironmentConfiguration"/> class.
-        /// <param name="width">Width of environment window (pixels).</param>
-        /// <param name="height">Height of environment window (pixels).</param>
-        /// <param name="qualityLevel">
-        /// Rendering quality of environment. Ranges from 0 to 5, with higher.
-        /// </param>
-        /// <param name="timeScale">
-        /// Speed at which environment is run. Ranges from 1 to 100, with higher
-        /// values representing faster speed.
-        /// </param>
-        /// <param name="targetFrameRate">
-        /// Target frame rate (per second) that the engine tries to maintain.
-        /// </param>
-        public EnvironmentConfiguration(
-            int width, int height, int qualityLevel,
-            float timeScale, int targetFrameRate)
-        {
-            this.width = width;
-            this.height = height;
-            this.qualityLevel = qualityLevel;
-            this.timeScale = timeScale;
-            this.targetFrameRate = targetFrameRate;
-        }
-    }
 
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
@@ -106,25 +55,8 @@ namespace MLAgents
         /// Used to restore original value when deriving Academy modifies it
         float m_OriginalMaximumDeltaTime;
 
-        // Fields provided in the Inspector
-
-        [FormerlySerializedAs("trainingConfiguration")]
-        [SerializeField]
-        [Tooltip("The engine-level settings which correspond to rendering " +
-            "quality and engine speed during Training.")]
-        EnvironmentConfiguration m_TrainingConfiguration =
-            new EnvironmentConfiguration(80, 80, 1, 100.0f, -1);
-
-        [FormerlySerializedAs("inferenceConfiguration")]
-        [SerializeField]
-        [Tooltip("The engine-level settings which correspond to rendering " +
-            "quality and engine speed during Inference.")]
-        EnvironmentConfiguration m_InferenceConfiguration =
-            new EnvironmentConfiguration(1280, 720, 5, 1.0f, 60);
 
         public IFloatProperties FloatProperties;
-
-        public CommunicatorObjects.CustomResetParametersProto customResetParameters;
 
         // Fields not provided in the Inspector.
 
@@ -139,12 +71,6 @@ namespace MLAgents
             get { return Communicator != null; }
         }
 
-        /// If true, the Academy will use inference settings. This field is
-        /// initialized in <see cref="Awake"/> depending on the presence
-        /// or absence of a communicator. Furthermore, it can be modified during 
-        /// training via <see cref="SetIsInference"/>.
-        bool m_IsInference = true;
-
         /// The number of episodes completed by the environment. Incremented
         /// each time the environment is reset.
         int m_EpisodeCount;
@@ -157,11 +83,6 @@ namespace MLAgents
         /// The number of total number of steps completed during the whole simulation. Incremented
         /// each time a step is taken in the environment.
         int m_TotalStepCount;
-
-        /// Flag that indicates whether the inference/training mode of the
-        /// environment was switched by the training process. This impacts the
-        /// engine settings at the next environment step.
-        bool m_ModeSwitched;
 
         /// Pointer to the communicator currently in use by the Academy.
         public ICommunicator Communicator;
@@ -301,15 +222,12 @@ namespace MLAgents
                 {
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
-                    Communicator.RLInputReceived += OnRLInputReceived;
                 }
             }
 
             // If a communicator is enabled/provided, then we assume we are in
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
-
-            SetIsInference(!IsCommunicatorOn);
 
             DecideAction += () => { };
             DestroyAction += () => { };
@@ -319,7 +237,6 @@ namespace MLAgents
             AgentAct += () => { };
             AgentForceReset += () => { };
 
-            ConfigureEnvironment();
         }
 
         static void OnQuitCommandReceived()
@@ -333,46 +250,6 @@ namespace MLAgents
         void OnResetCommand()
         {
             ForcedFullReset();
-        }
-
-        void OnRLInputReceived(UnityRLInputParameters inputParams)
-        {
-            m_IsInference = !inputParams.isTraining;
-        }
-
-
-        /// <summary>
-        /// Configures the environment settings depending on the training/inference
-        /// mode and the corresponding parameters passed in the Editor.
-        /// </summary>
-        void ConfigureEnvironment()
-        {
-            if (m_IsInference)
-            {
-                ConfigureEnvironmentHelper(m_InferenceConfiguration);
-                Monitor.SetActive(true);
-            }
-            else
-            {
-                ConfigureEnvironmentHelper(m_TrainingConfiguration);
-                Monitor.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// Helper method for initializing the environment based on the provided
-        /// configuration.
-        /// </summary>
-        /// <param name="config">
-        /// Environment configuration (specified in the Editor).
-        /// </param>
-        static void ConfigureEnvironmentHelper(EnvironmentConfiguration config)
-        {
-            Screen.SetResolution(config.width, config.height, false);
-            QualitySettings.SetQualityLevel(config.qualityLevel, true);
-            Time.timeScale = config.timeScale;
-            Time.captureFramerate = 60;
-            Application.targetFrameRate = config.targetFrameRate;
         }
 
         /// <summary>
@@ -399,37 +276,6 @@ namespace MLAgents
         {
         }
 
-        /// <summary>
-        /// Returns the <see cref="m_IsInference"/> flag.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if current mode is inference, <c>false</c> if training.
-        /// </returns>
-        public bool GetIsInference()
-        {
-            return m_IsInference;
-        }
-
-        /// <summary>
-        /// Sets the <see cref="m_IsInference"/> flag to the provided value. If
-        /// the new flag differs from the current flag value, this signals that
-        /// the environment configuration needs to be updated.
-        /// </summary>
-        /// <param name="isInference">
-        /// Environment mode, if true then inference, otherwise training.
-        /// </param>
-        public void SetIsInference(bool isInference)
-        {
-            if (m_IsInference != isInference)
-            {
-                m_IsInference = isInference;
-
-                // This signals to the academy that at the next environment step
-                // the engine configurations need updating to the respective mode
-                // (i.e. training vs inference) configuration.
-                m_ModeSwitched = true;
-            }
-        }
 
         /// <summary>
         /// Returns the current episode counter.
@@ -482,11 +328,6 @@ namespace MLAgents
         /// </summary>
         void EnvironmentStep()
         {
-            if (m_ModeSwitched)
-            {
-                ConfigureEnvironment();
-                m_ModeSwitched = false;
-            }
             if (!m_FirstAcademyReset)
             {
                 ForcedFullReset();
