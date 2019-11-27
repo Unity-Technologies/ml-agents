@@ -133,6 +133,7 @@ namespace MLAgents
         {
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
             SendCommandEvent(rlInput.Command);
+
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,

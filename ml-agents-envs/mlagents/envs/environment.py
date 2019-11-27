@@ -283,13 +283,9 @@ class UnityEnvironment(BaseUnityEnvironment):
                 )
 
     def __str__(self):
-        return (
-            """Unity Academy name: {0}
+        return """Unity Academy name: {0}
         Number of Training Brains : {1}""".format(
-                self._academy_name, str(self._num_external_brains)
-            )
-            + "\n"
-            + "\n".join([str(self._brains[b]) for b in self._brains])
+            self._academy_name, str(self._num_external_brains)
         )
 
     def reset(self) -> AllBrainInfo:
@@ -552,9 +548,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
             if agent_infos.value:
                 agent = agent_infos.value[0]
-                self._brains[brain_param.brain_name] = BrainParameters.from_proto(
-                    brain_param, agent
-                )
+                new_brain = BrainParameters.from_proto(brain_param, agent)
+                self._brains[brain_param.brain_name] = new_brain
+                logger.info(f"Connected new brain:\n{new_brain}")
         self._external_brain_names = list(self._brains.keys())
         self._num_external_brains = len(self._external_brain_names)
 

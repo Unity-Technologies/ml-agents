@@ -55,8 +55,8 @@ namespace MLAgents
         /// Used to restore original value when deriving Academy modifies it
         float m_OriginalMaximumDeltaTime;
 
-
         public IFloatProperties FloatProperties;
+
 
         // Fields not provided in the Inspector.
 
@@ -176,6 +176,8 @@ namespace MLAgents
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
             InitializeAcademy();
+
+
             // Try to launch the communicator by using the arguments passed at launch
             try
             {

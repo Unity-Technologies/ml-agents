@@ -25,7 +25,6 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    RayPerception3D m_RayPer;
     public bool useVectorObs;
 
 
@@ -35,7 +34,6 @@ public class FoodCollectorAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         m_MyArea = area.GetComponent<FoodCollectorArea>();
-        m_RayPer = GetComponent<RayPerception3D>();
         m_MyAcademy = FindObjectOfType<FoodCollectorAcademy>();
 
         SetResetParameters();
@@ -45,10 +43,6 @@ public class FoodCollectorAgent : Agent
     {
         if (useVectorObs)
         {
-            const float rayDistance = 50f;
-            float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
-            string[] detectableObjects = { "food", "agent", "wall", "badFood", "frozenAgent" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects));
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             AddVectorObs(localVelocity.x);
             AddVectorObs(localVelocity.z);

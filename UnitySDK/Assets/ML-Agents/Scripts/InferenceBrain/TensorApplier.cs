@@ -67,10 +67,10 @@ namespace MLAgents.InferenceBrain
             {
                 var model = (Model)barracudaModel;
 
-                for (var i = 0; i < model?.memories.Length; i++)
+                for (var i = 0; i < model?.memories.Count; i++)
                 {
                     m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Length, i, memories);
+                        new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
                 }
             }
         }

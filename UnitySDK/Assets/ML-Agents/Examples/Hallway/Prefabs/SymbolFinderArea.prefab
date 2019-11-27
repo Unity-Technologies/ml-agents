@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 54112968250075710}
   - component: {fileID: 114907778469006590}
   - component: {fileID: 114286701363010626}
-  - component: {fileID: 114569343444552314}
+  - component: {fileID: 114388598785529460}
   m_Layer: 0
   m_Name: Agent
   m_TagString: agent
@@ -1585,7 +1585,7 @@ MonoBehaviour:
   symbolO: {fileID: 1453690758295050}
   symbolX: {fileID: 1915733999209864}
   useVectorObs: 1
---- !u!114 &114569343444552314
+--- !u!114 &114388598785529460
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1593,9 +1593,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1471560210313468}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - symbol_O_Goal
+  - symbol_X_Goal
+  - symbol_O
+  - symbol_X
+  - wall
+  raysPerDirection: 2
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 12
+  observationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114907778469006590
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1608,7 +1625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 36
+    vectorObservationSize: 1
     numStackedVectorObservations: 3
     vectorActionSize: 05000000
     vectorActionDescriptions: []
