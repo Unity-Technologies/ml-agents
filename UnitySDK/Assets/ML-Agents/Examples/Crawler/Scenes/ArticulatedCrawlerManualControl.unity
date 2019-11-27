@@ -289,6 +289,11 @@ PrefabInstance:
       propertyPath: m_ParentAnchorPosition.z
       value: 0.34000003
       objectReference: {fileID: 0}
+    - target: {fileID: 6571351125315617548, guid: 1661ce2a8a3cdfd3480c3d24bddd72f2,
+        type: 3}
+      propertyPath: m_Immovable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7027398816889156176, guid: 1661ce2a8a3cdfd3480c3d24bddd72f2,
         type: 3}
       propertyPath: m_ParentAnchorPosition.x

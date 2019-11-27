@@ -311,7 +311,10 @@ public class ArticulatedCrawlerAgent : Agent
         
         // For starting position, make a random orientation
         Quaternion rotation = Quaternion.identity;
-        rotation.SetLookRotation(Random.onUnitSphere * 10.0f + position, Vector3.up);
+        Vector3 randomViewPos = Random.onUnitSphere * 10.0f + position;
+        randomViewPos.y = position.y; // Look at the height of body center
+        
+        rotation.SetLookRotation(randomViewPos, Vector3.up);
         
         m_JdController.Reset();
         
