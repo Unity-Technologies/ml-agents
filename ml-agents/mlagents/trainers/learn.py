@@ -10,6 +10,8 @@ import numpy as np
 
 from typing import Any, Callable, Optional, List, NamedTuple
 
+import mlagents.trainers
+import mlagents.envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
@@ -52,6 +54,15 @@ class CommandLineOptions(NamedTuple):
     @staticmethod
     def from_argparse(args: Any) -> "CommandLineOptions":
         return CommandLineOptions(**vars(args))
+
+
+def get_version_string() -> str:
+    return f""" Version information:\n
+    ml-agents: {mlagents.trainers.__version__},
+    ml-agents-envs: {mlagents.envs.__version__},
+    Communicator API: {UnityEnvironment.API_VERSION},
+    TensorFlow: {tf_utils.tf.__version__}
+"""
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
@@ -159,6 +170,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     parser.add_argument(
         "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
+
+    parser.add_argument("--version", action="version", version=get_version_string())
 
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)

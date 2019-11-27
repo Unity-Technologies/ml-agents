@@ -161,5 +161,12 @@ namespace MLAgents
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
         Dictionary<Agent, AgentAction> GetActions(string key);
+
+        /// <summary>
+        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// messages with its Python equivalent.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
+        void RegisterSideChannel(SideChannel sideChannel);
     }
 }

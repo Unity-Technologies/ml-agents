@@ -158,10 +158,9 @@ like this:
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Number of Brains: 1
-        Number of Training Brains : 1
-        Reset Parameters :
+        Reset Parameters : {}
 
+INFO:mlagents.envs:Connected new brain:
 Unity brain name: 3DBallLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8

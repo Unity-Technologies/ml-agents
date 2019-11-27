@@ -411,7 +411,8 @@ with our Agent code.
 2. Change **Decision Interval** from `1` to `10`.
 3. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
-4. Modify the Behavior Parameters of the Agent :
+4. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
+5. Modify the Behavior Parameters of the Agent :
   * `Behavior Name` to *RollerBallBrain*
   * `Vector Observation` `Space Size` = 8
   * `Vector Action` `Space Type` = **Continuous**

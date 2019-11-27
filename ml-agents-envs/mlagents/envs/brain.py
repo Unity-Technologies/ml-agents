@@ -157,6 +157,7 @@ class BrainInfo:
         return s
 
     @staticmethod
+    @timed
     def from_agent_proto(
         worker_id: int,
         agent_info_list: List[AgentInfoProto],
