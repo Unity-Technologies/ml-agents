@@ -207,6 +207,8 @@ class TrainerController(object):
                 new_brains = external_brains - last_brain_names
                 if last_brain_names != env_manager.external_brains.keys():
                     for name in new_brains:
+                        agent_manager = AgentManager(processor=AgentProcessor())
+                        self.managers[name] = agent_manager
                         trainer = self.trainer_factory.generate(
                             env_manager.external_brains[name]
                         )
@@ -283,6 +285,12 @@ class TrainerController(object):
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 if brain_name in step_info.brain_name_to_action_info:
+                    _processor = self.managers[brain_name].processor
+                    _processor.add_experiences(
+                        step_info.previous_all_brain_info[brain_name],
+                        step_info.current_all_brain_info[brain_name],
+                        step_info.brain_name_to_action_info[brain_name].outputs,
+                    )
                     trainer.add_experiences(
                         step_info.previous_all_brain_info[brain_name],
                         step_info.current_all_brain_info[brain_name],
