@@ -7,7 +7,7 @@ Windows VM such as Bootcamp or Parallels.
 
 To use the ML-Agents toolkit, you install Python and the required Python
 packages as outlined below. This guide also covers how set up GPU-based training
-(for advanced users). GPU-based training is not currently required for the 
+(for advanced users). GPU-based training is not currently required for the
 ML-Agents toolkit. However, training on a GPU might be required by future
 versions and features.
 
@@ -130,15 +130,15 @@ The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
-The `ml-agents` subdirectory contains a Python package which provides deep reinforcement 
+The `ml-agents` subdirectory contains a Python package which provides deep reinforcement
 learning trainers to use with Unity environments.
 
 The `ml-agents-envs` subdirectory contains a Python API to interface with Unity, which
-the `ml-agents` package depends on. 
+the `ml-agents` package depends on.
 
 The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
-Keep in mind where the files were downloaded, as you will need the 
+Keep in mind where the files were downloaded, as you will need the
 trainer config files in this directory when running `mlagents-learn`.
 Make sure you are connected to the Internet and then type in the Anaconda
 Prompt:
@@ -156,14 +156,14 @@ Sometimes on Windows, when you use pip to install certain Python packages, the p
 pip install mlagents --no-cache-dir
 ```
 
-This `--no-cache-dir` tells the pip to disable the cache.  
+This `--no-cache-dir` tells the pip to disable the cache.
 
 ### Installing for Development
 
-If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install 
+If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install
 the packages from the cloned repo rather than from PyPi. To do this, you will need to install
- `ml-agents` and `ml-agents-envs` separately. 
- 
+ `ml-agents` and `ml-agents-envs` separately.
+
 In our example, the files are located in `C:\Downloads`. After you have either
 cloned or downloaded the files, from the Anaconda Prompt, change to the ml-agents
 subdirectory inside the ml-agents directory:
@@ -171,7 +171,7 @@ subdirectory inside the ml-agents directory:
 ```console
 cd C:\Downloads\ml-agents
 ```
- 
+
 From the repo's main directory, now run:
 
 ```console
@@ -184,8 +184,8 @@ pip install -e .
 
 Running pip with the `-e` flag will let you make changes to the Python files directly and have those
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
-`mlagents` package depends on `mlagents_envs`, and installing it in the other 
-order will download `mlagents_envs` from PyPi. 
+`mlagents` package depends on `mlagents_envs`, and installing it in the other
+order will download `mlagents_envs` from PyPi.
 
 ## (Optional) Step 4: GPU Training using The ML-Agents Toolkit
 
@@ -321,7 +321,7 @@ pip install tensorflow-gpu==1.7.1
 ```
 
 Lastly, you should test to see if everything installed properly and that
-TensorFlow can identify your GPU. In the same Anaconda Prompt, open Python 
+TensorFlow can identify your GPU. In the same Anaconda Prompt, open Python
 in the Prompt by calling:
 
 ```sh
