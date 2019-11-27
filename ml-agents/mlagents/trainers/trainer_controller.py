@@ -207,12 +207,14 @@ class TrainerController(object):
                 new_brains = external_brains - last_brain_names
                 if last_brain_names != env_manager.external_brains.keys():
                     for name in new_brains:
-                        agent_manager = AgentManager(processor=AgentProcessor())
-                        self.managers[name] = agent_manager
                         trainer = self.trainer_factory.generate(
                             env_manager.external_brains[name]
                         )
                         self.start_trainer(trainer, env_manager)
+                        agent_manager = AgentManager(
+                            processor=AgentProcessor(trainer.policy)
+                        )
+                        self.managers[name] = agent_manager
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
