@@ -5,22 +5,6 @@ using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
-    public struct EnvironmentResetParameters
-    {
-        /// <summary>
-        /// Mapping of string : float which defines which parameters can be
-        /// reset from python.
-        /// </summary>
-        public ResetParameters resetParameters;
-
-        /// <summary>
-        /// The protobuf for custom reset parameters.
-        /// NOTE: This is the last remaining relic of gRPC protocol
-        /// that is left in our code.  We need to decide how to handle this
-        /// moving forward.
-        /// </summary>
-        public CustomResetParametersProto customResetParameters;
-    }
     public struct CommunicatorInitParameters
     {
         /// <summary>
@@ -35,10 +19,6 @@ namespace MLAgents
         /// The version of the Unity SDK.
         /// </summary>
         public string version;
-        /// <summary>
-        /// The set of environment parameters defined by the user that will be sent to the communicator.
-        /// </summary>
-        public EnvironmentResetParameters environmentResetParameters;
     }
     public struct UnityRLInitParameters
     {
@@ -64,7 +44,7 @@ namespace MLAgents
     /// Delegate for handling reset parameter updates sent from the communicator.
     /// </summary>
     /// <param name="resetParams"></param>
-    public delegate void ResetCommandHandler(EnvironmentResetParameters resetParams);
+    public delegate void ResetCommandHandler();
 
     /// <summary>
     /// Delegate to handle UnityRLInputParameters updates from the communicator.

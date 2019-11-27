@@ -134,29 +134,6 @@ namespace MLAgents
             return bp;
         }
 
-        /// <summary>
-        /// Convert a MapField to ResetParameters.
-        /// </summary>
-        /// <param name="floatParams">The mapping of strings to floats from a protobuf MapField.</param>
-        /// <returns></returns>
-        public static ResetParameters ToResetParameters(this MapField<string, float> floatParams)
-        {
-            return new ResetParameters(floatParams);
-        }
-
-        /// <summary>
-        /// Convert an EnvironmnetParametersProto protobuf object to an EnvironmentResetParameters struct.
-        /// </summary>
-        /// <param name="epp">The instance of the EnvironmentParametersProto object.</param>
-        /// <returns>A new EnvironmentResetParameters struct.</returns>
-        public static EnvironmentResetParameters ToEnvironmentResetParameters(this EnvironmentParametersProto epp)
-        {
-            return new EnvironmentResetParameters
-            {
-                resetParameters = epp.FloatParameters?.ToResetParameters(),
-                customResetParameters = epp.CustomResetParameters
-            };
-        }
 
         public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
         {

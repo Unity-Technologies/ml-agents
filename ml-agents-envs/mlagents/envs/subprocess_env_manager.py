@@ -22,7 +22,7 @@ from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesC
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
 )
-
+from mlagents.envs.side_channel.side_channel import SideChannel
 
 logger = logging.getLogger("mlagents.envs")
 
@@ -81,12 +81,14 @@ class UnityEnvWorker:
 def worker(
     parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
 ) -> None:
-    env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
-        pickled_env_factory
-    )
-    env: BaseUnityEnvironment = env_factory(worker_id)
+    env_factory: Callable[
+        [int, List[SideChannel]], UnityEnvironment
+    ] = cloudpickle.loads(pickled_env_factory)
     shared_float_properties = FloatPropertiesChannel()
     engine_configuration = EngineConfigurationChannel()
+    env: BaseUnityEnvironment = env_factory(
+        worker_id, [shared_float_properties, engine_configuration]
+    )
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -119,7 +121,7 @@ def worker(
 
                 _send_response("reset_parameters", reset_params)
             elif cmd.name == "reset":
-                for k, v in cmd.payload[0]:
+                for k, v in cmd.payload[0].items():
                     shared_float_properties.set_property(k, v)
                 if cmd.payload[1]:
                     engine_configuration.set_configuration(80, 80, 1, 20.0, -1)
@@ -146,7 +148,9 @@ def worker(
 
 class SubprocessEnvManager(EnvManager):
     def __init__(
-        self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
+        self,
+        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        n_env: int = 1,
     ):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
@@ -160,7 +164,7 @@ class SubprocessEnvManager(EnvManager):
     def create_worker(
         worker_id: int,
         step_queue: Queue,
-        env_factory: Callable[[int], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 

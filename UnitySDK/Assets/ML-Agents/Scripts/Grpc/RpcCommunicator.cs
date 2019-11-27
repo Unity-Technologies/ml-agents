@@ -79,12 +79,6 @@ namespace MLAgents
 
             academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
 
-            var resetParameters = initParameters.environmentResetParameters.resetParameters;
-            foreach (var key in resetParameters.Keys)
-            {
-                academyParameters.EnvironmentParameters.FloatParameters.Add(key, resetParameters[key]);
-            }
-
             UnityInputProto input;
             UnityInputProto initializationInput;
             try
@@ -139,7 +133,7 @@ namespace MLAgents
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
             SendRLInputReceivedEvent(rlInput.IsTraining);
-            SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
+            SendCommandEvent(rlInput.Command);
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
         }
 
@@ -203,7 +197,7 @@ namespace MLAgents
 
         #region Sending Events
 
-        void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+        void SendCommandEvent(CommandProto command)
         {
             switch (command)
             {
@@ -214,7 +208,7 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        ResetCommandReceived?.Invoke();
                         return;
                     }
                 default:

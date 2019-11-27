@@ -22,6 +22,7 @@ from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+from mlagents.envs.side_channel.side_channel import SideChannel
 
 
 class CommandLineOptions(NamedTuple):
@@ -297,7 +298,7 @@ def try_create_meta_curriculum(
         return None
 
     else:
-        meta_curriculum = MetaCurriculum(curriculum_folder, env.reset_parameters)
+        meta_curriculum = MetaCurriculum(curriculum_folder)
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         meta_curriculum.set_all_curriculums_to_lesson_num(lesson)
@@ -334,7 +335,7 @@ def create_environment_factory(
     seed: Optional[int],
     start_port: int,
     env_args: Optional[List[str]],
-) -> Callable[[int], BaseUnityEnvironment]:
+) -> Callable[[int, List[SideChannel]], BaseUnityEnvironment]:
     if env_path is not None:
         # Strip out executable extensions if passed
         env_path = (
@@ -356,7 +357,9 @@ def create_environment_factory(
     seed_count = 10000
     seed_pool = [np.random.randint(0, seed_count) for _ in range(seed_count)]
 
-    def create_unity_environment(worker_id: int) -> UnityEnvironment:
+    def create_unity_environment(
+        worker_id: int, side_channels: List[SideChannel]
+    ) -> UnityEnvironment:
         env_seed = seed
         if not env_seed:
             env_seed = seed_pool[worker_id % len(seed_pool)]
@@ -368,6 +371,7 @@ def create_environment_factory(
             no_graphics=no_graphics,
             base_port=start_port,
             args=env_args,
+            side_channels=side_channels,
         )
 
     return create_unity_environment

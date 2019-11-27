@@ -7,6 +7,7 @@ public class BouncerAcademy : Academy
 
     public override void InitializeAcademy()
     {
+        FloatProperties.RegisterCallback("target_scale", f => { });
         Physics.gravity = new Vector3(0, -9.8f * gravityMultiplier, 0);
     }
 

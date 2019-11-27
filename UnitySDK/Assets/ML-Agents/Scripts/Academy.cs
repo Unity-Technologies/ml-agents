@@ -122,21 +122,6 @@ namespace MLAgents
         EnvironmentConfiguration m_InferenceConfiguration =
             new EnvironmentConfiguration(1280, 720, 5, 1.0f, 60);
 
-        /// <summary>
-        /// Contains a mapping from parameter names to float values. They are
-        /// used in <see cref="AcademyReset"/> and <see cref="AcademyStep"/>
-        /// to modify elements in the environment at reset time.
-        /// </summary>
-        /// <remarks>
-        /// Default reset parameters are specified in the academy Editor, and can
-        /// be modified when training by passing a config
-        /// dictionary at reset.
-        /// </remarks>
-        [SerializeField]
-        [Tooltip("List of custom parameters that can be changed in the " +
-            "environment when it resets.")]
-        public ResetParameters resetParameters;
-
         public IFloatProperties FloatProperties;
 
         public CommunicatorObjects.CustomResetParametersProto customResetParameters;
@@ -267,10 +252,9 @@ namespace MLAgents
             m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
 
-            InitializeAcademy();
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
-
+            InitializeAcademy();
             // Try to launch the communicator by using the arguments passed at launch
             try
             {
@@ -293,6 +277,8 @@ namespace MLAgents
 
             if (Communicator != null)
             {
+                Communicator.RegisterSideChannel(new EngineConfigurationChannel());
+                Communicator.RegisterSideChannel(floatProperties);
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
                 //environment must use Inference.
@@ -303,11 +289,6 @@ namespace MLAgents
                         {
                             version = k_ApiVersion,
                             name = gameObject.name,
-                            environmentResetParameters = new EnvironmentResetParameters
-                            {
-                                resetParameters = resetParameters,
-                                customResetParameters = customResetParameters
-                            }
                         });
                     Random.InitState(unityRLInitParameters.seed);
                 }
@@ -321,8 +302,6 @@ namespace MLAgents
                     Communicator.QuitCommandReceived += OnQuitCommandReceived;
                     Communicator.ResetCommandReceived += OnResetCommand;
                     Communicator.RLInputReceived += OnRLInputReceived;
-                    Communicator.RegisterSideChannel(new EngineConfigurationChannel());
-                    Communicator.RegisterSideChannel(floatProperties);
                 }
             }
 
@@ -351,9 +330,8 @@ namespace MLAgents
             Application.Quit();
         }
 
-        void OnResetCommand(EnvironmentResetParameters newResetParameters)
+        void OnResetCommand()
         {
-            UpdateResetParameters(newResetParameters);
             ForcedFullReset();
         }
 
@@ -362,17 +340,6 @@ namespace MLAgents
             m_IsInference = !inputParams.isTraining;
         }
 
-        void UpdateResetParameters(EnvironmentResetParameters newResetParameters)
-        {
-            if (newResetParameters.resetParameters != null)
-            {
-                foreach (var kv in newResetParameters.resetParameters)
-                {
-                    resetParameters[kv.Key] = kv.Value;
-                }
-            }
-            customResetParameters = newResetParameters.customResetParameters;
-        }
 
         /// <summary>
         /// Configures the environment settings depending on the training/inference
