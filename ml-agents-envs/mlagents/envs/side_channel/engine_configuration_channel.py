@@ -1,6 +1,15 @@
 from mlagents.envs.side_channel.side_channel import SideChannel, SideChannelType
 from mlagents.envs.exception import UnityCommunicationException
 import struct
+from typing import NamedTuple
+
+
+class EngineConfig(NamedTuple):
+    width: int
+    height: int
+    quality_level: int
+    time_scale: float
+    target_frame_rate: int
 
 
 class EngineConfigurationChannel(SideChannel):
@@ -31,7 +40,7 @@ class EngineConfigurationChannel(SideChannel):
             + "this should not have happend."
         )
 
-    def set_configuration(
+    def set_configuration_parameters(
         self,
         width: int = 80,
         height: int = 80,
@@ -58,4 +67,12 @@ class EngineConfigurationChannel(SideChannel):
         data += struct.pack("<i", quality_level)
         data += struct.pack("<f", time_scale)
         data += struct.pack("<i", target_frame_rate)
+        super().queue_message_to_send(data)
+
+    def set_configuration(self, config: EngineConfig) -> None:
+        """
+        Sets the engine configuration. Takes as input an EngineConfig.
+        """
+        data = bytearray()
+        data += struct.pack("<iiifi", *config)
         super().queue_message_to_send(data)

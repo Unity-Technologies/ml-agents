@@ -21,6 +21,7 @@ from mlagents.envs.action_info import ActionInfo
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
+    EngineConfig,
 )
 from mlagents.envs.side_channel.side_channel import SideChannel
 
@@ -79,15 +80,20 @@ class UnityEnvWorker:
 
 
 def worker(
-    parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
+    parent_conn: Connection,
+    step_queue: Queue,
+    pickled_env_factory: str,
+    worker_id: int,
+    engine_configuration: EngineConfig,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     shared_float_properties = FloatPropertiesChannel()
-    engine_configuration = EngineConfigurationChannel()
+    engine_configuration_channel = EngineConfigurationChannel()
+    engine_configuration_channel.set_configuration(engine_configuration)
     env: BaseUnityEnvironment = env_factory(
-        worker_id, [shared_float_properties, engine_configuration]
+        worker_id, [shared_float_properties, engine_configuration_channel]
     )
 
     def _send_response(cmd_name, payload):
@@ -121,12 +127,8 @@ def worker(
 
                 _send_response("reset_parameters", reset_params)
             elif cmd.name == "reset":
-                for k, v in cmd.payload[0].items():
+                for k, v in cmd.payload.items():
                     shared_float_properties.set_property(k, v)
-                if cmd.payload[1]:
-                    engine_configuration.set_configuration(80, 80, 1, 20.0, -1)
-                else:
-                    engine_configuration.set_configuration(1280, 1280, 5, 1.0, -1)
                 all_brain_info = env.reset()
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
@@ -150,6 +152,7 @@ class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
         env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        engine_configuration: EngineConfig,
         n_env: int = 1,
     ):
         super().__init__()
@@ -157,7 +160,9 @@ class SubprocessEnvManager(EnvManager):
         self.step_queue: Queue = Queue()
         for worker_idx in range(n_env):
             self.env_workers.append(
-                self.create_worker(worker_idx, self.step_queue, env_factory)
+                self.create_worker(
+                    worker_idx, self.step_queue, env_factory, engine_configuration
+                )
             )
 
     @staticmethod
@@ -165,6 +170,7 @@ class SubprocessEnvManager(EnvManager):
         worker_id: int,
         step_queue: Queue,
         env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        engine_configuration: EngineConfig,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -172,7 +178,14 @@ class SubprocessEnvManager(EnvManager):
         # on Windows as of Python 3.6.
         pickled_env_factory = cloudpickle.dumps(env_factory)
         child_process = Process(
-            target=worker, args=(child_conn, step_queue, pickled_env_factory, worker_id)
+            target=worker,
+            args=(
+                child_conn,
+                step_queue,
+                pickled_env_factory,
+                worker_id,
+                engine_configuration,
+            ),
         )
         child_process.start()
         return UnityEnvWorker(child_process, worker_id, parent_conn)
@@ -211,16 +224,14 @@ class SubprocessEnvManager(EnvManager):
         step_infos = self._postprocess_steps(worker_steps)
         return step_infos
 
-    def reset(
-        self, config: Optional[Dict] = None, train_mode: bool = True
-    ) -> List[EnvironmentStep]:
+    def reset(self, config: Optional[Dict] = None) -> List[EnvironmentStep]:
         while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
                 step = self.step_queue.get_nowait()
                 self.env_workers[step.worker_id].waiting = False
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
-            ew.send("reset", (config, train_mode))
+            ew.send("reset", (config))
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
             ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)

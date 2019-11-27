@@ -23,6 +23,7 @@ from mlagents.envs.exception import SamplerException
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.side_channel.side_channel import SideChannel
+from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 class CommandLineOptions(NamedTuple):
@@ -39,7 +40,6 @@ class CommandLineOptions(NamedTuple):
     num_envs: int
     curriculum_folder: Optional[str]
     lesson: int
-    slow: bool
     no_graphics: bool
     multi_gpu: bool  # ?
     trainer_config_path: str
@@ -47,10 +47,11 @@ class CommandLineOptions(NamedTuple):
     docker_target_name: Optional[str]
     env_args: Optional[List[str]]
     cpu: bool
-
-    @property
-    def fast_simulation(self) -> bool:
-        return not self.slow
+    width: int
+    height: int
+    quality_level: int
+    time_scale: float
+    target_frame_rate: int
 
     @staticmethod
     def from_argparse(args: Any) -> "CommandLineOptions":
@@ -117,9 +118,6 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         "--seed", default=-1, type=int, help="Random seed used for training"
     )
     parser.add_argument(
-        "--slow", action="store_true", help="Whether to run the game at training speed"
-    )
-    parser.add_argument(
         "--train",
         default=False,
         dest="train_model",
@@ -173,6 +171,38 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     )
 
     parser.add_argument("--version", action="version", version=get_version_string())
+
+    eng_conf = parser.add_argument_group(title="Engine Configuration")
+    eng_conf.add_argument(
+        "--width",
+        default=84,
+        type=int,
+        help="The width of the executable window of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--height",
+        default=84,
+        type=int,
+        help="The height of the executable window of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--quality-level",
+        default=5,
+        type=int,
+        help="The quality level of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--time-scale",
+        default=20,
+        type=float,
+        help="The time scale of the Unity environment(s)",
+    )
+    eng_conf.add_argument(
+        "--target-frame-rate",
+        default=-1,
+        type=int,
+        help="The target frame rate of the Unity environment(s)",
+    )
 
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
@@ -228,7 +258,14 @@ def run_training(
         port,
         options.env_args,
     )
-    env = SubprocessEnvManager(env_factory, options.num_envs)
+    engine_config = EngineConfig(
+        options.width,
+        options.height,
+        options.quality_level,
+        options.time_scale,
+        options.target_frame_rate,
+    )
+    env = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(
         curriculum_folder, env, options.lesson
     )
@@ -257,7 +294,6 @@ def run_training(
         maybe_meta_curriculum,
         options.train_model,
         run_seed,
-        options.fast_simulation,
         sampler_manager,
         resampling_interval,
     )

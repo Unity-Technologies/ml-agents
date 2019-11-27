@@ -8,6 +8,7 @@ from mlagents.envs.brain import BrainParameters
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
+    EngineConfig,
 )
 
 
@@ -17,10 +18,11 @@ class SimpleEnvManager(EnvManager):
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
     """
 
-    def __init__(self, env: BaseUnityEnvironment):
+    def __init__(self, env: BaseUnityEnvironment, engine_configuration: EngineConfig):
         super().__init__()
         self.shared_float_properties = FloatPropertiesChannel()
-        self.engine_configuration = EngineConfigurationChannel()
+        engine_configuration = EngineConfigurationChannel()
+        engine_configuration.set_configuration(engine_configuration)
         self.env = env
         self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
@@ -47,15 +49,11 @@ class SimpleEnvManager(EnvManager):
         return [step_info]
 
     def reset(
-        self, config: Dict[str, float] = None, train_mode: bool = True
+        self, config: Dict[str, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:
             for k, v in config.items():
                 self.shared_float_properties.set_property(k, v)
-        if train_mode:
-            self.engine_configuration.set_configuration(80, 80, 1, 20.0, -1)
-        else:
-            self.engine_configuration.set_configuration(1280, 1280, 5, 1.0, -1)
         all_brain_info = self.env.reset()
         self.previous_step = EnvironmentStep(None, all_brain_info, None)
         return [self.previous_step]
