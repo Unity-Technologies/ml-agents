@@ -7,6 +7,8 @@ from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSch
 
 logger = logging.getLogger("mlagents.trainers")
 
+EPSILON = 1e-6  # Small value to avoid divide by zero
+
 
 class PPOModel(LearningModel):
     def __init__(
@@ -130,17 +132,23 @@ class PPOModel(LearningModel):
         self.epsilon = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
         )
-        # Clip and scale output to ensure actions are always within [-1, 1] range.
-        self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
-        output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
-        self.output = tf.identity(output_post, name="action")
-        self.selected_actions = tf.stop_gradient(output_post)
+        _policy_out = mu + tf.sqrt(sigma_sq) * self.epsilon
+
+        # Squash using tanh to ensure actions are always within [-1, 1] range.
+        self.output_pre = tf.tanh(_policy_out)
+        self.output = tf.identity(self.output_pre, name="action")
+        self.selected_actions = tf.stop_gradient(self.output)
 
         # Compute probability of model output.
         all_probs = (
-            -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
+            -0.5 * tf.square(tf.stop_gradient(_policy_out) - mu) / sigma_sq
             - 0.5 * tf.log(2.0 * np.pi)
             - 0.5 * self.log_sigma_sq
+        )
+
+        # Correct for tanh squash (source: https://arxiv.org/abs/1801.01290)
+        all_probs -= tf.reduce_sum(
+            tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
         )
 
         self.all_log_probs = tf.identity(all_probs, name="action_probs")

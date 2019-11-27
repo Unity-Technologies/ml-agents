@@ -130,8 +130,6 @@ class SACPolicy(TFPolicy):
                 "learning_rate": self.model.learning_rate,
             }
         )
-        if self.use_continuous_act:
-            self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
 

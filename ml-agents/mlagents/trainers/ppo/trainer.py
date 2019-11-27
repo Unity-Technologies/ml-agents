@@ -178,8 +178,6 @@ class PPOTrainer(RLTrainer):
         """
         actions = take_action_outputs["action"]
         if self.policy.use_continuous_act:
-            actions_pre = take_action_outputs["pre_action"]
-            self.training_buffer[agent_id]["actions_pre"].append(actions_pre[agent_idx])
             epsilons = take_action_outputs["random_normal_epsilon"]
             self.training_buffer[agent_id]["random_normal_epsilon"].append(
                 epsilons[agent_idx]

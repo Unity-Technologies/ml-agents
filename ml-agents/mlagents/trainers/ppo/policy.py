@@ -110,8 +110,6 @@ class PPOPolicy(TFPolicy):
                 "learning_rate": self.model.learning_rate,
             }
         )
-        if self.use_continuous_act:
-            self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.model.memory_out
 
@@ -207,7 +205,6 @@ class PPOPolicy(TFPolicy):
             ]
 
         if self.use_continuous_act:
-            feed_dict[model.output_pre] = mini_batch["actions_pre"]
             feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
         else:
             feed_dict[model.action_holder] = mini_batch["actions"]

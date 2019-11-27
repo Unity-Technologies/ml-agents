@@ -114,7 +114,7 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
         env,
         policy,
         BUFFER_INIT_SAMPLES,
-        exclude_key_list=["advantages", "actions_pre", "random_normal_epsilon"],
+        exclude_key_list=["advantages", "random_normal_epsilon"],
     )
 
     # Mock out reward signal eval
