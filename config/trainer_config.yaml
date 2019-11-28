@@ -137,6 +137,7 @@ VisualPyramids:
     buffer_size: 12000
     summary_freq: 1000
     time_horizon: 1000
+    max_steps: 1e5
     lambd: 0.99
     beta: 0.001
 
