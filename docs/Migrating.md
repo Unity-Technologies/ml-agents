@@ -1,6 +1,6 @@
 # Migrating
 
-## Migrating from ML-Agents toolkit v0.11.0
+## Migrating from ML-Agents toolkit v0.11.0 to v0.12.0
 
 ### Important Changes
 * Text actions and observations, and custom action and observation protos have been removed.
