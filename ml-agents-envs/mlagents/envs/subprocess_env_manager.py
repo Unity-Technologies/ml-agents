@@ -231,7 +231,7 @@ class SubprocessEnvManager(EnvManager):
                 self.env_workers[step.worker_id].waiting = False
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
-            ew.send("reset", (config))
+            ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
             ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)
