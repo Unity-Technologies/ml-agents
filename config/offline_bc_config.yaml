@@ -12,6 +12,20 @@ default:
     memory_size: 256
     demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demo_File>.demo
 
+FoodCollector:
+    trainer: offline_bc
+    batch_size: 64
+    summary_freq: 1000
+    max_steps: 5.0e4
+    batches_per_epoch: 10
+    use_recurrent: false
+    hidden_units: 128
+    learning_rate: 3.0e-4
+    num_layers: 2
+    sequence_length: 32
+    memory_size: 256
+    demo_path: ./demos/ExpertFood.demo
+
 Hallway:
     trainer: offline_bc
     max_steps: 5.0e5
@@ -25,3 +39,4 @@ Hallway:
     memory_size: 256
     sequence_length: 32
     demo_path: ./demos/ExpertHallway.demo
+

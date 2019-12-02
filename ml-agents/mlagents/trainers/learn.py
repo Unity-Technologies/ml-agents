@@ -270,7 +270,7 @@ def run_training(
         curriculum_folder, env, options.lesson
     )
     sampler_manager, resampling_interval = create_sampler_manager(
-        options.sampler_file_path, env.reset_parameters, run_seed
+        options.sampler_file_path, run_seed
     )
     trainer_factory = TrainerFactory(
         trainer_config,
@@ -303,7 +303,7 @@ def run_training(
     tc.start_learning(env)
 
 
-def create_sampler_manager(sampler_file_path, env_reset_params, run_seed=None):
+def create_sampler_manager(sampler_file_path, run_seed=None):
     sampler_config = None
     resample_interval = None
     if sampler_file_path is not None:

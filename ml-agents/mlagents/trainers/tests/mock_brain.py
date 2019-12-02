@@ -51,23 +51,23 @@ def create_mock_braininfo(
     mock_braininfo = mock.Mock()
 
     mock_braininfo.return_value.visual_observations = num_vis_observations * [
-        np.ones((num_agents, 84, 84, 3))
+        np.ones((num_agents, 84, 84, 3), dtype=np.float32)
     ]
     mock_braininfo.return_value.vector_observations = np.array(
-        num_agents * [num_vector_observations * [1]]
+        num_agents * [num_vector_observations * [1]], dtype=np.float32
     )
     if discrete:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_discrete_branches * [0.5]]
+            num_agents * [num_discrete_branches * [0.5]], dtype=np.float32
         )
         mock_braininfo.return_value.action_masks = np.array(
-            num_agents * [num_vector_acts * [1.0]]
+            num_agents * [num_vector_acts * [1.0]], dtype=np.float32
         )
     else:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_vector_acts * [0.5]]
+            num_agents * [num_vector_acts * [0.5]], dtype=np.float32
         )
-    mock_braininfo.return_value.memories = np.ones((num_agents, 8))
+    mock_braininfo.return_value.memories = np.ones((num_agents, 8), dtype=np.float32)
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
     mock_braininfo.return_value.max_reached = num_agents * [100]
@@ -132,24 +132,28 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
         fake_action_size = len(brain_params.vector_action_space_size)
         if brain_params.vector_action_space_type == "continuous":
             fake_action_size = brain_params.vector_action_space_size[0]
-        buffer[0]["actions"].append(np.zeros(fake_action_size))
-        buffer[0]["prev_action"].append(np.zeros(fake_action_size))
+        buffer[0]["actions"].append(np.zeros(fake_action_size, dtype=np.float32))
+        buffer[0]["prev_action"].append(np.zeros(fake_action_size, dtype=np.float32))
         buffer[0]["masks"].append(1.0)
         buffer[0]["advantages"].append(1.0)
         if brain_params.vector_action_space_type == "discrete":
             buffer[0]["action_probs"].append(
-                np.ones(sum(brain_params.vector_action_space_size))
+                np.ones(sum(brain_params.vector_action_space_size), dtype=np.float32)
             )
         else:
-            buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["actions_pre"].append(np.ones(buffer[0]["actions"][0].shape))
+            buffer[0]["action_probs"].append(
+                np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
+            )
+        buffer[0]["actions_pre"].append(
+            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
+        )
         buffer[0]["random_normal_epsilon"].append(
-            np.ones(buffer[0]["actions"][0].shape)
+            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
         )
         buffer[0]["action_mask"].append(
-            np.ones(np.sum(brain_params.vector_action_space_size))
+            np.ones(np.sum(brain_params.vector_action_space_size), dtype=np.float32)
         )
-        buffer[0]["memory"].append(np.ones(memory_size))
+        buffer[0]["memory"].append(np.ones(memory_size, dtype=np.float32))
 
     buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
     return buffer
