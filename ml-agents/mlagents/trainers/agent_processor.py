@@ -20,11 +20,10 @@ class ProcessingBuffer(dict):
 
     def reset_local_buffers(self) -> None:
         """
-        Resets all the local local_buffers
+        Resets all the local AgentBuffers.
         """
-        agent_ids = list(self.keys())
-        for k in agent_ids:
-            self[k].reset_agent()
+        for buf in self.values():
+            buf.reset_agent()
 
     def append_to_update_buffer(
         self,
