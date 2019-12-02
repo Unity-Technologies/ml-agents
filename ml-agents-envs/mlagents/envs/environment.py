@@ -280,10 +280,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                 )
 
     def __str__(self):
-        return """Unity Academy name: {0}
-        Number of Training Brains : {1}""".format(
-            self._academy_name, str(self._num_external_brains)
-        )
+        return """Unity Academy name: {0}""".format(self._academy_name)
 
     def reset(self) -> AllBrainInfo:
         """
