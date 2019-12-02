@@ -29,23 +29,15 @@ class MockEnvWorker:
 class SubprocessEnvManagerTest(unittest.TestCase):
     def test_environments_are_created(self):
         SubprocessEnvManager.create_worker = MagicMock()
-        env = SubprocessEnvManager(
-            mock_env_factory, EngineConfig(80, 80, 1, 20.0, -1), 2
-        )
+        env = SubprocessEnvManager(mock_env_factory, EngineConfig.default_config(), 2)
         # Creates two processes
         env.create_worker.assert_has_calls(
             [
                 mock.call(
-                    0,
-                    env.step_queue,
-                    mock_env_factory,
-                    EngineConfig(80, 80, 1, 20.0, -1),
+                    0, env.step_queue, mock_env_factory, EngineConfig.default_config()
                 ),
                 mock.call(
-                    1,
-                    env.step_queue,
-                    mock_env_factory,
-                    EngineConfig(80, 80, 1, 20.0, -1),
+                    1, env.step_queue, mock_env_factory, EngineConfig.default_config()
                 ),
             ]
         )
@@ -56,7 +48,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             worker_id, EnvironmentResponse("reset", worker_id, worker_id)
         )
         manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig(80, 80, 1, 20.0, -1), 1
+            mock_env_factory, EngineConfig.default_config(), 1
         )
         params = {"test": "params"}
         manager.reset(params)
@@ -67,7 +59,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             worker_id, EnvironmentResponse("reset", worker_id, worker_id)
         )
         manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig(80, 80, 1, 20.0, -1), 4
+            mock_env_factory, EngineConfig.default_config(), 4
         )
 
         params = {"test": "params"}
@@ -86,7 +78,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             worker_id, EnvironmentResponse("step", worker_id, worker_id)
         )
         manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig(80, 80, 1, 20.0, -1), 3
+            mock_env_factory, EngineConfig.default_config(), 3
         )
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [

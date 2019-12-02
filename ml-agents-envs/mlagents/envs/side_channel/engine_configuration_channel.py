@@ -11,6 +11,10 @@ class EngineConfig(NamedTuple):
     time_scale: float
     target_frame_rate: int
 
+    @staticmethod
+    def default_config():
+        return EngineConfig(80, 80, 1, 20.0, -1)
+
 
 class EngineConfigurationChannel(SideChannel):
     """
