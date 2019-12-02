@@ -23,7 +23,7 @@ namespace MLAgents
         bool m_IsOpen;
 
         /// The default number of agents in the scene
-        private const int k_NumAgents = 32;
+        const int k_NumAgents = 32;
 
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
@@ -37,8 +37,8 @@ namespace MLAgents
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
         // Brains that we have sent over the communicator with agents.
-        HashSet<string> m_sentBrainKeys = new HashSet<string>();
-        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
+        HashSet<string> m_SentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_UnsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -138,7 +138,7 @@ namespace MLAgents
             SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
         }
 
-        private UnityInputProto Initialize(UnityOutputProto unityOutput,
+        UnityInputProto Initialize(UnityOutputProto unityOutput,
             out UnityInputProto unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -197,7 +197,8 @@ namespace MLAgents
         #endregion
 
         #region Sending Events
-        private void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+
+        void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
         {
             switch (command)
             {
@@ -218,7 +219,7 @@ namespace MLAgents
             }
         }
 
-        private void SendRLInputReceivedEvent(bool isTraining)
+        void SendRLInputReceivedEvent(bool isTraining)
         {
             RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
@@ -243,7 +244,7 @@ namespace MLAgents
                         {
                             // Update the sensor data on the AgentInfo
                             agent.GenerateSensorData();
-                            var agentInfoProto = agent.Info.ToProto();
+                            var agentInfoProto = agent.Info.ToAgentInfoProto();
                             m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                         }
 
@@ -260,8 +261,8 @@ namespace MLAgents
         /// <summary>
         /// Sends the observations of one Agent. 
         /// </summary>
-        /// <param name="key">Batch Key.</param>
-        /// <param name="agents">Agent info.</param>
+        /// <param name="brainKey">Batch Key.</param>
+        /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, Agent agent)
         {
             m_CurrentAgents[brainKey].Add(agent);
@@ -337,7 +338,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        private UnityInputProto Exchange(UnityOutputProto unityOutput)
+        UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -377,7 +378,7 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        private static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
+        static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
         {
             return new UnityMessageProto
             {
@@ -386,21 +387,21 @@ namespace MLAgents
             };
         }
 
-        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
-            if (m_sentBrainKeys.Contains(brainKey))
+            if (m_SentBrainKeys.Contains(brainKey))
             {
                 return;
             }
 
             // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_unsentBrainKeys[brainKey] = brainParameters;
+            m_UnsentBrainKeys[brainKey] = brainParameters;
         }
 
-        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach (var brainKey in m_unsentBrainKeys.Keys)
+            foreach (var brainKey in m_UnsentBrainKeys.Keys)
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
                 {
@@ -409,7 +410,7 @@ namespace MLAgents
                         output = new UnityRLInitializationOutputProto();
                     }
 
-                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    var brainParameters = m_UnsentBrainKeys[brainKey];
                     output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
                 }
             }
@@ -417,7 +418,7 @@ namespace MLAgents
             return output;
         }
 
-        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
         {
             if (output == null)
             {
@@ -426,8 +427,8 @@ namespace MLAgents
 
             foreach (var brainProto in output.BrainParameters)
             {
-                m_sentBrainKeys.Add(brainProto.BrainName);
-                m_unsentBrainKeys.Remove(brainProto.BrainName);
+                m_SentBrainKeys.Add(brainProto.BrainName);
+                m_UnsentBrainKeys.Remove(brainProto.BrainName);
             }
         }
 
@@ -439,7 +440,7 @@ namespace MLAgents
         /// When the editor exits, the communicator must be closed
         /// </summary>
         /// <param name="state">State.</param>
-        private void HandleOnPlayModeChanged(PlayModeStateChange state)
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)

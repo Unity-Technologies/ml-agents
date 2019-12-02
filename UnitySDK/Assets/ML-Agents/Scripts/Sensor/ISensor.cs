@@ -1,11 +1,9 @@
-using MLAgents.InferenceBrain;
-
 namespace MLAgents.Sensor
 {
     public enum SensorCompressionType
     {
         None,
-        PNG,
+        PNG
     }
 
     /// <summary>
@@ -22,12 +20,14 @@ namespace MLAgents.Sensor
         int[] GetFloatObservationShape();
 
         /// <summary>
-        /// Write the observation data directly to the TensorProxy.
+        /// Write the observation data directly to the WriteAdapter.
         /// This is considered an advanced interface; for a simpler approach, use SensorBase and override WriteFloats instead.
+        /// Note that this (and GetCompressedObservation) may be called multiple times per agent step, so should not
+        /// mutate any internal state.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="agentIndex"></param>
-        void WriteToTensor(TensorProxy tensorProxy, int agentIndex);
+        /// <param name="adapater"></param>
+        /// <returns>The number of elements written</returns>
+        int Write(WriteAdapter adapater);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this should generally not be
@@ -36,6 +36,11 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns></returns>
         byte[] GetCompressedObservation();
+
+        /// <summary>
+        /// Update any internal state of the sensor. This is called once per each agent step.
+        /// </summary>
+        void Update();
 
         /// <summary>
         /// Return the compression type being used. If no compression is used, return SensorCompressionType.None
@@ -49,6 +54,26 @@ namespace MLAgents.Sensor
         /// </summary>
         /// <returns>The name of the sensor</returns>
         string GetName();
+    }
+
+    public static class SensorExtensions
+    {
+        /// <summary>
+        /// Get the total number of elements in the ISensor's observation (i.e. the product of the shape elements).
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <returns></returns>
+        public static int ObservationSize(this ISensor sensor)
+        {
+            var shape = sensor.GetFloatObservationShape();
+            int count = 1;
+            for (var i = 0; i < shape.Length; i++)
+            {
+                count *= shape[i];
+            }
+
+            return count;
+        }
     }
 
 }

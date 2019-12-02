@@ -49,7 +49,7 @@ def test_reset(mock_communicator, mock_launcher):
     )
     assert (
         len(brain_info["RealFakeBrain"].vector_observations[0])
-        == brain.vector_observation_space_size * brain.num_stacked_vector_observations
+        == brain.vector_observation_space_size
     )
 
 
@@ -88,7 +88,7 @@ def test_step(mock_communicator, mock_launcher):
     )
     assert (
         len(brain_info["RealFakeBrain"].vector_observations[0])
-        == brain.vector_observation_space_size * brain.num_stacked_vector_observations
+        == brain.vector_observation_space_size
     )
 
     print("\n\n\n\n\n\n\n" + str(brain_info["RealFakeBrain"].local_done))

@@ -10,7 +10,7 @@ repos:
             )$
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.720
+    rev: v0.740
     hooks:
     -   id: mypy
         name: mypy-ml-agents
@@ -28,7 +28,7 @@ repos:
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.2.3
+    rev: v2.4.0
     hooks:
     -   id: mixed-line-ending
         exclude: >
@@ -44,16 +44,32 @@ repos:
                 .*_pb2.py|
                 .*_pb2_grpc.py
             )$
-        # temporarily pin flake8-comprehensions
-        additional_dependencies: [flake8-comprehensions==3.0.1]
+        # flake8-tidy-imports is used for banned-modules, not actually tidying
+        additional_dependencies: [flake8-comprehensions, flake8-tidy-imports]
     -   id: trailing-whitespace
         name: trailing-whitespace-markdown
         types: [markdown]
+    -   id: check-merge-conflict
+        args: [--assume-in-merge]
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.4.1  # Use the ref you want to point at
+    rev: v1.4.2
     hooks:
     -   id: python-check-mock-methods
+
+
+
+-   repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v2.4.4
+    hooks:
+    -   id: pylint
+        exclude: >
+            (?x)^(
+                .*_pb2.py|
+                .*_pb2_grpc.py|
+                .*/tests/.*
+            )$
+        args: [--score=n]
 
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
@@ -63,15 +79,22 @@ repos:
         # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
         # Note that you must install the package separately via npm. For example:
         #  brew install npm; npm install -g markdown-link-check
-        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.config.json' --
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.fast.json' --
         language: system
         types: [markdown]
         # Don't check localized files since their target might not be localized.
         exclude: ".*localized.*"
         # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check
         stages: [manual]
+    -   id: markdown-link-check-full
+        name: markdown-link-check-full
+        entry: bash -xc 'echo "$@" | xargs -n1 -t markdown-link-check -c markdown-link-check.full.json' --
+        language: system
+        types: [markdown]
+        exclude: ".*localized.*"
+        stages: [manual]
     -   id: validate-versions
         name: validate library versions
         language: script
         entry: utils/validate_versions.py
-        files: ".*/setup.py"
+        files: ".*/__init__.py"

@@ -4,8 +4,9 @@ import os
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+import gym_unity
 
-VERSION = "0.11.0"
+VERSION = gym_unity.__version__
 
 
 class VerifyVersionCommand(install):

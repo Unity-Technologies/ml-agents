@@ -6,15 +6,15 @@ namespace MLAgents
 {
     public class Startup : MonoBehaviour
     {
-        private const string k_SceneVariableName = "SCENE_NAME";
+        const string k_SceneVariableName = "SCENE_NAME";
 
-        private void Awake()
+        void Awake()
         {
             var sceneName = Environment.GetEnvironmentVariable(k_SceneVariableName);
             SwitchScene(sceneName);
         }
 
-        private static void SwitchScene(string sceneName)
+        static void SwitchScene(string sceneName)
         {
             if (sceneName == null)
             {

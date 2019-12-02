@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -8,12 +9,9 @@ namespace MLAgents
     /// Ray perception component. Attach this to agents to enable "local perception"
     /// via the use of ray casts directed outward from the agent.
     /// </summary>
+    [Obsolete("The RayPerception MonoBehaviour is deprecated. Use the RayPerceptionSensorComponent instead")]
     public class RayPerception3D : RayPerception
     {
-        Vector3 m_EndPosition;
-        RaycastHit m_Hit;
-        private float[] m_SubList;
-
         /// <summary>
         /// Creates perception vector to be used as part of an observation of an agent.
         /// Each ray in the rayAngles array adds a sublist of data to the observation.
@@ -32,64 +30,26 @@ namespace MLAgents
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
         /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
-        public override List<float> Perceive(float rayDistance,
+        public override IList<float> Perceive(float rayDistance,
             float[] rayAngles, string[] detectableObjects,
             float startOffset=0.0f, float endOffset=0.0f)
         {
-            if (m_SubList == null || m_SubList.Length != detectableObjects.Length + 2)
-                m_SubList = new float[detectableObjects.Length + 2];
-
-            m_PerceptionBuffer.Clear();
-            m_PerceptionBuffer.Capacity = m_SubList.Length * rayAngles.Length;
-
-            // For each ray sublist stores categorical information on detected object
-            // along with object distance.
-            foreach (var angle in rayAngles)
+            var perceptionSize = (detectableObjects.Length + 2) * rayAngles.Length;
+            if (m_PerceptionBuffer == null || m_PerceptionBuffer.Length != perceptionSize)
             {
-                m_EndPosition = transform.TransformDirection(
-                    PolarToCartesian(rayDistance, angle));
-                m_EndPosition.y = endOffset;
-                if (Application.isEditor)
-                {
-                    Debug.DrawRay(transform.position + new Vector3(0f, startOffset, 0f),
-                        m_EndPosition, Color.black, 0.01f, true);
-                }
-
-                Array.Clear(m_SubList, 0, m_SubList.Length);
-
-                if (Physics.SphereCast(transform.position +
-                    new Vector3(0f, startOffset, 0f), 0.5f,
-                    m_EndPosition, out m_Hit, rayDistance))
-                {
-                    for (var i = 0; i < detectableObjects.Length; i++)
-                    {
-                        if (m_Hit.collider.gameObject.CompareTag(detectableObjects[i]))
-                        {
-                            m_SubList[i] = 1;
-                            m_SubList[detectableObjects.Length + 1] = m_Hit.distance / rayDistance;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    m_SubList[detectableObjects.Length] = 1f;
-                }
-
-                Utilities.AddRangeNoAlloc(m_PerceptionBuffer, m_SubList);
+                m_PerceptionBuffer = new float[perceptionSize];
             }
+
+            const float castRadius = 0.5f;
+            const bool legacyHitFractionBehavior = true;
+            RayPerceptionSensor.PerceiveStatic(
+                rayDistance, rayAngles, detectableObjects, startOffset, endOffset, castRadius,
+                transform, RayPerceptionSensor.CastType.Cast3D, m_PerceptionBuffer, legacyHitFractionBehavior
+            );
 
             return m_PerceptionBuffer;
         }
 
-        /// <summary>
-        /// Converts polar coordinate to cartesian coordinate.
-        /// </summary>
-        public static Vector3 PolarToCartesian(float radius, float angle)
-        {
-            var x = radius * Mathf.Cos(DegreeToRadian(angle));
-            var z = radius * Mathf.Sin(DegreeToRadian(angle));
-            return new Vector3(x, 0f, z);
-        }
+
     }
 }

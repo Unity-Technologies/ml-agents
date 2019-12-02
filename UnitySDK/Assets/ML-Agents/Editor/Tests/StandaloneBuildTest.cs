@@ -14,7 +14,7 @@ namespace MLAgents
             string[] scenes = { "Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity" };
             var buildResult = BuildPipeline.BuildPlayer(scenes, "testPlayer", BuildTarget.StandaloneOSX, BuildOptions.None);
 #if UNITY_2018_1_OR_NEWER
-            var isOK = buildResult.summary.result == BuildResult.Succeeded;
+            var isOk = buildResult.summary.result == BuildResult.Succeeded;
             var error = "";
             foreach (var stepInfo in buildResult.steps)
             {
@@ -28,9 +28,9 @@ namespace MLAgents
             }
 #else
             var error = buildResult;
-            var isOK = string.IsNullOrEmpty(error);
+            var isOk = string.IsNullOrEmpty(error);
 #endif
-            if (isOK)
+            if (isOk)
             {
                 EditorApplication.Exit(0);
             }

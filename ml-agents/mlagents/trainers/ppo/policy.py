@@ -1,7 +1,8 @@
 import logging
 import numpy as np
 from typing import Any, Dict, Optional
-import tensorflow as tf
+
+from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
 from mlagents.envs.brain import BrainInfo, BrainParameters
@@ -151,14 +152,10 @@ class PPOPolicy(TFPolicy):
         epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
-                feed_dict[
-                    self.model.prev_action
-                ] = brain_info.previous_vector_actions.reshape(
-                    [-1, len(self.model.act_size)]
+                feed_dict[self.model.prev_action] = self.retrieve_previous_action(
+                    brain_info.agents
                 )
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = brain_info.memories
+            feed_dict[self.model.memory_in] = self.retrieve_memories(brain_info.agents)
         if self.use_continuous_act:
             epsilon = np.random.normal(
                 size=(len(brain_info.vector_observations), self.model.act_size[0])
@@ -253,13 +250,9 @@ class PPOPolicy(TFPolicy):
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
         if self.use_recurrent:
-            if brain_info.memories.shape[1] == 0:
-                brain_info.memories = self.make_empty_memory(len(brain_info.agents))
-            feed_dict[self.model.memory_in] = [brain_info.memories[idx]]
+            feed_dict[self.model.memory_in] = self.retrieve_memories([idx])
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = [
-                brain_info.previous_vector_actions[idx]
-            ]
+            feed_dict[self.model.prev_action] = self.retrieve_previous_action([idx])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}

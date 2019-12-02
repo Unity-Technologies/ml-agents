@@ -28,7 +28,6 @@ from mlagents.envs.communicator_objects.unity_rl_initialization_input_pb2 import
 )
 
 from mlagents.envs.communicator_objects.unity_input_pb2 import UnityInputProto
-from mlagents.envs.communicator_objects.custom_action_pb2 import CustomActionProto
 
 from .rpc_communicator import RpcCommunicator
 from sys import platform
@@ -41,8 +40,7 @@ logger = logging.getLogger("mlagents.envs")
 class UnityEnvironment(BaseUnityEnvironment):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    SINGLE_BRAIN_TEXT_TYPES = list
-    API_VERSION = "API-11"
+    API_VERSION = "API-12"
 
     def __init__(
         self,
@@ -52,7 +50,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         seed: int = 0,
         docker_training: bool = False,
         no_graphics: bool = False,
-        timeout_wait: int = 30,
+        timeout_wait: int = 60,
         args: Optional[List[str]] = None,
     ):
         """
@@ -74,12 +72,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         self.port = base_port + worker_id
         self._buffer_size = 12000
         self._version_ = UnityEnvironment.API_VERSION
-        self._loaded = (
-            False
-        )  # If true, this means the environment was successfully loaded
-        self.proc1 = (
-            None
-        )  # The process that is started. If None, no process was started
+        # If true, this means the environment was successfully loaded
+        self._loaded = False
+        # The process that is started. If None, no process was started
+        self.proc1 = None
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
@@ -249,23 +245,22 @@ class UnityEnvironment(BaseUnityEnvironment):
                     ) from perm
 
             else:
-                """
-                Comments for future maintenance:
-                    xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                    rendering is done to virtual memory. It automatically creates a
-                    new virtual server automatically picking a server number `auto-servernum`.
-                    The server is passed the arguments using `server-args`, we are telling
-                    Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                    Note that 640 X 480 are the default width and height. The main reason for
-                    us to add this is because we'd like to change the depth from the default
-                    of 8 bits to 24.
-                    Unfortunately, this means that we will need to pass the arguments through
-                    a shell which is why we set `shell=True`. Now, this adds its own
-                    complications. E.g SIGINT can bounce off the shell and not get propagated
-                    to the child processes. This is why we add `exec`, so that the shell gets
-                    launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                    we created with `xvfb`.
-                """
+                # Comments for future maintenance:
+                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
+                #     rendering is done to virtual memory. It automatically creates a
+                #     new virtual server automatically picking a server number `auto-servernum`.
+                #     The server is passed the arguments using `server-args`, we are telling
+                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
+                #     Note that 640 X 480 are the default width and height. The main reason for
+                #     us to add this is because we'd like to change the depth from the default
+                #     of 8 bits to 24.
+                #     Unfortunately, this means that we will need to pass the arguments through
+                #     a shell which is why we set `shell=True`. Now, this adds its own
+                #     complications. E.g SIGINT can bounce off the shell and not get propagated
+                #     to the child processes. This is why we add `exec`, so that the shell gets
+                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
+                #     we created with `xvfb`.
+                #
                 docker_ls = (
                     "exec xvfb-run --auto-servernum"
                     " --server-args='-screen 0 640x480x24'"
@@ -279,22 +274,18 @@ class UnityEnvironment(BaseUnityEnvironment):
                 )
 
     def __str__(self):
-        return (
-            """Unity Academy name: {0}
-        Number of Training Brains : {1}
-        Reset Parameters :\n\t\t{2}""".format(
-                self._academy_name,
-                str(self._num_external_brains),
-                "\n\t\t".join(
-                    [
-                        str(k) + " -> " + str(self._resetParameters[k])
-                        for k in self._resetParameters
-                    ]
-                ),
+        reset_params_str = (
+            "\n\t\t".join(
+                [
+                    str(k) + " -> " + str(self._resetParameters[k])
+                    for k in self._resetParameters
+                ]
             )
-            + "\n"
-            + "\n".join([str(self._brains[b]) for b in self._brains])
+            if self._resetParameters
+            else "{}"
         )
+        return f"""Unity Academy name: {self._academy_name}
+        Reset Parameters : {reset_params_str}"""
 
     def reset(
         self,
@@ -348,10 +339,7 @@ class UnityEnvironment(BaseUnityEnvironment):
     def step(
         self,
         vector_action: Dict[str, np.ndarray] = None,
-        memory: Optional[Dict[str, np.ndarray]] = None,
-        text_action: Optional[Dict[str, List[str]]] = None,
         value: Optional[Dict[str, np.ndarray]] = None,
-        custom_action: Dict[str, Any] = None,
     ) -> AllBrainInfo:
         """
         Provides the environment with an action, moves the environment dynamics forward accordingly,
@@ -359,17 +347,12 @@ class UnityEnvironment(BaseUnityEnvironment):
         :param value: Value estimates provided by agents.
         :param vector_action: Agent's vector action. Can be a scalar or vector of int/floats.
         :param memory: Vector corresponding to memory used for recurrent policies.
-        :param text_action: Text action to send to environment for.
-        :param custom_action: Optional instance of a CustomAction protobuf message.
         :return: AllBrainInfo  : A Data structure corresponding to the new state of the environment.
         """
         if self._is_first_message:
             return self.reset()
         vector_action = {} if vector_action is None else vector_action
-        memory = {} if memory is None else memory
-        text_action = {} if text_action is None else text_action
         value = {} if value is None else value
-        custom_action = {} if custom_action is None else custom_action
 
         # Check that environment is loaded, and episode is currently running.
         if not self._loaded:
@@ -389,34 +372,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a vector_action input"
                     )
 
-            if isinstance(memory, self.SINGLE_BRAIN_ACTION_TYPES):
-                if self._num_external_brains == 1:
-                    memory = {self._external_brain_names[0]: memory}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and memories as values".format(self._num_external_brains)
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a memory input"
-                    )
-
-            if isinstance(text_action, self.SINGLE_BRAIN_TEXT_TYPES):
-                if self._num_external_brains == 1:
-                    text_action = {self._external_brain_names[0]: text_action}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and text_actions as values".format(self._num_external_brains)
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a value input"
-                    )
-
             if isinstance(value, self.SINGLE_BRAIN_ACTION_TYPES):
                 if self._num_external_brains == 1:
                     value = {self._external_brain_names[0]: value}
@@ -433,27 +388,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         "step cannot take a value input"
                     )
 
-            if isinstance(custom_action, CustomActionProto):
-                if self._num_external_brains == 1:
-                    custom_action = {self._external_brain_names[0]: custom_action}
-                elif self._num_external_brains > 1:
-                    raise UnityActionException(
-                        "You have {0} brains, you need to feed a dictionary of brain names as keys "
-                        "and CustomAction instances as values".format(
-                            self._num_external_brains
-                        )
-                    )
-                else:
-                    raise UnityActionException(
-                        "There are no external brains in the environment, "
-                        "step cannot take a custom_action input"
-                    )
-
-            for brain_name in (
-                list(vector_action.keys())
-                + list(memory.keys())
-                + list(text_action.keys())
-            ):
+            for brain_name in list(vector_action.keys()):
                 if brain_name not in self._external_brain_names:
                     raise UnityActionException(
                         "The name {0} does not correspond to an external brain "
@@ -477,37 +412,6 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                 else:
                     vector_action[brain_name] = self._flatten(vector_action[brain_name])
-                if brain_name not in memory:
-                    memory[brain_name] = []
-                else:
-                    if memory[brain_name] is None:
-                        memory[brain_name] = []
-                    else:
-                        memory[brain_name] = self._flatten(memory[brain_name])
-                if brain_name not in text_action:
-                    text_action[brain_name] = [""] * n_agent
-                else:
-                    if text_action[brain_name] is None:
-                        text_action[brain_name] = [""] * n_agent
-                if brain_name not in custom_action:
-                    custom_action[brain_name] = [None] * n_agent
-                else:
-                    if custom_action[brain_name] is None:
-                        custom_action[brain_name] = [None] * n_agent
-                    if isinstance(custom_action[brain_name], CustomActionProto):
-                        custom_action[brain_name] = [
-                            custom_action[brain_name]
-                        ] * n_agent
-
-                number_text_actions = len(text_action[brain_name])
-                if not ((number_text_actions == n_agent) or number_text_actions == 0):
-                    raise UnityActionException(
-                        "There was a mismatch between the provided text_action and "
-                        "the environment's expectation: "
-                        "The brain {0} expected {1} text_action but was given {2}".format(
-                            brain_name, n_agent, number_text_actions
-                        )
-                    )
 
                 discrete_check = (
                     self._brains[brain_name].vector_action_space_type == "discrete"
@@ -548,9 +452,7 @@ class UnityEnvironment(BaseUnityEnvironment):
                         )
                     )
 
-            step_input = self._generate_step_input(
-                vector_action, memory, text_action, value, custom_action
-            )
+            step_input = self._generate_step_input(vector_action, value)
             with hierarchical_timer("communicator.exchange"):
                 outputs = self.communicator.exchange(step_input)
             if outputs is None:
@@ -602,8 +504,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         if len(arr) == 0:
             return arr
         if isinstance(arr[0], np.ndarray):
+            # pylint: disable=no-member
             arr = [item for sublist in arr for item in sublist.tolist()]
         if isinstance(arr[0], list):
+            # pylint: disable=not-an-iterable
             arr = [item for sublist in arr for item in sublist]
         arr = [float(x) for x in arr]
         return arr
@@ -630,20 +534,15 @@ class UnityEnvironment(BaseUnityEnvironment):
             agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
             if agent_infos.value:
                 agent = agent_infos.value[0]
-                self._brains[brain_param.brain_name] = BrainParameters.from_proto(
-                    brain_param, agent
-                )
+                new_brain = BrainParameters.from_proto(brain_param, agent)
+                self._brains[brain_param.brain_name] = new_brain
+                logger.info(f"Connected new brain:\n{new_brain}")
         self._external_brain_names = list(self._brains.keys())
         self._num_external_brains = len(self._external_brain_names)
 
     @timed
     def _generate_step_input(
-        self,
-        vector_action: Dict[str, np.ndarray],
-        memory: Dict[str, np.ndarray],
-        text_action: Dict[str, list],
-        value: Dict[str, np.ndarray],
-        custom_action: Dict[str, list],
+        self, vector_action: Dict[str, np.ndarray], value: Dict[str, np.ndarray]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -651,13 +550,9 @@ class UnityEnvironment(BaseUnityEnvironment):
             if n_agents == 0:
                 continue
             _a_s = len(vector_action[b]) // n_agents
-            _m_s = len(memory[b]) // n_agents
             for i in range(n_agents):
                 action = AgentActionProto(
-                    vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s],
-                    memories=memory[b][i * _m_s : (i + 1) * _m_s],
-                    text_actions=text_action[b][i],
-                    custom_action=custom_action[b][i],
+                    vector_actions=vector_action[b][i * _a_s : (i + 1) * _a_s]
                 )
                 if b in value:
                     if value[b] is not None:
@@ -702,7 +597,7 @@ class UnityEnvironment(BaseUnityEnvironment):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)
+            s = signal.Signals(-returncode)  # pylint: disable=no-member
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.

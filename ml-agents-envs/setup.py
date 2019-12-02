@@ -2,8 +2,9 @@ import os
 import sys
 from setuptools import setup
 from setuptools.command.install import install
+import mlagents.envs
 
-VERSION = "0.11.0"
+VERSION = mlagents.envs.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 

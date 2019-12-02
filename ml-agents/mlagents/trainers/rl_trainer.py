@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List, Any, NamedTuple
 import numpy as np
 
-from mlagents.envs.brain import AllBrainInfo, BrainInfo
+from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import Buffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -57,14 +57,10 @@ class RLTrainer(Trainer):
             [] for _ in next_info.visual_observations
         ]  # TODO add types to brain.py methods
         vector_observations = []
-        text_observations = []
-        memories = []
         rewards = []
         local_dones = []
         max_reacheds = []
         agents = []
-        prev_vector_actions = []
-        prev_text_actions = []
         action_masks = []
         for agent_id in next_info.agents:
             agent_brain_info = self.training_buffer[agent_id].last_brain_info
@@ -78,36 +74,17 @@ class RLTrainer(Trainer):
             vector_observations.append(
                 agent_brain_info.vector_observations[agent_index]
             )
-            text_observations.append(agent_brain_info.text_observations[agent_index])
-            if self.policy.use_recurrent:
-                if len(agent_brain_info.memories) > 0:
-                    memories.append(agent_brain_info.memories[agent_index])
-                else:
-                    memories.append(self.policy.make_empty_memory(1))
             rewards.append(agent_brain_info.rewards[agent_index])
             local_dones.append(agent_brain_info.local_done[agent_index])
             max_reacheds.append(agent_brain_info.max_reached[agent_index])
             agents.append(agent_brain_info.agents[agent_index])
-            prev_vector_actions.append(
-                agent_brain_info.previous_vector_actions[agent_index]
-            )
-            prev_text_actions.append(
-                agent_brain_info.previous_text_actions[agent_index]
-            )
             action_masks.append(agent_brain_info.action_masks[agent_index])
-        # Check if memories exists (i.e. next_info is not empty) before attempting vstack
-        if self.policy.use_recurrent and memories:
-            memories = np.vstack(memories)
         curr_info = BrainInfo(
             visual_observations,
             vector_observations,
-            text_observations,
-            memories,
             rewards,
             agents,
             local_dones,
-            prev_vector_actions,
-            prev_text_actions,
             max_reacheds,
             action_masks,
         )
@@ -115,14 +92,14 @@ class RLTrainer(Trainer):
 
     def add_experiences(
         self,
-        curr_all_info: AllBrainInfo,
-        next_all_info: AllBrainInfo,
+        curr_info: BrainInfo,
+        next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param curr_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
         self.trainer_metrics.start_experience_collection_timer()
@@ -135,9 +112,6 @@ class RLTrainer(Trainer):
                 self.stats[signal.value_name].append(
                     np.mean(take_action_outputs["value_heads"][name])
                 )
-
-        curr_info = curr_all_info[self.brain_name]
-        next_info = next_all_info[self.brain_name]
 
         for agent_id in curr_info.agents:
             self.training_buffer[agent_id].last_brain_info = curr_info
@@ -153,7 +127,9 @@ class RLTrainer(Trainer):
         # Evaluate and store the reward signals
         tmp_reward_signal_outs = {}
         for name, signal in self.policy.reward_signals.items():
-            tmp_reward_signal_outs[name] = signal.evaluate(curr_to_use, next_info)
+            tmp_reward_signal_outs[name] = signal.evaluate(
+                curr_to_use, take_action_outputs["action"], next_info
+            )
         # Store the environment reward
         tmp_environment = np.array(next_info.rewards)
 
@@ -185,12 +161,8 @@ class RLTrainer(Trainer):
                             next_info.vector_observations[next_idx]
                         )
                     if self.policy.use_recurrent:
-                        if stored_info.memories.shape[1] == 0:
-                            stored_info.memories = np.zeros(
-                                (len(stored_info.agents), self.policy.m_size)
-                            )
                         self.training_buffer[agent_id]["memory"].append(
-                            stored_info.memories[idx]
+                            self.policy.retrieve_memories([agent_id])[0, :]
                         )
 
                     self.training_buffer[agent_id]["masks"].append(1.0)
@@ -199,13 +171,13 @@ class RLTrainer(Trainer):
                     )
                     # Add the outputs of the last eval
                     self.add_policy_outputs(stored_take_action_outputs, agent_id, idx)
-                    # Store action masks if neccessary
+                    # Store action masks if necessary
                     if not self.policy.use_continuous_act:
                         self.training_buffer[agent_id]["action_mask"].append(
                             stored_info.action_masks[idx], padding_value=1
                         )
                     self.training_buffer[agent_id]["prev_action"].append(
-                        stored_info.previous_vector_actions[idx]
+                        self.policy.retrieve_previous_action([agent_id])[0, :]
                     )
 
                     values = stored_take_action_outputs["value_heads"]
@@ -230,6 +202,9 @@ class RLTrainer(Trainer):
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
+        self.policy.save_previous_action(
+            curr_info.agents, take_action_outputs["action"]
+        )
         self.trainer_metrics.end_experience_collection_timer()
 
     def end_episode(self) -> None:
@@ -263,7 +238,7 @@ class RLTrainer(Trainer):
         :param agent_idx: the index of the Agent agent_id
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_policy_outputs method was not implemented."
         )
 
     def add_rewards_outputs(
@@ -285,5 +260,5 @@ class RLTrainer(Trainer):
         :param agent_next_idx: the index of the Agent agent_id in the next brain info
         """
         raise UnityTrainerException(
-            "The process_experiences method was not implemented."
+            "The add_rewards_outputs method was not implemented."
         )

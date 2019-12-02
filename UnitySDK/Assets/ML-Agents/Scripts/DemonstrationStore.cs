@@ -1,6 +1,7 @@
 using System.IO;
 using System.IO.Abstractions;
 using Google.Protobuf;
+using UnityEngine;
 
 namespace MLAgents
 {
@@ -10,23 +11,25 @@ namespace MLAgents
     public class DemonstrationStore
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
-        private readonly IFileSystem m_FileSystem;
-        private const string k_DemoDirecory = "Assets/Demonstrations/";
-        private const string k_ExtensionType = ".demo";
+        readonly IFileSystem m_FileSystem;
+        const string k_DemoDirecory = "Assets/Demonstrations/";
+        const string k_ExtensionType = ".demo";
 
-        private string m_FilePath;
-        private DemonstrationMetaData m_MetaData;
-        private Stream m_Writer;
-        private float m_CumulativeReward;
+        string m_FilePath;
+        DemonstrationMetaData m_MetaData;
+        Stream m_Writer;
+        float m_CumulativeReward;
 
         public DemonstrationStore(IFileSystem fileSystem)
         {
-            m_FileSystem = fileSystem;
-        }
-
-        public DemonstrationStore()
-        {
-            m_FileSystem = new FileSystem();
+            if (fileSystem != null)
+            {
+                m_FileSystem = fileSystem;
+            }
+            else
+            {
+                m_FileSystem = new FileSystem();
+            }
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace MLAgents
         /// Checks for the existence of the Demonstrations directory
         /// and creates it if it does not exist.
         /// </summary>
-        private void CreateDirectory()
+        void CreateDirectory()
         {
             if (!m_FileSystem.Directory.Exists(k_DemoDirecory))
             {
@@ -55,7 +58,7 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration file.
         /// </summary>
-        private void CreateDemonstrationFile(string demonstrationName)
+        void CreateDemonstrationFile(string demonstrationName)
         {
             // Creates demonstration file.
             var literalName = demonstrationName;
@@ -69,7 +72,7 @@ namespace MLAgents
             }
 
             m_Writer = m_FileSystem.File.Create(m_FilePath);
-            m_MetaData = new DemonstrationMetaData {demonstrationName = demonstrationName};
+            m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
             var metaProto = m_MetaData.ToProto();
             metaProto.WriteDelimitedTo(m_Writer);
         }
@@ -77,7 +80,7 @@ namespace MLAgents
         /// <summary>
         /// Writes brain parameters to file.
         /// </summary>
-        private void WriteBrainParameters(string brainName, BrainParameters brainParameters)
+        void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
             // Writes BrainParameters to file.
             m_Writer.Seek(MetaDataBytes + 1, 0);
@@ -99,7 +102,7 @@ namespace MLAgents
             }
 
             // Write AgentInfo to file.
-            var agentProto = info.ToProto();
+            var agentProto = info.ToInfoActionPairProto();
             agentProto.WriteDelimitedTo(m_Writer);
         }
 
@@ -117,7 +120,7 @@ namespace MLAgents
         /// <summary>
         /// Performs necessary episode-completion steps.
         /// </summary>
-        private void EndEpisode()
+        void EndEpisode()
         {
             m_MetaData.numberEpisodes += 1;
         }
@@ -125,7 +128,7 @@ namespace MLAgents
         /// <summary>
         /// Writes meta-data.
         /// </summary>
-        private void WriteMetadata()
+        void WriteMetadata()
         {
             var metaProto = m_MetaData.ToProto();
             var metaProtoBytes = metaProto.ToByteArray();

@@ -10,7 +10,9 @@ import numpy as np
 
 from typing import Any, Callable, Optional, List, NamedTuple
 
-
+import mlagents.trainers
+import mlagents.envs
+from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -52,6 +54,15 @@ class CommandLineOptions(NamedTuple):
     @staticmethod
     def from_argparse(args: Any) -> "CommandLineOptions":
         return CommandLineOptions(**vars(args))
+
+
+def get_version_string() -> str:
+    return f""" Version information:\n
+    ml-agents: {mlagents.trainers.__version__},
+    ml-agents-envs: {mlagents.envs.__version__},
+    Communicator API: {UnityEnvironment.API_VERSION},
+    TensorFlow: {tf_utils.tf.__version__}
+"""
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
@@ -159,6 +170,8 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
     parser.add_argument(
         "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
+
+    parser.add_argument("--version", action="version", version=get_version_string())
 
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
@@ -333,13 +346,11 @@ def create_environment_factory(
         )
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:
-        """
-            Comments for future maintenance:
-                Some OS/VM instances (e.g. COS GCP Image) mount filesystems
-                with COS flag which prevents execution of the Unity scene,
-                to get around this, we will copy the executable into the
-                container.
-            """
+        #     Comments for future maintenance:
+        #         Some OS/VM instances (e.g. COS GCP Image) mount filesystems
+        #         with COS flag which prevents execution of the Unity scene,
+        #         to get around this, we will copy the executable into the
+        #         container.
         # Navigate in docker path and find env_path and copy it.
         env_path = prepare_for_docker_run(docker_target_name, env_path)
     seed_count = 10000
@@ -391,6 +402,9 @@ def main():
     if options.debug:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
+    else:
+        # disable noisy warnings from tensorflow.
+        tf_utils.set_warnings_enabled(False)
     if options.env_path is None and options.num_runs > 1:
         raise TrainerError(
             "It is not possible to launch more than one concurrent training session "

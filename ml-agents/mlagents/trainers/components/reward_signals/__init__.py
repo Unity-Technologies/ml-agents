@@ -4,7 +4,7 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
@@ -49,11 +49,12 @@ class RewardSignal(abc.ABC):
         self.stats_name_to_update_name: Dict[str, str] = {}
 
     def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
     ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
+        :param action: the action that was taken between the two infos
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """

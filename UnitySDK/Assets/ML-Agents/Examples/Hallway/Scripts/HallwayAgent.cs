@@ -11,7 +11,6 @@ public class HallwayAgent : Agent
     public GameObject symbolO;
     public GameObject symbolX;
     public bool useVectorObs;
-    RayPerception m_RayPer;
     Rigidbody m_AgentRb;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
@@ -22,7 +21,6 @@ public class HallwayAgent : Agent
     {
         base.InitializeAgent();
         m_Academy = FindObjectOfType<HallwayAcademy>();
-        m_RayPer = GetComponent<RayPerception>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
@@ -32,11 +30,7 @@ public class HallwayAgent : Agent
     {
         if (useVectorObs)
         {
-            var rayDistance = 12f;
-            float[] rayAngles = { 20f, 60f, 90f, 120f, 160f };
-            string[] detectableObjects = { "symbol_O_Goal", "symbol_X_Goal", "symbol_O", "symbol_X", "wall" };
             AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
         }
     }
 
@@ -72,7 +66,7 @@ public class HallwayAgent : Agent
         m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);

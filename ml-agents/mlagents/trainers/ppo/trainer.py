@@ -8,7 +8,7 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs.brain import AllBrainInfo
+from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
@@ -79,34 +79,33 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = {}
 
     def process_experiences(
-        self, current_info: AllBrainInfo, new_info: AllBrainInfo
+        self, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param new_info: Dictionary of all next brains and corresponding BrainInfo.
+        :param current_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         """
-        info = new_info[self.brain_name]
         if self.is_training:
-            self.policy.update_normalization(info.vector_observations)
-        for l in range(len(info.agents)):
-            agent_actions = self.training_buffer[info.agents[l]]["actions"]
+            self.policy.update_normalization(next_info.vector_observations)
+        for l in range(len(next_info.agents)):
+            agent_actions = self.training_buffer[next_info.agents[l]]["actions"]
             if (
-                info.local_done[l]
+                next_info.local_done[l]
                 or len(agent_actions) > self.trainer_parameters["time_horizon"]
             ) and len(agent_actions) > 0:
-                agent_id = info.agents[l]
-                if info.max_reached[l]:
+                agent_id = next_info.agents[l]
+                if next_info.max_reached[l]:
                     bootstrapping_info = self.training_buffer[agent_id].last_brain_info
                     idx = bootstrapping_info.agents.index(agent_id)
                 else:
-                    bootstrapping_info = info
+                    bootstrapping_info = next_info
                     idx = l
                 value_next = self.policy.get_value_estimates(
                     bootstrapping_info,
                     idx,
-                    info.local_done[l] and not info.max_reached[l],
+                    next_info.local_done[l] and not next_info.max_reached[l],
                 )
 
                 tmp_advantages = []
@@ -150,7 +149,7 @@ class PPOTrainer(RLTrainer):
                 )
 
                 self.training_buffer[agent_id].reset_agent()
-                if info.local_done[l]:
+                if next_info.local_done[l]:
                     self.stats["Environment/Episode Length"].append(
                         self.episode_steps.get(agent_id, 0)
                     )
@@ -228,7 +227,7 @@ class PPOTrainer(RLTrainer):
             number_experiences=buffer_length,
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
         )
-        self.cumulative_returns_since_policy_update = []
+        self.cumulative_returns_since_policy_update.clear()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.

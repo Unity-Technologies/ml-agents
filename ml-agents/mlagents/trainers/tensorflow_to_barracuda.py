@@ -1,7 +1,9 @@
+# pylint: skip-file
+# flake8: noqa
 from __future__ import print_function
 import numpy as np
 import struct  # convert from Python values and C structs
-import tensorflow as tf
+from mlagents.tf_utils import tf
 import re
 
 # import barracuda

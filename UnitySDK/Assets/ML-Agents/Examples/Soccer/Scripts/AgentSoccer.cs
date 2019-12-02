@@ -3,6 +3,13 @@ using MLAgents;
 
 public class AgentSoccer : Agent
 {
+    // Note that that the detectable tags are different for the blue and purple teams. The order is
+    // * ball
+    // * own goal
+    // * opposing goal
+    // * wall
+    // * own teammate
+    // * opposing player
     public enum Team
     {
         Purple,
@@ -24,13 +31,6 @@ public class AgentSoccer : Agent
     public Rigidbody agentRb;
     SoccerAcademy m_Academy;
     Renderer m_AgentRenderer;
-    RayPerception m_RayPer;
-
-    float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] m_DetectableObjectsPurple = { "ball", "purpleGoal", "blueGoal",
-                                           "wall", "purpleAgent", "blueAgent" };
-    string[] m_DetectableObjectsBlue = { "ball", "blueGoal", "purpleGoal",
-                                         "wall", "blueAgent", "purpleAgent" };
 
     public void ChooseRandomTeam()
     {
@@ -65,7 +65,6 @@ public class AgentSoccer : Agent
     {
         base.InitializeAgent();
         m_AgentRenderer = GetComponentInChildren<Renderer>();
-        m_RayPer = GetComponent<RayPerception>();
         m_Academy = FindObjectOfType<SoccerAcademy>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
@@ -79,22 +78,6 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         m_PlayerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = m_PlayerIndex;
-    }
-
-    public override void CollectObservations()
-    {
-        var rayDistance = 20f;
-        string[] detectableObjects;
-        if (team == Team.Purple)
-        {
-            detectableObjects = m_DetectableObjectsPurple;
-        }
-        else
-        {
-            detectableObjects = m_DetectableObjectsBlue;
-        }
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 0f, 0f));
-        AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, detectableObjects, 1f, 0f));
     }
 
     public void MoveAgent(float[] act)
@@ -156,7 +139,7 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
         if (agentRole == AgentRole.Striker)

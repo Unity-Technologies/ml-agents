@@ -2,7 +2,6 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using MLAgents.Sensor;
-using MLAgents.InferenceBrain;
 
 namespace MLAgents.Tests
 {
@@ -36,12 +35,12 @@ namespace MLAgents.Tests
         {
             initializeAgentCalls += 1;
 
-            // Add in some custom sensors so we can confirm they get sorted as expected.
+            // Add in some custom Sensors so we can confirm they get sorted as expected.
             var sensor1 = new TestSensor("testsensor1");
             var sensor2 = new TestSensor("testsensor2");
 
-            m_Sensors.Add(sensor2);
-            m_Sensors.Add(sensor1);
+            sensors.Add(sensor2);
+            sensors.Add(sensor1);
         }
 
         public override void CollectObservations()
@@ -50,7 +49,7 @@ namespace MLAgents.Tests
             AddVectorObs(0f);
         }
 
-        public override void AgentAction(float[] vectorAction, string textAction)
+        public override void AgentAction(float[] vectorAction)
         {
             agentActionCalls += 1;
             AddReward(0.1f);
@@ -83,10 +82,14 @@ namespace MLAgents.Tests
 
         public int[] GetFloatObservationShape()
         {
-            return new[] { 1 };
+            return new[] { 0 };
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex) { }
+        public int Write(WriteAdapter adapter)
+        {
+            // No-op
+            return 0;
+        }
 
         public byte[] GetCompressedObservation()
         {
@@ -102,6 +105,8 @@ namespace MLAgents.Tests
         {
             return sensorName;
         }
+
+        public void Update() { }
     }
 
     public class EditModeTestGeneration
@@ -196,9 +201,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
 
-            // Make sure the sensors were sorted
-            Assert.AreEqual(agent1.m_Sensors[0].GetName(), "testsensor1");
-            Assert.AreEqual(agent1.m_Sensors[1].GetName(), "testsensor2");
+            // Make sure the Sensors were sorted
+            Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
         }
     }
 

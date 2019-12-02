@@ -3,27 +3,9 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.models import LearningModel
 
 
 class ExtrinsicRewardSignal(RewardSignal):
-    def __init__(
-        self,
-        policy: TFPolicy,
-        policy_model: LearningModel,
-        strength: float,
-        gamma: float,
-    ):
-        """
-        The extrinsic reward generator. Returns the reward received by the environment
-        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to.
-        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value.
-        :param gamma: The time discounting factor used for this reward.
-        :return: An ExtrinsicRewardSignal object.
-        """
-        super().__init__(policy, policy_model, strength, gamma)
-
     @classmethod
     def check_config(
         cls, config_dict: Dict[str, Any], param_keys: List[str] = None
@@ -36,7 +18,7 @@ class ExtrinsicRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
     ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info

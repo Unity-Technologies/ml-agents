@@ -1,17 +1,16 @@
 using System;
-using MLAgents.InferenceBrain;
 using UnityEngine;
 
 namespace MLAgents.Sensor
 {
     public class CameraSensor : ISensor
     {
-        private Camera m_Camera;
-        private int m_Width;
-        private int m_Height;
-        private bool m_Grayscale;
-        private string m_Name;
-        private int[] m_Shape;
+        Camera m_Camera;
+        int m_Width;
+        int m_Height;
+        bool m_Grayscale;
+        string m_Name;
+        int[] m_Shape;
 
         public CameraSensor(Camera camera, int width, int height, bool grayscale, string name)
         {
@@ -20,7 +19,7 @@ namespace MLAgents.Sensor
             m_Height = height;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = new[] { width, height, grayscale ? 1 : 3 };
+            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
         }
 
         public string GetName()
@@ -45,15 +44,18 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void WriteToTensor(TensorProxy tensorProxy, int agentIndex)
+        public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                Utilities.TextureToTensorProxy(texture, tensorProxy, m_Grayscale, agentIndex);
+                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
                 UnityEngine.Object.Destroy(texture);
+                return numWritten;
             }
         }
+
+        public void Update() { }
 
         public SensorCompressionType GetCompressionType()
         {

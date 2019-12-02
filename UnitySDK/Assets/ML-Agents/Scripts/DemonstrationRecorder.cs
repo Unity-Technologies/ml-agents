@@ -1,5 +1,6 @@
-using UnityEngine;
+using System.IO.Abstractions;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace MLAgents
 {
@@ -11,12 +12,12 @@ namespace MLAgents
     {
         public bool record;
         public string demonstrationName;
-        private Agent m_RecordingAgent;
-        private string m_FilePath;
-        private DemonstrationStore m_DemoStore;
+        Agent m_RecordingAgent;
+        string m_FilePath;
+        DemonstrationStore m_DemoStore;
         public const int MaxNameLength = 16;
 
-        private void Start()
+        void Start()
         {
             if (Application.isEditor && record)
             {
@@ -24,7 +25,7 @@ namespace MLAgents
             }
         }
 
-        private void Update()
+        void Update()
         {
             if (Application.isEditor && record && m_DemoStore == null)
             {
@@ -35,15 +36,16 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        private void InitializeDemoStore()
+        public void InitializeDemoStore(IFileSystem fileSystem = null)
         {
             m_RecordingAgent = GetComponent<Agent>();
-            m_DemoStore = new DemonstrationStore();
+            m_DemoStore = new DemonstrationStore(fileSystem);
+            var behaviorParams = GetComponent<BehaviorParameters>();
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             m_DemoStore.Initialize(
                 demonstrationName,
-                GetComponent<BehaviorParameters>().brainParameters,
-                GetComponent<BehaviorParameters>().behaviorName);
+                behaviorParams.brainParameters,
+                behaviorParams.behaviorName);
             Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 
@@ -71,14 +73,23 @@ namespace MLAgents
             m_DemoStore.Record(info);
         }
 
+        public void Close()
+        {
+            if (m_DemoStore != null)
+            {
+                m_DemoStore.Close();
+                m_DemoStore = null;
+            }
+        }
+
         /// <summary>
         /// Closes Demonstration store.
         /// </summary>
-        private void OnApplicationQuit()
+        void OnApplicationQuit()
         {
-            if (Application.isEditor && record && m_DemoStore != null)
+            if (Application.isEditor && record)
             {
-                m_DemoStore.Close();
+                Close();
             }
         }
     }

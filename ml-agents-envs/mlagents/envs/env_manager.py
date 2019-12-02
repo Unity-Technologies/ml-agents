@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NamedTuple, Optional
+from typing import Any, List, Dict, NamedTuple, Optional
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 from mlagents.envs.policy import Policy
 from mlagents.envs.action_info import ActionInfo
@@ -9,6 +9,13 @@ class EnvironmentStep(NamedTuple):
     previous_all_brain_info: Optional[AllBrainInfo]
     current_all_brain_info: AllBrainInfo
     brain_name_to_action_info: Optional[Dict[str, ActionInfo]]
+
+    def has_actions_for_brain(self, brain_name: str) -> bool:
+        return (
+            self.brain_name_to_action_info is not None
+            and brain_name in self.brain_name_to_action_info
+            and self.brain_name_to_action_info[brain_name].outputs is not None
+        )
 
 
 class EnvManager(ABC):
@@ -24,7 +31,10 @@ class EnvManager(ABC):
 
     @abstractmethod
     def reset(
-        self, config: Dict = None, train_mode: bool = True
+        self,
+        config: Dict = None,
+        train_mode: bool = True,
+        custom_reset_parameters: Any = None,
     ) -> List[EnvironmentStep]:
         pass
 

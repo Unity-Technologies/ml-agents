@@ -6,9 +6,9 @@ namespace MLAgents.Tests
 {
     public class RandomNormalTest
     {
-        private const float k_FirstValue = -1.19580f;
-        private const float k_SecondValue = -0.97345f;
-        private const double k_Epsilon = 0.0001;
+        const float k_FirstValue = -1.19580f;
+        const float k_SecondValue = -0.97345f;
+        const double k_Epsilon = 0.0001;
 
         [Test]
         public void RandomNormalTestTwoDouble()

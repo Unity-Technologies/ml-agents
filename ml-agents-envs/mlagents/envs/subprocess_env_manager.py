@@ -3,7 +3,7 @@ from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.exception import UnityCommunicationException
+from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
@@ -79,7 +79,7 @@ def worker(
     env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
         pickled_env_factory
     )
-    env = env_factory(worker_id)
+    env: BaseUnityEnvironment = env_factory(worker_id)
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -90,15 +90,11 @@ def worker(
             if cmd.name == "step":
                 all_action_info = cmd.payload
                 actions = {}
-                memories = {}
-                texts = {}
                 values = {}
                 for brain_name, action_info in all_action_info.items():
                     actions[brain_name] = action_info.action
-                    memories[brain_name] = action_info.memory
-                    texts[brain_name] = action_info.text
                     values[brain_name] = action_info.value
-                all_brain_info = env.step(actions, memories, texts, values)
+                all_brain_info = env.step(vector_action=actions, value=values)
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -118,7 +114,7 @@ def worker(
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
                 break
-    except (KeyboardInterrupt, UnityCommunicationException):
+    except (KeyboardInterrupt, UnityCommunicationException, UnityTimeOutException):
         logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(EnvironmentResponse("env_close", worker_id, None))
     finally:

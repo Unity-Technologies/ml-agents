@@ -43,6 +43,8 @@ def create_mock_all_brain_info(brain_info):
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
+    mock_policy.retrieve_memories.return_value = np.zeros((1, 1))
+    mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1))
     return mock_policy
 
 
@@ -64,11 +66,7 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
-    trainer.add_experiences(
-        create_mock_all_brain_info(mock_braininfo),
-        create_mock_all_brain_info(mock_braininfo),
-        fake_action_outputs,
-    )
+    trainer.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
 
     # Remove one of the agents
     next_mock_braininfo = mb.create_mock_braininfo(
@@ -83,7 +81,6 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     assert len(brain_info.agents) == 1
     assert len(brain_info.visual_observations) == num_vis_obs
     assert len(brain_info.vector_observations) == 1
-    assert len(brain_info.previous_vector_actions) == 1
 
     # Test end episode
     trainer.end_episode()

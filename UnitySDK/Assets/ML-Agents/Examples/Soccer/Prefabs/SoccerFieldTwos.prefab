@@ -89,7 +89,8 @@ GameObject:
   - component: {fileID: 135232974003521068}
   - component: {fileID: 114734187185382186}
   - component: {fileID: 114492261207303438}
-  - component: {fileID: 114692966630797794}
+  - component: {fileID: 114320493772006642}
+  - component: {fileID: 114413496910417180}
   m_Layer: 13
   m_Name: PurpleStriker
   m_TagString: purpleAgent
@@ -180,7 +181,8 @@ GameObject:
   - component: {fileID: 135154818167532598}
   - component: {fileID: 114105115387635628}
   - component: {fileID: 114698199869072806}
-  - component: {fileID: 114381244552195858}
+  - component: {fileID: 114402225209785518}
+  - component: {fileID: 114691053776668376}
   m_Layer: 11
   m_Name: BlueGoalie
   m_TagString: blueAgent
@@ -200,7 +202,8 @@ GameObject:
   - component: {fileID: 135208952479003512}
   - component: {fileID: 114387866097048300}
   - component: {fileID: 114850431417842684}
-  - component: {fileID: 114965771318032104}
+  - component: {fileID: 114516244030127556}
+  - component: {fileID: 114736358897902410}
   m_Layer: 13
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -766,7 +769,8 @@ GameObject:
   - component: {fileID: 135133947297127334}
   - component: {fileID: 114529615399004778}
   - component: {fileID: 114284769194328828}
-  - component: {fileID: 114724674330921748}
+  - component: {fileID: 114742734491650780}
+  - component: {fileID: 114206319503468014}
   m_Layer: 11
   m_Name: PurpleGoalie
   m_TagString: purpleAgent
@@ -3521,7 +3525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 112
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
     vectorActionDescriptions: []
@@ -3530,6 +3534,35 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Goalie
+--- !u!114 &114206319503468014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1890219402901316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: PurpleOffsetRayPerceptionSensor
+  detectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114273807544954564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3566,17 +3599,35 @@ MonoBehaviour:
   agentRole: 1
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
---- !u!114 &114381244552195858
+--- !u!114 &114320493772006642
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1124213441168130}
+  m_GameObject: {fileID: 1095606497496374}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: PurpleRayPerceptionSensor
+  detectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114387866097048300
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3589,7 +3640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 112
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
@@ -3598,6 +3649,64 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Striker
+--- !u!114 &114402225209785518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1124213441168130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueRayPerceptionSensor
+  detectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
+--- !u!114 &114413496910417180
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095606497496374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: PurpleOffsetRayPerceptionSensor
+  detectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3618,6 +3727,35 @@ MonoBehaviour:
   agentRole: 0
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
+--- !u!114 &114516244030127556
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1131626411948014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueRayPerceptionSensor
+  detectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114529615399004778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3630,7 +3768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 112
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
     vectorActionSize: 05000000
     vectorActionDescriptions: []
@@ -3658,17 +3796,35 @@ MonoBehaviour:
   ballStartingPos: {x: 0, y: 0, z: 0}
   goalTextUI: {fileID: 0}
   canResetBall: 0
---- !u!114 &114692966630797794
+--- !u!114 &114691053776668376
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1095606497496374}
+  m_GameObject: {fileID: 1124213441168130}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sensorName: BlueOffsetRayPerceptionSensor
+  detectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114698199869072806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3689,17 +3845,6 @@ MonoBehaviour:
   agentRole: 1
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
---- !u!114 &114724674330921748
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1890219402901316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114734187185382186
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3712,7 +3857,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 112
+    vectorObservationSize: 0
     numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
@@ -3721,6 +3866,64 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Striker
+--- !u!114 &114736358897902410
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1131626411948014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueOffsetRayPerceptionSensor
+  detectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 1
+  endVerticalOffset: 1
+--- !u!114 &114742734491650780
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1890219402901316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: PurpleRayPerceptionSensor
+  detectableTags:
+  - ball
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3741,17 +3944,6 @@ MonoBehaviour:
   agentRole: 0
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
---- !u!114 &114965771318032104
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1131626411948014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb172294dbbcc408286b156a2c4b553c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &135133947297127334
 SphereCollider:
   m_ObjectHideFlags: 1

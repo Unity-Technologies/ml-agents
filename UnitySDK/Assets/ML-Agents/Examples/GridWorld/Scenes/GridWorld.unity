@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971162, g: 0.49977726, b: 0.5756362, a: 1}
+  m_IndirectSpecularColor: {r: 0.4497121, g: 0.49977785, b: 0.57563704, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
     vectorActionSize: 05000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 07afbd1d35ed345eeb850fcbb59eae0b, type: 3}
+  m_Model: {fileID: 11400000, guid: a812f1ce7763a4a0c912717f3594fe20, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: GridWorld
@@ -372,7 +372,7 @@ MonoBehaviour:
   renderTexture: {fileID: 8400000, guid: 114608d5384404f89bff4b6f88432958, type: 2}
   sensorName: RenderTextureSensor
   width: 84
-  height: 84
+  height: 64
   grayscale: 0
 --- !u!1 &260425459
 GameObject:
@@ -1584,7 +1584,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -369.5, y: -197}
-  m_SizeDelta: {x: 200, y: 200}
+  m_SizeDelta: {x: 200, y: 152}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1305247361
 MonoBehaviour:

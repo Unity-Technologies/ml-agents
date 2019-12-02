@@ -4,8 +4,9 @@ import sys
 
 from setuptools import setup, find_namespace_packages
 from setuptools.command.install import install
+import mlagents.trainers
 
-VERSION = "0.11.0"
+VERSION = mlagents.trainers.__version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -64,7 +65,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
-        "tensorflow>=1.7,<2.0",
+        "tensorflow>=1.7,<2.1",
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",
