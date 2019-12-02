@@ -211,7 +211,7 @@ class AgentBuffer(dict):
         """
         num_seq_to_sample = batch_size // sequence_length
         mini_batch = AgentBuffer()
-        buff_len = len(next(iter(self.values())))
+        buff_len = self.num_experiences
         num_sequences_in_buffer = buff_len // sequence_length
         start_idxes = (
             np.random.randint(num_sequences_in_buffer, size=num_seq_to_sample)
