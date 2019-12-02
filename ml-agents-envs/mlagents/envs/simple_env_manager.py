@@ -59,7 +59,7 @@ class SimpleEnvManager(EnvManager):
         return self.env.external_brains
 
     @property
-    def reset_parameters(self) -> Dict[str, float]:
+    def get_properties(self) -> Dict[str, float]:
         reset_params = {}
         for k in self.shared_float_properties.list_properties():
             reset_params[k] = self.shared_float_properties.get_property(k)

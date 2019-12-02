@@ -33,7 +33,7 @@ class EnvManager(ABC):
 
     @property
     @abstractmethod
-    def reset_parameters(self) -> Dict[str, float]:
+    def get_properties(self) -> Dict[str, float]:
         pass
 
     @abstractmethod

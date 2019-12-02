@@ -120,12 +120,12 @@ def worker(
                 reset_timers()
             elif cmd.name == "external_brains":
                 _send_response("external_brains", env.external_brains)
-            elif cmd.name == "reset_parameters":
+            elif cmd.name == "get_properties":
                 reset_params = {}
                 for k in shared_float_properties.list_properties():
                     reset_params[k] = shared_float_properties.get_property(k)
 
-                _send_response("reset_parameters", reset_params)
+                _send_response("get_properties", reset_params)
             elif cmd.name == "reset":
                 for k, v in cmd.payload.items():
                     shared_float_properties.set_property(k, v)
@@ -243,8 +243,8 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     @property
-    def reset_parameters(self) -> Dict[str, float]:
-        self.env_workers[0].send("reset_parameters")
+    def get_properties(self) -> Dict[str, float]:
+        self.env_workers[0].send("get_properties")
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
