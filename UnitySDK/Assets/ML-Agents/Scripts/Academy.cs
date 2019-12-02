@@ -92,7 +92,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        const string k_ApiVersion = "API-11";
+        const string k_ApiVersion = "API-12";
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
@@ -156,7 +156,7 @@ namespace MLAgents
 
         /// If true, the Academy will use inference settings. This field is
         /// initialized in <see cref="Awake"/> depending on the presence
-        /// or absence of a communicator. Furthermore, it can be modified during 
+        /// or absence of a communicator. Furthermore, it can be modified during
         /// training via <see cref="SetIsInference"/>.
         bool m_IsInference = true;
 
@@ -187,13 +187,13 @@ namespace MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
-        // The Academy uses a series of events to communicate with agents 
+        // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
-        // Signals to all the Agents at each environment step so they can use 
+        // Signals to all the Agents at each environment step so they can use
         // their Policy to decide on their next action.
         public event System.Action DecideAction;
 
@@ -575,13 +575,13 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Creates or retrieves an existing ModelRunner that uses the same 
+        /// Creates or retrieves an existing ModelRunner that uses the same
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model"> The NNModel the ModelRunner must use </param>
-        /// <param name="brainParameters"> The brainParameters used to create 
+        /// <param name="brainParameters"> The brainParameters used to create
         /// the ModelRunner </param>
-        /// <param name="inferenceDevice"> The inference device (CPU or GPU) 
+        /// <param name="inferenceDevice"> The inference device (CPU or GPU)
         /// the ModelRunner will use </param>
         /// <returns> The ModelRunner compatible with the input settings</returns>
         public ModelRunner GetOrCreateModelRunner(
