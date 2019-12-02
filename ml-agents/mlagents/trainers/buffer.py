@@ -244,9 +244,25 @@ class AgentBuffer(dict):
         we're not truncating at each update. Note that we must truncate an integer number of sequence_lengths
         param: max_length: The length at which to truncate the buffer.
         """
-        current_length = len(next(iter(self.values())))
+        current_length = self.num_experiences
         # make max_length an integer number of sequence_lengths
         max_length -= max_length % sequence_length
         if current_length > max_length:
             for _key in self.keys():
                 self[_key] = self[_key][current_length - max_length :]
+
+    @property
+    def num_experiences(self):
+        """
+        The number of agent experiences in the AgentBuffer, i.e. the length of the buffer.
+
+        An experience consists of one element across all of the fields of this AgentBuffer.
+        Note that these all have to be the same length, otherwise shuffle and append_to_update_buffer
+        will fail.
+        """
+        key_list = list(self.keys())
+        if not self.check_length(key_list):
+            raise BufferException(
+                "Unable to shuffle if the fields are not of same length"
+            )
+        return len(next(iter(self.values())))

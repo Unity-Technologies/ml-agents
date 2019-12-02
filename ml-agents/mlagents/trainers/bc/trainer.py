@@ -113,7 +113,7 @@ class BCTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.demonstration_buffer["actions"]) > self.n_sequences
+        return self.demonstration_buffer.num_experiences > self.n_sequences
 
     def update_policy(self):
         """
@@ -125,7 +125,7 @@ class BCTrainer(Trainer):
         # We either divide the entire buffer into num_batches batches, or limit the number
         # of batches to batches_per_epoch.
         num_batches = min(
-            len(self.demonstration_buffer["actions"]) // batch_size,
+            self.demonstration_buffer.num_experiences // batch_size,
             self.batches_per_epoch,
         )
 

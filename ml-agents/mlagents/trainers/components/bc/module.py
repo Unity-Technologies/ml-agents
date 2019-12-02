@@ -43,7 +43,7 @@ class BCModule:
         self.batch_size = batch_size if batch_size else default_batch_size
         self.num_epoch = num_epoch if num_epoch else default_num_epoch
         self.n_sequences = max(
-            min(self.batch_size, len(self.demonstration_buffer["actions"]))
+            min(self.batch_size, self.demonstration_buffer.num_experiences)
             // policy.sequence_length,
             1,
         )
@@ -85,7 +85,7 @@ class BCModule:
 
         batch_losses = []
         possible_demo_batches = (
-            len(self.demonstration_buffer["actions"]) // self.n_sequences
+            self.demonstration_buffer.num_experiences // self.n_sequences
         )
         possible_batches = possible_demo_batches
 

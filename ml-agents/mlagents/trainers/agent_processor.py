@@ -36,6 +36,7 @@ class ProcessingBuffer(dict):
     ) -> None:
         """
         Appends the buffer of an agent to the update buffer.
+        :param update_buffer: A reference to an AgentBuffer to append the agent's buffer to
         :param agent_id: The id of the agent which data will be appended
         :param key_list: The fields that must be added. If None: all fields will be appended.
         :param batch_size: The number of elements that must be appended. If None: All of them will be.
@@ -45,7 +46,7 @@ class ProcessingBuffer(dict):
             key_list = self[agent_id].keys()
         if not self[agent_id].check_length(key_list):
             raise BufferException(
-                "The length of the fields {0} for agent {1} where not of same length".format(
+                "The length of the fields {0} for agent {1} were not of same length".format(
                     key_list, agent_id
                 )
             )
