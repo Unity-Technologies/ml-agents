@@ -43,8 +43,10 @@ def create_mock_all_brain_info(brain_info):
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
-    mock_policy.retrieve_memories.return_value = np.zeros((1, 1))
-    mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1))
+    mock_policy.retrieve_memories.return_value = np.zeros((1, 1), dtype=np.float32)
+    mock_policy.retrieve_previous_action.return_value = np.zeros(
+        (1, 1), dtype=np.float32
+    )
     return mock_policy
 
 
@@ -57,7 +59,7 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     fake_action_outputs = {
         "action": [0.1, 0.1],
         "value_heads": {},
-        "entropy": np.array([1.0]),
+        "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
     }
     mock_braininfo = mb.create_mock_braininfo(

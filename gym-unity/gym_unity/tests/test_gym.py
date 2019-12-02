@@ -125,7 +125,9 @@ def create_mock_vector_braininfo(num_agents=1, number_visual_observations=0):
     mock_braininfo = mock.Mock()
     mock_braininfo.return_value.vector_observations = np.array([num_agents * [1, 2, 3]])
     if number_visual_observations:
-        mock_braininfo.return_value.visual_observations = [[np.zeros(shape=(8, 8, 3))]]
+        mock_braininfo.return_value.visual_observations = [
+            [np.zeros(shape=(8, 8, 3), dtype=np.float32)]
+        ]
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
     mock_braininfo.return_value.agents = range(0, num_agents)
