@@ -26,12 +26,6 @@ public class FoodCollectorAcademy : Academy
         totalScore = 0;
     }
 
-    public override void InitializeAcademy()
-    {
-        FloatProperties.RegisterCallback("laser_length", f => { });
-        FloatProperties.RegisterCallback("agent_scale", f => { });
-    }
-
     void ClearObjects(GameObject[] objects)
     {
         foreach (var food in objects)

@@ -12,8 +12,6 @@ public class GridAcademy : Academy
             MainCamera.transform.position = new Vector3(-(f - 1) / 2f, f * 1.25f, -(f - 1) / 2f);
             MainCamera.orthographicSize = (f + 5f) / 2f;
         });
-        FloatProperties.RegisterCallback("numObstacles", f => { });
-        FloatProperties.RegisterCallback("numGoals", f => { });
 
     }
 }
