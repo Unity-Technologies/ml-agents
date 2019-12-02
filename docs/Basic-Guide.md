@@ -141,7 +141,6 @@ INFO:mlagents.learn:{'--curriculum': 'None',
  '--run-id': 'first-run',
  '--save-freq': '50000',
  '--seed': '-1',
- '--slow': False,
  '--train': True,
  '--worker-id': '0',
  '<trainer-config-path>': 'config/trainer_config.yaml'}
@@ -158,7 +157,6 @@ like this:
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Reset Parameters : {}
 
 INFO:mlagents.envs:Connected new brain:
 Unity brain name: 3DBallLearning

@@ -1,5 +1,14 @@
 # Migrating
 
+## Migrating from master to develop
+
+### Important changes
+* CustomResetParameters are now deprecated.
+* `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
+* `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`
+* The Academy no longer has a `Training Configuration` nor `Inference Configuration` field in the inspector. To modify the configuration form the Low-Level Python API, use an `EngineConfigurationChannel`. To modify it during training, use the new command line arguments `--width`, `--heigth`, `--quality-level`, `--time-scale` and `--target-frame-rate` in `mlagents-learn`.
+* The Academy no longer has a `Default Reset Parameters` field in the inspector. The Academy class no longer has a `ResetParameters`. To access shared float properties with Python, use the new `FloatProperties` field on the Academy.
+
 ## Migrating from ML-Agents toolkit v0.11.0
 
 ### Important Changes

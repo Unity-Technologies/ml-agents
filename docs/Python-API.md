@@ -93,14 +93,6 @@ variable named `env` in this example, can be used in the following way:
 - **Reset : `env.reset(train_mode=True, config=None)`**
   Send a reset signal to the environment, and provides a dictionary mapping
   Brain names to BrainInfo objects.
-  - `train_mode` indicates whether to run the environment in train (`True`) or
-    test (`False`) mode.
-  - `config` is an optional dictionary of configuration flags specific to the
-    environment. For generic environments, `config` can be ignored. `config` is
-    a dictionary of strings to floats where the keys are the names of the
-    `resetParameters` and the values are their corresponding float values.
-    Define the reset parameters on the Academy Inspector window in the Unity
-    Editor.
 - **Step : `env.step(action)`**
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
@@ -131,6 +123,22 @@ variable named `env` in this example, can be used in the following way:
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
+
+### Modifying the environment from Python
+The Environment can be modified by using side channels to send data to the
+environment. When creating the environment, pass a list of side channels as
+`side_channels` argument to the constructor.
+
+#### EngineConfigurationChannel
+An `EngineConfigurationChannel` will allow you to modify how
+fast and how accurate the Unity engine is. For example, modifying the
+time scale or the quality level.
+
+#### FloatPropertiesChannel
+A `FloatPropertiesChannel` will allow you to get and set float properties
+in the environment. You can call get_property and set_property on the
+side channel to read and write properties.
+
 
 ## mlagents-learn
 
