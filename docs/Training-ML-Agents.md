@@ -159,7 +159,7 @@ environment, you can set the following command line options when invoking
 * `--cpu`: Forces training using CPU only.
 * Engine Configuration :
   * `--width' : The width of the executable window of the environment(s) in pixels
-  (does not work for editor training) (Default 84)
+  (ignored for editor training) (Default 84)
   * `--height` : The height of the executable window of the environment(s) in pixels
   (does not work for editor training). (Default 84)
   * `--quality-level` : The quality level of the environment(s). Equivalent to
