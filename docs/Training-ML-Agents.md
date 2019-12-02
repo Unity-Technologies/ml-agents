@@ -142,12 +142,6 @@ environment, you can set the following command line options when invoking
   will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs
   given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
   training using the Editor rather than an executable, the base port will be ignored.
-* `--slow`: Specify this option to run the Unity environment at normal, game
-  speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
-  specified in the Academy's **Inference Configuration**. By default, training
-  runs using the speeds specified in your Academy's **Training Configuration**.
-  See
-  [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train`: Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
 * `--load`: If set, the training code loads an already trained model to
@@ -163,6 +157,17 @@ environment, you can set the following command line options when invoking
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
 * `--cpu`: Forces training using CPU only.
+* Engine Configuration :
+  * `--width' : The width of the executable window of the environment(s) in pixels
+  (ignored for editor training) (Default 84)
+  * `--height` : The height of the executable window of the environment(s) in pixels
+  (ignored for editor training). (Default 84)
+  * `--quality-level` : The quality level of the environment(s). Equivalent to
+  calling `QualitySettings.SetQualityLevel` in Unity. (Default 5)
+  * `--time-scale` : The time scale of the Unity environment(s). Equivalent to setting
+  `Time.timeScale` in Unity. (Default 20.0, maximum 100.0)
+  * `--target-frame-rate` : The target frame rate of the Unity environment(s).
+  Equivalent to setting `Application.targetFrameRate` in Unity. (Default: -1)
 
 ### Training Config File
 

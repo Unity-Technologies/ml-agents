@@ -111,43 +111,6 @@ perform training. Please refer to [this
 page](Learning-Environment-Executable.md) for instructions on how to build and
 use an executable.
 
-```console
-ml-agents$ mlagents-learn config/trainer_config.yaml --run-id=first-run --train
-
-
-                        ▄▄▄▓▓▓▓
-                   ╓▓▓▓▓▓▓█▓▓▓▓▓
-              ,▄▄▄m▀▀▀'  ,▓▓▓▀▓▓▄                           ▓▓▓  ▓▓▌
-            ▄▓▓▓▀'      ▄▓▓▀  ▓▓▓      ▄▄     ▄▄ ,▄▄ ▄▄▄▄   ,▄▄ ▄▓▓▌▄ ▄▄▄    ,▄▄
-          ▄▓▓▓▀        ▄▓▓▀   ▐▓▓▌     ▓▓▌   ▐▓▓ ▐▓▓▓▀▀▀▓▓▌ ▓▓▓ ▀▓▓▌▀ ^▓▓▌  ╒▓▓▌
-        ▄▓▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓      ▓▀      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌   ▐▓▓▄ ▓▓▌
-        ▀▓▓▓▓▀▀▀▀▀▀▀▀▀▀▓▓▄     ▓▓      ▓▓▌   ▐▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▌    ▐▓▓▐▓▓
-          ^█▓▓▓        ▀▓▓▄   ▐▓▓▌     ▓▓▓▓▄▓▓▓▓ ▐▓▓    ▓▓▓ ▓▓▓  ▓▓▓▄    ▓▓▓▓`
-            '▀▓▓▓▄      ^▓▓▓  ▓▓▓       └▀▀▀▀ ▀▀ ^▀▀    `▀▀ `▀▀   '▀▀    ▐▓▓▌
-               ▀▀▀▀▓▄▄▄   ▓▓▓▓▓▓,                                      ▓▓▓▓▀
-                   `▀█▓▓▓▓▓▓▓▓▓▌
-                        ¬`▀▀▀█▓
-
-
-INFO:mlagents.learn:{'--curriculum': 'None',
- '--docker-target-name': 'Empty',
- '--env': 'None',
- '--help': False,
- '--keep-checkpoints': '5',
- '--lesson': '0',
- '--load': False,
- '--no-graphics': False,
- '--num-runs': '1',
- '--run-id': 'first-run',
- '--save-freq': '50000',
- '--seed': '-1',
- '--slow': False,
- '--train': True,
- '--worker-id': '0',
- '<trainer-config-path>': 'config/trainer_config.yaml'}
-INFO:mlagents.envs:Start training by pressing the Play button in the Unity Editor.
- ```
-
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
 environment first.
 
@@ -158,7 +121,6 @@ like this:
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Reset Parameters : {}
 
 INFO:mlagents.envs:Connected new brain:
 Unity brain name: 3DBallLearning
