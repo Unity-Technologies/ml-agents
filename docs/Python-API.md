@@ -90,7 +90,7 @@ variable named `env` in this example, can be used in the following way:
 - **Print : `print(str(env))`**
   Prints all parameters relevant to the loaded environment and the
   Brains.
-- **Reset : `env.reset(train_mode=True, config=None)`**
+- **Reset : `env.reset()`**
   Send a reset signal to the environment, and provides a dictionary mapping
   Brain names to BrainInfo objects.
 - **Step : `env.step(action)`**
