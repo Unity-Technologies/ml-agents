@@ -178,7 +178,7 @@ class TFPolicy(Policy):
         :param num_agents: Number of agents.
         :return: Numpy array of zeros.
         """
-        return np.zeros((num_agents, self.m_size), dtype=np.float)
+        return np.zeros((num_agents, self.m_size), dtype=np.float32)
 
     def save_memories(
         self, agent_ids: List[int], memory_matrix: Optional[np.ndarray]
@@ -189,7 +189,7 @@ class TFPolicy(Policy):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
     def retrieve_memories(self, agent_ids: List[int]) -> np.ndarray:
-        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float)
+        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.memory_dict:
                 memory_matrix[index, :] = self.memory_dict[agent_id]

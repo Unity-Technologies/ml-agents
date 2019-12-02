@@ -133,7 +133,7 @@ class RLTrainer(Trainer):
                 curr_to_use, take_action_outputs["action"], next_info
             )
         # Store the environment reward
-        tmp_environment = np.array(next_info.rewards)
+        tmp_environment = np.array(next_info.rewards, dtype=np.float32)
 
         rewards_out = AllRewardsOutput(
             reward_signals=tmp_reward_signal_outs, environment=tmp_environment

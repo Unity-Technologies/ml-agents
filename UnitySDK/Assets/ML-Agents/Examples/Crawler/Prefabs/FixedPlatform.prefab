@@ -1812,8 +1812,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0
@@ -1953,12 +1951,11 @@ MonoBehaviour:
     vectorObservationSize: 126
     numStackedVectorObservations: 1
     vectorActionSize: 14000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 48982d8fa360a4ed0bb265495e4f378b, type: 3}
+  m_Model: {fileID: 11400000, guid: ac4a23ff4713140198629ae0844926ee, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
+  m_BehaviorType: 0
   m_BehaviorName: CrawlerStatic
 --- !u!114 &114954029223843696
 MonoBehaviour:

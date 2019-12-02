@@ -74,7 +74,7 @@ class BCModel(object):
                 power=1.0,
             )
         else:
-            self.annealed_learning_rate = learning_rate
+            self.annealed_learning_rate = tf.Variable(learning_rate)
 
         optimizer = tf.train.AdamOptimizer(learning_rate=self.annealed_learning_rate)
         self.update_batch = optimizer.minimize(self.loss)
