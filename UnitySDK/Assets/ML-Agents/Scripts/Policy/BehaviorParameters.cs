@@ -68,7 +68,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, m_BehaviorName);
+                        return new RemotePolicy(m_BrainParameters, concatBehaviorIdentifiers);
                     }
                     if (m_Model != null)
                     {
