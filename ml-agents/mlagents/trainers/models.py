@@ -112,11 +112,7 @@ class LearningModel(object):
             learning_rate = tf.Variable(lr)
         elif lr_schedule == LearningRateSchedule.LINEAR:
             learning_rate = tf.train.polynomial_decay(
-                np.float32(lr),
-                global_step,
-                np.float32(max_step),
-                np.float32(1e-10),
-                power=np.float32(1.0),
+                lr, global_step, max_step, 1e-10, power=1.0
             )
         else:
             raise UnityTrainerException(
