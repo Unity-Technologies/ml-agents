@@ -161,7 +161,7 @@ environment, you can set the following command line options when invoking
   * `--width' : The width of the executable window of the environment(s) in pixels
   (ignored for editor training) (Default 84)
   * `--height` : The height of the executable window of the environment(s) in pixels
-  (does not work for editor training). (Default 84)
+  (ignored for editor training). (Default 84)
   * `--quality-level` : The quality level of the environment(s). Equivalent to
   calling `QualitySettings.SetQualityLevel` in Unity. (Default 5)
   * `--time-scale` : The time scale of the Unity environment(s). Equivalent to setting
