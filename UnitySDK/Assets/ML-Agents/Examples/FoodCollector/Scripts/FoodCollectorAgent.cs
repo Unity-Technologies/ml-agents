@@ -277,7 +277,7 @@ public class FoodCollectorAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f) * m_LaserLength;
+        m_LaserLength = m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
