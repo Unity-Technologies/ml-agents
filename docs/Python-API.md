@@ -129,6 +129,9 @@ The Environment can be modified by using side channels to send data to the
 environment. When creating the environment, pass a list of side channels as
 `side_channels` argument to the constructor.
 
+__Note__ : A side channel will only send/receive messages when `env.step` is
+called.
+
 #### EngineConfigurationChannel
 An `EngineConfigurationChannel` will allow you to modify how
 fast and how accurate the Unity engine is. For example, modifying the
