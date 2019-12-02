@@ -136,12 +136,58 @@ called.
 An `EngineConfigurationChannel` will allow you to modify how
 fast and how accurate the Unity engine is. For example, modifying the
 time scale or the quality level.
+`EngineConfigurationChannel` has two methods :
+
+ * `set_configuration_parameters` with arguments
+   * width: Defines the width of the display. Default 80.
+   * height: Defines the height of the display. Default 80.
+   * quality_level: Defines the quality level of the simulation. Default 1.
+   * time_scale: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics might break. Default 20.
+   *  target_frame_rate: Instructs simulation to try to render at a specified frame rate. Default -1.
+ * `set_configuration` with argument config which is an `EngineConfig`
+ NamedTuple object.
+
+For example :
+```python
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+
+channel = EngineConfigurationChannel()
+
+env = UnityEnvironment(base_port = 5004, side_channels = [channel])
+
+channel.set_configuration_parameters(time_scale = 2.0)
+
+i = env.reset()
+...
+```
 
 #### FloatPropertiesChannel
 A `FloatPropertiesChannel` will allow you to get and set float properties
 in the environment. You can call get_property and set_property on the
 side channel to read and write properties.
+`FloatPropertiesChannel` has three methods:
 
+ * `set_property` Sets a property in the Unity Environment.
+  * key: The string identifier of the property.
+  * value: The float value of the property.
+ * `get_property` Gets a property in the Unity Environment. If the property was not found, will return None.
+  * key: The string identifier of the property.
+ * `list_properties` Returns a list of all the string identifiers of the properties
+
+```python
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+
+channel = FloatPropertiesChannel()
+
+env = UnityEnvironment(base_port = 5004, side_channels = [channel])
+
+channel.set_property("parameter_1", 2.0)
+
+i = env.reset()
+...
+```
 
 ## mlagents-learn
 

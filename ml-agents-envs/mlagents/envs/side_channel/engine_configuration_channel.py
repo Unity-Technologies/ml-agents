@@ -60,7 +60,7 @@ class EngineConfigurationChannel(SideChannel):
         :param quality_level: Defines the quality level of the simulation.
         Default 1.
         :param time_scale: Defines the multiplier for the deltatime in the
-        simulation. If set to a higher value, time will pass faaster in the
+        simulation. If set to a higher value, time will pass faster in the
         simulation but the physics might break. Default 20.
         :param target_frame_rate: Instructs simulation to try to render at a
         specified frame rate. Default -1.
