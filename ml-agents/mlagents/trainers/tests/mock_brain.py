@@ -2,7 +2,8 @@ import unittest.mock as mock
 import numpy as np
 
 from mlagents.envs.brain import CameraResolution, BrainParameters
-from mlagents.trainers.buffer import AgentProcessorBuffer, AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 
 
 def create_mock_brainparams(
@@ -107,7 +108,7 @@ def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
 
 
 def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
-    buffer = AgentProcessorBuffer()
+    buffer = ProcessingBuffer()
     update_buffer = AgentBuffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):

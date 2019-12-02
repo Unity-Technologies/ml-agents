@@ -9,7 +9,8 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.bc.policy import BCPolicy
-from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -41,7 +42,7 @@ class BCTrainer(Trainer):
         self.batches_per_epoch = trainer_parameters["batches_per_epoch"]
 
         self.demonstration_buffer = AgentBuffer()
-        self.evaluation_buffer = AgentProcessorBuffer()
+        self.evaluation_buffer = ProcessingBuffer()
 
     def add_experiences(
         self,

@@ -1,5 +1,6 @@
 import numpy as np
-from mlagents.trainers.buffer import AgentProcessorBuffer, AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 
 
 def assert_array(a, b):
@@ -11,7 +12,7 @@ def assert_array(a, b):
 
 
 def construct_fake_processing_buffer():
-    b = AgentProcessorBuffer()
+    b = ProcessingBuffer()
     for fake_agent_id in range(4):
         for step in range(9):
             b[fake_agent_id]["vector_observation"].append(

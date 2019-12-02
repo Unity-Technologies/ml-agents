@@ -3,7 +3,8 @@ import logging
 import os
 from typing import List, Tuple
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
@@ -24,7 +25,7 @@ def make_demo_buffer(
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
-    demo_process_buffer = AgentProcessorBuffer()
+    demo_process_buffer = ProcessingBuffer()
     demo_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
