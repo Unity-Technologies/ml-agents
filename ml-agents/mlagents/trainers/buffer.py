@@ -256,7 +256,7 @@ class AgentBuffer(dict):
                 self[_key] = self[_key][current_length - max_length :]
 
     @property
-    def num_experiences(self):
+    def num_experiences(self) -> int:
         """
         The number of agent experiences in the AgentBuffer, i.e. the length of the buffer.
 
@@ -264,9 +264,7 @@ class AgentBuffer(dict):
         Note that these all have to be the same length, otherwise shuffle and append_to_update_buffer
         will fail.
         """
-        key_list = list(self.keys())
-        if not self.check_length(key_list):
-            raise BufferException(
-                "Unable to shuffle if the fields are not of same length"
-            )
-        return len(next(iter(self.values())))
+        if self.values():
+            return len(next(iter(self.values())))
+        else:
+            return 0
