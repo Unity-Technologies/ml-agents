@@ -43,9 +43,7 @@ class BCModule:
         self.batch_size = batch_size if batch_size else default_batch_size
         self.num_epoch = num_epoch if num_epoch else default_num_epoch
         self.n_sequences = max(
-            min(
-                self.batch_size, len(self.demonstration_buffer.update_buffer["actions"])
-            )
+            min(self.batch_size, self.demonstration_buffer.num_experiences)
             // policy.sequence_length,
             1,
         )
@@ -87,7 +85,7 @@ class BCModule:
 
         batch_losses = []
         possible_demo_batches = (
-            len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences
+            self.demonstration_buffer.num_experiences // self.n_sequences
         )
         possible_batches = possible_demo_batches
 
@@ -95,7 +93,7 @@ class BCModule:
 
         n_epoch = self.num_epoch
         for _ in range(n_epoch):
-            self.demonstration_buffer.update_buffer.shuffle(
+            self.demonstration_buffer.shuffle(
                 sequence_length=self.policy.sequence_length
             )
             if max_batches == 0:
@@ -103,7 +101,7 @@ class BCModule:
             else:
                 num_batches = min(possible_batches, max_batches)
             for i in range(num_batches // self.policy.sequence_length):
-                demo_update_buffer = self.demonstration_buffer.update_buffer
+                demo_update_buffer = self.demonstration_buffer
                 start = i * self.n_sequences * self.policy.sequence_length
                 end = (i + 1) * self.n_sequences * self.policy.sequence_length
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)

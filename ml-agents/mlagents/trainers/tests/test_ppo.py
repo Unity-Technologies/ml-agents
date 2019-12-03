@@ -347,14 +347,14 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["extrinsic_returns"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["extrinsic_value_estimates"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_returns"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_value_estimates"] = buffer.update_buffer["rewards"]
+    buffer["extrinsic_rewards"] = buffer["rewards"]
+    buffer["extrinsic_returns"] = buffer["rewards"]
+    buffer["extrinsic_value_estimates"] = buffer["rewards"]
+    buffer["curiosity_rewards"] = buffer["rewards"]
+    buffer["curiosity_returns"] = buffer["rewards"]
+    buffer["curiosity_value_estimates"] = buffer["rewards"]
 
-    trainer.training_buffer = buffer
+    trainer.update_buffer = buffer
     trainer.update_policy()
     # Make batch length a larger multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 128
@@ -397,8 +397,8 @@ def test_add_rewards_output(dummy_config):
         agent_idx=idx,
         agent_next_idx=next_idx,
     )
-    assert trainer.training_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
-    assert trainer.training_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
+    assert trainer.processing_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
+    assert trainer.processing_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
 
 
 if __name__ == "__main__":

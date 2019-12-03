@@ -5,7 +5,8 @@ import numpy as np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
@@ -43,7 +44,8 @@ class RLTrainer(Trainer):
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": {}}
-        self.training_buffer = Buffer()
+        self.processing_buffer = ProcessingBuffer()
+        self.update_buffer = AgentBuffer()
         self.episode_steps = {}
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
@@ -63,7 +65,7 @@ class RLTrainer(Trainer):
         agents = []
         action_masks = []
         for agent_id in next_info.agents:
-            agent_brain_info = self.training_buffer[agent_id].last_brain_info
+            agent_brain_info = self.processing_buffer[agent_id].last_brain_info
             if agent_brain_info is None:
                 agent_brain_info = next_info
             agent_index = agent_brain_info.agents.index(agent_id)
@@ -114,8 +116,8 @@ class RLTrainer(Trainer):
                 )
 
         for agent_id in curr_info.agents:
-            self.training_buffer[agent_id].last_brain_info = curr_info
-            self.training_buffer[
+            self.processing_buffer[agent_id].last_brain_info = curr_info
+            self.processing_buffer[
                 agent_id
             ].last_take_action_outputs = take_action_outputs
 
@@ -138,8 +140,8 @@ class RLTrainer(Trainer):
         )
 
         for agent_id in next_info.agents:
-            stored_info = self.training_buffer[agent_id].last_brain_info
-            stored_take_action_outputs = self.training_buffer[
+            stored_info = self.processing_buffer[agent_id].last_brain_info
+            stored_take_action_outputs = self.processing_buffer[
                 agent_id
             ].last_take_action_outputs
             if stored_info is not None:
@@ -147,36 +149,36 @@ class RLTrainer(Trainer):
                 next_idx = next_info.agents.index(agent_id)
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
-                        self.training_buffer[agent_id]["visual_obs%d" % i].append(
+                        self.processing_buffer[agent_id]["visual_obs%d" % i].append(
                             stored_info.visual_observations[i][idx]
                         )
-                        self.training_buffer[agent_id]["next_visual_obs%d" % i].append(
-                            next_info.visual_observations[i][next_idx]
-                        )
+                        self.processing_buffer[agent_id][
+                            "next_visual_obs%d" % i
+                        ].append(next_info.visual_observations[i][next_idx])
                     if self.policy.use_vec_obs:
-                        self.training_buffer[agent_id]["vector_obs"].append(
+                        self.processing_buffer[agent_id]["vector_obs"].append(
                             stored_info.vector_observations[idx]
                         )
-                        self.training_buffer[agent_id]["next_vector_in"].append(
+                        self.processing_buffer[agent_id]["next_vector_in"].append(
                             next_info.vector_observations[next_idx]
                         )
                     if self.policy.use_recurrent:
-                        self.training_buffer[agent_id]["memory"].append(
+                        self.processing_buffer[agent_id]["memory"].append(
                             self.policy.retrieve_memories([agent_id])[0, :]
                         )
 
-                    self.training_buffer[agent_id]["masks"].append(1.0)
-                    self.training_buffer[agent_id]["done"].append(
+                    self.processing_buffer[agent_id]["masks"].append(1.0)
+                    self.processing_buffer[agent_id]["done"].append(
                         next_info.local_done[next_idx]
                     )
                     # Add the outputs of the last eval
                     self.add_policy_outputs(stored_take_action_outputs, agent_id, idx)
                     # Store action masks if necessary
                     if not self.policy.use_continuous_act:
-                        self.training_buffer[agent_id]["action_mask"].append(
+                        self.processing_buffer[agent_id]["action_mask"].append(
                             stored_info.action_masks[idx], padding_value=1
                         )
-                    self.training_buffer[agent_id]["prev_action"].append(
+                    self.processing_buffer[agent_id]["prev_action"].append(
                         self.policy.retrieve_previous_action([agent_id])[0, :]
                     )
 
@@ -212,7 +214,7 @@ class RLTrainer(Trainer):
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
-        self.training_buffer.reset_local_buffers()
+        self.processing_buffer.reset_local_buffers()
         for agent_id in self.episode_steps:
             self.episode_steps[agent_id] = 0
         for rewards in self.collected_rewards.values():
@@ -224,7 +226,7 @@ class RLTrainer(Trainer):
         Clear the buffers that have been built up during inference. If
         we're not training, this should be called instead of update_policy.
         """
-        self.training_buffer.reset_update_buffer()
+        self.update_buffer.reset_agent()
 
     def add_policy_outputs(
         self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int

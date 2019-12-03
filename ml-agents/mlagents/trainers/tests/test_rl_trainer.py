@@ -4,7 +4,8 @@ import yaml
 import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers.tests.test_buffer import construct_fake_buffer
+from mlagents.trainers.tests.test_buffer import construct_fake_processing_buffer
+from mlagents.trainers.buffer import AgentBuffer
 
 
 @pytest.fixture
@@ -88,7 +89,7 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     trainer.end_episode()
     for agent_id in trainer.episode_steps:
         assert trainer.episode_steps[agent_id] == 0
-        assert len(trainer.training_buffer[agent_id]["action"]) == 0
+        assert len(trainer.processing_buffer[agent_id]["action"]) == 0
     for rewards in trainer.collected_rewards.values():
         for agent_id in rewards:
             assert rewards[agent_id] == 0
@@ -96,8 +97,11 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
 
 def test_clear_update_buffer():
     trainer = create_rl_trainer()
-    trainer.training_buffer = construct_fake_buffer()
-    trainer.training_buffer.append_update_buffer(2, batch_size=None, training_length=2)
+    trainer.processing_buffer = construct_fake_processing_buffer()
+    trainer.update_buffer = AgentBuffer()
+    trainer.processing_buffer.append_to_update_buffer(
+        trainer.update_buffer, 2, batch_size=None, training_length=2
+    )
     trainer.clear_update_buffer()
-    for _, arr in trainer.training_buffer.update_buffer.items():
+    for _, arr in trainer.update_buffer.items():
         assert len(arr) == 0
