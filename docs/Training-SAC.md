@@ -259,7 +259,7 @@ Below are the available hyperparameters for BC.
 ### Strength
 
 `strength` corresponds to the learning rate of the imitation relative to the learning
-rate of SAC, and roughly corresponds to how strongly we allow the behavioral cloning
+rate of SAC, and roughly corresponds to how strongly we allow BC
 to influence the policy.
 
 Typical Range: `0.1` - `0.5`
@@ -274,7 +274,7 @@ See the [imitation learning guide](Training-Imitation-Learning.md) for more on `
 During BC, it is often desirable to stop using demonstrations after the agent has
 "seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
 outside of the provided demonstrations. `steps` corresponds to the training steps over which
-BC is active. The learning rate of the pretrainer will anneal over the steps. Set
+BC is active. The learning rate of BC will anneal over the steps. Set
 the steps to 0 for constant imitation over the entire training run.
 
 ### (Optional) Batch Size
