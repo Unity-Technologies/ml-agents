@@ -346,12 +346,12 @@ def test_sac_save_load_buffer(tmpdir):
     trainer.update_buffer = mb.simulate_rollout(
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
-    buffer_len = len(trainer.update_buffer.num_experiences)
+    buffer_len = trainer.update_buffer.num_experiences
     trainer.save_model()
 
     # Wipe Trainer and try to load
     trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
-    assert len(trainer2.update_buffer.num_experiences) == buffer_len
+    assert trainer2.update_buffer.num_experiences == buffer_len
 
 
 if __name__ == "__main__":
