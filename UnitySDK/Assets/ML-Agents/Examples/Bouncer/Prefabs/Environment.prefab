@@ -828,8 +828,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 1
@@ -852,10 +850,9 @@ MonoBehaviour:
     vectorObservationSize: 6
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: f5250a39cb2134db49b833e3c92527a1, type: 3}
+  m_Model: {fileID: 11400000, guid: 6c4ee6ab37d9b49b492a5cc49ed47ca0, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
+  m_BehaviorType: 0
   m_BehaviorName: Bouncer
