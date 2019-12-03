@@ -133,9 +133,7 @@ __Note__ : A side channel will only send/receive messages when `env.step` is
 called.
 
 #### EngineConfigurationChannel
-An `EngineConfigurationChannel` will allow you to modify how
-fast and how accurate the Unity engine is. For example, modifying the
-time scale or the quality level.
+An `EngineConfiguration` will allow you to modify the time scale and graphics quality of the Unity engine.
 `EngineConfigurationChannel` has two methods :
 
  * `set_configuration_parameters` with arguments
