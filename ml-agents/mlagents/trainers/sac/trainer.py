@@ -93,7 +93,7 @@ class SACTrainer(RLTrainer):
                 )
             LOGGER.debug(
                 "Loaded update buffer with {} sequences".format(
-                    len(self.update_buffer["actions"])
+                    self.update_buffer.num_experiences
                 )
             )
 
@@ -130,7 +130,7 @@ class SACTrainer(RLTrainer):
             self.update_buffer.load_from_file(file_object)
         LOGGER.info(
             "Experience replay buffer has {} experiences.".format(
-                len(self.update_buffer["actions"])
+                self.update_buffer.num_experiences
             )
         )
 
@@ -227,7 +227,7 @@ class SACTrainer(RLTrainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         return (
-            len(self.update_buffer["actions"]) >= self.trainer_parameters["batch_size"]
+            self.update_buffer.num_experiences >= self.trainer_parameters["batch_size"]
             and self.step >= self.trainer_parameters["buffer_init_steps"]
         )
 
@@ -239,7 +239,7 @@ class SACTrainer(RLTrainer):
         """
         if self.step % self.train_interval == 0:
             self.trainer_metrics.start_policy_update_timer(
-                number_experiences=len(self.update_buffer["actions"]),
+                number_experiences=self.update_buffer.num_experiences,
                 mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
             )
             self.update_sac_policy()
@@ -266,7 +266,7 @@ class SACTrainer(RLTrainer):
             LOGGER.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.update_buffer
             if (
-                len(self.update_buffer["actions"])
+                self.update_buffer.num_experiences
                 >= self.trainer_parameters["batch_size"]
             ):
                 sampled_minibatch = buffer.sample_mini_batch(
@@ -285,7 +285,7 @@ class SACTrainer(RLTrainer):
 
         # Truncate update buffer if neccessary. Truncate more than we need to to avoid truncating
         # a large buffer at each update.
-        if len(self.update_buffer["actions"]) > self.trainer_parameters["buffer_size"]:
+        if self.update_buffer.num_experiences > self.trainer_parameters["buffer_size"]:
             self.update_buffer.truncate(
                 int(self.trainer_parameters["buffer_size"] * BUFFER_TRUNCATE_PERCENT)
             )

@@ -75,6 +75,7 @@ def test_buffer():
     b.append_to_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
     b.append_to_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     assert len(update_buffer["action"]) == 20
+
     assert np.array(update_buffer["action"]).shape == (20, 2)
 
     c = update_buffer.make_mini_batch(start=0, end=1)
@@ -104,6 +105,20 @@ def test_buffer_sample():
     assert np.array(mb["action"]).shape == (19, 2)
 
 
+def test_num_experiences():
+    b = construct_fake_processing_buffer()
+    update_buffer = AgentBuffer()
+
+    assert len(update_buffer["action"]) == 0
+    assert update_buffer.num_experiences == 0
+
+    b.append_to_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
+    b.append_to_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
+
+    assert len(update_buffer["action"]) == 20
+    assert update_buffer.num_experiences == 20
+
+
 def test_buffer_truncate():
     b = construct_fake_processing_buffer()
     update_buffer = AgentBuffer()
@@ -111,10 +126,10 @@ def test_buffer_truncate():
     b.append_to_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test non-LSTM
     update_buffer.truncate(2)
-    assert len(update_buffer["action"]) == 2
+    assert update_buffer.num_experiences == 2
 
     b.append_to_update_buffer(update_buffer, 3, batch_size=None, training_length=2)
     b.append_to_update_buffer(update_buffer, 2, batch_size=None, training_length=2)
     # Test LSTM, truncate should be some multiple of sequence_length
     update_buffer.truncate(4, sequence_length=3)
-    assert len(update_buffer["action"]) == 3
+    assert update_buffer.num_experiences == 3

@@ -89,7 +89,7 @@ def test_sac_cc_policy(mock_env, dummy_config):
     update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
     update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
-    policy.update(update_buffer, num_sequences=len(update_buffer["actions"]))
+    policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     env.close()
 
 
@@ -119,7 +119,7 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
     update_buffer["curiosity_rewards"] = update_buffer["rewards"]
     policy.update_reward_signals(
-        {"curiosity": update_buffer}, num_sequences=len(update_buffer["actions"])
+        {"curiosity": update_buffer}, num_sequences=update_buffer.num_experiences
     )
     env.close()
 
@@ -140,7 +140,7 @@ def test_sac_dc_policy(mock_env, dummy_config):
     update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
     update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
-    policy.update(update_buffer, num_sequences=len(update_buffer["actions"]))
+    policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     env.close()
 
 
@@ -160,7 +160,7 @@ def test_sac_visual_policy(mock_env, dummy_config):
     update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
     update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
-    run_out = policy.update(update_buffer, num_sequences=len(update_buffer["actions"]))
+    run_out = policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     assert type(run_out) is dict
 
 
@@ -346,12 +346,12 @@ def test_sac_save_load_buffer(tmpdir):
     trainer.update_buffer = mb.simulate_rollout(
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
-    buffer_len = len(trainer.update_buffer["actions"])
+    buffer_len = len(trainer.update_buffer.num_experiences)
     trainer.save_model()
 
     # Wipe Trainer and try to load
     trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
-    assert len(trainer2.update_buffer["actions"]) == buffer_len
+    assert len(trainer2.update_buffer.num_experiences) == buffer_len
 
 
 if __name__ == "__main__":
