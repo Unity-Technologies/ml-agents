@@ -98,7 +98,7 @@ def initialize_trainer(
     trainer = None
     if trainer_parameters["trainer"] == "offline_bc":
         raise UnityTrainerException(
-            "The offline_bc trainer has been deprecated. To train with demonstrations, "
+            "The offline_bc trainer has been removed. To train with demonstrations, "
             "please use a PPO or SAC trainer with the GAIL Reward Signal and/or the "
             "Behavioral Cloning feature enabled."
         )
