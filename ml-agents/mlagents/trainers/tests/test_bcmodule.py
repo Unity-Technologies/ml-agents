@@ -145,7 +145,7 @@ def test_bcmodule_update(mock_env, trainer_config):
 @mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_constant_lr_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
-    trainer_config["pretraining"]["steps"] = 0
+    trainer_config["behavioral_cloning"]["steps"] = 0
     env, policy = create_policy_with_bc_mock(
         mock_env, mock_brain, trainer_config, False, "test.demo"
     )
