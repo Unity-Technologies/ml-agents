@@ -37,8 +37,8 @@ In most scenarios, you should combine these two features
   number of demonstrations.
 * Behavioral Cloning (BC) trains the Agent's neural network to exactly mimic the actions
   shown in a set of demonstrations.
-  [Behavioral Cloning](Training-PPO.md#optional-behavioral-cloning-using-demonstrations)
-  can be enabled on the PPO or SAC trainer. Behavioral Cloning tends to work best when
+  [The BC feature](Training-PPO.md#optional-behavioral-cloning-using-demonstrations)
+  can be enabled on the PPO or SAC trainer. BC tends to work best when
   there are a lot of demonstrations, or in conjunction with GAIL and/or an extrinsic reward.
 
 ### How to Choose
@@ -49,7 +49,7 @@ at low strengths in addition to having an extrinsic reward.
 An example of this is provided for the Pyramids example environment under
  `PyramidsLearning` in `config/gail_config.yaml`.
 
-If you want to train purely from demonstrations, GAIL and Behavioral Cloning _without_ an
+If you want to train purely from demonstrations, GAIL and BC _without_ an
 extrinsic reward signal is the preferred approach. An example of this is provided for the Crawler
 example environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
 
@@ -58,8 +58,7 @@ example environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
 It is possible to record demonstrations of agent behavior from the Unity Editor,
 and save them as assets. These demonstrations contain information on the
 observations, actions, and rewards for a given agent during the recording session.
-They can be managed from the Editor, as well as used for training with Offline
-Behavioral Cloning and GAIL.
+They can be managed from the Editor, as well as used for training with BC and GAIL.
 
 In order to record demonstrations from an agent, add the `Demonstration Recorder`
 component to a GameObject in the scene which contains an `Agent` component.
