@@ -185,7 +185,7 @@ Unity to start training in the Editor.
 environment first.
 
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
-The `--time-scale=100` sets the `Time.TimeScale` value in Unity. 
+The `--time-scale=100` sets the `Time.TimeScale` value in Unity.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
 follow the instructions in
