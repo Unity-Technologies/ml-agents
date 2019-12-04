@@ -16,7 +16,7 @@ The versions can be found in
   * `Default` corresponds to the previous unchecked behavior, meaning that Agents will train if they connect to a python trainer, otherwise they will performance inference.
   * `Heuristic Only` means the Agent will always use the `Heuristic()` method. This corresponds to having "Use Heuristic" selected in 0.11.0.
   * `Inference Only` means the Agent will always perform inference.
-* Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager. 
+* Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager.
 
 ### Steps to Migrate
 * We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
