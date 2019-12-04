@@ -113,6 +113,60 @@ def test_batched_step_result_from_proto():
     assert list(result.obs[1].shape) == [n_agents] + list(shapes[1])
 
 
+def test_action_masking_discrete():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (7, 3))
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    result = batched_step_result_from_proto(ap_list, group_spec)
+    masks = result.action_mask
+    assert isinstance(masks, list)
+    assert len(masks) == 2
+    assert masks[0].shape == (n_agents, 7)
+    assert masks[1].shape == (n_agents, 3)
+    assert masks[0][0, 0]
+    assert not masks[1][0, 0]
+    assert masks[1][0, 1]
+
+
+def test_action_masking_discrete_1():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (10,))
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    result = batched_step_result_from_proto(ap_list, group_spec)
+    masks = result.action_mask
+    assert isinstance(masks, list)
+    assert len(masks) == 1
+    assert masks[0].shape == (n_agents, 10)
+    assert masks[0][0, 0]
+
+
+def test_action_masking_discrete_2():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (2, 2, 6))
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    result = batched_step_result_from_proto(ap_list, group_spec)
+    masks = result.action_mask
+    assert isinstance(masks, list)
+    assert len(masks) == 3
+    assert masks[0].shape == (n_agents, 2)
+    assert masks[1].shape == (n_agents, 2)
+    assert masks[2].shape == (n_agents, 6)
+    assert masks[0][0, 0]
+
+
+def test_action_masking_continuous():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 10)
+    ap_list = generate_list_agent_proto(n_agents, shapes)
+    result = batched_step_result_from_proto(ap_list, group_spec)
+    masks = result.action_mask
+    assert masks is None
+
+
 def test_agent_group_spec_from_proto():
     agent_proto = generate_list_agent_proto(1, [(3,), (4,)])[0]
     bp = BrainParametersProto()

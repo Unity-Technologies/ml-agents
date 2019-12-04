@@ -128,6 +128,27 @@ def batched_step_result_from_proto(
     )
     action_mask = None
     if group_spec.action_type == ActionType.DISCRETE:
-        # TODO
-        print("ERROR")
+        if any([agent_info.action_mask is not None] for agent_info in agent_info_list):
+            n_agents = len(agent_info_list)
+            a_size = np.sum(group_spec.action_shape)
+            mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
+            for agent_index, agent_info in enumerate(agent_info_list):
+                if agent_info.action_mask is not None:
+                    if len(agent_info.action_mask) == a_size:
+                        mask_matrix[agent_index, :] = [
+                            False if agent_info.action_mask[k] else True
+                            for k in range(a_size)
+                        ]
+            action_mask = (1 - mask_matrix).astype(np.bool)
+            indices = _generate_split_indices(group_spec.action_shape)
+            action_mask = np.split(action_mask, indices, axis=1)
     return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
+
+
+def _generate_split_indices(dims):
+    if len(dims) <= 1:
+        return ()
+    result = (dims[0],)
+    for i in range(len(dims) - 2):
+        result += (dims[i + 1] + result[i],)
+    return result
