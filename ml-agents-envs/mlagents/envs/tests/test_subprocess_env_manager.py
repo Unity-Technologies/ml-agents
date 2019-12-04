@@ -8,12 +8,12 @@ from mlagents.envs.subprocess_env_manager import (
     EnvironmentResponse,
     StepResponse,
 )
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 def mock_env_factory(worker_id):
-    return mock.create_autospec(spec=BaseUnityEnvironment)
+    return mock.create_autospec(spec=BaseEnv)
 
 
 class MockEnvWorker:

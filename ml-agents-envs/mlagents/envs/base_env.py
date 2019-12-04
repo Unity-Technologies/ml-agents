@@ -205,7 +205,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def set_action(self, agent_group: str, action: np.array) -> None:
+    def set_actions(self, agent_group: str, action: np.array) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in

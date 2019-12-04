@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import timed
 from mlagents.envs.action_info import ActionInfo
@@ -10,13 +10,11 @@ from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesC
 
 class SimpleEnvManager(EnvManager):
     """
-    Simple implementation of the EnvManager interface that only handles one BaseUnityEnvironment at a time.
+    Simple implementation of the EnvManager interface that only handles one BaseEnv at a time.
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
     """
 
-    def __init__(
-        self, env: BaseUnityEnvironment, float_prop_channel: FloatPropertiesChannel
-    ):
+    def __init__(self, env: BaseEnv, float_prop_channel: FloatPropertiesChannel):
         super().__init__()
         self.shared_float_properties = float_prop_channel
         self.env = env

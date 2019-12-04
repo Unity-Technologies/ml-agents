@@ -7,7 +7,7 @@ from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutExc
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import (
     TimerNode,
@@ -92,7 +92,7 @@ def worker(
     shared_float_properties = FloatPropertiesChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
-    env: BaseUnityEnvironment = env_factory(
+    env: BaseEnv = env_factory(
         worker_id, [shared_float_properties, engine_configuration_channel]
     )
 
@@ -151,7 +151,7 @@ def worker(
 class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
-        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
         engine_configuration: EngineConfig,
         n_env: int = 1,
     ):
@@ -169,7 +169,7 @@ class SubprocessEnvManager(EnvManager):
     def create_worker(
         worker_id: int,
         step_queue: Queue,
-        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
         engine_configuration: EngineConfig,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
