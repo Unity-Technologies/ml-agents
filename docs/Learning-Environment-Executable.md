@@ -112,23 +112,6 @@ ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first
                    `▀█▓▓▓▓▓▓▓▓▓▌
                         ¬`▀▀▀█▓
 
-
-INFO:mlagents.learn:{'--curriculum': 'None',
- '--docker-target-name': 'Empty',
- '--env': '3DBall',
- '--help': False,
- '--keep-checkpoints': '5',
- '--lesson': '0',
- '--load': False,
- '--no-graphics': False,
- '--num-runs': '1',
- '--run-id': 'firstRun',
- '--save-freq': '50000',
- '--seed': '-1',
- '--slow': False,
- '--train': True,
- '--worker-id': '0',
- '<trainer-config-path>': 'config/trainer_config.yaml'}
 ```
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
@@ -144,7 +127,6 @@ Mono config path = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/MonoBl
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Reset Parameters : {}
 
 INFO:mlagents.envs:Connected new brain:
 Unity brain name: Ball3DLearning

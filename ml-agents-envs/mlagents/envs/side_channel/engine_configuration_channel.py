@@ -1,6 +1,19 @@
 from mlagents.envs.side_channel.side_channel import SideChannel, SideChannelType
 from mlagents.envs.exception import UnityCommunicationException
 import struct
+from typing import NamedTuple
+
+
+class EngineConfig(NamedTuple):
+    width: int
+    height: int
+    quality_level: int
+    time_scale: float
+    target_frame_rate: int
+
+    @staticmethod
+    def default_config():
+        return EngineConfig(80, 80, 1, 20.0, -1)
 
 
 class EngineConfigurationChannel(SideChannel):
@@ -31,7 +44,7 @@ class EngineConfigurationChannel(SideChannel):
             + "this should not have happend."
         )
 
-    def set_configuration(
+    def set_configuration_parameters(
         self,
         width: int = 80,
         height: int = 80,
@@ -47,7 +60,7 @@ class EngineConfigurationChannel(SideChannel):
         :param quality_level: Defines the quality level of the simulation.
         Default 1.
         :param time_scale: Defines the multiplier for the deltatime in the
-        simulation. If set to a higher value, time will pass faaster in the
+        simulation. If set to a higher value, time will pass faster in the
         simulation but the physics might break. Default 20.
         :param target_frame_rate: Instructs simulation to try to render at a
         specified frame rate. Default -1.
@@ -58,4 +71,12 @@ class EngineConfigurationChannel(SideChannel):
         data += struct.pack("<i", quality_level)
         data += struct.pack("<f", time_scale)
         data += struct.pack("<i", target_frame_rate)
+        super().queue_message_to_send(data)
+
+    def set_configuration(self, config: EngineConfig) -> None:
+        """
+        Sets the engine configuration. Takes as input an EngineConfig.
+        """
+        data = bytearray()
+        data += struct.pack("<iiifi", *config)
         super().queue_message_to_send(data)

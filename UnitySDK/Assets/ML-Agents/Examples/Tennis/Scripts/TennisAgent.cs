@@ -16,7 +16,7 @@ public class TennisAgent : Agent
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
     float m_InvertMult;
-    ResetParameters m_ResetParams;
+    IFloatProperties m_ResetParams;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -31,7 +31,7 @@ public class TennisAgent : Agent
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
         var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.resetParameters;
+        m_ResetParams = academy.FloatProperties;
         if (invertX)
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardBName).gameObject;
@@ -101,7 +101,7 @@ public class TennisAgent : Agent
 
     public void SetRacket()
     {
-        angle = m_ResetParams["angle"];
+        angle = m_ResetParams.GetPropertyWithDefault("angle", 55);
         gameObject.transform.eulerAngles = new Vector3(
             gameObject.transform.eulerAngles.x,
             gameObject.transform.eulerAngles.y,
@@ -111,7 +111,7 @@ public class TennisAgent : Agent
 
     public void SetBall()
     {
-        scale = m_ResetParams["scale"];
+        scale = m_ResetParams.GetPropertyWithDefault("scale", 1);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

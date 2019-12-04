@@ -24,6 +24,8 @@ namespace MLAgents
                     var timeScale = binaryReader.ReadSingle();
                     var targetFrameRate = binaryReader.ReadInt32();
 
+                    timeScale = Mathf.Clamp(timeScale, 1, 100);
+
                     Screen.SetResolution(width, height, false);
                     QualitySettings.SetQualityLevel(qualityLevel, true);
                     Time.timeScale = timeScale;
