@@ -341,7 +341,7 @@ class UnityEnvironment(BaseEnv):
                 "in the environment".format(agent_group)
             )
 
-    def set_action(self, agent_group: str, action: np.array) -> None:
+    def set_actions(self, agent_group: str, action: np.array) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:
             return
@@ -361,12 +361,8 @@ class UnityEnvironment(BaseEnv):
                     agent_group, expected_shape, action.shape
                 )
             )
-
         if action.dtype != expected_type:
-            raise UnityActionException(
-                "The group {0} needs to receive action of type {1} but received"
-                "actions of type {2}".format(agent_group, expected_type, action.dtype)
-            )
+            action = action.astype(expected_type)
         self._env_actions[agent_group] = action
 
     def set_action_for_agent(
@@ -389,6 +385,12 @@ class UnityEnvironment(BaseEnv):
                     agent_id, agent_group, expected_shape, action.shape
                 )
             )
+        expected_type = (
+            np.float32 if spec.action_type == ActionType.CONTINUOUS else np.int32
+        )
+        if action.dtype != expected_type:
+            action = action.astype(expected_type)
+
         if agent_group not in self._env_actions:
             self._env_actions[agent_group] = self._empty_action(
                 spec, self._env_state[agent_group].n_agents()
