@@ -26,7 +26,7 @@ follow this [guide](Using-Virtual-Environment.md).
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
 ```sh
-git clone https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
 ```
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
