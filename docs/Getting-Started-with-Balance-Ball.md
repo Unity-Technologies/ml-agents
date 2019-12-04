@@ -174,7 +174,7 @@ saved to the same directory and will all be included on the same graph.
 To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train
+mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train --time-scale=100
 ```
 
 When the message _"Start training by pressing the Play button in the Unity
@@ -185,6 +185,7 @@ Unity to start training in the Editor.
 environment first.
 
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
+The `--time-scale=100` sets the `Time.TimeScale` value in Unity. 
 
 **Note**: You can train using an executable rather than the Editor. To do so,
 follow the instructions in
