@@ -33,6 +33,27 @@ The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
+### Package Installation
+
+If you intend to copy the `UnitySDK` folder in to your project, ensure that
+you have the [Barracuda preview package](https://docs.unity3d.com/Packages/com.unity.barracuda@0.3/manual/index.html) installed.
+
+To install the Barracuda package in Unity **2017.4.x**, you will have to copy the
+`UnityPackageManager` folder under the `UnitySDK` folder to the root directory of your
+project.
+
+To install the Barrcuda package in later versions of Unity, navigate to the Package
+Manager window by navigating to the menu `Window` -> `Package Manager`.  Click on the
+`Adavanced` dropdown menu to the left of the search bar and make sure "Show Preview Packages"
+is checked.  Search for or select the `Barracuda` package and install the latest version.
+
+<p align="center">
+  <img src="images/barracuda-package.png"
+       alt="Barracuda Package Manager"
+       width="710" border="10"
+       height="569" />
+</p>
+
 The `ml-agents` subdirectory contains a Python package which provides deep reinforcement
 learning trainers to use with Unity environments.
 
