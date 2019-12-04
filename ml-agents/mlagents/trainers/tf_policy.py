@@ -56,9 +56,9 @@ class TFPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
-        self.memory_dict: Dict[int, np.ndarray] = {}
+        self.memory_dict: Dict[str, np.ndarray] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
-        self.previous_action_dict: Dict[int, np.array] = {}
+        self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
