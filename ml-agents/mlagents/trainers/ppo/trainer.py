@@ -12,6 +12,7 @@ from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
+from mlagents.trainers.agent_processor import Trajectory
 from mlagents.envs.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
@@ -77,6 +78,9 @@ class PPOTrainer(RLTrainer):
 
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
+
+    def process_trajectory(self, trajectory: Trajectory) -> None:
+        pass
 
     def process_experiences(
         self, current_info: BrainInfo, next_info: BrainInfo
