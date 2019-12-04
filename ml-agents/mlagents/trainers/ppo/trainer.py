@@ -139,8 +139,12 @@ class PPOTrainer(RLTrainer):
                     tmp_advantages.append(local_advantage)
                     tmp_returns.append(local_return)
 
-                global_advantages = list(np.mean(np.array(tmp_advantages), axis=0))
-                global_returns = list(np.mean(np.array(tmp_returns), axis=0))
+                global_advantages = list(
+                    np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+                )
+                global_returns = list(
+                    np.mean(np.array(tmp_returns, dtype=np.float32), axis=0)
+                )
                 self.processing_buffer[agent_id]["advantages"].set(global_advantages)
                 self.processing_buffer[agent_id]["discounted_returns"].set(
                     global_returns
@@ -221,7 +225,7 @@ class PPOTrainer(RLTrainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        size_of_buffer = len(self.update_buffer["actions"])
+        size_of_buffer = self.update_buffer.num_experiences
         return size_of_buffer > self.trainer_parameters["buffer_size"]
 
     def update_policy(self):
@@ -229,7 +233,7 @@ class PPOTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
-        buffer_length = len(self.update_buffer["actions"])
+        buffer_length = self.update_buffer.num_experiences
         self.trainer_metrics.start_policy_update_timer(
             number_experiences=buffer_length,
             mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),

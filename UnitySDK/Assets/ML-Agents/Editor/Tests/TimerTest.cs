@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace MLAgents.Tests
@@ -10,13 +11,13 @@ namespace MLAgents.Tests
         {
             TimerStack myTimer = TimerStack.Instance;
             myTimer.Reset();
-
             using (myTimer.Scoped("foo"))
             {
                 for (int i = 0; i < 5; i++)
                 {
                     using (myTimer.Scoped("bar"))
                     {
+                        myTimer.SetGauge("my_gauge", (float)i);
                     }
                 }
             }
@@ -24,6 +25,12 @@ namespace MLAgents.Tests
             var rootChildren = myTimer.RootNode.Children;
             Assert.That(rootChildren, Contains.Key("foo"));
             Assert.AreEqual(rootChildren["foo"].NumCalls, 1);
+            var gauge = myTimer.RootNode.Gauges["my_gauge"];
+            Assert.NotNull(gauge);
+            Assert.AreEqual(5, gauge.count);
+            Assert.AreEqual(0, gauge.minValue);
+            Assert.AreEqual(4, gauge.maxValue);
+            Assert.AreEqual(4, gauge.value);
 
             var fooChildren = rootChildren["foo"].Children;
             Assert.That(fooChildren, Contains.Key("bar"));

@@ -9,7 +9,8 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.bc.policy import BCPolicy
-from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -41,7 +42,7 @@ class BCTrainer(Trainer):
         self.batches_per_epoch = trainer_parameters["batches_per_epoch"]
 
         self.demonstration_buffer = AgentBuffer()
-        self.evaluation_buffer = AgentProcessorBuffer()
+        self.evaluation_buffer = ProcessingBuffer()
 
     def add_experiences(
         self,
@@ -112,7 +113,7 @@ class BCTrainer(Trainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        return len(self.demonstration_buffer["actions"]) > self.n_sequences
+        return self.demonstration_buffer.num_experiences > self.n_sequences
 
     def update_policy(self):
         """
@@ -124,7 +125,7 @@ class BCTrainer(Trainer):
         # We either divide the entire buffer into num_batches batches, or limit the number
         # of batches to batches_per_epoch.
         num_batches = min(
-            len(self.demonstration_buffer["actions"]) // batch_size,
+            self.demonstration_buffer.num_experiences // batch_size,
             self.batches_per_epoch,
         )
 

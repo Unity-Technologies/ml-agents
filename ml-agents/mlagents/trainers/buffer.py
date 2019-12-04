@@ -50,13 +50,17 @@ class AgentBuffer(dict):
             """
             self += list(np.array(data))
 
-        def set(self, data: np.ndarray) -> None:
+        def set(self, data):
             """
             Sets the list of np.array to the input data
             :param data: The np.array list to be set.
             """
+            # Make sure we convert incoming data to float32 if it's a float
+            dtype = None
+            if data is not None and len(data) and isinstance(data[0], float):
+                dtype = np.float32
             self[:] = []
-            self[:] = list(np.array(data))
+            self[:] = list(np.array(data, dtype=dtype))
 
         def get_batch(
             self,
@@ -91,7 +95,7 @@ class AgentBuffer(dict):
                         " too large given the current number of data points."
                     )
                 if batch_size * training_length > len(self):
-                    padding = np.array(self[-1]) * self.padding_value
+                    padding = np.array(self[-1], dtype=np.float32) * self.padding_value
                     return np.array(
                         [padding] * (training_length - leftover) + self[:],
                         dtype=np.float32,
@@ -207,7 +211,7 @@ class AgentBuffer(dict):
         """
         num_seq_to_sample = batch_size // sequence_length
         mini_batch = AgentBuffer()
-        buff_len = len(next(iter(self.values())))
+        buff_len = self.num_experiences
         num_sequences_in_buffer = buff_len // sequence_length
         start_idxes = (
             np.random.randint(num_sequences_in_buffer, size=num_seq_to_sample)
@@ -244,82 +248,23 @@ class AgentBuffer(dict):
         we're not truncating at each update. Note that we must truncate an integer number of sequence_lengths
         param: max_length: The length at which to truncate the buffer.
         """
-        current_length = len(next(iter(self.values())))
+        current_length = self.num_experiences
         # make max_length an integer number of sequence_lengths
         max_length -= max_length % sequence_length
         if current_length > max_length:
             for _key in self.keys():
                 self[_key] = self[_key][current_length - max_length :]
 
-
-class AgentProcessorBuffer(dict):
-    """
-    AgentProcessorBuffer contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
-    Buffer also contains an update_buffer that corresponds to the buffer used when updating the model.
-    """
-
-    def __str__(self):
-        return "local_buffers :\n{0}".format(
-            "\n".join(["\tagent {0} :{1}".format(k, str(self[k])) for k in self.keys()])
-        )
-
-    def __getitem__(self, key):
-        if key not in self.keys():
-            self[key] = AgentBuffer()
-        return super().__getitem__(key)
-
-    def reset_local_buffers(self) -> None:
+    @property
+    def num_experiences(self) -> int:
         """
-        Resets all the local local_buffers
-        """
-        agent_ids = list(self.keys())
-        for k in agent_ids:
-            self[k].reset_agent()
+        The number of agent experiences in the AgentBuffer, i.e. the length of the buffer.
 
-    def append_to_update_buffer(
-        self,
-        update_buffer: AgentBuffer,
-        agent_id: str,
-        key_list: List[str] = None,
-        batch_size: int = None,
-        training_length: int = None,
-    ) -> None:
+        An experience consists of one element across all of the fields of this AgentBuffer.
+        Note that these all have to be the same length, otherwise shuffle and append_to_update_buffer
+        will fail.
         """
-        Appends the buffer of an agent to the update buffer.
-        :param agent_id: The id of the agent which data will be appended
-        :param key_list: The fields that must be added. If None: all fields will be appended.
-        :param batch_size: The number of elements that must be appended. If None: All of them will be.
-        :param training_length: The length of the samples that must be appended. If None: only takes one element.
-        """
-        if key_list is None:
-            key_list = self[agent_id].keys()
-        if not self[agent_id].check_length(key_list):
-            raise BufferException(
-                "The length of the fields {0} for agent {1} where not of same length".format(
-                    key_list, agent_id
-                )
-            )
-        for field_key in key_list:
-            update_buffer[field_key].extend(
-                self[agent_id][field_key].get_batch(
-                    batch_size=batch_size, training_length=training_length
-                )
-            )
-
-    def append_all_agent_batch_to_update_buffer(
-        self,
-        update_buffer: AgentBuffer,
-        key_list: List[str] = None,
-        batch_size: int = None,
-        training_length: int = None,
-    ) -> None:
-        """
-        Appends the buffer of all agents to the update buffer.
-        :param key_list: The fields that must be added. If None: all fields will be appended.
-        :param batch_size: The number of elements that must be appended. If None: All of them will be.
-        :param training_length: The length of the samples that must be appended. If None: only takes one element.
-        """
-        for agent_id in self.keys():
-            self.append_to_update_buffer(
-                update_buffer, agent_id, key_list, batch_size, training_length
-            )
+        if self.values():
+            return len(next(iter(self.values())))
+        else:
+            return 0

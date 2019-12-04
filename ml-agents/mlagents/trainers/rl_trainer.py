@@ -5,7 +5,8 @@ import numpy as np
 
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
-from mlagents.trainers.buffer import AgentBuffer, AgentProcessorBuffer
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
@@ -43,7 +44,7 @@ class RLTrainer(Trainer):
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": {}}
-        self.processing_buffer = AgentProcessorBuffer()
+        self.processing_buffer = ProcessingBuffer()
         self.update_buffer = AgentBuffer()
         self.episode_steps = {}
 
@@ -132,7 +133,7 @@ class RLTrainer(Trainer):
                 curr_to_use, take_action_outputs["action"], next_info
             )
         # Store the environment reward
-        tmp_environment = np.array(next_info.rewards)
+        tmp_environment = np.array(next_info.rewards, dtype=np.float32)
 
         rewards_out = AllRewardsOutput(
             reward_signals=tmp_reward_signal_outs, environment=tmp_environment

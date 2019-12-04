@@ -136,7 +136,7 @@ class GAILRewardSignal(RewardSignal):
         :return: Feed_dict for update process.
         """
         max_num_experiences = min(
-            len(mini_batch["actions"]), len(self.demonstration_buffer["actions"])
+            len(mini_batch["actions"]), self.demonstration_buffer.num_experiences
         )
         # If num_sequences is less, we need to shorten the input batch.
         for key, element in mini_batch.items():
