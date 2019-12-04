@@ -3,27 +3,11 @@ from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec, ActionType
 import numpy as np
 from typing import List
 
-# BrainInfo(
-#         visual_observation,
-#         vector_observation,
-#         reward=None,
-#         agents=None,
-#         local_done=None,
-#         max_reached=None,
-#         action_mask=None,
-#     )
-# BrainParameters
-#         brain_name: str,
-#         vector_observation_space_size: int,
-#         camera_resolutions: List[CameraResolution],
-#         vector_action_space_size: List[int],
-#         vector_action_descriptions: List[str],
-#         vector_action_space_type: int,
-#     )
-
 
 def step_result_to_brain_info(
-    step_result: BatchedStepResult, group_spec: AgentGroupSpec
+    step_result: BatchedStepResult,
+    group_spec: AgentGroupSpec,
+    agent_id_prefix: int = None,
 ) -> BrainInfo:
     n_agents = step_result.n_agents()
     vis_obs_indices = []
@@ -38,11 +22,17 @@ def step_result_to_brain_info(
     mask = np.ones((n_agents, np.sum(group_spec.action_shape)))
     if step_result.action_mask is not None:
         mask = 1 - np.concatenate(step_result.action_mask, axis=1)
+    if agent_id_prefix is None:
+        agent_ids = list(step_result.agent_id)
+    else:
+        agent_ids = [
+            f"${agent_id_prefix}-{ag_id}" for ag_id in list(step_result.agent_id)
+        ]
     return BrainInfo(
         vis_obs,
         vec_obs,
         list(step_result.reward),
-        list(step_result.agent_id),
+        agent_ids,
         list(step_result.done),
         list(step_result.max_step),
         mask,

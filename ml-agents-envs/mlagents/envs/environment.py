@@ -349,7 +349,7 @@ class UnityEnvironment(BaseEnv):
         expected_a = (
             spec.action_shape
             if spec.action_type == ActionType.CONTINUOUS
-            else np.sum(spec.action_shape)
+            else len(spec.action_shape)
         )
         expected_type = (
             np.float32 if spec.action_type == ActionType.CONTINUOUS else np.int32

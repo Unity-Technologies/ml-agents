@@ -107,7 +107,9 @@ def worker(
         all_brain_info = {}
         for brain_name in env.get_agent_groups():
             all_brain_info[brain_name] = step_result_to_brain_info(
-                env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
+                env.get_step_result(brain_name),
+                env.get_agent_group_spec(brain_name),
+                worker_id,
             )
         return all_brain_info
 
@@ -125,7 +127,8 @@ def worker(
             if cmd.name == "step":
                 all_action_info = cmd.payload
                 for brain_name, action_info in all_action_info.items():
-                    env.set_actions(brain_name, action_info.action)
+                    if len(action_info.action) != 0:
+                        env.set_actions(brain_name, action_info.action)
                 env.step()
                 all_brain_info = _generate_all_brain_info()
                 # The timers in this process are independent from all the processes and the "main" process
