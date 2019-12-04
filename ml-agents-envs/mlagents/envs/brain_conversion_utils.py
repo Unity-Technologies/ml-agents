@@ -1,7 +1,7 @@
 from mlagents.envs.brain import BrainInfo, BrainParameters, CameraResolution
 from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec, ActionType
 import numpy as np
-from typing import List
+from typing import List, Any
 
 
 def step_result_to_brain_info(
@@ -17,7 +17,10 @@ def step_result_to_brain_info(
             vec_obs_indices.append(index)
         if len(observation.shape) == 4:
             vis_obs_indices.append(index)
-    vec_obs = np.concatenate([step_result.obs[i] for i in vec_obs_indices], axis=1)
+    if len(vec_obs_indices) == 0:
+        vec_obs: List[Any] = []
+    else:
+        vec_obs = np.concatenate([step_result.obs[i] for i in vec_obs_indices], axis=1)
     vis_obs = [step_result.obs[i] for i in vis_obs_indices]
     mask = np.ones((n_agents, np.sum(group_spec.action_shape)))
     if step_result.action_mask is not None:
