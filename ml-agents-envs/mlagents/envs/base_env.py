@@ -8,9 +8,9 @@ corresponds to a single group of Agents in the simulation.
 For performance reasons, the data of each group of agents is processed in a
 batched manner. When retrieving the state of a group of Agents, said state
 contains the data for the whole group. Agents in these groups are identified
-by a unique int identifier that allows tracking of Agents accross simulation
+by a unique int identifier that allows tracking of Agents across simulation
 steps. Note that there is no guarantee that the number or order of the Agents
-in the state will be consistent accross simulation steps.
+in the state will be consistent across simulation steps.
 A simulation steps corresponds to moving the simulation forward until at least
 one agent in the simulation sends its observations to Python again. Since
 Agents can request decisions at different frequencies, a simulation step does
@@ -35,7 +35,7 @@ class StepResult(NamedTuple):
     Contains the data a single Agent collected since the last
     simulation step.
      - obs is a list of numpy arrays observations collected by the group of
-    agent.
+     agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
      - done is a bool. Is true if the Agent was terminated during the last
@@ -44,6 +44,7 @@ class StepResult(NamedTuple):
      steps during the last simulation step.
      - agent_id is an int and an unique identifier for the corresponding Agent.
      - action_mask is an optional list of one dimensional array of booleans.
+     Only available in multi-discrete action space type.
      Each array corresponds to an action branch. Each array contains a mask
      for each action of the branch. If true, the action is not available for
      the agent during this simulation step.
@@ -62,11 +63,12 @@ class BatchedStepResult(NamedTuple):
     Contains the data a group of similar Agents collected since the last
     simulation step. Note that all Agents do not necessarily have new
     information to send at each simulation step. Therefore, the ordering of
-    agents and the batch size of the BatchedStepResult are not fixed accross
+    agents and the batch size of the BatchedStepResult are not fixed across
     simulation steps.
      - obs is a list of numpy arrays observations collected by the group of
-    agent. The first dimension of the array corresponds to the batch size of
-    the group.
+     agent. Each obs has one extra dimension compared to StepResult: the first
+     dimension of the array corresponds to the batch size of
+     the group.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
      - done is an array of booleans of length batch size. Is true if the
@@ -76,8 +78,9 @@ class BatchedStepResult(NamedTuple):
      simulation step.
      - agent_id is an int vector of length batch size containing unique
      identifier for the corresponding Agent. This is used to track Agents
-     accross simulation steps.
+     across simulation steps.
      - action_mask is an optional list of two dimensional array of booleans.
+     Only available in multi-discrete action space type.
      Each array corresponds to an action branch. The first dimension of each
      array is the batch size and the second contains a mask for each action of
      the branch. If true, the action is not available for the agent during
@@ -153,11 +156,11 @@ class AgentGroupSpec(NamedTuple):
     A NamedTuple to containing information about the observations and actions
     spaces for a group of Agents.
      - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-     to an observation's dimensionsthe shape tuples have the same ordering as
-     the ordering of the BatchedStepResult.
+     to an observation's dimensions. The shape tuples have the same ordering as
+     the ordering of the BatchedStepResult and StepResult.
      - action_type is the type of data of the action. it can be discrete or
      continuous. If discrete, the action tensors are expected to be int32. If
-     discrete, the actions are expected to be float32.
+     continuous, the actions are expected to be float32.
      - action_shape is:
        - An int in continuous action space corresponding to the number of
      floats that constitute the action.
