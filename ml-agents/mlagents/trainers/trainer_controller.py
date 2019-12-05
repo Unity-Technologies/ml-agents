@@ -196,9 +196,9 @@ class TrainerController(object):
                     brain_name, _ = name_behavior_id.split("?")
 
                     # This could be done with a try/except which may improve performance?
-                    if brain_name in self.trainers:
+                    try:
                         trainer = self.trainers[brain_name]
-                    else:
+                    except KeyError:
                         trainer = self.trainer_factory.generate(brain_name)
                         self.trainers[brain_name] = trainer
                         self.logger.info(trainer)
@@ -289,6 +289,7 @@ class TrainerController(object):
                 for behavior_identifier in self.brain_name_to_identifier[brain_name]:
                     if step_info.has_actions_for_brain(behavior_identifier):
                         trainer.add_experiences(
+                            behavior_identifier,
                             step_info.previous_all_brain_info[behavior_identifier],
                             step_info.current_all_brain_info[behavior_identifier],
                             step_info.brain_name_to_action_info[
@@ -296,6 +297,7 @@ class TrainerController(object):
                             ].outputs,
                         )
                         trainer.process_experiences(
+                            behavior_identifier,
                             step_info.previous_all_brain_info[behavior_identifier],
                             step_info.current_all_brain_info[behavior_identifier],
                         )
