@@ -14,7 +14,7 @@ expert in the same situation.
 The output of the training process is a model file containing the optimized
 policy. This model file is a TensorFlow data graph containing the mathematical
 operations and the optimized weights selected during the training process. You
-can use the generated model file with in the Behaviors Parameters under your 
+can set the generated model file in the Behaviors Parameters under your
 Agent in your Unity project to decide the best course of action for an agent.
 
 Use the command `mlagents-learn` to train your agents. This command is installed
