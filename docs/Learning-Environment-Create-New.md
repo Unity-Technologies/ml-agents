@@ -26,8 +26,7 @@ steps:
     calculate the rewards used for reinforcement training. You can also implement
     optional methods to reset the Agent when it has finished or failed its task.
 4. Add your Agent subclasses to appropriate GameObjects, typically, the object
-    in the scene that represents the Agent in the simulation. Each Agent object
-    must be assigned a Brain object.
+    in the scene that represents the Agent in the simulation.
 
 **Note:** If you are unfamiliar with Unity, refer to
 [Learning the interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
