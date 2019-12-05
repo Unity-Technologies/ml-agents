@@ -22,7 +22,7 @@ with the `mlagents` package and its implementation can be found at
 `ml-agents/mlagents/trainers/learn.py`. The [configuration file](#training-config-file),
 like `config/trainer_config.yaml` specifies the hyperparameters used during training.
 You can edit this file with a text editor to add a specific configuration for
-each Agent.
+each Behavior.
 
 For a broader overview of reinforcement learning, imitation learning and the
 ML-Agents training process, see [ML-Agents Toolkit
