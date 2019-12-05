@@ -7,7 +7,6 @@ import numpy as np
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.agent_processor import ProcessingBuffer, Trajectory, split_obs
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
@@ -45,7 +44,6 @@ class RLTrainer(Trainer):
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": defaultdict(lambda: 0)}
-        self.processing_buffer = ProcessingBuffer()
         self.update_buffer = AgentBuffer()
         self.episode_steps = {}
 
@@ -265,58 +263,3 @@ class RLTrainer(Trainer):
         raise UnityTrainerException(
             "The add_rewards_outputs method was not implemented."
         )
-
-    def _trajectory_to_agentbuffer(self, trajectory: Trajectory) -> AgentBuffer:
-        """
-        Converts a Trajectory to an AgentBuffer
-        :param trajectory: A Trajectory
-        :returns: AgentBuffer
-        """
-        agent_buffer_trajectory = AgentBuffer()
-        for step, exp in enumerate(trajectory.steps):
-            vec_vis_obs = split_obs(exp.obs)
-            if step < len(trajectory.steps) - 1:
-                next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
-            else:
-                next_vec_vis_obs = split_obs(trajectory.bootstrap_step.obs)
-            for i, _ in enumerate(vec_vis_obs.visual_observations):
-                agent_buffer_trajectory["visual_obs%d" % i].append(
-                    vec_vis_obs.visual_observations[i]
-                )
-                agent_buffer_trajectory["next_visual_obs%d" % i].append(
-                    next_vec_vis_obs.visual_observations[i]
-                )
-            if self.policy.use_vec_obs:
-                agent_buffer_trajectory["vector_obs"].append(
-                    vec_vis_obs.vector_observations
-                )
-                agent_buffer_trajectory["next_vector_in"].append(
-                    next_vec_vis_obs.vector_observations
-                )
-            if self.policy.use_recurrent:
-                agent_buffer_trajectory["memory"].append(exp.memory)
-
-            agent_buffer_trajectory["masks"].append(1.0)
-            agent_buffer_trajectory["done"].append(exp.done)
-            # Add the outputs of the last eval
-            if self.policy.use_continuous_act:
-                actions_pre = exp.action_pre
-                agent_buffer_trajectory["actions_pre"].append(actions_pre)
-                epsilons = exp.epsilon
-                agent_buffer_trajectory["random_normal_epsilon"].append(epsilons)
-            # value is a dictionary from name of reward to value estimate of the value head
-            agent_buffer_trajectory["actions"].append(exp.action)
-            agent_buffer_trajectory["action_probs"].append(exp.action_probs)
-
-            # Store action masks if necessary. Eventually these will be
-            # None for continuous actions
-            if exp.action_mask is not None:
-                agent_buffer_trajectory["action_mask"].append(
-                    exp.action_mask, padding_value=1
-                )
-
-            agent_buffer_trajectory["prev_action"].append(exp.prev_action)
-
-            # Add the value outputs if needed
-            agent_buffer_trajectory["environment_rewards"].append(exp.reward)
-        return agent_buffer_trajectory

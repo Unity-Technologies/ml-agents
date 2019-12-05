@@ -10,7 +10,7 @@ import numpy as np
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers.agent_processor import Trajectory
+from mlagents.trainers.trajectory import Trajectory, trajectory_to_agentbuffer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -84,7 +84,7 @@ class PPOTrainer(RLTrainer):
         agent_id = trajectory.steps[
             -1
         ].agent_id  # All the agents should have the same ID
-        agent_buffer_trajectory = self._trajectory_to_agentbuffer(trajectory)
+        agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
         # Update the normalization
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])

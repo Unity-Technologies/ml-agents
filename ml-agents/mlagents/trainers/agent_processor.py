@@ -1,66 +1,16 @@
-from typing import List, Dict, NamedTuple, Iterable
+from typing import List, Dict
 from collections import defaultdict
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer, BufferException
 from mlagents.trainers.trainer import Trainer
-from mlagents.envs.exception import UnityException
+from mlagents.trainers.trajectory import (
+    Trajectory,
+    AgentExperience,
+    BootstrapExperience,
+)
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
-
-
-class AgentExperience(NamedTuple):
-    obs: List[np.ndarray]
-    reward: float
-    done: bool
-    action: np.array
-    action_probs: np.ndarray
-    action_pre: np.ndarray  # TODO: Remove this
-    action_mask: np.array
-    prev_action: np.ndarray
-    epsilon: float
-    memory: np.array
-    agent_id: str
-
-
-class BootstrapExperience(NamedTuple):
-    """
-    A partial AgentExperience needed to bootstrap GAE.
-    """
-
-    obs: List[np.ndarray]
-    agent_id: str
-
-
-class SplitObservations(NamedTuple):
-    vector_observations: np.ndarray
-    visual_observations: List[np.ndarray]
-
-
-class Trajectory(NamedTuple):
-    steps: Iterable[AgentExperience]
-    bootstrap_step: BootstrapExperience  # The next step after the trajectory. Used for GAE.
-
-
-class AgentProcessorException(UnityException):
-    """
-    Related to errors with the AgentProcessor.
-    """
-
-    pass
-
-
-def split_obs(obs: List[np.ndarray]) -> SplitObservations:
-    vis_obs_indices = []
-    vec_obs_indices = []
-    for index, observation in enumerate(obs):
-        if len(observation.shape) == 1:
-            vec_obs_indices.append(index)
-        if len(observation.shape) == 3:
-            vis_obs_indices.append(index)
-    vec_obs = np.concatenate([obs[i] for i in vec_obs_indices], axis=0)
-    vis_obs = [obs[i] for i in vis_obs_indices]
-    return SplitObservations(vector_observations=vec_obs, visual_observations=vis_obs)
 
 
 class AgentProcessor:
