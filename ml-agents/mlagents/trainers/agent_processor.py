@@ -187,6 +187,7 @@ class AgentProcessor:
                         agent_id, training_length=self.policy.sequence_length
                     )
                     self.trainer.process_trajectory(trajectory)
+                    self.processing_buffer[agent_id].reset_agent()
                 elif not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
