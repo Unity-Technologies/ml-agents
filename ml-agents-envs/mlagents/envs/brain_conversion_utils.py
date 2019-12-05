@@ -58,5 +58,5 @@ def group_spec_to_brain_parameters(
         a_size += [group_spec.action_shape]
         vector_action_space_type = 1
     return BrainParameters(
-        name, vec_size, cam_res, a_size, [], vector_action_space_type
+        name, int(vec_size), cam_res, a_size, [], vector_action_space_type
     )
