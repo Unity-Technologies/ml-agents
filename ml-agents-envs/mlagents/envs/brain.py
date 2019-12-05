@@ -141,6 +141,7 @@ class BrainInfo:
         return s
 
     @staticmethod
+    @timed
     def from_agent_proto(
         worker_id: int,
         agent_info_list: List[AgentInfoProto],
@@ -152,7 +153,9 @@ class BrainInfo:
         vis_obs = BrainInfo._process_visual_observations(brain_params, agent_info_list)
 
         total_num_actions = sum(brain_params.vector_action_space_size)
-        mask_actions = np.ones((len(agent_info_list), total_num_actions))
+        mask_actions = np.ones(
+            (len(agent_info_list), total_num_actions), dtype=np.float32
+        )
         for agent_index, agent_info in enumerate(agent_info_list):
             if agent_info.action_mask is not None:
                 if len(agent_info.action_mask) == total_num_actions:
@@ -215,7 +218,9 @@ class BrainInfo:
         brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
-            vector_obs = np.zeros((0, brain_params.vector_observation_space_size))
+            vector_obs = np.zeros(
+                (0, brain_params.vector_observation_space_size), dtype=np.float32
+            )
         else:
             stacked_obs = []
             has_nan = False
@@ -229,7 +234,7 @@ class BrainInfo:
                 for vo in vec_obs:
                     # TODO consider itertools.chain here
                     proto_vector_obs.extend(vo.float_data.data)
-                np_obs = np.array(proto_vector_obs)
+                np_obs = np.array(proto_vector_obs, dtype=np.float32)
 
                 # Check for NaNs or infs in the observations
                 # If there's a NaN in the observations, the dot() result will be NaN
@@ -241,7 +246,7 @@ class BrainInfo:
                 has_nan = has_nan or np.isnan(d)
                 has_inf = has_inf or not np.isfinite(d)
                 stacked_obs.append(np_obs)
-            vector_obs = np.array(stacked_obs)
+            vector_obs = np.array(stacked_obs, dtype=np.float32)
 
             # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
             if has_nan or has_inf:
