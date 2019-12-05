@@ -84,7 +84,7 @@ class PPOTrainer(RLTrainer):
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         """
-
+        agent_id = trajectory.steps[-1].agent_id
         agent_buffer_trajectory = self._trajectory_to_agentbuffer(trajectory)
         # Update the normalization
         if self.is_training:
@@ -101,10 +101,13 @@ class PPOTrainer(RLTrainer):
 
         # Evaluate all reward functions
         for name, reward_signal in self.policy.reward_signals.items():
-            evaluate_result = reward_signal.evaluate_batch(
-                agent_buffer_trajectory
-            ).scaled_reward
-            agent_buffer_trajectory["{}_rewards".format(name)].extend(evaluate_result)
+            evaluate_result = reward_signal.evaluate_batch(agent_buffer_trajectory)
+            agent_buffer_trajectory["{}_rewards".format(name)].extend(
+                evaluate_result.scaled_reward
+            )
+            self.collected_rewards[name][agent_id] += np.sum(
+                evaluate_result.unscaled_reward
+            )
 
         # Compute GAE and returns
         tmp_advantages = []
@@ -149,7 +152,6 @@ class PPOTrainer(RLTrainer):
             )
 
         if trajectory.steps[-1].done:
-            agent_id = trajectory.steps[-1].agent_id
             self.stats["Environment/Episode Length"].append(
                 self.episode_steps.get(agent_id, 0)
             )
