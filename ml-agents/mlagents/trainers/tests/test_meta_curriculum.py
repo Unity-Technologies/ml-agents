@@ -40,17 +40,14 @@ def reward_buff_sizes():
 def test_init_meta_curriculum_happy_path(
     listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
 ):
-    meta_curriculum = MetaCurriculum("test/", default_reset_parameters)
+    meta_curriculum = MetaCurriculum("test/")
 
     assert len(meta_curriculum.brains_to_curriculums) == 2
 
     assert "Brain1" in meta_curriculum.brains_to_curriculums
     assert "Brain2" in meta_curriculum.brains_to_curriculums
 
-    calls = [
-        call("test/Brain1.json", default_reset_parameters),
-        call("test/Brain2.json", default_reset_parameters),
-    ]
+    calls = [call("test/Brain1.json"), call("test/Brain2.json")]
 
     mock_curriculum_init.assert_has_calls(calls)
 
@@ -58,7 +55,7 @@ def test_init_meta_curriculum_happy_path(
 @patch("os.listdir", side_effect=NotADirectoryError())
 def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
     with pytest.raises(MetaCurriculumError):
-        MetaCurriculum("test/", default_reset_parameters)
+        MetaCurriculum("test/")
 
 
 @patch("mlagents.trainers.curriculum.Curriculum")

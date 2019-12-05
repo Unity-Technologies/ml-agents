@@ -143,7 +143,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
             Assert.AreEqual(0, aca.initializeAcademyCalls);
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetEpisodeCount());
@@ -169,7 +168,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -215,7 +213,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
             var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             academyInitializeMethod?.Invoke(aca, new object[] { });
@@ -252,7 +249,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -330,7 +326,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
             var academyInitializeMethod = typeof(Academy).GetMethod(
                 "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
             academyInitializeMethod?.Invoke(aca, new object[] { });
@@ -369,7 +364,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -475,7 +469,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(
@@ -552,7 +545,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
 
             var agentEnableMethod = typeof(Agent).GetMethod(

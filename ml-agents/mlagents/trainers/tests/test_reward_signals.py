@@ -126,7 +126,7 @@ def reward_signal_eval(env, policy, reward_signal_name):
     brain_info = brain_infos[env.external_brain_names[0]]
     next_brain_info = env.step()[env.external_brain_names[0]]
     # Test evaluate
-    action = np.ones((len(brain_info.agents), policy.num_branches))
+    action = np.ones((len(brain_info.agents), policy.num_branches), dtype=np.float32)
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
         brain_info, action, next_brain_info
     )
@@ -137,7 +137,7 @@ def reward_signal_eval(env, policy, reward_signal_name):
 def reward_signal_update(env, policy, reward_signal_name):
     buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     feed_dict = policy.reward_signals[reward_signal_name].prepare_update(
-        policy.model, buffer.update_buffer.make_mini_batch(0, 10), 2
+        policy.model, buffer.make_mini_batch(0, 10), 2
     )
     out = policy._execute_model(
         feed_dict, policy.reward_signals[reward_signal_name].update_dict

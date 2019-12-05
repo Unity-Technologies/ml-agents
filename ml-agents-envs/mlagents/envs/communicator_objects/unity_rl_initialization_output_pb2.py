@@ -14,16 +14,15 @@ _sym_db = _symbol_database.Default()
 
 
 from mlagents.envs.communicator_objects import brain_parameters_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_brain__parameters__pb2
-from mlagents.envs.communicator_objects import environment_parameters_pb2 as mlagents_dot_envs_dot_communicator__objects_dot_environment__parameters__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents/envs/communicator_objects/unity_rl_initialization_output.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nGmlagents/envs/communicator_objects/unity_rl_initialization_output.proto\x12\x14\x63ommunicator_objects\x1a\x39mlagents/envs/communicator_objects/brain_parameters.proto\x1a?mlagents/envs/communicator_objects/environment_parameters.proto\"\xeb\x01\n UnityRLInitializationOutputProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x10\n\x08log_path\x18\x03 \x01(\t\x12\x44\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32*.communicator_objects.BrainParametersProto\x12P\n\x16\x65nvironment_parameters\x18\x06 \x01(\x0b\x32\x30.communicator_objects.EnvironmentParametersProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\nGmlagents/envs/communicator_objects/unity_rl_initialization_output.proto\x12\x14\x63ommunicator_objects\x1a\x39mlagents/envs/communicator_objects/brain_parameters.proto\"\x9f\x01\n UnityRLInitializationOutputProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x10\n\x08log_path\x18\x03 \x01(\t\x12\x44\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32*.communicator_objects.BrainParametersProtoJ\x04\x08\x06\x10\x07\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
-  dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_brain__parameters__pb2.DESCRIPTOR,mlagents_dot_envs_dot_communicator__objects_dot_environment__parameters__pb2.DESCRIPTOR,])
+  dependencies=[mlagents_dot_envs_dot_communicator__objects_dot_brain__parameters__pb2.DESCRIPTOR,])
 
 
 
@@ -63,13 +62,6 @@ _UNITYRLINITIALIZATIONOUTPUTPROTO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='environment_parameters', full_name='communicator_objects.UnityRLInitializationOutputProto.environment_parameters', index=4,
-      number=6, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -82,12 +74,11 @@ _UNITYRLINITIALIZATIONOUTPUTPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=222,
-  serialized_end=457,
+  serialized_start=157,
+  serialized_end=316,
 )
 
 _UNITYRLINITIALIZATIONOUTPUTPROTO.fields_by_name['brain_parameters'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_brain__parameters__pb2._BRAINPARAMETERSPROTO
-_UNITYRLINITIALIZATIONOUTPUTPROTO.fields_by_name['environment_parameters'].message_type = mlagents_dot_envs_dot_communicator__objects_dot_environment__parameters__pb2._ENVIRONMENTPARAMETERSPROTO
 DESCRIPTOR.message_types_by_name['UnityRLInitializationOutputProto'] = _UNITYRLINITIALIZATIONOUTPUTPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

@@ -246,10 +246,13 @@ class PPOPolicy(TFPolicy):
             ]
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
+        agent_id = brain_info.agents[idx]
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = self.retrieve_memories([idx])
+            feed_dict[self.model.memory_in] = self.retrieve_memories([agent_id])
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = self.retrieve_previous_action([idx])
+            feed_dict[self.model.prev_action] = self.retrieve_previous_action(
+                [agent_id]
+            )
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
