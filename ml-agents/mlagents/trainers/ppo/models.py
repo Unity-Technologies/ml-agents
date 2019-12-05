@@ -141,11 +141,15 @@ class PPOModel(LearningModel):
 
         # Compute probability of model output.
         all_probs = (
-            -0.5 * tf.square(tf.stop_gradient(_policy_out) - mu) / sigma_sq
+            -0.5
+            * tf.reduce_sum(
+                tf.square(tf.stop_gradient(_policy_out) - mu) / sigma_sq,
+                axis=1,
+                keepdims=True,
+            )
             - 0.5 * tf.log(2.0 * np.pi)
-            - 0.5 * self.log_sigma_sq
+            - 0.5 * tf.reduce_sum(self.log_sigma_sq)
         )
-
         # Correct for tanh squash (source: https://arxiv.org/abs/1801.01290)
         all_probs -= tf.reduce_sum(
             tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
@@ -160,16 +164,12 @@ class PPOModel(LearningModel):
         self.create_value_heads(self.stream_names, hidden_value)
 
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
+            shape=[None, 1], dtype=tf.float32, name="old_probabilities"
         )
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = tf.reduce_sum(
-            (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
-        self.old_log_probs = tf.reduce_sum(
-            (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
-        )
+        self.log_probs = self.all_log_probs
+        self.old_log_probs = self.all_old_log_probs
 
     def create_dc_actor_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
