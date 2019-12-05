@@ -265,7 +265,7 @@ GridWorld:
     hidden_units: 256
     beta: 5.0e-3
     buffer_size: 256
-    max_steps: 5.0e5
+    max_steps: 50000
     summary_freq: 2000
     time_horizon: 5
     reward_signals:

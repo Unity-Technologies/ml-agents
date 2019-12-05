@@ -24,15 +24,10 @@ reach out to us directly at ml-agents@unity3d.com and/or browse the GitHub
 issues with the `contributions welcome` label.
 
 ## Git Branches
+The master branch corresponds to the most recent version of the project.
+Note that this may be newer that the [latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release).
 
-Starting with v0.3, we adopted the
-[Gitflow Workflow](http://nvie.com/posts/a-successful-git-branching-model/).
-Consequently, the `master` branch corresponds to the latest release of
-the project, while the `develop` branch corresponds to the most recent, stable,
-version of the project.
-
-Thus, when adding to the project, **please branch off `develop`**
-and make sure that your Pull Request (PR) contains the following:
+When contributing to the project, please make sure that your Pull Request (PR) contains the following:
 
 * Detailed description of the changes performed
 * Corresponding changes to documentation, unit tests and sample environments (if

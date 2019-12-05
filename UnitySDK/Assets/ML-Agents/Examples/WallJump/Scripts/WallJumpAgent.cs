@@ -312,7 +312,7 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.resetParameters["no_wall_height"],
+                m_Academy.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", noWallBrain);
@@ -321,17 +321,16 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.resetParameters["small_wall_height"],
+                m_Academy.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var height =
-                m_Academy.resetParameters["big_wall_min_height"] +
-                Random.value * (m_Academy.resetParameters["big_wall_max_height"] -
-                    m_Academy.resetParameters["big_wall_min_height"]);
+            var min = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,
                 height,

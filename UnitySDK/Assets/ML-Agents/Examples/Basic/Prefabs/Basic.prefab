@@ -912,12 +912,11 @@ MonoBehaviour:
     vectorObservationSize: 20
     numStackedVectorObservations: 1
     vectorActionSize: 03000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 53fa7c392ce3c492281be273668f6aaf, type: 3}
+  m_Model: {fileID: 11400000, guid: 468c183196f1844f69e125c99dd135a1, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
+  m_BehaviorType: 0
   m_BehaviorName: Basic
 --- !u!114 &114827551040495112
 MonoBehaviour:
@@ -931,8 +930,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 1

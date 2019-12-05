@@ -51,7 +51,7 @@ def default_reset_parameters():
 
 @patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
 def test_init_curriculum_happy_path(mock_file, location, default_reset_parameters):
-    curriculum = Curriculum(location, default_reset_parameters)
+    curriculum = Curriculum(location)
 
     assert curriculum._brain_name == "TestBrain"
     assert curriculum.lesson_num == 0
@@ -63,12 +63,12 @@ def test_init_curriculum_bad_curriculum_raises_error(
     mock_file, location, default_reset_parameters
 ):
     with pytest.raises(CurriculumConfigError):
-        Curriculum(location, default_reset_parameters)
+        Curriculum(location)
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
 def test_increment_lesson(mock_file, location, default_reset_parameters):
-    curriculum = Curriculum(location, default_reset_parameters)
+    curriculum = Curriculum(location)
     assert curriculum.lesson_num == 0
 
     curriculum.lesson_num = 1
@@ -89,7 +89,7 @@ def test_increment_lesson(mock_file, location, default_reset_parameters):
 
 @patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
 def test_get_config(mock_file):
-    curriculum = Curriculum("TestBrain.json", {"param1": 1, "param2": 1, "param3": 1})
+    curriculum = Curriculum("TestBrain.json")
     assert curriculum.get_config() == {"param1": 0.7, "param2": 100, "param3": 0.2}
 
     curriculum.lesson_num = 2

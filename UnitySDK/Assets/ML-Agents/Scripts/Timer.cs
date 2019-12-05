@@ -1,4 +1,5 @@
 // Compile with: csc CRefTest.cs -doc:Results.xml
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,12 @@ namespace MLAgents
         /// </summary>
         [DataMember(Name = "children", Order = 999)]
         Dictionary<string, TimerNode> m_Children;
+
+        /// <summary>
+        /// Gauge Nodes to measure arbitrary values.
+        /// </summary>
+        [DataMember(Name = "gauges", EmitDefaultValue = false)]
+        Dictionary<string, GaugeNode> m_Gauges;
 
         /// <summary>
         /// Custom sampler used to add timings to the profiler.
@@ -58,7 +65,7 @@ namespace MLAgents
                 var currentTicks = m_TotalTicks;
                 if (m_TickStart != 0)
                 {
-                    currentTicks += (System.DateTime.Now.Ticks - m_TickStart);
+                    currentTicks += (DateTime.Now.Ticks - m_TickStart);
                 }
 
                 return currentTicks;
@@ -73,6 +80,11 @@ namespace MLAgents
         {
             get { return CurrentTicks * s_TicksToSeconds; }
             set {}  // Serialization needs this, but unused.
+        }
+
+        public Dictionary<string, GaugeNode> Gauges
+        {
+            get { return m_Gauges; }
         }
 
         /// <summary>
@@ -117,7 +129,8 @@ namespace MLAgents
                 // have a sensible value for total time (the running time since reset).
                 // The root node doesn't have a sampler since that could interfere with the profiler.
                 m_NumCalls = 1;
-                m_TickStart = System.DateTime.Now.Ticks;
+                m_TickStart = DateTime.Now.Ticks;
+                m_Gauges = new Dictionary<string, GaugeNode>();
             }
             else
             {
@@ -131,7 +144,7 @@ namespace MLAgents
         public void Begin()
         {
             m_Sampler?.Begin();
-            m_TickStart = System.DateTime.Now.Ticks;
+            m_TickStart = DateTime.Now.Ticks;
         }
 
         /// <summary>
@@ -139,7 +152,7 @@ namespace MLAgents
         /// </summary>
         public void End()
         {
-            var elapsed = System.DateTime.Now.Ticks - m_TickStart;
+            var elapsed = DateTime.Now.Ticks - m_TickStart;
             m_TotalTicks += elapsed;
             m_TickStart = 0;
             m_NumCalls++;
@@ -206,6 +219,37 @@ namespace MLAgents
     }
 
     /// <summary>
+    /// Tracks the most recent value of a metric. This is analogous to gauges in statsd.
+    /// </summary>
+    [DataContract]
+    public class GaugeNode
+    {
+        [DataMember]
+        public float value;
+        [DataMember( Name = "min")]
+        public float minValue;
+        [DataMember( Name = "max")]
+        public float maxValue;
+        [DataMember]
+        public uint count;
+        public GaugeNode(float value)
+        {
+            this.value = value;
+            minValue = value;
+            maxValue = value;
+            count = 1;
+        }
+
+        public void Update(float newValue)
+        {
+            minValue = Mathf.Min(minValue, newValue);
+            maxValue = Mathf.Max(maxValue, newValue);
+            value = newValue;
+            ++count;
+        }
+    }
+
+    /// <summary>
     /// A "stack" of timers that allows for lightweight hierarchical profiling of long-running processes.
     /// <example>
     /// Example usage:
@@ -228,7 +272,7 @@ namespace MLAgents
     /// This implements the Singleton pattern (solution 4) as described in
     /// https://csharpindepth.com/articles/singleton
     /// </remarks>
-    public class TimerStack : System.IDisposable
+    public class TimerStack : IDisposable
     {
         static readonly TimerStack k_Instance = new TimerStack();
 
@@ -261,6 +305,22 @@ namespace MLAgents
         public TimerNode RootNode
         {
             get { return m_RootNode; }
+        }
+
+        public void SetGauge(string name, float value)
+        {
+            if (!float.IsNaN(value))
+            {
+                GaugeNode gauge;
+                if (m_RootNode.Gauges.TryGetValue(name, out gauge))
+                {
+                    gauge.Update(value);
+                }
+                else
+                {
+                    m_RootNode.Gauges[name] = new GaugeNode(value);
+                }
+            }
         }
 
         void Push(string name)
