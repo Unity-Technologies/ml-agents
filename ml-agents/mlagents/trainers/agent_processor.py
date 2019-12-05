@@ -217,9 +217,6 @@ class AgentProcessor:
         self.processing_buffer[agent_id]["actions"].append(actions[agent_idx])
         self.processing_buffer[agent_id]["action_probs"].append(a_dist[agent_idx])
 
-    def process_experiences(self):
-        pass
-
 
 class ProcessingBuffer(dict):
     """

@@ -81,7 +81,9 @@ class PPOTrainer(RLTrainer):
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         """
-        agent_id = trajectory.steps[-1].agent_id
+        agent_id = trajectory.steps[
+            -1
+        ].agent_id  # All the agents should have the same ID
         agent_buffer_trajectory = self._trajectory_to_agentbuffer(trajectory)
         # Update the normalization
         if self.is_training:
