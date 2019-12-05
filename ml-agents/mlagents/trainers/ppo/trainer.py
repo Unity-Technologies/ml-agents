@@ -80,108 +80,197 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = {}
 
     def process_trajectory(self, trajectory: Trajectory) -> None:
-        pass
+        """
+        Takes a trajectory and processes it, putting it into the update buffer.
+        Processing involves calculating value and advantage targets for model updating step.
+        """
+
+        agent_buffer_trajectory = self._trajectory_to_agentbuffer(trajectory)
+        # Update the normalization
+        if self.is_training:
+            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+
+        # Get all value estimates
+        value_estimates = self.policy.get_batched_value_estimates(
+            agent_buffer_trajectory
+        )
+        for name, v in value_estimates.items():
+            agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
+
+        value_next = self.policy.get_value_estimates2(trajectory.next_step)
+
+        # Evaluate all reward functions
+        for name, reward_signal in self.policy.reward_signals.items():
+            evaluate_result = reward_signal.evaluate_batch(
+                agent_buffer_trajectory
+            ).scaled_reward
+            agent_buffer_trajectory["{}_rewards".format(name)].extend(evaluate_result)
+
+        # Compute GAE and returns
+        tmp_advantages = []
+        tmp_returns = []
+        for name in self.policy.reward_signals:
+            bootstrap_value = value_next[name]
+
+            local_rewards = agent_buffer_trajectory[
+                "{}_rewards".format(name)
+            ].get_batch()
+            local_value_estimates = agent_buffer_trajectory[
+                "{}_value_estimates".format(name)
+            ].get_batch()
+            local_advantage = get_gae(
+                rewards=local_rewards,
+                value_estimates=local_value_estimates,
+                value_next=bootstrap_value,
+                gamma=self.policy.reward_signals[name].gamma,
+                lambd=self.trainer_parameters["lambd"],
+            )
+            local_return = local_advantage + local_value_estimates
+            # This is later use as target for the different value estimates
+            agent_buffer_trajectory["{}_returns".format(name)].set(local_return)
+            agent_buffer_trajectory["{}_advantage".format(name)].set(local_advantage)
+            tmp_advantages.append(local_advantage)
+            tmp_returns.append(local_return)
+
+        # Get global advantages
+        global_advantages = list(
+            np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+        )
+        global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
+        agent_buffer_trajectory["advantages"].set(global_advantages)
+        agent_buffer_trajectory["discounted_returns"].set(global_returns)
+        # Append to update buffer
+        key_list = agent_buffer_trajectory.keys()
+        for field_key in key_list:
+            self.update_buffer[field_key].extend(
+                agent_buffer_trajectory[field_key].get_batch(
+                    batch_size=None, training_length=self.policy.sequence_length
+                )
+            )
+
+        if trajectory.steps[-1].done:
+            agent_id = trajectory.steps[-1].agent_id
+            self.stats["Environment/Episode Length"].append(
+                self.episode_steps.get(agent_id, 0)
+            )
+            self.episode_steps[agent_id] = 0
+            for name, rewards in self.collected_rewards.items():
+                if name == "environment":
+                    self.cumulative_returns_since_policy_update.append(
+                        rewards.get(agent_id, 0)
+                    )
+                    self.stats["Environment/Cumulative Reward"].append(
+                        rewards.get(agent_id, 0)
+                    )
+                    self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                    rewards[agent_id] = 0
+                else:
+                    self.stats[self.policy.reward_signals[name].stat_name].append(
+                        rewards.get(agent_id, 0)
+                    )
+                    rewards[agent_id] = 0
 
     def process_experiences(
         self, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
-        """
-        Checks agent histories for processing condition, and processes them as necessary.
-        Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: current BrainInfo.
-        :param next_info: next BrainInfo.
-        """
-        if self.is_training:
-            self.policy.update_normalization(next_info.vector_observations)
-        for l in range(len(next_info.agents)):
-            agent_actions = self.processing_buffer[next_info.agents[l]]["actions"]
-            if (
-                next_info.local_done[l]
-                or len(agent_actions) > self.trainer_parameters["time_horizon"]
-            ) and len(agent_actions) > 0:
-                agent_id = next_info.agents[l]
-                if next_info.max_reached[l]:
-                    bootstrapping_info = self.processing_buffer[
-                        agent_id
-                    ].last_brain_info
-                    idx = bootstrapping_info.agents.index(agent_id)
-                else:
-                    bootstrapping_info = next_info
-                    idx = l
-                value_next = self.policy.get_value_estimates(
-                    bootstrapping_info,
-                    idx,
-                    next_info.local_done[l] and not next_info.max_reached[l],
-                )
+        pass
+        # """
+        # Checks agent histories for processing condition, and processes them as necessary.
+        # Processing involves calculating value and advantage targets for model updating step.
+        # :param current_info: current BrainInfo.
+        # :param next_info: next BrainInfo.
+        # """
+        # if self.is_training:
+        #     self.policy.update_normalization(next_info.vector_observations)
+        # for l in range(len(next_info.agents)):
+        #     agent_actions = self.processing_buffer[next_info.agents[l]]["actions"]
+        #     if (
+        #         next_info.local_done[l]
+        #         or len(agent_actions) > self.trainer_parameters["time_horizon"]
+        #     ) and len(agent_actions) > 0:
+        #         agent_id = next_info.agents[l]
+        #         if next_info.max_reached[l]:
+        #             bootstrapping_info = self.processing_buffer[
+        #                 agent_id
+        #             ].last_brain_info
+        #             idx = bootstrapping_info.agents.index(agent_id)
+        #         else:
+        #             bootstrapping_info = next_info
+        #             idx = l
+        #         value_next = self.policy.get_value_estimates(
+        #             bootstrapping_info,
+        #             idx,
+        #             next_info.local_done[l] and not next_info.max_reached[l],
+        #         )
 
-                tmp_advantages = []
-                tmp_returns = []
-                for name in self.policy.reward_signals:
-                    bootstrap_value = value_next[name]
+        #         tmp_advantages = []
+        #         tmp_returns = []
+        #         for name in self.policy.reward_signals:
+        #             bootstrap_value = value_next[name]
 
-                    local_rewards = self.processing_buffer[agent_id][
-                        "{}_rewards".format(name)
-                    ].get_batch()
-                    local_value_estimates = self.processing_buffer[agent_id][
-                        "{}_value_estimates".format(name)
-                    ].get_batch()
-                    local_advantage = get_gae(
-                        rewards=local_rewards,
-                        value_estimates=local_value_estimates,
-                        value_next=bootstrap_value,
-                        gamma=self.policy.reward_signals[name].gamma,
-                        lambd=self.trainer_parameters["lambd"],
-                    )
-                    local_return = local_advantage + local_value_estimates
-                    # This is later use as target for the different value estimates
-                    self.processing_buffer[agent_id]["{}_returns".format(name)].set(
-                        local_return
-                    )
-                    self.processing_buffer[agent_id]["{}_advantage".format(name)].set(
-                        local_advantage
-                    )
-                    tmp_advantages.append(local_advantage)
-                    tmp_returns.append(local_return)
+        #             local_rewards = self.processing_buffer[agent_id][
+        #                 "{}_rewards".format(name)
+        #             ].get_batch()
+        #             local_value_estimates = self.processing_buffer[agent_id][
+        #                 "{}_value_estimates".format(name)
+        #             ].get_batch()
+        #             local_advantage = get_gae(
+        #                 rewards=local_rewards,
+        #                 value_estimates=local_value_estimates,
+        #                 value_next=bootstrap_value,
+        #                 gamma=self.policy.reward_signals[name].gamma,
+        #                 lambd=self.trainer_parameters["lambd"],
+        #             )
+        #             local_return = local_advantage + local_value_estimates
+        #             # This is later use as target for the different value estimates
+        #             self.processing_buffer[agent_id]["{}_returns".format(name)].set(
+        #                 local_return
+        #             )
+        #             self.processing_buffer[agent_id]["{}_advantage".format(name)].set(
+        #                 local_advantage
+        #             )
+        #             tmp_advantages.append(local_advantage)
+        #             tmp_returns.append(local_return)
 
-                global_advantages = list(
-                    np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
-                )
-                global_returns = list(
-                    np.mean(np.array(tmp_returns, dtype=np.float32), axis=0)
-                )
-                self.processing_buffer[agent_id]["advantages"].set(global_advantages)
-                self.processing_buffer[agent_id]["discounted_returns"].set(
-                    global_returns
-                )
+        #         global_advantages = list(
+        #             np.mean(np.array(tmp_advantages, dtype=np.float32), axis=0)
+        #         )
+        #         global_returns = list(
+        #             np.mean(np.array(tmp_returns, dtype=np.float32), axis=0)
+        #         )
+        #         self.processing_buffer[agent_id]["advantages"].set(global_advantages)
+        #         self.processing_buffer[agent_id]["discounted_returns"].set(
+        #             global_returns
+        #         )
 
-                self.processing_buffer.append_to_update_buffer(
-                    self.update_buffer,
-                    agent_id,
-                    batch_size=None,
-                    training_length=self.policy.sequence_length,
-                )
+        #         self.processing_buffer.append_to_update_buffer(
+        #             self.update_buffer,
+        #             agent_id,
+        #             batch_size=None,
+        #             training_length=self.policy.sequence_length,
+        #         )
 
-                self.processing_buffer[agent_id].reset_agent()
-                if next_info.local_done[l]:
-                    self.stats["Environment/Episode Length"].append(
-                        self.episode_steps.get(agent_id, 0)
-                    )
-                    self.episode_steps[agent_id] = 0
-                    for name, rewards in self.collected_rewards.items():
-                        if name == "environment":
-                            self.cumulative_returns_since_policy_update.append(
-                                rewards.get(agent_id, 0)
-                            )
-                            self.stats["Environment/Cumulative Reward"].append(
-                                rewards.get(agent_id, 0)
-                            )
-                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
-                            rewards[agent_id] = 0
-                        else:
-                            self.stats[
-                                self.policy.reward_signals[name].stat_name
-                            ].append(rewards.get(agent_id, 0))
-                            rewards[agent_id] = 0
+        #         self.processing_buffer[agent_id].reset_agent()
+        #         if next_info.local_done[l]:
+        #             self.stats["Environment/Episode Length"].append(
+        #                 self.episode_steps.get(agent_id, 0)
+        #             )
+        #             self.episode_steps[agent_id] = 0
+        #             for name, rewards in self.collected_rewards.items():
+        #                 if name == "environment":
+        #                     self.cumulative_returns_since_policy_update.append(
+        #                         rewards.get(agent_id, 0)
+        #                     )
+        #                     self.stats["Environment/Cumulative Reward"].append(
+        #                         rewards.get(agent_id, 0)
+        #                     )
+        #                     self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+        #                     rewards[agent_id] = 0
+        #                 else:
+        #                     self.stats[
+        #                         self.policy.reward_signals[name].stat_name
+        #                     ].append(rewards.get(agent_id, 0))
+        #                     rewards[agent_id] = 0
 
     def add_policy_outputs(
         self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int

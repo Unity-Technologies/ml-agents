@@ -3,22 +3,29 @@ from collections import defaultdict
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer, BufferException
-from mlagents.envs.trainer import Trainer
+from mlagents.trainers.trainer import Trainer
 from mlagents.envs.exception import UnityException
 from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 
 
 class AgentExperience(NamedTuple):
-    obs: List[np.array]
+    obs: List[np.ndarray]
     reward: float
     done: bool
     action: np.array
-    action_probs: np.array
-    prev_action: np.array
+    action_probs: np.ndarray
+    action_pre: np.ndarray  # TODO: Remove this
+    action_mask: np.array
+    prev_action: np.ndarray
     epsilon: float
     memory: np.array
     agent_id: str
+
+
+class SplitObservations(NamedTuple):
+    vector_observations: np.ndarray
+    visual_observations: List[np.ndarray]
 
 
 class Trajectory(NamedTuple):
@@ -32,6 +39,19 @@ class AgentProcessorException(UnityException):
     """
 
     pass
+
+
+def split_obs(obs: List[np.ndarray]) -> SplitObservations:
+    vis_obs_indices = []
+    vec_obs_indices = []
+    for index, observation in enumerate(obs):
+        if len(observation.shape) == 1:
+            vec_obs_indices.append(index)
+        if len(observation.shape) == 3:
+            vis_obs_indices.append(index)
+    vec_obs = np.concatenate([obs[i] for i in vec_obs_indices], axis=0)
+    vis_obs = [obs[i] for i in vis_obs_indices]
+    return SplitObservations(vector_observations=vec_obs, visual_observations=vis_obs)
 
 
 class AgentProcessor:
@@ -150,7 +170,7 @@ class AgentProcessor:
 
                     # Add the value outputs if needed
                     self.processing_buffer[agent_id]["environment_rewards"].append(
-                        tmp_environment
+                        tmp_environment[next_idx]
                     )
 
                     for name, value in values.items():
@@ -290,6 +310,8 @@ class ProcessingBuffer(dict):
                 done=self[agent_id]["done"][_exp],
                 action=self[agent_id]["actions"][_exp],
                 action_probs=self[agent_id]["action_probs"][_exp],
+                action_pre=self[agent_id]["actions_pre"][_exp],
+                action_mask=self[agent_id]["action_mask"][_exp],
                 prev_action=self[agent_id]["prev_action"][_exp],
                 agent_id=agent_id,
                 memory=memory,
