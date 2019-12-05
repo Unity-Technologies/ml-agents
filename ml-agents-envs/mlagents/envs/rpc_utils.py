@@ -60,14 +60,14 @@ def _process_visual_observation(
     obs_index: int, shape: Tuple[int, int, int], agent_info_list: List[AgentInfoProto]
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
-        return np.zeros((0, shape[0], shape[1], shape[2]))
+        return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
 
     gray_scale = shape[2] == 1
     batched_visual = [
         process_pixels(agent_obs.observations[obs_index].compressed_data, gray_scale)
         for agent_obs in agent_info_list
     ]
-    return np.array(batched_visual)
+    return np.array(batched_visual, dtype=np.float32)
 
 
 @timed
@@ -80,7 +80,8 @@ def _process_vector_observation(
         [
             agent_obs.observations[obs_index].float_data.data
             for agent_obs in agent_info_list
-        ]
+        ],
+        dtype=np.float32,
     )
     # Check for NaNs or infs in the observations
     # If there's a NaN in the observations, the dot() result will be NaN
