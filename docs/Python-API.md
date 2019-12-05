@@ -7,7 +7,7 @@ Unity Environments using our implementations of reinforcement learning or
 imitation learning.
 
 You can use the Python Low Level API to interact directly with your learning
-environment, and use it to develop new learning algorithms 
+environment, and use it to develop new learning algorithms
 
 ## mlagents.envs
 
@@ -27,7 +27,7 @@ The key objects in the Python API include:
 - **AgentGroupSpec** — describes the shape of the data inside a BatchedStepResult.
   For example, provides the dimensions of the observations of a group.
 
-These classes are all defined in the [base_env](../ml-agents-envs/mlagents/base_env.py)
+These classes are all defined in the [base_env](../ml-agents-envs/mlagents/envs/base_env.py)
 script.
 
 An Agent Group is a group of Agents identified by a string name that share the same
@@ -89,15 +89,15 @@ A `BaseEnv` has the following methods:
  - **Close : `env.close()`** Sends a shutdown signal to the environment and terminates
    the communication.
  - **Get Agent Group Names : `env.get_agent_groups()`** Returns a list of agent group ids.
-   Note that the number of groups can change over time in the simulation if new 
+   Note that the number of groups can change over time in the simulation if new
    agent groups are created in the simulation.
  - **Get Agent Group Spec : `env.get_agent_group_spec(agent_group: str)`** Returns
-   the `AgentGroupSpec` corresponding to the agent_group given as input. An 
+   the `AgentGroupSpec` corresponding to the agent_group given as input. An
    `AgentGroupSpec` contains information such as the observation shapes, the action
    type (multi-discrete or continuous) and the action shape. Note that the `AgentGroupSpec`
-   for a specific group is fixed throughout the simulation. 
+   for a specific group is fixed throughout the simulation.
  - **Get Batched Step Result for Agent Group : `env.get_step_result(agent_group: str)`**
-   Returns a `BatchedStepResult` corresponding to the agent_group given as input. 
+   Returns a `BatchedStepResult` corresponding to the agent_group given as input.
    A `BatchedStepResult` contains information about the state of the agents in a group
    such as the observations, the rewards, the done flags and the agent identifiers. The
    data is in `np.array` of which the first dimension is always the number of agents which
@@ -125,7 +125,7 @@ A `BatchedStepResult` is a `NamedTuple` with the following fields :
 
  - `obs` is a list of numpy arrays observations collected by the group of
  agent. The first dimension of the array corresponds to the batch size of
- the group (number of agents requesting a decision since the last call to 
+ the group (number of agents requesting a decision since the last call to
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
@@ -143,9 +143,9 @@ A `BatchedStepResult` is a `NamedTuple` with the following fields :
  array is the batch size and the second contains a mask for each action of
  the branch. If true, the action is not available for the agent during
  this simulation step.
- 
+
 It also has the two following methods:
- 
+
  - `n_agents()` Returns the number of agents requesting a decision since
  the last call to `env.step()`
  - `get_agent_step_result(agent_id: int)` Returns a `StepResult`
@@ -179,7 +179,7 @@ An `AgentGroupSpec` is a `NamedTuple` with the following fields :
 
  - `observation_shapes` is a List of Tuples of int : Each Tuple corresponds
  to an observation's dimensions (without the number of agents dimension).
- The shape tuples have the same ordering as the ordering of the 
+ The shape tuples have the same ordering as the ordering of the
  BatchedStepResult and StepResult.
  - `action_type` is the type of data of the action. it can be discrete or
  continuous. If discrete, the action tensors are expected to be `np.int32`. If
@@ -187,13 +187,13 @@ An `AgentGroupSpec` is a `NamedTuple` with the following fields :
  - `action_size` is an `int` corresponding to the expected dimension of the action
  array.
    - In continuous action space it is the number of floats that constitute the action.
-   - In discrete action space (same as multi-discrete) it corresponds to the 
+   - In discrete action space (same as multi-discrete) it corresponds to the
    number of branches (the number of independent actions)
  - `discrete_action_branches` is a Tuple of int only for discrete action space. Each int
  corresponds to the number of different options for each branch of the action.
  For example : In a game direction input (no movement, left, right) and jump input
  (no jump, jump) there will be two branches (direction and jump), the first one with 3
- options and the second with 2 options. (`action_size = 2` and 
+ options and the second with 2 options. (`action_size = 2` and
  `discrete_action_branches = (3,2,)`)
 
 
