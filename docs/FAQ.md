@@ -1,29 +1,5 @@
 # Frequently Asked Questions
 
-## Installation problems
-
-### Tensorflow dependency
-ML Agents requires TensorFlow; if you don't already have it installed, `pip` will try to install it when you install
-the ml-agents package.
-
-If you see a message like this
-```console
-ERROR: Could not find a version that satisfies the requirement tensorflow<2.0,>=1.7 (from mlagents) (from versions: none)
-ERROR: No matching distribution found for tensorflow<2.0,>=1.7 (from mlagents)
-```
-it means that there is no version of TensorFlow for your python environment. Some known potential causes are:
- * You're using 32-bit python instead of 64-bit. See the answer [here](https://stackoverflow.com/a/1405971/224264)
-  for how to tell which you have installed.
- * You're using python 3.8. Tensorflow plans to release packages for this as soon as possible; see
-  [this issue](https://github.com/tensorflow/tensorflow/issues/33374) for more details.
- * You have the `tensorflow-gpu` package installed. This is equivalent to `tensorflow`, however `pip` doesn't recognize
-  this. The best way to resolve this is to update to `tensorflow==1.15.0` which provides GPU support in the same package
-  (see the [release notes](https://github.com/tensorflow/tensorflow/issues/33374) for more details.)
- * You're on another architecture (e.g. ARM) which requires vendor provided packages.
-
-In all of these cases, the issue is a pip/python environment setup issue.  Please search the tensorflow github issues
-for similar problems and solutions before creating a new issue.
-
 ## Scripting Runtime Environment not setup correctly
 
 If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6
@@ -102,9 +78,3 @@ for custom episode-terminating events.
 ## Problems with training on AWS
 
 Please refer to [Training on Amazon Web Service FAQ](Training-on-Amazon-Web-Service.md#faq)
-
-# Known Issues
-
-## Release 0.10.0
-* ml-agents 0.10.0 and earlier were incompatible with TensorFlow 1.15.0; the graph could contain
- an operator that `tensorflow_to_barracuda` didn't handle. This was fixed in the 0.11.0 release.

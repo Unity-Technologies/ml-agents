@@ -1,10 +1,3 @@
-# Upgrading
-## :warning: Warning :warning:
-The C# editor code and python trainer code are not compatible between releases. This means that if you upgrade one, you *must* upgrade the other as well. If you experience new errors or unable to connect to training after updating, please double-check that the versions are in the same.
-The versions can be found in
-* `Academy.k_ApiVersion` in Academy.cs ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/UnitySDK/Assets/ML-Agents/Scripts/Academy.cs#L95))
-* `UnityEnvironment.API_VERSION` in environment.py ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
-
 # Migrating
 
 ## Migrating from master to develop
@@ -29,7 +22,6 @@ The versions can be found in
   * `Default` corresponds to the previous unchecked behavior, meaning that Agents will train if they connect to a python trainer, otherwise they will performance inference.
   * `Heuristic Only` means the Agent will always use the `Heuristic()` method. This corresponds to having "Use Heuristic" selected in 0.11.0.
   * `Inference Only` means the Agent will always perform inference.
-* Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager.
 
 ### Steps to Migrate
 * We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
