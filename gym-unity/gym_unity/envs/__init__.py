@@ -211,11 +211,12 @@ class UnityEnv(gym.Env):
                 # Translate action into list
                 action = self._flattener.lookup_action(action)
 
-        self._env.set_actions(self.brain_name, np.array(action))
+        spec = self._env.get_agent_group_spec(self.brain_name)
+        action = np.array(action).reshape((self._n_agents, spec.action_size))
+        self._env.set_actions(self.brain_name, action)
         self._env.step()
         info = step_result_to_brain_info(
-            self._env.get_step_result(self.brain_name),
-            self._env.get_agent_group_spec(self.brain_name),
+            self._env.get_step_result(self.brain_name), spec
         )
         n_agents = len(info.agents)
         self._check_agents(n_agents)

@@ -25,7 +25,7 @@ SideChannels.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, NamedTuple, Tuple, Union, Optional
+from typing import List, NamedTuple, Tuple, Optional, Any
 import numpy as np
 from enum import Enum
 
@@ -170,7 +170,44 @@ class AgentGroupSpec(NamedTuple):
 
     observation_shapes: List[Tuple]
     action_type: ActionType
-    action_shape: Union[int, Tuple]
+    action_shape: Any
+
+    def is_action_discrete(self) -> bool:
+        """
+        Returns true if the Agent group uses discrete actions
+        """
+        return self.action_type == ActionType.DISCRETE
+
+    def is_action_continuous(self) -> bool:
+        """
+        Returns true if the Agent group uses continuous actions
+        """
+        return self.action_type == ActionType.CONTINUOUS
+
+    @property
+    def action_size(self) -> int:
+        """
+        Returns the dimension of the action.
+         - In the continuous case, will return the number of continuous actions.
+         - In the (multi-)discrete case, will return the number of action.
+         branches.
+        """
+        if self.action_type == ActionType.DISCRETE:
+            return len(self.action_shape)
+        else:
+            return self.action_shape
+
+    @property
+    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
+        """
+        Returns a Tuple of int corresponding to the number of possible actions
+        for each branch (only for discrete actions). Will return None in
+        for continuous actions.
+        """
+        if self.action_type == ActionType.DISCRETE:
+            return self.action_shape
+        else:
+            return None
 
 
 class BaseEnv(ABC):

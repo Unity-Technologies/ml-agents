@@ -1,5 +1,5 @@
 from mlagents.envs.brain import BrainInfo, BrainParameters, CameraResolution
-from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec, ActionType
+from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec
 import numpy as np
 from typing import List, Any
 
@@ -22,9 +22,13 @@ def step_result_to_brain_info(
     else:
         vec_obs = np.concatenate([step_result.obs[i] for i in vec_obs_indices], axis=1)
     vis_obs = [step_result.obs[i] for i in vis_obs_indices]
-    mask = np.ones((n_agents, np.sum(group_spec.action_shape)), dtype=np.float32)
-    if step_result.action_mask is not None:
-        mask = 1 - np.concatenate(step_result.action_mask, axis=1)
+    mask = np.ones((n_agents, np.sum(group_spec.action_size)), dtype=np.float32)
+    if group_spec.is_action_discrete():
+        mask = np.ones(
+            (n_agents, np.sum(group_spec.discrete_action_branches)), dtype=np.float32
+        )
+        if step_result.action_mask is not None:
+            mask = 1 - np.concatenate(step_result.action_mask, axis=1)
     if agent_id_prefix is None:
         agent_ids = list(step_result.agent_id)
     else:
@@ -51,11 +55,11 @@ def group_spec_to_brain_parameters(
     vis_sizes = [shape for shape in group_spec.observation_shapes if len(shape) == 3]
     cam_res = [CameraResolution(s[0], s[1], s[2]) for s in vis_sizes]
     a_size: List[int] = []
-    if group_spec.action_type == ActionType.DISCRETE:
-        a_size += list(group_spec.action_shape)
+    if group_spec.is_action_discrete():
+        a_size += list(group_spec.discrete_action_branches)
         vector_action_space_type = 0
     else:
-        a_size += [group_spec.action_shape]
+        a_size += [group_spec.action_size]
         vector_action_space_type = 1
     return BrainParameters(
         name, int(vec_size), cam_res, a_size, [], vector_action_space_type

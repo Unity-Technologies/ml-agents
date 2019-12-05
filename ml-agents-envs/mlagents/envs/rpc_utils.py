@@ -29,7 +29,7 @@ def agent_group_spec_from_proto(
     action_shape = None
     if action_type == ActionType.CONTINUOUS:
         action_shape = brain_param_proto.vector_action_size[0]
-    if action_type == ActionType.DISCRETE:
+    else:
         action_shape = tuple(brain_param_proto.vector_action_size)
     return AgentGroupSpec(observation_shape, action_type, action_shape)
 
@@ -128,10 +128,10 @@ def batched_step_result_from_proto(
         [agent_info.id for agent_info in agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if group_spec.action_type == ActionType.DISCRETE:
+    if group_spec.is_action_discrete():
         if any([agent_info.action_mask is not None] for agent_info in agent_info_list):
             n_agents = len(agent_info_list)
-            a_size = np.sum(group_spec.action_shape)
+            a_size = np.sum(group_spec.discrete_action_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
             for agent_index, agent_info in enumerate(agent_info_list):
                 if agent_info.action_mask is not None:
@@ -141,7 +141,7 @@ def batched_step_result_from_proto(
                             for k in range(a_size)
                         ]
             action_mask = (1 - mask_matrix).astype(np.bool)
-            indices = _generate_split_indices(group_spec.action_shape)
+            indices = _generate_split_indices(group_spec.discrete_action_branches)
             action_mask = np.split(action_mask, indices, axis=1)
     return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
 

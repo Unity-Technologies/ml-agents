@@ -173,12 +173,15 @@ def test_agent_group_spec_from_proto():
     bp.vector_action_size.extend([5, 4])
     bp.vector_action_space_type = 0
     group_spec = agent_group_spec_from_proto(bp, agent_proto)
-    assert group_spec.action_type == ActionType.DISCRETE
+    assert group_spec.is_action_discrete()
+    assert not group_spec.is_action_continuous()
     assert group_spec.observation_shapes == [(3,), (4,)]
-    assert group_spec.action_shape == (5, 4)
+    assert group_spec.discrete_action_branches == (5, 4)
+    assert group_spec.action_size == 2
     bp = BrainParametersProto()
     bp.vector_action_size.extend([6])
     bp.vector_action_space_type = 1
     group_spec = agent_group_spec_from_proto(bp, agent_proto)
-    assert group_spec.action_type == ActionType.CONTINUOUS
-    assert group_spec.action_shape == 6
+    assert not group_spec.is_action_discrete()
+    assert group_spec.is_action_continuous()
+    assert group_spec.action_size == 6

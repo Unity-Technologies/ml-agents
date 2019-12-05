@@ -8,12 +8,7 @@ from typing import Dict, List, Optional, Any
 
 from mlagents.envs.side_channel.side_channel import SideChannel
 
-from mlagents.envs.base_env import (
-    BaseEnv,
-    BatchedStepResult,
-    ActionType,
-    AgentGroupSpec,
-)
+from mlagents.envs.base_env import BaseEnv, BatchedStepResult, AgentGroupSpec
 from mlagents.envs.timers import timed, hierarchical_timer
 from .exception import (
     UnityEnvironmentException,
@@ -286,12 +281,10 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _empty_action(spec: AgentGroupSpec, n_agents: int) -> np.array:
-        if spec.action_type == ActionType.DISCRETE:
-            action_size = np.sum(spec.action_shape)
-            return np.zeros((n_agents, action_size), dtype=np.int32)
+        if spec.is_action_discrete():
+            return np.zeros((n_agents, spec.action_size), dtype=np.int32)
         else:
-            action_size = spec.action_shape
-            return np.zeros((n_agents, action_size), dtype=np.float32)
+            return np.zeros((n_agents, spec.action_size), dtype=np.float32)
 
     def reset(self) -> None:
         if self._loaded:
@@ -346,15 +339,8 @@ class UnityEnvironment(BaseEnv):
         if agent_group not in self._env_state:
             return
         spec = self._env_specs[agent_group]
-        expected_a = (
-            spec.action_shape
-            if spec.action_type == ActionType.CONTINUOUS
-            else len(spec.action_shape)
-        )
-        expected_type = (
-            np.float32 if spec.action_type == ActionType.CONTINUOUS else np.int32
-        )
-        expected_shape = (self._env_state[agent_group].n_agents(), expected_a)
+        expected_type = np.float32 if spec.is_action_continuous() else np.int32
+        expected_shape = (self._env_state[agent_group].n_agents(), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
                 "The group {0} needs an input of dimension {1} but received input of dimension {2}".format(
@@ -372,22 +358,14 @@ class UnityEnvironment(BaseEnv):
         if agent_group not in self._env_state:
             return
         spec = self._env_specs[agent_group]
-        expected_shape = (
-            (
-                spec.action_shape
-                if spec.action_type == ActionType.CONTINUOUS
-                else np.sum(spec.action_shape)
-            ),
-        )
+        expected_shape = (spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
                 "The Agent {0} in group {1} needs an input of dimension {2} but received input of dimension {3}".format(
                     agent_id, agent_group, expected_shape, action.shape
                 )
             )
-        expected_type = (
-            np.float32 if spec.action_type == ActionType.CONTINUOUS else np.int32
-        )
+        expected_type = np.float32 if spec.is_action_continuous() else np.int32
         if action.dtype != expected_type:
             action = action.astype(expected_type)
 

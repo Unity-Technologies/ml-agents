@@ -56,18 +56,18 @@ def test_step(mock_communicator, mock_launcher):
     batched_step_result = env.get_step_result("RealFakeBrain")
     n_agents = batched_step_result.n_agents()
     env.set_actions(
-        "RealFakeBrain", np.zeros((n_agents, spec.action_shape), dtype=np.float32)
+        "RealFakeBrain", np.zeros((n_agents, spec.action_size), dtype=np.float32)
     )
     env.step()
     with pytest.raises(UnityActionException):
         env.set_actions(
             "RealFakeBrain",
-            np.zeros((n_agents - 1, spec.action_shape), dtype=np.float32),
+            np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
         )
     batched_step_result = env.get_step_result("RealFakeBrain")
     n_agents = batched_step_result.n_agents()
     env.set_actions(
-        "RealFakeBrain", -1 * np.ones((n_agents, spec.action_shape), dtype=np.float32)
+        "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)
     )
     env.step()
 
