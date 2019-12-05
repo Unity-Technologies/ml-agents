@@ -1,5 +1,6 @@
 import yaml
 from typing import Any, Dict, TextIO
+import logging
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
@@ -8,6 +9,8 @@ from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
+
+logger = logging.getLogger("mlagents.trainers")
 
 
 class TrainerFactory:
@@ -97,6 +100,18 @@ def initialize_trainer(
         trainer_parameters.update(trainer_config[_brain_key])
 
     trainer = None
+    min_lesson_length = 1
+    if meta_curriculum:
+        if brain_name in meta_curriculum.brains_to_curriculums:
+            min_lesson_length = meta_curriculum.brains_to_curriculums[
+                brain_name
+            ].min_lesson_length
+        else:
+            logger.warning(
+                f"Metacurriculum enabled, but no curriculum for brain {brain_name}. "
+                f"Brains with curricula: {meta_curriculum.brains_to_curriculums.keys()}. "
+            )
+
     if trainer_parameters["trainer"] == "offline_bc":
         trainer = OfflineBCTrainer(
             brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
@@ -104,9 +119,7 @@ def initialize_trainer(
     elif trainer_parameters["trainer"] == "ppo":
         trainer = PPOTrainer(
             brain_parameters,
-            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-            if meta_curriculum
-            else 1,
+            min_lesson_length,
             trainer_parameters,
             train_model,
             load_model,
@@ -117,9 +130,7 @@ def initialize_trainer(
     elif trainer_parameters["trainer"] == "sac":
         trainer = SACTrainer(
             brain_parameters,
-            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-            if meta_curriculum
-            else 1,
+            min_lesson_length,
             trainer_parameters,
             train_model,
             load_model,

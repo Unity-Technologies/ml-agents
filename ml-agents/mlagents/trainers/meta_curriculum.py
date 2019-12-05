@@ -80,7 +80,9 @@ class MetaCurriculum(object):
         for brain_name, lesson in lesson_nums.items():
             self.brains_to_curriculums[brain_name].lesson_num = lesson
 
-    def _lesson_ready_to_increment(self, brain_name, reward_buff_size):
+    def _lesson_ready_to_increment(
+        self, brain_name: str, reward_buff_size: int
+    ) -> bool:
         """Determines whether the curriculum of a specified brain is ready
         to attempt an increment.
 
@@ -94,6 +96,9 @@ class MetaCurriculum(object):
             Whether the curriculum of the specified brain should attempt to
             increment its lesson.
         """
+        if brain_name not in self.brains_to_curriculums:
+            return False
+
         return reward_buff_size >= (
             self.brains_to_curriculums[brain_name].min_lesson_length
         )
