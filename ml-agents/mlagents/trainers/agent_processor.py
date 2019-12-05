@@ -23,6 +23,15 @@ class AgentExperience(NamedTuple):
     agent_id: str
 
 
+class BootstrapExperience(NamedTuple):
+    """
+    A partial AgentExperience needed to bootstrap GAE.
+    """
+
+    obs: List[np.ndarray]
+    agent_id: str
+
+
 class SplitObservations(NamedTuple):
     vector_observations: np.ndarray
     visual_observations: List[np.ndarray]
@@ -30,7 +39,7 @@ class SplitObservations(NamedTuple):
 
 class Trajectory(NamedTuple):
     steps: Iterable[AgentExperience]
-    next_step: AgentExperience  # The next step after the trajectory. Used for GAE when time_horizon is reached.
+    bootstrap_step: BootstrapExperience  # The next step after the trajectory. Used for GAE.
 
 
 class AgentProcessorException(UnityException):
@@ -61,7 +70,11 @@ class AgentProcessor:
     """
 
     def __init__(self, trainer: Trainer):
-        self.processing_buffer = ProcessingBuffer()
+        self.experience_buffers: Dict[str, List] = defaultdict(list)
+        self.last_brain_info: Dict[str, BrainInfo] = defaultdict(BrainInfo)
+        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
+            ActionInfoOutputs
+        )
         self.stats: Dict[str, List] = defaultdict(list)
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
@@ -75,19 +88,11 @@ class AgentProcessor:
         return "local_buffers :\n{0}".format(
             "\n".join(
                 [
-                    "\tagent {0} :{1}".format(k, str(self.processing_buffer[k]))
-                    for k in self.processing_buffer.keys()
+                    "\tagent {0} :{1}".format(k, str(self.experience_buffers[k]))
+                    for k in self.experience_buffers.keys()
                 ]
             )
         )
-
-    def reset_local_buffers(self) -> None:
-        """
-        Resets all the local local_buffers
-        """
-        agent_ids = list(self.processing_buffer.keys())
-        for k in agent_ids:
-            self.processing_buffer[k].reset_agent()
 
     def add_experiences(
         self,
@@ -110,84 +115,79 @@ class AgentProcessor:
                 self.stats[name].append(np.mean(values))
 
         for agent_id in curr_info.agents:
-            self.processing_buffer[agent_id].last_brain_info = curr_info
-            self.processing_buffer[
-                agent_id
-            ].last_take_action_outputs = take_action_outputs
+            self.last_brain_info[agent_id] = curr_info
+            self.last_take_action_outputs[agent_id] = take_action_outputs
 
         # Store the environment reward
         tmp_environment = np.array(next_info.rewards)
 
         for agent_id in next_info.agents:
-            stored_info = self.processing_buffer[agent_id].last_brain_info
-            stored_take_action_outputs = self.processing_buffer[
-                agent_id
-            ].last_take_action_outputs
+            stored_info = self.last_brain_info[agent_id]
+            stored_take_action_outputs = self.last_take_action_outputs[agent_id]
             if stored_info is not None:
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
+                obs = []
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
-                        self.processing_buffer[agent_id]["visual_obs%d" % i].append(
-                            stored_info.visual_observations[i][idx]
-                        )
-                        self.processing_buffer[agent_id][
-                            "next_visual_obs%d" % i
-                        ].append(next_info.visual_observations[i][next_idx])
+                        obs.append(stored_info.visual_observations[i][idx])
                     if self.policy.use_vec_obs:
-                        self.processing_buffer[agent_id]["vector_obs"].append(
-                            stored_info.vector_observations[idx]
-                        )
-                        self.processing_buffer[agent_id]["next_vector_in"].append(
-                            next_info.vector_observations[next_idx]
-                        )
+                        obs.append(stored_info.vector_observations[idx])
                     if self.policy.use_recurrent:
-                        self.processing_buffer[agent_id]["memory"].append(
-                            self.policy.retrieve_memories([agent_id])[0, :]
-                        )
+                        memory = self.policy.retrieve_memories([agent_id])[0, :]
+                    else:
+                        memory = None
 
-                    self.processing_buffer[agent_id]["masks"].append(1.0)
-                    self.processing_buffer[agent_id]["done"].append(
-                        next_info.local_done[next_idx]
-                    )
+                    done = next_info.local_done[next_idx]
+
                     # Add the outputs of the last eval
-                    self.add_policy_outputs(stored_take_action_outputs, agent_id, idx)
-
-                    # Store action masks if necessary. Eventually these will be
-                    # None for continuous actions
-                    if stored_info.action_masks[idx] is not None:
-                        self.processing_buffer[agent_id]["action_mask"].append(
-                            stored_info.action_masks[idx], padding_value=1
-                        )
-
-                    # TODO: This should be done by the env_manager, and put it in
-                    # the AgentExperience
-                    self.processing_buffer[agent_id]["prev_action"].append(
-                        self.policy.retrieve_previous_action([agent_id])[0, :]
-                    )
+                    action = take_action_outputs["action"][idx]
+                    if self.policy.use_continuous_act:
+                        action_pre = take_action_outputs["pre_action"][idx]
+                        epsilon = take_action_outputs["random_normal_epsilon"][idx]
+                    else:
+                        action_pre = None
+                        epsilon = None
+                    action_probs = take_action_outputs["log_probs"][idx]
+                    action_masks = stored_info.action_masks[idx]
+                    prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
 
                     values = stored_take_action_outputs["value_heads"]
-
-                    # Add the value outputs if needed
-                    self.processing_buffer[agent_id]["environment_rewards"].append(
-                        tmp_environment[next_idx]
+                    experience = AgentExperience(
+                        obs=obs,
+                        reward=tmp_environment[next_idx],
+                        done=done,
+                        action=action,
+                        action_probs=action_probs,
+                        action_pre=action_pre,
+                        action_mask=action_masks,
+                        prev_action=prev_action,
+                        agent_id=agent_id,
+                        memory=memory,
+                        epsilon=epsilon,
                     )
+                    # Add the value outputs if needed
+                    self.experience_buffers[agent_id].append(experience)
 
-                    for name, value in values.items():
-                        self.processing_buffer[agent_id][
-                            "{}_value_estimates".format(name)
-                        ].append(value[idx][0])
-
-                agent_actions = self.processing_buffer[agent_id]["actions"]
                 if (
                     next_info.local_done[next_idx]
-                    or len(agent_actions) > self.time_horizon
-                ) and len(agent_actions) > 0:
-                    trajectory = self.processing_buffer.agent_to_trajectory(
-                        agent_id, training_length=self.policy.sequence_length
+                    or len(self.experience_buffers[agent_id]) > self.time_horizon
+                ) and len(self.experience_buffers[agent_id]) > 0:
+                    # Make next AgentExperience
+                    next_obs = []
+                    for i, _ in enumerate(next_info.visual_observations):
+                        next_obs.append(next_info.visual_observations[i][next_idx])
+                    if self.policy.use_vec_obs:
+                        next_obs.append(next_info.vector_observations[next_idx])
+                    bootstrap_step = BootstrapExperience(
+                        obs=next_obs, agent_id=agent_id
+                    )
+                    trajectory = Trajectory(
+                        steps=self.experience_buffers[agent_id],
+                        bootstrap_step=bootstrap_step,
                     )
                     self.trainer.process_trajectory(trajectory)
-                    self.processing_buffer[agent_id].reset_agent()
+                    self.experience_buffers[agent_id] = []
                 elif not next_info.local_done[next_idx]:
                     if agent_id not in self.episode_steps:
                         self.episode_steps[agent_id] = 0
@@ -196,31 +196,11 @@ class AgentProcessor:
             curr_info.agents, take_action_outputs["action"]
         )
 
-    def add_policy_outputs(
-        self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int
-    ) -> None:
-        """
-        Takes the output of the last action and store it into the training buffer.
-        """
-        actions = take_action_outputs["action"]
-        if self.policy.use_continuous_act:
-            actions_pre = take_action_outputs["pre_action"]
-            self.processing_buffer[agent_id]["actions_pre"].append(
-                actions_pre[agent_idx]
-            )
-            epsilons = take_action_outputs["random_normal_epsilon"]
-            self.processing_buffer[agent_id]["random_normal_epsilon"].append(
-                epsilons[agent_idx]
-            )
-        a_dist = take_action_outputs["log_probs"]
-        # value is a dictionary from name of reward to value estimate of the value head
-        self.processing_buffer[agent_id]["actions"].append(actions[agent_idx])
-        self.processing_buffer[agent_id]["action_probs"].append(a_dist[agent_idx])
-
 
 class ProcessingBuffer(dict):
     """
     ProcessingBuffer contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
+    TODO: Remove.
     """
 
     def __str__(self):
@@ -315,8 +295,9 @@ class ProcessingBuffer(dict):
                 memory=memory,
                 epsilon=self[agent_id]["random_normal_epsilon"][_exp],
             )
+            bootstrap_step = BootstrapExperience(obs=obs, agent_id=agent_id)
             trajectory_list.append(experience)
-        trajectory = Trajectory(steps=trajectory_list, next_step=experience)
+        trajectory = Trajectory(steps=trajectory_list, bootstrap_step=bootstrap_step)
         return trajectory
 
     def append_all_agent_batch_to_update_buffer(

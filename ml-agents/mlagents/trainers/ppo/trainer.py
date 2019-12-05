@@ -96,7 +96,9 @@ class PPOTrainer(RLTrainer):
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
 
-        value_next = self.policy.get_value_estimates2(trajectory.next_step)
+        value_next = self.policy.get_value_estimates(
+            trajectory.bootstrap_step, trajectory.steps[-1].done
+        )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(

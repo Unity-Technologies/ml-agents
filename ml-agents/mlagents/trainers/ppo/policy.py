@@ -5,9 +5,9 @@ from typing import Any, Dict, Optional
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
-from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
-from mlagents.trainers.agent_processor import AgentExperience, split_obs
+from mlagents.trainers.agent_processor import BootstrapExperience, split_obs
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -229,44 +229,6 @@ class PPOPolicy(TFPolicy):
             feed_dict[model.memory_in] = mem_in
         return feed_dict
 
-    def get_value_estimates(
-        self, brain_info: BrainInfo, idx: int, done: bool
-    ) -> Dict[str, float]:
-        """
-        Generates value estimates for bootstrapping.
-        :param brain_info: BrainInfo to be used for bootstrapping.
-        :param idx: Index in BrainInfo of agent.
-        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
-        :return: The value estimate dictionary with key being the name of the reward signal and the value the
-        corresponding value estimate.
-        """
-
-        feed_dict: Dict[tf.Tensor, Any] = {
-            self.model.batch_size: 1,
-            self.model.sequence_length: 1,
-        }
-        for i in range(len(brain_info.visual_observations)):
-            feed_dict[self.model.visual_in[i]] = [
-                brain_info.visual_observations[i][idx]
-            ]
-        if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
-        if self.use_recurrent:
-            feed_dict[self.model.memory_in] = self.retrieve_memories([idx])
-        if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = self.retrieve_previous_action([idx])
-        value_estimates = self.sess.run(self.model.value_heads, feed_dict)
-
-        value_estimates = {k: float(v) for k, v in value_estimates.items()}
-
-        # If we're done, reassign all of the value estimates that need terminal states.
-        if done:
-            for k in value_estimates:
-                if self.reward_signals[k].use_terminal_states:
-                    value_estimates[k] = 0.0
-
-        return value_estimates
-
     def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.batch_size: batch.num_experiences,
@@ -288,7 +250,9 @@ class PPOPolicy(TFPolicy):
 
         return value_estimates
 
-    def get_value_estimates2(self, experience: AgentExperience) -> Dict[str, float]:
+    def get_value_estimates(
+        self, experience: BootstrapExperience, done: bool
+    ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
         :param brain_info: BrainInfo to be used for bootstrapping.
@@ -302,6 +266,7 @@ class PPOPolicy(TFPolicy):
             self.model.batch_size: 1,
             self.model.sequence_length: 1,
         }
+        agent_id = experience.agent_id
         vec_vis_obs = split_obs(experience.obs)
         for i in range(len(vec_vis_obs.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [vec_vis_obs.visual_observations[i]]
@@ -309,15 +274,15 @@ class PPOPolicy(TFPolicy):
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [vec_vis_obs.vector_observations]
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = [experience.memory]
+            feed_dict[self.model.memory_in] = self.retrieve_memories([agent_id])
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = [experience.prev_action]
+            feed_dict[self.model.prev_action] = self.retrieve_memories([agent_id])
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
 
         # If we're done, reassign all of the value estimates that need terminal states.
-        if experience.done:
+        if done:
             for k in value_estimates:
                 if self.reward_signals[k].use_terminal_states:
                     value_estimates[k] = 0.0

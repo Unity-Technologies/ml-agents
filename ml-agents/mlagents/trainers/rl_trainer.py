@@ -278,7 +278,7 @@ class RLTrainer(Trainer):
             if step < len(trajectory.steps) - 1:
                 next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
             else:
-                next_vec_vis_obs = split_obs(trajectory.next_step.obs)
+                next_vec_vis_obs = split_obs(trajectory.bootstrap_step.obs)
             for i, _ in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["visual_obs%d" % i].append(
                     vec_vis_obs.visual_observations[i]
