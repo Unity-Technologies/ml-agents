@@ -88,9 +88,9 @@ def test_process_visual_observation():
     in_array_2 = np.random.rand(128, 128, 3)
     proto_obs_2 = generate_compressed_proto_obs(in_array_2)
     ap1 = AgentInfoProto()
-    ap1.observations.append(proto_obs_1)
+    ap1.observations.extend([proto_obs_1])
     ap2 = AgentInfoProto()
-    ap2.observations.append(proto_obs_2)
+    ap2.observations.extend([proto_obs_2])
     ap_list = [ap1, ap2]
     arr = _process_visual_observation(0, (128, 128, 3), ap_list)
     assert list(arr.shape) == [2, 128, 128, 3]
