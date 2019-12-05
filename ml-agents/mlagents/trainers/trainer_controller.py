@@ -1,11 +1,11 @@
 # # Unity ML-Agents Toolkit
-# ## ML-Agenunique_t Learning
+# ## ML-Agent Learning
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
 import json
 import logging
-from typing import Tuple, Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set
 from collections import defaultdict
 
 import numpy as np
@@ -186,54 +186,35 @@ class TrainerController(object):
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
         global_step = 0
-        last_brain_names: Set[str] = set()
-        last_behavior_identifiers: Set[Tuple[str, str]] = set()
+        last_brain_behavior_ids: Set[str] = set()
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
-                brain_names, behavior_identifiers = zip(
-                    *map(lambda x: [x.split("?")[0], x], external_brain_behavior_ids)
-                )
+                new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
+                for name_behavior_id in new_behavior_ids:
+                    brain_name, _ = name_behavior_id.split("?")
 
-                for brain_name, behavior_identifier in zip(
-                    brain_names, behavior_identifiers
-                ):
-                    self.brain_name_to_identifier[brain_name].add(behavior_identifier)
+                    # This could be done with a try/except which may improve performance?
+                    if brain_name in self.trainers:
+                        trainer = self.trainers[brain_name]
+                    else:
+                        trainer = self.trainer_factory.generate(brain_name)
+                        self.trainers[brain_name] = trainer
+                        self.logger.info(trainer)
+                        if self.train_model:
+                            trainer.write_tensorboard_text(
+                                "Hyperparameters", trainer.parameters
+                            )
 
-                external_brains = set(brain_names)
-                external_identifiers = set(zip(brain_names, behavior_identifiers))
-
-                new_brains = external_brains - last_brain_names
-                new_identifiers = external_identifiers - last_behavior_identifiers
-
-                for name in new_brains:
-                    trainer = self.trainer_factory.generate(name)
-                    self.trainers[name] = trainer
-                    for behavior_identifier in self.brain_name_to_identifier[name]:
-                        self.multi_trainers[behavior_identifier] = trainer
-                        trainer.add_policy(
-                            env_manager.external_brains[behavior_identifier]
-                        )
-                        env_manager.set_policy(
-                            behavior_identifier, trainer.get_policy(behavior_identifier)
-                        )
-                    self.logger.info(trainer)
-                    if self.train_model:
-                        trainer.write_tensorboard_text(
-                            "Hyperparameters", trainer.parameters
-                        )
-                for name, new_identifier in new_identifiers:
-                    trainer = self.trainers[name]
-                    trainer[name].add_policy(
-                        env_manager.external_brains[new_identifier]
-                    )
+                    trainer.add_policy(env_manager.external_brains[name_behavior_id])
                     env_manager.set_policy(
-                        new_identifier, trainer.get_policy(new_identifier)
+                        name_behavior_id, trainer.get_policy(name_behavior_id)
                     )
 
-                last_brain_names = external_brains
-                last_behavior_identifiers = external_identifiers
+                    self.brain_name_to_identifier[brain_name].add(name_behavior_id)
+
+                last_brain_behavior_ids = external_brain_behavior_ids
 
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
@@ -304,16 +285,20 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-                if step_info.has_actions_for_brain(brain_name):
-                    trainer.add_experiences(
-                        step_info.previous_all_brain_info[brain_name],
-                        step_info.current_all_brain_info[brain_name],
-                        step_info.brain_name_to_action_info[brain_name].outputs,
-                    )
-                    trainer.process_experiences(
-                        step_info.previous_all_brain_info[brain_name],
-                        step_info.current_all_brain_info[brain_name],
-                    )
+
+                for behavior_identifier in self.brain_name_to_identifier[brain_name]:
+                    if step_info.has_actions_for_brain(behavior_identifier):
+                        trainer.add_experiences(
+                            step_info.previous_all_brain_info[behavior_identifier],
+                            step_info.current_all_brain_info[behavior_identifier],
+                            step_info.brain_name_to_action_info[
+                                behavior_identifier
+                            ].outputs,
+                        )
+                        trainer.process_experiences(
+                            step_info.previous_all_brain_info[behavior_identifier],
+                            step_info.current_all_brain_info[behavior_identifier],
+                        )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
