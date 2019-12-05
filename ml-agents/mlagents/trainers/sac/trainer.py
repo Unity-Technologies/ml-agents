@@ -12,6 +12,7 @@ import numpy as np
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 
@@ -166,10 +167,11 @@ class SACTrainer(RLTrainer):
         )
 
     def process_experiences(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, name_behavior_id: str, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
+        :param name_behavior_id: string policy identifier.
         :param current_info: current BrainInfo.
         :param next_info: next BrainInfo.
         """
@@ -253,19 +255,18 @@ class SACTrainer(RLTrainer):
             self.update_reward_signals()
             self.trainer_metrics.end_policy_update()
 
-    def add_policy(self, brain_parameters: BrainParameters) -> None:
-        self.policy = SACPolicy(
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        policy = SACPolicy(
             self.seed,
             brain_parameters,
             self.trainer_parameters,
             self.is_training,
             self.load,
         )
-        for _reward_signal in self.policy.reward_signals.keys():
+        for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
-    def get_policy(self, brain_name: str) -> SACPolicy:
-        return self.policy
+        return policy
 
     def update_sac_policy(self) -> None:
         """

@@ -3,11 +3,12 @@ import logging
 from typing import Dict, List, Any, NamedTuple
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -47,6 +48,7 @@ class RLTrainer(Trainer):
         self.processing_buffer = ProcessingBuffer()
         self.update_buffer = AgentBuffer()
         self.episode_steps = {}
+        self.policy: TFPolicy = None
 
     def construct_curr_info(self, next_info: BrainInfo) -> BrainInfo:
         """
@@ -94,12 +96,14 @@ class RLTrainer(Trainer):
 
     def add_experiences(
         self,
+        name_behavior_id: str,
         curr_info: BrainInfo,
         next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
+        :param name_behavior_id: string policy identifier.
         :param curr_info: current BrainInfo.
         :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
@@ -264,3 +268,11 @@ class RLTrainer(Trainer):
         raise UnityTrainerException(
             "The add_rewards_outputs method was not implemented."
         )
+
+    def add_policy(self, brain_parameters: BrainParameters) -> None:
+        """
+        Adds policy to trainers list of policies
+        """
+        policy = self.create_policy(brain_parameters)
+        self.policy = policy
+        self.policies[brain_parameters.brain_name] = policy

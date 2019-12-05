@@ -61,6 +61,7 @@ class Trainer(object):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None
+        self.policies: Dict[str, TFPolicy] = {}
         self.step: int = 0
 
     def check_param_keys(self):
@@ -238,12 +239,14 @@ class Trainer(object):
 
     def add_experiences(
         self,
+        name_behavior_id: str,
         curr_info: BrainInfo,
         next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
+        :param name_behavior_id: string policy identifier.
         :param curr_info: current BrainInfo.
         :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
@@ -251,11 +254,12 @@ class Trainer(object):
         raise UnityTrainerException("The add_experiences method was not implemented.")
 
     def process_experiences(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, name_behavior_id: str, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
+        :param name_behavior_id: string policy identifier.
         :param current_info: current BrainInfo.
         :param next_info: next BrainInfo.
         """
@@ -283,14 +287,14 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def add_policy(self, brain_parameters: BrainParameters) -> None:
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """
-        Adds policy to trainers list of policies
+        Creates policy
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
     def get_policy(self, brain_name: str) -> TFPolicy:
         """
-        Adds policy to trainers list of policies
+        Gets policy from trainers list of policies
         """
-        raise UnityTrainerException("The update_model method was not implemented.")
+        return self.policies[brain_name]

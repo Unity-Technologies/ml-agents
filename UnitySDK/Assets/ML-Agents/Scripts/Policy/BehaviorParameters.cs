@@ -40,11 +40,6 @@ namespace MLAgents
         //string m_BehaviorIdentifier;
 
         
-        private string concatBehaviorIdentifiers()
-        {
-           return m_BehaviorName + "?team=" + m_TeamID;
-        }
-
         public BrainParameters brainParameters
         {
             get { return m_BrainParameters; }
@@ -53,7 +48,7 @@ namespace MLAgents
         public string behaviorName
         {
             
-            get { return concatBehaviorIdentifiers();}
+            get { return m_BehaviorName + "?team=" + m_TeamID;} 
 
         }
 
@@ -68,7 +63,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, concatBehaviorIdentifiers());
+                        return new RemotePolicy(m_BrainParameters, behaviorName);
                     }
                     if (m_Model != null)
                     {

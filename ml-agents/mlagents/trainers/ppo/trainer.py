@@ -9,6 +9,7 @@ from typing import Dict
 import numpy as np
 
 from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
@@ -71,11 +72,12 @@ class PPOTrainer(RLTrainer):
         self.policy = None
 
     def process_experiences(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, name_behavior_id: str, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
+        :param name_behavior_id: string policy identifier.
         :param current_info: current BrainInfo.
         :param next_info: next BrainInfo.
         """
@@ -272,9 +274,9 @@ class PPOTrainer(RLTrainer):
         self.clear_update_buffer()
         self.trainer_metrics.end_policy_update()
 
-    def add_policy(self, brain_parameters: BrainParameters) -> None:
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         if self.multi_gpu and len(get_devices()) > 1:
-            self.policy = MultiGpuPPOPolicy(
+            policy = MultiGpuPPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -282,7 +284,7 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
         else:
-            self.policy = PPOPolicy(
+            policy = PPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -290,11 +292,10 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
 
-        for _reward_signal in self.policy.reward_signals.keys():
+        for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
-    def get_policy(self, brain_name: str) -> PPOPolicy:
-        return self.policy
+        return policy
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
