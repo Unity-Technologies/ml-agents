@@ -123,11 +123,13 @@ an Anaconda Prompt _(if you open a new prompt, be sure to activate the ml-agents
 Conda environment by typing `activate ml-agents`)_:
 
 ```sh
-git clone https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
 ```
+The `--branch latest_release` option will switch to the tag of the latest stable release.
+Omitting that will get the `master` branch which is potentially unstable.
 
 If you don't want to use Git, you can always directly download all the files
-[here](https://github.com/Unity-Technologies/ml-agents/archive/master.zip).
+[here](https://github.com/Unity-Technologies/ml-agents/archive/latest_release.zip).
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)

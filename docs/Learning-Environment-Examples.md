@@ -33,7 +33,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Discrete) Two possible actions (Move left, move
     right).
   * Visual Observations: None
-* Reset Parameters: None
+* Float Properties: None
 * Benchmark Mean Reward: 0.94
 
 ## [3DBall: 3D Balance Ball](https://youtu.be/dheeCO29-EI)
@@ -55,7 +55,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
   * Visual Observations: None.
-* Reset Parameters: Three
+* Float Properties: Three
     * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
       * Default: 1
       * Recommended Minimum: 0.2
@@ -92,7 +92,7 @@ If you would like to contribute environments, please see our
     using the `Mask Actions` checkbox within the `trueAgent` GameObject).
     The trained model file provided was generated with action masking turned on.
   * Visual Observations: One corresponding to top-down view of GridWorld.
-* Reset Parameters: Three, corresponding to grid size, number of obstacles, and
+* Float Properties: Three, corresponding to grid size, number of obstacles, and
   number of goals.
 * Benchmark Mean Reward: 0.8
 
@@ -116,7 +116,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 2, corresponding to movement
     toward net or away from net, and jumping.
   * Visual Observations: None
-* Reset Parameters: Three
+* Float Properties: Three
     * angle: Angle of the racket from the vertical (Y) axis.
       * Default: 55
       * Recommended Minimum: 35
@@ -151,7 +151,7 @@ If you would like to contribute environments, please see our
     `VisualPushBlock` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Four
+* Float Properties: Four
     * block_scale: Scale of the block along the x and z dimensions
         * Default: 2
         * Recommended Minimum: 0.5
@@ -193,7 +193,7 @@ If you would like to contribute environments, please see our
     * Side Motion (3 possible actions: Left, Right, No Action)
     * Jump (2 possible actions: Jump, No Action)
   * Visual Observations: None
-* Reset Parameters: Four
+* Float Properties: Four
 * Benchmark Mean Reward (Big & Small Wall): 0.8
 
 ## [Reacher](https://youtu.be/2N9EoF6pQyE)
@@ -211,7 +211,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   * Visual Observations: None.
-* Reset Parameters: Five
+* Float Properties: Five
   * goal_size: radius of the goal zone
     * Default: 5
     * Recommended Minimum: 1
@@ -253,7 +253,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
   * Visual Observations: None
-* Reset Parameters: None
+* Float Properties: None
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
@@ -282,7 +282,7 @@ If you would like to contribute environments, please see our
     `VisualFoodCollector` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: Two
+* Float Properties: Two
   * laser_length: Length of the laser used by the agent
     * Default: 1
     * Recommended Minimum: 0.2
@@ -315,7 +315,7 @@ If you would like to contribute environments, please see our
     `VisualHallway` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None
+* Float Properties: None
 * Benchmark Mean Reward: 0.7
   * To speed up training, you can enable curiosity by adding `use_curiosity: true` in `config/trainer_config.yaml`
 
@@ -337,7 +337,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) 3 corresponding to agent force applied for
     the jump.
   * Visual Observations: None
-* Reset Parameters: Two
+* Float Properties: Two
     * target_scale: The scale of the green cube in the 3 dimensions
         * Default: 150
         * Recommended Minimum: 50
@@ -372,7 +372,7 @@ If you would like to contribute environments, please see our
       as well as rotation.
     * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None
-* Reset Parameters: Two
+* Float Properties: Two
   * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
     * Default: 7.5
     * Recommended minimum: 4
@@ -405,7 +405,7 @@ If you would like to contribute environments, please see our
   * Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations applicable to the joints.
   * Visual Observations: None
-* Reset Parameters: Four
+* Float Properties: Four
     * gravity: Magnitude of gravity
         * Default: 9.81
         * Recommended Minimum:
@@ -445,5 +445,5 @@ If you would like to contribute environments, please see our
     `VisualPyramids` scene. __The visual observation version of
      this environment does not train with the provided default
      training parameters.__
-* Reset Parameters: None
+* Float Properties: None
 * Benchmark Mean Reward: 1.75

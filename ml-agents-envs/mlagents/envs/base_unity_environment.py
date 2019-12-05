@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Any
+from typing import Dict, Optional
 
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 
@@ -12,22 +12,12 @@ class BaseUnityEnvironment(ABC):
         pass
 
     @abstractmethod
-    def reset(
-        self,
-        config: Optional[Dict] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> AllBrainInfo:
+    def reset(self) -> AllBrainInfo:
         pass
 
     @property
     @abstractmethod
     def external_brains(self) -> Dict[str, BrainParameters]:
-        pass
-
-    @property
-    @abstractmethod
-    def reset_parameters(self) -> Dict[str, float]:
         pass
 
     @abstractmethod

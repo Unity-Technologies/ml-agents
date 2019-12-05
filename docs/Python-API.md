@@ -90,17 +90,9 @@ variable named `env` in this example, can be used in the following way:
 - **Print : `print(str(env))`**
   Prints all parameters relevant to the loaded environment and the
   Brains.
-- **Reset : `env.reset(train_mode=True, config=None)`**
+- **Reset : `env.reset()`**
   Send a reset signal to the environment, and provides a dictionary mapping
   Brain names to BrainInfo objects.
-  - `train_mode` indicates whether to run the environment in train (`True`) or
-    test (`False`) mode.
-  - `config` is an optional dictionary of configuration flags specific to the
-    environment. For generic environments, `config` can be ignored. `config` is
-    a dictionary of strings to floats where the keys are the names of the
-    `resetParameters` and the values are their corresponding float values.
-    Define the reset parameters on the Academy Inspector window in the Unity
-    Editor.
 - **Step : `env.step(action)`**
   Sends a step signal to the environment using the actions. For each Brain :
   - `action` can be one dimensional arrays or two dimensional arrays if you have
@@ -131,6 +123,77 @@ variable named `env` in this example, can be used in the following way:
 - **Close : `env.close()`**
   Sends a shutdown signal to the environment and closes the communication
   socket.
+
+### Modifying the environment from Python
+The Environment can be modified by using side channels to send data to the
+environment. When creating the environment, pass a list of side channels as
+`side_channels` argument to the constructor.
+
+__Note__ : A side channel will only send/receive messages when `env.step` is
+called.
+
+#### EngineConfigurationChannel
+An `EngineConfiguration` will allow you to modify the time scale and graphics quality of the Unity engine.
+`EngineConfigurationChannel` has two methods :
+
+ * `set_configuration_parameters` with arguments
+   * width: Defines the width of the display. Default 80.
+   * height: Defines the height of the display. Default 80.
+   * quality_level: Defines the quality level of the simulation. Default 1.
+   * time_scale: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics might break. Default 20.
+   *  target_frame_rate: Instructs simulation to try to render at a specified frame rate. Default -1.
+ * `set_configuration` with argument config which is an `EngineConfig`
+ NamedTuple object.
+
+For example :
+```python
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+
+channel = EngineConfigurationChannel()
+
+env = UnityEnvironment(base_port = 5004, side_channels = [channel])
+
+channel.set_configuration_parameters(time_scale = 2.0)
+
+i = env.reset()
+...
+```
+
+#### FloatPropertiesChannel
+A `FloatPropertiesChannel` will allow you to get and set float properties
+in the environment. You can call get_property and set_property on the
+side channel to read and write properties.
+`FloatPropertiesChannel` has three methods:
+
+ * `set_property` Sets a property in the Unity Environment.
+  * key: The string identifier of the property.
+  * value: The float value of the property.
+ * `get_property` Gets a property in the Unity Environment. If the property was not found, will return None.
+  * key: The string identifier of the property.
+ * `list_properties` Returns a list of all the string identifiers of the properties
+
+```python
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+
+channel = FloatPropertiesChannel()
+
+env = UnityEnvironment(base_port = 5004, side_channels = [channel])
+
+channel.set_property("parameter_1", 2.0)
+
+i = env.reset()
+...
+```
+
+Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
+
+```csharp
+var academy = FindObjectOfType<Academy>();
+var sharedProperties = academy.FloatProperties;
+float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
+```
 
 ## mlagents-learn
 

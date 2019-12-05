@@ -51,7 +51,6 @@ def basic_trainer_controller():
         meta_curriculum=None,
         train=True,
         training_seed=99,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
@@ -70,7 +69,6 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         meta_curriculum=None,
         train=True,
         training_seed=seed,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
