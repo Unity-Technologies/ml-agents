@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Any, NamedTuple
+from collections import defaultdict
 import numpy as np
 
 from mlagents.envs.brain import BrainInfo
@@ -43,7 +44,7 @@ class RLTrainer(Trainer):
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
-        self.collected_rewards = {"environment": {}}
+        self.collected_rewards = {"environment": defaultdict(lambda: 0)}
         self.processing_buffer = ProcessingBuffer()
         self.update_buffer = AgentBuffer()
         self.episode_steps = {}

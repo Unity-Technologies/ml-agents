@@ -98,7 +98,7 @@ class SACTrainer(RLTrainer):
             )
 
         for _reward_signal in self.policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = {}
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         self.episode_steps = {}
 
