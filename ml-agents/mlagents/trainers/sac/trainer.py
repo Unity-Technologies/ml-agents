@@ -198,13 +198,9 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory["done"][-1] = False
 
         # Append to update buffer
-        key_list = agent_buffer_trajectory.keys()
-        for field_key in key_list:
-            self.update_buffer[field_key].extend(
-                agent_buffer_trajectory[field_key].get_batch(
-                    batch_size=None, training_length=self.policy.sequence_length
-                )
-            )
+        agent_buffer_trajectory.resequence_and_append(
+            self.update_buffer, training_length=self.policy.sequence_length
+        )
 
         if trajectory.steps[-1].done:
             self.stats["Environment/Episode Length"].append(

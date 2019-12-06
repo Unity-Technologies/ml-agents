@@ -255,6 +255,35 @@ class AgentBuffer(dict):
             for _key in self.keys():
                 self[_key] = self[_key][current_length - max_length :]
 
+    def resequence_and_append(
+        self,
+        target_buffer: "AgentBuffer",
+        key_list: List[str] = None,
+        batch_size: int = None,
+        training_length: int = None,
+    ) -> None:
+        """
+        Takes in a batch size and training length (sequence length), and appends this AgentBuffer to target_buffer
+        properly padded for LSTM use. Optionally, use key_list to restrict which fields are inserted into the new
+        buffer.
+        :param target_buffer: The buffer which to append the samples to.
+        :param key_list: The fields that must be added. If None: all fields will be appended.
+        :param batch_size: The number of elements that must be appended. If None: All of them will be.
+        :param training_length: The length of the samples that must be appended. If None: only takes one element.
+        """
+        if key_list is None:
+            key_list = list(self.keys())
+        if not self.check_length(key_list):
+            raise BufferException(
+                "The length of the fields {0} were not of same length".format(key_list)
+            )
+        for field_key in key_list:
+            target_buffer[field_key].extend(
+                self[field_key].get_batch(
+                    batch_size=batch_size, training_length=training_length
+                )
+            )
+
     @property
     def num_experiences(self) -> int:
         """
