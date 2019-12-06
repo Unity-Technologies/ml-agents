@@ -238,7 +238,7 @@ class BaseEnv(ABC):
         """
         Returns the list of the agent group names present in the environment.
         Agents grouped under the same group name have the same action and
-        observation specs are expected to behave similarly in the environment.
+        observation specs, and are expected to behave similarly in the environment.
         This list can grow with time as new policies are instantiated.
         :return: the list of agent group names.
         """
