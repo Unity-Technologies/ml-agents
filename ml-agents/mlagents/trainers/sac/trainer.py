@@ -10,7 +10,6 @@ import os
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
 from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
@@ -227,69 +226,6 @@ class SACTrainer(RLTrainer):
                         rewards.get(agent_id, 0)
                     )
                     rewards[agent_id] = 0
-
-    def process_experiences(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> None:
-        """
-        Checks agent histories for processing condition, and processes them as necessary.
-        :param current_info: current BrainInfo.
-        :param next_info: next BrainInfo.
-        """
-        if self.is_training:
-            self.policy.update_normalization(next_info.vector_observations)
-        for l in range(len(next_info.agents)):
-            agent_actions = self.processing_buffer[next_info.agents[l]]["actions"]
-            if (
-                next_info.local_done[l]
-                or len(agent_actions) >= self.trainer_parameters["time_horizon"]
-            ) and len(agent_actions) > 0:
-                agent_id = next_info.agents[l]
-
-                # Bootstrap using last brain info. Set last element to duplicate obs and remove dones.
-                if next_info.max_reached[l]:
-                    bootstrapping_info = self.processing_buffer[
-                        agent_id
-                    ].last_brain_info
-                    idx = bootstrapping_info.agents.index(agent_id)
-                    for i, obs in enumerate(bootstrapping_info.visual_observations):
-                        self.processing_buffer[agent_id]["next_visual_obs%d" % i][
-                            -1
-                        ] = obs[idx]
-                    if self.policy.use_vec_obs:
-                        self.processing_buffer[agent_id]["next_vector_in"][
-                            -1
-                        ] = bootstrapping_info.vector_observations[idx]
-                    self.processing_buffer[agent_id]["done"][-1] = False
-
-                self.processing_buffer.append_to_update_buffer(
-                    self.update_buffer,
-                    agent_id,
-                    batch_size=None,
-                    training_length=self.policy.sequence_length,
-                )
-
-                self.processing_buffer[agent_id].reset_agent()
-                if next_info.local_done[l]:
-                    self.stats["Environment/Episode Length"].append(
-                        self.episode_steps.get(agent_id, 0)
-                    )
-                    self.episode_steps[agent_id] = 0
-                    for name, rewards in self.collected_rewards.items():
-                        if name == "environment":
-                            self.cumulative_returns_since_policy_update.append(
-                                rewards.get(agent_id, 0)
-                            )
-                            self.stats["Environment/Cumulative Reward"].append(
-                                rewards.get(agent_id, 0)
-                            )
-                            self.reward_buffer.appendleft(rewards.get(agent_id, 0))
-                            rewards[agent_id] = 0
-                        else:
-                            self.stats[
-                                self.policy.reward_signals[name].stat_name
-                            ].append(rewards.get(agent_id, 0))
-                            rewards[agent_id] = 0
 
     def is_ready_update(self) -> bool:
         """
