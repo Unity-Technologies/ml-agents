@@ -279,13 +279,6 @@ class UnityEnvironment(BaseEnv):
                 )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
 
-    @staticmethod
-    def _empty_action(spec: AgentGroupSpec, n_agents: int) -> np.array:
-        if spec.is_action_discrete():
-            return np.zeros((n_agents, spec.action_size), dtype=np.int32)
-        else:
-            return np.zeros((n_agents, spec.action_size), dtype=np.float32)
-
     def reset(self) -> None:
         if self._loaded:
             outputs = self.communicator.exchange(self._generate_reset_input())
@@ -311,9 +304,9 @@ class UnityEnvironment(BaseEnv):
                 n_agents = 0
                 if group_name in self._env_state:
                     n_agents = self._env_state[group_name].n_agents()
-                self._env_actions[group_name] = self._empty_action(
-                    self._env_specs[group_name], n_agents
-                )
+                self._env_actions[group_name] = self._env_specs[
+                    group_name
+                ].create_empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
             outputs = self.communicator.exchange(step_input)

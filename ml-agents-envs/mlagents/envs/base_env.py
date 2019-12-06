@@ -125,12 +125,12 @@ class BatchedStepResult(NamedTuple):
         )
 
     @staticmethod
-    def empty(spec: AgentGroupSpec) -> "BatchedStepResult":
+    def empty(spec: "AgentGroupSpec") -> "BatchedStepResult":
         """
         Returns an empty BatchedStepResult.
         :param spec: The AgentGroupSpec for the BatchedStepResult
         """
-        obs = []
+        obs: List[np.array] = []
         for shape in spec.observation_shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
         return BatchedStepResult(
@@ -208,6 +208,12 @@ class AgentGroupSpec(NamedTuple):
             return self.action_shape
         else:
             return None
+
+    def create_empty_action(self, n_agents: int) -> np.array:
+        if self.action_type == ActionType.DISCRETE:
+            return np.zeros((n_agents, self.action_size), dtype=np.int32)
+        else:
+            return np.zeros((n_agents, self.action_size), dtype=np.float32)
 
 
 class BaseEnv(ABC):

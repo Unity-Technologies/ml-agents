@@ -1,5 +1,6 @@
 from mlagents.envs.brain import BrainInfo, BrainParameters, CameraResolution
 from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec
+from mlagents.envs.exception import UnityEnvironmentException
 import numpy as np
 from typing import List, Any
 
@@ -15,8 +16,13 @@ def step_result_to_brain_info(
     for index, observation in enumerate(step_result.obs):
         if len(observation.shape) == 2:
             vec_obs_indices.append(index)
-        if len(observation.shape) == 4:
+        elif len(observation.shape) == 4:
             vis_obs_indices.append(index)
+        else:
+            raise UnityEnvironmentException(
+                "Invalid input received from the environment, the observation should "
+                "either be a vector of float or a PNG image"
+            )
     if len(vec_obs_indices) == 0:
         vec_obs: List[Any] = []
     else:
@@ -30,11 +36,9 @@ def step_result_to_brain_info(
         if step_result.action_mask is not None:
             mask = 1 - np.concatenate(step_result.action_mask, axis=1)
     if agent_id_prefix is None:
-        agent_ids = list(step_result.agent_id)
+        agent_ids = [str(ag_id) for ag_id in list(step_result.agent_id)]
     else:
-        agent_ids = [
-            f"${agent_id_prefix}-{ag_id}" for ag_id in list(step_result.agent_id)
-        ]
+        agent_ids = [f"${agent_id_prefix}-{ag_id}" for ag_id in step_result.agent_id]
     return BrainInfo(
         vis_obs,
         vec_obs,
