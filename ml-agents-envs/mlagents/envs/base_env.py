@@ -50,12 +50,12 @@ class StepResult(NamedTuple):
      the agent during this simulation step.
     """
 
-    obs: List[np.array]
+    obs: List[np.ndarray]
     reward: float
     done: bool
     max_step: bool
     agent_id: int
-    action_mask: Optional[List[np.array]]
+    action_mask: Optional[List[np.ndarray]]
 
 
 class BatchedStepResult:
@@ -88,12 +88,12 @@ class BatchedStepResult:
     """
 
     def __init__(self, obs, reward, done, max_step, agent_id, action_mask):
-        self.obs: List[np.array] = obs
-        self.reward: np.array = reward
-        self.done: np.array = done
-        self.max_step: np.array = max_step
-        self.agent_id: np.array = agent_id
-        self.action_mask: Optional[List[np.array]] = action_mask
+        self.obs: List[np.ndarray] = obs
+        self.reward: np.ndarray = reward
+        self.done: np.ndarray = done
+        self.max_step: np.ndarray = max_step
+        self.agent_id: np.ndarray = agent_id
+        self.action_mask: Optional[List[np.ndarray]] = action_mask
         self._agent_id_to_index: Optional[Dict[int, int]] = None
 
     def contains_agent(self, agent_id: int) -> bool:
@@ -138,7 +138,7 @@ class BatchedStepResult:
         Returns an empty BatchedStepResult.
         :param spec: The AgentGroupSpec for the BatchedStepResult
         """
-        obs: List[np.array] = []
+        obs: List[np.ndarray] = []
         for shape in spec.observation_shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
         return BatchedStepResult(
@@ -217,7 +217,7 @@ class AgentGroupSpec(NamedTuple):
         else:
             return None
 
-    def create_empty_action(self, n_agents: int) -> np.array:
+    def create_empty_action(self, n_agents: int) -> np.ndarray:
         if self.action_type == ActionType.DISCRETE:
             return np.zeros((n_agents, self.action_size), dtype=np.int32)
         else:
@@ -259,27 +259,27 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def set_actions(self, agent_group: str, action: np.array) -> None:
+    def set_actions(self, agent_group: str, action: np.ndarray) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
         the step result.
         :param agent_group: The name of the group the agents are part of
-        :param action: A two dimensional np.array corresponding to the action
+        :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
         """
         pass
 
     @abstractmethod
     def set_action_for_agent(
-        self, agent_group: str, agent_id: int, action: np.array
+        self, agent_group: str, agent_id: int, action: np.ndarray
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next
         step.
         :param agent_group: The name of the group the agent is part of
         :param agent_id: The id of the agent the action is set for
-        :param action: A two dimensional np.array corresponding to the action
+        :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
         """
         pass

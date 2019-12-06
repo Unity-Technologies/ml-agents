@@ -38,7 +38,7 @@ def generate_list_agent_proto(
     return result
 
 
-def generate_compressed_data(in_array: np.array) -> bytes:
+def generate_compressed_data(in_array: np.ndarray) -> bytes:
     image_arr = (in_array * 255).astype(np.uint8)
     im = Image.fromarray(image_arr, "RGB")
     byteIO = io.BytesIO()
@@ -46,7 +46,7 @@ def generate_compressed_data(in_array: np.array) -> bytes:
     return byteIO.getvalue()
 
 
-def generate_compressed_proto_obs(in_array: np.array) -> ObservationProto:
+def generate_compressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     obs_proto = ObservationProto()
     obs_proto.compressed_data = generate_compressed_data(in_array)
     obs_proto.compression_type = 1

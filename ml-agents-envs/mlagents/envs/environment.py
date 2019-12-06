@@ -130,7 +130,7 @@ class UnityEnvironment(BaseEnv):
             )
         self._env_state: Dict[str, BatchedStepResult] = {}
         self._env_specs: Dict[str, AgentGroupSpec] = {}
-        self._env_actions: Dict[str, np.array] = {}
+        self._env_actions: Dict[str, np.ndarray] = {}
         self._is_first_message = True
         self._update_group_specs(aca_output)
 
@@ -327,7 +327,7 @@ class UnityEnvironment(BaseEnv):
                 "in the environment".format(agent_group)
             )
 
-    def set_actions(self, agent_group: str, action: np.array) -> None:
+    def set_actions(self, agent_group: str, action: np.ndarray) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:
             return
@@ -345,7 +345,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[agent_group] = action
 
     def set_action_for_agent(
-        self, agent_group: str, agent_id: int, action: np.array
+        self, agent_group: str, agent_id: int, action: np.ndarray
     ) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:

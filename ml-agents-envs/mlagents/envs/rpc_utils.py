@@ -106,7 +106,7 @@ def _process_vector_observation(
 def batched_step_result_from_proto(
     agent_info_list: List[AgentInfoProto], group_spec: AgentGroupSpec
 ) -> BatchedStepResult:
-    obs_list: List[np.array] = []
+    obs_list: List[np.ndarray] = []
     for obs_index, obs_shape in enumerate(group_spec.observation_shapes):
         is_visual = len(obs_shape) == 3
         if is_visual:
