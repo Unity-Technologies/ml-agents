@@ -149,9 +149,6 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
         buffer[0]["actions_pre"].append(
             np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
         )
-        buffer[0]["random_normal_epsilon"].append(
-            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
-        )
         buffer[0]["action_mask"].append(
             np.ones(np.sum(brain_params.vector_action_space_size), dtype=np.float32)
         )

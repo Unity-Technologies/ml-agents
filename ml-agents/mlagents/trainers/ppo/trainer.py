@@ -191,10 +191,6 @@ class PPOTrainer(RLTrainer):
             self.processing_buffer[agent_id]["actions_pre"].append(
                 actions_pre[agent_idx]
             )
-            epsilons = take_action_outputs["random_normal_epsilon"]
-            self.processing_buffer[agent_id]["random_normal_epsilon"].append(
-                epsilons[agent_idx]
-            )
         a_dist = take_action_outputs["log_probs"]
         # value is a dictionary from name of reward to value estimate of the value head
         self.processing_buffer[agent_id]["actions"].append(actions[agent_idx])

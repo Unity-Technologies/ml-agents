@@ -109,10 +109,7 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
 
     # Test update, while removing PPO-specific buffer elements.
     update_buffer = mb.simulate_rollout(
-        env,
-        policy,
-        BUFFER_INIT_SAMPLES,
-        exclude_key_list=["advantages", "actions_pre", "random_normal_epsilon"],
+        env, policy, BUFFER_INIT_SAMPLES, exclude_key_list=["advantages", "actions_pre"]
     )
 
     # Mock out reward signal eval
