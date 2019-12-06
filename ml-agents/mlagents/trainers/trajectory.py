@@ -54,7 +54,11 @@ def split_obs(obs: List[np.ndarray]) -> SplitObservations:
             vec_obs_indices.append(index)
         if len(observation.shape) == 3:
             vis_obs_indices.append(index)
-    vec_obs = np.concatenate([obs[i] for i in vec_obs_indices], axis=0)
+    vec_obs = (
+        np.concatenate([obs[i] for i in vec_obs_indices], axis=0)
+        if len(vec_obs_indices) > 0
+        else np.array([], dtype=np.float32)
+    )
     vis_obs = [obs[i] for i in vis_obs_indices]
     return SplitObservations(vector_observations=vec_obs, visual_observations=vis_obs)
 
@@ -79,13 +83,10 @@ def trajectory_to_agentbuffer(trajectory: Trajectory) -> AgentBuffer:
             agent_buffer_trajectory["next_visual_obs%d" % i].append(
                 next_vec_vis_obs.visual_observations[i]
             )
-        if vec_vis_obs.vector_observations.size > 0:
-            agent_buffer_trajectory["vector_obs"].append(
-                vec_vis_obs.vector_observations
-            )
-            agent_buffer_trajectory["next_vector_in"].append(
-                next_vec_vis_obs.vector_observations
-            )
+        agent_buffer_trajectory["vector_obs"].append(vec_vis_obs.vector_observations)
+        agent_buffer_trajectory["next_vector_in"].append(
+            next_vec_vis_obs.vector_observations
+        )
         if exp.memory:
             agent_buffer_trajectory["memory"].append(exp.memory)
 

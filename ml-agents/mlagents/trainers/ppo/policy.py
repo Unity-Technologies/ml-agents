@@ -243,7 +243,7 @@ class PPOPolicy(TFPolicy):
         if not self.use_continuous_act and self.use_recurrent:
             feed_dict[self.model.prev_action] = batch["prev_action"]
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
-        value_estimates = {k: np.squeeze(v) for k, v in value_estimates.items()}
+        value_estimates = {k: np.squeeze(v, axis=1) for k, v in value_estimates.items()}
 
         return value_estimates
 
