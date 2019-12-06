@@ -25,7 +25,7 @@ SideChannels.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, NamedTuple, Tuple, Optional, Union
+from typing import List, NamedTuple, Tuple, Optional, Union, Dict
 import numpy as np
 from enum import Enum
 
@@ -58,7 +58,7 @@ class StepResult(NamedTuple):
     action_mask: Optional[List[np.array]]
 
 
-class BatchedStepResult(NamedTuple):
+class BatchedStepResult(object):
     """
     Contains the data a group of similar Agents collected since the last
     simulation step. Note that all Agents do not necessarily have new
@@ -87,12 +87,21 @@ class BatchedStepResult(NamedTuple):
      this simulation step.
     """
 
-    obs: List[np.array]
-    reward: np.array
-    done: np.array
-    max_step: np.array
-    agent_id: np.array
-    action_mask: Optional[List[np.array]]
+    def __init__(self, obs, reward, done, max_step, agent_id, action_mask):
+        self.obs: List[np.array] = obs
+        self.reward: np.array = reward
+        self.done: np.array = done
+        self.max_step: np.array = max_step
+        self.agent_id: np.array = agent_id
+        self.action_mask: Optional[List[np.array]] = action_mask
+        self.agent_id_to_index: Optional[Dict[int, int]] = None
+
+    def contains_agent(self, agent_id: int) -> bool:
+        if self.agent_id_to_index is None:
+            self.agent_id_to_index = {}
+            for a_idx, a_id in enumerate(self.agent_id):
+                self.agent_id_to_index[a_id] = a_idx
+        return agent_id in self.agent_id_to_index
 
     def get_agent_step_result(self, agent_id: int) -> StepResult:
         """
@@ -101,12 +110,11 @@ class BatchedStepResult(NamedTuple):
         :returns: obs, reward, done, agent_id and optional action mask for a
         specific agent
         """
-        try:
-            agent_index = np.where(self.agent_id == agent_id)[0][0]
-        except IndexError as ie:
+        if not self.contains_agent(agent_id):
             raise IndexError(
                 "agent_id {} is not present in the BatchedStepResult".format(agent_id)
-            ) from ie
+            )
+        agent_index = self.agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
             agent_obs.append(batched_obs[agent_index])
@@ -114,7 +122,7 @@ class BatchedStepResult(NamedTuple):
         if self.action_mask is not None:
             agent_mask = []
             for mask in self.action_mask:
-                agent_mask.append(mask[0])
+                agent_mask.append(mask[agent_index])
         return StepResult(
             obs=agent_obs,
             reward=self.reward[agent_index],
