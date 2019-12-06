@@ -2,7 +2,7 @@ from mlagents.envs.brain import BrainInfo, BrainParameters, CameraResolution
 from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec
 from mlagents.envs.exception import UnityEnvironmentException
 import numpy as np
-from typing import List, Any
+from typing import List
 
 
 def step_result_to_brain_info(
@@ -24,7 +24,7 @@ def step_result_to_brain_info(
                 "either be a vector of float or a PNG image"
             )
     if len(vec_obs_indices) == 0:
-        vec_obs: List[Any] = []
+        vec_obs = np.zeros((n_agents, 0), dtype=np.float32)
     else:
         vec_obs = np.concatenate([step_result.obs[i] for i in vec_obs_indices], axis=1)
     vis_obs = [step_result.obs[i] for i in vis_obs_indices]
