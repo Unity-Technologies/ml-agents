@@ -4,7 +4,6 @@ import os
 from typing import List, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.envs.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
@@ -27,8 +26,8 @@ def make_demo_buffer(
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
-    demo_process_buffer = ProcessingBuffer()
-    demo_buffer = AgentBuffer()
+    demo_raw_buffer = AgentBuffer()
+    demo_processed_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
@@ -47,30 +46,27 @@ def make_demo_buffer(
             previous_action = np.array(
                 pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
             )
-        demo_process_buffer[0].last_brain_info = current_brain_info
-        demo_process_buffer[0]["done"].append(next_brain_info.local_done[0])
-        demo_process_buffer[0]["rewards"].append(next_brain_info.rewards[0])
+        demo_raw_buffer["done"].append(next_brain_info.local_done[0])
+        demo_raw_buffer["rewards"].append(next_brain_info.rewards[0])
         for i in range(brain_params.number_visual_observations):
-            demo_process_buffer[0]["visual_obs%d" % i].append(
+            demo_raw_buffer["visual_obs%d" % i].append(
                 current_brain_info.visual_observations[i][0]
             )
         if brain_params.vector_observation_space_size > 0:
-            demo_process_buffer[0]["vector_obs"].append(
+            demo_raw_buffer["vector_obs"].append(
                 current_brain_info.vector_observations[0]
             )
-        demo_process_buffer[0]["actions"].append(
-            current_pair_info.action_info.vector_actions
-        )
-        demo_process_buffer[0]["prev_action"].append(previous_action)
+        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        demo_raw_buffer["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
-            demo_process_buffer.append_to_update_buffer(
-                demo_buffer, 0, batch_size=None, training_length=sequence_length
+            demo_raw_buffer.resequence_and_append(
+                demo_processed_buffer, batch_size=None, training_length=sequence_length
             )
-            demo_process_buffer.reset_local_buffers()
-    demo_process_buffer.append_to_update_buffer(
-        demo_buffer, 0, batch_size=None, training_length=sequence_length
+            demo_raw_buffer.reset_agent()
+    demo_raw_buffer.resequence_and_append(
+        demo_processed_buffer, batch_size=None, training_length=sequence_length
     )
-    return demo_buffer
+    return demo_processed_buffer
 
 
 @timed

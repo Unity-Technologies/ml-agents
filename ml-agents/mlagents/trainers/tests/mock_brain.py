@@ -3,7 +3,6 @@ import numpy as np
 
 from mlagents.envs.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.agent_processor import ProcessingBuffer
 
 
 def create_mock_brainparams(
@@ -108,7 +107,7 @@ def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
 
 
 def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
-    buffer = ProcessingBuffer()
+    buffer = AgentBuffer()
     update_buffer = AgentBuffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):
@@ -116,46 +115,44 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
             break
         current_brain_info = brain_infos[idx]
         next_brain_info = brain_infos[idx + 1]
-        buffer[0].last_brain_info = current_brain_info
-        buffer[0]["done"].append(next_brain_info.local_done[0])
-        buffer[0]["rewards"].append(next_brain_info.rewards[0])
+        buffer.last_brain_info = current_brain_info
+        buffer["done"].append(next_brain_info.local_done[0])
+        buffer["rewards"].append(next_brain_info.rewards[0])
         for i in range(brain_params.number_visual_observations):
-            buffer[0]["visual_obs%d" % i].append(
+            buffer["visual_obs%d" % i].append(
                 current_brain_info.visual_observations[i][0]
             )
-            buffer[0]["next_visual_obs%d" % i].append(
+            buffer["next_visual_obs%d" % i].append(
                 current_brain_info.visual_observations[i][0]
             )
         if brain_params.vector_observation_space_size > 0:
-            buffer[0]["vector_obs"].append(current_brain_info.vector_observations[0])
-            buffer[0]["next_vector_in"].append(
-                current_brain_info.vector_observations[0]
-            )
+            buffer["vector_obs"].append(current_brain_info.vector_observations[0])
+            buffer["next_vector_in"].append(current_brain_info.vector_observations[0])
         fake_action_size = len(brain_params.vector_action_space_size)
         if brain_params.vector_action_space_type == "continuous":
             fake_action_size = brain_params.vector_action_space_size[0]
-        buffer[0]["actions"].append(np.zeros(fake_action_size, dtype=np.float32))
-        buffer[0]["prev_action"].append(np.zeros(fake_action_size, dtype=np.float32))
-        buffer[0]["masks"].append(1.0)
-        buffer[0]["advantages"].append(1.0)
+        buffer["actions"].append(np.zeros(fake_action_size, dtype=np.float32))
+        buffer["prev_action"].append(np.zeros(fake_action_size, dtype=np.float32))
+        buffer["masks"].append(1.0)
+        buffer["advantages"].append(1.0)
         if brain_params.vector_action_space_type == "discrete":
-            buffer[0]["action_probs"].append(
+            buffer["action_probs"].append(
                 np.ones(sum(brain_params.vector_action_space_size), dtype=np.float32)
             )
         else:
-            buffer[0]["action_probs"].append(
+            buffer["action_probs"].append(
                 np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
             )
-        buffer[0]["actions_pre"].append(
-            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
+        buffer["actions_pre"].append(
+            np.ones(buffer["actions"][0].shape, dtype=np.float32)
         )
-        buffer[0]["action_mask"].append(
+        buffer["action_mask"].append(
             np.ones(np.sum(brain_params.vector_action_space_size), dtype=np.float32)
         )
-        buffer[0]["memory"].append(np.ones(memory_size, dtype=np.float32))
+        buffer["memory"].append(np.ones(memory_size, dtype=np.float32))
 
-    buffer.append_to_update_buffer(
-        update_buffer, 0, batch_size=None, training_length=sequence_length
+    buffer.resequence_and_append(
+        update_buffer, batch_size=None, training_length=sequence_length
     )
     return update_buffer
 
