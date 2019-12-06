@@ -29,7 +29,7 @@ public class GridArea : MonoBehaviour
 
     Vector3 m_InitialPosition;
 
-    public void Awake()
+    public void Start()
     {
         m_ResetParameters = FindObjectOfType<Academy>().FloatProperties;
 
