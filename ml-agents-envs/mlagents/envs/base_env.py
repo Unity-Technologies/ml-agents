@@ -58,7 +58,7 @@ class StepResult(NamedTuple):
     action_mask: Optional[List[np.array]]
 
 
-class BatchedStepResult(object):
+class BatchedStepResult:
     """
     Contains the data a group of similar Agents collected since the last
     simulation step. Note that all Agents do not necessarily have new
