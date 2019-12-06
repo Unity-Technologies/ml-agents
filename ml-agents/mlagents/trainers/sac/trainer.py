@@ -15,6 +15,11 @@ from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
+from mlagents.trainers.trajectory import (
+    Trajectory,
+    trajectory_to_agentbuffer,
+    split_obs,
+)
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -157,6 +162,59 @@ class SACTrainer(RLTrainer):
         self.processing_buffer[agent_id]["environment_rewards"].append(
             rewards_out.environment[agent_next_idx]
         )
+
+    def process_trajectory(self, trajectory: Trajectory) -> None:
+        """
+        Takes a trajectory and processes it, putting it into the replay buffer.
+        """
+        last_step = trajectory.steps[-1]
+        agent_id = last_step.agent_id  # All the agents should have the same ID
+        agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
+        # Update the normalization
+        if self.is_training:
+            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+
+        # Bootstrap using the last step rather than the bootstrap step if max step is reached.
+        # Set last element to duplicate obs and remove dones.
+        if last_step.max_step:
+            vec_vis_obs = split_obs(last_step)
+            for i, obs in enumerate(vec_vis_obs.visual_observations):
+                agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
+            if vec_vis_obs.vector_observations.size > 1:
+                agent_buffer_trajectory["next_vector_in"][
+                    -1
+                ] = vec_vis_obs.vector_observations
+            agent_buffer_trajectory["done"][-1] = False
+
+        # Append to update buffer
+        key_list = agent_buffer_trajectory.keys()
+        for field_key in key_list:
+            self.update_buffer[field_key].extend(
+                agent_buffer_trajectory[field_key].get_batch(
+                    batch_size=None, training_length=self.policy.sequence_length
+                )
+            )
+
+        if trajectory.steps[-1].done:
+            self.stats["Environment/Episode Length"].append(
+                self.episode_steps.get(agent_id, 0)
+            )
+            self.episode_steps[agent_id] = 0
+            for name, rewards in self.collected_rewards.items():
+                if name == "environment":
+                    self.cumulative_returns_since_policy_update.append(
+                        rewards.get(agent_id, 0)
+                    )
+                    self.stats["Environment/Cumulative Reward"].append(
+                        rewards.get(agent_id, 0)
+                    )
+                    self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                    rewards[agent_id] = 0
+                else:
+                    self.stats[self.policy.reward_signals[name].stat_name].append(
+                        rewards.get(agent_id, 0)
+                    )
+                    rewards[agent_id] = 0
 
     def process_experiences(
         self, current_info: BrainInfo, next_info: BrainInfo

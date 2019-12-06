@@ -89,6 +89,7 @@ class AgentProcessor:
                         memory = None
 
                     done = next_info.local_done[next_idx]
+                    max_step = next_info.max_reached[next_idx]
 
                     # Add the outputs of the last eval
                     action = take_action_outputs["action"][idx]
@@ -112,6 +113,7 @@ class AgentProcessor:
                         action_pre=action_pre,
                         action_mask=action_masks,
                         prev_action=prev_action,
+                        max_step=max_step,
                         agent_id=agent_id,
                         memory=memory,
                         epsilon=epsilon,

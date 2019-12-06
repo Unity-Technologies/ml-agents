@@ -15,6 +15,7 @@ class AgentExperience(NamedTuple):
     action_mask: np.array
     prev_action: np.ndarray
     epsilon: float
+    max_step: bool
     memory: np.array
     agent_id: str
 

@@ -97,7 +97,8 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
 
         value_next = self.policy.get_value_estimates(
-            trajectory.bootstrap_step, trajectory.steps[-1].done
+            trajectory.bootstrap_step,
+            trajectory.steps[-1].done and not trajectory.steps[-1].max_step,
         )
 
         # Evaluate all reward functions
