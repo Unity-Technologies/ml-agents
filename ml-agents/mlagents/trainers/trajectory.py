@@ -14,7 +14,6 @@ class AgentExperience(NamedTuple):
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.array
     prev_action: np.ndarray
-    epsilon: float
     max_step: bool
     memory: np.array
     agent_id: str
@@ -96,9 +95,7 @@ def trajectory_to_agentbuffer(trajectory: Trajectory) -> AgentBuffer:
         if exp.action_pre is not None:
             actions_pre = exp.action_pre
             agent_buffer_trajectory["actions_pre"].append(actions_pre)
-        if exp.epsilon is not None:
-            epsilons = exp.epsilon
-            agent_buffer_trajectory["random_normal_epsilon"].append(epsilons)
+
         # value is a dictionary from name of reward to value estimate of the value head
         agent_buffer_trajectory["actions"].append(exp.action)
         agent_buffer_trajectory["action_probs"].append(exp.action_probs)

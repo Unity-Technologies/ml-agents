@@ -95,10 +95,8 @@ class AgentProcessor:
                     action = take_action_outputs["action"][idx]
                     if self.policy.use_continuous_act:
                         action_pre = take_action_outputs["pre_action"][idx]
-                        epsilon = take_action_outputs["random_normal_epsilon"][idx]
                     else:
                         action_pre = None
-                        epsilon = None
                     action_probs = take_action_outputs["log_probs"][idx]
                     action_masks = stored_info.action_masks[idx]
                     prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
@@ -116,7 +114,6 @@ class AgentProcessor:
                         max_step=max_step,
                         agent_id=agent_id,
                         memory=memory,
-                        epsilon=epsilon,
                     )
                     # Add the value outputs if needed
                     self.experience_buffers[agent_id].append(experience)
