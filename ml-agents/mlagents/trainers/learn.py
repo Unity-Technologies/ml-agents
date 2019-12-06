@@ -265,9 +265,9 @@ def run_training(
         options.time_scale,
         options.target_frame_rate,
     )
-    env = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
+    env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(
-        curriculum_folder, env, options.lesson
+        curriculum_folder, env_manager, options.lesson
     )
     sampler_manager, resampling_interval = create_sampler_manager(
         options.sampler_file_path, run_seed
@@ -301,9 +301,9 @@ def run_training(
     process_queue.put(True)
     # Begin training
     try:
-        tc.start_learning(env)
+        tc.start_learning(env_manager)
     finally:
-        env.close()
+        env_manager.close()
 
 
 def create_sampler_manager(sampler_file_path, run_seed=None):
