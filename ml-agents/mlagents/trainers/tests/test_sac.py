@@ -342,7 +342,8 @@ def test_sac_save_load_buffer(tmpdir):
     trainer_params["summary_path"] = str(tmpdir)
     trainer_params["model_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
-    trainer = SACTrainer(mock_brain, 1, trainer_params, True, False, 0, 0)
+    trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
+    trainer.add_policy(mock_brain)
     trainer.update_buffer = mb.simulate_rollout(
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
@@ -350,7 +351,8 @@ def test_sac_save_load_buffer(tmpdir):
     trainer.save_model()
 
     # Wipe Trainer and try to load
-    trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
+    trainer2 = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, True, 0, 0)
+    trainer2.add_policy(mock_brain)
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 

@@ -343,7 +343,10 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
     trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
 
-    trainer = PPOTrainer(mock_brain, 0, trainer_params, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
+    )
+    trainer.add_policy(mock_brain)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
@@ -375,7 +378,10 @@ def test_add_rewards_output(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
+    trainer.add_policy(brain_params)
     rewardsout = AllRewardsOutput(
         reward_signals={
             "extrinsic": RewardSignalResult(

@@ -194,7 +194,10 @@ class TrainerController(object):
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
                 for name_behavior_id in new_behavior_ids:
-                    brain_name, _ = name_behavior_id.split("?")
+                    try:
+                        brain_name, _ = name_behavior_id.split("?")
+                    except ValueError:
+                        brain_name = name_behavior_id
 
                     # This could be done with a try/except which may improve performance?
                     try:
