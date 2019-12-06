@@ -125,7 +125,7 @@ class BatchedStepResult(NamedTuple):
         )
 
     @staticmethod
-    def empty(spec):
+    def empty(spec: AgentGroupSpec) -> "BatchedStepResult":
         """
         Returns an empty BatchedStepResult.
         :param spec: The AgentGroupSpec for the BatchedStepResult
