@@ -8,7 +8,13 @@ from typing import Dict, List, Optional, Any
 
 from mlagents.envs.side_channel.side_channel import SideChannel
 
-from mlagents.envs.base_env import BaseEnv, BatchedStepResult, AgentGroupSpec
+from mlagents.envs.base_env import (
+    BaseEnv,
+    BatchedStepResult,
+    AgentGroupSpec,
+    AgentGroup,
+    AgentId,
+)
 from mlagents.envs.timers import timed, hierarchical_timer
 from .exception import (
     UnityEnvironmentException,
@@ -317,7 +323,7 @@ class UnityEnvironment(BaseEnv):
         self._update_state(rl_output)
         self._env_actions.clear()
 
-    def get_agent_groups(self) -> List[str]:
+    def get_agent_groups(self) -> List[AgentGroup]:
         return list(self._env_specs.keys())
 
     def _assert_group_exists(self, agent_group: str) -> None:
@@ -327,7 +333,7 @@ class UnityEnvironment(BaseEnv):
                 "in the environment".format(agent_group)
             )
 
-    def set_actions(self, agent_group: str, action: np.ndarray) -> None:
+    def set_actions(self, agent_group: AgentGroup, action: np.ndarray) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:
             return
@@ -345,7 +351,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[agent_group] = action
 
     def set_action_for_agent(
-        self, agent_group: str, agent_id: int, action: np.ndarray
+        self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
     ) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:
@@ -376,11 +382,11 @@ class UnityEnvironment(BaseEnv):
             ) from ie
         self._env_actions[agent_group][index] = action
 
-    def get_step_result(self, agent_group: str) -> BatchedStepResult:
+    def get_step_result(self, agent_group: AgentGroup) -> BatchedStepResult:
         self._assert_group_exists(agent_group)
         return self._env_state[agent_group]
 
-    def get_agent_group_spec(self, agent_group: str) -> AgentGroupSpec:
+    def get_agent_group_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
         self._assert_group_exists(agent_group)
         return self._env_specs[agent_group]
 

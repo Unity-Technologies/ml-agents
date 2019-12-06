@@ -25,9 +25,12 @@ SideChannels.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict
+from typing import List, NamedTuple, Tuple, Optional, Union, Dict, NewType
 import numpy as np
 from enum import Enum
+
+AgentId = NewType("AgentId", int)
+AgentGroup = NewType("AgentGroup", str)
 
 
 class StepResult(NamedTuple):
@@ -54,7 +57,7 @@ class StepResult(NamedTuple):
     reward: float
     done: bool
     max_step: bool
-    agent_id: int
+    agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
 
 
@@ -96,14 +99,14 @@ class BatchedStepResult:
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self._agent_id_to_index: Optional[Dict[int, int]] = None
 
-    def contains_agent(self, agent_id: int) -> bool:
+    def contains_agent(self, agent_id: AgentId) -> bool:
         if self._agent_id_to_index is None:
             self._agent_id_to_index = {}
             for a_idx, a_id in enumerate(self.agent_id):
                 self._agent_id_to_index[a_id] = a_idx
         return agent_id in self._agent_id_to_index
 
-    def get_agent_step_result(self, agent_id: int) -> StepResult:
+    def get_agent_step_result(self, agent_id: AgentId) -> StepResult:
         """
         returns the step result for a specific agent.
         :param agent_id: The id of the agent
@@ -248,7 +251,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_agent_groups(self) -> List[str]:
+    def get_agent_groups(self) -> List[AgentGroup]:
         """
         Returns the list of the agent group names present in the environment.
         Agents grouped under the same group name have the same action and
@@ -259,7 +262,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def set_actions(self, agent_group: str, action: np.ndarray) -> None:
+    def set_actions(self, agent_group: AgentGroup, action: np.ndarray) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
@@ -272,7 +275,7 @@ class BaseEnv(ABC):
 
     @abstractmethod
     def set_action_for_agent(
-        self, agent_group: str, agent_id: int, action: np.ndarray
+        self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next
@@ -285,7 +288,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_step_result(self, agent_group: str) -> BatchedStepResult:
+    def get_step_result(self, agent_group: AgentGroup) -> BatchedStepResult:
         """
         Retrieves the observations of the agents that requested a step in the
         simulation.
@@ -296,7 +299,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_agent_group_spec(self, agent_group: str) -> AgentGroupSpec:
+    def get_agent_group_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
         """
         Get the AgentGroupSpec corresponding to the agent group name
         :param agent_group: The name of the group the agents are part of
