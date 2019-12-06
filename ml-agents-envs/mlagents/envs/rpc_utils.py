@@ -84,7 +84,7 @@ def _process_vector_observation(
         dtype=np.float32,
     )
     # Check for NaNs or infs in the observations
-    # If there's a NaN in the observations, the dot() result will be NaN
+    # If there's a NaN in the observations, the np.mean() result will be NaN
     # If there's an Inf (either sign) then the result will be Inf
     # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
     # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
@@ -120,6 +120,16 @@ def batched_step_result_from_proto(
     rewards = np.array(
         [agent_info.reward for agent_info in agent_info_list], dtype=np.float32
     )
+
+    d = np.dot(rewards, rewards)
+    has_nan = np.isnan(d)
+    has_inf = not np.isfinite(d)
+    # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
+    if has_nan or has_inf:
+        rewards = np.nan_to_num(rewards)
+    if has_nan:
+        logger.warning(f"An agent had a NaN reward in the environment")
+
     done = np.array([agent_info.done for agent_info in agent_info_list], dtype=np.bool)
     max_step = np.array(
         [agent_info.max_step_reached for agent_info in agent_info_list], dtype=np.bool
