@@ -172,11 +172,13 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     env_mock.reset.assert_not_called()
     env_mock.step.assert_called_once()
     trainer_mock.add_experiences.assert_called_once_with(
+        brain_name,
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
         new_step_info.brain_name_to_action_info[brain_name].outputs,
     )
     trainer_mock.process_experiences.assert_called_once_with(
+        brain_name,
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
     )
@@ -205,11 +207,13 @@ def test_take_step_if_not_training():
     env_mock.reset.assert_not_called()
     env_mock.step.assert_called_once()
     trainer_mock.add_experiences.assert_called_once_with(
+        brain_name,
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
         new_step_info.brain_name_to_action_info[brain_name].outputs,
     )
     trainer_mock.process_experiences.assert_called_once_with(
+        brain_name,
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
     )

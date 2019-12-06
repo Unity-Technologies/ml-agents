@@ -137,7 +137,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     external_brains = {"testbrain": brain_params_mock}
 
     def mock_constructor(self, brain, trainer_parameters, training, load, seed, run_id):
-        assert brain == brain_params_mock
+        assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert training == train_model
         assert load == load_model
@@ -157,7 +157,9 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         )
         trainers = {}
         for _, brain_parameters in external_brains.items():
-            trainers["testbrain"] = trainer_factory.generate(brain_parameters)
+            trainers["testbrain"] = trainer_factory.generate(
+                brain_parameters.brain_name
+            )
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], OfflineBCTrainer)
 
@@ -194,7 +196,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         multi_gpu,
     ):
         self.trainer_metrics = TrainerMetrics("", "")
-        assert brain == brain_params_mock
+        assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
@@ -216,7 +218,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
-            trainers[brain_name] = trainer_factory.generate(brain_parameters)
+            trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
@@ -247,7 +249,7 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
-            trainers[brain_name] = trainer_factory.generate(brain_parameters)
+            trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
 
 
 def test_load_config_missing_file():

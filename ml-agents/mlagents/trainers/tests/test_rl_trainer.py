@@ -33,7 +33,7 @@ def create_mock_brain():
 
 def create_rl_trainer():
     mock_brainparams = create_mock_brain()
-    trainer = RLTrainer(mock_brainparams, dummy_config(), True, 0)
+    trainer = RLTrainer(mock_brainparams.brain_name, dummy_config(), True, 0)
     return trainer
 
 
@@ -57,6 +57,7 @@ def create_mock_policy():
 def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
     trainer = create_rl_trainer()
     trainer.policy = create_mock_policy()
+    fake_id = "fake_behavior_id"
     fake_action_outputs = {
         "action": [0.1, 0.1],
         "value_heads": {},
@@ -69,7 +70,9 @@ def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
-    trainer.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
+    trainer.add_experiences(
+        fake_id, mock_braininfo, mock_braininfo, fake_action_outputs
+    )
 
     # Remove one of the agents
     next_mock_braininfo = mb.create_mock_braininfo(
