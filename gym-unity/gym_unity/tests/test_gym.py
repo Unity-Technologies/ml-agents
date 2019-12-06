@@ -138,7 +138,7 @@ def setup_mock_unityenvironment(mock_env, mock_spec, mock_result):
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
     :Mock mock_spec: An AgentGroupSpec object that specifies the params of this environment.
-    :Mock mock_result: A mock BatchedStepResult object that will be returned at each step and reset.
+    :Mock mock_result: A BatchedStepResult object that will be returned at each step and reset.
     """
     mock_env.return_value.get_agent_groups.return_value = ["MockBrain"]
     mock_env.return_value.get_agent_group_spec.return_value = mock_spec
