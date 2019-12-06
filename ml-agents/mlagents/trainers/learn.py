@@ -300,7 +300,10 @@ def run_training(
     # Signal that environment has been launched.
     process_queue.put(True)
     # Begin training
-    tc.start_learning(env)
+    try:
+        tc.start_learning(env)
+    finally:
+        env.close()
 
 
 def create_sampler_manager(sampler_file_path, run_seed=None):
