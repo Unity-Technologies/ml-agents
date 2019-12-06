@@ -94,14 +94,14 @@ class BatchedStepResult(object):
         self.max_step: np.array = max_step
         self.agent_id: np.array = agent_id
         self.action_mask: Optional[List[np.array]] = action_mask
-        self.agent_id_to_index: Optional[Dict[int, int]] = None
+        self._agent_id_to_index: Optional[Dict[int, int]] = None
 
     def contains_agent(self, agent_id: int) -> bool:
-        if self.agent_id_to_index is None:
-            self.agent_id_to_index = {}
+        if self._agent_id_to_index is None:
+            self._agent_id_to_index = {}
             for a_idx, a_id in enumerate(self.agent_id):
-                self.agent_id_to_index[a_id] = a_idx
-        return agent_id in self.agent_id_to_index
+                self._agent_id_to_index[a_id] = a_idx
+        return agent_id in self._agent_id_to_index
 
     def get_agent_step_result(self, agent_id: int) -> StepResult:
         """
@@ -114,7 +114,7 @@ class BatchedStepResult(object):
             raise IndexError(
                 "agent_id {} is not present in the BatchedStepResult".format(agent_id)
             )
-        agent_index = self.agent_id_to_index[agent_id]  # type: ignore
+        agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
             agent_obs.append(batched_obs[agent_index])
