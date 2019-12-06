@@ -174,10 +174,22 @@ class SACTrainer(RLTrainer):
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
+        # Evaluate all reward functions for reporting purposes
+        self.collected_rewards["environment"][agent_id] += np.sum(
+            agent_buffer_trajectory["environment_rewards"]
+        )
+        for name, reward_signal in self.policy.reward_signals.items():
+            evaluate_result = reward_signal.evaluate_batch(
+                agent_buffer_trajectory
+            ).scaled_reward
+            agent_buffer_trajectory["{}_rewards".format(name)].extend(evaluate_result)
+            # Report the reward signals
+            self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
+
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.max_step:
-            vec_vis_obs = split_obs(last_step)
+            vec_vis_obs = split_obs(last_step.obs)
             for i, obs in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
             if vec_vis_obs.vector_observations.size > 1:
