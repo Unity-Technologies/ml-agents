@@ -223,7 +223,6 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
-        env_manager.close()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
