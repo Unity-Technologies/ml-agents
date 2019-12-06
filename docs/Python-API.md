@@ -121,7 +121,7 @@ __Note:__ If no action is provided for an agent group between two calls to `env.
 the default action will be all zeros (in either discrete or continuous action space)
 #### BathedStepResult and StepResult
 
-A `BatchedStepResult` is a `NamedTuple` with the following fields :
+A `BatchedStepResult` has the following fields :
 
  - `obs` is a list of numpy arrays observations collected by the group of
  agent. The first dimension of the array corresponds to the batch size of
@@ -151,7 +151,7 @@ It also has the two following methods:
  - `get_agent_step_result(agent_id: int)` Returns a `StepResult`
  for the Agent with the `agent_id` unique identifier.
 
-A `StepResult` is a `NamedTuple` with the following fields:
+A `StepResult` has the following fields:
 
  - `obs` is a list of numpy arrays observations collected by the group of
  agent. (Each array has one less dimension than the arrays in `BatchedStepResult`)
@@ -175,7 +175,7 @@ it is, use `spec.is_action_discrete()` or `spec.is_action_continuous()` to see
 which one it is. If discrete, the action tensors are expected to be `np.int32`. If
 continuous, the actions are expected to be `np.float32`.
 
-An `AgentGroupSpec` is a `NamedTuple` with the following fields :
+An `AgentGroupSpec` has the following fields :
 
  - `observation_shapes` is a List of Tuples of int : Each Tuple corresponds
  to an observation's dimensions (without the number of agents dimension).
