@@ -162,7 +162,7 @@ public class GridAgent : Agent
             renderCamera.Render();
         }
 
-        if (!m_Academy.IsCommunicatorOn)
+        if (m_Academy.IsCommunicatorOn)
         {
             RequestDecision();
         }
