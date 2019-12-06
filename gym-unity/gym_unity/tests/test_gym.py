@@ -137,7 +137,7 @@ def setup_mock_unityenvironment(mock_env, mock_spec, mock_result):
     BrainParameters and BrainInfo.
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
-    :Mock mock_spec: A mock AgentGroupSpec object that specifies the params of this environment.
+    :Mock mock_spec: An AgentGroupSpec object that specifies the params of this environment.
     :Mock mock_result: A mock BatchedStepResult object that will be returned at each step and reset.
     """
     mock_env.return_value.get_agent_groups.return_value = ["MockBrain"]
