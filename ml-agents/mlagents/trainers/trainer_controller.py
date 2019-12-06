@@ -40,7 +40,6 @@ class TrainerController(object):
         meta_curriculum: Optional[MetaCurriculum],
         train: bool,
         training_seed: int,
-        fast_simulation: bool,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
     ):
@@ -67,7 +66,6 @@ class TrainerController(object):
         self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.meta_curriculum = meta_curriculum
         self.training_start_time = time()
-        self.fast_simulation = fast_simulation
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
         np.random.seed(training_seed)
@@ -160,7 +158,7 @@ class TrainerController(object):
             self.meta_curriculum.get_config() if self.meta_curriculum else {}
         )
         sampled_reset_param.update(new_meta_curriculum_config)
-        return env.reset(train_mode=self.fast_simulation, config=sampled_reset_param)
+        return env.reset(config=sampled_reset_param)
 
     def _should_save_model(self, global_step: int) -> bool:
         return (

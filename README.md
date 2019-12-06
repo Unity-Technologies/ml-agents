@@ -6,6 +6,9 @@
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](docs/Readme.md)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
+([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
+([all releases](https://github.com/Unity-Technologies/ml-agents/releases))
+
 **The Unity Machine Learning Agents Toolkit** (ML-Agents) is an open-source
 Unity plugin that enables games and simulations to serve as environments for
 training intelligent agents. Agents can be trained using reinforcement learning,
