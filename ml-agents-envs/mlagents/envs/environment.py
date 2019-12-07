@@ -103,7 +103,8 @@ class UnityEnvironment(BaseUnityEnvironment):
             self.executable_launcher(file_name, docker_training, no_graphics, args)
         else:
             logger.info(
-                "Start training by pressing the Play button in the Unity Editor."
+                f"Listening on port {self.port}. "
+                f"Start training by pressing the Play button in the Unity Editor."
             )
         self._loaded = True
 
@@ -119,9 +120,10 @@ class UnityEnvironment(BaseUnityEnvironment):
         if self._unity_version != self._version_:
             self._close()
             raise UnityEnvironmentException(
-                "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
-                "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                "of ML-Agents.".format(self._version_, self._unity_version)
+                f"The API number is not compatible between Unity and python. "
+                f"Python API: {self._version_}, Unity API: {self._unity_version}.\n"
+                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release"
+                f"to download the latest version of ML-Agents."
             )
         self._n_agents: Dict[str, int] = {}
         self._is_first_message = True
