@@ -60,7 +60,7 @@ class Trainer(object):
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None
+        self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.step: int = 0
 
     def check_param_keys(self):
@@ -282,3 +282,8 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def clear_update_buffer(self) -> None:
+        raise UnityTrainerException(
+            "The clear_update_buffer method was not implemented."
+        )

@@ -88,6 +88,10 @@ class LearningModel(object):
         self.running_variance: Optional[tf.Variable] = None
         self.update_normalization: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
+        self.all_log_probs: Optional[tf.Tensor] = None
+        self.output: Optional[tf.Tensor] = None
+        self.selected_actions: Optional[tf.Tensor] = None
+        self.action_holder: Optional[tf.Tensor] = None
 
     @staticmethod
     def create_global_steps():
