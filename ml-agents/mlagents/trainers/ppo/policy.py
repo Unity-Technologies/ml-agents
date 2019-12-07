@@ -229,7 +229,7 @@ class PPOPolicy(TFPolicy):
     def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.batch_size: batch.num_experiences,
-            self.model.sequence_length: self.sequence_length,
+            self.model.sequence_length: 1,  # We want to feed data in batch-wise, not time-wise.
         }
 
         if self.use_vec_obs:
