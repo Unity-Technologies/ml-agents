@@ -130,7 +130,7 @@ class AgentProcessor:
 
                 if (
                     next_info.local_done[next_idx]
-                    or len(self.experience_buffers[agent_id]) > self.time_horizon
+                    or len(self.experience_buffers[agent_id]) >= self.time_horizon
                 ) and len(self.experience_buffers[agent_id]) > 0:
                     # Make next AgentExperience
                     next_obs = []

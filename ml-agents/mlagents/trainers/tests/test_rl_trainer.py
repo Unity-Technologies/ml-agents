@@ -50,45 +50,15 @@ def create_mock_policy():
     return mock_policy
 
 
-@mock.patch("mlagents.trainers.rl_trainer.RLTrainer.add_policy_outputs")
-@mock.patch("mlagents.trainers.rl_trainer.RLTrainer.add_rewards_outputs")
-@pytest.mark.parametrize("num_vis_obs", [0, 1, 2], ids=["vec", "1 viz", "2 viz"])
-def test_rl_trainer(add_policy_outputs, add_rewards_outputs, num_vis_obs):
+def test_rl_trainer():
     trainer = create_rl_trainer()
-    trainer.policy = create_mock_policy()
-    fake_action_outputs = {
-        "action": [0.1, 0.1],
-        "value_heads": {},
-        "entropy": np.array([1.0], dtype=np.float32),
-        "learning_rate": 1.0,
-    }
-    mock_braininfo = mb.create_mock_braininfo(
-        num_agents=2,
-        num_vector_observations=8,
-        num_vector_acts=2,
-        num_vis_observations=num_vis_obs,
-    )
-    trainer.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
-
-    # Remove one of the agents
-    next_mock_braininfo = mb.create_mock_braininfo(
-        num_agents=1,
-        num_vector_observations=8,
-        num_vector_acts=2,
-        num_vis_observations=num_vis_obs,
-    )
-    brain_info = trainer.construct_curr_info(next_mock_braininfo)
-
-    # assert construct_curr_info worked properly
-    assert len(brain_info.agents) == 1
-    assert len(brain_info.visual_observations) == num_vis_obs
-    assert len(brain_info.vector_observations) == 1
-
+    agent_id = "0"
+    trainer.episode_steps[agent_id] = 3
+    trainer.collected_rewards["extrinsic"] = {agent_id: 3}
     # Test end episode
     trainer.end_episode()
     for agent_id in trainer.episode_steps:
         assert trainer.episode_steps[agent_id] == 0
-        assert len(trainer.processing_buffer[agent_id]["action"]) == 0
     for rewards in trainer.collected_rewards.values():
         for agent_id in rewards:
             assert rewards[agent_id] == 0
