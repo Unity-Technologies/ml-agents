@@ -3,6 +3,7 @@
 ## Migrating from master to develop
 
 ### Important changes
+* The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information.
 * `CustomResetParameters` are now removed.
 * `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
 * `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`. For more information, refer to the [Low Level Python API documentation](Python-API.md)
