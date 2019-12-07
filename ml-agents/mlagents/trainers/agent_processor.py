@@ -9,16 +9,25 @@ from mlagents.trainers.trajectory import (
     BootstrapExperience,
 )
 from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.envs.action_info import ActionInfoOutputs
 
 
 class AgentProcessor:
     """
-    AgentProcessor contains a dictionary of AgentBuffer. The AgentBuffers are indexed by agent_id.
+    AgentProcessor contains a dictionary per-agent trajectory buffers. The buffers are indexed by agent_id.
     Buffer also contains an update_buffer that corresponds to the buffer used when updating the model.
+    One AgentProcessor should be created per agent group.
     """
 
-    def __init__(self, trainer: Trainer):
+    def __init__(self, trainer: Trainer, policy: TFPolicy, time_horizon: int):
+        """
+        Create an AgentProcessor.
+        :param trainer: Trainer instance connected to this AgentProcessor. Trainer is given trajectory
+        when it is finished.
+        :param policy: Policy instance associated with this AgentProcessor.
+        :param time_horizon: Maximum length of a trajectory before it is added to the trainer.
+        """
         self.experience_buffers: Dict[str, List] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
@@ -28,9 +37,9 @@ class AgentProcessor:
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
         # that really should be gathered by the env-manager.
-        self.policy = trainer.policy
+        self.policy = policy
         self.episode_steps: Dict[str, int] = {}
-        self.time_horizon: int = trainer.parameters["time_horizon"]
+        self.time_horizon = time_horizon
         self.trainer = trainer
 
     def __str__(self):
@@ -136,6 +145,7 @@ class AgentProcessor:
                         steps=self.experience_buffers[agent_id],
                         bootstrap_step=bootstrap_step,
                     )
+                    # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)
                     self.experience_buffers[agent_id] = []
                 elif not next_info.local_done[next_idx]:

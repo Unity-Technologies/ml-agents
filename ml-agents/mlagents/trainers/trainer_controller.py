@@ -209,7 +209,13 @@ class TrainerController(object):
                             env_manager.external_brains[name]
                         )
                         self.start_trainer(trainer, env_manager)
-                        agent_manager = AgentManager(processor=AgentProcessor(trainer))
+                        agent_manager = AgentManager(
+                            processor=AgentProcessor(
+                                trainer,
+                                trainer.policy,
+                                trainer.parameters["time_horizon"],
+                            )
+                        )
                         self.managers[name] = agent_manager
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
