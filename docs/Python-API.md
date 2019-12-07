@@ -170,7 +170,7 @@ A `StepResult` has the following fields:
 
 #### AgentGroupSpec
 
-An Agent group can either has discrete or continuous actions. To check which type
+An Agent group can either have discrete or continuous actions. To check which type
 it is, use `spec.is_action_discrete()` or `spec.is_action_continuous()` to see
 which one it is. If discrete, the action tensors are expected to be `np.int32`. If
 continuous, the actions are expected to be `np.float32`.
@@ -267,4 +267,3 @@ var academy = FindObjectOfType<Academy>();
 var sharedProperties = academy.FloatProperties;
 float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```
-
