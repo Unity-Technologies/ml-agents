@@ -27,7 +27,7 @@ def make_demo_buffer(
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
-    fake_agent_id = "0"
+    agent_id: int = 0
     demo_process_buffer = ProcessingBuffer()
     demo_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
