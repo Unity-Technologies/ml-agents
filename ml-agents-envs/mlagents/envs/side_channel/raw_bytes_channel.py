@@ -17,7 +17,7 @@ class RawBytesChannel(SideChannel):
     def channel_type(self) -> int:
         return SideChannelType.RawBytesChannelStart + self._channel_id
 
-    def on_message_received(self, data: bytearray) -> None:
+    def on_message_received(self, data: bytes) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that

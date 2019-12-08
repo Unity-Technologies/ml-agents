@@ -33,7 +33,7 @@ class SideChannel(ABC):
         self.message_queue.append(data)
 
     @abstractmethod
-    def on_message_received(self, data: bytearray) -> None:
+    def on_message_received(self, data: bytes) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that

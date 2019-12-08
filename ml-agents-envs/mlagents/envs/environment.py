@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Any
 from mlagents.envs.side_channel.side_channel import SideChannel
 from mlagents.envs.base_unity_environment import BaseUnityEnvironment
 from mlagents.envs.timers import timed, hierarchical_timer
-from .brain import AllBrainInfo, BrainInfo, BrainParameters
+from mlagents.envs.brain import AllBrainInfo, BrainInfo, BrainParameters
 from .exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
@@ -17,6 +17,7 @@ from .exception import (
     UnityTimeOutException,
 )
 
+from mlagents.envs.communicator_objects.command_pb2 import CommandProto
 from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
@@ -494,7 +495,7 @@ class UnityEnvironment(BaseUnityEnvironment):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[int, SideChannel], data: bytearray
+        side_channels: Dict[int, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
@@ -566,13 +567,13 @@ class UnityEnvironment(BaseUnityEnvironment):
                     if value[b] is not None:
                         action.value = float(value[b][i])
                 rl_in.agent_actions[b].value.extend([action])
-                rl_in.command = 0
+                rl_in.command = CommandProto.STEP
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
-        rl_in.command = 1
+        rl_in.command = CommandProto.RESET
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 

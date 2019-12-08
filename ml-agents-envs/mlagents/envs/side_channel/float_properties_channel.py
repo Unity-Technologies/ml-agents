@@ -1,6 +1,6 @@
 from mlagents.envs.side_channel.side_channel import SideChannel, SideChannelType
 import struct
-from typing import Tuple, Optional, List
+from typing import Dict, Tuple, Optional, List
 
 
 class FloatPropertiesChannel(SideChannel):
@@ -10,15 +10,15 @@ class FloatPropertiesChannel(SideChannel):
     set_property, get_property and list_properties.
     """
 
-    def __init__(self):
-        self._float_properties = {}
+    def __init__(self) -> None:
+        self._float_properties: Dict[str, float] = {}
         super().__init__()
 
     @property
     def channel_type(self) -> int:
         return SideChannelType.FloatProperties
 
-    def on_message_received(self, data: bytearray) -> None:
+    def on_message_received(self, data: bytes) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that
@@ -52,7 +52,14 @@ class FloatPropertiesChannel(SideChannel):
         Returns a list of all the string identifiers of the properties
         currently present in the Unity Environment.
         """
-        return self._float_properties.keys()
+        return list(self._float_properties.keys())
+
+    def get_property_dict(self) -> Dict[str, float]:
+        """
+        Returns a copy of the float properties.
+        :return:
+        """
+        return dict(self._float_properties)
 
     @staticmethod
     def serialize_float_prop(key: str, value: float) -> bytearray:
@@ -64,7 +71,7 @@ class FloatPropertiesChannel(SideChannel):
         return result
 
     @staticmethod
-    def deserialize_float_prop(data: bytearray) -> Tuple[str, float]:
+    def deserialize_float_prop(data: bytes) -> Tuple[str, float]:
         offset = 0
         encoded_key_len = struct.unpack_from("<i", data, offset)[0]
         offset = offset + 4
