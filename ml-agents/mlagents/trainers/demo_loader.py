@@ -27,7 +27,6 @@ def make_demo_buffer(
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
-    agent_id: int = 0
     demo_process_buffer = ProcessingBuffer()
     demo_buffer = AgentBuffer()
     for idx, experience in enumerate(pair_infos):
@@ -65,11 +64,11 @@ def make_demo_buffer(
         demo_process_buffer[0]["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
             demo_process_buffer.append_to_update_buffer(
-                demo_buffer, fake_agent_id, batch_size=None, training_length=sequence_length
+                demo_buffer, 0, batch_size=None, training_length=sequence_length
             )
             demo_process_buffer.reset_local_buffers()
     demo_process_buffer.append_to_update_buffer(
-        demo_buffer, fake_agent_id, batch_size=None, training_length=sequence_length
+        demo_buffer, 0, batch_size=None, training_length=sequence_length
     )
     return demo_buffer
 
