@@ -160,7 +160,9 @@ class BrainInfo:
     @timed
     def from_agent_proto(
         worker_id: int,
-        agent_info_list: Collection[AgentInfoProto],
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
         brain_params: BrainParameters,
     ) -> "BrainInfo":
         """
@@ -202,7 +204,10 @@ class BrainInfo:
 
     @staticmethod
     def _process_visual_observations(
-        brain_params: BrainParameters, agent_info_list: Collection[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> List[np.ndarray]:
 
         visual_observation_protos: List[List[ObservationProto]] = []
@@ -231,7 +236,10 @@ class BrainInfo:
 
     @staticmethod
     def _process_vector_observations(
-        brain_params: BrainParameters, agent_info_list: Collection[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
             vector_obs = np.zeros(

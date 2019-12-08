@@ -44,4 +44,5 @@ disable =
 
     # This was causing false positives
     # Appears to be https://github.com/PyCQA/pylint/issues/2981
-    W0201
+    W0201,
+

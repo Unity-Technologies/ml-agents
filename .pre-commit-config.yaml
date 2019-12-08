@@ -9,13 +9,8 @@ repos:
                 .*_pb2_grpc.py
             )$
 
--   repo: https://github.com/chriselion/mypy
-    # This is a fork of mypy from the 0.750 release with two changes:
-    #  * adds its own pre-commit hook definition
-    #  * disables an assert that fires when a file is processed twice
-    # Disabling the assert is necessary to enable --namespace-packages
-    # which we need in turn to get some types recognized across files.
-    rev: 3d0b6164a9487a6c5cf9d144110b86600fd85e25
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.750
     hooks:
     -   id: mypy
         name: mypy-ml-agents
