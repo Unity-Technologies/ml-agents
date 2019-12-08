@@ -13,7 +13,7 @@ from mlagents.envs.communicator_objects.observation_pb2 import (
     NONE as COMPRESSION_TYPE_NONE,
     PNG as COMPRESSION_TYPE_PNG,
 )
-from mlagents.envs.communicator_objects.space_type_pb2 import SpaceTypeProto
+from mlagents.envs.communicator_objects.space_type_pb2 import discrete, continuous
 
 
 class MockCommunicator(Communicator):
@@ -44,7 +44,7 @@ class MockCommunicator(Communicator):
         bp = BrainParametersProto(
             vector_action_size=[2],
             vector_action_descriptions=["", ""],
-            vector_action_space_type=SpaceTypeProto.discrete if self.is_discrete else SpaceTypeProto.continuous,
+            vector_action_space_type=discrete if self.is_discrete else continuous,
             brain_name=self.brain_name,
             is_training=True,
         )

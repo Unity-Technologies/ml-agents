@@ -17,7 +17,7 @@ from .exception import (
     UnityTimeOutException,
 )
 
-from mlagents.envs.communicator_objects.command_pb2 import CommandProto
+from mlagents.envs.communicator_objects.command_pb2 import STEP, RESET
 from mlagents.envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents.envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents.envs.communicator_objects.agent_action_pb2 import AgentActionProto
@@ -567,13 +567,13 @@ class UnityEnvironment(BaseUnityEnvironment):
                     if value[b] is not None:
                         action.value = float(value[b][i])
                 rl_in.agent_actions[b].value.extend([action])
-                rl_in.command = CommandProto.STEP
+                rl_in.command = STEP
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
-        rl_in.command = CommandProto.RESET
+        rl_in.command = RESET
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 

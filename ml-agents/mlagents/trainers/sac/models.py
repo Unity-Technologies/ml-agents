@@ -57,7 +57,6 @@ class SACNetwork(LearningModel):
         self.q2_memory_in: Optional[tf.Tensor] = None
         self.q1_memory_out: Optional[tf.Tensor] = None
         self.q2_memory_out: Optional[tf.Tensor] = None
-        #self.action_holder: Optional[tf.Tensor] = None
         self.prev_action: Optional[tf.Tensor] = None
         self.action_masks: Optional[tf.Tensor] = None
         self.external_action_in: Optional[tf.Tensor] = None
@@ -66,7 +65,6 @@ class SACNetwork(LearningModel):
         self.deterministic_output: Optional[tf.Tensor] = None
         self.normalized_logprobs: Optional[tf.Tensor] = None
         self.action_probs: Optional[tf.Tensor] = None
-        #self.selected_actions: Optional[tf.Tensor] = None
         self.output_oh: Optional[tf.Tensor] = None
         self.output_pre: Optional[tf.Tensor] = None
 
