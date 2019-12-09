@@ -22,7 +22,7 @@ Environments. For more information on Virtual Environments and installation inst
 follow this [guide](Using-Virtual-Environment.md).
 
 Although we don't support Anaconda installation path of ML-Agents for Windows, the previous guide
-is still in the docs folder.  Please refer to [Windows Installation (Depricated)](Installtion-Windows.md).
+is still in the docs folder.  Please refer to [Windows Installation (Depricated)](Installation-Windows.md).
 
 ### Clone the ML-Agents Toolkit Repository
 
