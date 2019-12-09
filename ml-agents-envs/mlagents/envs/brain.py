@@ -6,7 +6,7 @@ from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.observation_pb2 import ObservationProto
 from mlagents.envs.timers import hierarchical_timer, timed
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
@@ -118,22 +118,6 @@ class BrainInfo:
         self.max_reached = max_reached
         self.agents = agents
         self.action_masks = action_mask
-
-    @staticmethod
-    def merge_memories(m1, m2, agents1, agents2):
-        if len(m1) == 0 and len(m2) != 0:
-            m1 = np.zeros((len(agents1), m2.shape[1]), dtype=np.float32)
-        elif len(m2) == 0 and len(m1) != 0:
-            m2 = np.zeros((len(agents2), m1.shape[1]), dtype=np.float32)
-        elif m2.shape[1] > m1.shape[1]:
-            new_m1 = np.zeros((m1.shape[0], m2.shape[1]), dtype=np.float32)
-            new_m1[0 : m1.shape[0], 0 : m1.shape[1]] = m1
-            return np.append(new_m1, m2, axis=0)
-        elif m1.shape[1] > m2.shape[1]:
-            new_m2 = np.zeros((m2.shape[0], m1.shape[1]), dtype=np.float32)
-            new_m2[0 : m2.shape[0], 0 : m2.shape[1]] = m2
-            return np.append(m1, new_m2, axis=0)
-        return np.append(m1, m2, axis=0)
 
     @staticmethod
     @timed
@@ -273,34 +257,6 @@ class BrainInfo:
                     f"An agent had a NaN observation for brain {brain_params.brain_name}"
                 )
         return vector_obs
-
-
-def safe_concat_lists(l1: Optional[List], l2: Optional[List]) -> Optional[List]:
-    if l1 is None:
-        if l2 is None:
-            return None
-        else:
-            return l2.copy()
-    else:
-        if l2 is None:
-            return l1.copy()
-        else:
-            copy = l1.copy()
-            copy.extend(l2)
-            return copy
-
-
-def safe_concat_np_ndarray(
-    a1: Optional[np.ndarray], a2: Optional[np.ndarray]
-) -> Optional[np.ndarray]:
-    if a1 is not None and a1.size != 0:
-        if a2 is not None and a2.size != 0:
-            return np.append(a1, a2, axis=0)
-        else:
-            return a1.copy()
-    elif a2 is not None and a2.size != 0:
-        return a2.copy()
-    return None
 
 
 # Renaming of dictionary of brain name to BrainInfo for clarity

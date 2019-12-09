@@ -20,7 +20,7 @@ from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.sampler_class import SamplerManager
 from mlagents.envs.exception import SamplerException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.side_channel.side_channel import SideChannel
 from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
@@ -374,7 +374,7 @@ def create_environment_factory(
     seed: Optional[int],
     start_port: int,
     env_args: Optional[List[str]],
-) -> Callable[[int, List[SideChannel]], BaseUnityEnvironment]:
+) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
         # Strip out executable extensions if passed
         env_path = (
