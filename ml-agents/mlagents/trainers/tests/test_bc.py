@@ -13,6 +13,7 @@ from mlagents.trainers.bc.offline_trainer import BCTrainer
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 
 
 @pytest.fixture
@@ -75,43 +76,33 @@ def test_bc_trainer_step(dummy_config, use_recurrent):
     assert trainer.step == 1
 
 
-def test_bc_trainer_add_proc_experiences(dummy_config):
-    trainer, env = create_bc_trainer(dummy_config)
-    # Test add_experiences
-    returned_braininfo = env.step()
-    brain_name = "Ball3DBrain"
-    trainer.add_experiences(
-        returned_braininfo[brain_name], returned_braininfo[brain_name], {}
-    )  # Take action outputs is not used
-    for agent_id in returned_braininfo[brain_name].agents:
-        assert trainer.evaluation_buffer[agent_id].last_brain_info is not None
-        assert trainer.episode_steps[agent_id] > 0
-        assert trainer.cumulative_rewards[agent_id] > 0
-    # Test process_experiences by setting done
-    returned_braininfo[brain_name].local_done = 12 * [True]
-    trainer.process_experiences(
-        returned_braininfo[brain_name], returned_braininfo[brain_name]
-    )
-    for agent_id in returned_braininfo[brain_name].agents:
-        assert trainer.episode_steps[agent_id] == 0
-        assert trainer.cumulative_rewards[agent_id] == 0
+def test_bc_trainer_process_trajectory(dummy_config):
+    trainer, _ = create_bc_trainer(dummy_config)
+    # Test process_trajectory
+    agent_id = "test_agent"
+    trajectory = make_fake_trajectory(length=15)
+    trainer.process_trajectory(trajectory)
+    assert len(trainer.stats["Environment/Cumulative Reward"]) > 0
+    # Assert that the done reset the steps
+    assert trainer.episode_steps[agent_id] == 0
+    assert trainer.cumulative_rewards[agent_id] == 0
+
+    # Create a trajectory without a done
+    trajectory = make_fake_trajectory(length=15, max_step_complete=True)
+    trainer.process_trajectory(trajectory)
+    assert trainer.episode_steps[agent_id] == 15
+    assert trainer.cumulative_rewards[agent_id] > 0
 
 
 def test_bc_trainer_end_episode(dummy_config):
-    trainer, env = create_bc_trainer(dummy_config)
-    returned_braininfo = env.step()
-    brain_name = "Ball3DBrain"
-    trainer.add_experiences(
-        returned_braininfo[brain_name], returned_braininfo[brain_name], {}
-    )  # Take action outputs is not used
-    trainer.process_experiences(
-        returned_braininfo[brain_name], returned_braininfo[brain_name]
-    )
+    trainer, _ = create_bc_trainer(dummy_config)
+    trajectory = make_fake_trajectory(length=15)
+    trainer.process_trajectory(trajectory)
     # Should set everything to 0
     trainer.end_episode()
-    for agent_id in returned_braininfo[brain_name].agents:
-        assert trainer.episode_steps[agent_id] == 0
-        assert trainer.cumulative_rewards[agent_id] == 0
+    agent_id = "test_agent"
+    assert trainer.episode_steps[agent_id] == 0
+    assert trainer.cumulative_rewards[agent_id] == 0
 
 
 @mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")

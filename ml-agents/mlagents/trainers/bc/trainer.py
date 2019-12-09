@@ -5,6 +5,7 @@
 import logging
 
 import numpy as np
+from collections import defaultdict
 
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -29,7 +30,7 @@ class BCTrainer(Trainer):
         super(BCTrainer, self).__init__(brain, trainer_parameters, training, run_id)
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.n_sequences = 1
-        self.cumulative_rewards = {}
+        self.cumulative_rewards = defaultdict(lambda: 0)
         self.episode_steps = {}
         self.stats = {
             "Losses/Cloning Loss": [],
@@ -52,37 +53,35 @@ class BCTrainer(Trainer):
         agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
 
         # Evaluate all reward functions
-        self.collected_rewards["environment"][agent_id] += np.sum(
+        self.cumulative_rewards[agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
+
+        # Increment episode steps
+        if agent_id not in self.episode_steps:
+            self.episode_steps[agent_id] = 0
+        else:
+            self.episode_steps[agent_id] += len(trajectory.steps)
 
         if trajectory.steps[-1].done:
             self.stats["Environment/Episode Length"].append(
                 self.episode_steps.get(agent_id, 0)
             )
             self.episode_steps[agent_id] = 0
-            for name, rewards in self.collected_rewards.items():
-                if name == "environment":
-                    self.cumulative_returns_since_policy_update.append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Cumulative Reward"].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.reward_buffer.appendleft(rewards.get(agent_id, 0))
-                    rewards[agent_id] = 0
-                else:
-                    self.stats[self.policy.reward_signals[name].stat_name].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    rewards[agent_id] = 0
+
+            self.cumulative_returns_since_policy_update.append(
+                self.cumulative_rewards.get(agent_id, 0)
+            )
+            self.stats["Environment/Cumulative Reward"].append(
+                self.cumulative_rewards.get(agent_id, 0)
+            )
+            self.cumulative_rewards[agent_id] = 0
 
     def end_episode(self):
         """
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
-        self.evaluation_buffer.reset_local_buffers()
         for agent_id in self.cumulative_rewards:
             self.cumulative_rewards[agent_id] = 0
         for agent_id in self.episode_steps:
