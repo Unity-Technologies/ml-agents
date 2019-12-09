@@ -108,7 +108,7 @@ import gym
 from baselines import deepq
 from baselines import logger
 
-from gym_unity.envs.unity_env import UnityEnv
+from gym_unity.envs import UnityEnv
 
 def main():
     env = UnityEnv("./envs/GridWorld", 0, use_visual=True, uint8_visual=True)
