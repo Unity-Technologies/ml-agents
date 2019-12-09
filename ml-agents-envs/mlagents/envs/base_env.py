@@ -15,13 +15,6 @@ A simulation steps corresponds to moving the simulation forward until at least
 one agent in the simulation sends its observations to Python again. Since
 Agents can request decisions at different frequencies, a simulation step does
 not necessarily correspond to a fixed simulation time increment.
-Changes from ML-Agents v0.11 :
- - Step now takes no arguments and returns None.
- - The data received from a step is no longer a dictionary of NamedTuple, the
-state data must now be retrieved manually from the environment object.
- - Reset does no longer take any input arguments.
- - Modifying properties of the environment besides actions is handled in
-SideChannels.
 """
 
 from abc import ABC, abstractmethod
