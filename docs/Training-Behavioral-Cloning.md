@@ -19,7 +19,7 @@ generated using the `Demonstration Recorder` as the dataset used to train a beha
 5. Modify the `demo_path` parameter in the file to reference the path to the
    demonstration file recorded in step 2. In our case this is:
    `./UnitySDK/Assets/Demonstrations/AgentRecording.demo`
-6. Launch `mlagent-learn`, providing `./config/offline_bc_config.yaml`
+6. Launch `mlagents-learn`, providing `./config/offline_bc_config.yaml`
    as the config parameter, and include the `--run-id` and `--train` as usual.
    Provide your environment as the `--env` parameter if it has been compiled
    as standalone, or omit to train in the editor.
