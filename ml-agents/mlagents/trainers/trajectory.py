@@ -2,7 +2,6 @@ from typing import List, NamedTuple
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.envs.exception import UnityException
 
 
 class AgentExperience(NamedTuple):
@@ -16,7 +15,6 @@ class AgentExperience(NamedTuple):
     prev_action: np.ndarray
     max_step: bool
     memory: np.ndarray
-    agent_id: str
 
 
 class SplitObservations(NamedTuple):
@@ -26,14 +24,7 @@ class SplitObservations(NamedTuple):
 
 class Trajectory(NamedTuple):
     steps: List[AgentExperience]
-
-
-class AgentProcessorException(UnityException):
-    """
-    Related to errors with the AgentProcessor.
-    """
-
-    pass
+    agent_id: str
 
 
 def split_obs(obs: List[np.ndarray]) -> SplitObservations:

@@ -248,7 +248,7 @@ class PPOPolicy(TFPolicy):
         return value_estimates
 
     def get_value_estimates(
-        self, experience: AgentExperience, done: bool
+        self, experience: AgentExperience, agent_id: str, done: bool
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
@@ -262,7 +262,6 @@ class PPOPolicy(TFPolicy):
             self.model.batch_size: 1,
             self.model.sequence_length: 1,
         }
-        agent_id = experience.agent_id
         vec_vis_obs = split_obs(experience.obs)
         for i in range(len(vec_vis_obs.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [vec_vis_obs.visual_observations[i]]

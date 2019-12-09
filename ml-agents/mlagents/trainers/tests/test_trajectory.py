@@ -50,7 +50,6 @@ def make_fake_trajectory(
             prev_action=prev_action,
             max_step=max_step,
             memory=memory,
-            agent_id=agent_id,
         )
         steps_list.append(experience)
     last_experience = AgentExperience(
@@ -64,10 +63,9 @@ def make_fake_trajectory(
         prev_action=prev_action,
         max_step=max_step_complete,
         memory=memory,
-        agent_id=agent_id,
     )
     steps_list.append(last_experience)
-    return Trajectory(steps=steps_list)
+    return Trajectory(steps=steps_list, agent_id=agent_id)
 
 
 @pytest.mark.parametrize("num_visual_obs", [0, 1, 2])

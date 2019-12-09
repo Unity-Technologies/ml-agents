@@ -142,7 +142,7 @@ class SACTrainer(RLTrainer):
         Takes a trajectory and processes it, putting it into the replay buffer.
         """
         last_step = trajectory.steps[-1]
-        agent_id = last_step.agent_id  # All the agents should have the same ID
+        agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         # Note that this agent buffer version of the traj. is one less than the len of the raw trajectory
         # for bootstrapping purposes.

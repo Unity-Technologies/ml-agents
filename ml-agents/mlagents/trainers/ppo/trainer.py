@@ -81,9 +81,7 @@ class PPOTrainer(RLTrainer):
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         """
-        agent_id = trajectory.steps[
-            -1
-        ].agent_id  # All the agents should have the same ID
+        agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         # Note that this agent buffer version of the traj. is one less than the len of the raw trajectory
         # for bootstrapping purposes.
@@ -102,6 +100,7 @@ class PPOTrainer(RLTrainer):
         value_next = self.policy.get_value_estimates(
             trajectory.steps[-1],
             trajectory.steps[-1].done and not trajectory.steps[-1].max_step,
+            agent_id,
         )
 
         # Evaluate all reward functions

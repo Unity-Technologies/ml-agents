@@ -118,7 +118,6 @@ class AgentProcessor:
                         action_mask=action_masks,
                         prev_action=prev_action,
                         max_step=max_step,
-                        agent_id=agent_id,
                         memory=memory,
                     )
                     # Add the value outputs if needed
@@ -135,7 +134,9 @@ class AgentProcessor:
                         next_obs.append(next_info.visual_observations[i][next_idx])
                     if self.policy.use_vec_obs:
                         next_obs.append(next_info.vector_observations[next_idx])
-                    trajectory = Trajectory(steps=self.experience_buffers[agent_id])
+                    trajectory = Trajectory(
+                        steps=self.experience_buffers[agent_id], agent_id=agent_id
+                    )
                     # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)
                     self.experience_buffers[agent_id] = []
