@@ -7,7 +7,7 @@ Unity Environments using our implementations of reinforcement learning or
 imitation learning.
 
 You can use the Python Low Level API to interact directly with your learning
-environment, and use it to develop new learning algorithms
+environment, and use it to develop new learning algorithms.
 
 ## mlagents.envs
 
