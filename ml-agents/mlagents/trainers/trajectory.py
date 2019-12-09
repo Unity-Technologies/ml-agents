@@ -9,13 +9,13 @@ class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     done: bool
-    action: np.array
+    action: np.ndarray
     action_probs: np.ndarray
     action_pre: np.ndarray  # TODO: Remove this
-    action_mask: np.array
+    action_mask: np.ndarray
     prev_action: np.ndarray
     max_step: bool
-    memory: np.array
+    memory: np.ndarray
     agent_id: str
 
 
