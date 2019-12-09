@@ -9,13 +9,12 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.rl_trainer import AllRewardsOutput
-from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.envs.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 
 
 @pytest.fixture
@@ -364,7 +363,7 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer.update_policy()
 
 
-def test_add_rewards_output(dummy_config):
+def test_process_trajectory(dummy_config):
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
@@ -376,29 +375,40 @@ def test_add_rewards_output(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
-    rewardsout = AllRewardsOutput(
-        reward_signals={
-            "extrinsic": RewardSignalResult(
-                scaled_reward=np.array([1.0, 1.0], dtype=np.float32),
-                unscaled_reward=np.array([1.0, 1.0], dtype=np.float32),
-            )
-        },
-        environment=np.array([1.0, 1.0], dtype=np.float32),
+    trajectory = make_fake_trajectory(
+        length=15, max_step_complete=True, vec_obs_size=1, num_vis_obs=0, action_space=2
     )
-    values = {"extrinsic": np.array([[2.0]], dtype=np.float32)}
-    agent_id = "123"
-    idx = 0
-    # make sure that we're grabbing from the next_idx for rewards. If we're not, the test will fail.
-    next_idx = 1
-    trainer.add_rewards_outputs(
-        rewardsout,
-        values=values,
-        agent_id=agent_id,
-        agent_idx=idx,
-        agent_next_idx=next_idx,
+    trainer.process_trajectory(trajectory)
+
+    # Check that trainer put trajectory in update buffer
+    assert trainer.update_buffer.num_experiences == 15
+
+    # Check that GAE worked
+    assert (
+        "advantages" in trainer.update_buffer
+        and "discounted_returns" in trainer.update_buffer
     )
-    assert trainer.processing_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
-    assert trainer.processing_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
+
+    # Check that the stats are being collected as episode isn't complete
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent > 0
+
+    # Add a terminal trajectory
+    trajectory = make_fake_trajectory(
+        length=15,
+        max_step_complete=False,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that the stats are reset as episode is finished
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent == 0
+    assert len(trainer.stats["Environment/Cumulative Reward"]) > 0
 
 
 if __name__ == "__main__":

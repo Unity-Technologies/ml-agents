@@ -25,10 +25,8 @@ def create_mock_policy():
     return mock_policy
 
 
-@mock.patch("mlagents.trainers.rl_trainer.RLTrainer.add_policy_outputs")
-@mock.patch("mlagents.trainers.rl_trainer.RLTrainer.add_rewards_outputs")
 @pytest.mark.parametrize("num_vis_obs", [0, 1, 2], ids=["vec", "1 viz", "2 viz"])
-def test_agentprocessor(add_policy_outputs, add_rewards_outputs, num_vis_obs):
+def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
     trainer = mock.Mock()
     processor = AgentProcessor(trainer, policy, time_horizon=5)

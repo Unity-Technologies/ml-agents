@@ -151,6 +151,7 @@ class PPOTrainer(RLTrainer):
             self.update_buffer, training_length=self.policy.sequence_length
         )
 
+        # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.steps[-1].done:
             self.stats["Environment/Episode Length"].append(
                 self.episode_steps.get(agent_id, 0)

@@ -10,10 +10,9 @@ import os
 
 import numpy as np
 
-from mlagents.envs.action_info import ActionInfoOutputs
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
-from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
+from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import (
     Trajectory,
     trajectory_to_agentbuffer,
@@ -136,30 +135,6 @@ class SACTrainer(RLTrainer):
             "Experience replay buffer has {} experiences.".format(
                 self.update_buffer.num_experiences
             )
-        )
-
-    def add_policy_outputs(
-        self, take_action_outputs: ActionInfoOutputs, agent_id: str, agent_idx: int
-    ) -> None:
-        """
-        Takes the output of the last action and store it into the training buffer.
-        """
-        actions = take_action_outputs["action"]
-        self.processing_buffer[agent_id]["actions"].append(actions[agent_idx])
-
-    def add_rewards_outputs(
-        self,
-        rewards_out: AllRewardsOutput,
-        values: Dict[str, np.ndarray],
-        agent_id: str,
-        agent_idx: int,
-        agent_next_idx: int,
-    ) -> None:
-        """
-        Takes the value output of the last action and store it into the training buffer.
-        """
-        self.processing_buffer[agent_id]["environment_rewards"].append(
-            rewards_out.environment[agent_next_idx]
         )
 
     def process_trajectory(self, trajectory: Trajectory) -> None:

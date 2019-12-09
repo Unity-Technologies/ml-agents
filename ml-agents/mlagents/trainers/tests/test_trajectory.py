@@ -3,6 +3,7 @@ import pytest
 
 from mlagents.trainers.trajectory import (
     AgentExperience,
+    BootstrapExperience,
     Trajectory,
     split_obs,
     trajectory_to_agentbuffer,
@@ -12,21 +13,30 @@ VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
 
 
-def make_fake_trajectory(length: int, max_step_complete: bool = False) -> Trajectory:
+def make_fake_trajectory(
+    length: int,
+    max_step_complete: bool = False,
+    vec_obs_size: int = VEC_OBS_SIZE,
+    num_vis_obs: int = 1,
+    action_space: int = ACTION_SIZE,
+) -> Trajectory:
     """
     Makes a fake trajectory of length length. If max_step_complete,
     the trajectory is terminated by a max step rather than a done.
     """
     steps_list = []
     for i in range(length - 1):
-        obs = [np.ones((84, 84, 3)), np.ones(VEC_OBS_SIZE)]
+        obs = []
+        for i in range(num_vis_obs):
+            obs.append(np.ones((84, 84, 3)))
+        obs.append(np.ones(vec_obs_size))
         reward = 1.0
         done = False
-        action = np.zeros(ACTION_SIZE)
-        action_probs = np.ones(ACTION_SIZE)
-        action_pre = np.zeros(ACTION_SIZE)
-        action_mask = np.ones(ACTION_SIZE)
-        prev_action = np.ones(ACTION_SIZE)
+        action = np.zeros(action_space)
+        action_probs = np.ones(action_space)
+        action_pre = np.zeros(action_space)
+        action_mask = np.ones(action_space)
+        prev_action = np.ones(action_space)
         max_step = False
         memory = np.ones(10)
         agent_id = "test_agent"
@@ -58,8 +68,8 @@ def make_fake_trajectory(length: int, max_step_complete: bool = False) -> Trajec
         agent_id=agent_id,
     )
     steps_list.append(last_experience)
-    bootstrap_step = experience
-    return Trajectory(steps=steps_list, bootstrap_step=bootstrap_step)
+    bootstrap_experience = BootstrapExperience(obs=obs, agent_id=agent_id)
+    return Trajectory(steps=steps_list, bootstrap_step=bootstrap_experience)
 
 
 @pytest.mark.parametrize("num_visual_obs", [0, 1, 2])

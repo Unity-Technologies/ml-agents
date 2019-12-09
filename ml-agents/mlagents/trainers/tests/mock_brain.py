@@ -141,7 +141,7 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
             )
         else:
             buffer["action_probs"].append(
-                np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
+                np.ones(buffer["actions"][0].shape, dtype=np.float32)
             )
         buffer["actions_pre"].append(
             np.ones(buffer["actions"][0].shape, dtype=np.float32)
