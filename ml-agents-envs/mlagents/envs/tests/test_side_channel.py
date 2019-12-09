@@ -69,6 +69,9 @@ def test_float_properties():
     val = sender.get_property("prop1")
     assert val == 1.0
 
+    assert receiver.get_property_dict() == {"prop1": 1.0, "prop2": 2.0}
+    assert receiver.get_property_dict() == sender.get_property_dict()
+
 
 def test_raw_bytes():
     sender = RawBytesChannel()

@@ -283,7 +283,5 @@ class Trainer(object):
         """
         raise UnityTrainerException("The update_model method was not implemented.")
 
-    def clear_update_buffer(self) -> None:
-        raise UnityTrainerException(
-            "The clear_update_buffer method was not implemented."
-        )
+    def advance(self) -> None:
+        pass
