@@ -3,7 +3,6 @@ import pytest
 
 from mlagents.trainers.trajectory import (
     AgentExperience,
-    BootstrapExperience,
     Trajectory,
     split_obs,
     trajectory_to_agentbuffer,
@@ -68,8 +67,7 @@ def make_fake_trajectory(
         agent_id=agent_id,
     )
     steps_list.append(last_experience)
-    bootstrap_experience = BootstrapExperience(obs=obs, agent_id=agent_id)
-    return Trajectory(steps=steps_list, bootstrap_step=bootstrap_experience)
+    return Trajectory(steps=steps_list)
 
 
 @pytest.mark.parametrize("num_visual_obs", [0, 1, 2])

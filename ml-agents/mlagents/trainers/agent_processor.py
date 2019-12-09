@@ -3,11 +3,7 @@ from collections import defaultdict
 import numpy as np
 
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.trajectory import (
-    Trajectory,
-    AgentExperience,
-    BootstrapExperience,
-)
+from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.envs.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.envs.action_info import ActionInfoOutputs
@@ -20,13 +16,13 @@ class AgentProcessor:
     One AgentProcessor should be created per agent group.
     """
 
-    def __init__(self, trainer: Trainer, policy: TFPolicy, time_horizon: int):
+    def __init__(self, trainer: Trainer, policy: TFPolicy, max_trajectory_length: int):
         """
         Create an AgentProcessor.
         :param trainer: Trainer instance connected to this AgentProcessor. Trainer is given trajectory
         when it is finished.
         :param policy: Policy instance associated with this AgentProcessor.
-        :param time_horizon: Maximum length of a trajectory before it is added to the trainer.
+        :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         """
         self.experience_buffers: Dict[str, List] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
@@ -39,7 +35,7 @@ class AgentProcessor:
         # that really should be gathered by the env-manager.
         self.policy = policy
         self.episode_steps: Dict[str, int] = {}
-        self.time_horizon = time_horizon
+        self.max_trajectory_length = max_trajectory_length
         self.trainer = trainer
 
     def __str__(self):
@@ -130,7 +126,8 @@ class AgentProcessor:
 
                 if (
                     next_info.local_done[next_idx]
-                    or len(self.experience_buffers[agent_id]) >= self.time_horizon
+                    or len(self.experience_buffers[agent_id])
+                    >= self.max_trajectory_length
                 ) and len(self.experience_buffers[agent_id]) > 0:
                     # Make next AgentExperience
                     next_obs = []
@@ -138,13 +135,7 @@ class AgentProcessor:
                         next_obs.append(next_info.visual_observations[i][next_idx])
                     if self.policy.use_vec_obs:
                         next_obs.append(next_info.vector_observations[next_idx])
-                    bootstrap_step = BootstrapExperience(
-                        obs=next_obs, agent_id=agent_id
-                    )
-                    trajectory = Trajectory(
-                        steps=self.experience_buffers[agent_id],
-                        bootstrap_step=bootstrap_step,
-                    )
+                    trajectory = Trajectory(steps=self.experience_buffers[agent_id])
                     # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)
                     self.experience_buffers[agent_id] = []

@@ -19,15 +19,6 @@ class AgentExperience(NamedTuple):
     agent_id: str
 
 
-class BootstrapExperience(NamedTuple):
-    """
-    A partial AgentExperience needed to bootstrap GAE.
-    """
-
-    obs: List[np.ndarray]
-    agent_id: str
-
-
 class SplitObservations(NamedTuple):
     vector_observations: np.ndarray
     visual_observations: List[np.ndarray]
@@ -35,7 +26,6 @@ class SplitObservations(NamedTuple):
 
 class Trajectory(NamedTuple):
     steps: List[AgentExperience]
-    bootstrap_step: BootstrapExperience  # The next step after the trajectory. Used for GAE.
 
 
 class AgentProcessorException(UnityException):
@@ -67,15 +57,15 @@ def trajectory_to_agentbuffer(trajectory: Trajectory) -> AgentBuffer:
     """
     Converts a Trajectory to an AgentBuffer
     :param trajectory: A Trajectory
-    :returns: AgentBuffer
+    :returns: AgentBuffer. Note that the length of the AgentBuffer will be one
+    less than the trajectory, as the next observation need to be populated from the last
+    step of the trajectory.
     """
     agent_buffer_trajectory = AgentBuffer()
-    for step, exp in enumerate(trajectory.steps):
+    for step, exp in enumerate(trajectory.steps[:-1]):
         vec_vis_obs = split_obs(exp.obs)
-        if step < len(trajectory.steps) - 1:
-            next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
-        else:
-            next_vec_vis_obs = split_obs(trajectory.bootstrap_step.obs)
+        next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
+
         for i, _ in enumerate(vec_vis_obs.visual_observations):
             agent_buffer_trajectory["visual_obs%d" % i].append(
                 vec_vis_obs.visual_observations[i]

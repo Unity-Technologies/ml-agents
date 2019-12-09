@@ -84,6 +84,9 @@ class PPOTrainer(RLTrainer):
         agent_id = trajectory.steps[
             -1
         ].agent_id  # All the agents should have the same ID
+
+        # Note that this agent buffer version of the traj. is one less than the len of the raw trajectory
+        # for bootstrapping purposes.
         agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
         # Update the normalization
         if self.is_training:
@@ -97,7 +100,7 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
 
         value_next = self.policy.get_value_estimates(
-            trajectory.bootstrap_step,
+            trajectory.steps[-1],
             trajectory.steps[-1].done and not trajectory.steps[-1].max_step,
         )
 

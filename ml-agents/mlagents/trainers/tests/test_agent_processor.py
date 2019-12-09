@@ -29,7 +29,7 @@ def create_mock_policy():
 def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
     trainer = mock.Mock()
-    processor = AgentProcessor(trainer, policy, time_horizon=5)
+    processor = AgentProcessor(trainer, policy, max_trajectory_length=5)
     fake_action_outputs = {
         "action": [0.1, 0.1],
         "value_heads": {},

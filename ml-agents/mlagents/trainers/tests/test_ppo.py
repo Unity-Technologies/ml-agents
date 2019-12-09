@@ -375,8 +375,13 @@ def test_process_trajectory(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    time_horizon = 15
     trajectory = make_fake_trajectory(
-        length=15, max_step_complete=True, vec_obs_size=1, num_vis_obs=0, action_space=2
+        length=time_horizon + 1,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
     )
     trainer.process_trajectory(trajectory)
 
@@ -396,7 +401,7 @@ def test_process_trajectory(dummy_config):
 
     # Add a terminal trajectory
     trajectory = make_fake_trajectory(
-        length=15,
+        length=time_horizon + 1,
         max_step_complete=False,
         vec_obs_size=1,
         num_vis_obs=0,

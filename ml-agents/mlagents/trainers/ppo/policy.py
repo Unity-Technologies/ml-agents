@@ -7,7 +7,7 @@ from mlagents.tf_utils import tf
 from mlagents.envs.timers import timed
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
-from mlagents.trainers.trajectory import BootstrapExperience, split_obs
+from mlagents.trainers.trajectory import split_obs, AgentExperience
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -248,11 +248,11 @@ class PPOPolicy(TFPolicy):
         return value_estimates
 
     def get_value_estimates(
-        self, experience: BootstrapExperience, done: bool
+        self, experience: AgentExperience, done: bool
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
-        :param experience: BootstrapExperience to be used for bootstrapping.
+        :param experience: AgentExperience to be used for bootstrapping.
         :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
         :return: The value estimate dictionary with key being the name of the reward signal and the value the
         corresponding value estimate.

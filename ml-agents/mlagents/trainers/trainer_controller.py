@@ -213,8 +213,10 @@ class TrainerController(object):
                             processor=AgentProcessor(
                                 trainer,
                                 trainer.policy,
-                                trainer.parameters["time_horizon"],
+                                trainer.parameters["time_horizon"] + 1,
                             )
+                            # Note: for a trajectory to be useful for bootstrapping, we need the next state.
+                            # Hence we have the processor give us 1 more than the time horizon.
                         )
                         self.managers[name] = agent_manager
                     last_brain_names = external_brains
