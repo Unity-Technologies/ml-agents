@@ -44,7 +44,7 @@ def reward_buff_sizes():
 
 @patch("mlagents.trainers.curriculum.Curriculum.get_config", return_value={})
 @patch("mlagents.trainers.curriculum.Curriculum.__init__", return_value=None)
-@patch("os.listdir", return_value=["Brain1.json", "Brain2.json"])
+@patch("os.listdir", return_value=["Brain1.json", "Brain2.test.json"])
 def test_init_meta_curriculum_happy_path(
     listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
 ):
@@ -53,9 +53,9 @@ def test_init_meta_curriculum_happy_path(
     assert len(meta_curriculum.brains_to_curriculums) == 2
 
     assert "Brain1" in meta_curriculum.brains_to_curriculums
-    assert "Brain2" in meta_curriculum.brains_to_curriculums
+    assert "Brain2.test" in meta_curriculum.brains_to_curriculums
 
-    calls = [call("test/Brain1.json"), call("test/Brain2.json")]
+    calls = [call("test/Brain1.json"), call("test/Brain2.test.json")]
 
     mock_curriculum_init.assert_has_calls(calls)
 
