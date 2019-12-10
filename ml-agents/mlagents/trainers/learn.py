@@ -59,6 +59,7 @@ class CommandLineOptions(NamedTuple):
 
 
 def get_version_string() -> str:
+    # pylint: disable=no-member
     return f""" Version information:\n
     ml-agents: {mlagents.trainers.__version__},
     ml-agents-envs: {mlagents.envs.__version__},
