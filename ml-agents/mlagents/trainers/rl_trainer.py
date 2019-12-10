@@ -43,7 +43,7 @@ class RLTrainer(Trainer):
         # of what reward signals are actually present.
         self.collected_rewards = {"environment": defaultdict(lambda: 0)}
         self.update_buffer = AgentBuffer()
-        self.episode_steps = {}
+        self.episode_steps = defaultdict(lambda: 0)
 
     def end_episode(self) -> None:
         """
@@ -54,6 +54,27 @@ class RLTrainer(Trainer):
             self.episode_steps[agent_id] = 0
         for rewards in self.collected_rewards.values():
             for agent_id in rewards:
+                rewards[agent_id] = 0
+
+    def _update_end_episode_stats(self, agent_id: str) -> None:
+        self.stats["Environment/Episode Length"].append(
+            self.episode_steps.get(agent_id, 0)
+        )
+        self.episode_steps[agent_id] = 0
+        for name, rewards in self.collected_rewards.items():
+            if name == "environment":
+                self.cumulative_returns_since_policy_update.append(
+                    rewards.get(agent_id, 0)
+                )
+                self.stats["Environment/Cumulative Reward"].append(
+                    rewards.get(agent_id, 0)
+                )
+                self.reward_buffer.appendleft(rewards.get(agent_id, 0))
+                rewards[agent_id] = 0
+            else:
+                self.stats[self.policy.reward_signals[name].stat_name].append(
+                    rewards.get(agent_id, 0)
+                )
                 rewards[agent_id] = 0
 
     def clear_update_buffer(self) -> None:

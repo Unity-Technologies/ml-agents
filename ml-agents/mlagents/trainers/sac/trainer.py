@@ -103,8 +103,6 @@ class SACTrainer(RLTrainer):
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        self.episode_steps = {}
-
     def save_model(self) -> None:
         """
         Saves the model. Overrides the default save_model since we want to save
@@ -144,6 +142,9 @@ class SACTrainer(RLTrainer):
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
+        # Add to episode_steps
+        self.episode_steps[agent_id] += len(trajectory.steps)
+
         agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
 
         # Update the normalization
@@ -158,9 +159,15 @@ class SACTrainer(RLTrainer):
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
-            agent_buffer_trajectory["{}_rewards".format(name)].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
+
+        # Get all value estimates for reporting purposes
+        value_estimates = self.policy.get_batched_value_estimates(
+            agent_buffer_trajectory
+        )
+        for name, v in value_estimates.items():
+            self.stats[self.policy.reward_signals[name].value_name].append(np.mean(v))
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
@@ -180,25 +187,7 @@ class SACTrainer(RLTrainer):
         )
 
         if trajectory.steps[-1].done:
-            self.stats["Environment/Episode Length"].append(
-                self.episode_steps.get(agent_id, 0)
-            )
-            self.episode_steps[agent_id] = 0
-            for name, rewards in self.collected_rewards.items():
-                if name == "environment":
-                    self.cumulative_returns_since_policy_update.append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Cumulative Reward"].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.reward_buffer.appendleft(rewards.get(agent_id, 0))
-                    rewards[agent_id] = 0
-                else:
-                    self.stats[self.policy.reward_signals[name].stat_name].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    rewards[agent_id] = 0
+            self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self) -> bool:
         """

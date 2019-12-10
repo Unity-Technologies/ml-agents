@@ -83,8 +83,9 @@ class PPOTrainer(RLTrainer):
         """
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
-        # Note that this agent buffer version of the traj. is one less than the len of the raw trajectory
-        # for bootstrapping purposes.
+        # Add to episode_steps
+        self.episode_steps[agent_id] += len(trajectory.steps)
+
         agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
         # Update the normalization
         if self.is_training:
@@ -96,6 +97,7 @@ class PPOTrainer(RLTrainer):
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
+            self.stats[self.policy.reward_signals[name].value_name].append(np.mean(v))
 
         value_next = self.policy.get_value_estimates(
             trajectory.next_obs,
@@ -155,25 +157,7 @@ class PPOTrainer(RLTrainer):
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.steps[-1].done:
-            self.stats["Environment/Episode Length"].append(
-                self.episode_steps.get(agent_id, 0)
-            )
-            self.episode_steps[agent_id] = 0
-            for name, rewards in self.collected_rewards.items():
-                if name == "environment":
-                    self.cumulative_returns_since_policy_update.append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.stats["Environment/Cumulative Reward"].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    self.reward_buffer.appendleft(rewards.get(agent_id, 0))
-                    rewards[agent_id] = 0
-                else:
-                    self.stats[self.policy.reward_signals[name].stat_name].append(
-                        rewards.get(agent_id, 0)
-                    )
-                    rewards[agent_id] = 0
+            self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self):
         """
