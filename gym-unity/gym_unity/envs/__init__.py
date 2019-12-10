@@ -4,6 +4,10 @@ import gym
 import numpy as np
 from mlagents.envs.environment import UnityEnvironment
 from gym import error, spaces
+from mlagents.envs.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 
 class UnityGymException(error.Error):
@@ -53,10 +57,9 @@ class UnityEnv(gym.Env):
         )
 
         # Take a single step so that the brain information will be sent over
-        if not self._env.brains:
+        if not self._env.get_agent_groups():
             self._env.step()
 
-        self.name = self._env.academy_name
         self.visual_obs = None
         self._current_state = None
         self._n_agents = None
@@ -67,18 +70,17 @@ class UnityEnv(gym.Env):
         self._allow_multiple_visual_obs = allow_multiple_visual_obs
 
         # Check brain configuration
-        if len(self._env.brains) != 1:
+        if len(self._env.get_agent_groups()) != 1:
             raise UnityGymException(
                 "There can only be one brain in a UnityEnvironment "
                 "if it is wrapped in a gym."
             )
-        if len(self._env.external_brain_names) <= 0:
-            raise UnityGymException(
-                "There are not any external brain in the UnityEnvironment"
-            )
 
-        self.brain_name = self._env.external_brain_names[0]
-        brain = self._env.brains[self.brain_name]
+        self.brain_name = self._env.get_agent_groups()[0]
+        self.name = self.brain_name
+        brain = group_spec_to_brain_parameters(
+            self.brain_name, self._env.get_agent_group_spec(self.brain_name)
+        )
 
         if use_visual and brain.number_visual_observations == 0:
             raise UnityGymException(
@@ -103,7 +105,11 @@ class UnityEnv(gym.Env):
             )
 
         # Check for number of agents in scene.
-        initial_info = self._env.reset()[self.brain_name]
+        self._env.reset()
+        initial_info = step_result_to_brain_info(
+            self._env.get_step_result(self.brain_name),
+            self._env.get_agent_group_spec(self.brain_name),
+        )
         self._check_agents(len(initial_info.agents))
 
         # Set observation and action spaces
@@ -153,7 +159,11 @@ class UnityEnv(gym.Env):
         Returns: observation (object/list): the initial observation of the
             space.
         """
-        info = self._env.reset()[self.brain_name]
+        self._env.reset()
+        info = step_result_to_brain_info(
+            self._env.get_step_result(self.brain_name),
+            self._env.get_agent_group_spec(self.brain_name),
+        )
         n_agents = len(info.agents)
         self._check_agents(n_agents)
         self.game_over = False
@@ -201,7 +211,13 @@ class UnityEnv(gym.Env):
                 # Translate action into list
                 action = self._flattener.lookup_action(action)
 
-        info = self._env.step(action)[self.brain_name]
+        spec = self._env.get_agent_group_spec(self.brain_name)
+        action = np.array(action).reshape((self._n_agents, spec.action_size))
+        self._env.set_actions(self.brain_name, action)
+        self._env.step()
+        info = step_result_to_brain_info(
+            self._env.get_step_result(self.brain_name), spec
+        )
         n_agents = len(info.agents)
         self._check_agents(n_agents)
         self._current_state = info

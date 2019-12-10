@@ -53,7 +53,7 @@ public class GridAgent : Agent
         // Prevents the agent from picking an action that would make it collide with a wall
         var positionX = (int)transform.position.x;
         var positionZ = (int)transform.position.z;
-        var maxPosition = (int)m_Academy.resetParameters["gridSize"] - 1;
+        var maxPosition = (int)m_Academy.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
 
         if (positionX == 0)
         {
@@ -162,7 +162,7 @@ public class GridAgent : Agent
             renderCamera.Render();
         }
 
-        if (!m_Academy.GetIsInference())
+        if (m_Academy.IsCommunicatorOn)
         {
             RequestDecision();
         }

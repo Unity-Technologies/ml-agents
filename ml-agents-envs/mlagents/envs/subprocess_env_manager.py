@@ -7,7 +7,7 @@ from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutExc
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import (
     TimerNode,
@@ -18,6 +18,16 @@ from mlagents.envs.timers import (
 )
 from mlagents.envs.brain import AllBrainInfo, BrainParameters
 from mlagents.envs.action_info import ActionInfo
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents.envs.side_channel.engine_configuration_channel import (
+    EngineConfigurationChannel,
+    EngineConfig,
+)
+from mlagents.envs.side_channel.side_channel import SideChannel
+from mlagents.envs.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 logger = logging.getLogger("mlagents.envs")
 
@@ -74,27 +84,53 @@ class UnityEnvWorker:
 
 
 def worker(
-    parent_conn: Connection, step_queue: Queue, pickled_env_factory: str, worker_id: int
+    parent_conn: Connection,
+    step_queue: Queue,
+    pickled_env_factory: str,
+    worker_id: int,
+    engine_configuration: EngineConfig,
 ) -> None:
-    env_factory: Callable[[int], UnityEnvironment] = cloudpickle.loads(
-        pickled_env_factory
+    env_factory: Callable[
+        [int, List[SideChannel]], UnityEnvironment
+    ] = cloudpickle.loads(pickled_env_factory)
+    shared_float_properties = FloatPropertiesChannel()
+    engine_configuration_channel = EngineConfigurationChannel()
+    engine_configuration_channel.set_configuration(engine_configuration)
+    env: BaseEnv = env_factory(
+        worker_id, [shared_float_properties, engine_configuration_channel]
     )
-    env: BaseUnityEnvironment = env_factory(worker_id)
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
+
+    def _generate_all_brain_info() -> AllBrainInfo:
+        all_brain_info = {}
+        for brain_name in env.get_agent_groups():
+            all_brain_info[brain_name] = step_result_to_brain_info(
+                env.get_step_result(brain_name),
+                env.get_agent_group_spec(brain_name),
+                worker_id,
+            )
+        return all_brain_info
+
+    def external_brains():
+        result = {}
+        for brain_name in env.get_agent_groups():
+            result[brain_name] = group_spec_to_brain_parameters(
+                brain_name, env.get_agent_group_spec(brain_name)
+            )
+        return result
 
     try:
         while True:
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
-                actions = {}
-                values = {}
                 for brain_name, action_info in all_action_info.items():
-                    actions[brain_name] = action_info.action
-                    values[brain_name] = action_info.value
-                all_brain_info = env.step(vector_action=actions, value=values)
+                    if len(action_info.action) != 0:
+                        env.set_actions(brain_name, action_info.action)
+                env.step()
+                all_brain_info = _generate_all_brain_info()
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -104,13 +140,18 @@ def worker(
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":
-                _send_response("external_brains", env.external_brains)
-            elif cmd.name == "reset_parameters":
-                _send_response("reset_parameters", env.reset_parameters)
+                _send_response("external_brains", external_brains())
+            elif cmd.name == "get_properties":
+                reset_params = {}
+                for k in shared_float_properties.list_properties():
+                    reset_params[k] = shared_float_properties.get_property(k)
+
+                _send_response("get_properties", reset_params)
             elif cmd.name == "reset":
-                all_brain_info = env.reset(
-                    cmd.payload[0], cmd.payload[1], cmd.payload[2]
-                )
+                for k, v in cmd.payload.items():
+                    shared_float_properties.set_property(k, v)
+                env.reset()
+                all_brain_info = _generate_all_brain_info()
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
                 break
@@ -131,21 +172,27 @@ def worker(
 
 class SubprocessEnvManager(EnvManager):
     def __init__(
-        self, env_factory: Callable[[int], BaseUnityEnvironment], n_env: int = 1
+        self,
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
+        engine_configuration: EngineConfig,
+        n_env: int = 1,
     ):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
         self.step_queue: Queue = Queue()
         for worker_idx in range(n_env):
             self.env_workers.append(
-                self.create_worker(worker_idx, self.step_queue, env_factory)
+                self.create_worker(
+                    worker_idx, self.step_queue, env_factory, engine_configuration
+                )
             )
 
     @staticmethod
     def create_worker(
         worker_id: int,
         step_queue: Queue,
-        env_factory: Callable[[int], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
+        engine_configuration: EngineConfig,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -153,7 +200,14 @@ class SubprocessEnvManager(EnvManager):
         # on Windows as of Python 3.6.
         pickled_env_factory = cloudpickle.dumps(env_factory)
         child_process = Process(
-            target=worker, args=(child_conn, step_queue, pickled_env_factory, worker_id)
+            target=worker,
+            args=(
+                child_conn,
+                step_queue,
+                pickled_env_factory,
+                worker_id,
+                engine_configuration,
+            ),
         )
         child_process.start()
         return UnityEnvWorker(child_process, worker_id, parent_conn)
@@ -192,19 +246,14 @@ class SubprocessEnvManager(EnvManager):
         step_infos = self._postprocess_steps(worker_steps)
         return step_infos
 
-    def reset(
-        self,
-        config: Optional[Dict] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> List[EnvironmentStep]:
+    def reset(self, config: Optional[Dict] = None) -> List[EnvironmentStep]:
         while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
                 step = self.step_queue.get_nowait()
                 self.env_workers[step.worker_id].waiting = False
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
-            ew.send("reset", (config, train_mode, custom_reset_parameters))
+            ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
             ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)
@@ -216,8 +265,8 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     @property
-    def reset_parameters(self) -> Dict[str, float]:
-        self.env_workers[0].send("reset_parameters")
+    def get_properties(self) -> Dict[str, float]:
+        self.env_workers[0].send("get_properties")
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:

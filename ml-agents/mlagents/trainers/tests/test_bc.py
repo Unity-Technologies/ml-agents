@@ -10,9 +10,14 @@ from mlagents.trainers.bc.models import BehavioralCloningModel
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.bc.offline_trainer import BCTrainer
-from mlagents.envs.environment import UnityEnvironment
+
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 
 @pytest.fixture
@@ -122,16 +127,20 @@ def test_bc_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
+    env.reset()
+    brain_name = env.get_agent_groups()[0]
+    brain_info = step_result_to_brain_info(
+        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
+    )
+    brain_params = group_spec_to_brain_parameters(
+        brain_name, env.get_agent_group_spec(brain_name)
+    )
 
     trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
+    model_path = brain_name
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = BCPolicy(
-        0, env.brains[env.external_brain_names[0]], trainer_parameters, False
-    )
+    policy = BCPolicy(0, brain_params, trainer_parameters, False)
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
 
@@ -174,7 +183,7 @@ def test_dc_bc_model():
                 model.dropout_rate: 1.0,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([2, 2]),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -195,9 +204,9 @@ def test_visual_dc_bc_model():
                 model.dropout_rate: 1.0,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.action_masks: np.ones([2, 2]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -217,8 +226,8 @@ def test_visual_cc_bc_model():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 

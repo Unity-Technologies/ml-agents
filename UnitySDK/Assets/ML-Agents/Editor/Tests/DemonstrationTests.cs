@@ -93,7 +93,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
             var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                 BindingFlags.Instance | BindingFlags.NonPublic);

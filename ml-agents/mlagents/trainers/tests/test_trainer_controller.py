@@ -51,7 +51,6 @@ def basic_trainer_controller():
         meta_curriculum=None,
         train=True,
         training_seed=99,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
@@ -70,7 +69,6 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         meta_curriculum=None,
         train=True,
         training_seed=seed,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
@@ -122,7 +120,6 @@ def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
     assert tc.advance.call_count == 11
     tc._export_graph.assert_not_called()
     tc._save_model.assert_not_called()
-    env_mock.close.assert_called_once()
 
 
 @patch.object(tf, "reset_default_graph")
@@ -140,7 +137,6 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
-    env_mock.close.assert_called_once()
     tc._save_model.assert_called_once()
 
 

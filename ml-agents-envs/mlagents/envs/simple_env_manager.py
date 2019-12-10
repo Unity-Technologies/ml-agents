@@ -1,35 +1,38 @@
-from typing import Any, Dict, List
+from typing import Dict, List
 
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
 from mlagents.envs.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import timed
 from mlagents.envs.action_info import ActionInfo
-from mlagents.envs.brain import BrainParameters
+from mlagents.envs.brain import BrainParameters, AllBrainInfo
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents.envs.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 
 class SimpleEnvManager(EnvManager):
     """
-    Simple implementation of the EnvManager interface that only handles one BaseUnityEnvironment at a time.
+    Simple implementation of the EnvManager interface that only handles one BaseEnv at a time.
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
     """
 
-    def __init__(self, env: BaseUnityEnvironment):
+    def __init__(self, env: BaseEnv, float_prop_channel: FloatPropertiesChannel):
         super().__init__()
+        self.shared_float_properties = float_prop_channel
         self.env = env
         self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
     def step(self) -> List[EnvironmentStep]:
-
         all_action_info = self._take_step(self.previous_step)
         self.previous_all_action_info = all_action_info
 
-        actions = {}
-        values = {}
         for brain_name, action_info in all_action_info.items():
-            actions[brain_name] = action_info.action
-            values[brain_name] = action_info.value
-        all_brain_info = self.env.step(vector_action=actions, value=values)
+            self.env.set_actions(brain_name, action_info.action)
+        self.env.step()
+        all_brain_info = self._generate_all_brain_info()
         step_brain_info = all_brain_info
 
         step_info = EnvironmentStep(
@@ -41,26 +44,31 @@ class SimpleEnvManager(EnvManager):
         return [step_info]
 
     def reset(
-        self,
-        config: Dict[str, float] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
+        self, config: Dict[str, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
-        all_brain_info = self.env.reset(
-            config=config,
-            train_mode=train_mode,
-            custom_reset_parameters=custom_reset_parameters,
-        )
+        if config is not None:
+            for k, v in config.items():
+                self.shared_float_properties.set_property(k, v)
+        self.env.reset()
+        all_brain_info = self._generate_all_brain_info()
         self.previous_step = EnvironmentStep(None, all_brain_info, None)
         return [self.previous_step]
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
-        return self.env.external_brains
+        result = {}
+        for brain_name in self.env.get_agent_groups():
+            result[brain_name] = group_spec_to_brain_parameters(
+                brain_name, self.env.get_agent_group_spec(brain_name)
+            )
+        return result
 
     @property
-    def reset_parameters(self) -> Dict[str, float]:
-        return self.env.reset_parameters
+    def get_properties(self) -> Dict[str, float]:
+        reset_params = {}
+        for k in self.shared_float_properties.list_properties():
+            reset_params[k] = self.shared_float_properties.get_property(k)
+        return reset_params
 
     def close(self):
         self.env.close()
@@ -73,3 +81,12 @@ class SimpleEnvManager(EnvManager):
                 brain_info
             )
         return all_action_info
+
+    def _generate_all_brain_info(self) -> AllBrainInfo:
+        all_brain_info = {}
+        for brain_name in self.env.get_agent_groups():
+            all_brain_info[brain_name] = step_result_to_brain_info(
+                self.env.get_step_result(brain_name),
+                self.env.get_agent_group_spec(brain_name),
+            )
+        return all_brain_info

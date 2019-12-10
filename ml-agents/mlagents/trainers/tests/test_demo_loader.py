@@ -13,7 +13,7 @@ def test_load_demo():
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo", 1)
-    assert len(demo_buffer.update_buffer["actions"]) == total_expected - 1
+    assert len(demo_buffer["actions"]) == total_expected - 1
 
 
 def test_load_demo_dir():
@@ -26,4 +26,4 @@ def test_load_demo_dir():
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test_demo_dir", 1)
-    assert len(demo_buffer.update_buffer["actions"]) == total_expected - 1
+    assert len(demo_buffer["actions"]) == total_expected - 1

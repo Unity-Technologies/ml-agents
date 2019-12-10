@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 
 from mlagents.envs.environment import UnityEnvironment
+from mlagents.envs.base_env import BatchedStepResult
 from mlagents.envs.exception import UnityEnvironmentException, UnityActionException
-from mlagents.envs.brain import BrainInfo
 from mlagents.envs.mock_communicator import MockCommunicator
 
 
@@ -22,7 +22,7 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.external_brain_names[0] == "RealFakeBrain"
+    assert env.get_agent_groups() == ["RealFakeBrain"]
     env.close()
 
 
@@ -33,24 +33,15 @@ def test_reset(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain = env.brains["RealFakeBrain"]
-    brain_info = env.reset()
+    spec = env.get_agent_group_spec("RealFakeBrain")
+    env.reset()
+    batched_step_result = env.get_step_result("RealFakeBrain")
     env.close()
-    assert isinstance(brain_info, dict)
-    assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
-    assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
-    assert isinstance(brain_info["RealFakeBrain"].vector_observations, np.ndarray)
-    assert (
-        len(brain_info["RealFakeBrain"].visual_observations)
-        == brain.number_visual_observations
-    )
-    assert len(brain_info["RealFakeBrain"].vector_observations) == len(
-        brain_info["RealFakeBrain"].agents
-    )
-    assert (
-        len(brain_info["RealFakeBrain"].vector_observations[0])
-        == brain.vector_observation_space_size
-    )
+    assert isinstance(batched_step_result, BatchedStepResult)
+    assert len(spec.observation_shapes) == len(batched_step_result.obs)
+    n_agents = batched_step_result.n_agents()
+    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+        assert (n_agents,) + shape == obs.shape
 
 
 @mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
@@ -60,40 +51,33 @@ def test_step(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain = env.brains["RealFakeBrain"]
-    brain_info = env.step()
-    brain_info = env.step(
-        [0]
-        * brain.vector_action_space_size[0]
-        * len(brain_info["RealFakeBrain"].agents)
+    spec = env.get_agent_group_spec("RealFakeBrain")
+    env.step()
+    batched_step_result = env.get_step_result("RealFakeBrain")
+    n_agents = batched_step_result.n_agents()
+    env.set_actions(
+        "RealFakeBrain", np.zeros((n_agents, spec.action_size), dtype=np.float32)
     )
+    env.step()
     with pytest.raises(UnityActionException):
-        env.step([0])
-    brain_info = env.step(
-        [-1]
-        * brain.vector_action_space_size[0]
-        * len(brain_info["RealFakeBrain"].agents)
+        env.set_actions(
+            "RealFakeBrain",
+            np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
+        )
+    batched_step_result = env.get_step_result("RealFakeBrain")
+    n_agents = batched_step_result.n_agents()
+    env.set_actions(
+        "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)
     )
-    env.close()
-    assert isinstance(brain_info, dict)
-    assert isinstance(brain_info["RealFakeBrain"], BrainInfo)
-    assert isinstance(brain_info["RealFakeBrain"].visual_observations, list)
-    assert isinstance(brain_info["RealFakeBrain"].vector_observations, np.ndarray)
-    assert (
-        len(brain_info["RealFakeBrain"].visual_observations)
-        == brain.number_visual_observations
-    )
-    assert len(brain_info["RealFakeBrain"].vector_observations) == len(
-        brain_info["RealFakeBrain"].agents
-    )
-    assert (
-        len(brain_info["RealFakeBrain"].vector_observations[0])
-        == brain.vector_observation_space_size
-    )
+    env.step()
 
-    print("\n\n\n\n\n\n\n" + str(brain_info["RealFakeBrain"].local_done))
-    assert not brain_info["RealFakeBrain"].local_done[0]
-    assert brain_info["RealFakeBrain"].local_done[2]
+    env.close()
+    assert isinstance(batched_step_result, BatchedStepResult)
+    assert len(spec.observation_shapes) == len(batched_step_result.obs)
+    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+        assert (n_agents,) + shape == obs.shape
+    assert not batched_step_result.done[0]
+    assert batched_step_result.done[2]
 
 
 @mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
