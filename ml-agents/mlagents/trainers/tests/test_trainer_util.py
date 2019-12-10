@@ -2,7 +2,7 @@ import pytest
 import yaml
 import os
 import io
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
 from mlagents.trainers.trainer_util import load_config, _load_config
