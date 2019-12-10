@@ -1,8 +1,16 @@
 import pytest
-from unittest.mock import patch, call
+from unittest.mock import patch, call, mock_open
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.exception import MetaCurriculumError
+
+from mlagents.trainers.tests.test_simple_rl import (
+    Simple1DEnvironment,
+    _check_environment_trains,
+    BRAIN_NAME,
+)
+from mlagents.trainers.tests.test_curriculum import dummy_curriculum_json_str
 
 
 class MetaCurriculumTest(MetaCurriculum):
@@ -133,3 +141,40 @@ def test_get_config(
     new_reset_parameters.update(more_reset_parameters)
 
     assert meta_curriculum.get_config() == new_reset_parameters
+
+
+META_CURRICULUM_CONFIG = """
+    default:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 5.0e-3
+        max_steps: 100
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 50
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+    """
+
+
+@pytest.mark.parametrize("curriculum_brain_name", [BRAIN_NAME, "WrongBrainName"])
+def test_simple_metacurriculum(curriculum_brain_name):
+    env = Simple1DEnvironment(use_discrete=False)
+    with patch(
+        "builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str
+    ):
+        curriculum = Curriculum("TestBrain.json")
+    mc = MetaCurriculumTest({curriculum_brain_name: curriculum})
+    _check_environment_trains(env, META_CURRICULUM_CONFIG, mc, -100.0)
