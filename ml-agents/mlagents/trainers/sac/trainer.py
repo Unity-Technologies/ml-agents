@@ -144,8 +144,6 @@ class SACTrainer(RLTrainer):
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
-        # Note that this agent buffer version of the traj. is one less than the len of the raw trajectory
-        # for bootstrapping purposes.
         agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
 
         # Update the normalization

@@ -135,7 +135,9 @@ class AgentProcessor:
                     if self.policy.use_vec_obs:
                         next_obs.append(next_info.vector_observations[next_idx])
                     trajectory = Trajectory(
-                        steps=self.experience_buffers[agent_id], agent_id=agent_id
+                        steps=self.experience_buffers[agent_id],
+                        agent_id=agent_id,
+                        next_obs=next_obs,
                     )
                     # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)

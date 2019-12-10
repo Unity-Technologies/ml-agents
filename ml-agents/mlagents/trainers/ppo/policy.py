@@ -1,13 +1,13 @@
 import logging
 import numpy as np
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
 from mlagents.envs.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
-from mlagents.trainers.trajectory import split_obs, AgentExperience
+from mlagents.trainers.trajectory import split_obs
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -248,7 +248,7 @@ class PPOPolicy(TFPolicy):
         return value_estimates
 
     def get_value_estimates(
-        self, experience: AgentExperience, agent_id: str, done: bool
+        self, next_obs: List[np.ndarray], agent_id: str, done: bool
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
@@ -262,7 +262,7 @@ class PPOPolicy(TFPolicy):
             self.model.batch_size: 1,
             self.model.sequence_length: 1,
         }
-        vec_vis_obs = split_obs(experience.obs)
+        vec_vis_obs = split_obs(next_obs)
         for i in range(len(vec_vis_obs.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [vec_vis_obs.visual_observations[i]]
 

@@ -24,6 +24,9 @@ class SplitObservations(NamedTuple):
 
 class Trajectory(NamedTuple):
     steps: List[AgentExperience]
+    next_obs: List[
+        np.ndarray
+    ]  # Observation following the trajectory, for bootstrapping
     agent_id: str
 
 
@@ -53,9 +56,12 @@ def trajectory_to_agentbuffer(trajectory: Trajectory) -> AgentBuffer:
     step of the trajectory.
     """
     agent_buffer_trajectory = AgentBuffer()
-    for step, exp in enumerate(trajectory.steps[:-1]):
+    for step, exp in enumerate(trajectory.steps):
         vec_vis_obs = split_obs(exp.obs)
-        next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
+        if step < len(trajectory.steps) - 1:
+            next_vec_vis_obs = split_obs(trajectory.steps[step + 1].obs)
+        else:
+            next_vec_vis_obs = split_obs(trajectory.next_obs)
 
         for i, _ in enumerate(vec_vis_obs.visual_observations):
             agent_buffer_trajectory["visual_obs%d" % i].append(
