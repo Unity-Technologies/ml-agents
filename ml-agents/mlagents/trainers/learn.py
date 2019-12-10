@@ -57,12 +57,11 @@ class CommandLineOptions(NamedTuple):
 
 
 def get_version_string() -> str:
-    return f""" Version information:\n
-    ml-agents: {mlagents.trainers.__version__},
-    ml-agents-envs: {mlagents.envs.__version__},
-    Communicator API: {UnityEnvironment.API_VERSION},
-    TensorFlow: {tf_utils.tf.__version__}
-"""
+    return f""" Version information:
+  ml-agents: {mlagents.trainers.__version__},
+  ml-agents-envs: {mlagents.envs.__version__},
+  Communicator API: {UnityEnvironment.API_VERSION},
+  TensorFlow: {tf_utils.tf.__version__}"""
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
@@ -171,7 +170,7 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
 
-    parser.add_argument("--version", action="version", version=get_version_string())
+    parser.add_argument("--version", action="version", version="")
 
     args = parser.parse_args(argv)
     return CommandLineOptions.from_argparse(args)
@@ -395,6 +394,7 @@ def main():
         )
     except Exception:
         print("\n\n\tUnity Technologies\n")
+    print(get_version_string())
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents.envs")
