@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, NamedTuple, Optional
-from mlagents.envs.brain import AllBrainInfo, BrainParameters
-from mlagents.envs.policy import Policy
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.action_info import ActionInfo
 
 
 class EnvironmentStep(NamedTuple):

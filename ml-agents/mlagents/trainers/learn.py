@@ -18,10 +18,10 @@ from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import SamplerException
+from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.trainers.exception import SamplerException
 from mlagents.envs.base_env import BaseEnv
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.side_channel.side_channel import SideChannel
 from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
 

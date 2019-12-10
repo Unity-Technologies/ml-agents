@@ -6,7 +6,7 @@ import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.trainer import UnityTrainerException
-from mlagents.envs.brain import CameraResolution
+from mlagents.trainers.brain import CameraResolution
 
 logger = logging.getLogger("mlagents.trainers")
 

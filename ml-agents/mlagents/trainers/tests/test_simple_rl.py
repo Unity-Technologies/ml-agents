@@ -15,9 +15,9 @@ from mlagents.envs.base_env import (
     BatchedStepResult,
     ActionType,
 )
-from mlagents.envs.brain import BrainParameters
-from mlagents.envs.simple_env_manager import SimpleEnvManager
-from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.simple_env_manager import SimpleEnvManager
+from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 BRAIN_NAME = __name__
