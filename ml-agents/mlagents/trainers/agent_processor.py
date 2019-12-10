@@ -4,9 +4,9 @@ import numpy as np
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 
 class AgentProcessor:
