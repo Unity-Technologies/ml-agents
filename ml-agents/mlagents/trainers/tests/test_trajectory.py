@@ -27,17 +27,17 @@ def make_fake_trajectory(
     for i in range(length - 1):
         obs = []
         for i in range(num_vis_obs):
-            obs.append(np.ones((84, 84, 3)))
-        obs.append(np.ones(vec_obs_size))
+            obs.append(np.ones((84, 84, 3), dtype=np.float32))
+        obs.append(np.ones(vec_obs_size, dtype=np.float32))
         reward = 1.0
         done = False
-        action = np.zeros(action_space)
-        action_probs = np.ones(action_space)
-        action_pre = np.zeros(action_space)
-        action_mask = np.ones(action_space)
-        prev_action = np.ones(action_space)
+        action = np.zeros(action_space, dtype=np.float32)
+        action_probs = np.ones(action_space, dtype=np.float32)
+        action_pre = np.zeros(action_space, dtype=np.float32)
+        action_mask = np.ones(action_space, dtype=np.float32)
+        prev_action = np.ones(action_space, dtype=np.float32)
         max_step = False
-        memory = np.ones(10)
+        memory = np.ones(10, dtype=np.float32)
         agent_id = "test_agent"
         experience = AgentExperience(
             obs=obs,
@@ -75,7 +75,7 @@ def test_split_obs(num_visual_obs, num_vec_obs):
     for i in range(num_visual_obs):
         obs.append(np.ones((84, 84, 3), dtype=np.float32))
     for i in range(num_vec_obs):
-        obs.append(np.ones(VEC_OBS_SIZE))
+        obs.append(np.ones(VEC_OBS_SIZE, dtype=np.float32))
     split_observations = split_obs(obs)
 
     if num_vec_obs == 1:

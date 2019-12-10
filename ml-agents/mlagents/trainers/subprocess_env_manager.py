@@ -7,8 +7,8 @@ from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutExc
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.env_manager import EnvManager, EnvironmentStep
+from mlagents.envs.base_env import BaseEnv
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import (
     TimerNode,
     timed,
@@ -16,14 +16,18 @@ from mlagents.envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.envs.brain import AllBrainInfo, BrainParameters
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.action_info import ActionInfo
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
 from mlagents.envs.side_channel.side_channel import SideChannel
+from mlagents.trainers.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 logger = logging.getLogger("mlagents.envs")
 
@@ -92,24 +96,41 @@ def worker(
     shared_float_properties = FloatPropertiesChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
-    env: BaseUnityEnvironment = env_factory(
+    env: BaseEnv = env_factory(
         worker_id, [shared_float_properties, engine_configuration_channel]
     )
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
 
+    def _generate_all_brain_info() -> AllBrainInfo:
+        all_brain_info = {}
+        for brain_name in env.get_agent_groups():
+            all_brain_info[brain_name] = step_result_to_brain_info(
+                env.get_step_result(brain_name),
+                env.get_agent_group_spec(brain_name),
+                worker_id,
+            )
+        return all_brain_info
+
+    def external_brains():
+        result = {}
+        for brain_name in env.get_agent_groups():
+            result[brain_name] = group_spec_to_brain_parameters(
+                brain_name, env.get_agent_group_spec(brain_name)
+            )
+        return result
+
     try:
         while True:
             cmd: EnvironmentCommand = parent_conn.recv()
             if cmd.name == "step":
                 all_action_info = cmd.payload
-                actions = {}
-                values = {}
                 for brain_name, action_info in all_action_info.items():
-                    actions[brain_name] = action_info.action
-                    values[brain_name] = action_info.value
-                all_brain_info = env.step(vector_action=actions, value=values)
+                    if len(action_info.action) != 0:
+                        env.set_actions(brain_name, action_info.action)
+                env.step()
+                all_brain_info = _generate_all_brain_info()
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
@@ -119,7 +140,7 @@ def worker(
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":
-                _send_response("external_brains", env.external_brains)
+                _send_response("external_brains", external_brains())
             elif cmd.name == "get_properties":
                 reset_params = {}
                 for k in shared_float_properties.list_properties():
@@ -129,7 +150,8 @@ def worker(
             elif cmd.name == "reset":
                 for k, v in cmd.payload.items():
                     shared_float_properties.set_property(k, v)
-                all_brain_info = env.reset()
+                env.reset()
+                all_brain_info = _generate_all_brain_info()
                 _send_response("reset", all_brain_info)
             elif cmd.name == "close":
                 break
@@ -151,7 +173,7 @@ def worker(
 class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
-        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
         engine_configuration: EngineConfig,
         n_env: int = 1,
     ):
@@ -169,7 +191,7 @@ class SubprocessEnvManager(EnvManager):
     def create_worker(
         worker_id: int,
         step_queue: Queue,
-        env_factory: Callable[[int, List[SideChannel]], BaseUnityEnvironment],
+        env_factory: Callable[[int, List[SideChannel]], BaseEnv],
         engine_configuration: EngineConfig,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()

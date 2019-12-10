@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 
@@ -31,5 +31,5 @@ class ExtrinsicRewardSignal(RewardSignal):
         return RewardSignalResult(scaled_reward, unscaled_reward)
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
-        env_rews = np.array(mini_batch["environment_rewards"])
+        env_rews = np.array(mini_batch["environment_rewards"], dtype=np.float32)
         return RewardSignalResult(self.strength * env_rews, env_rews)

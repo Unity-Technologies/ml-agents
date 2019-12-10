@@ -5,14 +5,14 @@ import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.envs.exception import UnityException
-from mlagents.envs.policy import Policy
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.action_info import ActionInfo
 from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import split_obs
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 
 
 logger = logging.getLogger("mlagents.trainers")

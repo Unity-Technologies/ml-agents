@@ -4,7 +4,7 @@ import os
 from typing import List, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.trainers.brain import BrainParameters, BrainInfo
 from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )

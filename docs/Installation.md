@@ -21,6 +21,9 @@ We now support a single mechanism for installing ML-Agents on Mac/Windows/Linux 
 Environments. For more information on Virtual Environments and installation instructions,
 follow this [guide](Using-Virtual-Environment.md).
 
+Although we don't support Anaconda installation path of ML-Agents for Windows, the previous guide
+is still in the docs folder.  Please refer to [Windows Installation (Deprecated)](Installation-Windows.md).
+
 ### Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.

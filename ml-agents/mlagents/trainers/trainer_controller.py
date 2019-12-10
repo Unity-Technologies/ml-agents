@@ -11,13 +11,12 @@ import numpy as np
 from mlagents.tf_utils import tf
 from time import time
 
-from mlagents.envs.env_manager import EnvironmentStep
-from mlagents.envs.env_manager import EnvManager
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
 )
-from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -237,7 +236,6 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
-        env_manager.close()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]

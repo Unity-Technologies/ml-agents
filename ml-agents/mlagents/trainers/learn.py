@@ -18,10 +18,10 @@ from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.exception import SamplerException
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.subprocess_env_manager import SubprocessEnvManager
+from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.trainers.exception import SamplerException
+from mlagents.envs.base_env import BaseEnv
+from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents.envs.side_channel.side_channel import SideChannel
 from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
 
@@ -59,12 +59,12 @@ class CommandLineOptions(NamedTuple):
 
 
 def get_version_string() -> str:
-    return f""" Version information:\n
-    ml-agents: {mlagents.trainers.__version__},
-    ml-agents-envs: {mlagents.envs.__version__},
-    Communicator API: {UnityEnvironment.API_VERSION},
-    TensorFlow: {tf_utils.tf.__version__}
-"""
+    # pylint: disable=no-member
+    return f""" Version information:
+  ml-agents: {mlagents.trainers.__version__},
+  ml-agents-envs: {mlagents.envs.__version__},
+  Communicator API: {UnityEnvironment.API_VERSION},
+  TensorFlow: {tf_utils.tf.__version__}"""
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
@@ -170,7 +170,7 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         "--cpu", default=False, action="store_true", help="Run with CPU only"
     )
 
-    parser.add_argument("--version", action="version", version=get_version_string())
+    parser.add_argument("--version", action="version", version="")
 
     eng_conf = parser.add_argument_group(title="Engine Configuration")
     eng_conf.add_argument(
@@ -265,9 +265,9 @@ def run_training(
         options.time_scale,
         options.target_frame_rate,
     )
-    env = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
+    env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(
-        curriculum_folder, env, options.lesson
+        curriculum_folder, env_manager, options.lesson
     )
     sampler_manager, resampling_interval = create_sampler_manager(
         options.sampler_file_path, run_seed
@@ -300,7 +300,10 @@ def run_training(
     # Signal that environment has been launched.
     process_queue.put(True)
     # Begin training
-    tc.start_learning(env)
+    try:
+        tc.start_learning(env_manager)
+    finally:
+        env_manager.close()
 
 
 def create_sampler_manager(sampler_file_path, run_seed=None):
@@ -371,7 +374,7 @@ def create_environment_factory(
     seed: Optional[int],
     start_port: int,
     env_args: Optional[List[str]],
-) -> Callable[[int, List[SideChannel]], BaseUnityEnvironment]:
+) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
         # Strip out executable extensions if passed
         env_path = (
@@ -435,6 +438,7 @@ def main():
         )
     except Exception:
         print("\n\n\tUnity Technologies\n")
+    print(get_version_string())
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents.envs")

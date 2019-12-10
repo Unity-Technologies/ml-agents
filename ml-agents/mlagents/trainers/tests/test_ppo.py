@@ -10,12 +10,16 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.trajectory import trajectory_to_agentbuffer
-from mlagents.envs.brain import BrainParameters
+from mlagents.trainers.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.trainers.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 
 @pytest.fixture
@@ -66,16 +70,20 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
+    env.reset()
+    brain_name = env.get_agent_groups()[0]
+    brain_info = step_result_to_brain_info(
+        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
+    )
+    brain_params = group_spec_to_brain_parameters(
+        brain_name, env.get_agent_group_spec(brain_name)
+    )
 
     trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
+    model_path = brain_name
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(
-        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
-    )
+    policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
     env.close()
