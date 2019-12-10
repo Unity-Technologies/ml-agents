@@ -8,11 +8,11 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 

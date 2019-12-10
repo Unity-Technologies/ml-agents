@@ -14,7 +14,7 @@ from mlagents.trainers.bc.offline_trainer import BCTrainer
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.brain_conversion_utils import (
+from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,
 )

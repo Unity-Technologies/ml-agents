@@ -6,7 +6,7 @@ import abc
 
 from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel

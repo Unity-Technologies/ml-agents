@@ -41,3 +41,11 @@ class MetaCurriculumError(TrainerError):
     """
 
     pass
+
+
+class SamplerException(TrainerError):
+    """
+    Related to errors with the sampler actions.
+    """
+
+    pass

@@ -8,7 +8,7 @@ from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents.envs.base_env import BaseEnv
-from mlagents.envs.env_manager import EnvManager, EnvironmentStep
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import (
     TimerNode,
     timed,
@@ -16,15 +16,15 @@ from mlagents.envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.envs.brain import AllBrainInfo, BrainParameters
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.action_info import ActionInfo
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
 from mlagents.envs.side_channel.side_channel import SideChannel
-from mlagents.envs.brain_conversion_utils import (
+from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,
 )
