@@ -107,7 +107,7 @@ def initialize_trainer(
         raise TrainerConfigError(
             f'The "trainer" key must be set in your trainer config for brain {brain_name} (or the default brain).'
         )
-    trainer_type = trainer_parameters.get["trainer"]
+    trainer_type = trainer_parameters["trainer"]
 
     if trainer_type == "offline_bc":
         trainer = OfflineBCTrainer(
