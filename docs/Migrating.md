@@ -22,6 +22,7 @@ The versions can be found in
 * If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D (and similarly for 2D). The settings, such as ray angles and detectable tags, are configured on the component now.
 RayPerception3D would contribute `(# of rays) * (# of tags + 2)` to the State Size in Behavior Parameters, but this is no longer necessary, so you should reduce the State Size by this amount.
 Making this change will require retraining your model, since the observations that RayPerceptionSensorComponent3D produces are different from the old behavior.
+* If you see messages such as `The type or namespace 'Barracuda' could not be found` or `The type or namespace 'Google' could not be found`, you will need to [install the Barracuda preview package](Installation.md#package-installation).
 
 ## Migrating from ML-Agents toolkit v0.10 to v0.11.0
 
