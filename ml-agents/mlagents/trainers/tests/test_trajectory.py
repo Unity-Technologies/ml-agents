@@ -65,7 +65,7 @@ def make_fake_trajectory(
         memory=memory,
     )
     steps_list.append(last_experience)
-    return Trajectory(steps=steps_list, agent_id=agent_id)
+    return Trajectory(steps=steps_list, agent_id=agent_id, next_obs=obs)
 
 
 @pytest.mark.parametrize("num_visual_obs", [0, 1, 2])
