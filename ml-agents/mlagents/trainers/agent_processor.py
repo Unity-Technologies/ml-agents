@@ -73,7 +73,7 @@ class AgentProcessor:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
         # Store the environment reward
-        tmp_environment = np.array(next_info.rewards)
+        tmp_environment = np.array(next_info.rewards, dtype=np.float32)
 
         for agent_id in next_info.agents:
             stored_info = self.last_brain_info.get(agent_id, None)
