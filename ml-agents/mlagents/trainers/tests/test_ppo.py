@@ -9,6 +9,7 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.trajectory import trajectory_to_agentbuffer
 from mlagents.envs.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
@@ -84,38 +85,47 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
 @mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0
-    )
-    env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
 
-    trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(
-        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
     )
-    run_out = policy.get_value_estimates(brain_info, 0, done=False)
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    policy = PPOPolicy(0, brain_params, dummy_config, False, False)
+    time_horizon = 15
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=False)
     for key, val in run_out.items():
         assert type(key) is str
         assert type(val) is float
 
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val == 0.0
 
     # Check if we ignore terminal states properly
     policy.reward_signals["extrinsic"].use_terminal_states = False
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val != 0.0
 
-    env.close()
+    agentbuffer = trajectory_to_agentbuffer(trajectory)
+    batched_values = policy.get_batched_value_estimates(agentbuffer)
+    for values in batched_values.values():
+        assert len(values) == 15
 
 
 def test_ppo_model_cc_vector():
@@ -377,7 +387,7 @@ def test_process_trajectory(dummy_config):
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
     time_horizon = 15
     trajectory = make_fake_trajectory(
-        length=time_horizon + 1,
+        length=time_horizon,
         max_step_complete=True,
         vec_obs_size=1,
         num_vis_obs=0,
