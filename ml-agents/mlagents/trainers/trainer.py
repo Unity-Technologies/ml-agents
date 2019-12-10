@@ -160,9 +160,7 @@ class Trainer(object):
         """
         self.trainer_metrics.write_training_metrics()
 
-    def write_summary(
-        self, global_step: int, delta_train_start: float, lesson_num: int = 0
-    ) -> None:
+    def write_summary(self, global_step: int, delta_train_start: float) -> None:
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
@@ -203,38 +201,6 @@ class Trainer(object):
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag="{}".format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
-            self.summary_writer.add_summary(summary, step)
-            self.summary_writer.flush()
-
-    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
-        """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            with tf.Session() as sess:
-                s_op = tf.summary.text(
-                    key,
-                    tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
-                    ),
-                )
-                s = sess.run(s_op)
-                self.summary_writer.add_summary(s, self.get_step)
-        except Exception:
-            LOGGER.info(
-                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
-            )
-            pass
 
     def add_experiences(
         self,
