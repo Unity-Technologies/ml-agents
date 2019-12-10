@@ -11,6 +11,14 @@ class TrainerError(Exception):
     pass
 
 
+class TrainerConfigError(Exception):
+    """
+    Any error related to the configuration of trainers in the ML-Agents Toolkit.
+    """
+
+    pass
+
+
 class CurriculumError(TrainerError):
     """
     Any error related to training with a curriculum.
