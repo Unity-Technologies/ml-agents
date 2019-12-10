@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 import numpy as np
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 

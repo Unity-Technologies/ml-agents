@@ -1,6 +1,6 @@
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainInfo
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
 import numpy as np
 

@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
