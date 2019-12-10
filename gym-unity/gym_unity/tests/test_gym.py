@@ -23,7 +23,6 @@ def test_gym_wrapper(mock_env):
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
     assert isinstance(done, (bool, np.bool_))
-    assert isinstance(info, dict)
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -42,7 +41,6 @@ def test_multi_agent(mock_env):
     assert isinstance(obs, list)
     assert isinstance(rew, list)
     assert isinstance(done, list)
-    assert isinstance(info, dict)
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -81,7 +79,6 @@ def test_gym_wrapper_visual(mock_env, use_uint8):
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
     assert isinstance(done, (bool, np.bool_))
-    assert isinstance(info, dict)
 
 
 # Helper methods
