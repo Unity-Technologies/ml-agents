@@ -11,6 +11,10 @@ class StatsWriter(abc.ABC):
     def write_stats(self, category: str, key: str, value: float, step: int) -> None:
         pass
 
+    @abc.abstractmethod
+    def write_text(self, category: str, text: str, step: int) -> None:
+        pass
+
 
 class TensorboardWriter(StatsWriter):
     def __init__(self):
@@ -23,6 +27,11 @@ class TensorboardWriter(StatsWriter):
         summary.value.add(tag="{}".format(key), simple_value=value)
         self.summary_writers[category].add_summary(summary, step)
         self.summary_writers[category].flush()
+
+    def write_text(self, category: str, text: str, step: int) -> None:
+        if category not in self.summary_writers:
+            self.summary_writers[category] = tf.summary.FileWriter(category)
+        self.summary_writers[category].add_summary(text, step)
 
 
 class StatsReporter:
@@ -37,14 +46,29 @@ class StatsReporter:
             lambda: defaultdict(list)
         )
 
-    def add_stat(self, key: str, value: float, category: str) -> None:
+    def add_stat(self, category: str, key: str, value: float) -> None:
         self.stats_dict[category][key].append(value)
 
-    @abc.abstractmethod
     def write_stats(self, category: str, step: int) -> None:
         for key in self.stats_dict[category]:
             if len(self.stats_dict[category][key]) > 0:
                 stat_mean = float(np.mean(self.stats_dict[category][key]))
-                self.stats_dict[category][key] = []
+                del self.stats_dict[category][key]
                 for writer in self.writers:
                     writer.write_stats(category, key, stat_mean, step)
+
+    def write_text(self, category: str, text: str, step: int) -> None:
+        for writer in self.writers:
+            writer.write_text(category, text, step)
+
+    def get_mean_stat(self, category: str, key: str) -> float:
+        return np.mean(self.stats_dict[category][key])
+
+    def get_std_stat(self, category: str, key: str) -> float:
+        return np.std(self.stats_dict[category][key])
+
+    def get_num_stats(self, category: str, key: str) -> int:
+        return len(self.stats_dict[category][key])
+
+
+stats_reporter = StatsReporter([TensorboardWriter()])

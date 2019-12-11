@@ -7,6 +7,7 @@ import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
+from mlagents.trainers import stats
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -57,8 +58,10 @@ class RLTrainer(Trainer):
                 rewards[agent_id] = 0
 
     def _update_end_episode_stats(self, agent_id: str) -> None:
-        self.stats["Environment/Episode Length"].append(
-            self.episode_steps.get(agent_id, 0)
+        stats.stats_reporter.add_stat(
+            self.summary_path,
+            "Environment/Episode Length",
+            self.episode_steps.get(agent_id, 0),
         )
         self.episode_steps[agent_id] = 0
         for name, rewards in self.collected_rewards.items():
@@ -66,14 +69,18 @@ class RLTrainer(Trainer):
                 self.cumulative_returns_since_policy_update.append(
                     rewards.get(agent_id, 0)
                 )
-                self.stats["Environment/Cumulative Reward"].append(
-                    rewards.get(agent_id, 0)
+                stats.stats_reporter.add_stat(
+                    self.summary_path,
+                    "Environment/Cumulative Reward",
+                    rewards.get(agent_id, 0),
                 )
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                self.stats[self.policy.reward_signals[name].stat_name].append(
-                    rewards.get(agent_id, 0)
+                stats.stats_reporter.add_stat(
+                    self.summary_path,
+                    self.policy.reward_signals[name].stat_name,
+                    rewards.get(agent_id, 0),
                 )
                 rewards[agent_id] = 0
 

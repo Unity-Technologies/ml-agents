@@ -11,6 +11,7 @@ from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, trajectory_to_agentbuffer
+from mlagents.trainers import stats
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -97,7 +98,11 @@ class PPOTrainer(RLTrainer):
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
-            self.stats[self.policy.reward_signals[name].value_name].append(np.mean(v))
+            stats.stats_reporter.add_stat(
+                self.summary_path,
+                self.policy.reward_signals[name].value_name,
+                np.mean(v),
+            )
 
         value_next = self.policy.get_value_estimates(
             trajectory.next_obs,
@@ -210,12 +215,12 @@ class PPOTrainer(RLTrainer):
                     batch_update_stats[stat_name].append(value)
 
         for stat, stat_list in batch_update_stats.items():
-            self.stats[stat].append(np.mean(stat_list))
+            stats.stats_reporter.add_stat(self.summary_path, stat, np.mean(stat_list))
 
         if self.policy.bc_module:
             update_stats = self.policy.bc_module.update()
             for stat, val in update_stats.items():
-                self.stats[stat].append(val)
+                stats.stats_reporter.add_stat(self.summary_path, stat, val)
         self.clear_update_buffer()
         self.trainer_metrics.end_policy_update()
 

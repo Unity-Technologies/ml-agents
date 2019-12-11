@@ -5,14 +5,14 @@ import os
 
 from mlagents.tf_utils import tf
 
-import numpy as np
-from collections import deque, defaultdict
+from collections import deque
 
 from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers import stats
 from mlagents.trainers.brain import BrainParameters, BrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -54,7 +54,6 @@ class Trainer(object):
             os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
-        self.stats: Dict[str, List] = defaultdict(list)
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
@@ -70,6 +69,29 @@ class Trainer(object):
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
+
+    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
+        """
+        Saves text to Tensorboard.
+        Note: Only works on tensorflow r1.2 or above.
+        :param key: The name of the text.
+        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+        """
+        try:
+            with tf.Session() as sess:
+                s_op = tf.summary.text(
+                    key,
+                    tf.convert_to_tensor(
+                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                    ),
+                )
+                s = sess.run(s_op)
+                stats.stats_recorder.write_text(self.summary_path, s, self.get_step)
+        except Exception:
+            LOGGER.info(
+                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
+            )
+            pass
 
     def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
@@ -177,8 +199,15 @@ class Trainer(object):
                 else "Not Training."
             )
             step = min(self.get_step, self.get_max_steps)
-            if len(self.stats["Environment/Cumulative Reward"]) > 0:
-                mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
+            if (
+                stats.stats_reporter.get_num_stats(
+                    self.summary_path, "Environment/Cumulative Reward"
+                )
+                > 0
+            ):
+                mean_reward = stats.stats_reporter.get_mean_stat(
+                    self.summary_path, "Environment/Cumulative Reward"
+                )
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
@@ -190,7 +219,9 @@ class Trainer(object):
                         step,
                         delta_train_start,
                         mean_reward,
-                        np.std(self.stats["Environment/Cumulative Reward"]),
+                        stats.stats_reporter.get_std_stat(
+                            self.summary_path, "Environment/Cumulative Reward"
+                        ),
                         is_training,
                     )
                 )
