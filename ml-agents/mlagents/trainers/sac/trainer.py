@@ -81,7 +81,9 @@ class SACTrainer(RLTrainer):
             if "save_replay_buffer" in trainer_parameters
             else False
         )
-        self.sac_policy = SACPolicy(seed, brain, trainer_parameters, self.is_training, load)
+        self.sac_policy = SACPolicy(
+            seed, brain, trainer_parameters, self.is_training, load
+        )
         self.policy = self.sac_policy
 
         # Load the replay buffer if load

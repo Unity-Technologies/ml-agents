@@ -22,7 +22,7 @@ class SimpleEnvManager(EnvManager):
         super().__init__()
         self.shared_float_properties = float_prop_channel
         self.env = env
-        self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
+        self.previous_step: EnvironmentStep = EnvironmentStep({}, {}, {})
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
     def step(self) -> List[EnvironmentStep]:
@@ -51,7 +51,7 @@ class SimpleEnvManager(EnvManager):
                 self.shared_float_properties.set_property(k, v)
         self.env.reset()
         all_brain_info = self._generate_all_brain_info()
-        self.previous_step = EnvironmentStep(None, all_brain_info, None)
+        self.previous_step = EnvironmentStep({}, all_brain_info, {})
         return [self.previous_step]
 
     @property

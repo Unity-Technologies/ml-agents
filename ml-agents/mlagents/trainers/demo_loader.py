@@ -154,5 +154,7 @@ def load_demonstration(
                     pos += next_pos
                 obs_decoded += 1
     if not brain_params:
-        raise RuntimeError(f"No BrainParameters found in demonstration file at {file_path}.")
+        raise RuntimeError(
+            f"No BrainParameters found in demonstration file at {file_path}."
+        )
     return brain_params, info_action_pairs, total_expected

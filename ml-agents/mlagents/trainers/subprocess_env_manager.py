@@ -53,7 +53,7 @@ class UnityEnvWorker:
         self.process = process
         self.worker_id = worker_id
         self.conn = conn
-        self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
+        self.previous_step: EnvironmentStep = EnvironmentStep({}, {}, {})
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 
@@ -253,7 +253,7 @@ class SubprocessEnvManager(EnvManager):
             ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
-            ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)
+            ew.previous_step = EnvironmentStep({}, ew.recv().payload, {})
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property

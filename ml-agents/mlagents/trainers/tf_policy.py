@@ -128,7 +128,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], None)
+            return ActionInfo([], [], {})
 
         agents_done = [
             agent
