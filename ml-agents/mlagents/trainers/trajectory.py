@@ -23,6 +23,13 @@ class SplitObservations(NamedTuple):
 
     @staticmethod
     def from_observations(obs: List[np.ndarray]) -> "SplitObservations":
+        """
+        Divides a List of numpy arrays into a SplitObservations NamedTuple.
+        This allows you to access the vector and visual observations directly,
+        without enumerating the list over and over.
+        :param obs: List of numpy arrays (observation)
+        :returns: A SplitObservations object.
+        """
         vis_obs_indices = []
         vec_obs_indices = []
         for index, observation in enumerate(obs):
