@@ -1,5 +1,6 @@
 using Barracuda;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -36,9 +37,6 @@ namespace MLAgents
         string m_BehaviorName = "My Behavior";
         [HideInInspector] [SerializeField]
         int m_TeamID = 0;
-        //[HideInInspector] [SerializeField]
-        //string m_BehaviorIdentifier;
-
         
         public BrainParameters brainParameters
         {
