@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MLAgents.RewardProvider;
 
 namespace MLAgents
 {
@@ -17,12 +18,16 @@ namespace MLAgents
         /// </summary>
         List<int[]> m_SensorShapes;
 
+        IRewardProvider m_RewardProvider;
+
         /// <inheritdoc />
         public RemotePolicy(
             BrainParameters brainParameters,
-            string behaviorName)
+            string behaviorName,
+            IRewardProvider rewardProvider)
         {
             m_BehaviorName = behaviorName;
+            m_RewardProvider = rewardProvider;
             var aca = Object.FindObjectOfType<Academy>();
             aca.LazyInitialization();
             m_Communicator = aca.Communicator;

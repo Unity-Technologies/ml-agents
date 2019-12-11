@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
+using MLAgents.RewardProvider;
 using MLAgents.Sensor;
 using UnityEngine.Serialization;
 
@@ -175,15 +176,7 @@ namespace MLAgents
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
-
-        /// Represents the reward the agent accumulated during the current step.
-        /// It is reset to 0 at the beginning of every step.
-        /// Should be set to a positive value when the agent performs a "good"
-        /// action that we wish to reinforce/reward, and set to a negative value
-        /// when the agent performs a "bad" action that we wish to punish/deter.
-        /// Additionally, the magnitude of the reward should not exceed 1.0
-        float m_Reward;
-
+        
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
 
@@ -246,6 +239,21 @@ namespace MLAgents
 
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
+
+        /// Represents the reward the agent accumulated during the current step.
+        /// It is reset to 0 at the beginning of every step.
+        /// Should be set to a positive value when the agent performs a "good"
+        /// action that we wish to reinforce/reward, and set to a negative value
+        /// when the agent performs a "bad" action that we wish to punish/deter.
+        /// Additionally, the magnitude of the reward should not exceed 1.0
+        IRewardProvider m_RewardProvider;
+        
+        /// <summary>
+        /// Here for ease of upgrading from the old reward system.
+        /// </summary>
+        LegacyRewardProvider m_LegacyRewardProvider;
+        
+
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -278,8 +286,9 @@ namespace MLAgents
             academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
+            InitializeRewardProvider();
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProvider);
             ResetData();
             InitializeAgent();
             InitializeSensors();
@@ -321,7 +330,7 @@ namespace MLAgents
         {
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProvider);
         }
 
         /// <summary>
@@ -340,11 +349,9 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            m_Reward = 0f;
-            if (m_Done)
-            {
-                m_CumulativeReward = 0f;
-            }
+            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+                "legacy method 'ResetReward' was called.");
+            m_LegacyRewardProvider.ResetReward(m_Done);
         }
 
         /// <summary>
@@ -354,8 +361,9 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            m_CumulativeReward += (reward - m_Reward);
-            m_Reward = reward;
+            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+                "legacy method 'SetReward' was called.");
+            m_LegacyRewardProvider.SetReward(reward);
         }
 
         /// <summary>
@@ -364,8 +372,9 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            m_Reward += increment;
-            m_CumulativeReward += increment;
+            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+                "legacy method 'AddReward' was called.");
+            m_LegacyRewardProvider.AddReward(increment);
         }
 
         /// <summary>
@@ -374,7 +383,9 @@ namespace MLAgents
         /// <returns>The step reward.</returns>
         public float GetReward()
         {
-            return m_Reward;
+            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+                "legacy method 'GetReward' was called.");
+            return m_LegacyRewardProvider.GetIncrementalReward();
         }
 
         /// <summary>
@@ -383,7 +394,9 @@ namespace MLAgents
         /// <returns>The episode reward.</returns>
         public float GetCumulativeReward()
         {
-            return m_CumulativeReward;
+            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+                "legacy method 'GetCumulativeReward' was called.");
+            return m_LegacyRewardProvider.GetCumulativeReward();
         }
 
         /// <summary>
@@ -551,6 +564,24 @@ namespace MLAgents
             m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
+        void InitializeRewardProvider()
+        {
+            // Look for a legacy reward provider.
+            var rewardProviderComponent = GetComponent<BaseRewardProviderComponent>();
+            if (rewardProviderComponent != null)
+            {
+                m_RewardProvider = rewardProviderComponent.GetRewardProvider();
+            }
+            
+            if (m_RewardProvider == null)
+            {
+                var legacyRewardProviderComponent = gameObject.AddComponent<LegacyRewardProviderComponent>();
+                m_RewardProvider = legacyRewardProviderComponent.GetTypedRewardProvider();
+            }
+            
+            m_LegacyRewardProvider = m_RewardProvider as LegacyRewardProvider;
+        }
+
         /// <summary>
         /// Sends the Agent info to the linked Brain.
         /// </summary>
@@ -573,11 +604,12 @@ namespace MLAgents
 
             // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
-            m_Info.reward = m_Reward;
+            m_Info.reward = m_RewardProvider.GetIncrementalReward();
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
+            // TODO(cgoy): Decouple Agent/Policy.
             m_Brain.RequestDecision(this);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)

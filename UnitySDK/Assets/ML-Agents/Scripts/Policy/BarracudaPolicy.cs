@@ -2,6 +2,7 @@ using UnityEngine;
 using Barracuda;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
+using MLAgents.RewardProvider;
 
 namespace MLAgents
 {
@@ -25,17 +26,20 @@ namespace MLAgents
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
         List<int[]> m_SensorShapes;
+        IRewardProvider m_RewardProvider;
 
         /// <inheritdoc />
         public BarracudaPolicy(
             BrainParameters brainParameters,
             NNModel model,
-            InferenceDevice inferenceDevice)
+            InferenceDevice inferenceDevice,
+            IRewardProvider rewardProvider)
         {
             var aca = Object.FindObjectOfType<Academy>();
             aca.LazyInitialization();
             var modelRunner = aca.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
+            m_RewardProvider = rewardProvider;
         }
 
         /// <inheritdoc />
