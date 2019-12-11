@@ -61,7 +61,7 @@ class BCTrainer(Trainer):
         else:
             self.episode_steps[agent_id] += len(trajectory.steps)
 
-        if trajectory.steps[-1].done:
+        if trajectory.done_reached:
             self.stats["Environment/Episode Length"].append(
                 self.episode_steps.get(agent_id, 0)
             )

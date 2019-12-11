@@ -182,7 +182,7 @@ class SACTrainer(RLTrainer):
             self.update_buffer, training_length=self.policy.sequence_length
         )
 
-        if trajectory.steps[-1].done:
+        if trajectory.done_reached:
             self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self) -> bool:

@@ -101,7 +101,7 @@ class PPOTrainer(RLTrainer):
 
         value_next = self.policy.get_value_estimates(
             trajectory.next_obs,
-            trajectory.steps[-1].done and not trajectory.steps[-1].max_step,
+            trajectory.done_reached and not trajectory.done_reached,
             agent_id,
         )
 
@@ -156,7 +156,7 @@ class PPOTrainer(RLTrainer):
         )
 
         # If this was a terminal trajectory, append stats and reset reward collection
-        if trajectory.steps[-1].done:
+        if trajectory.done_reached:
             self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self):

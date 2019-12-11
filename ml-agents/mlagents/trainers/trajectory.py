@@ -105,3 +105,17 @@ class Trajectory(NamedTuple):
             # Add the value outputs if needed
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
         return agent_buffer_trajectory
+
+    @property
+    def done_reached(self) -> bool:
+        """
+        Returns true if trajectory is terminated with a Done.
+        """
+        return self.steps[-1].done
+
+    @property
+    def max_step_reached(self) -> bool:
+        """
+        Returns true if trajectory was terminated because max steps was reached.
+        """
+        return self.steps[-1].max_step
