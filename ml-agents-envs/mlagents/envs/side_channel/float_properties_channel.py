@@ -54,7 +54,7 @@ class FloatPropertiesChannel(SideChannel):
         """
         return list(self._float_properties.keys())
 
-    def get_property_dict(self) -> Dict[str, float]:
+    def get_property_dict_copy(self) -> Dict[str, float]:
         """
         Returns a copy of the float properties.
         :return:
