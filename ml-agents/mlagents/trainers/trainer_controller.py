@@ -213,6 +213,7 @@ class TrainerController(object):
                                 trainer,
                                 trainer.policy,
                                 trainer.parameters["time_horizon"],
+                                trainer.summary_path,
                             )
                         )
                         self.managers[name] = agent_manager

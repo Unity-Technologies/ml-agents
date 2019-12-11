@@ -58,11 +58,6 @@ class RLTrainer(Trainer):
                 rewards[agent_id] = 0
 
     def _update_end_episode_stats(self, agent_id: str) -> None:
-        stats.stats_reporter.add_stat(
-            self.summary_path,
-            "Environment/Episode Length",
-            self.episode_steps.get(agent_id, 0),
-        )
         self.episode_steps[agent_id] = 0
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
