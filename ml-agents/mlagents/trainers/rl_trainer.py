@@ -264,3 +264,9 @@ class RLTrainer(Trainer):
         raise UnityTrainerException(
             "The add_rewards_outputs method was not implemented."
         )
+
+    def advance(self):
+        """
+        Eventually logic from TrainerController.advance() will live here.
+        """
+        self.clear_update_buffer()

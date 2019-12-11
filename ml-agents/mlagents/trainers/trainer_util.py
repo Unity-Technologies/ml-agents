@@ -96,7 +96,7 @@ def initialize_trainer(
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
 
-    trainer = None
+    trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
     if trainer_parameters["trainer"] == "offline_bc":
         trainer = OfflineBCTrainer(
             brain_parameters, trainer_parameters, train_model, load_model, seed, run_id

@@ -142,10 +142,7 @@ def worker(
             elif cmd.name == "external_brains":
                 _send_response("external_brains", external_brains())
             elif cmd.name == "get_properties":
-                reset_params = {}
-                for k in shared_float_properties.list_properties():
-                    reset_params[k] = shared_float_properties.get_property(k)
-
+                reset_params = shared_float_properties.get_property_dict_copy()
                 _send_response("get_properties", reset_params)
             elif cmd.name == "reset":
                 for k, v in cmd.payload.items():

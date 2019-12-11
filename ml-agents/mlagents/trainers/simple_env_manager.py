@@ -65,10 +65,7 @@ class SimpleEnvManager(EnvManager):
 
     @property
     def get_properties(self) -> Dict[str, float]:
-        reset_params = {}
-        for k in self.shared_float_properties.list_properties():
-            reset_params[k] = self.shared_float_properties.get_property(k)
-        return reset_params
+        return self.shared_float_properties.get_property_dict_copy()
 
     def close(self):
         self.env.close()

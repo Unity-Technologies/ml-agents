@@ -10,7 +10,7 @@ repos:
             )$
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.740
+    rev: v0.750
     hooks:
     -   id: mypy
         name: mypy-ml-agents
@@ -21,11 +21,11 @@ repos:
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs,  --namespace-packages]
     -   id: mypy
         name: mypy-gym-unity
         files: "gym-unity/.*"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs,  --namespace-packages]
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
