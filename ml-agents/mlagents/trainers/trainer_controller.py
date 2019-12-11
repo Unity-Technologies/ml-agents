@@ -199,7 +199,6 @@ class TrainerController(object):
                     except ValueError:
                         brain_name = name_behavior_id
 
-                    # This could be done with a try/except which may improve performance?
                     try:
                         trainer = self.trainers[brain_name]
                     except KeyError:
@@ -291,20 +290,20 @@ class TrainerController(object):
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
 
-                for behavior_identifier in self.brain_name_to_identifier[brain_name]:
-                    if step_info.has_actions_for_brain(behavior_identifier):
+                for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                    if step_info.has_actions_for_brain(name_behavior_id):
                         trainer.add_experiences(
-                            behavior_identifier,
-                            step_info.previous_all_brain_info[behavior_identifier],
-                            step_info.current_all_brain_info[behavior_identifier],
+                            name_behavior_id,
+                            step_info.previous_all_brain_info[name_behavior_id],
+                            step_info.current_all_brain_info[name_behavior_id],
                             step_info.brain_name_to_action_info[
-                                behavior_identifier
+                                name_behavior_id
                             ].outputs,
                         )
                         trainer.process_experiences(
-                            behavior_identifier,
-                            step_info.previous_all_brain_info[behavior_identifier],
-                            step_info.current_all_brain_info[behavior_identifier],
+                            name_behavior_id,
+                            step_info.previous_all_brain_info[name_behavior_id],
+                            step_info.current_all_brain_info[name_behavior_id],
                         )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
@@ -315,11 +314,9 @@ class TrainerController(object):
                     # Perform gradient descent with experience buffer
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
-                    for behavior_identifier in self.brain_name_to_identifier[
-                        brain_name
-                    ]:
+                    for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                         env.set_policy(
-                            behavior_identifier, trainer.get_policy(behavior_identifier)
+                            name_behavior_id, trainer.get_policy(name_behavior_id)
                         )
             else:
                 # Avoid memory leak during inference
