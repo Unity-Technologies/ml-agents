@@ -32,7 +32,7 @@ class AgentProcessor:
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
-        self.experience_buffers: Dict[str, List] = defaultdict(list)
+        self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
             ActionInfoOutputs
@@ -46,16 +46,6 @@ class AgentProcessor:
         self.max_trajectory_length = max_trajectory_length
         self.trainer = trainer
         self.stats_category = stats_category
-
-    def __str__(self):
-        return "local_buffers :\n{0}".format(
-            "\n".join(
-                [
-                    "\tagent {0} :{1}".format(k, str(self.experience_buffers[k]))
-                    for k in self.experience_buffers.keys()
-                ]
-            )
-        )
 
     def add_experiences(
         self,
@@ -86,7 +76,7 @@ class AgentProcessor:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
         # Store the environment reward
-        tmp_environment = np.array(next_info.rewards, dtype=np.float32)
+        tmp_environment_reward = np.array(next_info.rewards, dtype=np.float32)
 
         for agent_id in next_info.agents:
             stored_info = self.last_brain_info.get(agent_id, None)
@@ -122,7 +112,7 @@ class AgentProcessor:
 
                     experience = AgentExperience(
                         obs=obs,
-                        reward=tmp_environment[next_idx],
+                        reward=tmp_environment_reward[next_idx],
                         done=done,
                         action=action,
                         action_probs=action_probs,
@@ -134,7 +124,7 @@ class AgentProcessor:
                     )
                     # Add the value outputs if needed
                     self.experience_buffers[agent_id].append(experience)
-                    self.episode_rewards[agent_id] += tmp_environment[next_idx]
+                    self.episode_rewards[agent_id] += tmp_environment_reward[next_idx]
                 if (
                     next_info.local_done[next_idx]
                     or len(self.experience_buffers[agent_id])

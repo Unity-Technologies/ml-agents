@@ -10,8 +10,8 @@ import numpy as np
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers.trajectory import Trajectory, trajectory_to_agentbuffer
 from mlagents.trainers import stats
+from mlagents.trainers.trajectory import Trajectory
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -87,7 +87,7 @@ class PPOTrainer(RLTrainer):
         # Add to episode_steps
         self.episode_steps[agent_id] += len(trajectory.steps)
 
-        agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
+        agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
@@ -106,7 +106,7 @@ class PPOTrainer(RLTrainer):
 
         value_next = self.policy.get_value_estimates(
             trajectory.next_obs,
-            trajectory.steps[-1].done and not trajectory.steps[-1].max_step,
+            trajectory.done_reached and not trajectory.done_reached,
             agent_id,
         )
 
@@ -161,7 +161,7 @@ class PPOTrainer(RLTrainer):
         )
 
         # If this was a terminal trajectory, append stats and reset reward collection
-        if trajectory.steps[-1].done:
+        if trajectory.done_reached:
             self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self):

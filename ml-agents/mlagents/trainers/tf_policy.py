@@ -10,7 +10,7 @@ from mlagents.trainers.action_info import ActionInfo
 from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.trainers.trajectory import split_obs
+from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.brain import BrainInfo
 
@@ -350,7 +350,7 @@ class TFPolicy(Policy):
             self.model.batch_size: 1,
             self.model.sequence_length: 1,
         }
-        vec_vis_obs = split_obs(next_obs)
+        vec_vis_obs = SplitObservations.from_observations(next_obs)
         for i in range(len(vec_vis_obs.visual_observations)):
             feed_dict[self.model.visual_in[i]] = [vec_vis_obs.visual_observations[i]]
 

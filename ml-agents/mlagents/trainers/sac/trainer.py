@@ -13,12 +13,8 @@ import numpy as np
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers.trajectory import (
-    Trajectory,
-    trajectory_to_agentbuffer,
-    split_obs,
-)
 from mlagents.trainers import stats
+from mlagents.trainers.trajectory import Trajectory, SplitObservations
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -146,7 +142,7 @@ class SACTrainer(RLTrainer):
         # Add to episode_steps
         self.episode_steps[agent_id] += len(trajectory.steps)
 
-        agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
+        agent_buffer_trajectory = trajectory.to_agentbuffer()
 
         # Update the normalization
         if self.is_training:
@@ -177,7 +173,7 @@ class SACTrainer(RLTrainer):
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
         if last_step.max_step:
-            vec_vis_obs = split_obs(last_step.obs)
+            vec_vis_obs = SplitObservations.from_observations(last_step.obs)
             for i, obs in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs
             if vec_vis_obs.vector_observations.size > 1:
@@ -191,7 +187,7 @@ class SACTrainer(RLTrainer):
             self.update_buffer, training_length=self.policy.sequence_length
         )
 
-        if trajectory.steps[-1].done:
+        if trajectory.done_reached:
             self._update_end_episode_stats(agent_id)
 
     def is_ready_update(self) -> bool:
