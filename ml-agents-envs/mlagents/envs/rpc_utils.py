@@ -5,7 +5,7 @@ from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParamet
 import logging
 import numpy as np
 import io
-from typing import List, Tuple
+from typing import cast, List, Tuple, Union, Collection
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
@@ -26,9 +26,10 @@ def agent_group_spec_from_proto(
         if brain_param_proto.vector_action_space_type == 0
         else ActionType.CONTINUOUS
     )
-    action_shape = None
     if action_type == ActionType.CONTINUOUS:
-        action_shape = brain_param_proto.vector_action_size[0]
+        action_shape: Union[
+            int, Tuple[int, ...]
+        ] = brain_param_proto.vector_action_size[0]
     else:
         action_shape = tuple(brain_param_proto.vector_action_size)
     return AgentGroupSpec(observation_shape, action_type, action_shape)
@@ -57,7 +58,9 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 
 @timed
 def _process_visual_observation(
-    obs_index: int, shape: Tuple[int, int, int], agent_info_list: List[AgentInfoProto]
+    obs_index: int,
+    shape: Tuple[int, int, int],
+    agent_info_list: Collection[AgentInfoProto],
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
@@ -72,7 +75,7 @@ def _process_visual_observation(
 
 @timed
 def _process_vector_observation(
-    obs_index: int, shape: Tuple[int, ...], agent_info_list: List[AgentInfoProto]
+    obs_index: int, shape: Tuple[int, ...], agent_info_list: Collection[AgentInfoProto]
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0]), dtype=np.float32)
@@ -104,12 +107,13 @@ def _process_vector_observation(
 
 @timed
 def batched_step_result_from_proto(
-    agent_info_list: List[AgentInfoProto], group_spec: AgentGroupSpec
+    agent_info_list: Collection[AgentInfoProto], group_spec: AgentGroupSpec
 ) -> BatchedStepResult:
     obs_list: List[np.ndarray] = []
     for obs_index, obs_shape in enumerate(group_spec.observation_shapes):
         is_visual = len(obs_shape) == 3
         if is_visual:
+            obs_shape = cast(Tuple[int, int, int], obs_shape)
             obs_list += [
                 _process_visual_observation(obs_index, obs_shape, agent_info_list)
             ]

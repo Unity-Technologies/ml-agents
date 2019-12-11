@@ -372,8 +372,8 @@ class UnityEnvironment(BaseEnv):
             action = action.astype(expected_type)
 
         if agent_group not in self._env_actions:
-            self._env_actions[agent_group] = self._empty_action(
-                spec, self._env_state[agent_group].n_agents()
+            self._env_actions[agent_group] = spec.create_empty_action(
+                self._env_state[agent_group].n_agents()
             )
         try:
             index = np.where(self._env_state[agent_group].agent_id == agent_id)[0][0]

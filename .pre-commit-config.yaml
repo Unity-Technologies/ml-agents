@@ -15,7 +15,7 @@ repos:
     -   id: mypy
         name: mypy-ml-agents
         files: "ml-agents/.*"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs, --namespace-packages]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
     -   id: mypy
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
