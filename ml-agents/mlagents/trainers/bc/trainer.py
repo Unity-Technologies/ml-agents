@@ -6,8 +6,8 @@ import logging
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.agent_processor import ProcessingBuffer

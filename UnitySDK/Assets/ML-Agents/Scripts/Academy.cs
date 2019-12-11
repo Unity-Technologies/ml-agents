@@ -42,6 +42,7 @@ namespace MLAgents
     public abstract class Academy : MonoBehaviour
     {
         const string k_ApiVersion = "API-12";
+        const int k_EditorTrainingPort = 5004;
 
         /// Temporary storage for global gravity value
         /// Used to restore oringal value when deriving Academy modifies it
@@ -149,7 +150,7 @@ namespace MLAgents
         }
 
         // Used to read Python-provided environment parameters
-        static int ReadArgs()
+        static int ReadPortFromArgs()
         {
             var args = System.Environment.GetCommandLineArgs();
             var inputPort = "";
@@ -161,7 +162,22 @@ namespace MLAgents
                 }
             }
 
-            return int.Parse(inputPort);
+            try
+            {
+                return int.Parse(inputPort);
+            }
+            catch
+            {
+                // No arg passed, or malformed port number.
+#if UNITY_EDITOR
+                // Try connecting on the default editor port
+                return k_EditorTrainingPort;
+#else
+                // This is an executable, so we don't try to connect.
+                return -1;
+#endif
+            }
+
         }
 
         /// <summary>
@@ -179,23 +195,15 @@ namespace MLAgents
 
 
             // Try to launch the communicator by using the arguments passed at launch
-            try
+            var port = ReadPortFromArgs();
+            if (port > 0)
             {
                 Communicator = new RpcCommunicator(
                     new CommunicatorInitParameters
                     {
-                        port = ReadArgs()
-                    });
-            }
-            catch
-            {
-#if UNITY_EDITOR
-                Communicator = new RpcCommunicator(
-                    new CommunicatorInitParameters
-                    {
-                        port = 5004
-                    });
-#endif
+                        port = port
+                    }
+                );
             }
 
             if (Communicator != null)
@@ -217,6 +225,10 @@ namespace MLAgents
                 }
                 catch
                 {
+                    Debug.Log($"" +
+                        $"Couldn't connect to trainer on port {port} using API version {k_ApiVersion}. " +
+                        "Will perform inference instead."
+                    );
                     Communicator = null;
                 }
 

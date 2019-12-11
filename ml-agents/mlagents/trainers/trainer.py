@@ -8,12 +8,12 @@ from mlagents.tf_utils import tf
 import numpy as np
 from collections import deque, defaultdict
 
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.trainers.brain import BrainParameters, BrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
