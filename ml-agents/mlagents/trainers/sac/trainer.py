@@ -18,6 +18,7 @@ from mlagents.trainers.trajectory import (
     trajectory_to_agentbuffer,
     split_obs,
 )
+from mlagents.trainers import stats
 
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -167,7 +168,11 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
-            self.stats[self.policy.reward_signals[name].value_name].append(np.mean(v))
+            stats.stats_reporter.add_stat(
+                self.summary_path,
+                self.policy.reward_signals[name].value_name,
+                np.mean(v),
+            )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
@@ -259,12 +264,12 @@ class SACTrainer(RLTrainer):
             )
 
         for stat, stat_list in batch_update_stats.items():
-            self.stats[stat].append(np.mean(stat_list))
+            stats.stats_reporter.add_stat(self.summary_path, stat, np.mean(stat_list))
 
         if self.policy.bc_module:
             update_stats = self.policy.bc_module.update()
             for stat, val in update_stats.items():
-                self.stats[stat].append(val)
+                stats.stats_reporter.add_stat(self.summary_path, stat, val)
 
     def update_reward_signals(self) -> None:
         """
@@ -299,4 +304,4 @@ class SACTrainer(RLTrainer):
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
-            self.stats[stat].append(np.mean(stat_list))
+            stats.stats_reporter.add_stat(self.summary_path, stat, np.mean(stat_list))
