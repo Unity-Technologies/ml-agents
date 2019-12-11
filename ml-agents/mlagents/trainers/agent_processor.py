@@ -24,12 +24,12 @@ class AgentProcessor:
         :param policy: Policy instance associated with this AgentProcessor.
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
         """
-        self.experience_buffers: Dict[str, List] = defaultdict(list)
+        self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
             ActionInfoOutputs
         )
-        self.stats: Dict[str, List] = defaultdict(list)
+        self.stats: Dict[str, List[float]] = defaultdict(list)
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
         # that really should be gathered by the env-manager.
@@ -37,16 +37,6 @@ class AgentProcessor:
         self.episode_steps: Dict[str, int] = {}
         self.max_trajectory_length = max_trajectory_length
         self.trainer = trainer
-
-    def __str__(self):
-        return "local_buffers :\n{0}".format(
-            "\n".join(
-                [
-                    "\tagent {0} :{1}".format(k, str(self.experience_buffers[k]))
-                    for k in self.experience_buffers.keys()
-                ]
-            )
-        )
 
     def add_experiences(
         self,
@@ -73,7 +63,7 @@ class AgentProcessor:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
         # Store the environment reward
-        tmp_environment = np.array(next_info.rewards, dtype=np.float32)
+        tmp_environment_reward = np.array(next_info.rewards, dtype=np.float32)
 
         for agent_id in next_info.agents:
             stored_info = self.last_brain_info.get(agent_id, None)
@@ -110,7 +100,7 @@ class AgentProcessor:
                     values = stored_take_action_outputs["value_heads"]
                     experience = AgentExperience(
                         obs=obs,
-                        reward=tmp_environment[next_idx],
+                        reward=tmp_environment_reward[next_idx],
                         done=done,
                         action=action,
                         action_probs=action_probs,
