@@ -9,7 +9,6 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.trajectory import trajectory_to_agentbuffer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
@@ -130,7 +129,7 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         assert type(key) is str
         assert val != 0.0
 
-    agentbuffer = trajectory_to_agentbuffer(trajectory)
+    agentbuffer = trajectory.to_agentbuffer()
     batched_values = policy.get_batched_value_estimates(agentbuffer)
     for values in batched_values.values():
         assert len(values) == 15

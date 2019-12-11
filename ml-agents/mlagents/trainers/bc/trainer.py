@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from mlagents.trainers.bc.policy import BCPolicy
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trajectory import Trajectory, trajectory_to_agentbuffer
+from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.trainer import Trainer
 
 logger = logging.getLogger("mlagents.trainers")
@@ -48,7 +48,7 @@ class BCTrainer(Trainer):
         Processing involves calculating value and advantage targets for model updating step.
         """
         agent_id = trajectory.agent_id  # All the experiences should have the same ID
-        agent_buffer_trajectory = trajectory_to_agentbuffer(trajectory)
+        agent_buffer_trajectory = trajectory.to_agentbuffer()
 
         # Evaluate all reward functions
         self.cumulative_rewards[agent_id] += np.sum(

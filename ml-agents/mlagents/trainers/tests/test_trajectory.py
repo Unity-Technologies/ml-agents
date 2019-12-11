@@ -1,12 +1,7 @@
 import numpy as np
 import pytest
 
-from mlagents.trainers.trajectory import (
-    AgentExperience,
-    Trajectory,
-    split_obs,
-    trajectory_to_agentbuffer,
-)
+from mlagents.trainers.trajectory import AgentExperience, Trajectory, SplitObservations
 
 VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
@@ -76,7 +71,7 @@ def test_split_obs(num_visual_obs, num_vec_obs):
         obs.append(np.ones((84, 84, 3), dtype=np.float32))
     for i in range(num_vec_obs):
         obs.append(np.ones(VEC_OBS_SIZE, dtype=np.float32))
-    split_observations = split_obs(obs)
+    split_observations = SplitObservations.from_observations(obs)
 
     if num_vec_obs == 1:
         assert len(split_observations.vector_observations) == VEC_OBS_SIZE
@@ -106,7 +101,7 @@ def test_trajectory_to_agentbuffer():
     ]
     wanted_keys = set(wanted_keys)
     trajectory = make_fake_trajectory(length=length)
-    agentbuffer = trajectory_to_agentbuffer(trajectory)
+    agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()
     for key, field in agentbuffer.items():
         assert len(field) == length
