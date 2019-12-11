@@ -345,16 +345,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Resets the step reward and possibly the episode reward for the agent.
-        /// </summary>
-        public void ResetReward()
-        {
-            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
-                "legacy method 'ResetReward' was called.");
-            m_LegacyRewardProvider.ResetReward(m_Done);
-        }
-
-        /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
         /// reward accordingly.
         /// </summary>
@@ -980,7 +970,6 @@ namespace MLAgents
             if (m_RequestDecision)
             {
                 SendInfoToBrain();
-                ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
@@ -995,7 +984,6 @@ namespace MLAgents
             if (m_Terminate)
             {
                 m_Terminate = false;
-                ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;

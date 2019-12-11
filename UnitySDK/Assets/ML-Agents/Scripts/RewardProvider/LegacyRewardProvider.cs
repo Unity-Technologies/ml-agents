@@ -11,14 +11,16 @@ namespace MLAgents.RewardProvider
         
         public float GetIncrementalReward()
         {
-            return m_IncrementalReward;
+            var reward = m_IncrementalReward;
+            ResetReward();
+            return reward;
         }
         
         
         /// <summary>
         /// Resets the step reward and possibly the episode reward for the agent.
         /// </summary>
-        public void ResetReward(bool done = false)
+        void ResetReward(bool done = false)
         {
             m_IncrementalReward = 0f;
             if (done)
