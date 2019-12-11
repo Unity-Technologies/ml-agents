@@ -60,7 +60,9 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 def _process_visual_observation(
     obs_index: int,
     shape: Tuple[int, int, int],
-    agent_info_list: Collection[AgentInfoProto],
+    agent_info_list: Collection[
+        AgentInfoProto
+    ],  # pylint: disable=unsubscriptable-object
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
@@ -75,7 +77,11 @@ def _process_visual_observation(
 
 @timed
 def _process_vector_observation(
-    obs_index: int, shape: Tuple[int, ...], agent_info_list: Collection[AgentInfoProto]
+    obs_index: int,
+    shape: Tuple[int, ...],
+    agent_info_list: Collection[
+        AgentInfoProto
+    ],  # pylint: disable=unsubscriptable-object
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0]), dtype=np.float32)
@@ -107,7 +113,10 @@ def _process_vector_observation(
 
 @timed
 def batched_step_result_from_proto(
-    agent_info_list: Collection[AgentInfoProto], group_spec: AgentGroupSpec
+    agent_info_list: Collection[
+        AgentInfoProto
+    ],  # pylint: disable=unsubscriptable-object
+    group_spec: AgentGroupSpec,
 ) -> BatchedStepResult:
     obs_list: List[np.ndarray] = []
     for obs_index, obs_shape in enumerate(group_spec.observation_shapes):
