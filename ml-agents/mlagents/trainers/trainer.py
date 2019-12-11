@@ -57,7 +57,6 @@ class Trainer(object):
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
-        self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None
         self.step: int = 0
@@ -86,7 +85,7 @@ class Trainer(object):
                     ),
                 )
                 s = sess.run(s_op)
-                stats.stats_recorder.write_text(self.summary_path, s, self.get_step)
+                stats.stats_reporter.write_text(self.summary_path, s, self.get_step)
         except Exception:
             LOGGER.info(
                 "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
@@ -232,6 +231,7 @@ class Trainer(object):
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
+            stats.stats_reporter.write_stats(self.summary_path, step)
 
     def add_experiences(
         self,

@@ -53,9 +53,9 @@ class StatsReporter:
         for key in self.stats_dict[category]:
             if len(self.stats_dict[category][key]) > 0:
                 stat_mean = float(np.mean(self.stats_dict[category][key]))
-                del self.stats_dict[category][key]
                 for writer in self.writers:
                     writer.write_stats(category, key, stat_mean, step)
+        del self.stats_dict[category]
 
     def write_text(self, category: str, text: str, step: int) -> None:
         for writer in self.writers:
