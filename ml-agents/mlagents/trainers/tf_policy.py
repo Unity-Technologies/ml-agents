@@ -11,6 +11,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.components.reward_signals import RewardSignal
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -57,6 +58,7 @@ class TFPolicy(Policy):
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[str, np.ndarray] = {}
+        self.reward_signals: Dict[str, RewardSignal] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
