@@ -7,13 +7,13 @@ from mlagents.tf_utils import tf
 
 from collections import deque
 
-from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers import stats
-from mlagents.trainers.brain import BrainParameters, BrainInfo
+from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.brain import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -225,28 +225,11 @@ class Trainer(object):
                 )
             stats.stats_reporter.write_stats(self.summary_path, int(step))
 
-    def add_experiences(
-        self,
-        curr_info: BrainInfo,
-        next_info: BrainInfo,
-        take_action_outputs: ActionInfoOutputs,
-    ) -> None:
+    def process_trajectory(self, trajectory: Trajectory) -> None:
         """
-        Adds experiences to each agent's experience history.
-        :param curr_info: current BrainInfo.
-        :param next_info: next BrainInfo.
-        :param take_action_outputs: The outputs of the Policy's get_action method.
-        """
-        raise UnityTrainerException("The add_experiences method was not implemented.")
-
-    def process_experiences(
-        self, current_info: BrainInfo, next_info: BrainInfo
-    ) -> None:
-        """
-        Checks agent histories for processing condition, and processes them as necessary.
+        Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: current BrainInfo.
-        :param next_info: next BrainInfo.
+        :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         raise UnityTrainerException(
             "The process_experiences method was not implemented."
