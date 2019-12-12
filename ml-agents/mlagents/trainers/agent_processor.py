@@ -1,5 +1,5 @@
 from typing import List, Dict
-from collections import defaultdict
+from collections import defaultdict, Counter
 import numpy as np
 
 from mlagents.trainers.trainer import Trainer
@@ -41,7 +41,7 @@ class AgentProcessor:
         # We still need some info from the policy (memories, previous actions)
         # that really should be gathered by the env-manager.
         self.policy = policy
-        self.episode_steps: Dict[str, int] = defaultdict(lambda: 0)
+        self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(lambda: 0.0)
         self.max_trajectory_length = max_trajectory_length
         self.trainer = trainer
