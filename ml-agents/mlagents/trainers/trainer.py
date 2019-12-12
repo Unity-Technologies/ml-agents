@@ -60,7 +60,7 @@ class Trainer(object):
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None
+        self.policy: TFPolicy
         self.policies: Dict[str, TFPolicy] = {}
         self.step: int = 0
 
