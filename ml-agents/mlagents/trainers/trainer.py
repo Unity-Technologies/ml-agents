@@ -8,12 +8,12 @@ from mlagents.tf_utils import tf
 import numpy as np
 from collections import deque, defaultdict
 
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainParameters, BrainInfo
+from mlagents.trainers.brain import BrainParameters, BrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -60,7 +60,7 @@ class Trainer(object):
         )
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None
+        self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.step: int = 0
 
     def check_param_keys(self):
@@ -282,3 +282,6 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def advance(self) -> None:
+        pass

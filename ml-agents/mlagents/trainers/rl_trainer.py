@@ -3,8 +3,8 @@ import logging
 from typing import Dict, List, Any, NamedTuple
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -264,3 +264,9 @@ class RLTrainer(Trainer):
         raise UnityTrainerException(
             "The add_rewards_outputs method was not implemented."
         )
+
+    def advance(self):
+        """
+        Eventually logic from TrainerController.advance() will live here.
+        """
+        self.clear_update_buffer()

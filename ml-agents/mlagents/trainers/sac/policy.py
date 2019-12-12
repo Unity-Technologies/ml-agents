@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
-from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagents.trainers.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -59,18 +59,18 @@ class SACPolicy(TFPolicy):
         with self.graph.as_default():
             # Create pretrainer if needed
             self.bc_module: Optional[BCModule] = None
-            if "pretraining" in trainer_params:
-                BCModule.check_config(trainer_params["pretraining"])
+            if "behavioral_cloning" in trainer_params:
+                BCModule.check_config(trainer_params["behavioral_cloning"])
                 self.bc_module = BCModule(
                     self,
                     policy_learning_rate=trainer_params["learning_rate"],
                     default_batch_size=trainer_params["batch_size"],
                     default_num_epoch=1,
                     samples_per_update=trainer_params["batch_size"],
-                    **trainer_params["pretraining"],
+                    **trainer_params["behavioral_cloning"],
                 )
                 # SAC-specific setting - we don't want to do a whole epoch each update!
-                if "samples_per_update" in trainer_params["pretraining"]:
+                if "samples_per_update" in trainer_params["behavioral_cloning"]:
                     logger.warning(
                         "Pretraining: Samples Per Update is not a valid setting for SAC."
                     )

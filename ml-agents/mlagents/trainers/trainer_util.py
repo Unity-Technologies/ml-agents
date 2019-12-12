@@ -3,11 +3,10 @@ from typing import Any, Dict, TextIO
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.trainer import Trainer
-from mlagents.envs.brain import BrainParameters
+from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 
 
 class TrainerFactory:
@@ -102,7 +101,7 @@ def initialize_trainer(
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
 
-    trainer = None
+    trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
     if "trainer" not in trainer_parameters:
         raise TrainerConfigError(
             f'The "trainer" key must be set in your trainer config for brain {brain_name} (or the default brain).'
@@ -110,8 +109,10 @@ def initialize_trainer(
     trainer_type = trainer_parameters["trainer"]
 
     if trainer_type == "offline_bc":
-        trainer = OfflineBCTrainer(
-            brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
+        raise UnityTrainerException(
+            "The offline_bc trainer has been removed. To train with demonstrations, "
+            "please use a PPO or SAC trainer with the GAIL Reward Signal and/or the "
+            "Behavioral Cloning feature enabled."
         )
     elif trainer_type == "ppo":
         trainer = PPOTrainer(

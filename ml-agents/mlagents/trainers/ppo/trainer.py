@@ -8,11 +8,11 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -67,13 +67,14 @@ class PPOTrainer(RLTrainer):
         self.check_param_keys()
 
         if multi_gpu and len(get_devices()) > 1:
-            self.policy = MultiGpuPPOPolicy(
+            self.ppo_policy = MultiGpuPPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
             )
         else:
-            self.policy = PPOPolicy(
+            self.ppo_policy = PPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
             )
+        self.policy = self.ppo_policy
 
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
@@ -104,7 +105,7 @@ class PPOTrainer(RLTrainer):
                 else:
                     bootstrapping_info = next_info
                     idx = l
-                value_next = self.policy.get_value_estimates(
+                value_next = self.ppo_policy.get_value_estimates(
                     bootstrapping_info,
                     idx,
                     next_info.local_done[l] and not next_info.max_reached[l],

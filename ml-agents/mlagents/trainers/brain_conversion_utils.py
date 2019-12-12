@@ -1,4 +1,4 @@
-from mlagents.envs.brain import BrainInfo, BrainParameters, CameraResolution
+from mlagents.trainers.brain import BrainInfo, BrainParameters, CameraResolution
 from mlagents.envs.base_env import BatchedStepResult, AgentGroupSpec
 from mlagents.envs.exception import UnityEnvironmentException
 import numpy as np

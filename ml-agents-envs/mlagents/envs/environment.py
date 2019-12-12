@@ -16,13 +16,14 @@ from mlagents.envs.base_env import (
     AgentId,
 )
 from mlagents.envs.timers import timed, hierarchical_timer
-from .exception import (
+from mlagents.envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
 )
 
+from mlagents.envs.communicator_objects.command_pb2 import STEP, RESET
 from mlagents.envs.rpc_utils import (
     agent_group_spec_from_proto,
     batched_step_result_from_proto,
@@ -114,7 +115,8 @@ class UnityEnvironment(BaseEnv):
             self.executable_launcher(file_name, docker_training, no_graphics, args)
         else:
             logger.info(
-                "Start training by pressing the Play button in the Unity Editor."
+                f"Listening on port {self.port}. "
+                f"Start training by pressing the Play button in the Unity Editor."
             )
         self._loaded = True
 
@@ -130,9 +132,10 @@ class UnityEnvironment(BaseEnv):
         if self._unity_version != self._version_:
             self._close()
             raise UnityEnvironmentException(
-                "The API number is not compatible between Unity and python. Python API : {0}, Unity API : "
-                "{1}.\nPlease go to https://github.com/Unity-Technologies/ml-agents to download the latest version "
-                "of ML-Agents.".format(self._version_, self._unity_version)
+                f"The API number is not compatible between Unity and python. "
+                f"Python API: {self._version_}, Unity API: {self._unity_version}.\n"
+                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release"
+                f"to download the latest version of ML-Agents."
             )
         self._env_state: Dict[str, BatchedStepResult] = {}
         self._env_specs: Dict[str, AgentGroupSpec] = {}
@@ -369,8 +372,8 @@ class UnityEnvironment(BaseEnv):
             action = action.astype(expected_type)
 
         if agent_group not in self._env_actions:
-            self._env_actions[agent_group] = self._empty_action(
-                spec, self._env_state[agent_group].n_agents()
+            self._env_actions[agent_group] = spec.create_empty_action(
+                self._env_state[agent_group].n_agents()
             )
         try:
             index = np.where(self._env_state[agent_group].agent_id == agent_id)[0][0]
@@ -440,7 +443,7 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[int, SideChannel], data: bytearray
+        side_channels: Dict[int, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
@@ -491,13 +494,13 @@ class UnityEnvironment(BaseEnv):
             for i in range(n_agents):
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
-                rl_in.command = 0
+                rl_in.command = STEP
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
-        rl_in.command = 1
+        rl_in.command = RESET
         rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 

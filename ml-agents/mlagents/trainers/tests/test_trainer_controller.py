@@ -6,8 +6,8 @@ import yaml
 import pytest
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.envs.subprocess_env_manager import EnvironmentStep
-from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.subprocess_env_manager import EnvironmentStep
+from mlagents.trainers.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -213,4 +213,4 @@ def test_take_step_if_not_training():
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
     )
-    trainer_mock.clear_update_buffer.assert_called_once()
+    trainer_mock.advance.assert_called_once()

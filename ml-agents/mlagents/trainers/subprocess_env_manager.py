@@ -8,7 +8,7 @@ from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents.envs.base_env import BaseEnv
-from mlagents.envs.env_manager import EnvManager, EnvironmentStep
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.timers import (
     TimerNode,
     timed,
@@ -16,15 +16,15 @@ from mlagents.envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.envs.brain import AllBrainInfo, BrainParameters
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.action_info import ActionInfo
 from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
 from mlagents.envs.side_channel.side_channel import SideChannel
-from mlagents.envs.brain_conversion_utils import (
+from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,
 )
@@ -53,7 +53,7 @@ class UnityEnvWorker:
         self.process = process
         self.worker_id = worker_id
         self.conn = conn
-        self.previous_step: EnvironmentStep = EnvironmentStep(None, {}, None)
+        self.previous_step: EnvironmentStep = EnvironmentStep({}, {}, {})
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 
@@ -142,10 +142,7 @@ def worker(
             elif cmd.name == "external_brains":
                 _send_response("external_brains", external_brains())
             elif cmd.name == "get_properties":
-                reset_params = {}
-                for k in shared_float_properties.list_properties():
-                    reset_params[k] = shared_float_properties.get_property(k)
-
+                reset_params = shared_float_properties.get_property_dict_copy()
                 _send_response("get_properties", reset_params)
             elif cmd.name == "reset":
                 for k, v in cmd.payload.items():
@@ -256,7 +253,7 @@ class SubprocessEnvManager(EnvManager):
             ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
-            ew.previous_step = EnvironmentStep(None, ew.recv().payload, None)
+            ew.previous_step = EnvironmentStep({}, ew.recv().payload, {})
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property

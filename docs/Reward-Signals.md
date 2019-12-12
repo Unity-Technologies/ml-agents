@@ -135,11 +135,10 @@ discriminator is trained to better distinguish between demonstrations and agent 
 In this way, while the agent gets better and better at mimicing the demonstrations, the
 discriminator keeps getting stricter and stricter and the agent must try harder to "fool" it.
 
-This approach, when compared to [Behavioral Cloning](Training-Behavioral-Cloning.md), requires
-far fewer demonstrations to be provided. After all, we are still learning a policy that happens
-to be similar to the demonstrations, not directly copying the behavior of the demonstrations. It
-is especially effective when combined with an Extrinsic signal. However, the GAIL reward signal can
-also be used independently to purely learn from demonstrations.
+This approach learns a _policy_ that produces states and actions similar to the demonstrations,
+requiring fewer demonstrations than direct cloning of the actions. In addition to learning purely
+from demonstrations, the GAIL reward signal can be mixed with an extrinsic reward signal to guide
+the learning process.
 
 Using GAIL requires recorded demonstrations from your Unity environment. See the
 [imitation learning guide](Training-Imitation-Learning.md) to learn more about recording demonstrations.

@@ -1,6 +1,10 @@
 from typing import List, Tuple
 from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.communicator_objects.observation_pb2 import ObservationProto
+from mlagents.envs.communicator_objects.observation_pb2 import (
+    ObservationProto,
+    NONE,
+    PNG,
+)
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
 from mlagents.envs.base_env import AgentGroupSpec, ActionType
@@ -30,7 +34,7 @@ def generate_list_agent_proto(
         for obs_index in range(len(shape)):
             obs_proto = ObservationProto()
             obs_proto.shape.extend(list(shape[obs_index]))
-            obs_proto.compression_type = 0
+            obs_proto.compression_type = NONE
             obs_proto.float_data.data.extend([0.1] * np.prod(shape[obs_index]))
             obs_proto_list.append(obs_proto)
         ap.observations.extend(obs_proto_list)
@@ -49,7 +53,7 @@ def generate_compressed_data(in_array: np.ndarray) -> bytes:
 def generate_compressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     obs_proto = ObservationProto()
     obs_proto.compressed_data = generate_compressed_data(in_array)
-    obs_proto.compression_type = 1
+    obs_proto.compression_type = PNG
     obs_proto.shape.extend(in_array.shape)
     return obs_proto
 
