@@ -1,7 +1,6 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Deque, Any
-import os
 
 from mlagents.tf_utils import tf
 
@@ -11,7 +10,7 @@ from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers import stats
+from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.brain import BrainParameters
 
@@ -50,8 +49,9 @@ class Trainer(object):
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
-        if not os.path.exists(self.summary_path):
-            os.makedirs(self.summary_path)
+        self.stats_reporter = StatsReporter(self.summary_path)
+        # if not os.path.exists(self.summary_path):
+        #     os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self.trainer_metrics = TrainerMetrics(
@@ -76,21 +76,21 @@ class Trainer(object):
         :param key: The name of the text.
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
-        try:
-            with tf.Session() as sess:
-                s_op = tf.summary.text(
-                    key,
-                    tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
-                    ),
-                )
-                s = sess.run(s_op)
-                stats.stats_reporter.write_text(self.summary_path, s, self.get_step)
-        except Exception:
-            LOGGER.info(
-                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
+        #        try:
+        with tf.Session() as sess:
+            s_op = tf.summary.text(
+                key,
+                tf.convert_to_tensor(
+                    ([[str(x), str(input_dict[x])] for x in input_dict])
+                ),
             )
-            pass
+            s = sess.run(s_op)
+            self.stats_reporter.write_text(s, self.get_step)
+        # except Exception:
+        #     LOGGER.info(
+        #         "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
+        #     )
+        #     pass
 
     def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
@@ -197,8 +197,8 @@ class Trainer(object):
                 else "Not Training."
             )
             step = min(self.get_step, self.get_max_steps)
-            stats_summary = stats.stats_reporter.get_stats_summaries(
-                self.summary_path, "Environment/Cumulative Reward"
+            stats_summary = self.stats_reporter.get_stats_summaries(
+                "Environment/Cumulative Reward"
             )
             if stats_summary.num > 0:
                 LOGGER.info(
@@ -223,7 +223,7 @@ class Trainer(object):
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
-            stats.stats_reporter.write_stats(self.summary_path, int(step))
+            self.stats_reporter.write_stats(int(step))
 
     def process_trajectory(self, trajectory: Trajectory) -> None:
         """

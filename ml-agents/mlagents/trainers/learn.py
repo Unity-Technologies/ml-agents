@@ -17,6 +17,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
+from mlagents.trainers.stats import TensorboardWriter, StatsReporter
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
@@ -248,6 +249,11 @@ def run_training(
         )
     trainer_config = load_config(trainer_config_path)
     port = options.base_port + (sub_id * options.num_envs)
+
+    # Configure Tensorboard Writers and StatsReporter
+    tb_writer = TensorboardWriter(summaries_dir)
+    StatsReporter.add_writer(tb_writer)
+
     if options.env_path is None:
         port = 5004  # This is the in Editor Training Port
     env_factory = create_environment_factory(

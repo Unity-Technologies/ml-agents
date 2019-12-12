@@ -13,7 +13,6 @@ import numpy as np
 from mlagents.envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers import stats
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 
 
@@ -167,10 +166,8 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
-            stats.stats_reporter.add_stat(
-                self.summary_path,
-                self.policy.reward_signals[name].value_name,
-                np.mean(v),
+            self.stats_reporter.add_stat(
+                self.policy.reward_signals[name].value_name, np.mean(v)
             )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
@@ -263,13 +260,13 @@ class SACTrainer(RLTrainer):
             )
 
         for stat, stat_list in batch_update_stats.items():
-            stats.stats_reporter.add_stat(self.summary_path, stat, np.mean(stat_list))
+            self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
         bc_module = self.sac_policy.bc_module
         if bc_module:
             update_stats = bc_module.update()
             for stat, val in update_stats.items():
-                stats.stats_reporter.add_stat(self.summary_path, stat, val)
+                self.stats_reporter.add_stat(stat, val)
 
     def update_reward_signals(self) -> None:
         """
@@ -304,4 +301,4 @@ class SACTrainer(RLTrainer):
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
-            stats.stats_reporter.add_stat(self.summary_path, stat, np.mean(stat_list))
+            self.stats_reporter.add_stat(stat, np.mean(stat_list))

@@ -6,7 +6,6 @@ from collections import defaultdict
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
-from mlagents.trainers import stats
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -56,10 +55,8 @@ class RLTrainer(Trainer):
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                stats.stats_reporter.add_stat(
-                    self.summary_path,
-                    self.policy.reward_signals[name].stat_name,
-                    rewards.get(agent_id, 0),
+                self.stats_reporter.add_stat(
+                    self.policy.reward_signals[name].stat_name, rewards.get(agent_id, 0)
                 )
                 rewards[agent_id] = 0
 

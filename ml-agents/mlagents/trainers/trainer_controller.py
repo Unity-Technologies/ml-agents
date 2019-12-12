@@ -18,7 +18,6 @@ from mlagents.envs.exception import (
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers import stats
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -179,9 +178,7 @@ class TrainerController(object):
                 lesson_num = self.meta_curriculum.brains_to_curriculums[
                     brain_name
                 ].lesson_num
-                stats.stats_reporter.add_stat(
-                    trainer.summary_path, "Environment/Lesson", lesson_num
-                )
+                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
             trainer.write_summary(global_step, delta_train_start)
 
     def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:

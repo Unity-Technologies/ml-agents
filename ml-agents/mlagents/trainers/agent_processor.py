@@ -7,7 +7,7 @@ from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.action_info import ActionInfoOutputs
-from mlagents.trainers import stats
+from mlagents.trainers.stats import StatsReporter
 
 
 class AgentProcessor:
@@ -41,6 +41,7 @@ class AgentProcessor:
         self.policy = policy
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
+        self.stats_reporter = StatsReporter(stats_category)
         if max_trajectory_length:
             self.max_trajectory_length = max_trajectory_length
             self.ignore_max_length = False
@@ -63,15 +64,11 @@ class AgentProcessor:
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
         if take_action_outputs:
-            stats.stats_reporter.add_stat(
-                self.stats_category,
-                "Policy/Entropy",
-                take_action_outputs["entropy"].mean(),
+            self.stats_reporter.add_stat(
+                "Policy/Entropy", take_action_outputs["entropy"].mean()
             )
-            stats.stats_reporter.add_stat(
-                self.stats_category,
-                "Policy/Learning Rate",
-                take_action_outputs["learning_rate"],
+            self.stats_reporter.add_stat(
+                "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
 
         for agent_id in curr_info.agents:
@@ -149,13 +146,11 @@ class AgentProcessor:
                     self.trainer.process_trajectory(trajectory)
                     self.experience_buffers[agent_id] = []
                     if next_info.local_done[next_idx]:
-                        stats.stats_reporter.add_stat(
-                            self.stats_category,
+                        self.stats_reporter.add_stat(
                             "Environment/Cumulative Reward",
                             self.episode_rewards.get(agent_id, 0),
                         )
-                        stats.stats_reporter.add_stat(
-                            self.stats_category,
+                        self.stats_reporter.add_stat(
                             "Environment/Episode Length",
                             self.episode_steps.get(agent_id, 0),
                         )

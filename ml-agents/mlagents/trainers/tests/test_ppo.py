@@ -10,7 +10,6 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers import stats
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
@@ -432,7 +431,7 @@ def test_process_trajectory(dummy_config):
         for agent in reward.values():
             assert agent == 0
     assert (
-        stats.stats_reporter.get_stats_summaries(
+        trainer.stats_reporter.get_stats_summaries(
             trainer.summary_path, "Policy/Extrinsic Reward"
         ).num
         > 0

@@ -6,7 +6,6 @@ import numpy as np
 from mlagents.tf_utils import tf
 
 
-from mlagents.trainers import stats
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
@@ -387,12 +386,7 @@ def test_process_trajectory(dummy_config):
     for reward in trainer.collected_rewards.values():
         for agent in reward.values():
             assert agent == 0
-    assert (
-        stats.stats_reporter.get_stats_summaries(
-            trainer.summary_path, "Policy/Extrinsic Reward"
-        ).num
-        > 0
-    )
+    assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
 if __name__ == "__main__":
