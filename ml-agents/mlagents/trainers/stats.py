@@ -65,7 +65,6 @@ class StatsReporter:
         type of stat it is (e.g. Environment/Reward). Finally the Value is the float value
         attached to this stat.
         """
-
         self.category: str = category
 
     @staticmethod
