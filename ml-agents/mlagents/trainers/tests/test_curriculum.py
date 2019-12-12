@@ -6,7 +6,6 @@ from unittest.mock import patch, mock_open
 from mlagents.trainers.exception import CurriculumConfigError, CurriculumLoadingError
 from mlagents.trainers.curriculum import Curriculum
 
-
 dummy_curriculum_json_str = """
     {
         "measure" : "reward",
