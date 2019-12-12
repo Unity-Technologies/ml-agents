@@ -50,7 +50,6 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
-        self.multi_trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
         self.trainer_factory = trainer_factory
         self.model_path = model_path
@@ -74,6 +73,9 @@ class TrainerController(object):
                 brain_name,
                 curriculum,
             ) in self.meta_curriculum.brains_to_curriculums.items():
+                # Skip brains that are in the metacurriculum but no trainer yet.
+                if brain_name not in self.trainers:
+                    continue
                 if curriculum.measure == "progress":
                     measure_val = (
                         self.trainers[brain_name].get_step
@@ -171,7 +173,10 @@ class TrainerController(object):
         for brain_name, trainer in self.trainers.items():
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
-            if self.meta_curriculum is not None:
+            if (
+                self.meta_curriculum
+                and brain_name in self.meta_curriculum.brains_to_curriculums
+            ):
                 trainer.write_summary(
                     global_step,
                     delta_train_start,
