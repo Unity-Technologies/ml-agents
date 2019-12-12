@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from mlagents.trainers.buffer import AgentBuffer, BufferException
 
@@ -28,7 +28,7 @@ class ProcessingBuffer(dict):
     def append_to_update_buffer(
         self,
         update_buffer: AgentBuffer,
-        agent_id: str,
+        agent_id: Union[int, str],
         key_list: List[str] = None,
         batch_size: int = None,
         training_length: int = None,

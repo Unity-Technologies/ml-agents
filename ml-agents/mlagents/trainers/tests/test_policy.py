@@ -1,6 +1,6 @@
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainInfo
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.brain import BrainInfo
+from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
 import numpy as np
 
@@ -20,7 +20,7 @@ def test_take_action_returns_empty_with_no_agents():
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
     no_agent_brain_info = BrainInfo([], [], [], agents=[])
     result = policy.get_action(no_agent_brain_info)
-    assert result == ActionInfo([], [], None)
+    assert result == ActionInfo([], [], {})
 
 
 def test_take_action_returns_nones_on_missing_values():

@@ -4,11 +4,10 @@ import logging
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
-from mlagents.trainers.trainer import Trainer
-from mlagents.envs.brain import BrainParameters
+from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.bc.offline_trainer import OfflineBCTrainer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -99,7 +98,7 @@ def initialize_trainer(
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
 
-    trainer = None
+    trainer = None  # type: ignore  # will be set to one of these, or raise
     min_lesson_length = 1
     if meta_curriculum:
         if brain_name in meta_curriculum.brains_to_curriculums:
@@ -113,8 +112,10 @@ def initialize_trainer(
             )
 
     if trainer_parameters["trainer"] == "offline_bc":
-        trainer = OfflineBCTrainer(
-            brain_parameters, trainer_parameters, train_model, load_model, seed, run_id
+        raise UnityTrainerException(
+            "The offline_bc trainer has been removed. To train with demonstrations, "
+            "please use a PPO or SAC trainer with the GAIL Reward Signal and/or the "
+            "Behavioral Cloning feature enabled."
         )
     elif trainer_parameters["trainer"] == "ppo":
         trainer = PPOTrainer(

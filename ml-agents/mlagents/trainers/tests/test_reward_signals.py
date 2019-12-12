@@ -58,7 +58,7 @@ def sac_dummy_config():
         tau: 0.005
         use_recurrent: false
         vis_encode_type: simple
-        pretraining:
+        behavioral_cloning:
             demo_path: ./demos/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000

@@ -3,7 +3,7 @@ from unittest.mock import Mock, MagicMock
 import unittest
 from queue import Empty as EmptyQueue
 
-from mlagents.envs.subprocess_env_manager import (
+from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
     StepResponse,
