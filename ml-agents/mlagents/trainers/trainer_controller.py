@@ -18,6 +18,7 @@ from mlagents.envs.exception import (
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
+from mlagents.trainers import stats
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -175,15 +176,13 @@ class TrainerController(object):
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
-                trainer.write_summary(
-                    global_step,
-                    delta_train_start,
-                    lesson_num=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].lesson_num,
+                lesson_num = (
+                    self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num,
                 )
-            else:
-                trainer.write_summary(global_step, delta_train_start)
+                stats.StatsReporter.add_stat(
+                    trainer.summary_path, "Environment/Lesson", lesson_num
+                )
+            trainer.write_summary(global_step, delta_train_start)
 
     def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
         self.trainers[trainer.brain_name] = trainer

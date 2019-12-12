@@ -185,7 +185,6 @@ class Trainer(object):
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
-        :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
         """
         if (
