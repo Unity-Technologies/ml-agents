@@ -57,18 +57,14 @@ class SACNetwork(LearningModel):
         self.q2_memory_in: Optional[tf.Tensor] = None
         self.q1_memory_out: Optional[tf.Tensor] = None
         self.q2_memory_out: Optional[tf.Tensor] = None
-        self.action_holder: Optional[tf.Tensor] = None
         self.prev_action: Optional[tf.Tensor] = None
         self.action_masks: Optional[tf.Tensor] = None
         self.external_action_in: Optional[tf.Tensor] = None
         self.log_sigma_sq: Optional[tf.Tensor] = None
         self.entropy: Optional[tf.Tensor] = None
         self.deterministic_output: Optional[tf.Tensor] = None
-        self.all_log_probs: Optional[tf.Tensor] = None
         self.normalized_logprobs: Optional[tf.Tensor] = None
         self.action_probs: Optional[tf.Tensor] = None
-        self.selected_actions: Optional[tf.Tensor] = None
-        self.output: Optional[tf.Tensor] = None
         self.output_oh: Optional[tf.Tensor] = None
         self.output_pre: Optional[tf.Tensor] = None
 
@@ -788,7 +784,7 @@ class SACModel(LearningModel):
         self.dones_holder = tf.placeholder(
             shape=[None], dtype=tf.float32, name="dones_holder"
         )
-        # This is just a dummy to get pretraining to work. PPO has this but SAC doesn't.
+        # This is just a dummy to get BC to work. PPO has this but SAC doesn't.
         # TODO: Proper input and output specs for models
         self.epsilon = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"

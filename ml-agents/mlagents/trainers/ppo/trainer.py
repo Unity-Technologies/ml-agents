@@ -66,13 +66,14 @@ class PPOTrainer(RLTrainer):
         self.check_param_keys()
 
         if multi_gpu and len(get_devices()) > 1:
-            self.policy = MultiGpuPPOPolicy(
+            self.ppo_policy = MultiGpuPPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
             )
         else:
-            self.policy = PPOPolicy(
+            self.ppo_policy = PPOPolicy(
                 seed, brain, trainer_parameters, self.is_training, load
             )
+        self.policy = self.ppo_policy
 
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)

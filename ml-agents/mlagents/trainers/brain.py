@@ -6,7 +6,7 @@ from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.observation_pb2 import ObservationProto
 from mlagents.envs.timers import hierarchical_timer, timed
-from typing import Dict, List, NamedTuple
+from typing import Dict, List, NamedTuple, Collection
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
@@ -144,7 +144,9 @@ class BrainInfo:
     @timed
     def from_agent_proto(
         worker_id: int,
-        agent_info_list: List[AgentInfoProto],
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
         brain_params: BrainParameters,
     ) -> "BrainInfo":
         """
@@ -186,7 +188,10 @@ class BrainInfo:
 
     @staticmethod
     def _process_visual_observations(
-        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> List[np.ndarray]:
 
         visual_observation_protos: List[List[ObservationProto]] = []
@@ -215,7 +220,10 @@ class BrainInfo:
 
     @staticmethod
     def _process_vector_observations(
-        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
             vector_obs = np.zeros(

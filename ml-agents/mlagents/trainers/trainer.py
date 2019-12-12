@@ -58,7 +58,7 @@ class Trainer(object):
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None
+        self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.step: int = 0
 
     def check_param_keys(self):
@@ -278,3 +278,6 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def advance(self) -> None:
+        pass

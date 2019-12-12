@@ -211,8 +211,9 @@ class TrainerController(object):
                             processor=AgentProcessor(
                                 trainer,
                                 trainer.policy,
-                                trainer.parameters["time_horizon"],
-                                trainer.summary_path,
+                                trainer.parameters["time_horizon"]
+                                if "time_horizon" in trainer.parameters
+                                else None,
                             )
                         )
                         self.managers[name] = agent_manager
@@ -305,5 +306,8 @@ class TrainerController(object):
                     env.set_policy(brain_name, trainer.policy)
             else:
                 # Avoid memory leak during inference
-                trainer.clear_update_buffer()
+                # Eventually this whole block will take place in advance()
+                # But currently this only calls clear_update_buffer() in RLTrainer
+                # and nothing in the base class
+                trainer.advance()
         return len(new_step_infos)
