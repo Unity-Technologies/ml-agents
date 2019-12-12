@@ -183,7 +183,9 @@ SAC_CONFIG = f"""
     """
 
 
-def _check_environment_trains(env, config):
+def _check_environment_trains(
+    env, config, meta_curriculum=None, success_threshold=0.99
+):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -201,7 +203,7 @@ def _check_environment_trains(env, config):
             train_model=True,
             load_model=False,
             seed=seed,
-            meta_curriculum=None,
+            meta_curriculum=meta_curriculum,
             multi_gpu=False,
         )
 
@@ -210,7 +212,7 @@ def _check_environment_trains(env, config):
             summaries_dir=dir,
             model_path=dir,
             run_id=run_id,
-            meta_curriculum=None,
+            meta_curriculum=meta_curriculum,
             train=True,
             training_seed=seed,
             sampler_manager=SamplerManager(None),
@@ -223,7 +225,7 @@ def _check_environment_trains(env, config):
         print(tc._get_measure_vals())
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
-            assert mean_reward > 0.99
+            assert mean_reward > success_threshold
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])

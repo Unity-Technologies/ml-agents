@@ -1,11 +1,14 @@
 import yaml
 from typing import Any, Dict, TextIO
+import logging
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+
+logger = logging.getLogger("mlagents.trainers")
 
 
 class TrainerFactory:
@@ -99,6 +102,18 @@ def initialize_trainer(
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
 
+    min_lesson_length = 1
+    if meta_curriculum:
+        if brain_name in meta_curriculum.brains_to_curriculums:
+            min_lesson_length = meta_curriculum.brains_to_curriculums[
+                brain_name
+            ].min_lesson_length
+        else:
+            logger.warning(
+                f"Metacurriculum enabled, but no curriculum for brain {brain_name}. "
+                f"Brains with curricula: {meta_curriculum.brains_to_curriculums.keys()}. "
+            )
+
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
     if "trainer" not in trainer_parameters:
         raise TrainerConfigError(
@@ -115,9 +130,7 @@ def initialize_trainer(
     elif trainer_type == "ppo":
         trainer = PPOTrainer(
             brain_name,
-            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-            if meta_curriculum
-            else 1,
+            min_lesson_length,
             trainer_parameters,
             train_model,
             load_model,
@@ -128,9 +141,7 @@ def initialize_trainer(
     elif trainer_type == "sac":
         trainer = SACTrainer(
             brain_name,
-            meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-            if meta_curriculum
-            else 1,
+            min_lesson_length,
             trainer_parameters,
             train_model,
             load_model,
