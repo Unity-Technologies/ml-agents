@@ -42,7 +42,7 @@ class TensorboardWriter(StatsWriter):
 class StatsSummary(NamedTuple):
     mean: float
     std: float
-    count: int
+    num: int
 
 
 class StatsReporter:
@@ -100,9 +100,9 @@ class StatsReporter:
         :returns: A StatsSummary NamedTuple containing (mean, std, count).
         """
         return StatsSummary(
-            np.mean(self.stats_dict[category][key]),
-            np.std(self.stats_dict[category][key]),
-            len(self.stats_dict[category][key]),
+            mean=np.mean(self.stats_dict[category][key]),
+            std=np.std(self.stats_dict[category][key]),
+            num=len(self.stats_dict[category][key]),
         )
 
 

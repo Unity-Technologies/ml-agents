@@ -390,7 +390,7 @@ def test_process_trajectory(dummy_config):
     assert (
         stats.stats_reporter.get_stats_summaries(
             trainer.summary_path, "Environment/Cumulative Reward"
-        ).count
+        ).num
         > 0
     )
 

@@ -200,7 +200,7 @@ class Trainer(object):
             stats_summary = stats.stats_reporter.get_stats_summaries(
                 self.summary_path, "Environment/Cumulative Reward"
             )
-            if stats_summary.count > 0:
+            if stats_summary.num > 0:
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
