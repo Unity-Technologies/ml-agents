@@ -298,3 +298,6 @@ class Trainer(object):
         Gets policy from trainers list of policies
         """
         return self.policies[brain_name]
+
+    def advance(self) -> None:
+        pass

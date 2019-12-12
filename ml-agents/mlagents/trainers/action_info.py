@@ -1,6 +1,6 @@
-from typing import NamedTuple, Any, Dict, Optional
+from typing import NamedTuple, Any, Dict
 
-ActionInfoOutputs = Optional[Dict[str, Any]]
+ActionInfoOutputs = Dict[str, Any]
 
 
 class ActionInfo(NamedTuple):

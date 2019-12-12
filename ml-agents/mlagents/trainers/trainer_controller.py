@@ -318,5 +318,8 @@ class TrainerController(object):
                         )
             else:
                 # Avoid memory leak during inference
-                trainer.clear_update_buffer()
+                # Eventually this whole block will take place in advance()
+                # But currently this only calls clear_update_buffer() in RLTrainer
+                # and nothing in the base class
+                trainer.advance()
         return len(new_step_infos)

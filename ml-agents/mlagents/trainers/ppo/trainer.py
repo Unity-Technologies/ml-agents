@@ -98,7 +98,7 @@ class PPOTrainer(RLTrainer):
                 else:
                     bootstrapping_info = next_info
                     idx = l
-                value_next = self.policy.get_value_estimates(
+                value_next = self.ppo_policy.get_value_estimates(
                     bootstrapping_info,
                     idx,
                     next_info.local_done[l] and not next_info.max_reached[l],
