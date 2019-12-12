@@ -31,7 +31,7 @@ Pyramids:
     beta: 1.0e-2
     max_steps: 5.0e5
     num_epoch: 3
-    pretraining:
+    behavioral_cloning:
         demo_path: ./demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
@@ -59,6 +59,10 @@ CrawlerStatic:
     summary_freq: 3000
     num_layers: 3
     hidden_units: 512
+    behavioral_cloning:
+        demo_path: ./demos/ExpertCrawlerSta.demo
+        strength: 0.5
+        steps: 5000
     reward_signals:
         gail:
             strength: 1.0

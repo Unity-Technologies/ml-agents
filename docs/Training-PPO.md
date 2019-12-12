@@ -224,29 +224,27 @@ the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `64` - `512`
 
-## (Optional) Pretraining Using Demonstrations
+## (Optional) Behavioral Cloning Using Demonstrations
 
 In some cases, you might want to bootstrap the agent's policy using behavior recorded
-from a player. This can help guide the agent towards the reward. Pretraining adds
+from a player. This can help guide the agent towards the reward. Behavioral Cloning (BC) adds
 training operations that mimic a demonstration rather than attempting to maximize reward.
-It is essentially equivalent to running [behavioral cloning](Training-Behavioral-Cloning.md)
-in-line with PPO.
 
-To use pretraining, add a `pretraining` section to the trainer_config. For instance:
+To use BC, add a `behavioral_cloning` section to the trainer_config. For instance:
 
 ```
-    pretraining:
+    behavioral_cloning:
         demo_path: ./demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
 ```
 
-Below are the available hyperparameters for pretraining.
+Below are the available hyperparameters for BC.
 
 ### Strength
 
 `strength` corresponds to the learning rate of the imitation relative to the learning
-rate of PPO, and roughly corresponds to how strongly we allow the behavioral cloning
+rate of PPO, and roughly corresponds to how strongly we allow BC
 to influence the policy.
 
 Typical Range: `0.1` - `0.5`
@@ -258,10 +256,10 @@ See the [imitation learning guide](Training-Imitation-Learning.md) for more on `
 
 ### Steps
 
-During pretraining, it is often desirable to stop using demonstrations after the agent has
+During BC, it is often desirable to stop using demonstrations after the agent has
 "seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
 outside of the provided demonstrations. `steps` corresponds to the training steps over which
-pretraining is active. The learning rate of the pretrainer will anneal over the steps. Set
+BC is active. The learning rate of BC will anneal over the steps. Set
 the steps to 0 for constant imitation over the entire training run.
 
 ### (Optional) Batch Size

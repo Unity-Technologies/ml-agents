@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
-from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagents.trainers.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -52,14 +52,14 @@ class PPOPolicy(TFPolicy):
         with self.graph.as_default():
             self.bc_module: Optional[BCModule] = None
             # Create pretrainer if needed
-            if "pretraining" in trainer_params:
-                BCModule.check_config(trainer_params["pretraining"])
+            if "behavioral_cloning" in trainer_params:
+                BCModule.check_config(trainer_params["behavioral_cloning"])
                 self.bc_module = BCModule(
                     self,
                     policy_learning_rate=trainer_params["learning_rate"],
                     default_batch_size=trainer_params["batch_size"],
-                    default_num_epoch=trainer_params["num_epoch"],
-                    **trainer_params["pretraining"],
+                    default_num_epoch=3,
+                    **trainer_params["behavioral_cloning"],
                 )
 
         if load:
@@ -163,8 +163,6 @@ class PPOPolicy(TFPolicy):
             feed_dict[self.model.epsilon] = epsilon
         feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
-        if self.use_continuous_act:
-            run_out["random_normal_epsilon"] = epsilon
         return run_out
 
     @timed
@@ -208,7 +206,6 @@ class PPOPolicy(TFPolicy):
 
         if self.use_continuous_act:
             feed_dict[model.output_pre] = mini_batch["actions_pre"]
-            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
         else:
             feed_dict[model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:

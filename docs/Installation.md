@@ -21,13 +21,18 @@ We now support a single mechanism for installing ML-Agents on Mac/Windows/Linux 
 Environments. For more information on Virtual Environments and installation instructions,
 follow this [guide](Using-Virtual-Environment.md).
 
+Although we don't support Anaconda installation path of ML-Agents for Windows, the previous guide
+is still in the docs folder.  Please refer to [Windows Installation (Deprecated)](Installation-Windows.md).
+
 ### Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
 ```sh
-git clone https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
 ```
+The `--branch latest_release` option will switch to the tag of the latest stable release.
+Omitting that will get the `master` branch which is potentially unstable.
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)

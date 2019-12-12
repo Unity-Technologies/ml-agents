@@ -6,8 +6,8 @@ import yaml
 import pytest
 
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.envs.subprocess_env_manager import EnvironmentStep
-from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.subprocess_env_manager import EnvironmentStep
+from mlagents.trainers.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -51,7 +51,6 @@ def basic_trainer_controller():
         meta_curriculum=None,
         train=True,
         training_seed=99,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
@@ -70,7 +69,6 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         meta_curriculum=None,
         train=True,
         training_seed=seed,
-        fast_simulation=True,
         sampler_manager=SamplerManager({}),
         resampling_interval=None,
     )
@@ -122,7 +120,6 @@ def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
     assert tc.advance.call_count == 11
     tc._export_graph.assert_not_called()
     tc._save_model.assert_not_called()
-    env_mock.close.assert_called_once()
 
 
 @patch.object(tf, "reset_default_graph")
@@ -140,7 +137,6 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
-    env_mock.close.assert_called_once()
     tc._save_model.assert_called_once()
 
 
@@ -217,4 +213,4 @@ def test_take_step_if_not_training():
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
     )
-    trainer_mock.clear_update_buffer.assert_called_once()
+    trainer_mock.advance.assert_called_once()

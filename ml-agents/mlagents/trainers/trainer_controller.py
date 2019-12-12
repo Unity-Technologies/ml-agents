@@ -11,13 +11,12 @@ import numpy as np
 from mlagents.tf_utils import tf
 from time import time
 
-from mlagents.envs.env_manager import EnvironmentStep
-from mlagents.envs.env_manager import EnvManager
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents.envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
 )
-from mlagents.envs.sampler_class import SamplerManager
+from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -35,7 +34,6 @@ class TrainerController(object):
         meta_curriculum: Optional[MetaCurriculum],
         train: bool,
         training_seed: int,
-        fast_simulation: bool,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
     ):
@@ -61,7 +59,6 @@ class TrainerController(object):
         self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.meta_curriculum = meta_curriculum
         self.training_start_time = time()
-        self.fast_simulation = fast_simulation
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
         np.random.seed(training_seed)
@@ -154,7 +151,7 @@ class TrainerController(object):
             self.meta_curriculum.get_config() if self.meta_curriculum else {}
         )
         sampled_reset_param.update(new_meta_curriculum_config)
-        return env.reset(train_mode=self.fast_simulation, config=sampled_reset_param)
+        return env.reset(config=sampled_reset_param)
 
     def _should_save_model(self, global_step: int) -> bool:
         return (
@@ -225,7 +222,6 @@ class TrainerController(object):
             self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
-        env_manager.close()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
@@ -298,5 +294,8 @@ class TrainerController(object):
                     env.set_policy(brain_name, trainer.policy)
             else:
                 # Avoid memory leak during inference
-                trainer.clear_update_buffer()
+                # Eventually this whole block will take place in advance()
+                # But currently this only calls clear_update_buffer() in RLTrainer
+                # and nothing in the base class
+                trainer.advance()
         return len(new_step_infos)

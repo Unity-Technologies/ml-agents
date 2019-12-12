@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -136,15 +136,14 @@ class GAILRewardSignal(RewardSignal):
         :return: Feed_dict for update process.
         """
         max_num_experiences = min(
-            len(mini_batch["actions"]),
-            len(self.demonstration_buffer.update_buffer["actions"]),
+            len(mini_batch["actions"]), self.demonstration_buffer.num_experiences
         )
         # If num_sequences is less, we need to shorten the input batch.
         for key, element in mini_batch.items():
             mini_batch[key] = element[:max_num_experiences]
 
         # Get batch from demo buffer
-        mini_batch_demo = self.demonstration_buffer.update_buffer.sample_mini_batch(
+        mini_batch_demo = self.demonstration_buffer.sample_mini_batch(
             len(mini_batch["actions"]), 1
         )
 

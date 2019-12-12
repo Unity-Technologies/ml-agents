@@ -6,7 +6,7 @@ import abc
 
 from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -59,8 +59,8 @@ class RewardSignal(abc.ABC):
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return RewardSignalResult(
-            self.strength * np.zeros(len(current_info.agents)),
-            np.zeros(len(current_info.agents)),
+            self.strength * np.zeros(len(current_info.agents), dtype=np.float32),
+            np.zeros(len(current_info.agents), dtype=np.float32),
         )
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
@@ -75,7 +75,8 @@ class RewardSignal(abc.ABC):
         """
         mini_batch_len = len(next(iter(mini_batch.values())))
         return RewardSignalResult(
-            self.strength * np.zeros(mini_batch_len), np.zeros(mini_batch_len)
+            self.strength * np.zeros(mini_batch_len, dtype=np.float32),
+            np.zeros(mini_batch_len, dtype=np.float32),
         )
 
     def prepare_update(

@@ -47,8 +47,9 @@ metacurriculum for Wall Jump, we would create the folder
 
 In order to define a curriculum, the first step is to decide which parameters of
 the environment will vary. In the case of the Wall Jump environment, what varies
-is the height of the wall. We define this as a `Reset Parameter` in the Academy
-object of our scene, and by doing so it becomes adjustable via the Python API.
+is the height of the wall. We define this as a `Shared Float Property` that
+can be accessed in `Academy.FloatProperties`, and by doing so it becomes
+adjustable via the Python API.
 Rather than adjusting it by hand, we will create a JSON file which
 describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the

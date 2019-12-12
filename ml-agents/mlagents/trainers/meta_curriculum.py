@@ -1,7 +1,7 @@
 """Contains the MetaCurriculum class."""
 
 import os
-from typing import Any, Dict, Set
+from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.exception import MetaCurriculumError
 
@@ -15,9 +15,7 @@ class MetaCurriculum(object):
     particular brain in the environment.
     """
 
-    def __init__(
-        self, curriculum_folder: str, default_reset_parameters: Dict[str, Any]
-    ):
+    def __init__(self, curriculum_folder: str):
         """Initializes a MetaCurriculum object.
 
         Args:
@@ -40,7 +38,7 @@ class MetaCurriculum(object):
                 curriculum_filepath = os.path.join(
                     curriculum_folder, curriculum_filename
                 )
-                curriculum = Curriculum(curriculum_filepath, default_reset_parameters)
+                curriculum = Curriculum(curriculum_filepath)
                 config_keys: Set[str] = set(curriculum.get_config().keys())
 
                 # Check if any two curriculums use the same reset params.

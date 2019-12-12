@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using System.IO;
+using Google.Protobuf;
 
 namespace MLAgents
 {
@@ -17,7 +19,6 @@ namespace MLAgents
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
-        public event RLInputReceivedHandler RLInputReceived;
 
         /// If true, the communication is active.
         bool m_IsOpen;
@@ -48,6 +49,8 @@ namespace MLAgents
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
 
+        Dictionary<int, SideChannel> m_SideChannels = new Dictionary<int, SideChannel>();
+
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
@@ -72,14 +75,6 @@ namespace MLAgents
                 Name = initParameters.name,
                 Version = initParameters.version
             };
-
-            academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
-
-            var resetParameters = initParameters.environmentResetParameters.resetParameters;
-            foreach (var key in resetParameters.Keys)
-            {
-                academyParameters.EnvironmentParameters.FloatParameters.Add(key, resetParameters[key]);
-            }
 
             UnityInputProto input;
             UnityInputProto initializationInput;
@@ -134,8 +129,9 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SendRLInputReceivedEvent(rlInput.IsTraining);
-            SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
+            ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
+            SendCommandEvent(rlInput.Command);
+
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
@@ -198,7 +194,7 @@ namespace MLAgents
 
         #region Sending Events
 
-        void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+        void SendCommandEvent(CommandProto command)
         {
             switch (command)
             {
@@ -209,7 +205,7 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        ResetCommandReceived?.Invoke();
                         return;
                     }
                 default:
@@ -217,11 +213,6 @@ namespace MLAgents
                         return;
                     }
             }
-        }
-
-        void SendRLInputReceivedEvent(bool isTraining)
-        {
-            RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
 
         #endregion
@@ -283,6 +274,9 @@ namespace MLAgents
             {
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
+
+            byte[] messageAggregated = GetSideChannelMessage(m_SideChannels);
+            message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);
             UpdateSentBrainParameters(tempUnityRlInitializationOutput);
@@ -429,6 +423,102 @@ namespace MLAgents
             {
                 m_SentBrainKeys.Add(brainProto.BrainName);
                 m_UnsentBrainKeys.Remove(brainProto.BrainName);
+            }
+        }
+
+        #endregion
+
+
+        #region Handling side channels
+
+        /// <summary>
+        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// messages with its Python equivalent.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
+        public void RegisterSideChannel(SideChannel sideChannel)
+        {
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            {
+                throw new UnityAgentsException(string.Format(
+                "A side channel with type index {} is already registered. You cannot register multiple " +
+                "side channels of the same type."));
+            }
+            m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
+        }
+
+        /// <summary>
+        /// Grabs the messages that the registered side channels will send to Python at the current step
+        /// into a singe byte array.
+        /// </summary>
+        /// <param name="sideChannels"> A dictionary of channel type to channel.</param>
+        /// <returns></returns>
+        public static byte[] GetSideChannelMessage(Dictionary<int, SideChannel> sideChannels)
+        {
+            using (var memStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memStream))
+                {
+                    foreach (var sideChannel in sideChannels.Values)
+                    {
+                        var messageList = sideChannel.MessageQueue;
+                        foreach (var message in messageList)
+                        {
+                            binaryWriter.Write(sideChannel.ChannelType());
+                            binaryWriter.Write(message.Count());
+                            binaryWriter.Write(message);
+                        }
+                        sideChannel.MessageQueue.Clear();
+                    }
+                    return memStream.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Separates the data received from Python into individual messages for each registered side channel.
+        /// </summary>
+        /// <param name="sideChannels">A dictionary of channel type to channel.</param>
+        /// <param name="dataReceived">The byte array of data received from Python.</param>
+        public static void ProcessSideChannelData(Dictionary<int, SideChannel> sideChannels, byte[] dataReceived)
+        {
+            if (dataReceived.Length == 0)
+            {
+                return;
+            }
+            using (var memStream = new MemoryStream(dataReceived))
+            {
+                using (var binaryReader = new BinaryReader(memStream))
+                {
+                    while (memStream.Position < memStream.Length)
+                    {
+                        int channelType = 0;
+                        byte[] message = null;
+                        try
+                        {
+                            channelType = binaryReader.ReadInt32();
+                            var messageLength = binaryReader.ReadInt32();
+                            message = binaryReader.ReadBytes(messageLength);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new UnityAgentsException(
+                                "There was a problem reading a message in a SideChannel. Please make sure the " +
+                                "version of MLAgents in Unity is compatible with the Python version. Original error : "
+                                + ex.Message);
+                        }
+                        if (sideChannels.ContainsKey(channelType))
+                        {
+                            sideChannels[channelType].OnMessageReceived(message);
+                        }
+                        else
+                        {
+                            Debug.Log(string.Format(
+                                "Unknown side channel data received. Channel type "
+                                + ": {0}", channelType));
+                        }
+                    }
+                }
             }
         }
 

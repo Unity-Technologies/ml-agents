@@ -3,16 +3,17 @@ from unittest.mock import Mock, MagicMock
 import unittest
 from queue import Empty as EmptyQueue
 
-from mlagents.envs.subprocess_env_manager import (
+from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
     StepResponse,
 )
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
+from mlagents.envs.base_env import BaseEnv
+from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 def mock_env_factory(worker_id):
-    return mock.create_autospec(spec=BaseUnityEnvironment)
+    return mock.create_autospec(spec=BaseEnv)
 
 
 class MockEnvWorker:
@@ -28,35 +29,43 @@ class MockEnvWorker:
 class SubprocessEnvManagerTest(unittest.TestCase):
     def test_environments_are_created(self):
         SubprocessEnvManager.create_worker = MagicMock()
-        env = SubprocessEnvManager(mock_env_factory, 2)
+        env = SubprocessEnvManager(mock_env_factory, EngineConfig.default_config(), 2)
         # Creates two processes
         env.create_worker.assert_has_calls(
             [
-                mock.call(0, env.step_queue, mock_env_factory),
-                mock.call(1, env.step_queue, mock_env_factory),
+                mock.call(
+                    0, env.step_queue, mock_env_factory, EngineConfig.default_config()
+                ),
+                mock.call(
+                    1, env.step_queue, mock_env_factory, EngineConfig.default_config()
+                ),
             ]
         )
         self.assertEqual(len(env.env_workers), 2)
 
     def test_reset_passes_reset_params(self):
-        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
+        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory, engine_c: MockEnvWorker(
             worker_id, EnvironmentResponse("reset", worker_id, worker_id)
         )
-        manager = SubprocessEnvManager(mock_env_factory, 1)
+        manager = SubprocessEnvManager(
+            mock_env_factory, EngineConfig.default_config(), 1
+        )
         params = {"test": "params"}
-        manager.reset(params, False)
-        manager.env_workers[0].send.assert_called_with("reset", (params, False, None))
+        manager.reset(params)
+        manager.env_workers[0].send.assert_called_with("reset", (params))
 
     def test_reset_collects_results_from_all_envs(self):
-        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
+        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory, engine_c: MockEnvWorker(
             worker_id, EnvironmentResponse("reset", worker_id, worker_id)
         )
-        manager = SubprocessEnvManager(mock_env_factory, 4)
+        manager = SubprocessEnvManager(
+            mock_env_factory, EngineConfig.default_config(), 4
+        )
 
         params = {"test": "params"}
         res = manager.reset(params)
         for i, env in enumerate(manager.env_workers):
-            env.send.assert_called_with("reset", (params, True, None))
+            env.send.assert_called_with("reset", (params))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(
@@ -65,10 +74,12 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         assert res == list(map(lambda ew: ew.previous_step, manager.env_workers))
 
     def test_step_takes_steps_for_all_non_waiting_envs(self):
-        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory: MockEnvWorker(
+        SubprocessEnvManager.create_worker = lambda em, worker_id, step_queue, env_factory, engine_c: MockEnvWorker(
             worker_id, EnvironmentResponse("step", worker_id, worker_id)
         )
-        manager = SubprocessEnvManager(mock_env_factory, 3)
+        manager = SubprocessEnvManager(
+            mock_env_factory, EngineConfig.default_config(), 3
+        )
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [
             EnvironmentResponse("step", 0, StepResponse(0, None)),

@@ -5,12 +5,12 @@ import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.envs.exception import UnityException
-from mlagents.envs.policy import Policy
-from mlagents.envs.action_info import ActionInfo
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.action_info import ActionInfo
 from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -57,6 +57,7 @@ class TFPolicy(Policy):
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[str, np.ndarray] = {}
+        self.reward_signals: Dict[str, "RewardSignal"] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
@@ -126,7 +127,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], None)
+            return ActionInfo([], [], {})
 
         agents_done = [
             agent
@@ -178,7 +179,7 @@ class TFPolicy(Policy):
         :param num_agents: Number of agents.
         :return: Numpy array of zeros.
         """
-        return np.zeros((num_agents, self.m_size), dtype=np.float)
+        return np.zeros((num_agents, self.m_size), dtype=np.float32)
 
     def save_memories(
         self, agent_ids: List[str], memory_matrix: Optional[np.ndarray]
@@ -189,7 +190,7 @@ class TFPolicy(Policy):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 
     def retrieve_memories(self, agent_ids: List[str]) -> np.ndarray:
-        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float)
+        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.memory_dict:
                 memory_matrix[index, :] = self.memory_dict[agent_id]

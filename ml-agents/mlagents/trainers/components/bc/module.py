@@ -22,7 +22,7 @@ class BCModule:
         samples_per_update: int = 0,
     ):
         """
-        A BC trainer that can be used inline with RL, especially for pretraining.
+        A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
         :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate
             for the pretrainer.
@@ -33,7 +33,7 @@ class BCModule:
         :param demo_path: The path to the demonstration file.
         :param batch_size: The batch size to use during BC training.
         :param num_epoch: Number of epochs to train for during each update.
-        :param samples_per_update: Maximum number of samples to train on during each pretraining update.
+        :param samples_per_update: Maximum number of samples to train on during each BC update.
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
@@ -43,9 +43,7 @@ class BCModule:
         self.batch_size = batch_size if batch_size else default_batch_size
         self.num_epoch = num_epoch if num_epoch else default_num_epoch
         self.n_sequences = max(
-            min(
-                self.batch_size, len(self.demonstration_buffer.update_buffer["actions"])
-            )
+            min(self.batch_size, self.demonstration_buffer.num_experiences)
             // policy.sequence_length,
             1,
         )
@@ -62,7 +60,7 @@ class BCModule:
     @staticmethod
     def check_config(config_dict: Dict[str, Any]) -> None:
         """
-        Check the pretraining config for the required keys.
+        Check the behavioral_cloning config for the required keys.
         :param config_dict: Pretraining section of trainer_config
         """
         param_keys = ["strength", "demo_path", "steps"]
@@ -87,7 +85,7 @@ class BCModule:
 
         batch_losses = []
         possible_demo_batches = (
-            len(self.demonstration_buffer.update_buffer["actions"]) // self.n_sequences
+            self.demonstration_buffer.num_experiences // self.n_sequences
         )
         possible_batches = possible_demo_batches
 
@@ -95,7 +93,7 @@ class BCModule:
 
         n_epoch = self.num_epoch
         for _ in range(n_epoch):
-            self.demonstration_buffer.update_buffer.shuffle(
+            self.demonstration_buffer.shuffle(
                 sequence_length=self.policy.sequence_length
             )
             if max_batches == 0:
@@ -103,7 +101,7 @@ class BCModule:
             else:
                 num_batches = min(possible_batches, max_batches)
             for i in range(num_batches // self.policy.sequence_length):
-                demo_update_buffer = self.demonstration_buffer.update_buffer
+                demo_update_buffer = self.demonstration_buffer
                 start = i * self.n_sequences * self.policy.sequence_length
                 end = (i + 1) * self.n_sequences * self.policy.sequence_length
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
@@ -135,7 +133,8 @@ class BCModule:
                 (
                     self.n_sequences * self.policy.sequence_length,
                     sum(self.policy.model.brain.vector_action_space_size),
-                )
+                ),
+                dtype=np.float32,
             )
         if self.policy.model.brain.vector_observation_space_size > 0:
             feed_dict[self.policy.model.vector_in] = mini_batch_demo["vector_obs"]
@@ -145,7 +144,7 @@ class BCModule:
             ]
         if self.use_recurrent:
             feed_dict[self.policy.model.memory_in] = np.zeros(
-                [self.n_sequences, self.policy.m_size]
+                [self.n_sequences, self.policy.m_size], dtype=np.float32
             )
             if not self.policy.model.brain.vector_action_space_type == "continuous":
                 feed_dict[self.policy.model.prev_action] = mini_batch_demo[

@@ -46,7 +46,6 @@ def test_run_training(
                 None,
                 False,
                 0,
-                True,
                 sampler_manager_mock.return_value,
                 None,
             )
@@ -95,7 +94,6 @@ def test_commandline_args():
     assert opt.run_id == "ppo"
     assert opt.save_freq == 50000
     assert opt.seed == -1
-    assert opt.fast_simulation is True
     assert opt.train_model is False
     assert opt.base_port == 5005
     assert opt.num_envs == 1
@@ -117,7 +115,6 @@ def test_commandline_args():
         "--num-runs=3",
         "--save-freq=123456",
         "--seed=7890",
-        "--slow",
         "--train",
         "--base-port=4004",
         "--num-envs=2",
@@ -138,7 +135,6 @@ def test_commandline_args():
     assert opt.run_id == "myawesomerun"
     assert opt.save_freq == 123456
     assert opt.seed == 7890
-    assert opt.fast_simulation is False
     assert opt.train_model is True
     assert opt.base_port == 4004
     assert opt.num_envs == 2

@@ -7,6 +7,22 @@ The versions can be found in
 
 # Migrating
 
+## Migrating from master to develop
+
+### Important changes
+* The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. This should only affect you if you're writing a custom trainer; if you use `mlagents-learn` for training, this should be a transparent change.
+* `CustomResetParameters` are now removed.
+* `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
+* `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`. For more information, refer to the [Low Level Python API documentation](Python-API.md)
+* The Academy no longer has a `Training Configuration` nor `Inference Configuration` field in the inspector. To modify the configuration from the Low-Level Python API, use an `EngineConfigurationChannel`. To modify it during training, use the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` in `mlagents-learn`.
+* The Academy no longer has a `Default Reset Parameters` field in the inspector. The Academy class no longer has a `ResetParameters`. To access shared float properties with Python, use the new `FloatProperties` field on the Academy.
+* Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
+Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
+
+### Steps to Migrate
+ * If you had a custom `Training Configuration` in the Academy inspector, you will need to pass your custom configuration at every training run using the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate`.
+ * If you were using `--slow` in `mlagents-learn`, you will need to pass your old `Inference Configuration` of the Academy inspector with the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` instead.
+
 ## Migrating from ML-Agents toolkit v0.11.0 to v0.12.0
 
 ### Important Changes
@@ -16,6 +32,7 @@ The versions can be found in
   * `Default` corresponds to the previous unchecked behavior, meaning that Agents will train if they connect to a python trainer, otherwise they will performance inference.
   * `Heuristic Only` means the Agent will always use the `Heuristic()` method. This corresponds to having "Use Heuristic" selected in 0.11.0.
   * `Inference Only` means the Agent will always perform inference.
+* Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager.
 
 ### Steps to Migrate
 * We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.

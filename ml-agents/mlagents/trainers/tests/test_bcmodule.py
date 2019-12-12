@@ -30,7 +30,7 @@ def ppo_dummy_config():
         summary_freq: 1000
         use_recurrent: false
         memory_size: 8
-        pretraining:
+        behavioral_cloning:
           demo_path: ./demos/ExpertPyramid.demo
           strength: 1.0
           steps: 10000000
@@ -64,7 +64,7 @@ def sac_dummy_config():
         tau: 0.005
         use_recurrent: false
         vis_encode_type: simple
-        pretraining:
+        behavioral_cloning:
             demo_path: ./demos/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000
@@ -87,7 +87,7 @@ def create_policy_with_bc_mock(
     trainer_config["model_path"] = model_path
     trainer_config["keep_checkpoints"] = 3
     trainer_config["use_recurrent"] = use_rnn
-    trainer_config["pretraining"]["demo_path"] = (
+    trainer_config["behavioral_cloning"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/" + demo_file
     )
 
@@ -108,12 +108,12 @@ def test_bcmodule_defaults(mock_env):
     env, policy = create_policy_with_bc_mock(
         mock_env, mock_brain, trainer_config, False, "test.demo"
     )
-    assert policy.bc_module.num_epoch == trainer_config["num_epoch"]
+    assert policy.bc_module.num_epoch == 3
     assert policy.bc_module.batch_size == trainer_config["batch_size"]
     env.close()
     # Assign strange values and see if it overrides properly
-    trainer_config["pretraining"]["num_epoch"] = 100
-    trainer_config["pretraining"]["batch_size"] = 10000
+    trainer_config["behavioral_cloning"]["num_epoch"] = 100
+    trainer_config["behavioral_cloning"]["batch_size"] = 10000
     env, policy = create_policy_with_bc_mock(
         mock_env, mock_brain, trainer_config, False, "test.demo"
     )
@@ -145,7 +145,7 @@ def test_bcmodule_update(mock_env, trainer_config):
 @mock.patch("mlagents.envs.environment.UnityEnvironment")
 def test_bcmodule_constant_lr_update(mock_env, trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
-    trainer_config["pretraining"]["steps"] = 0
+    trainer_config["behavioral_cloning"]["steps"] = 0
     env, policy = create_policy_with_bc_mock(
         mock_env, mock_brain, trainer_config, False, "test.demo"
     )

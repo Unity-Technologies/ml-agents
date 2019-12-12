@@ -6,7 +6,7 @@ from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents.envs.communicator_objects.observation_pb2 import ObservationProto
 from mlagents.envs.timers import hierarchical_timer, timed
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Collection
 from PIL import Image
 
 logger = logging.getLogger("mlagents.envs")
@@ -120,22 +120,6 @@ class BrainInfo:
         self.action_masks = action_mask
 
     @staticmethod
-    def merge_memories(m1, m2, agents1, agents2):
-        if len(m1) == 0 and len(m2) != 0:
-            m1 = np.zeros((len(agents1), m2.shape[1]))
-        elif len(m2) == 0 and len(m1) != 0:
-            m2 = np.zeros((len(agents2), m1.shape[1]))
-        elif m2.shape[1] > m1.shape[1]:
-            new_m1 = np.zeros((m1.shape[0], m2.shape[1]))
-            new_m1[0 : m1.shape[0], 0 : m1.shape[1]] = m1
-            return np.append(new_m1, m2, axis=0)
-        elif m1.shape[1] > m2.shape[1]:
-            new_m2 = np.zeros((m2.shape[0], m1.shape[1]))
-            new_m2[0 : m2.shape[0], 0 : m2.shape[1]] = m2
-            return np.append(m1, new_m2, axis=0)
-        return np.append(m1, m2, axis=0)
-
-    @staticmethod
     @timed
     def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         """
@@ -157,9 +141,12 @@ class BrainInfo:
         return s
 
     @staticmethod
+    @timed
     def from_agent_proto(
         worker_id: int,
-        agent_info_list: List[AgentInfoProto],
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
         brain_params: BrainParameters,
     ) -> "BrainInfo":
         """
@@ -168,7 +155,9 @@ class BrainInfo:
         vis_obs = BrainInfo._process_visual_observations(brain_params, agent_info_list)
 
         total_num_actions = sum(brain_params.vector_action_space_size)
-        mask_actions = np.ones((len(agent_info_list), total_num_actions))
+        mask_actions = np.ones(
+            (len(agent_info_list), total_num_actions), dtype=np.float32
+        )
         for agent_index, agent_info in enumerate(agent_info_list):
             if agent_info.action_mask is not None:
                 if len(agent_info.action_mask) == total_num_actions:
@@ -199,7 +188,10 @@ class BrainInfo:
 
     @staticmethod
     def _process_visual_observations(
-        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> List[np.ndarray]:
 
         visual_observation_protos: List[List[ObservationProto]] = []
@@ -228,10 +220,15 @@ class BrainInfo:
 
     @staticmethod
     def _process_vector_observations(
-        brain_params: BrainParameters, agent_info_list: List[AgentInfoProto]
+        brain_params: BrainParameters,
+        agent_info_list: Collection[
+            AgentInfoProto
+        ],  # pylint: disable=unsubscriptable-object
     ) -> np.ndarray:
         if len(agent_info_list) == 0:
-            vector_obs = np.zeros((0, brain_params.vector_observation_space_size))
+            vector_obs = np.zeros(
+                (0, brain_params.vector_observation_space_size), dtype=np.float32
+            )
         else:
             stacked_obs = []
             has_nan = False
@@ -245,7 +242,7 @@ class BrainInfo:
                 for vo in vec_obs:
                     # TODO consider itertools.chain here
                     proto_vector_obs.extend(vo.float_data.data)
-                np_obs = np.array(proto_vector_obs)
+                np_obs = np.array(proto_vector_obs, dtype=np.float32)
 
                 # Check for NaNs or infs in the observations
                 # If there's a NaN in the observations, the dot() result will be NaN
@@ -257,7 +254,7 @@ class BrainInfo:
                 has_nan = has_nan or np.isnan(d)
                 has_inf = has_inf or not np.isfinite(d)
                 stacked_obs.append(np_obs)
-            vector_obs = np.array(stacked_obs)
+            vector_obs = np.array(stacked_obs, dtype=np.float32)
 
             # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
             if has_nan or has_inf:
@@ -268,34 +265,6 @@ class BrainInfo:
                     f"An agent had a NaN observation for brain {brain_params.brain_name}"
                 )
         return vector_obs
-
-
-def safe_concat_lists(l1: Optional[List], l2: Optional[List]) -> Optional[List]:
-    if l1 is None:
-        if l2 is None:
-            return None
-        else:
-            return l2.copy()
-    else:
-        if l2 is None:
-            return l1.copy()
-        else:
-            copy = l1.copy()
-            copy.extend(l2)
-            return copy
-
-
-def safe_concat_np_ndarray(
-    a1: Optional[np.ndarray], a2: Optional[np.ndarray]
-) -> Optional[np.ndarray]:
-    if a1 is not None and a1.size != 0:
-        if a2 is not None and a2.size != 0:
-            return np.append(a1, a2, axis=0)
-        else:
-            return a1.copy()
-    elif a2 is not None and a2.size != 0:
-        return a2.copy()
-    return None
 
 
 # Renaming of dictionary of brain name to BrainInfo for clarity
