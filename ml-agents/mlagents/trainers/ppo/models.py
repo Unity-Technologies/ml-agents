@@ -1,7 +1,8 @@
 import logging
-import numpy as np
+from typing import Optional
 
-import tensorflow as tf
+import numpy as np
+from mlagents.tf_utils import tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 
 logger = logging.getLogger("mlagents.trainers")
@@ -46,6 +47,11 @@ class PPOModel(LearningModel):
         LearningModel.__init__(
             self, m_size, normalize, use_recurrent, brain, seed, stream_names
         )
+
+        self.optimizer: Optional[tf.train.AdamOptimizer] = None
+        self.grads = None
+        self.update_batch: Optional[tf.Operation] = None
+
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
@@ -203,9 +209,7 @@ class PPOModel(LearningModel):
                 )
             )
 
-        self.all_log_probs = tf.concat(
-            [branch for branch in policy_branches], axis=1, name="action_probs"
-        )
+        self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"

@@ -18,32 +18,58 @@ Build Support_ component when installing Unity.
 
 ## Environment Setup
 We now support a single mechanism for installing ML-Agents on Mac/Windows/Linux using Virtual
-Environments. For more information on Virtual Environments and installation instructions, 
+Environments. For more information on Virtual Environments and installation instructions,
 follow this [guide](Using-Virtual-Environment.md).
+
+Although we don't support Anaconda installation path of ML-Agents for Windows, the previous guide
+is still in the docs folder.  Please refer to [Windows Installation (Deprecated)](Installation-Windows.md).
 
 ### Clone the ML-Agents Toolkit Repository
 
 Once installed, you will want to clone the ML-Agents Toolkit GitHub repository.
 
 ```sh
-git clone https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
 ```
+The `--branch latest_release` option will switch to the tag of the latest stable release.
+Omitting that will get the `master` branch which is potentially unstable.
 
 The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
 It also contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
-The `ml-agents` subdirectory contains a Python package which provides deep reinforcement 
+### Package Installation
+
+If you intend to copy the `UnitySDK` folder in to your project, ensure that
+you have the [Barracuda preview package](https://docs.unity3d.com/Packages/com.unity.barracuda@0.3/manual/index.html) installed.
+
+To install the Barracuda package in Unity **2017.4.x**, you will have to copy the
+`UnityPackageManager` folder under the `UnitySDK` folder to the root directory of your
+project.
+
+To install the Barrcuda package in later versions of Unity, navigate to the Package
+Manager window by navigating to the menu `Window` -> `Package Manager`.  Click on the
+`Adavanced` dropdown menu to the left of the search bar and make sure "Show Preview Packages"
+is checked.  Search for or select the `Barracuda` package and install the latest version.
+
+<p align="center">
+  <img src="images/barracuda-package.png"
+       alt="Barracuda Package Manager"
+       width="710" border="10"
+       height="569" />
+</p>
+
+The `ml-agents` subdirectory contains a Python package which provides deep reinforcement
 learning trainers to use with Unity environments.
 
 The `ml-agents-envs` subdirectory contains a Python API to interface with Unity, which
-the `ml-agents` package depends on. 
+the `ml-agents` package depends on.
 
 The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
 
 ### Install Python and mlagents Package
 
-In order to use ML-Agents toolkit, you need Python 3.6.1 or higher.  
+In order to use ML-Agents toolkit, you need Python 3.6.1 or higher.
 [Download](https://www.python.org/downloads/) and install the latest version of Python if you do not already have it.
 
 If your Python environment doesn't include `pip3`, see these
@@ -56,10 +82,10 @@ To install the `mlagents` Python package, run from the command line:
 pip3 install mlagents
 ```
 
-Note that this will install `ml-agents` from PyPi, _not_ from the cloned repo. 
+Note that this will install `ml-agents` from PyPi, _not_ from the cloned repo.
 If you installed this correctly, you should be able to run
 `mlagents-learn --help`, after which you will see the Unity logo and the command line
-parameters you can use with `mlagents-learn`. 
+parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the [setup.py file](../ml-agents/setup.py) are also installed.
 Some of the primary dependencies include:
@@ -77,7 +103,7 @@ Some of the primary dependencies include:
 
 ### Installing for Development
 
-If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install 
+If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install
 the packages from the cloned repo rather than from PyPi. To do this, you will need to install
  `ml-agents` and `ml-agents-envs` separately. From the repo's root directory, run:
 
@@ -91,7 +117,7 @@ pip3 install -e ./
 
 Running pip with the `-e` flag will let you make changes to the Python files directly and have those
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
-`mlagents` package depends on `mlagents_envs`, and installing it in the other 
+`mlagents` package depends on `mlagents_envs`, and installing it in the other
 order will download `mlagents_envs` from PyPi.
 
 ## Next Steps

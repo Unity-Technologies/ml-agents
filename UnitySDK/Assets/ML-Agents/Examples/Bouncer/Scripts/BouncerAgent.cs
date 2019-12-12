@@ -13,7 +13,7 @@ public class BouncerAgent : Agent
     int m_NumberJumps = 20;
     int m_JumpLeft = 20;
 
-    ResetParameters m_ResetParams;
+    IFloatProperties m_ResetParams;
 
     public override void InitializeAgent()
     {
@@ -21,7 +21,7 @@ public class BouncerAgent : Agent
         m_LookDir = Vector3.zero;
 
         var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.resetParameters;
+        m_ResetParams = academy.FloatProperties;
 
         SetResetParameters();
     }
@@ -32,7 +32,7 @@ public class BouncerAgent : Agent
         AddVectorObs(target.transform.localPosition);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         for (var i = 0; i < vectorAction.Length; i++)
         {
@@ -72,7 +72,7 @@ public class BouncerAgent : Agent
     {
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (Physics.Raycast(transform.position, new Vector3(0f, -1f, 0f), 0.51f) && m_JumpCooldown <= 0f)
         {
@@ -114,7 +114,7 @@ public class BouncerAgent : Agent
         return action;
     }
 
-    private void Update()
+    void Update()
     {
         if (m_LookDir.magnitude > float.Epsilon)
         {
@@ -126,7 +126,7 @@ public class BouncerAgent : Agent
 
     public void SetTargetScale()
     {
-        var targetScale = m_ResetParams["target_scale"];
+        var targetScale = m_ResetParams.GetPropertyWithDefault("target_scale", 1.0f);
         target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
 

@@ -3,7 +3,9 @@ using MLAgents;
 
 public class WalkerAgent : Agent
 {
-    [Header("Specific to Walker")][Header("Target To Walk Towards")][Space(10)]
+    [Header("Specific to Walker")]
+    [Header("Target To Walk Towards")]
+    [Space(10)]
     public Transform target;
 
     Vector3 m_DirToTarget;
@@ -27,11 +29,11 @@ public class WalkerAgent : Agent
     bool m_IsNewDecisionStep;
     int m_CurrentDecisionStep;
 
-    private Rigidbody m_HipsRb;
-    private Rigidbody m_ChestRb;
-    private Rigidbody m_SpineRb;
+    Rigidbody m_HipsRb;
+    Rigidbody m_ChestRb;
+    Rigidbody m_SpineRb;
 
-    private ResetParameters m_ResetParams;
+    IFloatProperties m_ResetParams;
 
     public override void InitializeAgent()
     {
@@ -58,7 +60,7 @@ public class WalkerAgent : Agent
         m_SpineRb = spine.GetComponent<Rigidbody>();
 
         var academy = FindObjectOfType<WalkerAcademy>();
-        m_ResetParams = academy.resetParameters;
+        m_ResetParams = academy.FloatProperties;
 
         SetResetParameters();
     }
@@ -103,7 +105,7 @@ public class WalkerAgent : Agent
         }
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
 
@@ -202,9 +204,9 @@ public class WalkerAgent : Agent
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams["chest_mass"];
-        m_SpineRb.mass = m_ResetParams["spine_mass"];
-        m_HipsRb.mass = m_ResetParams["hip_mass"];
+        m_ChestRb.mass = m_ResetParams.GetPropertyWithDefault("chest_mass", 8);
+        m_SpineRb.mass = m_ResetParams.GetPropertyWithDefault("spine_mass", 10);
+        m_HipsRb.mass = m_ResetParams.GetPropertyWithDefault("hip_mass", 15);
     }
 
     public void SetResetParameters()

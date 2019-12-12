@@ -3,17 +3,22 @@ import random
 import tempfile
 import pytest
 import yaml
-from typing import Any, Dict
+from typing import Dict
+import numpy as np
 
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.envs.base_unity_environment import BaseUnityEnvironment
-from mlagents.envs.brain import BrainInfo, AllBrainInfo, BrainParameters
-from mlagents.envs.communicator_objects.agent_info_pb2 import AgentInfoProto
-from mlagents.envs.simple_env_manager import SimpleEnvManager
-from mlagents.envs.sampler_class import SamplerManager
-
+from mlagents.envs.base_env import (
+    BaseEnv,
+    AgentGroupSpec,
+    BatchedStepResult,
+    ActionType,
+)
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.simple_env_manager import SimpleEnvManager
+from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 BRAIN_NAME = __name__
 OBS_SIZE = 1
@@ -28,7 +33,7 @@ def clamp(x, min_val, max_val):
     return max(min_val, min(x, max_val))
 
 
-class Simple1DEnvironment(BaseUnityEnvironment):
+class Simple1DEnvironment(BaseEnv):
     """
     Very simple "game" - the agent has a position on [-1, 1], gets a reward of 1 if it reaches 1, and a reward of -1 if
     it reaches -1. The position is incremented by the action amount (clamped to [-step_size, step_size]).
@@ -37,38 +42,41 @@ class Simple1DEnvironment(BaseUnityEnvironment):
     def __init__(self, use_discrete):
         super().__init__()
         self.discrete = use_discrete
-        self._brains: Dict[str, BrainParameters] = {}
-        brain_params = BrainParameters(
-            brain_name=BRAIN_NAME,
-            vector_observation_space_size=OBS_SIZE,
-            num_stacked_vector_observations=1,
-            camera_resolutions=[],
-            vector_action_space_size=[2] if use_discrete else [1],
-            vector_action_descriptions=["moveDirection"],
-            vector_action_space_type=0 if use_discrete else 1,
+        action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
+        self.group_spec = AgentGroupSpec(
+            [(OBS_SIZE,)], action_type, (2,) if use_discrete else 1
         )
-        self._brains[BRAIN_NAME] = brain_params
-
         # state
         self.position = 0.0
         self.step_count = 0
-        self.random = random.Random(str(brain_params))
+        self.random = random.Random(str(self.group_spec))
         self.goal = self.random.choice([-1, 1])
+        self.action = None
+        self.step_result = None
 
-    def step(
-        self,
-        vector_action: Dict[str, Any] = None,
-        memory: Dict[str, Any] = None,
-        text_action: Dict[str, Any] = None,
-        value: Dict[str, Any] = None,
-    ) -> AllBrainInfo:
-        assert vector_action is not None
+    def get_agent_groups(self):
+        return [BRAIN_NAME]
+
+    def get_agent_group_spec(self, name):
+        return self.group_spec
+
+    def set_action_for_agent(self, name, id, data):
+        pass
+
+    def set_actions(self, name, data):
+        self.action = data
+
+    def get_step_result(self, name):
+        return self.step_result
+
+    def step(self) -> None:
+        assert self.action is not None
 
         if self.discrete:
-            act = vector_action[BRAIN_NAME][0][0]
+            act = self.action[0][0]
             delta = 1 if act else -1
         else:
-            delta = vector_action[BRAIN_NAME][0][0]
+            delta = self.action[0][0]
         delta = clamp(delta, -STEP_SIZE, STEP_SIZE)
         self.position += delta
         self.position = clamp(self.position, -1, 1)
@@ -79,42 +87,34 @@ class Simple1DEnvironment(BaseUnityEnvironment):
         else:
             reward = -TIME_PENALTY
 
-        agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.goal] * OBS_SIZE, reward=reward, done=done
-        )
+        m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * self.goal]
+        m_reward = np.array([reward], dtype=np.float32)
+        m_done = np.array([done], dtype=np.bool)
+        m_agent_id = np.array([0], dtype=np.int32)
 
         if done:
             self._reset_agent()
 
-        return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(
-                0, [agent_info], self._brains[BRAIN_NAME]
-            )
-        }
+        self.step_result = BatchedStepResult(
+            m_vector_obs, m_reward, m_done, m_done, m_agent_id, None
+        )
 
     def _reset_agent(self):
         self.position = 0.0
         self.step_count = 0
         self.goal = self.random.choice([-1, 1])
 
-    def reset(
-        self,
-        config: Dict[str, float] = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> AllBrainInfo:  # type: ignore
+    def reset(self) -> None:  # type: ignore
         self._reset_agent()
 
-        agent_info = AgentInfoProto(
-            stacked_vector_observation=[self.goal] * OBS_SIZE,
-            done=False,
-            max_step_reached=False,
+        m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * self.goal]
+        m_reward = np.array([0], dtype=np.float32)
+        m_done = np.array([False], dtype=np.bool)
+        m_agent_id = np.array([0], dtype=np.int32)
+
+        self.step_result = BatchedStepResult(
+            m_vector_obs, m_reward, m_done, m_done, m_agent_id, None
         )
-        return {
-            BRAIN_NAME: BrainInfo.from_agent_proto(
-                0, [agent_info], self._brains[BRAIN_NAME]
-            )
-        }
 
     @property
     def external_brains(self) -> Dict[str, BrainParameters]:
@@ -156,13 +156,13 @@ PPO_CONFIG = """
 SAC_CONFIG = """
     default:
         trainer: sac
-        batch_size: 32
-        buffer_size: 10240
-        buffer_init_steps: 1000
-        hidden_units: 64
+        batch_size: 8
+        buffer_size: 500
+        buffer_init_steps: 100
+        hidden_units: 16
         init_entcoef: 0.01
         learning_rate: 5.0e-3
-        max_steps: 2000
+        max_steps: 1000
         memory_size: 256
         normalize: false
         num_update: 1
@@ -191,7 +191,7 @@ def _check_environment_trains(env, config):
         seed = 1337
 
         trainer_config = yaml.safe_load(config)
-        env_manager = SimpleEnvManager(env)
+        env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
             summaries_dir=dir,
@@ -213,7 +213,6 @@ def _check_environment_trains(env, config):
             meta_curriculum=None,
             train=True,
             training_seed=seed,
-            fast_simulation=True,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
             save_freq=save_freq,

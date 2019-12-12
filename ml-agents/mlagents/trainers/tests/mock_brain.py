@@ -1,13 +1,13 @@
 import unittest.mock as mock
 import numpy as np
 
-from mlagents.envs.brain import CameraResolution, BrainParameters
-from mlagents.trainers.buffer import Buffer
+from mlagents.trainers.brain import CameraResolution, BrainParameters
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.agent_processor import ProcessingBuffer
 
 
 def create_mock_brainparams(
     number_visual_observations=0,
-    num_stacked_vector_observations=1,
     vector_action_space_type="continuous",
     vector_observation_space_size=3,
     vector_action_space_size=None,
@@ -20,9 +20,6 @@ def create_mock_brainparams(
         vector_action_space_size = [2]
     mock_brain = mock.Mock()
     mock_brain.return_value.number_visual_observations = number_visual_observations
-    mock_brain.return_value.num_stacked_vector_observations = (
-        num_stacked_vector_observations
-    )
     mock_brain.return_value.vector_action_space_type = vector_action_space_type
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size
@@ -55,27 +52,25 @@ def create_mock_braininfo(
     mock_braininfo = mock.Mock()
 
     mock_braininfo.return_value.visual_observations = num_vis_observations * [
-        np.ones((num_agents, 84, 84, 3))
+        np.ones((num_agents, 84, 84, 3), dtype=np.float32)
     ]
     mock_braininfo.return_value.vector_observations = np.array(
-        num_agents * [num_vector_observations * [1]]
+        num_agents * [num_vector_observations * [1]], dtype=np.float32
     )
     if discrete:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_discrete_branches * [0.5]]
+            num_agents * [num_discrete_branches * [0.5]], dtype=np.float32
         )
         mock_braininfo.return_value.action_masks = np.array(
-            num_agents * [num_vector_acts * [1.0]]
+            num_agents * [num_vector_acts * [1.0]], dtype=np.float32
         )
     else:
         mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_vector_acts * [0.5]]
+            num_agents * [num_vector_acts * [0.5]], dtype=np.float32
         )
-    mock_braininfo.return_value.memories = np.ones((num_agents, 8))
+    mock_braininfo.return_value.memories = np.ones((num_agents, 8), dtype=np.float32)
     mock_braininfo.return_value.rewards = num_agents * [1.0]
     mock_braininfo.return_value.local_done = num_agents * [False]
-    mock_braininfo.return_value.text_observations = num_agents * [""]
-    mock_braininfo.return_value.previous_text_actions = num_agents * [""]
     mock_braininfo.return_value.max_reached = num_agents * [100]
     mock_braininfo.return_value.action_masks = num_agents * [num_vector_acts * [1.0]]
     mock_braininfo.return_value.agents = range(0, num_agents)
@@ -107,13 +102,14 @@ def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     # If a key_list was given, remove those keys
     if exclude_key_list:
         for key in exclude_key_list:
-            if key in buffer.update_buffer:
-                buffer.update_buffer.pop(key)
+            if key in buffer:
+                buffer.pop(key)
     return buffer
 
 
 def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
-    buffer = Buffer()
+    buffer = ProcessingBuffer()
+    update_buffer = AgentBuffer()
     # Make a buffer
     for idx, experience in enumerate(brain_infos):
         if idx > len(brain_infos) - 2:
@@ -135,27 +131,33 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
             buffer[0]["next_vector_in"].append(
                 current_brain_info.vector_observations[0]
             )
-        buffer[0]["actions"].append(next_brain_info.previous_vector_actions[0])
-        buffer[0]["prev_action"].append(current_brain_info.previous_vector_actions[0])
+        fake_action_size = len(brain_params.vector_action_space_size)
+        if brain_params.vector_action_space_type == "continuous":
+            fake_action_size = brain_params.vector_action_space_size[0]
+        buffer[0]["actions"].append(np.zeros(fake_action_size, dtype=np.float32))
+        buffer[0]["prev_action"].append(np.zeros(fake_action_size, dtype=np.float32))
         buffer[0]["masks"].append(1.0)
         buffer[0]["advantages"].append(1.0)
         if brain_params.vector_action_space_type == "discrete":
             buffer[0]["action_probs"].append(
-                np.ones(sum(brain_params.vector_action_space_size))
+                np.ones(sum(brain_params.vector_action_space_size), dtype=np.float32)
             )
         else:
-            buffer[0]["action_probs"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["actions_pre"].append(np.ones(buffer[0]["actions"][0].shape))
-        buffer[0]["random_normal_epsilon"].append(
-            np.ones(buffer[0]["actions"][0].shape)
+            buffer[0]["action_probs"].append(
+                np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
+            )
+        buffer[0]["actions_pre"].append(
+            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
         )
         buffer[0]["action_mask"].append(
-            np.ones(np.sum(brain_params.vector_action_space_size))
+            np.ones(np.sum(brain_params.vector_action_space_size), dtype=np.float32)
         )
-        buffer[0]["memory"].append(np.ones(memory_size))
+        buffer[0]["memory"].append(np.ones(memory_size, dtype=np.float32))
 
-    buffer.append_update_buffer(0, batch_size=None, training_length=sequence_length)
-    return buffer
+    buffer.append_to_update_buffer(
+        update_buffer, 0, batch_size=None, training_length=sequence_length
+    )
+    return update_buffer
 
 
 def setup_mock_env_and_brains(
@@ -240,9 +242,8 @@ def create_mock_banana_brain():
 def make_brain_parameters(
     discrete_action: bool = False,
     visual_inputs: int = 0,
-    stack: bool = True,
     brain_name: str = "RealFakeBrain",
-    vec_obs_size: int = 3,
+    vec_obs_size: int = 6,
 ) -> BrainParameters:
     resolutions = [
         CameraResolution(width=30, height=40, num_channels=3)
@@ -251,7 +252,6 @@ def make_brain_parameters(
 
     return BrainParameters(
         vector_observation_space_size=vec_obs_size,
-        num_stacked_vector_observations=2 if stack else 1,
         camera_resolutions=resolutions,
         vector_action_space_size=[2],
         vector_action_descriptions=["", ""],

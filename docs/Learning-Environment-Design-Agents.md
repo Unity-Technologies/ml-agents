@@ -16,12 +16,12 @@ discover the optimal decision-making policy.
 
 The Policy class abstracts out the decision making logic from the Agent itself so
 that you can use the same Policy in multiple Agents. How a Policy makes its
-decisions depends on the kind of Policy it is. You can change the Policy of an 
-Agent by changing its `Behavior Parameters`. If you check `Use Heuristic`, the 
-Agent will use its `Heuristic()` method to make decisions which can allow you to 
+decisions depends on the kind of Policy it is. You can change the Policy of an
+Agent by changing its `Behavior Parameters`. If you check `Use Heuristic`, the
+Agent will use its `Heuristic()` method to make decisions which can allow you to
 control the Agent manually or write your own Policy. If the Agent has a `Model`
 file, it Policy will use the neural network `Model` to take decisions.
-  
+
 ## Decisions
 
 The observation-decision-action-reward cycle repeats after a configurable number
@@ -33,7 +33,7 @@ respond to specific events or take actions of variable duration. For example, an
 agent in a robotic simulator that must provide fine-control of joint torques
 should make its decisions every step of the simulation. On the other hand, an
 agent that only needs to make decisions when certain game or simulation events
-occur, should use on-demand decision making.  
+occur, should use on-demand decision making.
 
 To control the frequency of step-based decision making, set the **Decision
 Frequency** value for the Agent object in the Unity Inspector window. Agents
@@ -53,7 +53,7 @@ agents can take actions of variable duration.
 When you turn on **On Demand Decisions** for an Agent, your agent code must call
 the `Agent.RequestDecision()` function. This function call starts one iteration
 of the observation-decision-action-reward cycle. The Agent's
-`CollectObservations()` method is called, the Policy makes a decision and 
+`CollectObservations()` method is called, the Policy makes a decision and
 returns it by calling the
 `AgentAction()` method. The Policy waits for the Agent to request the next
 decision before starting another iteration.
@@ -69,9 +69,9 @@ state of the world. A state observation can take the following forms:
 
 When you use vector observations for an Agent, implement the
 `Agent.CollectObservations()` method to create the feature vector. When you use
-**Visual Observations**, you only need to identify which Unity Camera objects 
-or RenderTextures will provide images and the base Agent class handles the rest. 
-You do not need to implement the `CollectObservations()` method when your Agent 
+**Visual Observations**, you only need to identify which Unity Camera objects
+or RenderTextures will provide images and the base Agent class handles the rest.
+You do not need to implement the `CollectObservations()` method when your Agent
 uses visual observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
@@ -199,23 +199,24 @@ used in your normalization formula.
 
 ### Multiple Visual Observations
 
-Visual observations use rendered textures directly or from one or more 
-cameras in a scene. The Policy vectorizes the textures into a 3D Tensor which 
-can be fed into a convolutional neural network (CNN). For more information on 
-CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You 
+Visual observations use rendered textures directly or from one or more
+cameras in a scene. The Policy vectorizes the textures into a 3D Tensor which
+can be fed into a convolutional neural network (CNN). For more information on
+CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You
 can use visual observations along side vector observations.
 
-Agents using visual observations can capture state of arbitrary complexity and 
-are useful when the state is difficult to describe numerically. However, they 
-are also typically less efficient and slower to train, and sometimes don't 
+Agents using visual observations can capture state of arbitrary complexity and
+are useful when the state is difficult to describe numerically. However, they
+are also typically less efficient and slower to train, and sometimes don't
 succeed at all.
 
-Visual observations can be derived from Cameras or RenderTextures within your scene. 
-To add a visual observation to an Agent, either click on the `Add Camera` or 
-`Add RenderTexture` button in the Agent inspector. Then drag the camera or 
-render texture you want to add to the `Camera` or `RenderTexture` field. 
-You can have more than one camera or render texture and even use a combination 
-of both attached to an Agent.
+Visual observations can be derived from Cameras or RenderTextures within your scene.
+To add a visual observation to an Agent, add either a Camera Sensor Component
+or RenderTextures Sensor Component to the Agent. Then drag the camera or
+render texture you want to add to the `Camera` or `RenderTexture` field.
+You can have more than one camera or render texture and even use a combination
+of both attached to an Agent. For each visual observation, set the width and height
+of the image (in pixels) and whether or not the observation is color or grayscale.
 
 ![Agent Camera](images/visual-observation.png)
 
@@ -223,38 +224,69 @@ or
 
 ![Agent RenderTexture](images/visual-observation-rendertexture.png)
 
-In addition, make sure that the Agent's Policy expects a visual observation. In
-the Agent inspector, under **Behavior Parameters** > **Visual Observations**,
-specify the number of Resolutions the Agent is using for its visual observations.
-For each visual observation, set the width and height of the image (in pixels)
-and whether or not the observation is color or grayscale (when `Black And White`
-is checked). 
+Each Agent that uses the same Policy must have the same number of visual observations,
+and they must all have the same resolutions (including whether or not they are grayscale).
+Additionally, each Sensor Component on an Agent must have a unique name so that they can
+be sorted deterministically (the name must be unique for that Agent, but multiple Agents can
+have a Sensor Component with the same name).
 
-For instance, if you are using two cameras and one render texture on your Agent,
-three **Visual Observations** have to be added to the **Behavior Parameters**. 
-During runtime, if a combination of `Cameras` and `RenderTextures` is used, all 
-cameras are captured first, then all render textures will be added, in the
-order they appear in the editor. 
-
-![Agent Camera and RenderTexture combination](images/visual-observation-combination.png)
-
-RenderTexture observations will throw an `Exception` if the width/height doesn't 
-match the resolution specified under **Behavior Parameters** > **Visual Observations**.
-
-When using `RenderTexture` visual observations, a handy feature for debugging is 
-adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's 
-`RenderTexture`. This will render the agent observation on the game screen. 
+When using `RenderTexture` visual observations, a handy feature for debugging is
+adding a `Canvas`, then adding a `Raw Image` with it's texture set to the Agent's
+`RenderTexture`. This will render the agent observation on the game screen.
 
 ![RenderTexture with Raw Image](images/visual-observation-rawimage.png)
 
-The [GridWorld environment](Learning-Environment-Examples.md#gridworld) 
-is an example on how to use a RenderTexture for both debugging and observation. Note 
-that in this example, a Camera is rendered to a RenderTexture, which is then used for 
-observations and debugging. To update the RenderTexture, the Camera must be asked to 
-render every time a decision is requested within the game code. When using Cameras 
+The [GridWorld environment](Learning-Environment-Examples.md#gridworld)
+is an example on how to use a RenderTexture for both debugging and observation. Note
+that in this example, a Camera is rendered to a RenderTexture, which is then used for
+observations and debugging. To update the RenderTexture, the Camera must be asked to
+render every time a decision is requested within the game code. When using Cameras
 as observations directly, this is done automatically by the Agent.
 
 ![Agent RenderTexture Debug](images/gridworld.png)
+
+### Raycast Observations
+Raycasts are an alternative system for the Agent to provide observations based on
+the physical environment. This can be easily implemented by adding a
+RayPerceptionSensorComponent3D (or RayPerceptionSensorComponent2D) to the Agent.
+
+During observations, several rays (or spheres, depending on settings) are cast into
+the physics world, and the objects that are hit determine the observation vector that
+is produced.
+
+![Agent with two RayPerceptionSensorComponent3Ds](images/ray_perception.png)
+
+Both sensor components have several settings:
+ * _Detectable Tags_ A list of strings corresponding to the types of objects that the
+ Agent should be able to distinguish between. For example, in the WallJump example,
+ we use "wall", "goal", and "block" as the list of objects to detect.
+ * _Rays Per Direction_ Determines the number of rays that are cast. One ray is
+  always cast forward, and this many rays are cast to the left and right.
+ * _Max Ray Degrees_ The angle (in degrees) for the outermost rays. 90 degrees
+  corresponds to the left and right of the agent.
+ * _ Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
+  to 0, rays will be used instead of spheres. Rays may be more efficient,
+  especially in complex scenes.
+ * _Ray Length_ The length of the casts
+ * _Observation Stacks_ The number of previous results to "stack" with the cast
+  results. Note that this can be independent of the "Stacked Vectors" setting
+  in `Behavior Parameters`.
+ * _Start Vertical Offset_ (3D only) The vertical offset of the ray start point.
+ * _End Vertical Offset_ (3D only) The vertical offset of the ray end point.
+
+In the example image above, the Agent has two RayPerceptionSensorComponent3Ds.
+Both use 3 Rays Per Direction and 90 Max Ray Degrees. One of the components
+had a vertical offset, so the Agent can tell whether it's clear to jump over
+the wall.
+
+The total size of the created observations is
+```
+(Observation Stacks) * (1 + 2 * Rays Per Direction) * (Num Detectable Tags + 2)
+```
+so the number of rays and tags should be kept as small as possible to reduce the
+amount of data used. Note that this is separate from the State Size defined in
+`Behavior Parameters`, so you don't need to worry about the formula above when
+setting the State Size.
 
 ## Vector Actions
 
@@ -269,7 +301,7 @@ of commands. In the **Discrete** vector action space type, the action parameter
 is an array of indices. The number of indices in the array is determined by the
 number of branches defined in the `Branches Size` property. Each branch
 corresponds to an action table, you can specify the size of each table by
-modifying the `Branches` property. 
+modifying the `Branches` property.
 
 Neither the Policy nor the training algorithm know anything about what the action
 values themselves mean. The training algorithm simply tries different values for
@@ -292,7 +324,7 @@ movement), and the Policy would create an action array containing two elements
 with values ranging from zero to one.
 
 Note that when you are programming actions for an agent, it is often helpful to
-test your action logic using the `Heuristic()` method of the Agent, 
+test your action logic using the `Heuristic()` method of the Agent,
 which lets you map keyboard
 commands to actions.
 
@@ -425,7 +457,7 @@ trained model and is also not used during imitation learning.
 Perhaps the best advice is to start simple and only add complexity as needed. In
 general, you should reward results rather than actions you think will lead to
 the desired results. To help develop your rewards, you can use the Monitor class
-to display the cumulative reward received by an Agent. You can even use the 
+to display the cumulative reward received by an Agent. You can even use the
 Agent's Heuristic to control the Agent while watching how it accumulates rewards.
 
 Allocate rewards to an Agent by calling the `AddReward()` method in the
@@ -514,12 +546,12 @@ The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
 Note that all of these environments make use of the `Done()` method, which manually
-terminates an episode when a termination condition is reached. This can be 
+terminates an episode when a termination condition is reached. This can be
 called independently of the `Max Step` property.
 
 ## Agent Properties
 
-![Agent Inspector](images/agent.png)
+![Agent Inspector](images/3dball_learning_brain.png)
 
 * `Behavior Parameters` - The parameters dictating what Policy the Agent will
 receive.
@@ -529,8 +561,6 @@ receive.
       be stacked and used collectively for decision making. This results in the
       effective size of the vector observation being passed to the Policy being:
       _Space Size_ x _Stacked Vectors_.
-  * `Visual Observations` - Describes height, width, and whether to grayscale
-    visual observations for the Policy.
   * `Vector Action`
     * `Space Type` - Corresponds to whether action vector contains a single
       integer (Discrete) or a series of real-valued floats (Continuous).
@@ -538,13 +568,11 @@ receive.
     * `Branches` (Discrete) - An array of integers, defines multiple concurrent
       discrete actions. The values in the `Branches` array correspond to the
       number of possible discrete values for each action branch.
-  * `Model` - The neural network model used for inference (obtained after 
+  * `Model` - The neural network model used for inference (obtained after
   training)
   * `Inference Device` - Whether to use CPU or GPU to run the model during inference
   * `Use Heuristic` - If checked, the Agent will use its 'Heuristic()' method for
   decisions.
-* `Visual Observations` - A list of `Cameras` or `RenderTextures` which will 
-  be used to generate observations.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset if `Reset On Done` is checked.
 * `Reset On Done` - Whether the Agent's `AgentReset()` function should be called

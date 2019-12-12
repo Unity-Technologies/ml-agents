@@ -21,6 +21,10 @@ jobs:
     executor: << parameters.executor >>
     working_directory: ~/repo
 
+    # Run additional numpy checks on unit tests
+    environment:
+      TEST_ENFORCE_NUMPY_FLOAT32: 1
+
     steps:
       - checkout
 
@@ -33,8 +37,6 @@ jobs:
           keys:
           # Parameterize the cache so that different python versions can get different versions of the packages
           - v1-dependencies-py<< parameters.pyversion >>-{{ checksum "python_deps.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-py<< parameters.pyversion >>-
 
       - run:
           name: Install Dependencies
@@ -88,6 +90,11 @@ jobs:
 
 
   markdown_link_check:
+    parameters:
+      precommit_command:
+        type: string
+        description: precommit hook to run
+        default: markdown-link-check
     docker:
       - image: circleci/node:12.6.0
     working_directory: ~/repo
@@ -119,7 +126,7 @@ jobs:
           name: Run markdown-link-check via precommit
           command: |
             . venv/bin/activate
-            pre-commit run --hook-stage manual markdown-link-check --all-files
+            pre-commit run --hook-stage manual << parameters.precommit_command >> --all-files
 
   protobuf_generation_check:
     docker:
@@ -170,7 +177,48 @@ jobs:
             path: /tmp/proto.patch
             destination: proto.patch
 
+  deploy:
+    parameters:
+      directory:
+        type: string
+        description: Local directory to use for publishing (e.g. ml-agents)
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install  --upgrade pip
+            pip install setuptools wheel twine
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: upload to pypi
+          # To upload to test, just add the following flag to twine upload:
+          # --repository-url https://test.pypi.org/legacy/
+          # and change the username to "mlagents-test"
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
+
 workflows:
+  version: 2
   workflow:
     jobs:
       - build_python:
@@ -184,6 +232,48 @@ workflows:
           executor: python373
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
-          pip_constraints: test_constraints_max_version.txt
+          pip_constraints: test_constraints_max_tf1_version.txt
+      - build_python:
+          name: python_3.7.3+tf2
+          executor: python373
+          pyversion: 3.7.3
+          # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
+      - deploy:
+          name: deploy ml-agents-envs
+          directory: ml-agents-envs
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy ml-agents
+          directory: ml-agents
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy gym-unity
+          directory: gym-unity
+          filters:
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+            branches:
+              ignore: /.*/
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - markdown_link_check:
+          name: markdown-link-check full
+          precommit_command: markdown-link-check-full

@@ -6,7 +6,7 @@ public class ReacherGoal : MonoBehaviour
     public GameObject hand;
     public GameObject goalOn;
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.gameObject == hand)
         {
@@ -14,7 +14,7 @@ public class ReacherGoal : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other)
     {
         if (other.gameObject == hand)
         {
@@ -22,7 +22,7 @@ public class ReacherGoal : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    void OnTriggerStay(Collider other)
     {
         if (other.gameObject == hand)
         {

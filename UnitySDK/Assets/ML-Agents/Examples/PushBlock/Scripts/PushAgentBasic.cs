@@ -42,10 +42,6 @@ public class PushAgentBasic : Agent
     Rigidbody m_BlockRb;  //cached on initialization
     Rigidbody m_AgentRb;  //cached on initialization
     Material m_GroundMaterial; //cached on Awake()
-    RayPerception m_RayPer;
-
-    float[] m_RayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-    string[] m_DetectableObjects = { "block", "goal", "wall" };
 
     /// <summary>
     /// We will be changing the ground material based on success/failue
@@ -62,7 +58,6 @@ public class PushAgentBasic : Agent
         base.InitializeAgent();
         goalDetect = block.GetComponent<GoalDetect>();
         goalDetect.agent = this;
-        m_RayPer = GetComponent<RayPerception>();
 
         // Cache the agent rigidbody
         m_AgentRb = GetComponent<Rigidbody>();
@@ -76,17 +71,6 @@ public class PushAgentBasic : Agent
         m_GroundMaterial = m_GroundRenderer.material;
 
         SetResetParameters();
-    }
-
-    public override void CollectObservations()
-    {
-        if (useVectorObs)
-        {
-            var rayDistance = 12f;
-
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 0f, 0f));
-            AddVectorObs(m_RayPer.Perceive(rayDistance, m_RayAngles, m_DetectableObjects, 1.5f, 0f));
-        }
     }
 
     /// <summary>
@@ -177,7 +161,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);
@@ -242,23 +226,24 @@ public class PushAgentBasic : Agent
 
     public void SetGroundMaterialFriction()
     {
-        var resetParams = m_Academy.resetParameters;
+        var resetParams = m_Academy.FloatProperties;
 
         var groundCollider = ground.GetComponent<Collider>();
 
-        groundCollider.material.dynamicFriction = resetParams["dynamic_friction"];
-        groundCollider.material.staticFriction = resetParams["static_friction"];
+        groundCollider.material.dynamicFriction = resetParams.GetPropertyWithDefault("dynamic_friction", 0);
+        groundCollider.material.staticFriction = resetParams.GetPropertyWithDefault("static_friction", 0);
     }
 
     public void SetBlockProperties()
     {
-        var resetParams = m_Academy.resetParameters;
+        var resetParams = m_Academy.FloatProperties;
 
+        var scale = resetParams.GetPropertyWithDefault("block_scale", 2);
         //Set the scale of the block
-        m_BlockRb.transform.localScale = new Vector3(resetParams["block_scale"], 0.75f, resetParams["block_scale"]);
+        m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
 
         // Set the drag of the block
-        m_BlockRb.drag = resetParams["block_drag"];
+        m_BlockRb.drag = resetParams.GetPropertyWithDefault("block_drag", 0.5f);
     }
 
     public void SetResetParameters()

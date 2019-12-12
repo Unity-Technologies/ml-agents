@@ -7,10 +7,10 @@ using MLAgents;
 public class PyramidAgent : Agent
 {
     public GameObject area;
-    private PyramidArea m_MyArea;
-    private Rigidbody m_AgentRb;
-    private RayPerception m_RayPer;
-    private PyramidSwitch m_SwitchLogic;
+    PyramidArea m_MyArea;
+    Rigidbody m_AgentRb;
+    RayPerception m_RayPer;
+    PyramidSwitch m_SwitchLogic;
     public GameObject areaSwitch;
     public bool useVectorObs;
 
@@ -33,7 +33,7 @@ public class PyramidAgent : Agent
             float[] rayAngles2 = { 15f, 85f, 155f, 40f, 130f, 65f, 105f };
 
             string[] detectableObjects = { "block", "wall", "goal", "switchOff", "switchOn", "stone" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
+            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects));
             AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles1, detectableObjects, 0f, 5f));
             AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles2, detectableObjects, 0f, 10f));
             AddVectorObs(m_SwitchLogic.GetState());
@@ -66,7 +66,7 @@ public class PyramidAgent : Agent
         m_AgentRb.AddForce(dirToGo * 2f, ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-1f / agentParameters.maxStep);
         MoveAgent(vectorAction);
@@ -113,7 +113,7 @@ public class PyramidAgent : Agent
         m_MyArea.CreateStonePyramid(1, items[8]);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("goal"))
         {

@@ -1,16 +1,41 @@
-from setuptools import setup, find_namespace_packages
-from os import path
 from io import open
+import os
+import sys
 
-here = path.abspath(path.dirname(__file__))
+from setuptools import setup, find_namespace_packages
+from setuptools.command.install import install
+import mlagents.trainers
+
+VERSION = mlagents.trainers.__version__
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+class VerifyVersionCommand(install):
+    """
+    Custom command to verify that the git tag matches our version
+    See https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
+    """
+
+    description = "verify that the git tag matches our version"
+
+    def run(self):
+        tag = os.getenv("CIRCLE_TAG")
+
+        if tag != VERSION:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, VERSION
+            )
+            sys.exit(info)
+
 
 # Get the long description from the README file
-with open(path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
     name="mlagents",
-    version="0.10.1",
+    version=VERSION,
     description="Unity Machine Learning Agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,14 +60,15 @@ setup(
         "h5py>=2.9.0",
         "jupyter",
         "matplotlib",
-        "mlagents_envs==0.10.1",
+        "mlagents_envs=={}".format(VERSION),
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
-        "tensorflow>=1.7,<2.0",
+        "tensorflow>=1.7,<2.1",
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",
     entry_points={"console_scripts": ["mlagents-learn=mlagents.trainers.learn:main"]},
+    cmdclass={"verify": VerifyVersionCommand},
 )

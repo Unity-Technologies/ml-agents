@@ -2,7 +2,7 @@
 
 **Unity Machine Learning Agents** (ML-Agents) 是一款开源的 Unity 插件，使我们得以在游戏和其它模拟环境中训练智能的 agent。您可以使用 reinforcement learning（强化学习）、
 imitation learning（模仿学习）、neuroevolution（神经进化）或其他机器学习方法
-通过简单易用的 Python API 对 Agent 进行训练。我们还提供最先进算法的实现方式（基于 
+通过简单易用的 Python API 对 Agent 进行训练。我们还提供最先进算法的实现方式（基于
 TensorFlow），让游戏开发者和业余爱好者能够轻松地
 训练用于 2D、3D 和 VR/AR 游戏的智能 agent。
 这些经过训练的 agent 可用于多种目的，
@@ -16,9 +16,9 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 根据您的背景（如研究人员、游戏开发人员、业余爱好者），
 您现在可能在脑海中会有非常不同的问题。
 为了让您更轻松地过渡到 ML-Agents，
-我们提供了多个后台页面，其中包括有关 
+我们提供了多个后台页面，其中包括有关
 [Unity 引擎](/docs/Background-Unity.md)、
-[机器学习](/docs/Background-Machine-Learning.md)和 
+[机器学习](/docs/Background-Machine-Learning.md)和
 [TensorFlow](/docs/Background-TensorFlow.md) 的概述和有用资源。如果您不熟悉 Unity 场景，不了解基本的机器学习概念，或者以前没有听说过 TensorFlow，**强烈**建议您浏览相关的背景知识页面。
 
 此页面的其余部分深入介绍了 ML-Agents、包括其重要组件、
@@ -118,12 +118,12 @@ ML-Agents 是一个 Unity 插件，它包含三个高级组件：
 所有机器学习算法。请注意，
 与学习环境不同，Python API 不是 Unity 的一部分，而是位于外部
 并通过 External Communicator 与 Unity 进行通信。
-* **External Communicator** - 它将 Unity 环境与 Python API 
+* **External Communicator** - 它将 Unity 环境与 Python API
 连接起来。它位于 Unity 环境中。
 
 <p align="center">
-    <img src="images/learning_environment_basic.png" 
-        alt="Simplified ML-Agents Scene Block Diagram" 
+    <img src="images/learning_environment_basic.png"
+        alt="Simplified ML-Agents Scene Block Diagram"
         width="700" border="10" />
 </p>
 
@@ -156,28 +156,28 @@ External Communicator 位于 Academy 内。
 Brain 定义了所有可能的观测和动作的空间，
 而与之相连的 Agent（在本示例中是指军医）可以各自拥有
 自己独特的观测和动作值。如果我们将游戏
-扩展到包含坦克驾驶员 NPC，那么附加到这些角色的 
+扩展到包含坦克驾驶员 NPC，那么附加到这些角色的
 Agent 不能与连接到军医的 Agent 共享一个 Brain（军医和驾驶员
 有不同的动作）。
 
 <p align="center">
-    <img src="images/learning_environment_example.png" 
-        alt="Example ML-Agents Scene Block Diagram" 
+    <img src="images/learning_environment_example.png"
+        alt="Example ML-Agents Scene Block Diagram"
         border="10" />
 </p>
 
 _示例游戏的 ML-Agents 的示例框图。_
 
-我们尚未讨论 ML-Agents 如何训练行为以及 Python API 和 
+我们尚未讨论 ML-Agents 如何训练行为以及 Python API 和
 External Communicator 的作用。在我们深入了解这些细节之前，
 让我们总结一下先前的组件。每个游戏角色上附有一个 Agent，
 而每个 Agent 都连接到一个 Brain。Brain 从 Agent 处接收观测结果和奖励并返回动作。Academy 除了能够控制环境参数之外，还可确保所有 Agent 和 Brain 都处于同步状态。那么，Brain 如何控制 Agent 的动作呢？
 
 实际上，我们有四种不同类型的 Brain，它们可以实现广泛的训练和预测情形：
 * **External** - 使用 Python API 进行决策。这种情况下，
-Brain 收集的观测结果和奖励通过 External Communicator 
+Brain 收集的观测结果和奖励通过 External Communicator
 转发给 Python API。Python API 随后返回 Agent 需要采取的相应动作。
-* **Internal** - 使用嵌入式 
+* **Internal** - 使用嵌入式
 [TensorFlow](/docs/Background-TensorFlow.md) 模型进行决策。
 嵌入式 TensorFlow 模型包含了学到的 policy，Brain 直接使用
 此模型来确定每个 Agent 的动作。
@@ -188,7 +188,7 @@ Brain 收集的观测结果和奖励通过 External Communicator
 具有写死逻辑行为的 Agent。也有助于把这种由写死逻辑指挥的 Agent 与
 训练好的 Agent 进行比较。在我们的示例中，一旦我们
 为军医训练了 Brain，我们便可以为一个军队的军医分配
-经过训练的 Brain，而为另一个军队的军医分配具有写死逻辑行为的 
+经过训练的 Brain，而为另一个军队的军医分配具有写死逻辑行为的
 Heuristic Brain。然后，我们可以评估哪个军医的效率更高。
 
 根据目前所述，External Communicator 和 Python API 似乎
@@ -199,8 +199,8 @@ Heuristic Brain。然后，我们可以评估哪个军医的效率更高。
 看到，这样可以实现其他的训练模式。
 
 <p align="center">
-    <img src="images/learning_environment.png" 
-        alt="ML-Agents Scene Block Diagram" 
+    <img src="images/learning_environment.png"
+        alt="ML-Agents Scene Block Diagram"
         border="10" />
 </p>
 
@@ -227,16 +227,16 @@ Brain 类型在训练期间设置为 External，在预测期间设置为 Interna
 因此所学的 policy 只是一个 TensorFlow 模型文件。然后在预测阶段，
 我们将 Brain 类型切换为 Internal，并加入从训练阶段
 生成的 TensorFlow 模型。现在，在预测阶段，军医
-仍然继续生成他们的观测结果，但不再将结果发送到 
+仍然继续生成他们的观测结果，但不再将结果发送到
 Python API，而是送入他们的嵌入了的 TensorFlow 模型，
 以便生成每个军医在每个时间点上要采取的_最佳_动作。
 
 总结一下：我们的实现是基于 TensorFlow 的，因此，
-在训练期间，Python API 使用收到的观测结果来学习 
-TensorFlow 模型。然后在预测过程中该模型将嵌入到 
+在训练期间，Python API 使用收到的观测结果来学习
+TensorFlow 模型。然后在预测过程中该模型将嵌入到
 Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 最佳动作。**请注意，我们的 Internal Brain 目前是实验性的，
-因为它仅限于 TensorFlow 模型并会利用第三方 
+因为它仅限于 TensorFlow 模型并会利用第三方
 [TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp)
  库。**
 
@@ -246,7 +246,7 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 ### 自定义训练和预测
 
 先前的模式中使用 External Brain 类型进行训练，
-从而生成 Internal Brain 类型可以理解和使用的 TensorFlow 
+从而生成 Internal Brain 类型可以理解和使用的 TensorFlow
 模型。然而，ML-Agents 的任何用户都可以利用自己的算法
 进行训练和预测。在这种情况下，训练阶段和预测阶段
 的 Brain 类型都会设置为 External，并且场景中所有 Agent 的行为
@@ -271,8 +271,8 @@ Internal Brain 中，以便为连接到该 Brain 的所有 Agent 生成
 较难的任务提供基础。
 
 <p align="center">
-    <img src="images/math.png" 
-        alt="Example Math Curriculum" 
+    <img src="images/math.png"
+        alt="Example Math Curriculum"
         width="700"
         border="10" />
 </p>
@@ -290,7 +290,7 @@ _数学课程的示例。从简单主题到复杂主题的课程进度安排，
 即，随着环境逐渐复杂化，policy 也会不断
 改进。在我们的示例中，我们可以考虑当每个队只包含一个
 玩家时，首先训练军医，然后再反复增加玩家人数
-（即环境复杂度）。ML-Agents 支持在 
+（即环境复杂度）。ML-Agents 支持在
 Academy 内设置自定义环境参数。因此，
 可以根据训练进度动态调整与难度或复杂性相关的
 环境要素（比如游戏对象）。
@@ -369,7 +369,7 @@ agent 必须对事件作出反应的游戏，
 agent 必须学会记住过去才能做出
 最好的决策。当 agent 只能部分观测环境时，
 跟踪过去的观测结果可以帮助 agent 学习。我们在
-教练中提供了一种_长短期记忆_ 
+教练中提供了一种_长短期记忆_
 ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory))
  的实现，使 agent 能够存储要在未来步骤中
 使用的记忆。您可以在
@@ -393,7 +393,7 @@ agent 必须学会记住过去才能做出
 第一人称视觉的导航 agent。您可以在
 [此处](/docs/Learning-Environment-Design-Agents.md#multiple-visual-observations)了解更多关于向 agent 添加视觉观测的
 信息。
-        
+
 * **Broadcasting** - 如前所述，默认情况下，External Brain 会将
 其所有 Agent 的观测结果发送到 Python API。这对
 训练或预测很有帮助。Broadcasting 是一种可以为
@@ -407,25 +407,25 @@ agent 必须学会记住过去才能做出
 [此处](/docs/Learning-Environment-Design-Brains.md#using-the-broadcast-feature)了解更多关于使用 broadcasting 功能的
 信息。
 
-* **Docker 设置（测试功能）** - 为了便于在不直接安装 
+* **Docker 设置（测试功能）** - 为了便于在不直接安装
 Python 或 TensorFlow 的情况下设置 ML-Agents，
 我们提供了关于如何创建和运行 Docker 容器的
 [指南](/docs/Using-Docker.md)。由于渲染视觉观测的限制，
 该功能被标记为测试功能。
 
-* **AWS 上的云训练** - 为了便于在 Amazon Web Services (AWS) 
+* **AWS 上的云训练** - 为了便于在 Amazon Web Services (AWS)
 机器上使用 ML-Agents，我们提供了一份
 [指南](/docs/Training-on-Amazon-Web-Service.md)
-让您了解如何设置 EC2 实例以及公共的预配置 Amazon 
+让您了解如何设置 EC2 实例以及公共的预配置 Amazon
 Machine Image (AMI)。
 
-* **Microsoft Azure 上的云训练** - 为了便于在 Microsoft Azure 
+* **Microsoft Azure 上的云训练** - 为了便于在 Microsoft Azure
 机器上使用 ML-Agents，我们提供了一份
 [指南](/docs/Training-on-Microsoft-Azure.md)
 让您了解如何设置 virtual machine instance 实例以及公共的预配置 Data Science VM。
 
 * **Cloud Training on Microsoft Azure** - To facilitate using ML-Agents on
-Azure machines, we provide a 
+Azure machines, we provide a
 [guide](Training-on-Microsoft-Azure.md)
 on how to set-up virtual machine instances in addition to a pre-configured data science image.
 

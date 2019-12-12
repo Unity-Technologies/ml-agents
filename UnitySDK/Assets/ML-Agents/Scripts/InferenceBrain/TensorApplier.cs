@@ -33,7 +33,7 @@ namespace MLAgents.InferenceBrain
             void Apply(TensorProxy tensorProxy, IEnumerable<Agent> agents);
         }
 
-        private readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
+        readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
 
         /// <summary>
         /// Returns a new TensorAppliers object.
@@ -42,9 +42,14 @@ namespace MLAgents.InferenceBrain
         /// used</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
+        /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorApplier(
-            BrainParameters bp, int seed, ITensorAllocator allocator, object barracudaModel = null)
+            BrainParameters bp,
+            int seed,
+            ITensorAllocator allocator,
+            Dictionary<int, List<float>> memories,
+            object barracudaModel = null)
         {
             m_Dict[TensorNames.ValueEstimateOutput] = new ValueEstimateApplier();
             if (bp.vectorActionSpaceType == SpaceType.Continuous)
@@ -56,16 +61,16 @@ namespace MLAgents.InferenceBrain
                 m_Dict[TensorNames.ActionOutput] =
                     new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
             if (barracudaModel != null)
             {
                 var model = (Model)barracudaModel;
 
-                for (var i = 0; i < model?.memories.Length; i++)
+                for (var i = 0; i < model?.memories.Count; i++)
                 {
                     m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Length, i);
+                        new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
                 }
             }
         }
@@ -78,7 +83,7 @@ namespace MLAgents.InferenceBrain
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IEnumerable<TensorProxy> tensors,  IEnumerable<Agent> agents)
+            IEnumerable<TensorProxy> tensors, IEnumerable<Agent> agents)
         {
             foreach (var tensor in tensors)
             {

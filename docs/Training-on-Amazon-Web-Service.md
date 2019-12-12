@@ -1,6 +1,6 @@
 # Training on Amazon Web Service
 
-Note: We no longer use this guide ourselves and so it may not work correctly. We've 
+Note: We no longer use this guide ourselves and so it may not work correctly. We've
 decided to keep it up just in case it is helpful to you.
 
 This page contains instructions for setting up an EC2 instance on Amazon Web
@@ -69,7 +69,7 @@ After launching your EC2 instance using the ami and ssh into it:
 2. Clone the ML-Agents repo and install the required Python packages
 
     ```sh
-    git clone https://github.com/Unity-Technologies/ml-agents.git
+    git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
     cd ml-agents/ml-agents/
     pip3 install -e .
     ```

@@ -6,9 +6,9 @@ public class HitWall : MonoBehaviour
     public int lastAgentHit;
     public int lastFloorHit;
 
-    private TennisArea m_Area;
-    private TennisAgent m_AgentA;
-    private TennisAgent m_AgentB;
+    TennisArea m_Area;
+    TennisAgent m_AgentA;
+    TennisAgent m_AgentB;
 
     // Use this for initialization
     void Start()

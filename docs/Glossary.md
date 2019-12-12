@@ -18,7 +18,7 @@
 * **Frame** - An instance of rendering the main camera for the display.
   Corresponds to each `Update` call of the game engine.
 * **Observation** - Partial information describing the state of the environment
-  available to a given agent. (e.g. Vector, Visual, Text)
+  available to a given agent. (e.g. Vector, Visual)
 * **Policy** - Function for producing decisions from observations.
 * **Reward** - Signal provided at every step used to indicate desirability of an
   agent’s action within the current state of the environment.
@@ -30,5 +30,5 @@
   logic should not be placed here.
 * **External Coordinator** - ML-Agents class responsible for communication with
   outside processes (in this case, the Python API).
-* **Trainer** - Python class which is responsible for training a given 
+* **Trainer** - Python class which is responsible for training a given
   group of Agents.

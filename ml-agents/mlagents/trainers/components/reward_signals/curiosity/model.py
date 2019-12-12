@@ -1,5 +1,6 @@
 from typing import List, Tuple
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 from mlagents.trainers.models import LearningModel
 
 

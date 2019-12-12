@@ -1,9 +1,9 @@
 from typing import Any, Dict, List
 import logging
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -68,13 +68,13 @@ class GAILRewardSignal(RewardSignal):
         }
 
     def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
     ) -> RewardSignalResult:
         if len(current_info.agents) == 0:
             return RewardSignalResult([], [])
         mini_batch: Dict[str, np.array] = {}
         # Construct the batch
-        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["actions"] = action
         mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
         for i, obs in enumerate(current_info.visual_observations):
             mini_batch["visual_obs%d" % i] = obs
@@ -126,7 +126,7 @@ class GAILRewardSignal(RewardSignal):
     def prepare_update(
         self,
         policy_model: LearningModel,
-        mini_batch_policy: Dict[str, np.ndarray],
+        mini_batch: Dict[str, np.ndarray],
         num_sequences: int,
     ) -> Dict[tf.Tensor, Any]:
         """
@@ -136,21 +136,20 @@ class GAILRewardSignal(RewardSignal):
         :return: Feed_dict for update process.
         """
         max_num_experiences = min(
-            len(mini_batch_policy["actions"]),
-            len(self.demonstration_buffer.update_buffer["actions"]),
+            len(mini_batch["actions"]), self.demonstration_buffer.num_experiences
         )
         # If num_sequences is less, we need to shorten the input batch.
-        for key, element in mini_batch_policy.items():
-            mini_batch_policy[key] = element[:max_num_experiences]
+        for key, element in mini_batch.items():
+            mini_batch[key] = element[:max_num_experiences]
 
         # Get batch from demo buffer
-        mini_batch_demo = self.demonstration_buffer.update_buffer.sample_mini_batch(
-            len(mini_batch_policy["actions"]), 1
+        mini_batch_demo = self.demonstration_buffer.sample_mini_batch(
+            len(mini_batch["actions"]), 1
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {
             self.model.done_expert_holder: mini_batch_demo["done"],
-            self.model.done_policy_holder: mini_batch_policy["done"],
+            self.model.done_policy_holder: mini_batch["done"],
         }
 
         if self.model.use_vail:
@@ -158,20 +157,18 @@ class GAILRewardSignal(RewardSignal):
 
         feed_dict[self.model.action_in_expert] = np.array(mini_batch_demo["actions"])
         if self.policy.use_continuous_act:
-            feed_dict[policy_model.selected_actions] = mini_batch_policy["actions"]
+            feed_dict[policy_model.selected_actions] = mini_batch["actions"]
         else:
-            feed_dict[policy_model.action_holder] = mini_batch_policy["actions"]
+            feed_dict[policy_model.action_holder] = mini_batch["actions"]
 
         if self.policy.use_vis_obs > 0:
             for i in range(len(policy_model.visual_in)):
-                feed_dict[policy_model.visual_in[i]] = mini_batch_policy[
-                    "visual_obs%d" % i
-                ]
+                feed_dict[policy_model.visual_in[i]] = mini_batch["visual_obs%d" % i]
                 feed_dict[self.model.expert_visual_in[i]] = mini_batch_demo[
                     "visual_obs%d" % i
                 ]
         if self.policy.use_vec_obs:
-            feed_dict[policy_model.vector_in] = mini_batch_policy["vector_obs"]
+            feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"]
         self.has_updated = True
         return feed_dict

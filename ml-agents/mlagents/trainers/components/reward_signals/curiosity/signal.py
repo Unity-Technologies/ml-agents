@@ -1,7 +1,8 @@
 from typing import Any, Dict, List
 import numpy as np
-import tensorflow as tf
-from mlagents.envs.brain import BrainInfo
+from mlagents.tf_utils import tf
+
+from mlagents.trainers.brain import BrainInfo
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
@@ -45,7 +46,7 @@ class CuriosityRewardSignal(RewardSignal):
         self.has_updated = False
 
     def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
     ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
@@ -57,7 +58,7 @@ class CuriosityRewardSignal(RewardSignal):
             return RewardSignalResult([], [])
         mini_batch: Dict[str, np.array] = {}
         # Construct the batch and use evaluate_batch
-        mini_batch["actions"] = next_info.previous_vector_actions
+        mini_batch["actions"] = action
         mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
         for i in range(len(current_info.visual_observations)):
             mini_batch["visual_obs%d" % i] = current_info.visual_observations[i]

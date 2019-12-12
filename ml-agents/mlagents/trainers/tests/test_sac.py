@@ -3,7 +3,8 @@ import pytest
 import yaml
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
@@ -85,12 +86,10 @@ def test_sac_cc_policy(mock_env, dummy_config):
     assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
     # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    policy.update(
-        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
-    )
+    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     env.close()
 
 
@@ -109,19 +108,15 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     )
 
     # Test update, while removing PPO-specific buffer elements.
-    buffer = mb.simulate_rollout(
-        env,
-        policy,
-        BUFFER_INIT_SAMPLES,
-        exclude_key_list=["advantages", "actions_pre", "random_normal_epsilon"],
+    update_buffer = mb.simulate_rollout(
+        env, policy, BUFFER_INIT_SAMPLES, exclude_key_list=["advantages", "actions_pre"]
     )
 
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    update_buffer["curiosity_rewards"] = update_buffer["rewards"]
     policy.update_reward_signals(
-        {"curiosity": buffer.update_buffer},
-        num_sequences=len(buffer.update_buffer["actions"]),
+        {"curiosity": update_buffer}, num_sequences=update_buffer.num_experiences
     )
     env.close()
 
@@ -139,12 +134,10 @@ def test_sac_dc_policy(mock_env, dummy_config):
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    policy.update(
-        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
-    )
+    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     env.close()
 
 
@@ -161,12 +154,10 @@ def test_sac_visual_policy(mock_env, dummy_config):
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    run_out = policy.update(
-        buffer.update_buffer, num_sequences=len(buffer.update_buffer["actions"])
-    )
+    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    run_out = policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     assert type(run_out) is dict
 
 
@@ -183,10 +174,10 @@ def test_sac_rnn_policy(mock_env, dummy_config):
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    policy.update(buffer.update_buffer, num_sequences=2)
+    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    policy.update(update_buffer, num_sequences=2)
     env.close()
 
 
@@ -224,8 +215,8 @@ def test_sac_model_cc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -245,9 +236,9 @@ def test_sac_model_dc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.action_masks: np.ones([2, 2]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -267,7 +258,7 @@ def test_sac_model_dc_vector():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([2, 2]),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -297,9 +288,9 @@ def test_sac_model_dc_vector_rnn():
                 model.batch_size: 1,
                 model.sequence_length: 2,
                 model.prev_action: [[0], [0]],
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([1, 2]),
+                model.action_masks: np.ones([1, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -328,7 +319,7 @@ def test_sac_model_cc_vector_rnn():
             feed_dict = {
                 model.batch_size: 1,
                 model.sequence_length: 2,
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
             }
             sess.run(run_list, feed_dict=feed_dict)
@@ -348,16 +339,18 @@ def test_sac_save_load_buffer(tmpdir):
     trainer_params["summary_path"] = str(tmpdir)
     trainer_params["model_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
-    trainer = SACTrainer(mock_brain, 1, trainer_params, True, False, 0, 0)
-    trainer.training_buffer = mb.simulate_rollout(
+    trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
+    trainer.add_policy(mock_brain)
+    trainer.update_buffer = mb.simulate_rollout(
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
-    buffer_len = len(trainer.training_buffer.update_buffer["actions"])
+    buffer_len = trainer.update_buffer.num_experiences
     trainer.save_model()
 
     # Wipe Trainer and try to load
-    trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
-    assert len(trainer2.training_buffer.update_buffer["actions"]) == buffer_len
+    trainer2 = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, True, 0, 0)
+    trainer2.add_policy(mock_brain)
+    assert trainer2.update_buffer.num_experiences == buffer_len
 
 
 if __name__ == "__main__":

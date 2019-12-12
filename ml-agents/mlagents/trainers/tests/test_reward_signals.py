@@ -2,6 +2,7 @@ import unittest.mock as mock
 import pytest
 import yaml
 import os
+import numpy as np
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.sac.policy import SACPolicy
@@ -57,7 +58,7 @@ def sac_dummy_config():
         tau: 0.005
         use_recurrent: false
         vis_encode_type: simple
-        pretraining:
+        behavioral_cloning:
             demo_path: ./demos/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000
@@ -125,8 +126,9 @@ def reward_signal_eval(env, policy, reward_signal_name):
     brain_info = brain_infos[env.external_brain_names[0]]
     next_brain_info = env.step()[env.external_brain_names[0]]
     # Test evaluate
+    action = np.ones((len(brain_info.agents), policy.num_branches), dtype=np.float32)
     rsig_result = policy.reward_signals[reward_signal_name].evaluate(
-        brain_info, next_brain_info
+        brain_info, action, next_brain_info
     )
     assert rsig_result.scaled_reward.shape == (NUM_AGENTS,)
     assert rsig_result.unscaled_reward.shape == (NUM_AGENTS,)
@@ -135,7 +137,7 @@ def reward_signal_eval(env, policy, reward_signal_name):
 def reward_signal_update(env, policy, reward_signal_name):
     buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
     feed_dict = policy.reward_signals[reward_signal_name].prepare_update(
-        policy.model, buffer.update_buffer.make_mini_batch(0, 10), 2
+        policy.model, buffer.make_mini_batch(0, 10), 2
     )
     out = policy._execute_model(
         feed_dict, policy.reward_signals[reward_signal_name].update_dict

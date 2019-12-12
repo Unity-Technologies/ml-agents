@@ -6,12 +6,12 @@ using UnityEngine.Serialization;
 
 public class GridAgent : Agent
 {
-    private Academy m_Academy;
+    Academy m_Academy;
     [FormerlySerializedAs("m_Area")]
     [Header("Specific to GridWorld")]
     public GridArea area;
     public float timeBetweenDecisionsAtInference;
-    private float m_TimeSinceDecision;
+    float m_TimeSinceDecision;
 
     [Tooltip("Because we want an observation right before making a decision, we can force " +
         "a camera to render before making a decision. Place the agentCam here if using " +
@@ -22,11 +22,11 @@ public class GridAgent : Agent
         "masking turned on may not behave optimally when action masking is turned off.")]
     public bool maskActions = true;
 
-    private const int k_NoAction = 0;  // do nothing!
-    private const int k_Up = 1;
-    private const int k_Down = 2;
-    private const int k_Left = 3;
-    private const int k_Right = 4;
+    const int k_NoAction = 0;  // do nothing!
+    const int k_Up = 1;
+    const int k_Down = 2;
+    const int k_Left = 3;
+    const int k_Right = 4;
 
     public override void InitializeAgent()
     {
@@ -48,12 +48,12 @@ public class GridAgent : Agent
     /// <summary>
     /// Applies the mask for the agents action to disallow unnecessary actions.
     /// </summary>
-    private void SetMask()
+    void SetMask()
     {
         // Prevents the agent from picking an action that would make it collide with a wall
         var positionX = (int)transform.position.x;
         var positionZ = (int)transform.position.z;
-        var maxPosition = (int)m_Academy.resetParameters["gridSize"] - 1;
+        var maxPosition = (int)m_Academy.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
 
         if (positionX == 0)
         {
@@ -77,7 +77,7 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         AddReward(-0.01f);
         var action = Mathf.FloorToInt(vectorAction[0]);
@@ -155,14 +155,14 @@ public class GridAgent : Agent
         WaitTimeInference();
     }
 
-    private void WaitTimeInference()
+    void WaitTimeInference()
     {
         if (renderCamera != null)
         {
             renderCamera.Render();
         }
 
-        if (!m_Academy.GetIsInference())
+        if (m_Academy.IsCommunicatorOn)
         {
             RequestDecision();
         }

@@ -4,9 +4,9 @@ using MLAgents;
 public class BasicAgent : Agent
 {
     [Header("Specific to Basic")]
-    private BasicAcademy m_Academy;
+    BasicAcademy m_Academy;
     public float timeBetweenDecisionsAtInference;
-    private float m_TimeSinceDecision;
+    float m_TimeSinceDecision;
     int m_Position;
     int m_SmallGoalPosition;
     int m_LargeGoalPosition;
@@ -25,7 +25,7 @@ public class BasicAgent : Agent
         AddVectorObs(m_Position, 20);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         var movement = (int)vectorAction[0];
 
@@ -95,9 +95,9 @@ public class BasicAgent : Agent
         WaitTimeInference();
     }
 
-    private void WaitTimeInference()
+    void WaitTimeInference()
     {
-        if (!m_Academy.GetIsInference())
+        if (!m_Academy.IsCommunicatorOn)
         {
             RequestDecision();
         }

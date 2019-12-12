@@ -112,23 +112,6 @@ ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first
                    `▀█▓▓▓▓▓▓▓▓▓▌
                         ¬`▀▀▀█▓
 
-
-INFO:mlagents.learn:{'--curriculum': 'None',
- '--docker-target-name': 'Empty',
- '--env': '3DBall',
- '--help': False,
- '--keep-checkpoints': '5',
- '--lesson': '0',
- '--load': False,
- '--no-graphics': False,
- '--num-runs': '1',
- '--run-id': 'firstRun',
- '--save-freq': '50000',
- '--seed': '-1',
- '--slow': False,
- '--train': True,
- '--worker-id': '0',
- '<trainer-config-path>': 'config/trainer_config.yaml'}
 ```
 
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
@@ -143,13 +126,9 @@ Mono path[0] = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/Resources/
 Mono config path = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/MonoBleedingEdge/etc'
 INFO:mlagents.envs:
 'Ball3DAcademy' started successfully!
-INFO:mlagents.envs:
-'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
-        Number of Brains: 1
-        Number of Training Brains : 1
-        Reset Parameters :
 
+INFO:mlagents.envs:Connected new brain:
 Unity brain name: Ball3DLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8

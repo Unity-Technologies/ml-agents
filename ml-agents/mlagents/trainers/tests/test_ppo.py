@@ -2,7 +2,8 @@ import unittest.mock as mock
 import pytest
 
 import numpy as np
-import tensorflow as tf
+from mlagents.tf_utils import tf
+
 import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
@@ -10,11 +11,15 @@ from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.rl_trainer import AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
-from mlagents.envs.brain import BrainParameters
+from mlagents.trainers.brain import BrainParameters
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.trainers.brain_conversion_utils import (
+    step_result_to_brain_info,
+    group_spec_to_brain_parameters,
+)
 
 
 @pytest.fixture
@@ -65,16 +70,20 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
+    env.reset()
+    brain_name = env.get_agent_groups()[0]
+    brain_info = step_result_to_brain_info(
+        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
+    )
+    brain_params = group_spec_to_brain_parameters(
+        brain_name, env.get_agent_group_spec(brain_name)
+    )
 
     trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
+    model_path = brain_name
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(
-        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
-    )
+    policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
     run_out = policy.evaluate(brain_info)
     assert run_out["action"].shape == (3, 2)
     env.close()
@@ -88,16 +97,20 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
+    env.reset()
+    brain_name = env.get_agent_groups()[0]
+    brain_info = step_result_to_brain_info(
+        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
+    )
+    brain_params = group_spec_to_brain_parameters(
+        brain_name, env.get_agent_group_spec(brain_name)
+    )
 
     trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
+    model_path = brain_name
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(
-        0, env.brains[env.external_brain_names[0]], trainer_parameters, False, False
-    )
+    policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
     run_out = policy.get_value_estimates(brain_info, 0, done=False)
     for key, val in run_out.items():
         assert type(key) is str
@@ -165,9 +178,9 @@ def test_ppo_model_cc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.epsilon: np.array([[0, 1], [2, 3]]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.epsilon: np.array([[0, 1], [2, 3]], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -193,9 +206,9 @@ def test_ppo_model_dc_visual():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3]),
-                model.visual_in[1]: np.ones([2, 40, 30, 3]),
-                model.action_masks: np.ones([2, 2]),
+                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -221,7 +234,7 @@ def test_ppo_model_dc_vector():
                 model.batch_size: 2,
                 model.sequence_length: 1,
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([2, 2]),
+                model.action_masks: np.ones([2, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -251,9 +264,9 @@ def test_ppo_model_dc_vector_rnn():
                 model.batch_size: 1,
                 model.sequence_length: 2,
                 model.prev_action: [[0], [0]],
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([1, 2]),
+                model.action_masks: np.ones([1, 2], dtype=np.float32),
             }
             sess.run(run_list, feed_dict=feed_dict)
 
@@ -282,7 +295,7 @@ def test_ppo_model_cc_vector_rnn():
             feed_dict = {
                 model.batch_size: 1,
                 model.sequence_length: 2,
-                model.memory_in: np.zeros((1, memory_size)),
+                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
                 model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
                 model.epsilon: np.array([[0, 1]]),
             }
@@ -290,15 +303,24 @@ def test_ppo_model_cc_vector_rnn():
 
 
 def test_rl_functions():
-    rewards = np.array([0.0, 0.0, 0.0, 1.0])
+    rewards = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
     gamma = 0.9
     returns = discount_rewards(rewards, gamma, 0.0)
-    np.testing.assert_array_almost_equal(returns, np.array([0.729, 0.81, 0.9, 1.0]))
+    np.testing.assert_array_almost_equal(
+        returns, np.array([0.729, 0.81, 0.9, 1.0], dtype=np.float32)
+    )
 
 
 def test_trainer_increment_step(dummy_config):
     trainer_params = dummy_config
-    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
 
     trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
     policy_mock = mock.Mock()
@@ -333,18 +355,21 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
     trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
 
-    trainer = PPOTrainer(mock_brain, 0, trainer_params, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
+    )
+    trainer.add_policy(mock_brain)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
-    buffer.update_buffer["extrinsic_rewards"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["extrinsic_returns"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["extrinsic_value_estimates"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_rewards"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_returns"] = buffer.update_buffer["rewards"]
-    buffer.update_buffer["curiosity_value_estimates"] = buffer.update_buffer["rewards"]
+    buffer["extrinsic_rewards"] = buffer["rewards"]
+    buffer["extrinsic_returns"] = buffer["rewards"]
+    buffer["extrinsic_value_estimates"] = buffer["rewards"]
+    buffer["curiosity_rewards"] = buffer["rewards"]
+    buffer["curiosity_returns"] = buffer["rewards"]
+    buffer["curiosity_value_estimates"] = buffer["rewards"]
 
-    trainer.training_buffer = buffer
+    trainer.update_buffer = buffer
     trainer.update_policy()
     # Make batch length a larger multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 128
@@ -355,19 +380,30 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
 
 
 def test_add_rewards_output(dummy_config):
-    brain_params = BrainParameters("test_brain", 1, 1, [], [2], [], 0)
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
+    trainer.add_policy(brain_params)
     rewardsout = AllRewardsOutput(
         reward_signals={
             "extrinsic": RewardSignalResult(
-                scaled_reward=np.array([1.0, 1.0]), unscaled_reward=np.array([1.0, 1.0])
+                scaled_reward=np.array([1.0, 1.0], dtype=np.float32),
+                unscaled_reward=np.array([1.0, 1.0], dtype=np.float32),
             )
         },
-        environment=np.array([1.0, 1.0]),
+        environment=np.array([1.0, 1.0], dtype=np.float32),
     )
-    values = {"extrinsic": np.array([[2.0]])}
+    values = {"extrinsic": np.array([[2.0]], dtype=np.float32)}
     agent_id = "123"
     idx = 0
     # make sure that we're grabbing from the next_idx for rewards. If we're not, the test will fail.
@@ -379,8 +415,8 @@ def test_add_rewards_output(dummy_config):
         agent_idx=idx,
         agent_next_idx=next_idx,
     )
-    assert trainer.training_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
-    assert trainer.training_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
+    assert trainer.processing_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
+    assert trainer.processing_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
 
 
 if __name__ == "__main__":

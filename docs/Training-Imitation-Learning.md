@@ -19,7 +19,7 @@ imitation learning combined with reinforcement learning can dramatically
 reduce the time the agent takes to solve the environment.
 For instance, on the [Pyramids environment](Learning-Environment-Examples.md#pyramids),
 using 6 episodes of demonstrations can reduce training steps by more than 4 times.
-See PreTraining + GAIL + Curiosity + RL below.
+See Behavioral Cloning + GAIL + Curiosity + RL below.
 
 <p align="center">
   <img src="images/mlagents-ImitationAndRL.png"
@@ -27,40 +27,38 @@ See PreTraining + GAIL + Curiosity + RL below.
        width="700" border="0" />
 </p>
 
-The ML-Agents toolkit provides several ways to learn from demonstrations.
+The ML-Agents toolkit provides two features that enable your agent to learn from demonstrations.
+In most scenarios, you should combine these two features
 
-* To train using GAIL (Generative Adversarial Imitation Learning) you can add the
+* GAIL (Generative Adversarial Imitation Learning) uses an adversarial approach to
+  reward your Agent for behaving similar to a set of demonstrations. To use GAIL, you can add the
   [GAIL reward signal](Reward-Signals.md#gail-reward-signal). GAIL can be
   used with or without environment rewards, and works well when there are a limited
   number of demonstrations.
-* To help bootstrap reinforcement learning, you can enable
-  [pretraining](Training-PPO.md#optional-pretraining-using-demonstrations)
-  on the PPO trainer, in addition to using a small GAIL reward signal.
-* To train an agent to exactly mimic demonstrations, you can use the
-  [Behavioral Cloning](Training-Behavioral-Cloning.md) trainer. Behavioral Cloning can be
-  used with demonstrations (in-editor), and learns very quickly. However, it usually is ineffective
-  on more complex environments without a large number of demonstrations.
+* Behavioral Cloning (BC) trains the Agent's neural network to exactly mimic the actions
+  shown in a set of demonstrations.
+  [The BC feature](Training-PPO.md#optional-behavioral-cloning-using-demonstrations)
+  can be enabled on the PPO or SAC trainer. BC tends to work best when
+  there are a lot of demonstrations, or in conjunction with GAIL and/or an extrinsic reward.
 
 ### How to Choose
 
 If you want to help your agents learn (especially with environments that have sparse rewards)
-using pre-recorded demonstrations, you can generally enable both GAIL and Pretraining.
+using pre-recorded demonstrations, you can generally enable both GAIL and Behavioral Cloning
+at low strengths in addition to having an extrinsic reward.
 An example of this is provided for the Pyramids example environment under
  `PyramidsLearning` in `config/gail_config.yaml`.
 
-If you want to train purely from demonstrations, GAIL is generally the preferred approach, especially
-if you have few (<10) episodes of demonstrations. An example of this is provided for the Crawler example
-environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
-
-If you have plenty of demonstrations and/or a very simple environment, Offline Behavioral Cloning can be effective and quick. However, it cannot be combined with RL.
+If you want to train purely from demonstrations, GAIL and BC _without_ an
+extrinsic reward signal is the preferred approach. An example of this is provided for the Crawler
+example environment under `CrawlerStaticLearning` in `config/gail_config.yaml`.
 
 ## Recording Demonstrations
 
 It is possible to record demonstrations of agent behavior from the Unity Editor,
 and save them as assets. These demonstrations contain information on the
 observations, actions, and rewards for a given agent during the recording session.
-They can be managed from the Editor, as well as used for training with Offline
-Behavioral Cloning and GAIL.
+They can be managed from the Editor, as well as used for training with BC and GAIL.
 
 In order to record demonstrations from an agent, add the `Demonstration Recorder`
 component to a GameObject in the scene which contains an `Agent` component.

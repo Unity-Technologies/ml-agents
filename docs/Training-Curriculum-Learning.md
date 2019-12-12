@@ -31,7 +31,7 @@ accomplish tasks otherwise much more difficult.
 
 ## How-To
 
-Each group of Agents under the same `Behavior Name` in an environment can have 
+Each group of Agents under the same `Behavior Name` in an environment can have
 a corresponding curriculum. These
 curriculums are held in what we call a metacurriculum. A metacurriculum allows
 different groups of Agents to follow different curriculums within the same environment.
@@ -47,8 +47,9 @@ metacurriculum for Wall Jump, we would create the folder
 
 In order to define a curriculum, the first step is to decide which parameters of
 the environment will vary. In the case of the Wall Jump environment, what varies
-is the height of the wall. We define this as a `Reset Parameter` in the Academy
-object of our scene, and by doing so it becomes adjustable via the Python API.
+is the height of the wall. We define this as a `Shared Float Property` that
+can be accessed in `Academy.FloatProperties`, and by doing so it becomes
+adjustable via the Python API.
 Rather than adjusting it by hand, we will create a JSON file which
 describes the structure of the curriculum. Within it, we can specify which
 points in the training process our wall height will change, either based on the
@@ -101,7 +102,7 @@ for an example.
 
 We will save this file into our metacurriculum folder with the name of its
 corresponding `Behavior Name`. For example, in the Wall Jump environment, there are two
-different `Behaviors Name` set via script in `WallJumpAgent.cs` 
+different `Behaviors Name` set via script in `WallJumpAgent.cs`
 ---BigWallBrainLearning and SmallWallBrainLearning. If we want to define a curriculum for
 the BigWallBrainLearning, we will save `BigWallBrainLearning.json` into
 `config/curricula/wall-jump/`.

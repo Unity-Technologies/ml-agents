@@ -4,9 +4,9 @@ from collections import namedtuple
 import numpy as np
 import abc
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -49,17 +49,18 @@ class RewardSignal(abc.ABC):
         self.stats_name_to_update_name: Dict[str, str] = {}
 
     def evaluate(
-        self, current_info: BrainInfo, next_info: BrainInfo
+        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
     ) -> RewardSignalResult:
         """
         Evaluates the reward for the agents present in current_info given the next_info
         :param current_info: The current BrainInfo.
+        :param action: the action that was taken between the two infos
         :param next_info: The BrainInfo from the next timestep.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
         """
         return RewardSignalResult(
-            self.strength * np.zeros(len(current_info.agents)),
-            np.zeros(len(current_info.agents)),
+            self.strength * np.zeros(len(current_info.agents), dtype=np.float32),
+            np.zeros(len(current_info.agents), dtype=np.float32),
         )
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
@@ -74,7 +75,8 @@ class RewardSignal(abc.ABC):
         """
         mini_batch_len = len(next(iter(mini_batch.values())))
         return RewardSignalResult(
-            self.strength * np.zeros(mini_batch_len), np.zeros(mini_batch_len)
+            self.strength * np.zeros(mini_batch_len, dtype=np.float32),
+            np.zeros(mini_batch_len, dtype=np.float32),
         )
 
     def prepare_update(

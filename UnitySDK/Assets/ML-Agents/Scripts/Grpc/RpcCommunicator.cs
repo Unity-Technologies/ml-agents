@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using System.IO;
+using Google.Protobuf;
 
 namespace MLAgents
 {
@@ -17,13 +19,12 @@ namespace MLAgents
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
-        public event RLInputReceivedHandler RLInputReceived;
 
         /// If true, the communication is active.
         bool m_IsOpen;
 
         /// The default number of agents in the scene
-        private const int k_NumAgents = 32;
+        const int k_NumAgents = 32;
 
         /// Keeps track of the agents of each brain on the current step
         Dictionary<string, List<Agent>> m_CurrentAgents =
@@ -37,8 +38,8 @@ namespace MLAgents
             new Dictionary<string, Dictionary<Agent, AgentAction>>();
 
         // Brains that we have sent over the communicator with agents.
-        HashSet<string> m_sentBrainKeys = new HashSet<string>();
-        Dictionary<string, BrainParameters> m_unsentBrainKeys = new Dictionary<string, BrainParameters>();
+        HashSet<string> m_SentBrainKeys = new HashSet<string>();
+        Dictionary<string, BrainParameters> m_UnsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -47,6 +48,8 @@ namespace MLAgents
 #endif
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
+
+        Dictionary<int, SideChannel> m_SideChannels = new Dictionary<int, SideChannel>();
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
@@ -72,14 +75,6 @@ namespace MLAgents
                 Name = initParameters.name,
                 Version = initParameters.version
             };
-
-            academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
-
-            var resetParameters = initParameters.environmentResetParameters.resetParameters;
-            foreach (var key in resetParameters.Keys)
-            {
-                academyParameters.EnvironmentParameters.FloatParameters.Add(key, resetParameters[key]);
-            }
 
             UnityInputProto input;
             UnityInputProto initializationInput;
@@ -134,11 +129,12 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SendRLInputReceivedEvent(rlInput.IsTraining);
-            SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
+            ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
+            SendCommandEvent(rlInput.Command);
+
         }
 
-        private UnityInputProto Initialize(UnityOutputProto unityOutput,
+        UnityInputProto Initialize(UnityOutputProto unityOutput,
             out UnityInputProto unityInput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
@@ -197,7 +193,8 @@ namespace MLAgents
         #endregion
 
         #region Sending Events
-        private void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+
+        void SendCommandEvent(CommandProto command)
         {
             switch (command)
             {
@@ -208,7 +205,7 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        ResetCommandReceived?.Invoke();
                         return;
                     }
                 default:
@@ -216,11 +213,6 @@ namespace MLAgents
                         return;
                     }
             }
-        }
-
-        private void SendRLInputReceivedEvent(bool isTraining)
-        {
-            RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
 
         #endregion
@@ -243,7 +235,7 @@ namespace MLAgents
                         {
                             // Update the sensor data on the AgentInfo
                             agent.GenerateSensorData();
-                            var agentInfoProto = agent.Info.ToProto();
+                            var agentInfoProto = agent.Info.ToAgentInfoProto();
                             m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                         }
 
@@ -260,8 +252,8 @@ namespace MLAgents
         /// <summary>
         /// Sends the observations of one Agent. 
         /// </summary>
-        /// <param name="key">Batch Key.</param>
-        /// <param name="agents">Agent info.</param>
+        /// <param name="brainKey">Batch Key.</param>
+        /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, Agent agent)
         {
             m_CurrentAgents[brainKey].Add(agent);
@@ -282,6 +274,9 @@ namespace MLAgents
             {
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
+
+            byte[] messageAggregated = GetSideChannelMessage(m_SideChannels);
+            message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);
             UpdateSentBrainParameters(tempUnityRlInitializationOutput);
@@ -337,7 +332,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>The next UnityInput.</returns>
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
-        private UnityInputProto Exchange(UnityOutputProto unityOutput)
+        UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
@@ -377,7 +372,7 @@ namespace MLAgents
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
         /// <param name="status">The status of the message.</param>
-        private static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
+        static UnityMessageProto WrapMessage(UnityOutputProto content, int status)
         {
             return new UnityMessageProto
             {
@@ -386,21 +381,21 @@ namespace MLAgents
             };
         }
 
-        private void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
         {
-            if (m_sentBrainKeys.Contains(brainKey))
+            if (m_SentBrainKeys.Contains(brainKey))
             {
                 return;
             }
 
             // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_unsentBrainKeys[brainKey] = brainParameters;
+            m_UnsentBrainKeys[brainKey] = brainParameters;
         }
 
-        private UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
+        UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach (var brainKey in m_unsentBrainKeys.Keys)
+            foreach (var brainKey in m_UnsentBrainKeys.Keys)
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
                 {
@@ -409,7 +404,7 @@ namespace MLAgents
                         output = new UnityRLInitializationOutputProto();
                     }
 
-                    var brainParameters = m_unsentBrainKeys[brainKey];
+                    var brainParameters = m_UnsentBrainKeys[brainKey];
                     output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
                 }
             }
@@ -417,7 +412,7 @@ namespace MLAgents
             return output;
         }
 
-        private void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
         {
             if (output == null)
             {
@@ -426,8 +421,104 @@ namespace MLAgents
 
             foreach (var brainProto in output.BrainParameters)
             {
-                m_sentBrainKeys.Add(brainProto.BrainName);
-                m_unsentBrainKeys.Remove(brainProto.BrainName);
+                m_SentBrainKeys.Add(brainProto.BrainName);
+                m_UnsentBrainKeys.Remove(brainProto.BrainName);
+            }
+        }
+
+        #endregion
+
+
+        #region Handling side channels
+
+        /// <summary>
+        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// messages with its Python equivalent.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
+        public void RegisterSideChannel(SideChannel sideChannel)
+        {
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            {
+                throw new UnityAgentsException(string.Format(
+                "A side channel with type index {} is already registered. You cannot register multiple " +
+                "side channels of the same type."));
+            }
+            m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
+        }
+
+        /// <summary>
+        /// Grabs the messages that the registered side channels will send to Python at the current step
+        /// into a singe byte array.
+        /// </summary>
+        /// <param name="sideChannels"> A dictionary of channel type to channel.</param>
+        /// <returns></returns>
+        public static byte[] GetSideChannelMessage(Dictionary<int, SideChannel> sideChannels)
+        {
+            using (var memStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memStream))
+                {
+                    foreach (var sideChannel in sideChannels.Values)
+                    {
+                        var messageList = sideChannel.MessageQueue;
+                        foreach (var message in messageList)
+                        {
+                            binaryWriter.Write(sideChannel.ChannelType());
+                            binaryWriter.Write(message.Count());
+                            binaryWriter.Write(message);
+                        }
+                        sideChannel.MessageQueue.Clear();
+                    }
+                    return memStream.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Separates the data received from Python into individual messages for each registered side channel.
+        /// </summary>
+        /// <param name="sideChannels">A dictionary of channel type to channel.</param>
+        /// <param name="dataReceived">The byte array of data received from Python.</param>
+        public static void ProcessSideChannelData(Dictionary<int, SideChannel> sideChannels, byte[] dataReceived)
+        {
+            if (dataReceived.Length == 0)
+            {
+                return;
+            }
+            using (var memStream = new MemoryStream(dataReceived))
+            {
+                using (var binaryReader = new BinaryReader(memStream))
+                {
+                    while (memStream.Position < memStream.Length)
+                    {
+                        int channelType = 0;
+                        byte[] message = null;
+                        try
+                        {
+                            channelType = binaryReader.ReadInt32();
+                            var messageLength = binaryReader.ReadInt32();
+                            message = binaryReader.ReadBytes(messageLength);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new UnityAgentsException(
+                                "There was a problem reading a message in a SideChannel. Please make sure the " +
+                                "version of MLAgents in Unity is compatible with the Python version. Original error : "
+                                + ex.Message);
+                        }
+                        if (sideChannels.ContainsKey(channelType))
+                        {
+                            sideChannels[channelType].OnMessageReceived(message);
+                        }
+                        else
+                        {
+                            Debug.Log(string.Format(
+                                "Unknown side channel data received. Channel type "
+                                + ": {0}", channelType));
+                        }
+                    }
+                }
             }
         }
 
@@ -439,7 +530,7 @@ namespace MLAgents
         /// When the editor exits, the communicator must be closed
         /// </summary>
         /// <param name="state">State.</param>
-        private void HandleOnPlayModeChanged(PlayModeStateChange state)
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             // This method is run whenever the playmode state is changed.
             if (state == PlayModeStateChange.ExitingPlayMode)

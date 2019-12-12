@@ -7,18 +7,18 @@ public class ReacherAgent : Agent
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
-    private ReacherAcademy m_MyAcademy;
+    ReacherAcademy m_MyAcademy;
     float m_GoalDegree;
-    private Rigidbody m_RbA;
-    private Rigidbody m_RbB;
+    Rigidbody m_RbA;
+    Rigidbody m_RbB;
     // speed of the goal zone around the arm (in radians)
-    private float m_GoalSpeed;
+    float m_GoalSpeed;
     // radius of the goal zone
-    private float m_GoalSize;
+    float m_GoalSize;
     // Magnitude of sinusoidal (cosine) deviation of the goal along the vertical dimension
-    private float m_Deviation;
+    float m_Deviation;
     // Frequency of the cosine deviation of the goal along the vertical dimension
-    private float m_DeviationFreq;
+    float m_DeviationFreq;
 
     /// <summary>
     /// Collect the rigidbodies of the reacher in order to resue them for
@@ -58,7 +58,7 @@ public class ReacherAgent : Agent
     /// <summary>
     /// The agent's four actions correspond to torques on each of the two joints.
     /// </summary>
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();
@@ -110,9 +110,10 @@ public class ReacherAgent : Agent
 
     public void SetResetParameters()
     {
-        m_GoalSize = m_MyAcademy.resetParameters["goal_size"];
-        m_GoalSpeed = Random.Range(-1f, 1f) * m_MyAcademy.resetParameters["goal_speed"];
-        m_Deviation = m_MyAcademy.resetParameters["deviation"];
-        m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
+        var fp = m_MyAcademy.FloatProperties;
+        m_GoalSize = fp.GetPropertyWithDefault("goal_size", 5);
+        m_GoalSpeed = Random.Range(-1f, 1f) * fp.GetPropertyWithDefault("goal_speed", 1);
+        m_Deviation = fp.GetPropertyWithDefault("deviation", 0);
+        m_DeviationFreq = fp.GetPropertyWithDefault("deviation_freq", 0);
     }
 }

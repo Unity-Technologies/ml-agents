@@ -19,7 +19,7 @@ public class PyramidArea : Area
         CreateObject(numObjects, stonePyramid, spawnAreaIndex);
     }
 
-    private void CreateObject(int numObjects, GameObject desiredObject, int spawnAreaIndex)
+    void CreateObject(int numObjects, GameObject desiredObject, int spawnAreaIndex)
     {
         for (var i = 0; i < numObjects; i++)
         {

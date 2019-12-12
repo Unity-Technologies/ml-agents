@@ -3,7 +3,7 @@ using MLAgents;
 
 public class FoodCollectorAgent : Agent
 {
-    private FoodCollectorAcademy m_MyAcademy;
+    FoodCollectorAcademy m_MyAcademy;
     public GameObject area;
     FoodCollectorArea m_MyArea;
     bool m_Frozen;
@@ -13,7 +13,7 @@ public class FoodCollectorAgent : Agent
     float m_FrozenTime;
     float m_EffectTime;
     Rigidbody m_AgentRb;
-    private float m_LaserLength;
+    float m_LaserLength;
     // Speed of agent rotation.
     public float turnSpeed = 300;
 
@@ -25,7 +25,6 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    private RayPerception3D m_RayPer;
     public bool useVectorObs;
 
 
@@ -35,7 +34,6 @@ public class FoodCollectorAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         m_MyArea = area.GetComponent<FoodCollectorArea>();
-        m_RayPer = GetComponent<RayPerception3D>();
         m_MyAcademy = FindObjectOfType<FoodCollectorAcademy>();
 
         SetResetParameters();
@@ -45,10 +43,6 @@ public class FoodCollectorAgent : Agent
     {
         if (useVectorObs)
         {
-            const float rayDistance = 50f;
-            float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
-            string[] detectableObjects = { "food", "agent", "wall", "badFood", "frozenAgent" };
-            AddVectorObs(m_RayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, 0f));
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             AddVectorObs(localVelocity.x);
             AddVectorObs(localVelocity.z);
@@ -150,10 +144,10 @@ public class FoodCollectorAgent : Agent
         {
             var myTransform = transform;
             myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
-            var position = myTransform.TransformDirection(RayPerception3D.PolarToCartesian(25f, 90f));
-            Debug.DrawRay(myTransform.position, position, Color.red, 0f, true);
+            var rayDir = 25.0f * myTransform.forward;
+            Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 2f, position, out hit, 25f))
+            if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 25f))
             {
                 if (hit.collider.gameObject.CompareTag("agent"))
                 {
@@ -208,7 +202,7 @@ public class FoodCollectorAgent : Agent
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         MoveAgent(vectorAction);
     }
@@ -283,13 +277,12 @@ public class FoodCollectorAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = m_MyAcademy.resetParameters.TryGetValue("laser_length", out m_LaserLength) ? m_LaserLength : 1.0f;
+        m_LaserLength = m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
     {
-        float agentScale;
-        agentScale = m_MyAcademy.resetParameters.TryGetValue("agent_scale", out agentScale) ? agentScale : 1.0f;
+        float agentScale = m_MyAcademy.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

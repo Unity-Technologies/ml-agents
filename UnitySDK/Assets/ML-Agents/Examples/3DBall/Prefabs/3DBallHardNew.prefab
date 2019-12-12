@@ -613,10 +613,9 @@ MonoBehaviour:
     vectorObservationSize: 5
     numStackedVectorObservations: 9
     vectorActionSize: 02000000
-    cameraResolutions: []
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: cee7d20369b814d549573de7e76c4a81, type: 3}
+  m_Model: {fileID: 11400000, guid: 27d49984757ed46b181090a532ef48e5, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: 3DBallHard
@@ -632,8 +631,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
     resetOnDone: 1
     onDemandDecision: 0

@@ -50,25 +50,7 @@ to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
 
-The Academy object for the scene is placed on the Ball3DAcademy GameObject. When
-you look at an Academy component in the inspector, you can see several
-properties that control how the environment works.
-The **Training Configuration** and **Inference Configuration** properties
-set the graphics and timescale properties for the Unity application.
-The Academy uses the **Training Configuration**  during training and the
-**Inference Configuration** when not training. (*Inference* means that the
-Agent is using a trained model or heuristics or direct control — in other
-words, whenever **not** training.)
-Typically, you would set a low graphics quality and timescale to greater `1.0` for the **Training
-Configuration** and a high graphics quality and timescale to `1.0` for the
-**Inference Configuration** .
-
-**Note:** if you want to observe the environment during training, you can adjust
-the **Training Configuration** settings to use a larger window and a timescale
-closer to 1:1. Be sure to set these parameters back when training in earnest;
-otherwise, training can take a very long time.
-
-Another aspect of an environment is the Academy implementation. Since
+The Academy object for the scene is placed on the Ball3DAcademy GameObject. Since
 the base Academy class is abstract, you must always define a subclass. There are
 three functions you can implement, though they are all optional:
 
@@ -89,11 +71,9 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 "Agent" GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior 
+* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
-* **Visual Observations** — Defines any Camera objects used by the Agent to
-  observe its environment. 3D Balance Ball does not use camera observations.
 * **Max Step** — Defines how many simulation steps can occur before the Agent
   decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
 * **Reset On Done** — Defines whether an Agent starts over when it is finished.
@@ -110,7 +90,7 @@ The Ball3DAgent subclass defines the following methods:
   training generalizes to more than a specific starting position and agent cube
   attitude.
 * agent.CollectObservations() — Called every simulation step. Responsible for
-  collecting the Agent's observations of the environment. Since the Behavior 
+  collecting the Agent's observations of the environment. Since the Behavior
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations()` must call
   `AddVectorObs` such that vector size adds up to 8.
@@ -122,11 +102,11 @@ The Ball3DAgent subclass defines the following methods:
   negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
-* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior 
+* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
   the actions of the Agent. As such, the `Heuristic()` method returns an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
-  keyboard inputs into actions.  
+  keyboard inputs into actions.
 
 
 #### Behavior Parameters : Vector Observation Space
@@ -194,7 +174,7 @@ saved to the same directory and will all be included on the same graph.
 To summarize, go to your command line, enter the `ml-agents` directory and type:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train
+mlagents-learn config/trainer_config.yaml --run-id=<run-identifier> --train --time-scale=100
 ```
 
 When the message _"Start training by pressing the Play button in the Unity
@@ -205,6 +185,7 @@ Unity to start training in the Editor.
 environment first.
 
 The `--train` flag tells the ML-Agents toolkit to run in training mode.
+The `--time-scale=100` sets the `Time.TimeScale` value in Unity.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
 follow the instructions in

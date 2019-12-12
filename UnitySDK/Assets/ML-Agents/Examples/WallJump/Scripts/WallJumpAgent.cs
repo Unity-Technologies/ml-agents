@@ -30,7 +30,6 @@ public class WallJumpAgent : Agent
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
     WallJumpAcademy m_Academy;
-    RayPerception m_RayPer;
 
     public float jumpingTime;
     public float jumpTime;
@@ -42,14 +41,10 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
-    string[] m_DetectableObjects;
-
     public override void InitializeAgent()
     {
         m_Academy = FindObjectOfType<WallJumpAcademy>();
-        m_RayPer = GetComponent<RayPerception>();
         m_Configuration = Random.Range(0, 5);
-        m_DetectableObjects = new[] { "wall", "goal", "block" };
 
         m_AgentRb = GetComponent<Rigidbody>();
         m_ShortBlockRb = shortBlock.GetComponent<Rigidbody>();
@@ -139,12 +134,6 @@ public class WallJumpAgent : Agent
 
     public override void CollectObservations()
     {
-        var rayDistance = 20f;
-        float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 110f, 70f };
-        AddVectorObs(m_RayPer.Perceive(
-            rayDistance, rayAngles, m_DetectableObjects, 0f, 0f));
-        AddVectorObs(m_RayPer.Perceive(
-            rayDistance, rayAngles, m_DetectableObjects, 2.5f, 2.5f));
         var agentPos = m_AgentRb.position - ground.transform.position;
 
         AddVectorObs(agentPos / 20f);
@@ -233,7 +222,7 @@ public class WallJumpAgent : Agent
         jumpingTime -= Time.fixedDeltaTime;
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         MoveAgent(vectorAction);
         if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))
@@ -299,7 +288,7 @@ public class WallJumpAgent : Agent
         m_AgentRb.velocity = default(Vector3);
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (m_Configuration != -1)
         {
@@ -323,7 +312,7 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.resetParameters["no_wall_height"],
+                m_Academy.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", noWallBrain);
@@ -332,17 +321,16 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.resetParameters["small_wall_height"],
+                m_Academy.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var height =
-                m_Academy.resetParameters["big_wall_min_height"] +
-                Random.value * (m_Academy.resetParameters["big_wall_max_height"] -
-                    m_Academy.resetParameters["big_wall_min_height"]);
+            var min = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,
                 height,

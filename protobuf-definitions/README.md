@@ -34,13 +34,13 @@ Download and install the latest version of [nuget](https://www.nuget.org/downloa
 `sudo apt-get install nuget`
 
 
-Navigate to your installation of nuget and run the following: 
+Navigate to your installation of nuget and run the following:
 
 `nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
 ## Running
 
-Whenever you change the fields of a custom message, you must follow the steps below to create C# and Python files corresponding to the new message.
+Whenever you change the fields of a message, you must follow the steps below to create C# and Python files corresponding to the new message.
 
 1. Open a terminal. **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 2. Un-comment line 7 in `make.sh` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
@@ -52,7 +52,7 @@ Whenever you change the fields of a custom message, you must follow the steps be
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
 ```
  and the following line to the end
- 
+
  ```csharp
  #endif
  ```
@@ -71,4 +71,4 @@ pip install -e .
 mlagents-learn
 ```
 
-The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo. 
+The final line will test if everything was generated and installed correctly. If it worked, you should see the Unity logo.

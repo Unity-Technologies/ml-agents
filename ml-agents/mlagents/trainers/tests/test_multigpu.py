@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import pytest
 
-import tensorflow as tf
+from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy

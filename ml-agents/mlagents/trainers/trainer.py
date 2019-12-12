@@ -2,16 +2,18 @@
 import logging
 from typing import Dict, List, Deque, Any
 import os
-import tensorflow as tf
+
+from mlagents.tf_utils import tf
+
 import numpy as np
 from collections import deque, defaultdict
 
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.envs.exception import UnityException
 from mlagents.envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.envs.brain import BrainParameters, AllBrainInfo
+from mlagents.trainers.brain import BrainParameters, BrainInfo
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -29,7 +31,7 @@ class Trainer(object):
 
     def __init__(
         self,
-        brain: BrainParameters,
+        brain_name: str,
         trainer_parameters: dict,
         training: bool,
         run_id: str,
@@ -44,7 +46,7 @@ class Trainer(object):
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []
-        self.brain_name = brain.brain_name
+        self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
@@ -59,6 +61,7 @@ class Trainer(object):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None
+        self.policies: Dict[str, TFPolicy] = {}
         self.step: int = 0
 
     def check_param_keys(self):
@@ -236,28 +239,29 @@ class Trainer(object):
 
     def add_experiences(
         self,
-        curr_all_info: AllBrainInfo,
-        next_all_info: AllBrainInfo,
+        name_behavior_id: str,
+        curr_info: BrainInfo,
+        next_info: BrainInfo,
         take_action_outputs: ActionInfoOutputs,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_all_info: Dictionary of all current brains and corresponding BrainInfo.
-        :param next_all_info: Dictionary of all current brains and corresponding BrainInfo.
+        :param name_behavior_id: string policy identifier.
+        :param curr_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
-        raise UnityTrainerException(
-            "The process_experiences method was not implemented."
-        )
+        raise UnityTrainerException("The add_experiences method was not implemented.")
 
     def process_experiences(
-        self, current_info: AllBrainInfo, next_info: AllBrainInfo
+        self, name_behavior_id: str, current_info: BrainInfo, next_info: BrainInfo
     ) -> None:
         """
         Checks agent histories for processing condition, and processes them as necessary.
         Processing involves calculating value and advantage targets for model updating step.
-        :param current_info: Dictionary of all current-step brains and corresponding BrainInfo.
-        :param next_info: Dictionary of all next-step brains and corresponding BrainInfo.
+        :param name_behavior_id: string policy identifier.
+        :param current_info: current BrainInfo.
+        :param next_info: next BrainInfo.
         """
         raise UnityTrainerException(
             "The process_experiences method was not implemented."
@@ -282,3 +286,18 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates policy
+        """
+        raise UnityTrainerException("The update_model method was not implemented.")
+
+    def get_policy(self, brain_name: str) -> TFPolicy:
+        """
+        Gets policy from trainers list of policies
+        """
+        return self.policies[brain_name]
+
+    def advance(self) -> None:
+        pass

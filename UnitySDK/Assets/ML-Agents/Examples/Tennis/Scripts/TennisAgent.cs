@@ -12,17 +12,17 @@ public class TennisAgent : Agent
     public float angle;
     public float scale;
 
-    private Text m_TextComponent;
-    private Rigidbody m_AgentRb;
-    private Rigidbody m_BallRb;
-    private float m_InvertMult;
-    private ResetParameters m_ResetParams;
+    Text m_TextComponent;
+    Rigidbody m_AgentRb;
+    Rigidbody m_BallRb;
+    float m_InvertMult;
+    IFloatProperties m_ResetParams;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
-    private const string k_CanvasName = "Canvas";
-    private const string k_ScoreBoardAName = "ScoreA";
-    private const string k_ScoreBoardBName = "ScoreB";
+    const string k_CanvasName = "Canvas";
+    const string k_ScoreBoardAName = "ScoreA";
+    const string k_ScoreBoardBName = "ScoreB";
 
     public override void InitializeAgent()
     {
@@ -31,7 +31,7 @@ public class TennisAgent : Agent
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
         var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.resetParameters;
+        m_ResetParams = academy.FloatProperties;
         if (invertX)
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardBName).gameObject;
@@ -59,7 +59,7 @@ public class TennisAgent : Agent
         AddVectorObs(m_InvertMult * gameObject.transform.rotation.z);
     }
 
-    public override void AgentAction(float[] vectorAction, string textAction)
+    public override void AgentAction(float[] vectorAction)
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * m_InvertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -107,7 +107,7 @@ public class TennisAgent : Agent
 
     public void SetRacket()
     {
-        angle = m_ResetParams["angle"];
+        angle = m_ResetParams.GetPropertyWithDefault("angle", 55);
         gameObject.transform.eulerAngles = new Vector3(
             gameObject.transform.eulerAngles.x,
             gameObject.transform.eulerAngles.y,
@@ -117,7 +117,7 @@ public class TennisAgent : Agent
 
     public void SetBall()
     {
-        scale = m_ResetParams["scale"];
+        scale = m_ResetParams.GetPropertyWithDefault("scale", 1);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

@@ -9,7 +9,7 @@ public class BouncerTarget : MonoBehaviour
         gameObject.transform.Rotate(new Vector3(1, 0, 0), 0.5f);
     }
 
-    private void OnTriggerEnter(Collider collision)
+    void OnTriggerEnter(Collider collision)
     {
         var agent = collision.gameObject.GetComponent<Agent>();
         if (agent != null)
