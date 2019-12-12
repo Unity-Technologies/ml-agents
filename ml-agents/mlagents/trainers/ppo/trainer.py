@@ -272,7 +272,7 @@ class PPOTrainer(RLTrainer):
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         if self.multi_gpu and len(get_devices()) > 1:
-            self.ppo_policy = MultiGpuPPOPolicy(
+            self.ppo_policy: PPOPolicy = MultiGpuPPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
