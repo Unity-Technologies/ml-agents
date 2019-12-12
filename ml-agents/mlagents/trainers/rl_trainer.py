@@ -275,7 +275,7 @@ class RLTrainer(Trainer):
         """
         policy = self.create_policy(brain_parameters)
         self.policy = policy
-        self.policies[brain_parameters.brain_name] = policy
+        # self.policies[brain_parameters.brain_name] = policy
 
     def advance(self):
         """

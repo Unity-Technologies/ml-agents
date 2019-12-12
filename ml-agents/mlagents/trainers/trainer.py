@@ -61,7 +61,6 @@ class Trainer(object):
         self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy
-        self.policies: Dict[str, TFPolicy] = {}
         self.step: int = 0
 
     def check_param_keys(self):
@@ -291,13 +290,19 @@ class Trainer(object):
         """
         Creates policy
         """
-        raise UnityTrainerException("The update_model method was not implemented.")
+        raise UnityTrainerException("The create_policy method was not implemented.")
+
+    def add_policy(self, brain_parameters: BrainParameters) -> None:
+        """
+        Adds policy to trainer
+        """
+        raise UnityTrainerException("The add_policy method was not implemented.")
 
     def get_policy(self, brain_name: str) -> TFPolicy:
         """
-        Gets policy from trainers list of policies
+        Gets policy from trainer
         """
-        return self.policies[brain_name]
+        return self.policy
 
     def advance(self) -> None:
         pass
