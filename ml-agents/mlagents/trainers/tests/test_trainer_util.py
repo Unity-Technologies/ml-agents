@@ -261,7 +261,7 @@ def test_handles_no_default_section():
         load_model=False,
         seed=42,
     )
-    trainer_factory.generate(brain_parameters)
+    trainer_factory.generate(brain_parameters.brain_name)
 
 
 def test_raise_if_no_config_for_brain():
