@@ -7,6 +7,11 @@ from mlagents.tf_utils import tf
 
 
 class StatsWriter(abc.ABC):
+    """
+    A StatsWriter abstract class. A StatsWriter takes in a category, key, scalar value, and step
+    and writes it out by some method.
+    """
+
     @abc.abstractmethod
     def write_stats(self, category: str, key: str, value: float, step: int) -> None:
         pass
@@ -37,9 +42,10 @@ class TensorboardWriter(StatsWriter):
 class StatsReporter:
     def __init__(self, writers: List[StatsWriter]):
         """
-        Generic StatsReporter. A category is the broadest type of storage (would correspond the run name and trainer
-        name, e.g. 3DBalltest_3DBall. A key is the type of stat it is (e.g. Environment/Reward). Finally the Value
-        is the float value attached to this stat.
+        Generic StatsReporter. A category is the broadest type of storage (would
+        correspond the run name and trainer name, e.g. 3DBalltest_3DBall. A key is the
+        type of stat it is (e.g. Environment/Reward). Finally the Value is the float value
+        attached to this stat.
         """
         self.writers = writers
         self.stats_dict: Dict[str, Dict[str, List]] = defaultdict(
