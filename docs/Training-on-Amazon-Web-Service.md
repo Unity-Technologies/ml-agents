@@ -266,7 +266,7 @@ Traceback (most recent call last):
   File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/environment.py", line 489, in send_academy_parameters
     return self.communicator.initialize(inputs).rl_initialization_output
   File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/rpc_communicator.py", line 60, in initialize
-mlagents.envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
+mlagents_envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
          The environment does not need user interaction to launch
          The environment and the Python interface have compatible versions.
 ```

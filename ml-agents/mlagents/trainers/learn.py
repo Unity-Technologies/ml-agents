@@ -62,7 +62,7 @@ def get_version_string() -> str:
     # pylint: disable=no-member
     return f""" Version information:
   ml-agents: {mlagents.trainers.__version__},
-  ml-agents-envs: {mlagents.envs.__version__},
+  ml-agents-envs: {mlagents_envs.__version__},
   Communicator API: {UnityEnvironment.API_VERSION},
   TensorFlow: {tf_utils.tf.__version__}"""
 
@@ -441,7 +441,7 @@ def main():
     print(get_version_string())
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
-    env_logger = logging.getLogger("mlagents.envs")
+    env_logger = logging.getLogger("mlagents_envs")
     trainer_logger.info(options)
     if options.debug:
         trainer_logger.setLevel("DEBUG")

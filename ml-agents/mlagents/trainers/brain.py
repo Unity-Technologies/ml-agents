@@ -9,7 +9,7 @@ from mlagents_envs.timers import hierarchical_timer, timed
 from typing import Dict, List, NamedTuple, Collection
 from PIL import Image
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class CameraResolution(NamedTuple):

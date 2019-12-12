@@ -52,7 +52,7 @@ class TrainerController(object):
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
-        self.logger = logging.getLogger("mlagents.envs")
+        self.logger = logging.getLogger("mlagents.trainers")
         self.run_id = run_id
         self.save_freq = save_freq
         self.train_model = train

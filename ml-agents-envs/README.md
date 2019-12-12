@@ -9,7 +9,7 @@ used independently of `mlagents` for Python communication.
 
 The `mlagents_envs` Python package contains one sub package:
 
-* `mlagents.envs`: A low level API which allows you to interact directly with a
+* `mlagents_envs`: A low level API which allows you to interact directly with a
   Unity Environment. See
   [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
   for more information on using this package.

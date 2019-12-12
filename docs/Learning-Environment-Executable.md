@@ -124,11 +124,11 @@ like this:
 CrashReporter: initialized
 Mono path[0] = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/Resources/Data/Managed'
 Mono config path = '/Users/dericp/workspace/ml-agents/3DBall.app/Contents/MonoBleedingEdge/etc'
-INFO:mlagents.envs:
+INFO:mlagents_envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
 
-INFO:mlagents.envs:Connected new brain:
+INFO:mlagents_envs:Connected new brain:
 Unity brain name: Ball3DLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
@@ -136,7 +136,7 @@ Unity brain name: Ball3DLearning
         Vector Action space type: continuous
         Vector Action space size (per agent): [2]
         Vector Action descriptions: ,
-INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
+INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
         batch_size:          64
         beta:                0.001
         buffer_size:         12000

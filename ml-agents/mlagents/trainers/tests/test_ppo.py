@@ -62,8 +62,8 @@ BUFFER_INIT_SAMPLES = 32
 NUM_AGENTS = 12
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -89,8 +89,8 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents.envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
     mock_communicator.return_value = MockCommunicator(
@@ -333,7 +333,7 @@ def test_trainer_increment_step(dummy_config):
     assert trainer.step == 10
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     env, mock_brain, _ = mb.setup_mock_env_and_brains(

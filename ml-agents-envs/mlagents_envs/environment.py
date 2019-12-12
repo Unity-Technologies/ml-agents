@@ -45,7 +45,7 @@ import signal
 import struct
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents_envs")
 
 
 class UnityEnvironment(BaseEnv):

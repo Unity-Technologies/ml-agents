@@ -8,7 +8,7 @@ import io
 from typing import cast, List, Tuple, Union, Collection
 from PIL import Image
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents_envs")
 
 
 def agent_group_spec_from_proto(

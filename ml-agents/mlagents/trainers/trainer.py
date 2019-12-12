@@ -27,7 +27,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the base class for the mlagents.envs.trainers"""
+    """This class is the base class for the mlagents_envs.trainers"""
 
     def __init__(
         self,

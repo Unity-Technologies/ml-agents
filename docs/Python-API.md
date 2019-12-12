@@ -1,7 +1,7 @@
 # Unity ML-Agents Python Low Level API
 
 The `mlagents` Python package contains two components: a low level API which
-allows you to interact directly with a Unity Environment (`mlagents.envs`) and
+allows you to interact directly with a Unity Environment (`mlagents_envs`) and
 an entry point to train (`mlagents-learn`) which allows you to train agents in
 Unity Environments using our implementations of reinforcement learning or
 imitation learning.
@@ -9,7 +9,7 @@ imitation learning.
 You can use the Python Low Level API to interact directly with your learning
 environment, and use it to develop new learning algorithms.
 
-## mlagents.envs
+## mlagents_envs
 
 The ML-Agents Toolkit Low Level API is a Python API for controlling the simulation
 loop of an environment or game built with Unity. This API is used by the

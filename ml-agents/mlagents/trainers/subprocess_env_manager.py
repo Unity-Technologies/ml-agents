@@ -29,7 +29,7 @@ from mlagents.trainers.brain_conversion_utils import (
     group_spec_to_brain_parameters,
 )
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class EnvironmentCommand(NamedTuple):

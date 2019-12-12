@@ -4,7 +4,7 @@ from typing import Optional
 from mlagents_envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents_envs")
 
 
 class Communicator(object):
