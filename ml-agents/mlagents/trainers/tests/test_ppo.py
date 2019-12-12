@@ -10,6 +10,7 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers import stats
 from mlagents.envs.environment import UnityEnvironment
 from mlagents.envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
@@ -430,7 +431,12 @@ def test_process_trajectory(dummy_config):
     for reward in trainer.collected_rewards.values():
         for agent in reward.values():
             assert agent == 0
-    assert len(trainer.stats["Environment/Cumulative Reward"]) > 0
+    assert (
+        stats.stats_reporter.get_num_stats(
+            trainer.summary_path, "Environment/Cumulative Reward"
+        )
+        > 0
+    )
 
 
 if __name__ == "__main__":
