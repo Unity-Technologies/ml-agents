@@ -291,6 +291,8 @@ class PPOTrainer(RLTrainer):
         for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
+        self.ppo_policy = policy
+
         return policy
 
 

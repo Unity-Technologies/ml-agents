@@ -269,6 +269,9 @@ class SACTrainer(RLTrainer):
                     self.update_buffer.num_experiences
                 )
             )
+
+        self.sac_policy = policy
+
         return policy
 
     def update_sac_policy(self) -> None:
