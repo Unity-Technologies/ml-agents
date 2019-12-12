@@ -433,7 +433,7 @@ def test_process_trajectory(dummy_config):
             assert agent == 0
     assert (
         stats.stats_reporter.get_stats_summaries(
-            trainer.summary_path, "Environment/Cumulative Reward"
+            trainer.summary_path, "Policy/Extrinsic Reward"
         ).num
         > 0
     )
