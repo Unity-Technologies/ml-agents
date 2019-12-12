@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, NamedTuple
 import numpy as np
 import abc
 
@@ -37,6 +37,12 @@ class TensorboardWriter(StatsWriter):
         if category not in self.summary_writers:
             self.summary_writers[category] = tf.summary.FileWriter(category)
         self.summary_writers[category].add_summary(text, step)
+
+
+class StatsSummary(NamedTuple):
+    mean: float
+    std: float
+    count: int
 
 
 class StatsReporter:
@@ -86,32 +92,18 @@ class StatsReporter:
         for writer in self.writers:
             writer.write_text(category, text, step)
 
-    def get_mean_stat(self, category: str, key: str) -> float:
+    def get_stats_summaries(self, category: str, key: str) -> StatsSummary:
         """
-        Get the mean of a particular statistic, since last write.
+        Get the mean, std, and count of a particular statistic, since last write.
         :param category: The highest categorization of the statistic, e.g. behavior name.
         :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: The mean of the statistic specified with category, key.
+        :returns: A StatsSummary NamedTuple containing (mean, std, count).
         """
-        return np.mean(self.stats_dict[category][key])
-
-    def get_std_stat(self, category: str, key: str) -> float:
-        """
-        Get the std of a particular statistic, since last write.
-        :param category: The highest categorization of the statistic, e.g. behavior name.
-        :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: The std of the statistic specified with category, key.
-        """
-        return np.std(self.stats_dict[category][key])
-
-    def get_num_stats(self, category: str, key: str) -> int:
-        """
-        Get the current number stored of a particular statistic, since last write.
-        :param category: The highest categorization of the statistic, e.g. behavior name.
-        :param key: The type of statistic, e.g. Environment/Reward.
-        :returns: The number of values in the buffer with specified with category, key.
-        """
-        return len(self.stats_dict[category][key])
+        return StatsSummary(
+            np.mean(self.stats_dict[category][key]),
+            np.std(self.stats_dict[category][key]),
+            len(self.stats_dict[category][key]),
+        )
 
 
 stats_reporter = StatsReporter([TensorboardWriter()])

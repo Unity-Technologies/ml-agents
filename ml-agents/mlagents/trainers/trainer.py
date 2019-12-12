@@ -197,15 +197,10 @@ class Trainer(object):
                 else "Not Training."
             )
             step = min(self.get_step, self.get_max_steps)
-            if (
-                stats.stats_reporter.get_num_stats(
-                    self.summary_path, "Environment/Cumulative Reward"
-                )
-                > 0
-            ):
-                mean_reward = stats.stats_reporter.get_mean_stat(
-                    self.summary_path, "Environment/Cumulative Reward"
-                )
+            stats_summary = stats.stats_reporter.get_stats_summaries(
+                self.summary_path, "Environment/Cumulative Reward"
+            )
+            if stats_summary.count > 0:
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
@@ -216,14 +211,12 @@ class Trainer(object):
                         self.brain_name,
                         step,
                         delta_train_start,
-                        mean_reward,
-                        stats.stats_reporter.get_std_stat(
-                            self.summary_path, "Environment/Cumulative Reward"
-                        ),
+                        stats_summary.mean,
+                        stats_summary.std,
                         is_training,
                     )
                 )
-                set_gauge(f"{self.brain_name}.mean_reward", mean_reward)
+                set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(

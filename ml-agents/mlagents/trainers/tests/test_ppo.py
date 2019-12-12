@@ -432,9 +432,9 @@ def test_process_trajectory(dummy_config):
         for agent in reward.values():
             assert agent == 0
     assert (
-        stats.stats_reporter.get_num_stats(
+        stats.stats_reporter.get_stats_summaries(
             trainer.summary_path, "Environment/Cumulative Reward"
-        )
+        ).count
         > 0
     )
 

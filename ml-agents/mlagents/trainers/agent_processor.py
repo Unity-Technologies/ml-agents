@@ -42,7 +42,7 @@ class AgentProcessor:
         # that really should be gathered by the env-manager.
         self.policy = policy
         self.episode_steps: Counter = Counter()
-        self.episode_rewards: Dict[str, float] = defaultdict(lambda: 0.0)
+        self.episode_rewards: Dict[str, float] = defaultdict(float)
         if max_trajectory_length:
             self.max_trajectory_length = max_trajectory_length
             self.ignore_max_length = False
