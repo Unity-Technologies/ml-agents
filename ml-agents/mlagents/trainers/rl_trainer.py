@@ -1,8 +1,7 @@
 # # Unity ML-Agents Toolkit
 import logging
-from typing import Dict, NamedTuple
+from typing import Dict
 from collections import defaultdict
-import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
@@ -11,16 +10,6 @@ from mlagents.trainers.components.reward_signals import RewardSignalResult
 LOGGER = logging.getLogger("mlagents.trainers")
 
 RewardSignalResults = Dict[str, RewardSignalResult]
-
-
-class AllRewardsOutput(NamedTuple):
-    """
-    This class stores all of the outputs of the reward signals,
-    as well as the raw reward from the environment.
-    """
-
-    reward_signals: RewardSignalResults
-    environment: np.ndarray
 
 
 class RLTrainer(Trainer):

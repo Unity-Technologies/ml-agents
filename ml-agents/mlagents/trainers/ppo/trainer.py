@@ -81,6 +81,7 @@ class PPOTrainer(RLTrainer):
         """
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
+        :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
