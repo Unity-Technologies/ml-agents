@@ -98,7 +98,7 @@ def initialize_trainer(
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
 
-    trainer = None  # type: ignore  # will be set to one of these, or raise
+    trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
     min_lesson_length = 1
     if meta_curriculum:
         if brain_name in meta_curriculum.brains_to_curriculums:
