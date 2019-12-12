@@ -26,9 +26,7 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
-        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
-            ActionInfoOutputs
-        )
+        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
         self.stats: Dict[str, List[float]] = defaultdict(list)
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
