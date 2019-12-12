@@ -215,7 +215,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd << parameters.directory >>
-            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
+            twine upload -u mlagents-test -p $PYPI_PASSWORD --repository-url https://test.pypi.org/legacy/ dist/*
 
 workflows:
   version: 2
