@@ -47,9 +47,22 @@ class StatsReporter:
         )
 
     def add_stat(self, category: str, key: str, value: float) -> None:
+        """
+        Add a float value stat to the StatsReporter.
+        :param category: The highest categorization of the statistic, e.g. behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param value: the value of the statistic.
+        """
         self.stats_dict[category][key].append(value)
 
     def write_stats(self, category: str, step: int) -> None:
+        """
+        Write out all stored statistics that fall under the category specified.
+        The currently stored values will be averaged, written out as a single value,
+        and the buffer cleared.
+        :param category: The category which to write out the stats.
+        :param step: Training step which to write these stats as.
+        """
         for key in self.stats_dict[category]:
             if len(self.stats_dict[category][key]) > 0:
                 stat_mean = float(np.mean(self.stats_dict[category][key]))
@@ -58,16 +71,40 @@ class StatsReporter:
         del self.stats_dict[category]
 
     def write_text(self, category: str, text: str, step: int) -> None:
+        """
+        Write out some text.
+        :param category: The highest categorization of the statistic, e.g. behavior name.
+        :param text: The text to write out.
+        :param step: Training step which to write these stats as.
+        """
         for writer in self.writers:
             writer.write_text(category, text, step)
 
     def get_mean_stat(self, category: str, key: str) -> float:
+        """
+        Get the mean of a particular statistic, since last write.
+        :param category: The highest categorization of the statistic, e.g. behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :returns: The mean of the statistic specified with category, key.
+        """
         return np.mean(self.stats_dict[category][key])
 
     def get_std_stat(self, category: str, key: str) -> float:
+        """
+        Get the std of a particular statistic, since last write.
+        :param category: The highest categorization of the statistic, e.g. behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :returns: The std of the statistic specified with category, key.
+        """
         return np.std(self.stats_dict[category][key])
 
     def get_num_stats(self, category: str, key: str) -> int:
+        """
+        Get the current number stored of a particular statistic, since last write.
+        :param category: The highest categorization of the statistic, e.g. behavior name.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :returns: The number of values in the buffer with specified with category, key.
+        """
         return len(self.stats_dict[category][key])
 
 
