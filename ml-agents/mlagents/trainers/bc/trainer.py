@@ -31,12 +31,7 @@ class BCTrainer(Trainer):
         self.policy = BCPolicy(seed, brain, trainer_parameters, load)
         self.n_sequences = 1
         self.cumulative_rewards = defaultdict(lambda: 0)
-        self.episode_steps = {}
-        self.stats = {
-            "Losses/Cloning Loss": [],
-            "Environment/Episode Length": [],
-            "Environment/Cumulative Reward": [],
-        }
+        self.stats = {"Losses/Cloning Loss": []}
 
         self.batches_per_epoch = trainer_parameters["batches_per_epoch"]
 
@@ -62,18 +57,9 @@ class BCTrainer(Trainer):
             self.episode_steps[agent_id] += len(trajectory.steps)
 
         if trajectory.done_reached:
-            self.stats["Environment/Episode Length"].append(
-                self.episode_steps.get(agent_id, 0)
-            )
-            self.episode_steps[agent_id] = 0
-
             self.cumulative_returns_since_policy_update.append(
                 self.cumulative_rewards.get(agent_id, 0)
             )
-            self.stats["Environment/Cumulative Reward"].append(
-                self.cumulative_rewards.get(agent_id, 0)
-            )
-            self.cumulative_rewards[agent_id] = 0
 
     def end_episode(self):
         """

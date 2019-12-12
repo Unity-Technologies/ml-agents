@@ -64,11 +64,6 @@ class RLTrainer(Trainer):
                 self.cumulative_returns_since_policy_update.append(
                     rewards.get(agent_id, 0)
                 )
-                stats.stats_reporter.add_stat(
-                    self.summary_path,
-                    "Environment/Cumulative Reward",
-                    rewards.get(agent_id, 0),
-                )
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
