@@ -7,7 +7,8 @@ import mlagents.trainers.trainer_util as trainer_util
 from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.envs.exception import UnityEnvironmentException
+from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.brain import BrainParameters
 
 
 @pytest.fixture
@@ -36,6 +37,10 @@ def dummy_config():
             use_curiosity: false
             curiosity_strength: 0.0
             curiosity_enc_size: 1
+            reward_signals:
+                extrinsic:
+                    strength: 1.0
+                    gamma: 0.99
         """
     )
 
@@ -212,7 +217,7 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
 
-    with pytest.raises(UnityEnvironmentException):
+    with pytest.raises(TrainerConfigError):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=bad_config,
             summaries_dir=summaries_dir,
@@ -228,8 +233,68 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
             trainers[brain_name] = trainer_factory.generate(brain_parameters)
 
 
+def test_handles_no_default_section():
+    """
+    Make sure the trainer setup handles a missing "default" in the config.
+    """
+    brain_name = "testbrain"
+    config = dummy_config()
+    no_default_config = {brain_name: config["default"]}
+    brain_parameters = BrainParameters(
+        brain_name=brain_name,
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+
+    trainer_factory = trainer_util.TrainerFactory(
+        trainer_config=no_default_config,
+        summaries_dir="test_dir",
+        run_id="testrun",
+        model_path="model_dir",
+        keep_checkpoints=1,
+        train_model=True,
+        load_model=False,
+        seed=42,
+    )
+    trainer_factory.generate(brain_parameters)
+
+
+def test_raise_if_no_config_for_brain():
+    """
+    Make sure the trainer setup raises a friendlier exception if both "default" and the brain name
+    are missing from the config.
+    """
+    brain_name = "testbrain"
+    config = dummy_config()
+    bad_config = {"some_other_brain": config["default"]}
+    brain_parameters = BrainParameters(
+        brain_name=brain_name,
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+
+    trainer_factory = trainer_util.TrainerFactory(
+        trainer_config=bad_config,
+        summaries_dir="test_dir",
+        run_id="testrun",
+        model_path="model_dir",
+        keep_checkpoints=1,
+        train_model=True,
+        load_model=False,
+        seed=42,
+    )
+    with pytest.raises(TrainerConfigError):
+        trainer_factory.generate(brain_parameters)
+
+
 def test_load_config_missing_file():
-    with pytest.raises(UnityEnvironmentException):
+    with pytest.raises(TrainerConfigError):
         load_config("thisFileDefinitelyDoesNotExist.yaml")
 
 
@@ -250,6 +315,6 @@ you:
 - not
   - parse
     """
-    with pytest.raises(UnityEnvironmentException):
+    with pytest.raises(TrainerConfigError):
         fp = io.StringIO(file_contents)
         _load_config(fp)
