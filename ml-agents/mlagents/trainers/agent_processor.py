@@ -71,10 +71,8 @@ class AgentProcessor:
 
         for agent_id in next_info.agents:
             stored_info = self.last_brain_info.get(agent_id, None)
-            stored_take_action_outputs = self.last_take_action_outputs.get(
-                agent_id, None
-            )
             if stored_info is not None:
+                stored_take_action_outputs = self.last_take_action_outputs[agent_id]
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 obs = []
