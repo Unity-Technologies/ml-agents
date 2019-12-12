@@ -176,9 +176,9 @@ class TrainerController(object):
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
-                lesson_num = (
-                    self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num,
-                )
+                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    brain_name
+                ].lesson_num
                 stats.stats_reporter.add_stat(
                     trainer.summary_path, "Environment/Lesson", lesson_num
                 )
