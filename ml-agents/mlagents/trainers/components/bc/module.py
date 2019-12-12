@@ -22,7 +22,7 @@ class BCModule:
         samples_per_update: int = 0,
     ):
         """
-        A BC trainer that can be used inline with RL, especially for pretraining.
+        A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
         :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate
             for the pretrainer.
@@ -33,7 +33,7 @@ class BCModule:
         :param demo_path: The path to the demonstration file.
         :param batch_size: The batch size to use during BC training.
         :param num_epoch: Number of epochs to train for during each update.
-        :param samples_per_update: Maximum number of samples to train on during each pretraining update.
+        :param samples_per_update: Maximum number of samples to train on during each BC update.
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
@@ -60,7 +60,7 @@ class BCModule:
     @staticmethod
     def check_config(config_dict: Dict[str, Any]) -> None:
         """
-        Check the pretraining config for the required keys.
+        Check the behavioral_cloning config for the required keys.
         :param config_dict: Pretraining section of trainer_config
         """
         param_keys = ["strength", "demo_path", "steps"]
