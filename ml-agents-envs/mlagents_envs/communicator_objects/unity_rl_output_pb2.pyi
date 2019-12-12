@@ -13,7 +13,7 @@ from google.protobuf.message import (
 )
 
 from mlagents_envs.communicator_objects.agent_info_pb2 import (
-    AgentInfoProto as mlagents___envs___communicator_objects___agent_info_pb2___AgentInfoProto,
+    AgentInfoProto as mlagents_envs___communicator_objects___agent_info_pb2___AgentInfoProto,
 )
 
 from typing import (
@@ -41,11 +41,11 @@ class UnityRLOutputProto(google___protobuf___message___Message):
         DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
         @property
-        def value(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___agent_info_pb2___AgentInfoProto]: ...
+        def value(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents_envs___communicator_objects___agent_info_pb2___AgentInfoProto]: ...
 
         def __init__(self,
             *,
-            value : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___agent_info_pb2___AgentInfoProto]] = None,
+            value : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___agent_info_pb2___AgentInfoProto]] = None,
             ) -> None: ...
         @classmethod
         def FromString(cls, s: builtin___bytes) -> UnityRLOutputProto.ListAgentInfoProto: ...

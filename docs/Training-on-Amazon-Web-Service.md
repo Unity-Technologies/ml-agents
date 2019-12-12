@@ -261,11 +261,11 @@ If you didn't setup X Server or hasn't launched it properly, or your environment
 Logging to /home/ubuntu/.config/unity3d/<Some_Path>/Player.log
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/environment.py", line 63, in __init__
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents_envs/environment.py", line 63, in __init__
     aca_params = self.send_academy_parameters(rl_init_parameters_in)
-  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/environment.py", line 489, in send_academy_parameters
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents_envs/environment.py", line 489, in send_academy_parameters
     return self.communicator.initialize(inputs).rl_initialization_output
-  File "/home/ubuntu/ml-agents/ml-agents/mlagents/envs/rpc_communicator.py", line 60, in initialize
+  File "/home/ubuntu/ml-agents/ml-agents/mlagents_envs/rpc_communicator.py", line 60, in initialize
 mlagents_envs.exception.UnityTimeOutException: The Unity environment took too long to respond. Make sure that :
          The environment does not need user interaction to launch
          The environment and the Python interface have compatible versions.

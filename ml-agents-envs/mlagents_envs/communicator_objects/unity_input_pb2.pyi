@@ -9,11 +9,11 @@ from google.protobuf.message import (
 )
 
 from mlagents_envs.communicator_objects.unity_rl_initialization_input_pb2 import (
-    UnityRLInitializationInputProto as mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto,
+    UnityRLInitializationInputProto as mlagents_envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto,
 )
 
 from mlagents_envs.communicator_objects.unity_rl_input_pb2 import (
-    UnityRLInputProto as mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto,
+    UnityRLInputProto as mlagents_envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto,
 )
 
 from typing import (
@@ -35,15 +35,15 @@ class UnityInputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
     @property
-    def rl_input(self) -> mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto: ...
+    def rl_input(self) -> mlagents_envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto: ...
 
     @property
-    def rl_initialization_input(self) -> mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto: ...
+    def rl_initialization_input(self) -> mlagents_envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto: ...
 
     def __init__(self,
         *,
-        rl_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto] = None,
-        rl_initialization_input : typing___Optional[mlagents___envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto] = None,
+        rl_input : typing___Optional[mlagents_envs___communicator_objects___unity_rl_input_pb2___UnityRLInputProto] = None,
+        rl_initialization_input : typing___Optional[mlagents_envs___communicator_objects___unity_rl_initialization_input_pb2___UnityRLInitializationInputProto] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityInputProto: ...

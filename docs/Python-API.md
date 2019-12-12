@@ -27,7 +27,7 @@ The key objects in the Python API include:
 - **AgentGroupSpec** — describes the shape of the data inside a BatchedStepResult.
   For example, provides the dimensions of the observations of a group.
 
-These classes are all defined in the [base_env](../ml-agents-envs/mlagents/envs/base_env.py)
+These classes are all defined in the [base_env](../ml-agents-envs/mlagents_envs/base_env.py)
 script.
 
 An Agent Group is a group of Agents identified by a string name that share the same
@@ -49,7 +49,7 @@ release._
 ## Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
-`ml-agents/mlagents/envs`. To load a Unity environment from a built binary
+`ml-agents/mlagents_envs`. To load a Unity environment from a built binary
 file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 

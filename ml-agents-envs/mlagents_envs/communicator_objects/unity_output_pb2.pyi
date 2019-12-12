@@ -9,11 +9,11 @@ from google.protobuf.message import (
 )
 
 from mlagents_envs.communicator_objects.unity_rl_initialization_output_pb2 import (
-    UnityRLInitializationOutputProto as mlagents___envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto,
+    UnityRLInitializationOutputProto as mlagents_envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto,
 )
 
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import (
-    UnityRLOutputProto as mlagents___envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto,
+    UnityRLOutputProto as mlagents_envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto,
 )
 
 from typing import (
@@ -35,15 +35,15 @@ class UnityOutputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
     @property
-    def rl_output(self) -> mlagents___envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto: ...
+    def rl_output(self) -> mlagents_envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto: ...
 
     @property
-    def rl_initialization_output(self) -> mlagents___envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto: ...
+    def rl_initialization_output(self) -> mlagents_envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto: ...
 
     def __init__(self,
         *,
-        rl_output : typing___Optional[mlagents___envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto] = None,
-        rl_initialization_output : typing___Optional[mlagents___envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto] = None,
+        rl_output : typing___Optional[mlagents_envs___communicator_objects___unity_rl_output_pb2___UnityRLOutputProto] = None,
+        rl_initialization_output : typing___Optional[mlagents_envs___communicator_objects___unity_rl_initialization_output_pb2___UnityRLInitializationOutputProto] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityOutputProto: ...

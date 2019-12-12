@@ -13,7 +13,7 @@ from google.protobuf.message import (
 )
 
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import (
-    BrainParametersProto as mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto,
+    BrainParametersProto as mlagents_envs___communicator_objects___brain_parameters_pb2___BrainParametersProto,
 )
 
 from typing import (
@@ -40,14 +40,14 @@ class UnityRLInitializationOutputProto(google___protobuf___message___Message):
     log_path = ... # type: typing___Text
 
     @property
-    def brain_parameters(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]: ...
+    def brain_parameters(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents_envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]: ...
 
     def __init__(self,
         *,
         name : typing___Optional[typing___Text] = None,
         version : typing___Optional[typing___Text] = None,
         log_path : typing___Optional[typing___Text] = None,
-        brain_parameters : typing___Optional[typing___Iterable[mlagents___envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]] = None,
+        brain_parameters : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityRLInitializationOutputProto: ...

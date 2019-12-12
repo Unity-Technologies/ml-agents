@@ -137,7 +137,7 @@ jobs:
       - checkout
       - run:
           name: Combine proto files for caching
-          command: cat protobuf-definitions/proto/mlagents/envs/communicator_objects/*.proto > /tmp/proto_deps.txt
+          command: cat protobuf-definitions/proto/mlagents_envs/communicator_objects/*.proto > /tmp/proto_deps.txt
 
       - restore_cache:
           keys:
