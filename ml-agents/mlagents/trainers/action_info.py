@@ -1,5 +1,5 @@
 from typing import NamedTuple, Any, Dict
-from numpy import np
+import numpy as np
 
 ActionInfoOutputs = Dict[str, np.ndarray]
 
