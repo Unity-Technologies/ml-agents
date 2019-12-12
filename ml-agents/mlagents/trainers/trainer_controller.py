@@ -288,8 +288,6 @@ class TrainerController(object):
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
 
-                print(brain_name)
-                print(self.brain_name_to_identifier[brain_name])
                 for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                     if step_info.has_actions_for_brain(name_behavior_id):
                         trainer.add_experiences(
