@@ -179,7 +179,7 @@ class TrainerController(object):
                 lesson_num = (
                     self.meta_curriculum.brains_to_curriculums[brain_name].lesson_num,
                 )
-                stats.StatsReporter.add_stat(
+                stats.stats_reporter.add_stat(
                     trainer.summary_path, "Environment/Lesson", lesson_num
                 )
             trainer.write_summary(global_step, delta_train_start)
