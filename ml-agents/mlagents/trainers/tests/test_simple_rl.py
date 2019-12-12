@@ -128,8 +128,8 @@ class Simple1DEnvironment(BaseEnv):
         pass
 
 
-PPO_CONFIG = """
-    default:
+PPO_CONFIG = f"""
+    {BRAIN_NAME}:
         trainer: ppo
         batch_size: 16
         beta: 5.0e-3
@@ -153,8 +153,8 @@ PPO_CONFIG = """
                 gamma: 0.99
     """
 
-SAC_CONFIG = """
-    default:
+SAC_CONFIG = f"""
+    {BRAIN_NAME}:
         trainer: sac
         batch_size: 8
         buffer_size: 500
