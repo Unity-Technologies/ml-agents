@@ -18,12 +18,12 @@ not necessarily correspond to a fixed simulation time increment.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict, NewType
+from typing import List, NamedTuple, Tuple, Optional, Union, Dict
 import numpy as np
 from enum import Enum
 
-AgentId = NewType("AgentId", int)
-AgentGroup = NewType("AgentGroup", str)
+AgentId = int
+AgentGroup = str
 
 
 class StepResult(NamedTuple):

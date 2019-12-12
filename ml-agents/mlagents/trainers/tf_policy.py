@@ -59,6 +59,7 @@ class TFPolicy(Policy):
         self.brain = brain
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[str, np.ndarray] = {}
+        self.reward_signals: Dict[str, "RewardSignal"] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)
@@ -128,7 +129,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], None)
+            return ActionInfo([], [], {})
 
         agents_done = [
             agent
