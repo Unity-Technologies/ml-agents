@@ -47,15 +47,3 @@ at every step or during the episode between environment resets. For example, if
 you want to add elements to the environment at random intervals, you can put the
 logic for creating them in the `AcademyStep()` function.
 
-## Academy Properties
-
-![Academy Inspector](images/academy.png)
-* `Configuration` - The engine-level settings which correspond to rendering
-  quality and engine speed.
-  * `Width` - Width of the environment window in pixels.
-  * `Height` - Height of the environment window in pixels.
-  * `Quality Level` - Rendering quality of environment. (Higher is better)
-  * `Time Scale` - Speed at which environment is run. (Higher is faster)
-  * `Target Frame Rate` - FPS engine attempts to maintain.
-* `Reset Parameters` - List of custom parameters that can be changed in the
-  environment on reset.

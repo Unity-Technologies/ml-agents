@@ -97,7 +97,7 @@ public class BasicAgent : Agent
 
     void WaitTimeInference()
     {
-        if (!m_Academy.GetIsInference())
+        if (!m_Academy.IsCommunicatorOn)
         {
             RequestDecision();
         }

@@ -69,7 +69,7 @@ For more on using the gym interface, see our
   observations by using the `allow_multiple_visual_obs=True` option in the gym
   parameters. If set to `True`, you will receive a list of `observation` instead
   of only the first one.
-* All `BrainInfo` output from the environment can still be accessed from the
+* The `BatchedStepResult` output from the environment can still be accessed from the
   `info` provided by `env.step(action)`.
 * Stacked vector observations are not supported.
 * Environment registration for use with `gym.make()` is currently not supported.
@@ -108,7 +108,7 @@ import gym
 from baselines import deepq
 from baselines import logger
 
-from gym_unity.envs.unity_env import UnityEnv
+from gym_unity.envs import UnityEnv
 
 def main():
     env = UnityEnv("./envs/GridWorld", 0, use_visual=True, uint8_visual=True)

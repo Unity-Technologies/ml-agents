@@ -1,7 +1,7 @@
 import unittest.mock as mock
 import numpy as np
 
-from mlagents.envs.brain import CameraResolution, BrainParameters
+from mlagents.trainers.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.agent_processor import ProcessingBuffer
 
@@ -147,9 +147,6 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
                 np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
             )
         buffer[0]["actions_pre"].append(
-            np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
-        )
-        buffer[0]["random_normal_epsilon"].append(
             np.ones(buffer[0]["actions"][0].shape, dtype=np.float32)
         )
         buffer[0]["action_mask"].append(

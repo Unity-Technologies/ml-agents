@@ -4,7 +4,7 @@ from typing import Any, Dict, TextIO
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.envs.exception import UnityEnvironmentException
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
-from mlagents.envs.brain import BrainParameters
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 

@@ -19,7 +19,6 @@ namespace MLAgents
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
-        public event RLInputReceivedHandler RLInputReceived;
 
         /// If true, the communication is active.
         bool m_IsOpen;
@@ -77,14 +76,6 @@ namespace MLAgents
                 Version = initParameters.version
             };
 
-            academyParameters.EnvironmentParameters = new EnvironmentParametersProto();
-
-            var resetParameters = initParameters.environmentResetParameters.resetParameters;
-            foreach (var key in resetParameters.Keys)
-            {
-                academyParameters.EnvironmentParameters.FloatParameters.Add(key, resetParameters[key]);
-            }
-
             UnityInputProto input;
             UnityInputProto initializationInput;
             try
@@ -138,9 +129,9 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SendRLInputReceivedEvent(rlInput.IsTraining);
-            SendCommandEvent(rlInput.Command, rlInput.EnvironmentParameters);
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
+            SendCommandEvent(rlInput.Command);
+
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
@@ -203,7 +194,7 @@ namespace MLAgents
 
         #region Sending Events
 
-        void SendCommandEvent(CommandProto command, EnvironmentParametersProto environmentParametersProto)
+        void SendCommandEvent(CommandProto command)
         {
             switch (command)
             {
@@ -214,7 +205,7 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
-                        ResetCommandReceived?.Invoke(environmentParametersProto.ToEnvironmentResetParameters());
+                        ResetCommandReceived?.Invoke();
                         return;
                     }
                 default:
@@ -222,11 +213,6 @@ namespace MLAgents
                         return;
                     }
             }
-        }
-
-        void SendRLInputReceivedEvent(bool isTraining)
-        {
-            RLInputReceived?.Invoke(new UnityRLInputParameters { isTraining = isTraining });
         }
 
         #endregion

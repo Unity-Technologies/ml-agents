@@ -15,7 +15,6 @@ namespace MLAgents.Tests
             var acaGo = new GameObject("TestAcademy");
             acaGo.AddComponent<TestAcademy>();
             var aca = acaGo.GetComponent<TestAcademy>();
-            aca.resetParameters = new ResetParameters();
 
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();

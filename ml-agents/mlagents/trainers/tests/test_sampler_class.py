@@ -1,12 +1,12 @@
 import pytest
 
-from mlagents.envs.sampler_class import SamplerManager
-from mlagents.envs.sampler_class import (
+from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.trainers.sampler_class import (
     UniformSampler,
     MultiRangeUniformSampler,
     GaussianSampler,
 )
-from mlagents.envs.exception import UnityException
+from mlagents.trainers.exception import TrainerError
 
 
 def sampler_config_1():
@@ -86,11 +86,11 @@ def incorrect_sampler_config():
 
 def test_incorrect_uniform_sampler():
     config = incorrect_uniform_sampler()
-    with pytest.raises(UnityException):
+    with pytest.raises(TrainerError):
         SamplerManager(config)
 
 
 def test_incorrect_sampler():
     config = incorrect_sampler_config()
-    with pytest.raises(UnityException):
+    with pytest.raises(TrainerError):
         SamplerManager(config)

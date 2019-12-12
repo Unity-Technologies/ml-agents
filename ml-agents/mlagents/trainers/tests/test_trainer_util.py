@@ -77,7 +77,7 @@ def dummy_bad_config():
     )
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagents.trainers.brain.BrainParameters")
 def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"
@@ -140,7 +140,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagents.trainers.brain.BrainParameters")
 def test_initialize_ppo_trainer(BrainParametersMock):
     brain_params_mock = BrainParametersMock()
     BrainParametersMock.return_value.brain_name = "testbrain"
@@ -199,7 +199,7 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.envs.brain.BrainParameters")
+@patch("mlagents.trainers.brain.BrainParameters")
 def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     summaries_dir = "test_dir"
     run_id = "testrun"

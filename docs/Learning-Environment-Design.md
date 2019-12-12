@@ -135,11 +135,7 @@ operate in a complex game or simulation. In this case, it might be more
 efficient and practical to create a purpose-built training scene.
 
 Both training and testing (or normal game) scenes must contain an Academy object
-to control the agent decision making process. The Academy defines several
-properties that can be set differently for a training scene versus a regular
-scene. The Academy's **Configuration** properties control rendering and time
-scale. You can set the **Training Configuration** to minimize the time Unity
-spends rendering graphics in order to speed up training.
+to control the agent decision making process.
 When you create a training environment in Unity, you must set up the scene so
 that it can be controlled by the external training process. Considerations
 include:

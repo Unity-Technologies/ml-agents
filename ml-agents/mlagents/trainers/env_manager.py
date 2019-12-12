@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Dict, NamedTuple, Optional
-from mlagents.envs.brain import AllBrainInfo, BrainParameters
-from mlagents.envs.policy import Policy
-from mlagents.envs.action_info import ActionInfo
+from typing import List, Dict, NamedTuple, Optional
+from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.policy import Policy
+from mlagents.trainers.action_info import ActionInfo
 
 
 class EnvironmentStep(NamedTuple):
@@ -30,12 +30,7 @@ class EnvManager(ABC):
         pass
 
     @abstractmethod
-    def reset(
-        self,
-        config: Dict = None,
-        train_mode: bool = True,
-        custom_reset_parameters: Any = None,
-    ) -> List[EnvironmentStep]:
+    def reset(self, config: Dict = None) -> List[EnvironmentStep]:
         pass
 
     @property
@@ -45,7 +40,7 @@ class EnvManager(ABC):
 
     @property
     @abstractmethod
-    def reset_parameters(self) -> Dict[str, float]:
+    def get_properties(self) -> Dict[str, float]:
         pass
 
     @abstractmethod

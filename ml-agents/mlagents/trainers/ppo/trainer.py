@@ -8,11 +8,11 @@ from typing import Dict
 
 import numpy as np
 
-from mlagents.envs.brain import BrainInfo
+from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
-from mlagents.envs.action_info import ActionInfoOutputs
+from mlagents.trainers.action_info import ActionInfoOutputs
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -190,10 +190,6 @@ class PPOTrainer(RLTrainer):
             actions_pre = take_action_outputs["pre_action"]
             self.processing_buffer[agent_id]["actions_pre"].append(
                 actions_pre[agent_idx]
-            )
-            epsilons = take_action_outputs["random_normal_epsilon"]
-            self.processing_buffer[agent_id]["random_normal_epsilon"].append(
-                epsilons[agent_idx]
             )
         a_dist = take_action_outputs["log_probs"]
         # value is a dictionary from name of reward to value estimate of the value head

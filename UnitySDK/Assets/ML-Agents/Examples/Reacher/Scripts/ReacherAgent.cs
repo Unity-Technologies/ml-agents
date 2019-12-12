@@ -110,9 +110,10 @@ public class ReacherAgent : Agent
 
     public void SetResetParameters()
     {
-        m_GoalSize = m_MyAcademy.resetParameters["goal_size"];
-        m_GoalSpeed = Random.Range(-1f, 1f) * m_MyAcademy.resetParameters["goal_speed"];
-        m_Deviation = m_MyAcademy.resetParameters["deviation"];
-        m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
+        var fp = m_MyAcademy.FloatProperties;
+        m_GoalSize = fp.GetPropertyWithDefault("goal_size", 5);
+        m_GoalSpeed = Random.Range(-1f, 1f) * fp.GetPropertyWithDefault("goal_speed", 1);
+        m_Deviation = fp.GetPropertyWithDefault("deviation", 0);
+        m_DeviationFreq = fp.GetPropertyWithDefault("deviation_freq", 0);
     }
 }

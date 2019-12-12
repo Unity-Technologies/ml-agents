@@ -14,15 +14,15 @@ expert in the same situation.
 The output of the training process is a model file containing the optimized
 policy. This model file is a TensorFlow data graph containing the mathematical
 operations and the optimized weights selected during the training process. You
-can use the generated model file with the Learning Brain type in your Unity
-project to decide the best course of action for an agent.
+can set the generated model file in the Behaviors Parameters under your
+Agent in your Unity project to decide the best course of action for an agent.
 
 Use the command `mlagents-learn` to train your agents. This command is installed
 with the `mlagents` package and its implementation can be found at
 `ml-agents/mlagents/trainers/learn.py`. The [configuration file](#training-config-file),
 like `config/trainer_config.yaml` specifies the hyperparameters used during training.
 You can edit this file with a text editor to add a specific configuration for
-each Brain.
+each Behavior.
 
 For a broader overview of reinforcement learning, imitation learning and the
 ML-Agents training process, see [ML-Agents Toolkit
@@ -142,12 +142,6 @@ environment, you can set the following command line options when invoking
   will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs
   given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
   training using the Editor rather than an executable, the base port will be ignored.
-* `--slow`: Specify this option to run the Unity environment at normal, game
-  speed. The `--slow` mode uses the **Time Scale** and **Target Frame Rate**
-  specified in the Academy's **Inference Configuration**. By default, training
-  runs using the speeds specified in your Academy's **Training Configuration**.
-  See
-  [Academy Properties](Learning-Environment-Design-Academy.md#academy-properties).
 * `--train`: Specifies whether to train model or only run in inference mode.
   When training, **always** use the `--train` option.
 * `--load`: If set, the training code loads an already trained model to
@@ -163,6 +157,17 @@ environment, you can set the following command line options when invoking
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
 * `--cpu`: Forces training using CPU only.
+* Engine Configuration :
+  * `--width' : The width of the executable window of the environment(s) in pixels
+  (ignored for editor training) (Default 84)
+  * `--height` : The height of the executable window of the environment(s) in pixels
+  (ignored for editor training). (Default 84)
+  * `--quality-level` : The quality level of the environment(s). Equivalent to
+  calling `QualitySettings.SetQualityLevel` in Unity. (Default 5)
+  * `--time-scale` : The time scale of the Unity environment(s). Equivalent to setting
+  `Time.timeScale` in Unity. (Default 20.0, maximum 100.0)
+  * `--target-frame-rate` : The target frame rate of the Unity environment(s).
+  Equivalent to setting `Application.targetFrameRate` in Unity. (Default: -1)
 
 ### Training Config File
 

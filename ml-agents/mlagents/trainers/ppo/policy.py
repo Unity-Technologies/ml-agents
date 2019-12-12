@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 from mlagents.tf_utils import tf
 
 from mlagents.envs.timers import timed
-from mlagents.envs.brain import BrainInfo, BrainParameters
+from mlagents.trainers.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -163,8 +163,6 @@ class PPOPolicy(TFPolicy):
             feed_dict[self.model.epsilon] = epsilon
         feed_dict = self.fill_eval_dict(feed_dict, brain_info)
         run_out = self._execute_model(feed_dict, self.inference_dict)
-        if self.use_continuous_act:
-            run_out["random_normal_epsilon"] = epsilon
         return run_out
 
     @timed
@@ -208,7 +206,6 @@ class PPOPolicy(TFPolicy):
 
         if self.use_continuous_act:
             feed_dict[model.output_pre] = mini_batch["actions_pre"]
-            feed_dict[model.epsilon] = mini_batch["random_normal_epsilon"]
         else:
             feed_dict[model.action_holder] = mini_batch["actions"]
             if self.use_recurrent:
@@ -249,10 +246,13 @@ class PPOPolicy(TFPolicy):
             ]
         if self.use_vec_obs:
             feed_dict[self.model.vector_in] = [brain_info.vector_observations[idx]]
+        agent_id = brain_info.agents[idx]
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = self.retrieve_memories([idx])
+            feed_dict[self.model.memory_in] = self.retrieve_memories([agent_id])
         if not self.use_continuous_act and self.use_recurrent:
-            feed_dict[self.model.prev_action] = self.retrieve_previous_action([idx])
+            feed_dict[self.model.prev_action] = self.retrieve_previous_action(
+                [agent_id]
+            )
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}
