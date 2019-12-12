@@ -2,7 +2,7 @@ import os
 import sys
 from setuptools import setup
 from setuptools.command.install import install
-import mlagents.envs
+import mlagents_envs
 
 VERSION = mlagents.envs.__version__
 

@@ -12,8 +12,8 @@ from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.rl_trainer import AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents.trainers.brain import BrainParameters
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.mock_communicator import MockCommunicator
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.brain_conversion_utils import (

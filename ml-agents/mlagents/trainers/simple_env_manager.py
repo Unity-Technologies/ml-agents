@@ -1,11 +1,11 @@
 from typing import Dict, List
 
-from mlagents.envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
-from mlagents.envs.timers import timed
+from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain import BrainParameters, AllBrainInfo
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,

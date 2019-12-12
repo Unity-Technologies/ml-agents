@@ -12,7 +12,7 @@ import numpy as np
 
 from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.action_info import ActionInfoOutputs
-from mlagents.envs.timers import timed
+from mlagents_envs.timers import timed
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer, AllRewardsOutput
 

@@ -9,7 +9,7 @@ import numpy as np
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.envs.base_env import (
+from mlagents_envs.base_env import (
     BaseEnv,
     AgentGroupSpec,
     BatchedStepResult,
@@ -18,7 +18,7 @@ from mlagents.envs.base_env import (
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 BRAIN_NAME = __name__
 OBS_SIZE = 1

@@ -11,19 +11,19 @@ import numpy as np
 from typing import Any, Callable, Optional, List, NamedTuple
 
 import mlagents.trainers
-import mlagents.envs
+import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.envs.environment import UnityEnvironment
+from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
-from mlagents.envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
-from mlagents.envs.side_channel.side_channel import SideChannel
-from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 class CommandLineOptions(NamedTuple):

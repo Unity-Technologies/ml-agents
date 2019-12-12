@@ -54,7 +54,7 @@ file, put the file in the same directory as `envs`. For example, if the filename
 of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.envs.environment import UnityEnvironment
+from mlagents_envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", base_port=5005, seed=1, side_channels=[])
 ```
 
@@ -220,8 +220,8 @@ An `EngineConfiguration` will allow you to modify the time scale and graphics qu
 
 For example :
 ```python
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 
 channel = EngineConfigurationChannel()
 
@@ -247,8 +247,8 @@ side channel to read and write properties.
  * `list_properties` Returns a list of all the string identifiers of the properties
 
 ```python
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 channel = FloatPropertiesChannel()
 
