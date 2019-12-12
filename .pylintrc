@@ -37,10 +37,8 @@ disable =
     # W0703: Catching too general exception Exception
     W0703,
 
-    # E0401: Unable to import...
-    # E0611: No name '...' in module '...'
-    # need to look into these, probably namespace packages
-    E0401, E0611,
+    # E0401: Unable to import... - triggers for external dependencies like numpy
+    E0401,
 
     # This was causing false positives
     # Appears to be https://github.com/PyCQA/pylint/issues/2981
