@@ -223,7 +223,7 @@ class Trainer(object):
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
-            stats.stats_reporter.write_stats(self.summary_path, step)
+            stats.stats_reporter.write_stats(self.summary_path, int(step))
 
     def add_experiences(
         self,
