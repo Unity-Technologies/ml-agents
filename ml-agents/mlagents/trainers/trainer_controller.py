@@ -215,7 +215,6 @@ class TrainerController(object):
                                 trainer.parameters["time_horizon"]
                                 if "time_horizon" in trainer.parameters
                                 else None,
-                                trainer.summary_path,
                             )
                         )
                         self.managers[name] = agent_manager

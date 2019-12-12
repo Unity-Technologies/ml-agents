@@ -213,4 +213,4 @@ def test_take_step_if_not_training():
         new_step_info.current_all_brain_info[brain_name],
         new_step_info.brain_name_to_action_info[brain_name].outputs,
     )
-    trainer_mock.clear_update_buffer.assert_called_once()
+    trainer_mock.advance.assert_called_once()
