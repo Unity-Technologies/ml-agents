@@ -34,9 +34,7 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
-        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = defaultdict(
-            ActionInfoOutputs
-        )
+        self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
         # that really should be gathered by the env-manager.
@@ -85,10 +83,8 @@ class AgentProcessor:
 
         for agent_id in next_info.agents:
             stored_info = self.last_brain_info.get(agent_id, None)
-            stored_take_action_outputs = self.last_take_action_outputs.get(
-                agent_id, None
-            )
             if stored_info is not None:
+                stored_take_action_outputs = self.last_take_action_outputs[agent_id]
                 idx = stored_info.agents.index(agent_id)
                 next_idx = next_info.agents.index(agent_id)
                 obs = []
