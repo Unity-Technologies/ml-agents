@@ -245,15 +245,19 @@ class SACTrainer(RLTrainer):
             self.update_reward_signals()
             self.trainer_metrics.end_policy_update()
 
+    def set_policy(self, policy: TFPolicy) -> None:
+        self.policy = policy
+        self.sac_policy: SACPolicy = policy
+
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
-        self.sac_policy = SACPolicy(
+        policy = SACPolicy(
             self.seed,
             brain_parameters,
             self.trainer_parameters,
             self.is_training,
             self.load,
         )
-        for _reward_signal in self.sac_policy.reward_signals.keys():
+        for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
         # Load the replay buffer if load
@@ -270,7 +274,7 @@ class SACTrainer(RLTrainer):
                 )
             )
 
-        return self.sac_policy
+        return policy
 
     def update_sac_policy(self) -> None:
         """

@@ -7,6 +7,7 @@ from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.ghost.trainer import GhostTrainer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -149,29 +150,35 @@ def initialize_trainer(
             run_id,
         )
 
-        # hacking it this way because SAC and PPO take variable args
-        # args = [run_id]
-
     else:
         raise TrainerConfigError(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
         )
 
-    # if trainer_parameters["ghosts"] > 0:
-    #    # wraps the trainer with the ghost trainer and passes the number of ghosts
-    #    trainer = create_ghost_trainer(
-    #        trainer,
-    #        trainer_parameters["ghosts"],
-    #        brain_parameters,
-    #        meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-    #        if meta_curriculum
-    #        else 1,
-    #        trainer_parameters,
-    #        train_model,
-    #        load_model,
-    #        seed,
-    #        *args,
-    #    )
+    if trainer_parameters["ghost"]:
+        trainer = GhostTrainer(
+            trainer,
+            brain_name,
+            min_lesson_length,
+            trainer_parameters,
+            train_model,
+            load_model,
+            seed,
+            run_id,
+        )
+        # trainer = create_ghost_trainer(
+        #    trainer,
+        #    trainer_parameters["ghosts"],
+        #    brain_parameters,
+        #    meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
+        #    if meta_curriculum
+        #    else 1,
+        #    trainer_parameters,
+        #    train_model,
+        #    load_model,
+        #    seed,
+        #    *args,
+        # )
 
     return trainer
 

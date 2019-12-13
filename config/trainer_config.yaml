@@ -22,7 +22,7 @@ default:
         extrinsic:
             strength: 1.0
             gamma: 0.99
-    ghosts: 0
+    ghost: false
 
 FoodCollector:
     normalize: false
@@ -157,8 +157,8 @@ VisualPyramids:
 Tennis:
     trainer: ppo
     normalize: true
-    max_steps: 5e6
-    ghosts: 1
+    max_steps: 5e7
+    ghost: true
 
 CrawlerStatic:
     normalize: true

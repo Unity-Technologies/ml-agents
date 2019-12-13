@@ -298,6 +298,12 @@ class Trainer(object):
         """
         raise UnityTrainerException("The add_policy method was not implemented.")
 
+    def set_policy(self, policy: TFPolicy) -> None:
+        """
+        Sets self.(x_)policy in trainer
+        """
+        raise UnityTrainerException("The set_policy method was not implemented.")
+
     def get_policy(self, brain_name: str) -> TFPolicy:
         """
         Gets policy from trainer

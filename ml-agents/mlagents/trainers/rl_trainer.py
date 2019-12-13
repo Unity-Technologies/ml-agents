@@ -274,8 +274,7 @@ class RLTrainer(Trainer):
         Adds policy to trainers list of policies
         """
         policy = self.create_policy(brain_parameters)
-        self.policy = policy
-        # self.policies[brain_parameters.brain_name] = policy
+        self.set_policy(policy)
 
     def advance(self):
         """

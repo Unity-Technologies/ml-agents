@@ -27,7 +27,7 @@ public class TennisArea : MonoBehaviour
             ball.transform.position = new Vector3(ballOut, 6f, 0f) + transform.position;
         }
         m_BallRb.velocity = new Vector3(0f, 0f, 0f);
-        ball.transform.localScale = new Vector3(1, 1, 1);
+        ball.transform.localScale = new Vector3(.5f, .5f, .5f);
         ball.GetComponent<HitWall>().lastAgentHit = -1;
     }
 

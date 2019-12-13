@@ -270,9 +270,13 @@ class PPOTrainer(RLTrainer):
         self.clear_update_buffer()
         self.trainer_metrics.end_policy_update()
 
+    def set_policy(self, policy: TFPolicy) -> None:
+        self.policy = policy
+        self.ppo_policy: PPOPolicy = policy
+
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         if self.multi_gpu and len(get_devices()) > 1:
-            self.ppo_policy: PPOPolicy = MultiGpuPPOPolicy(
+            policy = MultiGpuPPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -280,7 +284,7 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
         else:
-            self.ppo_policy = PPOPolicy(
+            policy = PPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -288,10 +292,10 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
 
-        for _reward_signal in self.ppo_policy.reward_signals.keys():
+        for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = {}
 
-        return self.ppo_policy
+        return policy
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
