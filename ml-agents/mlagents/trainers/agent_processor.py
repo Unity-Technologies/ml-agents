@@ -7,6 +7,7 @@ from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.action_info import ActionInfoOutputs
+from mlagents.trainers.stats import StatsReporter
 
 
 class AgentProcessor:
@@ -16,24 +17,31 @@ class AgentProcessor:
     One AgentProcessor should be created per agent group.
     """
 
-    def __init__(self, trainer: Trainer, policy: TFPolicy, max_trajectory_length: int):
+    def __init__(
+        self,
+        trainer: Trainer,
+        policy: TFPolicy,
+        max_trajectory_length: int,
+        stats_reporter: StatsReporter,
+    ):
         """
         Create an AgentProcessor.
         :param trainer: Trainer instance connected to this AgentProcessor. Trainer is given trajectory
         when it is finished.
         :param policy: Policy instance associated with this AgentProcessor.
         :param max_trajectory_length: Maximum length of a trajectory before it is added to the trainer.
+        :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_brain_info: Dict[str, BrainInfo] = {}
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
-        self.stats: Dict[str, List[float]] = defaultdict(list)
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
         # that really should be gathered by the env-manager.
         self.policy = policy
         self.episode_steps: Counter = Counter()
-        self.episode_rewards: Dict[str, float] = defaultdict(lambda: 0.0)
+        self.episode_rewards: Dict[str, float] = defaultdict(float)
+        self.stats_reporter = stats_reporter
         if max_trajectory_length:
             self.max_trajectory_length = max_trajectory_length
             self.ignore_max_length = False
@@ -55,12 +63,12 @@ class AgentProcessor:
         :param take_action_outputs: The outputs of the Policy's get_action method.
         """
         if take_action_outputs:
-            self.stats["Policy/Entropy"].append(take_action_outputs["entropy"].mean())
-            self.stats["Policy/Learning Rate"].append(
-                take_action_outputs["learning_rate"]
+            self.stats_reporter.add_stat(
+                "Policy/Entropy", take_action_outputs["entropy"].mean()
             )
-            for name, values in take_action_outputs["value_heads"].items():
-                self.stats[name].append(np.mean(values))
+            self.stats_reporter.add_stat(
+                "Policy/Learning Rate", take_action_outputs["learning_rate"]
+            )
 
         for agent_id in curr_info.agents:
             self.last_brain_info[agent_id] = curr_info
@@ -99,7 +107,6 @@ class AgentProcessor:
                     action_masks = stored_info.action_masks[idx]
                     prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
 
-                    values = stored_take_action_outputs["value_heads"]
                     experience = AgentExperience(
                         obs=obs,
                         reward=tmp_environment_reward[next_idx],
@@ -114,7 +121,7 @@ class AgentProcessor:
                     )
                     # Add the value outputs if needed
                     self.experience_buffers[agent_id].append(experience)
-
+                    self.episode_rewards[agent_id] += tmp_environment_reward[next_idx]
                 if (
                     next_info.local_done[next_idx]
                     or (
@@ -137,9 +144,18 @@ class AgentProcessor:
                     # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)
                     self.experience_buffers[agent_id] = []
+                    if next_info.local_done[next_idx]:
+                        self.stats_reporter.add_stat(
+                            "Environment/Cumulative Reward",
+                            self.episode_rewards.get(agent_id, 0),
+                        )
+                        self.stats_reporter.add_stat(
+                            "Environment/Episode Length",
+                            self.episode_steps.get(agent_id, 0),
+                        )
+                        del self.episode_steps[agent_id]
+                        del self.episode_rewards[agent_id]
                 elif not next_info.local_done[next_idx]:
-                    if agent_id not in self.episode_steps:
-                        self.episode_steps[agent_id] = 0
                     self.episode_steps[agent_id] += 1
         self.policy.save_previous_action(
             curr_info.agents, take_action_outputs["action"]

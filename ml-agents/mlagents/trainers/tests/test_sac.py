@@ -386,7 +386,7 @@ def test_process_trajectory(dummy_config):
     for reward in trainer.collected_rewards.values():
         for agent in reward.values():
             assert agent == 0
-    assert len(trainer.stats["Environment/Cumulative Reward"]) > 0
+    assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
 if __name__ == "__main__":

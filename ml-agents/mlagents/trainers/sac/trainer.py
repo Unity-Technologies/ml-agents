@@ -166,7 +166,9 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
-            self.stats[self.policy.reward_signals[name].value_name].append(np.mean(v))
+            self.stats_reporter.add_stat(
+                self.policy.reward_signals[name].value_name, np.mean(v)
+            )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
@@ -258,13 +260,13 @@ class SACTrainer(RLTrainer):
             )
 
         for stat, stat_list in batch_update_stats.items():
-            self.stats[stat].append(np.mean(stat_list))
+            self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
         bc_module = self.sac_policy.bc_module
         if bc_module:
             update_stats = bc_module.update()
             for stat, val in update_stats.items():
-                self.stats[stat].append(val)
+                self.stats_reporter.add_stat(stat, val)
 
     def update_reward_signals(self) -> None:
         """
@@ -299,4 +301,4 @@ class SACTrainer(RLTrainer):
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
-            self.stats[stat].append(np.mean(stat_list))
+            self.stats_reporter.add_stat(stat, np.mean(stat_list))

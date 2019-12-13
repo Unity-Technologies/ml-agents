@@ -175,15 +175,11 @@ class TrainerController(object):
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
             if self.meta_curriculum is not None:
-                trainer.write_summary(
-                    global_step,
-                    delta_train_start,
-                    lesson_num=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].lesson_num,
-                )
-            else:
-                trainer.write_summary(global_step, delta_train_start)
+                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    brain_name
+                ].lesson_num
+                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
+            trainer.write_summary(global_step, delta_train_start)
 
     def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
         self.trainers[trainer.brain_name] = trainer
@@ -215,6 +211,7 @@ class TrainerController(object):
                                 trainer.parameters["time_horizon"]
                                 if "time_horizon" in trainer.parameters
                                 else None,
+                                trainer.stats_reporter,
                             )
                         )
                         self.managers[name] = agent_manager

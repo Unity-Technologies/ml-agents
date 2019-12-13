@@ -3,6 +3,7 @@ import pytest
 import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
 from mlagents.trainers.agent_processor import AgentProcessor
+from mlagents.trainers.stats import StatsReporter
 
 
 def create_mock_brain():
@@ -29,10 +30,14 @@ def create_mock_policy():
 def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
     trainer = mock.Mock()
-    processor = AgentProcessor(trainer, policy, max_trajectory_length=5)
+    processor = AgentProcessor(
+        trainer,
+        policy,
+        max_trajectory_length=5,
+        stats_reporter=StatsReporter("testcat"),
+    )
     fake_action_outputs = {
         "action": [0.1, 0.1],
-        "value_heads": {},
         "entropy": np.array([1.0], dtype=np.float32),
         "learning_rate": 1.0,
         "pre_action": [0.1, 0.1],
