@@ -1196,10 +1196,11 @@ MonoBehaviour:
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: ec8ae32345e8345949f10388f0912723, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
+  m_BehaviorType: 0
   m_BehaviorName: Tennis
+  m_TeamID: 0
 --- !u!114 &114399072728845634
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1217,10 +1218,11 @@ MonoBehaviour:
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: ec8ae32345e8345949f10388f0912723, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
+  m_BehaviorType: 0
   m_BehaviorName: Tennis
+  m_TeamID: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -730,26 +730,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1aadf59c24464a9fb5b4b3a2190c972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrainingConfiguration:
-    width: 300
-    height: 200
-    qualityLevel: 0
-    timeScale: 10
-    targetFrameRate: 60
-  m_InferenceConfiguration:
-    width: 1280
-    height: 720
-    qualityLevel: 5
-    timeScale: 2
-    targetFrameRate: 60
-  resetParameters:
-    m_ResetParameters:
-    - key: gravity
-      value: 9.81
-    - key: angle
-      value: 55
-    - key: scale
-      value: 0.5
 --- !u!1001 &1065879750
 Prefab:
   m_ObjectHideFlags: 0
@@ -1221,6 +1201,10 @@ Prefab:
     - target: {fileID: 4893760344154248, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4172342666475122, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 812997c7bc2544b6f927ff684c03450f, type: 2}
