@@ -45,12 +45,6 @@ namespace MLAgents
         public bool maxStepReached;
 
         /// <summary>
-        /// Identifier for the team the agent is on. Received at initialization. It is used
-        /// to group agents into teams in the environment.
-        /// </summary>
-        public int teamId;
-
-        /// <summary>
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         /// </summary>
@@ -108,12 +102,6 @@ namespace MLAgents
         /// is turned off).
         /// </summary>
         public int numberOfActionsBetweenDecisions;
-
-        /// <summary>
-        /// Identifier for the team the agent is on. Received at initialization. It is used
-        /// to group agents into teams in the environment.
-        /// </summary>
-        public int teamId;
     }
 
 

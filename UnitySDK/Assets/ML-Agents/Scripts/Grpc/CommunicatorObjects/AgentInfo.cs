@@ -72,7 +72,6 @@ namespace MLAgents.CommunicatorObjects {
       done_ = other.done_;
       maxStepReached_ = other.maxStepReached_;
       id_ = other.id_;
-      teamId_ = other.teamId_;
       actionMask_ = other.actionMask_.Clone();
       observations_ = other.observations_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -127,21 +126,10 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "team_id" field.</summary>
-    public const int TeamIdFieldNumber = 11;
-    private int teamId_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int TeamId {
-      get { return teamId_; }
-      set {
-        teamId_ = value;
-      }
-    }
-
     /// <summary>Field number for the "action_mask" field.</summary>
-    public const int ActionMaskFieldNumber = 12;
+    public const int ActionMaskFieldNumber = 11;
     private static readonly pb::FieldCodec<bool> _repeated_actionMask_codec
-        = pb::FieldCodec.ForBool(98);
+        = pb::FieldCodec.ForBool(90);
     private readonly pbc::RepeatedField<bool> actionMask_ = new pbc::RepeatedField<bool>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<bool> ActionMask {
@@ -175,7 +163,6 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != other.Done) return false;
       if (MaxStepReached != other.MaxStepReached) return false;
       if (Id != other.Id) return false;
-      if (TeamId != other.TeamId) return false;
       if(!actionMask_.Equals(other.actionMask_)) return false;
       if(!observations_.Equals(other.observations_)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -188,7 +175,6 @@ namespace MLAgents.CommunicatorObjects {
       if (Done != false) hash ^= Done.GetHashCode();
       if (MaxStepReached != false) hash ^= MaxStepReached.GetHashCode();
       if (Id != 0) hash ^= Id.GetHashCode();
-      if (TeamId != 0) hash ^= TeamId.GetHashCode();
       hash ^= actionMask_.GetHashCode();
       hash ^= observations_.GetHashCode();
       if (_unknownFields != null) {
@@ -220,10 +206,6 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(80);
         output.WriteInt32(Id);
       }
-      if (TeamId != 0) {
-        output.WriteRawTag(88);
-        output.WriteInt32(TeamId);
-      }
       actionMask_.WriteTo(output, _repeated_actionMask_codec);
       observations_.WriteTo(output, _repeated_observations_codec);
       if (_unknownFields != null) {
@@ -245,9 +227,6 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (Id != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
-      }
-      if (TeamId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(TeamId);
       }
       size += actionMask_.CalculateSize(_repeated_actionMask_codec);
       size += observations_.CalculateSize(_repeated_observations_codec);
@@ -273,9 +252,6 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.Id != 0) {
         Id = other.Id;
-      }
-      if (other.TeamId != 0) {
-        TeamId = other.TeamId;
       }
       actionMask_.Add(other.actionMask_);
       observations_.Add(other.observations_);
@@ -306,12 +282,8 @@ namespace MLAgents.CommunicatorObjects {
             Id = input.ReadInt32();
             break;
           }
+          case 90:
           case 88: {
-            TeamId = input.ReadInt32();
-            break;
-          }
-          case 98:
-          case 96: {
             actionMask_.AddEntriesFrom(input, _repeated_actionMask_codec);
             break;
           }
