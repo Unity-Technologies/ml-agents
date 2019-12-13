@@ -13,7 +13,7 @@ class EnvironmentStep(NamedTuple):
     def has_actions_for_brain(self, brain_name: str) -> bool:
         return (
             brain_name in self.brain_name_to_action_info
-            and self.brain_name_to_action_info[brain_name].outputs is not None
+            and self.brain_name_to_action_info[brain_name].outputs
         )
 
 
