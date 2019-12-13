@@ -6,11 +6,12 @@ from mlagents.trainers.stats import StatsReporter, TensorboardWriter
 
 def test_stat_reporter_add_summary_write():
     # Test add_writer
+    StatsReporter.writers.clear()
     mock_writer1 = mock.Mock()
     mock_writer2 = mock.Mock()
     StatsReporter.add_writer(mock_writer1)
     StatsReporter.add_writer(mock_writer2)
-    assert len(StatsReporter.writers) == 1
+    assert len(StatsReporter.writers) == 2
 
     # Test add_stats and summaries
     statsreporter1 = StatsReporter("category1")
@@ -39,6 +40,7 @@ def test_stat_reporter_add_summary_write():
 def test_stat_reporter_text():
     # Test add_writer
     mock_writer = mock.Mock()
+    StatsReporter.writers.clear()
     StatsReporter.add_writer(mock_writer)
     assert len(StatsReporter.writers) == 1
 
@@ -47,7 +49,7 @@ def test_stat_reporter_text():
     # Test write_text
     step = 10
     statsreporter1.write_text("this is a text", step)
-    mock_writer.write_stats.assert_called_once_with("this is a text", step)
+    mock_writer.write_text.assert_called_once_with("category1", "this is a text", step)
 
 
 @mock.patch("tensorflow.Summary")
