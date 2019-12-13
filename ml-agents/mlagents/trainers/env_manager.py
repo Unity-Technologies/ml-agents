@@ -11,9 +11,8 @@ class EnvironmentStep(NamedTuple):
     brain_name_to_action_info: Dict[str, ActionInfo]
 
     def has_actions_for_brain(self, brain_name: str) -> bool:
-        return (
-            brain_name in self.brain_name_to_action_info
-            and self.brain_name_to_action_info[brain_name].outputs
+        return brain_name in self.brain_name_to_action_info and bool(
+            self.brain_name_to_action_info[brain_name].outputs
         )
 
 
