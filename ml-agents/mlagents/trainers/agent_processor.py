@@ -22,7 +22,7 @@ class AgentProcessor:
         trainer: Trainer,
         policy: TFPolicy,
         max_trajectory_length: int,
-        stats_category: str,
+        stats_reporter: StatsReporter,
     ):
         """
         Create an AgentProcessor.
@@ -41,7 +41,7 @@ class AgentProcessor:
         self.policy = policy
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
-        self.stats_reporter = StatsReporter(stats_category)
+        self.stats_reporter = stats_reporter
         if max_trajectory_length:
             self.max_trajectory_length = max_trajectory_length
             self.ignore_max_length = False
@@ -49,7 +49,6 @@ class AgentProcessor:
             self.max_trajectory_length = 0
             self.ignore_max_length = True
         self.trainer = trainer
-        self.stats_category = stats_category
 
     def add_experiences(
         self,

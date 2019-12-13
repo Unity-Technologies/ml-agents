@@ -76,21 +76,21 @@ class Trainer(object):
         :param key: The name of the text.
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
-        #        try:
-        with tf.Session() as sess:
-            s_op = tf.summary.text(
-                key,
-                tf.convert_to_tensor(
-                    ([[str(x), str(input_dict[x])] for x in input_dict])
-                ),
+        try:
+            with tf.Session() as sess:
+                s_op = tf.summary.text(
+                    key,
+                    tf.convert_to_tensor(
+                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                    ),
+                )
+                s = sess.run(s_op)
+                self.stats_reporter.write_text(s, self.get_step)
+        except Exception:
+            LOGGER.info(
+                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
             )
-            s = sess.run(s_op)
-            self.stats_reporter.write_text(s, self.get_step)
-        # except Exception:
-        #     LOGGER.info(
-        #         "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
-        #     )
-        #     pass
+            pass
 
     def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
