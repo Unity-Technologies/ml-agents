@@ -52,8 +52,8 @@ def test_stat_reporter_text():
     mock_writer.write_text.assert_called_once_with("category1", "this is a text", step)
 
 
-@mock.patch("tensorflow.Summary")
-@mock.patch("tensorflow.summary.FileWriter")
+@mock.patch("mlagents.tf_utils.tf.Summary")
+@mock.patch("mlagents.tf_utils.tf.summary.FileWriter")
 def test_tensorboard_writer(mock_filewriter, mock_summary):
     # Test write_stats
     base_dir = "base_dir"
