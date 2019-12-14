@@ -207,17 +207,21 @@ class LearningModel(object):
 
     def create_normalizer_update(self, vector_input):
         mean_current_observation = tf.reduce_mean(vector_input, axis=0)
-        new_mean = self.running_mean + (
-            mean_current_observation - self.running_mean
-        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
+        steps_increment = tf.shape(vector_input)[0]
+
+        total_new_steps = tf.add(self.normalization_steps, steps_increment)
+        unref_norm_steps = tf.cast(tf.identity(self.normalization_steps), tf.float32)
+        unref_norm_step_inc = tf.cast(steps_increment, tf.float32)
+        new_mean = (
+            self.running_mean * unref_norm_steps
+            + mean_current_observation * unref_norm_step_inc
+        ) / tf.cast(total_new_steps, tf.float32)
         new_variance = self.running_variance + (mean_current_observation - new_mean) * (
             mean_current_observation - self.running_mean
         )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        update_norm_step = tf.assign(
-            self.normalization_steps, self.normalization_steps + 1
-        )
+        update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
         return tf.group([update_mean, update_variance, update_norm_step])
 
     @staticmethod
