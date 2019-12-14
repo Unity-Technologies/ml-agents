@@ -9,8 +9,8 @@ import numpy as np
 from collections import deque, defaultdict
 
 from mlagents.trainers.action_info import ActionInfoOutputs
-from mlagents.envs.exception import UnityException
-from mlagents.envs.timers import set_gauge
+from mlagents_envs.exception import UnityException
+from mlagents_envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.brain import BrainParameters, BrainInfo
@@ -27,7 +27,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the base class for the mlagents.envs.trainers"""
+    """This class is the base class for the mlagents_envs.trainers"""
 
     def __init__(
         self,

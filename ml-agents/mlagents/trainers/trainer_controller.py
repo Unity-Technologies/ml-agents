@@ -12,12 +12,12 @@ from mlagents.tf_utils import tf
 from time import time
 
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
-from mlagents.envs.exception import (
+from mlagents_envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.envs.timers import hierarchical_timer, get_timer_tree, timed
+from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -52,7 +52,7 @@ class TrainerController(object):
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
-        self.logger = logging.getLogger("mlagents.envs")
+        self.logger = logging.getLogger("mlagents.trainers")
         self.run_id = run_id
         self.save_freq = save_freq
         self.train_model = train

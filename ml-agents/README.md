@@ -8,7 +8,7 @@ in Unity environments.
 
 The `mlagents` Python package contains two sub packages:
 
-* `mlagents.envs`: A low level API which allows you to interact directly with a
+* `mlagents_envs`: A low level API which allows you to interact directly with a
   Unity Environment. See
   [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
   for more information on using this package.

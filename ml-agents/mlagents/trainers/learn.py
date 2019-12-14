@@ -11,19 +11,19 @@ import numpy as np
 from typing import Any, Callable, Optional, List, NamedTuple
 
 import mlagents.trainers
-import mlagents.envs
+import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.envs.environment import UnityEnvironment
+from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
-from mlagents.envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
-from mlagents.envs.side_channel.side_channel import SideChannel
-from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 class CommandLineOptions(NamedTuple):
@@ -62,7 +62,7 @@ def get_version_string() -> str:
     # pylint: disable=no-member
     return f""" Version information:
   ml-agents: {mlagents.trainers.__version__},
-  ml-agents-envs: {mlagents.envs.__version__},
+  ml-agents-envs: {mlagents_envs.__version__},
   Communicator API: {UnityEnvironment.API_VERSION},
   TensorFlow: {tf_utils.tf.__version__}"""
 
@@ -441,7 +441,7 @@ def main():
     print(get_version_string())
     options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
-    env_logger = logging.getLogger("mlagents.envs")
+    env_logger = logging.getLogger("mlagents_envs")
     trainer_logger.info(options)
     if options.debug:
         trainer_logger.setLevel("DEBUG")

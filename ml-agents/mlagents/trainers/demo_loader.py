@@ -6,14 +6,14 @@ import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.agent_processor import ProcessingBuffer
 from mlagents.trainers.brain import BrainParameters, BrainInfo
-from mlagents.envs.communicator_objects.agent_info_action_pair_pb2 import (
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
-from mlagents.envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents.envs.communicator_objects.demonstration_meta_pb2 import (
+from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
-from mlagents.envs.timers import timed, hierarchical_timer
+from mlagents_envs.timers import timed, hierarchical_timer
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
 
 

@@ -2,14 +2,14 @@ import logging
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.exception import UnityCommunicationException, UnityTimeOutException
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.exception import UnityCommunicationException, UnityTimeOutException
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents.envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
-from mlagents.envs.timers import (
+from mlagents_envs.timers import (
     TimerNode,
     timed,
     hierarchical_timer,
@@ -18,18 +18,18 @@ from mlagents.envs.timers import (
 )
 from mlagents.trainers.brain import AllBrainInfo, BrainParameters
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
-from mlagents.envs.side_channel.engine_configuration_channel import (
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
-from mlagents.envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,
 )
 
-logger = logging.getLogger("mlagents.envs")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class EnvironmentCommand(NamedTuple):
