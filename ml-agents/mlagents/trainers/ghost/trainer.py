@@ -47,6 +47,8 @@ class GhostTrainer(RLTrainer):
         self.learning_policy_name: str = None
         self.current_policy_snapshot = None
         self.last_step = 0
+        self.window = trainer_parameters["ghost"]["window"]
+        self.current_prob = trainer_parameters["ghost"]["current_prob"]
 
     def process_experiences(
         self, name_behavior_id: str, current_info: BrainInfo, new_info: BrainInfo
@@ -123,6 +125,9 @@ class GhostTrainer(RLTrainer):
 
         self.policies[brain_parameters.brain_name] = policy
 
+        if not self.learning_policy_name:
+            self.set_learning_policy(brain_parameters.brain_name)
+
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         return self.policies[name_behavior_id]
 
@@ -130,13 +135,14 @@ class GhostTrainer(RLTrainer):
         with policy.graph.as_default():
             weights = policy.tfvars.get_weights()
             self.policy_snapshots.append(weights)
+        if len(self.policy_snapshots) > self.window:
+            del self.policy_snapshots[0]
 
     def swap_snapshots(self) -> None:
         for name_behavior_id, policy in self.policies.items():
             # here is the place for a sampling protocol
-            if (
-                name_behavior_id != self.learning_policy_name
-                and np.random.uniform() < 0.3
+            if name_behavior_id != self.learning_policy_name and np.random.uniform() < (
+                1 - self.current_prob
             ):
                 # snapshot = np.random.choice(self.policy_snapshots)
                 x = np.random.randint(len(self.policy_snapshots))

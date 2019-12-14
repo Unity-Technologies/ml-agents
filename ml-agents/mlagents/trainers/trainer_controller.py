@@ -201,6 +201,7 @@ class TrainerController(object):
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
                 all_brain_behavior_ids += list(new_behavior_ids)
+
                 for name_behavior_id in new_behavior_ids:
                     try:
                         brain_name, _ = name_behavior_id.split("?")
@@ -235,7 +236,7 @@ class TrainerController(object):
                         # Save Tensorflow model
                         self._save_model()
                     self.write_to_tensorboard(global_step)
-                if global_step - last_global_step > 1000 or last_global_step == 0:
+                if global_step - last_global_step > 1000:
                     for trainer in self.trainers.values():
                         trainer.set_learning_policy(all_brain_behavior_ids[counter])
                     last_global_step = global_step

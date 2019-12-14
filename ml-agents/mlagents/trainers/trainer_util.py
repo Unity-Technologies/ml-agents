@@ -155,7 +155,7 @@ def initialize_trainer(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
         )
 
-    if trainer_parameters["ghost"]:
+    if "ghost" in trainer_parameters:
         trainer = GhostTrainer(
             trainer,
             brain_name,
@@ -166,20 +166,6 @@ def initialize_trainer(
             seed,
             run_id,
         )
-        # trainer = create_ghost_trainer(
-        #    trainer,
-        #    trainer_parameters["ghosts"],
-        #    brain_parameters,
-        #    meta_curriculum.brains_to_curriculums[brain_name].min_lesson_length
-        #    if meta_curriculum
-        #    else 1,
-        #    trainer_parameters,
-        #    train_model,
-        #    load_model,
-        #    seed,
-        #    *args,
-        # )
-
     return trainer
 
 
