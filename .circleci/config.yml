@@ -94,7 +94,7 @@ jobs:
           command: |
             cat .pre-commit-config.yaml > pre-commit-deps.txt
             python -VV >> pre-commit-deps.txt
-            # TODO REMOVE
+            # TODO REMOVE - no-op change
             echo test1 >> pre-commit-deps.txt
 
       - restore_cache:
