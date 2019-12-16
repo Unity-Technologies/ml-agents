@@ -210,6 +210,7 @@ class LearningModel(object):
         steps_increment = tf.shape(vector_input)[0]
 
         total_new_steps = tf.add(self.normalization_steps, steps_increment)
+        # Needed to fix tensorflow's inability to cast
         unref_norm_steps = tf.cast(tf.identity(self.normalization_steps), tf.float32)
         unref_norm_step_inc = tf.cast(steps_increment, tf.float32)
         new_mean = (
