@@ -65,12 +65,6 @@ jobs:
             pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
-          name: Check Code Style using pre-commit
-          command: |
-            . venv/bin/activate
-            pre-commit run --show-diff-on-failure --all-files
-
-      - run:
           name: Verify there are no hidden/missing metafiles.
           # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
           command: |
@@ -88,6 +82,42 @@ jobs:
           path: htmlcov
           destination: htmlcov
 
+  pre-commit:
+    parameters:
+      pyversion:
+        type: string
+        description: python version to being used (currently only affects caching).
+
+    docker:
+      - image: circleci/python:3.7.3
+    working_directory: ~/repo/
+
+    steps:
+      - checkout
+
+      #- restore_cache:
+      #    keys:
+      #    - v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install --upgrade setuptools
+            pip install pre-commit
+              -
+      #- save_cache:
+      #    paths:
+      #      - ./venv
+      #    key: v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+
+      - run:
+          name: Check Code Style using pre-commit
+          command: |
+            . venv/bin/activate
+            pre-commit run --show-diff-on-failure --all-files
 
   markdown_link_check:
     parameters:
@@ -241,6 +271,8 @@ workflows:
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
+      - pre-commit:
+          pyversion: 3.7.3
       - deploy:
           name: deploy ml-agents-envs
           directory: ml-agents-envs
