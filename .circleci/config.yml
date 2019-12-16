@@ -107,7 +107,7 @@ jobs:
             pip install --upgrade pip
             pip install --upgrade setuptools
             pip install pre-commit
-              -
+
       #- save_cache:
       #    paths:
       #      - ./venv
