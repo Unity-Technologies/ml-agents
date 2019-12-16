@@ -95,9 +95,9 @@ jobs:
     steps:
       - checkout
 
-      #- restore_cache:
-      #    keys:
-      #    - v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+      - restore_cache:
+          keys:
+          - v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
 
       - run:
           name: Install Dependencies
@@ -108,10 +108,10 @@ jobs:
             pip install --upgrade setuptools
             pip install pre-commit
 
-      #- save_cache:
-      #    paths:
-      #      - ./venv
-      #    key: v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+      - save_cache:
+          paths:
+            - ~/.cache/pre-commit
+          key: v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
 
       - run:
           name: Check Code Style using pre-commit
