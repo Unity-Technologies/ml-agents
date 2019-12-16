@@ -94,8 +94,6 @@ jobs:
           command: |
             cat .pre-commit-config.yaml > pre-commit-deps.txt
             python -VV >> pre-commit-deps.txt
-            # TODO REMOVE - no-op change
-            echo test1 >> pre-commit-deps.txt
 
       - restore_cache:
           keys:
@@ -115,6 +113,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.cache/pre-commit
+            - ./venv
           key: v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
 
       - run:

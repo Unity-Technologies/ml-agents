@@ -63,8 +63,6 @@ repos:
     hooks:
     -   id: python-check-mock-methods
 
-
-
 -   repo: https://github.com/pre-commit/mirrors-pylint
     rev: v2.4.4
     hooks:
