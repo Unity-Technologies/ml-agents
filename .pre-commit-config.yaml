@@ -55,13 +55,14 @@ repos:
         types: [markdown]
     -   id: check-merge-conflict
         args: [--assume-in-merge]
+    -   id: check-yaml
+        # Won't handle the templating in yamato
+        exclude: \.yamato/*
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.4.2
     hooks:
     -   id: python-check-mock-methods
-
-
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
     rev: v2.4.4

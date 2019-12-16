@@ -10,7 +10,8 @@ default:
     num_layers: 2
     sequence_length: 32
     memory_size: 256
-    demo_path: ./UnitySDK/Assets/Demonstrations/<Your_Demo_File>.demo
+    # Change the path here to point to your demo files
+    demo_path: ./UnitySDK/Assets/Demonstrations/Your_Demo_File.demo
 
 FoodCollector:
     trainer: offline_bc
@@ -34,7 +35,6 @@ Hallway:
     batches_per_epoch: 5
     num_layers: 2
     hidden_units: 128
-    sequence_length: 16
     use_recurrent: true
     memory_size: 256
     sequence_length: 32

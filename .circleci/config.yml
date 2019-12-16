@@ -65,12 +65,6 @@ jobs:
             pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
-          name: Check Code Style using pre-commit
-          command: |
-            . venv/bin/activate
-            pre-commit run --show-diff-on-failure --all-files
-
-      - run:
           name: Verify there are no hidden/missing metafiles.
           # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
           command: |
@@ -88,6 +82,45 @@ jobs:
           path: htmlcov
           destination: htmlcov
 
+  pre-commit:
+    docker:
+      - image: circleci/python:3.7.3
+    working_directory: ~/repo/
+
+    steps:
+      - checkout
+      - run:
+          name: Combine precommit config and python versions for caching
+          command: |
+            cat .pre-commit-config.yaml > pre-commit-deps.txt
+            python -VV >> pre-commit-deps.txt
+
+      - restore_cache:
+          keys:
+          - v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
+
+      - run:
+          name: Install Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install --upgrade setuptools
+            pip install pre-commit
+            # Install the hooks now so that they'll be cached
+            pre-commit install-hooks
+
+      - save_cache:
+          paths:
+            - ~/.cache/pre-commit
+            - ./venv
+          key: v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
+
+      - run:
+          name: Check Code Style using pre-commit
+          command: |
+            . venv/bin/activate
+            pre-commit run --show-diff-on-failure --all-files
 
   markdown_link_check:
     parameters:
@@ -241,6 +274,7 @@ workflows:
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
+      - pre-commit
       - deploy:
           name: deploy ml-agents-envs
           directory: ml-agents-envs
