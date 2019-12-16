@@ -83,21 +83,23 @@ jobs:
           destination: htmlcov
 
   pre-commit:
-    parameters:
-      pyversion:
-        type: string
-        description: python version to being used (currently only affects caching).
-
     docker:
       - image: circleci/python:3.7.3
     working_directory: ~/repo/
 
     steps:
       - checkout
+      - run:
+          name: Combine precommit config and python versions for caching
+          command: |
+            cat .pre-commit-config.yaml > pre-commit-deps.txt
+            python -VV >> pre-commit-deps.txt
+            # TODO REMOVE
+            echo test1 >> pre-commit-deps.txt
 
       - restore_cache:
           keys:
-          - v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+          - v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
 
       - run:
           name: Install Dependencies
@@ -107,11 +109,13 @@ jobs:
             pip install --upgrade pip
             pip install --upgrade setuptools
             pip install pre-commit
+            # Install the hooks now so that they'll be cached
+            pre-commit install-hooks
 
       - save_cache:
           paths:
             - ~/.cache/pre-commit
-          key: v1-precommit-deps-py<< parameters.pyversion >>-{{ checksum ".pre-commit-config.yaml" }}
+          key: v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
 
       - run:
           name: Check Code Style using pre-commit
@@ -271,8 +275,7 @@ workflows:
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - protobuf_generation_check
-      - pre-commit:
-          pyversion: 3.7.3
+      - pre-commit
       - deploy:
           name: deploy ml-agents-envs
           directory: ml-agents-envs
