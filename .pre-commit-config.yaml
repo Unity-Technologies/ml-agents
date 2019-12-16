@@ -56,6 +56,7 @@ repos:
     -   id: check-merge-conflict
         args: [--assume-in-merge]
     -   id: check-yaml
+        # Won't handle the templating in yamato
         exclude: \.yamato/*
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
