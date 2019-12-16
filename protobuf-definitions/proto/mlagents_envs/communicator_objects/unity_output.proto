@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "mlagents_envs/communicator_objects/unity_rl_output.proto";
+import "mlagents_envs/communicator_objects/unity_rl_initialization_output.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message UnityOutputProto {
+    UnityRLOutputProto rl_output = 1;
+    UnityRLInitializationOutputProto rl_initialization_output = 2;
+
+    //More messages can be added here
+}
+

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "mlagents_envs/communicator_objects/agent_info.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message UnityRLOutputProto {
+    message ListAgentInfoProto {
+        repeated AgentInfoProto value = 1;
+    }
+    reserved 1; // deprecated bool global_done field
+    map<string, ListAgentInfoProto> agentInfos = 2;
+    bytes side_channel = 3;
+}
+

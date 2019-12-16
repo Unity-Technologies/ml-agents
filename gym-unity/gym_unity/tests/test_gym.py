@@ -4,7 +4,7 @@ import numpy as np
 
 from gym import spaces
 from gym_unity.envs import UnityEnv, UnityGymException
-from mlagents.envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")

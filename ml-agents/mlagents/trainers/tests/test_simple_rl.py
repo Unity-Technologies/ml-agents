@@ -9,7 +9,7 @@ import numpy as np
 
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.envs.base_env import (
+from mlagents_envs.base_env import (
     BaseEnv,
     AgentGroupSpec,
     BatchedStepResult,
@@ -19,7 +19,7 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.stats import StatsReporter
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 BRAIN_NAME = __name__
 OBS_SIZE = 1
@@ -129,8 +129,8 @@ class Simple1DEnvironment(BaseEnv):
         pass
 
 
-PPO_CONFIG = """
-    default:
+PPO_CONFIG = f"""
+    {BRAIN_NAME}:
         trainer: ppo
         batch_size: 16
         beta: 5.0e-3
@@ -154,8 +154,8 @@ PPO_CONFIG = """
                 gamma: 0.99
     """
 
-SAC_CONFIG = """
-    default:
+SAC_CONFIG = f"""
+    {BRAIN_NAME}:
         trainer: sac
         batch_size: 8
         buffer_size: 500
@@ -184,7 +184,9 @@ SAC_CONFIG = """
     """
 
 
-def _check_environment_trains(env, config):
+def _check_environment_trains(
+    env, config, meta_curriculum=None, success_threshold=0.99
+):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -202,7 +204,7 @@ def _check_environment_trains(env, config):
             train_model=True,
             load_model=False,
             seed=seed,
-            meta_curriculum=None,
+            meta_curriculum=meta_curriculum,
             multi_gpu=False,
         )
 
@@ -211,7 +213,7 @@ def _check_environment_trains(env, config):
             summaries_dir=dir,
             model_path=dir,
             run_id=run_id,
-            meta_curriculum=None,
+            meta_curriculum=meta_curriculum,
             train=True,
             training_seed=seed,
             sampler_manager=SamplerManager(None),
@@ -224,7 +226,7 @@ def _check_environment_trains(env, config):
         print(tc._get_measure_vals())
         for brain_name, mean_reward in tc._get_measure_vals().items():
             assert not math.isnan(mean_reward)
-            assert mean_reward > 0.99
+            assert mean_reward > success_threshold
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])

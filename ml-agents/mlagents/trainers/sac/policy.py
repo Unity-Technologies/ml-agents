@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.envs.timers import timed
+from mlagents_envs.timers import timed
 from mlagents.trainers.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel

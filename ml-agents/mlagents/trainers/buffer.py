@@ -2,7 +2,7 @@ import numpy as np
 import h5py
 from typing import List, BinaryIO
 
-from mlagents.envs.exception import UnityException
+from mlagents_envs.exception import UnityException
 
 
 class BufferException(UnityException):

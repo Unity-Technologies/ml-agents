@@ -6,8 +6,8 @@ from mlagents.tf_utils import tf
 
 from collections import deque
 
-from mlagents.envs.exception import UnityException
-from mlagents.envs.timers import set_gauge
+from mlagents_envs.exception import UnityException
+from mlagents_envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
@@ -26,7 +26,7 @@ class UnityTrainerException(UnityException):
 
 
 class Trainer(object):
-    """This class is the base class for the mlagents.envs.trainers"""
+    """This class is the base class for the mlagents_envs.trainers"""
 
     def __init__(
         self,

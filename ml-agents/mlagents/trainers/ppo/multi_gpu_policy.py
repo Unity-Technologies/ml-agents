@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 from tensorflow.python.client import device_lib
 from mlagents.trainers.brain import BrainParameters
-from mlagents.envs.timers import timed
+from mlagents_envs.timers import timed
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.models import PPOModel
