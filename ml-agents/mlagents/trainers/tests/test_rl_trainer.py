@@ -8,7 +8,6 @@ from mlagents.trainers.tests.test_buffer import construct_fake_processing_buffer
 from mlagents.trainers.buffer import AgentBuffer
 
 
-@pytest.fixture
 def dummy_config():
     return yaml.safe_load(
         """

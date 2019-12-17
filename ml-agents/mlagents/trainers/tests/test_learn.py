@@ -5,7 +5,6 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.learn import parse_command_line
 
 
-@pytest.fixture
 def basic_options(extra_args=None):
     extra_args = extra_args or {}
     args = ["basic_path"]

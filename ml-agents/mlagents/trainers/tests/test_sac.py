@@ -325,7 +325,7 @@ def test_sac_model_cc_vector_rnn():
             sess.run(run_list, feed_dict=feed_dict)
 
 
-def test_sac_save_load_buffer(tmpdir):
+def test_sac_save_load_buffer(tmpdir, dummy_config):
     env, mock_brain, _ = mb.setup_mock_env_and_brains(
         mock.Mock(),
         False,
@@ -335,7 +335,7 @@ def test_sac_save_load_buffer(tmpdir):
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-    trainer_params = dummy_config()
+    trainer_params = dummy_config
     trainer_params["summary_path"] = str(tmpdir)
     trainer_params["model_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
