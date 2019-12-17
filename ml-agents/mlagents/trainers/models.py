@@ -206,20 +206,18 @@ class LearningModel(object):
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
-        mean_current_observation = tf.reduce_mean(vector_input, axis=0)
         steps_increment = tf.shape(vector_input)[0]
 
         total_new_steps = tf.add(self.normalization_steps, steps_increment)
-        # Needed to fix tensorflow's inability to cast
-        unref_norm_steps = tf.cast(tf.identity(self.normalization_steps), tf.float32)
-        unref_norm_step_inc = tf.cast(steps_increment, tf.float32)
-        new_mean = (
-            self.running_mean * unref_norm_steps
-            + mean_current_observation * unref_norm_step_inc
-        ) / tf.cast(total_new_steps, tf.float32)
-        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
-            mean_current_observation - self.running_mean
+
+        delta = tf.subtract(vector_input, self.running_mean)
+        new_mean = self.running_mean + tf.reduce_sum(
+            delta / tf.cast(total_new_steps, dtype=tf.float32), axis=0
         )
+
+        delta2 = tf.subtract(vector_input, new_mean)
+        new_variance = self.running_variance + tf.reduce_sum(delta2 * delta, axis=0)
+
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
         update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
