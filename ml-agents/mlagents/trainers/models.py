@@ -170,11 +170,7 @@ class LearningModel(object):
 
     def normalize_vector_obs(self, vector_obs):
         normalized_state = tf.clip_by_value(
-            (vector_obs - self.running_mean)
-            / tf.sqrt(
-                self.running_variance
-                / (tf.cast(self.normalization_steps, tf.float32) + 1)
-            ),
+            (vector_obs - self.running_mean) / tf.sqrt(self.running_variance + 1e-8),
             -5,
             5,
             name="normalized_state",
@@ -206,22 +202,25 @@ class LearningModel(object):
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
-        steps_increment = tf.shape(vector_input)[0]
+        def discount_normalization(vector_input, running_mean, running_variance):
+            steps_increment = vector_input.shape[0]
+            alpha = 0.0001
+            for i in range(steps_increment):
+                running_mean = (1 - alpha) * running_mean + alpha * vector_input[i]
+                running_variance = (1 - alpha) * running_variance + alpha * np.square(
+                    running_mean - vector_input[i]
+                )
+            return running_mean, running_variance
 
-        total_new_steps = tf.add(self.normalization_steps, steps_increment)
-
-        delta = tf.subtract(vector_input, self.running_mean)
-        new_mean = self.running_mean + tf.reduce_sum(
-            delta / tf.cast(total_new_steps, dtype=tf.float32), axis=0
+        new_mean, new_variance = tf.py_func(
+            func=discount_normalization,
+            inp=[vector_input, self.running_mean, self.running_variance],
+            Tout=[tf.float32, tf.float32],
         )
-
-        delta2 = tf.subtract(vector_input, new_mean)
-        new_variance = self.running_variance + tf.reduce_sum(delta2 * delta, axis=0)
-
+        # new_mean = tf.Print(new_mean, [self.running_mean], summarize=10)
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
-        return tf.group([update_mean, update_variance, update_norm_step])
+        return tf.group([update_mean, update_variance])
 
     @staticmethod
     def create_vector_observation_encoder(
