@@ -118,11 +118,11 @@ If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
 
 ```console
-INFO:mlagents.envs:
+INFO:mlagents_envs:
 'Ball3DAcademy' started successfully!
 Unity Academy name: Ball3DAcademy
 
-INFO:mlagents.envs:Connected new brain:
+INFO:mlagents_envs:Connected new brain:
 Unity brain name: 3DBallLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
@@ -130,7 +130,7 @@ Unity brain name: 3DBallLearning
         Vector Action space type: continuous
         Vector Action space size (per agent): [2]
         Vector Action descriptions: ,
-INFO:mlagents.envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
+INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         batch_size:          64
         beta:                0.001
         buffer_size:         12000

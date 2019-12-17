@@ -206,7 +206,6 @@ Reacher:
     summary_freq: 3000
 
 Hallway:
-    use_recurrent: true
     sequence_length: 32
     num_layers: 2
     hidden_units: 128
@@ -218,7 +217,6 @@ Hallway:
     use_recurrent: true
 
 VisualHallway:
-    use_recurrent: true
     sequence_length: 32
     num_layers: 1
     hidden_units: 128

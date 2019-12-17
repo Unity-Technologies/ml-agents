@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "mlagents_envs/communicator_objects/space_type.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message BrainParametersProto {
+    reserved 1; // deprecated int32 vector_observation_size = 1;
+    reserved 2; // deprecated int32 num_stacked_vector_observations = 2;
+    repeated int32 vector_action_size = 3;
+    reserved 4; // deprecated repeated ResolutionProto camera_resolutions
+    repeated string vector_action_descriptions = 5;
+    SpaceTypeProto vector_action_space_type = 6;
+    string brain_name = 7;
+    bool is_training = 8;
+}

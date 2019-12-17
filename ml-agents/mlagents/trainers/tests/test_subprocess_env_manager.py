@@ -8,8 +8,8 @@ from mlagents.trainers.subprocess_env_manager import (
     EnvironmentResponse,
     StepResponse,
 )
-from mlagents.envs.base_env import BaseEnv
-from mlagents.envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 
 def mock_env_factory(worker_id):

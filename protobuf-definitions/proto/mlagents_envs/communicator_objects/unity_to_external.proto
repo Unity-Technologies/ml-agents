@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "mlagents_envs/communicator_objects/unity_message.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+service UnityToExternalProto {
+    // Sends the academy parameters
+    rpc Exchange(UnityMessageProto) returns (UnityMessageProto) {}
+}
+

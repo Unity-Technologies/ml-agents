@@ -1,17 +1,17 @@
 rem variables
 
-rem GRPC-TOOLS required. Install with `nuget install Grpc.Tools`. 
+rem GRPC-TOOLS required. Install with `nuget install Grpc.Tools`.
 rem Then un-comment and replace [DIRECTORY] with location of files.
 rem For example, on Windows, you might have something like:
 rem set COMPILER=Grpc.Tools.1.14.1\tools\windows_x64
 rem set COMPILER=[DIRECTORY]
 
-set SRC_DIR=proto\mlagents\envs\communicator_objects
+set SRC_DIR=proto\mlagents_envs\communicator_objects
 set DST_DIR_C=..\UnitySDK\Assets\ML-Agents\Scripts\Grpc\CommunicatorObjects
 set DST_DIR_P=..\ml-agents-envs
 set PROTO_PATH=proto
 
-set PYTHON_PACKAGE=mlagents\envs\communicator_objects
+set PYTHON_PACKAGE=mlagents_envs\communicator_objects
 
 rem clean
 rd /s /q %DST_DIR_C%
@@ -36,7 +36,7 @@ python -m grpc_tools.protoc --proto_path=proto --python_out=%DST_DIR_P% --grpc_p
 rem Generate the init file for the python module
 rem rm -f $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
 setlocal enabledelayedexpansion
-for %%i in (%DST_DIR_P%\%PYTHON_PACKAGE%\*.py) do ( 
+for %%i in (%DST_DIR_P%\%PYTHON_PACKAGE%\*.py) do (
 set FILE=%%~ni
 rem echo from .$(basename $FILE) import * >> $DST_DIR_P/$PYTHON_PACKAGE/__init__.py
 echo from .!FILE! import * >> %DST_DIR_P%\%PYTHON_PACKAGE%\__init__.py
