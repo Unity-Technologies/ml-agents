@@ -656,37 +656,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaf2b7ab74c8a40608abae7343edd909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  broadcastHub:
-    brainsToControl:
-    - {fileID: 11400000, guid: 090fa5a8588f5433bb7f878e6f5ac954, type: 2}
-    - {fileID: 11400000, guid: 29ed78b3e8fef4340b3a1f6954b88f18, type: 2}
-  m_TrainingConfiguration:
-    width: 800
-    height: 500
-    qualityLevel: 0
-    timeScale: 10
-    targetFrameRate: 60
-  m_InferenceConfiguration:
-    width: 1280
-    height: 720
-    qualityLevel: 5
-    timeScale: 2
-    targetFrameRate: 60
-  resetParameters:
-    m_ResetParameters:
-    - key: ball_scale
-      value: 0.015
-    - key: gravity
-      value: 9.81
   purpleMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   blueMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   gravityMultiplier: 1
   randomizePlayersTeamForTraining: 0
   agentRunSpeed: 2
-  strikerPunish: -0.1
+  strikerPunish: -1
   strikerReward: 1
   goaliePunish: -1
-  goalieReward: 0.1
+  goalieReward: 1
 --- !u!4 &1574236049
 Transform:
   m_ObjectHideFlags: 0

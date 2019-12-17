@@ -907,7 +907,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1081996550758964}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1100, y: 200, z: 0}
+  m_LocalPosition: {x: -1700, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1042,7 +1042,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1850200619918880}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1180, y: 200, z: 0}
+  m_LocalPosition: {x: 1680, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1379,7 +1379,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1763572357542770}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1100, y: 200, z: 0}
+  m_LocalPosition: {x: 1700, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1457,7 +1457,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1331814686035208}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1180, y: 200, z: 0}
+  m_LocalPosition: {x: -1680, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -3527,13 +3527,14 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 05000000
+    vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: Goalie
+  m_BehaviorType: 0
+  m_BehaviorName: Soccer
+  m_TeamID: 0
 --- !u!114 &114206319503468014
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3553,16 +3554,16 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 3
+  raysPerDirection: 0
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 1
-  endVerticalOffset: 1
+  startVerticalOffset: 0.5
+  endVerticalOffset: 0.5
 --- !u!114 &114273807544954564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3596,7 +3597,7 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 0
-  agentRole: 1
+  agentRole: 0
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
 --- !u!114 &114320493772006642
@@ -3618,16 +3619,16 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 3
+  raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0
-  endVerticalOffset: 0
+  startVerticalOffset: 0.5
+  endVerticalOffset: 0.5
 --- !u!114 &114387866097048300
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3645,10 +3646,11 @@ MonoBehaviour:
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: Striker
+  m_BehaviorType: 0
+  m_BehaviorName: Soccer
+  m_TeamID: 0
 --- !u!114 &114402225209785518
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3668,16 +3670,16 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 3
+  raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0
-  endVerticalOffset: 0
+  startVerticalOffset: 0.5
+  endVerticalOffset: 0.5
 --- !u!114 &114413496910417180
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3697,11 +3699,11 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 3
+  raysPerDirection: 0
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
@@ -3746,16 +3748,16 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 3
+  raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0
-  endVerticalOffset: 0
+  startVerticalOffset: 0.5
+  endVerticalOffset: 0.5
 --- !u!114 &114529615399004778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3770,13 +3772,14 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 05000000
+    vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: Goalie
+  m_BehaviorType: 0
+  m_BehaviorName: Soccer
+  m_TeamID: 1
 --- !u!114 &114559182131992928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3815,11 +3818,11 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 3
+  raysPerDirection: 0
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
@@ -3842,7 +3845,7 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 1
-  agentRole: 1
+  agentRole: 0
   area: {fileID: 114559182131992928}
   agentRb: {fileID: 0}
 --- !u!114 &114734187185382186
@@ -3862,10 +3865,11 @@ MonoBehaviour:
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
   m_InferenceDevice: 0
-  m_UseHeuristic: 0
-  m_BehaviorName: Striker
+  m_BehaviorType: 0
+  m_BehaviorName: Soccer
+  m_TeamID: 1
 --- !u!114 &114736358897902410
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3885,11 +3889,11 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 3
+  raysPerDirection: 0
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
@@ -3914,16 +3918,16 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 3
+  raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 1
+  observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0
-  endVerticalOffset: 0
+  startVerticalOffset: 0.5
+  endVerticalOffset: 0.5
 --- !u!114 &114850431417842684
 MonoBehaviour:
   m_ObjectHideFlags: 1

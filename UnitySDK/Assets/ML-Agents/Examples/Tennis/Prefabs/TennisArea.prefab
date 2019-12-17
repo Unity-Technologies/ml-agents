@@ -1196,7 +1196,7 @@ MonoBehaviour:
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: ddeebf56ea07142cba1fd96aba6d8d4d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -1218,10 +1218,10 @@ MonoBehaviour:
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: ddeebf56ea07142cba1fd96aba6d8d4d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Tennis
+  m_BehaviorName: Tennis_SAC
   m_TeamID: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
@@ -1239,7 +1239,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-    teamId: 0
   ball: {fileID: 1273406647218856}
   invertX: 1
   score: 0
@@ -1276,7 +1275,6 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-    teamId: 0
   ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0

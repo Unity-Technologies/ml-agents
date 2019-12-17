@@ -66,10 +66,10 @@ public class SoccerFieldArea : MonoBehaviour
         {
             if (ps.agentScript.gameObject.activeInHierarchy)
             {
-                if (reward != 0)
-                {
-                    ps.agentScript.AddReward(reward);
-                }
+                //if (reward != 0)
+                //{
+                //    ps.agentScript.AddReward(reward);
+                //}
                 ps.agentScript.Done();
             }
         }

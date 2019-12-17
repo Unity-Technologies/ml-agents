@@ -95,6 +95,17 @@ Goalie:
     num_layers: 2
     normalize: false
 
+Soccer:
+    trainer: ppo
+    normalize: true
+    max_steps: 5e7
+    hidden_units: 512
+    num_layers: 2
+    ghost:
+        window: 20
+        current_prob: .7
+        snapshot_per: 1000
+
 Pyramids:
     summary_freq: 2000
     time_horizon: 128
@@ -158,7 +169,44 @@ Tennis:
     trainer: ppo
     normalize: true
     max_steps: 5e7
-    ghost: true
+    ghost:
+        window: 20
+        current_prob: .7
+        snapshot_per: 1000
+
+Tennis_SAC:
+    trainer: sac
+    batch_size: 128
+    buffer_size: 50000
+    buffer_init_steps: 0
+    hidden_units: 128
+    init_entcoef: 1.0
+    learning_rate: 3.0e-4
+    learning_rate_schedule: constant
+    max_steps: 5.0e4
+    memory_size: 256
+    normalize: false
+    num_update: 1
+    train_interval: 1
+    num_layers: 2
+    time_horizon: 64
+    sequence_length: 64
+    summary_freq: 1000
+    tau: 0.005
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.99
+    normalize: true
+    max_steps: 5e7
+    ghost:
+        window: 20
+        current_prob: .7
+        snapshot_per: 1000
+
+
 
 CrawlerStatic:
     normalize: true
