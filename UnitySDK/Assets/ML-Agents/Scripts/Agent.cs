@@ -252,6 +252,11 @@ namespace MLAgents
         {
             m_Id = gameObject.GetInstanceID();
             var academy = FindObjectOfType<Academy>();
+            if (academy == null)
+            {
+                throw new UnityAgentsException(
+                    "No Academy Component could be found in the scene.");
+            }
             academy.LazyInitialization();
             OnEnableHelper(academy);
 
@@ -265,12 +270,6 @@ namespace MLAgents
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
-
-            if (academy == null)
-            {
-                throw new UnityAgentsException(
-                    "No Academy Component could be found in the scene.");
-            }
 
             academy.AgentSetStatus += SetStatus;
             academy.AgentResetIfDone += ResetIfDone;

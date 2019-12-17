@@ -23,7 +23,8 @@ GameObject:
   - component: {fileID: 61607684435006894}
   - component: {fileID: 50038960445382884}
   - component: {fileID: 114028198358633208}
-  - component: {fileID: 114107366108349864}
+  - component: {fileID: 114735272992145842}
+  - component: {fileID: 114325747366330126}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -128,7 +129,7 @@ GameObject:
   - component: {fileID: 61175182912136580}
   m_Layer: 0
   m_Name: Wall (2)
-  m_TagString: Untagged
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,7 +150,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1643424632278004
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,7 +184,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1782507024130018
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,8 +296,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1014421213912728}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.6181662, y: -8.92453, z: 0.171875}
+  m_LocalRotation: {x: -0, y: 0.0523359, z: -0, w: 0.9986295}
+  m_LocalPosition: {x: -4.6418, y: 1.1930466, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4323441479098572}
@@ -309,8 +310,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1661633189295650}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.301165, y: -4.462265, z: 0.171875}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -4.66, y: -6.18, z: -1}
+  m_LocalScale: {x: 0.75, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4323441479098572}
   m_RootOrder: 9
@@ -322,7 +323,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1847453981338936}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.2237248, y: 0.1605815, z: -0.171875}
+  m_LocalPosition: {x: 149.99193, y: 56.688637, z: -24.85398}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4234453863133892}
@@ -348,7 +349,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1048363797171572}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.8913646, y: 7.2853303, z: 0.171875}
+  m_LocalPosition: {x: 4.97, y: -8.25, z: 0.171875}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4323441479098572}
@@ -463,7 +464,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!61 &61005056756666034
 BoxCollider2D:
@@ -721,7 +722,7 @@ BoxCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1782507024130018}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -802,16 +803,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 4
+    vectorObservationSize: 2
     numStackedVectorObservations: 6
-    vectorActionSize: 03000000030000000300000002000000
+    vectorActionSize: 0300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 1
   m_BehaviorName: SmallWallJump
---- !u!114 &114107366108349864
+--- !u!114 &114325747366330126
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -819,7 +820,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 1014421213912728}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 676fca959b8ee45539773905ca71afa1, type: 3}
+  m_Script: {fileID: 11500000, guid: f67c7e722ba14acd9153bb4488bff6e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: RayPerceptionSensor
+  detectableTags:
+  - wall
+  - ground
+  - goal
+  raysPerDirection: 3
+  maxRayDegrees: 70
+  sphereCastRadius: 0.45
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 0
+--- !u!114 &114735272992145842
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1014421213912728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faebf211ad16b4cc48451ec57da7e31c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
@@ -827,15 +852,12 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  noWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
-  smallWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
-  bigWallBrain: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
-  ground: {fileID: 0}
-  spawnArea: {fileID: 0}
-  goal: {fileID: 0}
+  ground: {fileID: 1782507024130018}
+  spawnArea: {fileID: 1661633189295650}
+  goal: {fileID: 1048363797171572}
   shortBlock: {fileID: 0}
   wall: {fileID: 0}
-  jumpingTime: 0
+  jumpingTime: 0.18
   jumpTime: 0.2
   fallingForce: 111
   hitGroundColliders:
@@ -900,7 +922,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a1daf31cdf41e484ca9ac33a5c6f524a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
