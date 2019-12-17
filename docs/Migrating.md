@@ -7,21 +7,23 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from master to develop
+## Migrating from 0.12 to latest
 
 ### Important changes
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. This should only affect you if you're writing a custom trainer; if you use `mlagents-learn` for training, this should be a transparent change.
+  * `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
+  * `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`. For more information, refer to the [Low Level Python API documentation](Python-API.md)
 * `CustomResetParameters` are now removed.
-* `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
-* `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`. For more information, refer to the [Low Level Python API documentation](Python-API.md)
 * The Academy no longer has a `Training Configuration` nor `Inference Configuration` field in the inspector. To modify the configuration from the Low-Level Python API, use an `EngineConfigurationChannel`. To modify it during training, use the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` in `mlagents-learn`.
 * The Academy no longer has a `Default Reset Parameters` field in the inspector. The Academy class no longer has a `ResetParameters`. To access shared float properties with Python, use the new `FloatProperties` field on the Academy.
 * Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
 Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
+* `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused problems with some of our tooling such as mypy and pylint.
 
 ### Steps to Migrate
  * If you had a custom `Training Configuration` in the Academy inspector, you will need to pass your custom configuration at every training run using the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate`.
  * If you were using `--slow` in `mlagents-learn`, you will need to pass your old `Inference Configuration` of the Academy inspector with the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` instead.
+ * Any imports from `mlagents.envs` should be replaced with `mlagents_envs`.
 
 ## Migrating from ML-Agents toolkit v0.11.0 to v0.12.0
 
@@ -69,7 +71,7 @@ Making this change will require retraining your model, since the observations th
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
 * The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
 * We have removed the `Done` call as well as the capacity to set `Max Steps` on the Academy. Therefore an AcademyReset will never be triggered from C# (only from Python). If you want to reset the simulation after a fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as BananaCollector). In our examples, groups of Agents can be reset through an "Area" that can reset groups of Agents.
-* The import for `mlagents.envs.UnityEnvironment` was removed. If you are using the Python API, change `from mlagents.envs import UnityEnvironment` to `from mlagents.envs.environment import UnityEnvironment`.
+* The import for `mlagents.envs.UnityEnvironment` was removed. If you are using the Python API, change `from mlagents_envs import UnityEnvironment` to `from mlagents_envs.environment import UnityEnvironment`.
 
 
 ## Migrating from ML-Agents toolkit v0.8 to v0.9

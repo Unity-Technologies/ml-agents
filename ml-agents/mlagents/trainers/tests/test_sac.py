@@ -73,7 +73,7 @@ def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_vi
     return env, policy
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 def test_sac_cc_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -94,7 +94,7 @@ def test_sac_cc_policy(mock_env, dummy_config):
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     # Test evaluate
     tf.reset_default_graph()
@@ -121,7 +121,7 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 def test_sac_dc_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -141,7 +141,7 @@ def test_sac_dc_policy(mock_env, dummy_config):
     env.close()
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 def test_sac_visual_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()
@@ -161,7 +161,7 @@ def test_sac_visual_policy(mock_env, dummy_config):
     assert type(run_out) is dict
 
 
-@mock.patch("mlagents.envs.environment.UnityEnvironment")
+@mock.patch("mlagents_envs.environment.UnityEnvironment")
 def test_sac_rnn_policy(mock_env, dummy_config):
     # Test evaluate
     tf.reset_default_graph()

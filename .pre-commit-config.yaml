@@ -19,17 +19,17 @@ repos:
     -   id: mypy
         name: mypy-ml-agents
         files: "ml-agents/.*"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs, --namespace-packages]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
     -   id: mypy
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs,  --namespace-packages]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
     -   id: mypy
         name: mypy-gym-unity
         files: "gym-unity/.*"
-        args: [--ignore-missing-imports, --disallow-incomplete-defs,  --namespace-packages]
+        args: [--ignore-missing-imports, --disallow-incomplete-defs]
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
@@ -55,13 +55,14 @@ repos:
         types: [markdown]
     -   id: check-merge-conflict
         args: [--assume-in-merge]
+    -   id: check-yaml
+        # Won't handle the templating in yamato
+        exclude: \.yamato/*
 
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.4.2
     hooks:
     -   id: python-check-mock-methods
-
-
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
     rev: v2.4.4

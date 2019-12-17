@@ -496,7 +496,16 @@ namespace MLAgents
         public void InitializeSensors()
         {
             // Get all attached sensor components
-            var attachedSensorComponents = GetComponents<SensorComponent>();
+            SensorComponent[] attachedSensorComponents;
+            if(m_PolicyFactory.useChildSensors)
+            {
+                attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
+            }
+            else
+            {
+                attachedSensorComponents = GetComponents<SensorComponent>();
+            }
+
             sensors.Capacity += attachedSensorComponents.Length;
             foreach (var component in attachedSensorComponents)
             {

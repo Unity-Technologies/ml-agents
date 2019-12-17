@@ -2,7 +2,7 @@ from io import open
 import os
 import sys
 
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_packages
 from setuptools.command.install import install
 import mlagents.trainers
 
@@ -50,9 +50,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
-    packages=find_namespace_packages(
-        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
-    ),
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.

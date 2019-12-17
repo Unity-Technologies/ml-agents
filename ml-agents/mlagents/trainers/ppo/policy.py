@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 from mlagents.tf_utils import tf
 
-from mlagents.envs.timers import timed
+from mlagents_envs.timers import timed
 from mlagents.trainers.brain import BrainInfo, BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel

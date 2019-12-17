@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "mlagents_envs/communicator_objects/unity_output.proto";
+import "mlagents_envs/communicator_objects/unity_input.proto";
+import "mlagents_envs/communicator_objects/header.proto";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message UnityMessageProto {
+    HeaderProto header = 1;
+    UnityOutputProto unity_output = 2;
+    UnityInputProto unity_input = 3;
+}
+

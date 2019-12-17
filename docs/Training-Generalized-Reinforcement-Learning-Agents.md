@@ -120,7 +120,7 @@ Below is a list of included `sampler-type` as part of the toolkit.
 
     * **sub-arguments** - `intervals`
 
-The implementation of the samplers can be found at `ml-agents-envs/mlagents/envs/sampler_class.py`.
+The implementation of the samplers can be found at `ml-agents-envs/mlagents_envs/sampler_class.py`.
 
 ### Defining a New Sampler Type
 

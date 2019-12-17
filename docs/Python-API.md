@@ -1,7 +1,7 @@
 # Unity ML-Agents Python Low Level API
 
 The `mlagents` Python package contains two components: a low level API which
-allows you to interact directly with a Unity Environment (`mlagents.envs`) and
+allows you to interact directly with a Unity Environment (`mlagents_envs`) and
 an entry point to train (`mlagents-learn`) which allows you to train agents in
 Unity Environments using our implementations of reinforcement learning or
 imitation learning.
@@ -9,7 +9,7 @@ imitation learning.
 You can use the Python Low Level API to interact directly with your learning
 environment, and use it to develop new learning algorithms.
 
-## mlagents.envs
+## mlagents_envs
 
 The ML-Agents Toolkit Low Level API is a Python API for controlling the simulation
 loop of an environment or game built with Unity. This API is used by the
@@ -27,7 +27,7 @@ The key objects in the Python API include:
 - **AgentGroupSpec** — describes the shape of the data inside a BatchedStepResult.
   For example, provides the dimensions of the observations of a group.
 
-These classes are all defined in the [base_env](../ml-agents-envs/mlagents/envs/base_env.py)
+These classes are all defined in the [base_env](../ml-agents-envs/mlagents_envs/base_env.py)
 script.
 
 An Agent Group is a group of Agents identified by a string name that share the same
@@ -49,12 +49,12 @@ release._
 ## Loading a Unity Environment
 
 Python-side communication happens through `UnityEnvironment` which is located in
-`ml-agents/mlagents/envs`. To load a Unity environment from a built binary
-file, put the file in the same directory as `envs`. For example, if the filename
-of your Unity environment is 3DBall.app, in python, run:
+[`environment.py`](../ml-agents-envs/mlagents_envs/environment.py). To load
+a Unity environment from a built binary file, put the file in the same directory
+as `envs`. For example, if the filename of your Unity environment is 3DBall.app, in python, run:
 
 ```python
-from mlagents.envs.environment import UnityEnvironment
+from mlagents_envs.environment import UnityEnvironment
 env = UnityEnvironment(file_name="3DBall", base_port=5005, seed=1, side_channels=[])
 ```
 
@@ -220,8 +220,8 @@ An `EngineConfiguration` will allow you to modify the time scale and graphics qu
 
 For example :
 ```python
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 
 channel = EngineConfigurationChannel()
 
@@ -247,8 +247,8 @@ side channel to read and write properties.
  * `list_properties` Returns a list of all the string identifiers of the properties
 
 ```python
-from mlagents.envs.environment import UnityEnvironment
-from mlagents.envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 channel = FloatPropertiesChannel()
 
