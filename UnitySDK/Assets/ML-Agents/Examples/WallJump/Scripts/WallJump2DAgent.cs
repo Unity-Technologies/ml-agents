@@ -222,6 +222,7 @@ public class WallJump2DAgent : Agent
 
     public override float[] Heuristic()
     {
+        GenerateSensorData();
         bool pressed = false;
         var action = new float[4];
         if (Input.GetKey(KeyCode.D))

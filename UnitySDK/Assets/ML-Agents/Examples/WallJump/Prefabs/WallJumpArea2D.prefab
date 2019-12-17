@@ -296,7 +296,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1014421213912728}
-  m_LocalRotation: {x: -0, y: 0.0523359, z: -0, w: 0.9986295}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.6418, y: 1.1930466, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -830,7 +830,7 @@ MonoBehaviour:
   - goal
   raysPerDirection: 3
   maxRayDegrees: 70
-  sphereCastRadius: 0.45
+  sphereCastRadius: 0.5
   rayLength: 20
   observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
