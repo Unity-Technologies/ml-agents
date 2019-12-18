@@ -80,15 +80,19 @@ public class AgentSoccer : Agent
         playerState.playerIndex = m_PlayerIndex;
     }
 
-    //public override void CollectObservations()
-    //{
-    //      float relX = area.ball.transform.localPosition.x - transform.localPosition.x;
-    //      float relY = area.ball.transform.localPosition.y - transform.localPosition.y;
-    //      float relZ = area.ball.transform.localPosition.z - transform.localPosition.z;
-    //
-    //      float dist = 
-    //      AddVectorObs(new Vector3(relX, relY, relZ));
-    //}
+    public override void CollectObservations()
+    {
+          //float relX = area.ball.transform.localPosition.x - transform.localPosition.x;
+          //float relY = area.ball.transform.localPosition.y - transform.localPosition.y;
+          //float relZ = area.ball.transform.localPosition.z - transform.localPosition.z;
+    
+          //Vector3 relVec = new Vector3(relX, relY, relZ);
+          Vector3 dirToTarget = area.ball.transform.localPosition - transform.localPosition;
+          AddVectorObs(transform.InverseTransformDirection(dirToTarget));
+          //AddVectorObs(new Vector3(relX, relY, relZ));
+          //AddVectorObs(transform.forward);
+    //      AddVectorObs(area.ball.transform.localPosition.y);
+    }
 
     public void MoveAgent(float[] act)
     {
