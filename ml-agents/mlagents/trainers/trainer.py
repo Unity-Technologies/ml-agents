@@ -50,8 +50,6 @@ class Trainer(object):
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
         self.stats_reporter = StatsReporter(self.summary_path)
-        # if not os.path.exists(self.summary_path):
-        #     os.makedirs(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self.trainer_metrics = TrainerMetrics(
