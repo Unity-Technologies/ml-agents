@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+import tf2onnx
 from mlagents.tf_utils import tf
 
 from mlagents_envs.exception import UnityException
@@ -30,16 +31,18 @@ class TFPolicy(Policy):
     functions to interact with it to perform evaluate and updating.
     """
 
-    possible_output_nodes = [
-        "action",
-        "value_estimate",
-        "action_probs",
-        "recurrent_out",
-        "memory_size",
-        "version_number",
-        "is_continuous_control",
-        "action_output_shape",
-    ]
+    POSSIBLE_OUTPUT_NODES = frozenset(
+        [
+            "action",
+            "value_estimate",
+            "action_probs",
+            "recurrent_out",
+            "memory_size",
+            "version_number",
+            "is_continuous_control",
+            "action_output_shape",
+        ]
+    )
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -279,6 +282,40 @@ class TFPolicy(Policy):
         """
 
         with self.graph.as_default():
+            # Saved Model saving
+            if "foo" in {}:
+                vectorInputNode = self.graph.get_tensor_by_name("vector_observation:0")
+                sigs = {}
+                inputs = {"vector_observation": vectorInputNode}
+                outputs = self._get_output_nodes()
+                if self.use_continuous_act:
+                    epsilonInputNode = self.graph.get_tensor_by_name("epsilon:0")
+                    inputs["epsilon"] = epsilonInputNode
+                else:
+                    actionMaskInput = self.graph.get_tensor_by_name("action_masks:0")
+                    inputs["actionMask"] = actionMaskInput
+
+                sig_key = (
+                    tf.compat.v1.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY
+                )
+                sigs[
+                    sig_key
+                ] = tf.saved_model.signature_def_utils.predict_signature_def(
+                    inputs, outputs
+                )
+
+                builder = tf.compat.v1.saved_model.Builder(
+                    self.model_path + "/SavedModel/"
+                )
+                builder.add_meta_graph_and_variables(
+                    self.sess,
+                    [tf.saved_model.tag_constants.SERVING],
+                    signature_def_map=sigs,
+                    strip_default_attrs=True,
+                )
+                builder.save()
+
+            # Frozen graph saving
             target_nodes = ",".join(self._process_graph())
             graph_def = self.graph.as_graph_def()
             output_graph_def = graph_util.convert_variables_to_constants(
@@ -290,13 +327,166 @@ class TFPolicy(Policy):
             tf2bc.convert(frozen_graph_def_path, self.model_path + ".nn")
             logger.info("Exported " + self.model_path + ".nn file")
 
+        # logger.info("Converting to onnx")
+        # self.convert_frozen_to_onnx(output_graph_def, ["vector_observation:0","epsilon:0"], ["action:0","action_probs:0"])
+
+    def convert_frozen_to_onnx(self, frozen_graph_def, inputs, outputs):
+        # This is bascailly https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
+        # but without the command line
+        from tf2onnx.tfonnx import process_tf_graph, tf_optimize
+        from tf2onnx import constants, loader, logging, utils, optimizer
+        from tf2onnx.loader import freeze_session, remove_redundant_inputs
+
+        # args
+        fold_const = False
+        continue_on_error = False
+        target = []
+        opset = None
+        custom_ops = {}
+        extra_opset = []
+        shape_override = None
+        inputs_as_nchw = None
+
+        logging.basicConfig(level=logging.get_verbosity_level(1))
+
+        def const_handler(ctx, node, name, args):
+            # replace tf.Print() with Identity
+            #   T output = Print(T input, data, @list(type) U, @string message, @int first_n, @int summarize)
+            # becomes:
+            #   T output = Identity(T Input)
+            print(f"name={name}")
+            node.type = "Nop"
+            node.domain = "com.unity"
+            # del node.input[1:]
+            return node
+
+        def make_constant_node_proto(name, value):
+            from onnx import (
+                TensorProto,
+                SparseTensorProto,
+                AttributeProto,
+                ValueInfoProto,
+                TensorShapeProto,
+                NodeProto,
+                ModelProto,
+                GraphProto,
+                OperatorSetIdProto,
+                TypeProto,
+                IR_VERSION,
+            )
+
+            # EXAMPLE
+            # node {
+            #     output: "truediv_3/y:0"
+            #     name: "truediv_3/y"
+            #     op_type: "Nop"
+            #     attribute {
+            #       name: "dtype"
+            #       i: 1
+            #       type: INT
+            #     }
+            #     attribute {
+            #       name: "value"
+            #       t {
+            #         data_type: 1
+            #         name: "truediv_3/y:0"
+            #         raw_data: "\000\000@@"
+            #       }
+            #       type: TENSOR
+            #     }
+            #     domain: "com.unity"
+            #   }
+            dtype_attribute = AttributeProto(
+                name="dtype", i=int(TensorProto.INT32), type=AttributeProto.INT
+            )
+            tensor_value = TensorProto(
+                data_type=TensorProto.INT32, name=name, int32_data=[value]
+            )
+            value_attribute = AttributeProto(
+                name="value", t=tensor_value, type=AttributeProto.TENSOR
+            )
+            return NodeProto(
+                output=f"{name}:0",
+                name=name,
+                op_type="Constant",
+                attribute=[dtype_attribute, value_attribute],
+            )
+
+        # custom_ops["Const"] = (const_handler, [])
+
+        def _from_graphdef(graph_def, input_names, output_names):
+            # https://github.com/onnx/tensorflow-onnx/blob/f487e5aa6d8ba41d85ee7929fb163de1b7654afb/tf2onnx/loader.py#L55
+            """Load tensorflow graph from graphdef."""
+            # make sure we start with clean default graph
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                tf.import_graph_def(graph_def, name="")
+                frozen_graph = freeze_session(sess, output_names=output_names)
+            input_names = remove_redundant_inputs(frozen_graph, input_names)
+            # clean up
+            tf.reset_default_graph()
+            return frozen_graph, input_names, output_names
+
+        breakpoint()
+        # _from_graphdef strips some of the constants that we want to keep
+        # graph_def, inputs, outputs = _from_graphdef(frozen_graph_def, inputs, outputs)
+        graph_def = frozen_graph_def
+
+        graph_def = tf_optimize(inputs, outputs, graph_def, fold_const)
+
+        with tf.Graph().as_default() as tf_graph:
+            tf.import_graph_def(graph_def, name="")
+        with tf.Session(graph=tf_graph):
+            g = process_tf_graph(
+                tf_graph,
+                continue_on_error=continue_on_error,
+                target=target,
+                opset=opset,
+                custom_op_handlers=custom_ops,
+                extra_opset=extra_opset,
+                shape_override=shape_override,
+                input_names=inputs,
+                output_names=outputs,
+                inputs_as_nchw=inputs_as_nchw,
+            )
+
+        # breakpoint()
+        # optimize_graph() also strips the constants
+        # onnx_graph = optimizer.optimize_graph(g)
+        model_proto = g.make_model("ML AGENTS!")
+        # breakpoint()
+
+        # Hack some constant nodes in
+        version_node = make_constant_node_proto("version_number", 2)
+        model_proto.graph.node.extend([version_node])
+        utils.save_protobuf(self.model_path + "/3DBall_onnx_py.onnx", model_proto)
+
+    def _get_output_nodes(self) -> Dict[str, Any]:
+        nodes = {}
+
+        output_node_names = {
+            "action",
+            "value_estimate",
+            "action_probs",
+            "recurrent_out",
+        }
+        for name in output_node_names:
+            full_name = f"{name}:0"
+            try:
+                nodes[name] = self.graph.get_tensor_by_name(full_name)
+            except Exception:
+                # Not all the possible nodes are in the output.
+                pass
+        print(f"Found {len(nodes)} for output: {nodes.keys()}")
+        return nodes
+
     def _process_graph(self):
         """
         Gets the list of the output nodes present in the graph for inference
         :return: list of node names
         """
         all_nodes = [x.name for x in self.graph.as_graph_def().node]
-        nodes = [x for x in all_nodes if x in self.possible_output_nodes]
+        nodes = [x for x in all_nodes if x in self.POSSIBLE_OUTPUT_NODES]
         logger.info("List of nodes to export for brain :" + self.brain.brain_name)
         for n in nodes:
             logger.info("\t" + n)

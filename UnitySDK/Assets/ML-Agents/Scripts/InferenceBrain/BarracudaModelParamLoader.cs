@@ -7,6 +7,24 @@ using UnityEngine;
 
 namespace MLAgents.InferenceBrain
 {
+
+    public static class ModelLoadingExtensions
+    {
+        public static HashSet<string> GetLayerNames(this Model model)
+        {
+            var layers = new HashSet<string>();
+            foreach (Layer layer in model.layers)
+            {
+                foreach (Layer.DataSet dataset in layer.datasets)
+                {
+                    layers.Add(dataset.name);
+                }
+            }
+
+            return layers;
+        }
+    }
+
     /// <summary>
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
     /// and BrainParameters are incompatible.
@@ -138,46 +156,71 @@ namespace MLAgents.InferenceBrain
                 return failedModelChecks;
             }
 
-            var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
-            var isContinuousInt = (int)model.GetTensorByName(TensorNames.IsContinuousControl)[0];
-            var isContinuous = GetActionType(isContinuousInt);
-            var actionSize = (int)model.GetTensorByName(TensorNames.ActionOutputShape)[0];
-            if (modelApiVersion == -1)
+            // DEBUG
+            var layerNames = model.GetLayerNames();
+            var outString = "";
+            foreach(var layerName in layerNames)
             {
-                failedModelChecks.Add(
-                    "Model was not trained using the right version of ML-Agents. " +
-                    "Cannot use this model.");
-                return failedModelChecks;
+                outString += $"{layerName}, ";
             }
-            if (modelApiVersion != k_ApiVersion)
+            // END DEBUG
+
+            try
             {
-                failedModelChecks.Add(
-                    $"Version of the trainer the model was trained with ({modelApiVersion}) " +
-                    $"is not compatible with the Brain's version ({k_ApiVersion}).");
-                return failedModelChecks;
+
+//                var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+//                var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+//                var isContinuousInt = (int)model.GetTensorByName(TensorNames.IsContinuousControl)[0];
+//                var isContinuous = GetActionType(isContinuousInt);
+//                var actionSize = (int)model.GetTensorByName(TensorNames.ActionOutputShape)[0];
+                var modelApiVersion = 2;
+                var memorySize = 0;
+                var isContinuousInt = 1;
+                var isContinuous = GetActionType(isContinuousInt);
+                var actionSize = 2;
+                if (modelApiVersion == -1)
+                {
+                    failedModelChecks.Add(
+                        "Model was not trained using the right version of ML-Agents. " +
+                        "Cannot use this model.");
+                    return failedModelChecks;
+                }
+
+                if (modelApiVersion != k_ApiVersion)
+                {
+                    failedModelChecks.Add(
+                        $"Version of the trainer the model was trained with ({modelApiVersion}) " +
+                        $"is not compatible with the Brain's version ({k_ApiVersion}).");
+                    return failedModelChecks;
+                }
+
+                failedModelChecks.AddRange(
+                    CheckIntScalarPresenceHelper(new Dictionary<string, int>()
+                    {
+                        { TensorNames.MemorySize, memorySize },
+                        { TensorNames.IsContinuousControl, isContinuousInt },
+                        { TensorNames.ActionOutputShape, actionSize }
+                    })
+                );
+                failedModelChecks.AddRange(
+                    CheckInputTensorPresence(model, brainParameters, memorySize, isContinuous, sensorComponents)
+                );
+                failedModelChecks.AddRange(
+                        CheckOutputTensorPresence(model, memorySize))
+                    ;
+                failedModelChecks.AddRange(
+                    CheckInputTensorShape(model, brainParameters, sensorComponents)
+                );
+                failedModelChecks.AddRange(
+                    CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
+                );
+            }
+            catch (Exception e)
+            {
+                Debug.Log(outString);
+                throw e;
             }
 
-            failedModelChecks.AddRange(
-                CheckIntScalarPresenceHelper(new Dictionary<string, int>()
-                {
-                    {TensorNames.MemorySize, memorySize},
-                    {TensorNames.IsContinuousControl, isContinuousInt},
-                    {TensorNames.ActionOutputShape, actionSize}
-                })
-            );
-            failedModelChecks.AddRange(
-                CheckInputTensorPresence(model, brainParameters, memorySize, isContinuous, sensorComponents)
-            );
-            failedModelChecks.AddRange(
-                CheckOutputTensorPresence(model, memorySize))
-            ;
-            failedModelChecks.AddRange(
-                CheckInputTensorShape(model, brainParameters, sensorComponents)
-            );
-            failedModelChecks.AddRange(
-                CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
-            );
             return failedModelChecks;
         }
 
