@@ -119,7 +119,8 @@ namespace MLAgents.InferenceBrain
 
             names.Add(TensorNames.ActionOutput);
 
-            var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            //var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var memory = 0;
             if (memory > 0)
             {
                 foreach (var mem in model.memories)
