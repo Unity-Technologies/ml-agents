@@ -177,7 +177,10 @@ class TrainerController(object):
         for brain_name, trainer in self.trainers.items():
             # Write training statistics to Tensorboard.
             delta_train_start = time() - self.training_start_time
-            if self.meta_curriculum is not None:
+            if (
+                self.meta_curriculum
+                and brain_name in self.meta_curriculum.brains_to_curriculums
+            ):
                 lesson_num = self.meta_curriculum.brains_to_curriculums[
                     brain_name
                 ].lesson_num

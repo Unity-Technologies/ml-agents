@@ -122,7 +122,7 @@ def trainer_controller_with_take_step_mocks(basic_trainer_controller):
 
     processor_mock = MagicMock()
 
-    tc = basic_trainer_controller()
+    tc = basic_trainer_controller
     tc.trainers = {"testbrain": trainer_mock}
     tc.managers = {"testbrain": AgentManager(processor=processor_mock)}
 
