@@ -33,6 +33,7 @@ namespace MLAgents
             EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
+            EditorGUILayout.PropertyField(so.FindProperty("m_useChildSensors"), true);
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())
@@ -58,7 +59,15 @@ namespace MLAgents
             Model barracudaModel = null;
             var model = (NNModel)serializedObject.FindProperty("m_Model").objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
-            var sensorComponents = behaviorParameters.GetComponents<SensorComponent>();
+            SensorComponent[] sensorComponents;
+            if(behaviorParameters.useChildSensors)
+            {
+                sensorComponents = behaviorParameters.GetComponentsInChildren<SensorComponent>();
+            }
+            else
+            {
+                sensorComponents = behaviorParameters.GetComponents<SensorComponent>();
+            }
             var brainParameters = behaviorParameters.brainParameters;
             if (model != null)
             {

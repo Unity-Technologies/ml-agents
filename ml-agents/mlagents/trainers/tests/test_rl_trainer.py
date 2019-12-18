@@ -1,5 +1,4 @@
 import unittest.mock as mock
-import pytest
 import yaml
 import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
@@ -7,7 +6,6 @@ from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 
 
-@pytest.fixture
 def dummy_config():
     return yaml.safe_load(
         """
