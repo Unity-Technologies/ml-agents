@@ -206,18 +206,21 @@ class LearningModel(object):
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
+        # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
+        # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
         steps_increment = tf.shape(vector_input)[0]
-
         total_new_steps = tf.add(self.normalization_steps, steps_increment)
 
-        delta = tf.subtract(vector_input, self.running_mean)
+        # Compute the incremental update and divide by the number of new steps.
+        input_to_old_mean = tf.subtract(vector_input, self.running_mean)
         new_mean = self.running_mean + tf.reduce_sum(
-            delta / tf.cast(total_new_steps, dtype=tf.float32), axis=0
+            input_to_old_mean / tf.cast(total_new_steps, dtype=tf.float32), axis=0
         )
-
-        delta2 = tf.subtract(vector_input, new_mean)
-        new_variance = self.running_variance + tf.reduce_sum(delta2 * delta, axis=0)
-
+        # Compute difference of input to the new mean for Welford update
+        input_to_new_mean = tf.subtract(vector_input, new_mean)
+        new_variance = self.running_variance + tf.reduce_sum(
+            input_to_new_mean * input_to_old_mean, axis=0
+        )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
         update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
