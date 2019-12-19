@@ -41,6 +41,7 @@ def dummy_config():
         sequence_length: 64
         summary_freq: 1000
         use_recurrent: false
+        normalize: true
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
@@ -431,6 +432,71 @@ def test_process_trajectory(dummy_config):
         for agent in reward.values():
             assert agent == 0
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
+
+
+def test_normalization(dummy_config):
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    time_horizon = 6
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    # Change half of the obs to 0
+    for i in range(3):
+        trajectory.steps[i].obs[0] = np.zeros(1)
+    trainer.process_trajectory(trajectory)
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = trainer.ppo_policy.sess.run(
+        [
+            trainer.policy.model.normalization_steps,
+            trainer.policy.model.running_mean,
+            trainer.policy.model.running_variance,
+        ]
+    )
+
+    assert steps == 6
+    assert mean[0] == 0.5
+    # Note: variance is divided by number of steps, and initialized to 1 to avoid
+    # divide by 0. The right answer is 0.25
+    assert (variance[0] - 1) / steps == 0.25
+
+    # Make another update, this time with all 0's
+    time_horizon = 10
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = trainer.ppo_policy.sess.run(
+        [
+            trainer.policy.model.normalization_steps,
+            trainer.policy.model.running_mean,
+            trainer.policy.model.running_variance,
+        ]
+    )
+
+    assert steps == 16
+    assert mean[0] == 0.8125
+    assert (variance[0] - 1) / steps == pytest.approx(0.152, abs=0.01)
 
 
 if __name__ == "__main__":

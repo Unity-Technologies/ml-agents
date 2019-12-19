@@ -187,7 +187,7 @@ class LearningModel(object):
             [],
             trainable=False,
             dtype=tf.int32,
-            initializer=tf.ones_initializer(),
+            initializer=tf.zeros_initializer(),
         )
         self.running_mean = tf.get_variable(
             "running_mean",
