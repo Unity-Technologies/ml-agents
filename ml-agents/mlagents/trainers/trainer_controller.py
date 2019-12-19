@@ -3,6 +3,7 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import sys
 import json
 import logging
 from typing import Dict, List, Optional, Set, NamedTuple
@@ -214,10 +215,8 @@ class TrainerController(object):
                             processor=AgentProcessor(
                                 trainer,
                                 trainer.policy,
-                                trainer.parameters["time_horizon"]
-                                if "time_horizon" in trainer.parameters
-                                else None,
                                 trainer.stats_reporter,
+                                trainer.parameters.get("time_horizon", sys.maxsize),
                             )
                         )
                         self.managers[name] = agent_manager
