@@ -456,7 +456,7 @@ def test_normalization(dummy_config):
     )
     # Change half of the obs to 0
     for i in range(3):
-        trajectory.steps[i].obs[0] = np.zeros(1)
+        trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
     trainer.process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
