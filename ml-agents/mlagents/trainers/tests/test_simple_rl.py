@@ -18,6 +18,7 @@ from mlagents_envs.base_env import (
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.trainers.stats import StatsReporter
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
 BRAIN_NAME = __name__
@@ -191,7 +192,7 @@ def _check_environment_trains(
         run_id = "id"
         save_freq = 99999
         seed = 1337
-
+        StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         trainer_config = yaml.safe_load(config)
         env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
         trainer_factory = TrainerFactory(

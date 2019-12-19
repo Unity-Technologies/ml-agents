@@ -3,9 +3,10 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import sys
 import json
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -21,6 +22,11 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.agent_processor import AgentProcessor
+
+
+class AgentManager(NamedTuple):
+    processor: AgentProcessor
 
 
 class TrainerController(object):
@@ -49,6 +55,7 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
+        self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
@@ -175,15 +182,11 @@ class TrainerController(object):
                 self.meta_curriculum
                 and brain_name in self.meta_curriculum.brains_to_curriculums
             ):
-                trainer.write_summary(
-                    global_step,
-                    delta_train_start,
-                    lesson_num=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].lesson_num,
-                )
-            else:
-                trainer.write_summary(global_step, delta_train_start)
+                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    brain_name
+                ].lesson_num
+                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
+            trainer.write_summary(global_step, delta_train_start)
 
     def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
         self.trainers[trainer.brain_name] = trainer
@@ -208,6 +211,15 @@ class TrainerController(object):
                             env_manager.external_brains[name]
                         )
                         self.start_trainer(trainer, env_manager)
+                        agent_manager = AgentManager(
+                            processor=AgentProcessor(
+                                trainer,
+                                trainer.policy,
+                                trainer.stats_reporter,
+                                trainer.parameters.get("time_horizon", sys.maxsize),
+                            )
+                        )
+                        self.managers[name] = agent_manager
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
@@ -279,14 +291,11 @@ class TrainerController(object):
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 if step_info.has_actions_for_brain(brain_name):
-                    trainer.add_experiences(
+                    _processor = self.managers[brain_name].processor
+                    _processor.add_experiences(
                         step_info.previous_all_brain_info[brain_name],
                         step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
-                    )
-                    trainer.process_experiences(
-                        step_info.previous_all_brain_info[brain_name],
-                        step_info.current_all_brain_info[brain_name],
                     )
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:

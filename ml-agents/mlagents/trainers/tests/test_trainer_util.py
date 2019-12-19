@@ -97,7 +97,7 @@ def test_initialize_trainer_parameters_override_defaults(
 
     base_config = dummy_config_with_override
     expected_config = base_config["default"]
-    expected_config["summary_path"] = summaries_dir + f"/{run_id}_testbrain"
+    expected_config["summary_path"] = f"{run_id}_testbrain"
     expected_config["model_path"] = model_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
@@ -163,7 +163,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
 
     base_config = dummy_config
     expected_config = base_config["default"]
-    expected_config["summary_path"] = summaries_dir + f"/{run_id}_testbrain"
+    expected_config["summary_path"] = f"{run_id}_testbrain"
     expected_config["model_path"] = model_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
