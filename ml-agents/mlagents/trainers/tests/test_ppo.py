@@ -474,7 +474,7 @@ def test_normalization(dummy_config):
     # divide by 0. The right answer is 0.25
     assert (variance[0] - 1) / steps == 0.25
 
-    # Make another update, this time with all 0's
+    # Make another update, this time with all 1's
     time_horizon = 10
     trajectory = make_fake_trajectory(
         length=time_horizon,
