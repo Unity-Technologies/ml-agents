@@ -85,9 +85,7 @@ class Trainer(object):
                 s = sess.run(s_op)
                 self.stats_reporter.write_text(s, self.get_step)
         except Exception:
-            LOGGER.info(
-                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
-            )
+            LOGGER.info("Could not write text summary for Tensorboard.")
             pass
 
     def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
