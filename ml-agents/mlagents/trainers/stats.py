@@ -61,6 +61,7 @@ class TensorboardWriter(StatsWriter):
 
 class CSVWriter(StatsWriter):
     def __init__(self, base_dir: str):
+        # We need to keep track of the fields in the CSV, as all rows need the same fields.
         self.csv_fields: Dict[str, List[str]] = {}
         self.base_dir: str = base_dir
 
