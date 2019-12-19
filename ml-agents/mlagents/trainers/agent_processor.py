@@ -1,6 +1,6 @@
+import sys
 from typing import List, Dict
 from collections import defaultdict, Counter
-import numpy as np
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
@@ -21,8 +21,8 @@ class AgentProcessor:
         self,
         trainer: Trainer,
         policy: TFPolicy,
-        max_trajectory_length: int,
         stats_reporter: StatsReporter,
+        max_trajectory_length: int = sys.maxsize,
     ):
         """
         Create an AgentProcessor.
@@ -42,13 +42,8 @@ class AgentProcessor:
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
         self.stats_reporter = stats_reporter
-        if max_trajectory_length:
-            self.max_trajectory_length = max_trajectory_length
-            self.ignore_max_length = False
-        else:
-            self.max_trajectory_length = 0
-            self.ignore_max_length = True
         self.trainer = trainer
+        self.max_trajectory_length = max_trajectory_length
 
     def add_experiences(
         self,
@@ -75,14 +70,13 @@ class AgentProcessor:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
         # Store the environment reward
-        tmp_environment_reward = np.array(next_info.rewards, dtype=np.float32)
+        tmp_environment_reward = next_info.rewards
 
-        for agent_id in next_info.agents:
+        for next_idx, agent_id in enumerate(next_info.agents):
             stored_info = self.last_brain_info.get(agent_id, None)
             if stored_info is not None:
                 stored_take_action_outputs = self.last_take_action_outputs[agent_id]
                 idx = stored_info.agents.index(agent_id)
-                next_idx = next_info.agents.index(agent_id)
                 obs = []
                 if not stored_info.local_done[idx]:
                     for i, _ in enumerate(stored_info.visual_observations):
@@ -125,8 +119,7 @@ class AgentProcessor:
                 if (
                     next_info.local_done[next_idx]
                     or (
-                        not self.ignore_max_length
-                        and len(self.experience_buffers[agent_id])
+                        len(self.experience_buffers[agent_id])
                         >= self.max_trajectory_length
                     )
                 ) and len(self.experience_buffers[agent_id]) > 0:
