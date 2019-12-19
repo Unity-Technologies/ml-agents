@@ -39,8 +39,7 @@ class TensorboardWriter(StatsWriter):
             filewriter_dir = "{basedir}/{category}".format(
                 basedir=self.base_dir, category=category
             )
-            if not os.path.exists(filewriter_dir):
-                os.makedirs(filewriter_dir)
+            os.makedirs(filewriter_dir, exist_ok=True)
             self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
 
     def write_text(self, category: str, text: str, step: int) -> None:

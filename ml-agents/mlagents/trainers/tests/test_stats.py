@@ -1,5 +1,7 @@
 import unittest.mock as mock
 import os
+import pytest
+import tempfile
 
 from mlagents.trainers.stats import StatsReporter, TensorboardWriter
 
@@ -27,8 +29,8 @@ def test_stat_reporter_add_summary_write():
     assert statssummary2.num == 10
     assert statssummary1.mean == 4.5
     assert statssummary2.mean == 4.5
-    assert round(statssummary1.std, 1) == 2.9
-    assert round(statssummary2.std, 1) == 2.9
+    assert statssummary1.std == pytest.approx(2.9, abs=0.1)
+    assert statssummary2.std == pytest.approx(2.9, abs=0.1)
 
     # Test write_stats
     step = 10
@@ -56,21 +58,23 @@ def test_stat_reporter_text():
 @mock.patch("mlagents.tf_utils.tf.summary.FileWriter")
 def test_tensorboard_writer(mock_filewriter, mock_summary):
     # Test write_stats
-    base_dir = "base_dir"
     category = "category1"
-    tb_writer = TensorboardWriter(base_dir)
-    tb_writer.write_stats("category1", "key1", 1.0, 10)
+    with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
+        tb_writer = TensorboardWriter(base_dir)
+        tb_writer.write_stats("category1", "key1", 1.0, 10)
 
-    # Test that the filewriter has been created and the directory has been created.
-    filewriter_dir = "{basedir}/{category}".format(basedir=base_dir, category=category)
-    assert os.path.exists(filewriter_dir)
-    mock_filewriter.assert_called_once_with(filewriter_dir)
+        # Test that the filewriter has been created and the directory has been created.
+        filewriter_dir = "{basedir}/{category}".format(
+            basedir=base_dir, category=category
+        )
+        assert os.path.exists(filewriter_dir)
+        mock_filewriter.assert_called_once_with(filewriter_dir)
 
-    # Test that the filewriter was written to and the summary was added.
-    mock_summary.return_value.value.add.assert_called_once_with(
-        tag="key1", simple_value=1.0
-    )
-    mock_filewriter.return_value.add_summary.assert_called_once_with(
-        mock_summary.return_value, 10
-    )
-    mock_filewriter.return_value.flush.assert_called_once()
+        # Test that the filewriter was written to and the summary was added.
+        mock_summary.return_value.value.add.assert_called_once_with(
+            tag="key1", simple_value=1.0
+        )
+        mock_filewriter.return_value.add_summary.assert_called_once_with(
+            mock_summary.return_value, 10
+        )
+        mock_filewriter.return_value.flush.assert_called_once()
