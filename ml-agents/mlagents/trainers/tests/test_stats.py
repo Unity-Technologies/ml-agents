@@ -2,8 +2,14 @@ import unittest.mock as mock
 import os
 import pytest
 import tempfile
+import csv
 
-from mlagents.trainers.stats import StatsReporter, TensorboardWriter
+from mlagents.trainers.stats import (
+    StatsReporter,
+    TensorboardWriter,
+    CSVWriter,
+    StatsSummary,
+)
 
 
 def test_stat_reporter_add_summary_write():
@@ -35,8 +41,12 @@ def test_stat_reporter_add_summary_write():
     # Test write_stats
     step = 10
     statsreporter1.write_stats(step)
-    mock_writer1.write_stats.assert_called_once_with("category1", "key1", 4.5, step)
-    mock_writer2.write_stats.assert_called_once_with("category1", "key1", 4.5, step)
+    mock_writer1.write_stats.assert_called_once_with(
+        "category1", {"key1": statssummary1}, step
+    )
+    mock_writer2.write_stats.assert_called_once_with(
+        "category1", {"key1": statssummary1}, step
+    )
 
 
 def test_stat_reporter_text():
@@ -61,7 +71,8 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
     category = "category1"
     with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
         tb_writer = TensorboardWriter(base_dir)
-        tb_writer.write_stats("category1", "key1", 1.0, 10)
+        statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+        tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
 
         # Test that the filewriter has been created and the directory has been created.
         filewriter_dir = "{basedir}/{category}".format(
@@ -78,3 +89,36 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
             mock_summary.return_value, 10
         )
         mock_filewriter.return_value.flush.assert_called_once()
+
+
+def test_csv_writer():
+    # Test write_stats
+    category = "category1"
+    with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
+        csv_writer = CSVWriter(base_dir)
+        statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+        csv_writer.write_stats(
+            "category1", {"key1": statssummary1, "key2": statssummary1}, 10
+        )
+        csv_writer.write_stats(
+            "category1", {"key1": statssummary1, "key2": statssummary1}, 20
+        )
+
+        # Test that the filewriter has been created and the directory has been created.
+        filewriter_dir = "{basedir}/{category}.csv".format(
+            basedir=base_dir, category=category
+        )
+        assert os.path.exists(filewriter_dir)
+        with open(filewriter_dir) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=",")
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    assert "key1" in row
+                    assert "key2" in row
+                    assert "Steps" in row
+                    line_count += 1
+                else:
+                    assert len(row) == 3
+                    line_count += 1
+            assert line_count == 3

@@ -2,9 +2,16 @@ from collections import defaultdict
 from typing import List, Dict, NamedTuple
 import numpy as np
 import abc
+import csv
 import os
 
 from mlagents.tf_utils import tf
+
+
+class StatsSummary(NamedTuple):
+    mean: float
+    std: float
+    num: int
 
 
 class StatsWriter(abc.ABC):
@@ -14,7 +21,9 @@ class StatsWriter(abc.ABC):
     """
 
     @abc.abstractmethod
-    def write_stats(self, category: str, key: str, value: float, step: int) -> None:
+    def write_stats(
+        self, category: str, values: Dict[str, StatsSummary], step: int
+    ) -> None:
         pass
 
     @abc.abstractmethod
@@ -27,12 +36,15 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, tf.summary.FileWriter] = {}
         self.base_dir: str = base_dir
 
-    def write_stats(self, category: str, key: str, value: float, step: int) -> None:
+    def write_stats(
+        self, category: str, values: Dict[str, StatsSummary], step: int
+    ) -> None:
         self._maybe_create_summary_writer(category)
-        summary = tf.Summary()
-        summary.value.add(tag="{}".format(key), simple_value=value)
-        self.summary_writers[category].add_summary(summary, step)
-        self.summary_writers[category].flush()
+        for key, value in values.items():
+            summary = tf.Summary()
+            summary.value.add(tag="{}".format(key), simple_value=value.mean)
+            self.summary_writers[category].add_summary(summary, step)
+            self.summary_writers[category].flush()
 
     def _maybe_create_summary_writer(self, category: str) -> None:
         if category not in self.summary_writers:
@@ -47,10 +59,42 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers[category].add_summary(text, step)
 
 
-class StatsSummary(NamedTuple):
-    mean: float
-    std: float
-    num: int
+class CSVWriter(StatsWriter):
+    def __init__(self, base_dir: str):
+        self.csv_fields: Dict[str, List[str]] = {}
+        self.base_dir: str = base_dir
+
+    def write_stats(
+        self, category: str, values: Dict[str, StatsSummary], step: int
+    ) -> None:
+        self._maybe_create_csv_file(category, list(values.keys()))
+        row = [str(step)]
+        # Only record the stats that showed up in the first row.
+        for key in self.csv_fields[category]:
+            _val = values.get(key, None)
+            row.append(str(_val.mean) if _val else "None")
+        with open(self._get_filepath(category), "a") as file:
+            writer = csv.writer(file)
+            writer.writerow(row)
+
+    def _maybe_create_csv_file(self, category: str, keys: List[str]) -> None:
+        if category not in self.csv_fields:
+            summary_dir = self.base_dir
+            os.makedirs(summary_dir, exist_ok=True)
+            self.csv_fields[category] = keys
+            with open(self._get_filepath(category), "w") as file:
+                title_row = ["Steps"]
+                title_row.extend(keys)
+                writer = csv.writer(file)
+                writer.writerow(title_row)
+                self.csv_fields[category] = keys
+
+    def _get_filepath(self, category: str) -> str:
+        file_dir = os.path.join(self.base_dir, category + ".csv")
+        return file_dir
+
+    def write_text(self, category: str, text: str, step: int) -> None:
+        pass
 
 
 class StatsReporter:
@@ -87,11 +131,13 @@ class StatsReporter:
         :param category: The category which to write out the stats.
         :param step: Training step which to write these stats as.
         """
+        values: Dict[str, StatsSummary] = {}
         for key in StatsReporter.stats_dict[self.category]:
             if len(StatsReporter.stats_dict[self.category][key]) > 0:
-                stat_mean = float(np.mean(StatsReporter.stats_dict[self.category][key]))
-                for writer in StatsReporter.writers:
-                    writer.write_stats(self.category, key, stat_mean, step)
+                stat_summary = self.get_stats_summaries(key)
+                values[key] = stat_summary
+        for writer in StatsReporter.writers:
+            writer.write_stats(self.category, values, step)
         del StatsReporter.stats_dict[self.category]
 
     def write_text(self, text: str, step: int) -> None:

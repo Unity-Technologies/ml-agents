@@ -17,7 +17,7 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.exception import TrainerError
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.trainers.stats import TensorboardWriter, StatsReporter
+from mlagents.trainers.stats import TensorboardWriter, CSVWriter, StatsReporter
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
@@ -251,8 +251,10 @@ def run_training(
     port = options.base_port + (sub_id * options.num_envs)
 
     # Configure Tensorboard Writers and StatsReporter
+    csv_writer = CSVWriter(summaries_dir)
     tb_writer = TensorboardWriter(summaries_dir)
     StatsReporter.add_writer(tb_writer)
+    StatsReporter.add_writer(csv_writer)
 
     if options.env_path is None:
         port = 5004  # This is the in Editor Training Port
