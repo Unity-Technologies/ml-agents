@@ -7,23 +7,23 @@ namespace MLAgents.InferenceBrain
     {
         public const string BatchSizePlaceholder = "batch_size";
         public const string SequenceLengthPlaceholder = "sequence_length";
-        public const string VectorObservationPlacholder = "vector_observation:0"; // HACK
+        public const string VectorObservationPlacholder = "vector_observation";
         public const string RecurrentInPlaceholder = "recurrent_in";
         public const string recurrentInPlaceholderH = "recurrent_in_h";
         public const string recurrentInPlaceholderC = "recurrent_in_c";
         public const string VisualObservationPlaceholderPrefix = "visual_observation_";
         public const string PreviousActionPlaceholder = "prev_action";
         public const string ActionMaskPlaceholder = "action_masks";
-        public const string RandomNormalEpsilonPlaceholder = "epsilon:0"; // HACK
+        public const string RandomNormalEpsilonPlaceholder = "epsilon";
 
         public const string ValueEstimateOutput = "value_estimate";
         public const string RecurrentOutput = "recurrent_out";
         public const string recurrentOutputH = "recurrent_out_h";
         public const string recurrentOutputC = "recurrent_out_c";
-        public const string MemorySize = "memory_size:0"; // HACK
+        public const string MemorySize = "memory_size";
         public const string VersionNumber = "version_number";
         public const string IsContinuousControl = "is_continuous_control";
         public const string ActionOutputShape = "action_output_shape";
-        public const string ActionOutput = "action:0"; // HACK
+        public const string ActionOutput = "action";
     }
 }
