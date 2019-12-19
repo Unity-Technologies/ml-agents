@@ -370,7 +370,7 @@ class TFPolicy(Policy):
     def _get_input_node_names(self) -> List[str]:
         input_names = []
         for name in ["epsilon", "action_masks", "vector_observation"]:
-            full_name = self._is_graph_node(name)
+            full_name = self._get_tensor_full_name(name)
             if full_name:
                 input_names.append(full_name)
 
@@ -378,7 +378,7 @@ class TFPolicy(Policy):
         vis_index = 0
         while True:
             vis_node_name = f"visual_observation_{vis_index}"
-            vis_full_name = self._is_graph_node(vis_node_name)
+            vis_full_name = self._get_tensor_full_name(vis_node_name)
             if vis_full_name:
                 input_names.append(vis_full_name)
             else:
@@ -389,12 +389,16 @@ class TFPolicy(Policy):
     def _get_output_node_names(self) -> List[str]:
         output_names = []
         for name in self.POSSIBLE_OUTPUT_NODES:
-            full_name = self._is_graph_node(name)
+            full_name = self._get_tensor_full_name(name)
             if full_name:
                 output_names.append(full_name)
         return output_names
 
-    def _is_graph_node(self, name: str) -> Optional[str]:
+    def _get_tensor_full_name(self, name: str) -> Optional[str]:
+        """
+        See if name + ":0" exists as a tensor in the graph.
+        If so, return name + ":0", otherwise return None
+        """
         full_name = f"{name}:0"
         try:
             self.graph.get_tensor_by_name(full_name)
