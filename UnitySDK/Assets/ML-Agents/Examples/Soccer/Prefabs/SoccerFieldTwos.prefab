@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 114734187185382186}
   - component: {fileID: 114492261207303438}
   - component: {fileID: 114320493772006642}
+  - component: {fileID: 114273769854953772}
   m_Layer: 13
   m_Name: PurpleStriker
   m_TagString: purpleAgent
@@ -181,6 +182,7 @@ GameObject:
   - component: {fileID: 114105115387635628}
   - component: {fileID: 114698199869072806}
   - component: {fileID: 114402225209785518}
+  - component: {fileID: 114418861898808642}
   m_Layer: 11
   m_Name: BlueGoalie
   m_TagString: blueAgent
@@ -201,6 +203,7 @@ GameObject:
   - component: {fileID: 114387866097048300}
   - component: {fileID: 114850431417842684}
   - component: {fileID: 114516244030127556}
+  - component: {fileID: 114398438888130450}
   m_Layer: 13
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -815,6 +818,7 @@ GameObject:
   - component: {fileID: 114529615399004778}
   - component: {fileID: 114284769194328828}
   - component: {fileID: 114742734491650780}
+  - component: {fileID: 114803290947599792}
   m_Layer: 11
   m_Name: PurpleGoalie
   m_TagString: purpleAgent
@@ -1366,7 +1370,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1141134673700168}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -40, y: 0, z: -51}
+  m_LocalPosition: {x: 0, y: 0, z: -51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4540201673231058}
@@ -3641,8 +3645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 3
-    numStackedVectorObservations: 3
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -3680,6 +3684,30 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
+--- !u!114 &114273769854953772
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095606497496374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: PurpleVerticalBallRayPerceptionSensor
+  detectableTags:
+  - ball
+  raysPerDirection: 8
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 2
+  endVerticalOffset: 2
 --- !u!114 &114273807544954564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3734,6 +3762,7 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
+  - ball
   raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -3755,7 +3784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleBackwardPerceptionSensor
+  sensorName: PurpleBackwardRayPerceptionSensor
   detectableTags:
   - purpleGoal
   - blueGoal
@@ -3784,8 +3813,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 3
-    numStackedVectorObservations: 3
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -3795,6 +3824,30 @@ MonoBehaviour:
   m_BehaviorName: Soccer
   m_TeamID: 0
   m_useChildSensors: 1
+--- !u!114 &114398438888130450
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1131626411948014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueVerticalBallRayPerceptionSensor
+  detectableTags:
+  - ball
+  raysPerDirection: 8
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 2
+  endVerticalOffset: 2
 --- !u!114 &114402225209785518
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3813,6 +3866,7 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
+  - ball
   raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -3823,6 +3877,30 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
+--- !u!114 &114418861898808642
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1124213441168130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueVerticalBallRayPerceptionSensor
+  detectableTags:
+  - ball
+  raysPerDirection: 8
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 2
+  endVerticalOffset: 2
 --- !u!114 &114492261207303438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3861,6 +3939,7 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
+  - ball
   raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -3883,8 +3962,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 3
-    numStackedVectorObservations: 3
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -3965,8 +4044,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 3
-    numStackedVectorObservations: 3
+    vectorObservationSize: 0
+    numStackedVectorObservations: 1
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -4022,6 +4101,7 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
+  - ball
   raysPerDirection: 12
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -4032,6 +4112,30 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
+--- !u!114 &114803290947599792
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1890219402901316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: PurpleVerticalBallRayPerceptionSensor
+  detectableTags:
+  - ball
+  raysPerDirection: 8
+  maxRayDegrees: 70
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 3
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 2
+  endVerticalOffset: 2
 --- !u!114 &114848654067075804
 MonoBehaviour:
   m_ObjectHideFlags: 1

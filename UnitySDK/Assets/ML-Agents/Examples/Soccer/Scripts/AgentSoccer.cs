@@ -80,19 +80,19 @@ public class AgentSoccer : Agent
         playerState.playerIndex = m_PlayerIndex;
     }
 
-    public override void CollectObservations()
-    {
-          //float relX = area.ball.transform.localPosition.x - transform.localPosition.x;
-          //float relY = area.ball.transform.localPosition.y - transform.localPosition.y;
-          //float relZ = area.ball.transform.localPosition.z - transform.localPosition.z;
-    
-          //Vector3 relVec = new Vector3(relX, relY, relZ);
-          Vector3 dirToTarget = area.ball.transform.localPosition - transform.localPosition;
-          AddVectorObs(transform.InverseTransformDirection(dirToTarget));
-          //AddVectorObs(new Vector3(relX, relY, relZ));
-          //AddVectorObs(transform.forward);
-    //      AddVectorObs(area.ball.transform.localPosition.y);
-    }
+    //public override void CollectObservations()
+    //{
+    //      //float relX = area.ball.transform.localPosition.x - transform.localPosition.x;
+    //      //float relY = area.ball.transform.localPosition.y - transform.localPosition.y;
+    //      //float relZ = area.ball.transform.localPosition.z - transform.localPosition.z;
+    //
+    //      //Vector3 relVec = new Vector3(relX, relY, relZ);
+    //      Vector3 dirToTarget = area.ball.transform.localPosition - transform.localPosition;
+    //      AddVectorObs(transform.InverseTransformDirection(dirToTarget));
+    //      //AddVectorObs(new Vector3(relX, relY, relZ));
+    //      //AddVectorObs(transform.forward);
+    ////      AddVectorObs(area.ball.transform.localPosition.y);
+    //}
 
     public void MoveAgent(float[] act)
     {
@@ -177,7 +177,7 @@ public class AgentSoccer : Agent
         var force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
-            AddReward(1f / 3000f);
+            //AddReward(1f / 3000f);
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);

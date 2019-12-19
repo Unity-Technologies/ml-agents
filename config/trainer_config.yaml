@@ -101,6 +101,7 @@ Soccer:
     max_steps: 5e7
     hidden_units: 512
     num_layers: 2
+    learning_rate_schedule: constant
     ghost:
         window: 20
         current_prob: .7
@@ -183,9 +184,7 @@ Tennis_SAC:
     init_entcoef: 1.0
     learning_rate: 3.0e-4
     learning_rate_schedule: constant
-    max_steps: 5.0e4
     memory_size: 256
-    normalize: false
     num_update: 1
     train_interval: 1
     num_layers: 2
