@@ -30,9 +30,11 @@ class RLTrainer(Trainer):
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
-        self.collected_rewards = {"environment": defaultdict(lambda: 0)}
-        self.update_buffer = AgentBuffer()
-        self.episode_steps = defaultdict(lambda: 0)
+        self.collected_rewards: Dict[str, Dict[str, int]] = {
+            "environment": defaultdict(lambda: 0)
+        }
+        self.update_buffer: AgentBuffer = AgentBuffer()
+        self.episode_steps: Dict[str, int] = defaultdict(lambda: 0)
 
     def end_episode(self) -> None:
         """
