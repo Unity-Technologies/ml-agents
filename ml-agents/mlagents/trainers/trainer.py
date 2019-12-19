@@ -1,19 +1,18 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Deque, Any
-import os
 
 from mlagents.tf_utils import tf
 
-import numpy as np
-from collections import deque, defaultdict
+from collections import deque
 
-from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents_envs.exception import UnityException
 from mlagents_envs.timers import set_gauge
 from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.brain import BrainParameters, BrainInfo
+from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.brain import BrainParameters
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -50,15 +49,12 @@ class Trainer(object):
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
-        if not os.path.exists(self.summary_path):
-            os.makedirs(self.summary_path)
+        self.stats_reporter = StatsReporter(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
-        self.stats: Dict[str, List] = defaultdict(list)
         self.trainer_metrics = TrainerMetrics(
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
-        self.summary_writer = tf.summary.FileWriter(self.summary_path)
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy
         self.step: int = 0
@@ -70,6 +66,27 @@ class Trainer(object):
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
+
+    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
+        """
+        Saves text to Tensorboard.
+        Note: Only works on tensorflow r1.2 or above.
+        :param key: The name of the text.
+        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+        """
+        try:
+            with tf.Session() as sess:
+                s_op = tf.summary.text(
+                    key,
+                    tf.convert_to_tensor(
+                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                    ),
+                )
+                s = sess.run(s_op)
+                self.stats_reporter.write_text(s, self.get_step)
+        except Exception:
+            LOGGER.info("Could not write text summary for Tensorboard.")
+            pass
 
     def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
@@ -160,13 +177,10 @@ class Trainer(object):
         """
         self.trainer_metrics.write_training_metrics()
 
-    def write_summary(
-        self, global_step: int, delta_train_start: float, lesson_num: int = 0
-    ) -> None:
+    def write_summary(self, global_step: int, delta_train_start: float) -> None:
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
-        :param lesson_num: Current lesson number in curriculum.
         :param global_step: The number of steps the simulation has been going for
         """
         if (
@@ -179,8 +193,10 @@ class Trainer(object):
                 else "Not Training."
             )
             step = min(self.get_step, self.get_max_steps)
-            if len(self.stats["Environment/Cumulative Reward"]) > 0:
-                mean_reward = np.mean(self.stats["Environment/Cumulative Reward"])
+            stats_summary = self.stats_reporter.get_stats_summaries(
+                "Environment/Cumulative Reward"
+            )
+            if stats_summary.num > 0:
                 LOGGER.info(
                     " {}: {}: Step: {}. "
                     "Time Elapsed: {:0.3f} s "
@@ -191,76 +207,25 @@ class Trainer(object):
                         self.brain_name,
                         step,
                         delta_train_start,
-                        mean_reward,
-                        np.std(self.stats["Environment/Cumulative Reward"]),
+                        stats_summary.mean,
+                        stats_summary.std,
                         is_training,
                     )
                 )
-                set_gauge(f"{self.brain_name}.mean_reward", mean_reward)
+                set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
             else:
                 LOGGER.info(
                     " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
                         self.run_id, self.brain_name, step, is_training
                     )
                 )
-            summary = tf.Summary()
-            for key in self.stats:
-                if len(self.stats[key]) > 0:
-                    stat_mean = float(np.mean(self.stats[key]))
-                    summary.value.add(tag="{}".format(key), simple_value=stat_mean)
-                    self.stats[key] = []
-            summary.value.add(tag="Environment/Lesson", simple_value=lesson_num)
-            self.summary_writer.add_summary(summary, step)
-            self.summary_writer.flush()
+            self.stats_reporter.write_stats(int(step))
 
-    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
+    def process_trajectory(self, trajectory: Trajectory) -> None:
         """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            with tf.Session() as sess:
-                s_op = tf.summary.text(
-                    key,
-                    tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
-                    ),
-                )
-                s = sess.run(s_op)
-                self.summary_writer.add_summary(s, self.get_step)
-        except Exception:
-            LOGGER.info(
-                "Cannot write text summary for Tensorboard. Tensorflow version must be r1.2 or above."
-            )
-            pass
-
-    def add_experiences(
-        self,
-        name_behavior_id: str,
-        curr_info: BrainInfo,
-        next_info: BrainInfo,
-        take_action_outputs: ActionInfoOutputs,
-    ) -> None:
-        """
-        Adds experiences to each agent's experience history.
-        :param name_behavior_id: string policy identifier.
-        :param curr_info: current BrainInfo.
-        :param next_info: next BrainInfo.
-        :param take_action_outputs: The outputs of the Policy's get_action method.
-        """
-        raise UnityTrainerException("The add_experiences method was not implemented.")
-
-    def process_experiences(
-        self, name_behavior_id: str, current_info: BrainInfo, next_info: BrainInfo
-    ) -> None:
-        """
-        Checks agent histories for processing condition, and processes them as necessary.
+        Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
-        :param name_behavior_id: string policy identifier.
-        :param current_info: current BrainInfo.
-        :param next_info: next BrainInfo.
+        :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         raise UnityTrainerException(
             "The process_experiences method was not implemented."

@@ -1,43 +1,10 @@
 from unittest.mock import MagicMock, Mock, patch
-
-from mlagents.tf_utils import tf
-
-import yaml
 import pytest
 
-from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.tf_utils import tf
+from mlagents.trainers.trainer_controller import TrainerController, AgentManager
 from mlagents.trainers.subprocess_env_manager import EnvironmentStep
 from mlagents.trainers.sampler_class import SamplerManager
-
-
-@pytest.fixture
-def dummy_config():
-    return yaml.safe_load(
-        """
-        default:
-            trainer: ppo
-            batch_size: 32
-            beta: 5.0e-3
-            buffer_size: 512
-            epsilon: 0.2
-            gamma: 0.99
-            hidden_units: 128
-            lambd: 0.95
-            learning_rate: 3.0e-4
-            max_steps: 5.0e4
-            normalize: true
-            num_epoch: 5
-            num_layers: 2
-            time_horizon: 64
-            sequence_length: 64
-            summary_freq: 1000
-            use_recurrent: false
-            memory_size: 8
-            use_curiosity: false
-            curiosity_strength: 0.0
-            curiosity_enc_size: 1
-        """
-    )
 
 
 @pytest.fixture
@@ -76,14 +43,15 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     tensorflow_set_seed.assert_called_with(seed)
 
 
-def trainer_controller_with_start_learning_mocks():
+@pytest.fixture
+def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
     trainer_mock = MagicMock()
     trainer_mock.get_step = 0
     trainer_mock.get_max_steps = 5
     trainer_mock.parameters = {"some": "parameter"}
     trainer_mock.write_tensorboard_text = MagicMock()
 
-    tc = basic_trainer_controller()
+    tc = basic_trainer_controller
     tc.initialize_trainers = MagicMock()
     tc.trainers = {"testbrain": trainer_mock}
     tc.advance = MagicMock()
@@ -103,8 +71,10 @@ def trainer_controller_with_start_learning_mocks():
 
 
 @patch.object(tf, "reset_default_graph")
-def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
-    tc, trainer_mock = trainer_controller_with_start_learning_mocks()
+def test_start_learning_trains_forever_if_no_train_model(
+    tf_reset_graph, trainer_controller_with_start_learning_mocks
+):
+    tc, trainer_mock = trainer_controller_with_start_learning_mocks
     tc.train_model = False
 
     tf_reset_graph.return_value = None
@@ -123,8 +93,10 @@ def test_start_learning_trains_forever_if_no_train_model(tf_reset_graph):
 
 
 @patch.object(tf, "reset_default_graph")
-def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
-    tc, trainer_mock = trainer_controller_with_start_learning_mocks()
+def test_start_learning_trains_until_max_steps_then_saves(
+    tf_reset_graph, trainer_controller_with_start_learning_mocks
+):
+    tc, trainer_mock = trainer_controller_with_start_learning_mocks
     tf_reset_graph.return_value = None
 
     brain_info_mock = MagicMock()
@@ -140,21 +112,27 @@ def test_start_learning_trains_until_max_steps_then_saves(tf_reset_graph):
     tc._save_model.assert_called_once()
 
 
-def trainer_controller_with_take_step_mocks():
+@pytest.fixture
+def trainer_controller_with_take_step_mocks(basic_trainer_controller):
     trainer_mock = MagicMock()
     trainer_mock.get_step = 0
     trainer_mock.get_max_steps = 5
     trainer_mock.parameters = {"some": "parameter"}
     trainer_mock.write_tensorboard_text = MagicMock()
 
-    tc = basic_trainer_controller()
+    processor_mock = MagicMock()
+
+    tc = basic_trainer_controller
     tc.trainers = {"testbrain": trainer_mock}
+    tc.managers = {"testbrain": AgentManager(processor=processor_mock)}
 
     return tc, trainer_mock
 
 
-def test_take_step_adds_experiences_to_trainer_and_trains():
-    tc, trainer_mock = trainer_controller_with_take_step_mocks()
+def test_take_step_adds_experiences_to_trainer_and_trains(
+    trainer_controller_with_take_step_mocks
+):
+    tc, trainer_mock = trainer_controller_with_take_step_mocks
 
     brain_name = "testbrain"
     action_info_dict = {brain_name: MagicMock()}
@@ -171,25 +149,22 @@ def test_take_step_adds_experiences_to_trainer_and_trains():
     tc.brain_name_to_identifier[brain_name].add(brain_name)
 
     tc.advance(env_mock)
+
     env_mock.reset.assert_not_called()
     env_mock.step.assert_called_once()
-    trainer_mock.add_experiences.assert_called_once_with(
-        brain_name,
+
+    processor_mock = tc.managers[brain_name].processor
+    processor_mock.add_experiences.assert_called_once_with(
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
         new_step_info.brain_name_to_action_info[brain_name].outputs,
-    )
-    trainer_mock.process_experiences.assert_called_once_with(
-        brain_name,
-        new_step_info.previous_all_brain_info[brain_name],
-        new_step_info.current_all_brain_info[brain_name],
     )
     trainer_mock.update_policy.assert_called_once()
     trainer_mock.increment_step.assert_called_once()
 
 
-def test_take_step_if_not_training():
-    tc, trainer_mock = trainer_controller_with_take_step_mocks()
+def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
+    tc, trainer_mock = trainer_controller_with_take_step_mocks
     tc.train_model = False
 
     brain_name = "testbrain"
@@ -210,15 +185,10 @@ def test_take_step_if_not_training():
     tc.advance(env_mock)
     env_mock.reset.assert_not_called()
     env_mock.step.assert_called_once()
-    trainer_mock.add_experiences.assert_called_once_with(
-        brain_name,
+    processor_mock = tc.managers[brain_name].processor
+    processor_mock.add_experiences.assert_called_once_with(
         new_step_info.previous_all_brain_info[brain_name],
         new_step_info.current_all_brain_info[brain_name],
         new_step_info.brain_name_to_action_info[brain_name].outputs,
-    )
-    trainer_mock.process_experiences.assert_called_once_with(
-        brain_name,
-        new_step_info.previous_all_brain_info[brain_name],
-        new_step_info.current_all_brain_info[brain_name],
     )
     trainer_mock.advance.assert_called_once()

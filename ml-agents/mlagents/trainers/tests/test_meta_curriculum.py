@@ -153,7 +153,7 @@ META_CURRICULUM_CONFIG = """
         hidden_units: 128
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 100
+        max_steps: 200
         memory_size: 256
         normalize: false
         num_epoch: 3

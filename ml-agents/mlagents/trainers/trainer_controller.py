@@ -3,9 +3,10 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import sys
 import json
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, NamedTuple
 from collections import defaultdict
 
 import numpy as np
@@ -22,6 +23,11 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer, TrainerMetrics
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.agent_processor import AgentProcessor
+
+
+class AgentManager(NamedTuple):
+    processor: AgentProcessor
 
 
 class TrainerController(object):
@@ -51,6 +57,7 @@ class TrainerController(object):
         """
         self.trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
+        self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
@@ -177,15 +184,11 @@ class TrainerController(object):
                 self.meta_curriculum
                 and brain_name in self.meta_curriculum.brains_to_curriculums
             ):
-                trainer.write_summary(
-                    global_step,
-                    delta_train_start,
-                    lesson_num=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].lesson_num,
-                )
-            else:
-                trainer.write_summary(global_step, delta_train_start)
+                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    brain_name
+                ].lesson_num
+                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
+            trainer.write_summary(global_step, delta_train_start)
 
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
@@ -220,6 +223,16 @@ class TrainerController(object):
                     )
 
                     self.brain_name_to_identifier[brain_name].add(name_behavior_id)
+
+                    agent_manager = AgentManager(
+                        processor=AgentProcessor(
+                            trainer,
+                            trainer.policy,
+                            trainer.stats_reporter,
+                            trainer.parameters.get("time_horizon", sys.maxsize),
+                        )
+                    )
+                    self.managers[name_behavior_id] = agent_manager
 
                 last_brain_behavior_ids = external_brain_behavior_ids
 
@@ -292,22 +305,17 @@ class TrainerController(object):
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:
                     self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-
                 for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                     if step_info.has_actions_for_brain(name_behavior_id):
-                        trainer.add_experiences(
-                            name_behavior_id,
+                        _processor = self.managers[name_behavior_id].processor
+                        _processor.add_experiences(
                             step_info.previous_all_brain_info[name_behavior_id],
                             step_info.current_all_brain_info[name_behavior_id],
                             step_info.brain_name_to_action_info[
                                 name_behavior_id
                             ].outputs,
                         )
-                        trainer.process_experiences(
-                            name_behavior_id,
-                            step_info.previous_all_brain_info[name_behavior_id],
-                            step_info.current_all_brain_info[name_behavior_id],
-                        )
+
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
