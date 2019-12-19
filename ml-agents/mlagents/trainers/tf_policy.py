@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import numpy as np
 from onnx import TensorProto, AttributeProto, NodeProto
@@ -293,11 +293,8 @@ class TFPolicy(Policy):
         tf2bc.convert(frozen_graph_def_path, self.model_path + ".nn")
         logger.info(f"Exported {self.model_path}.nn file")
 
-        onnx_graph = self.convert_frozen_to_onnx(
-            frozen_graph_def,
-            self._get_input_node_names(),
-            self._get_output_node_names(),
-        )
+        # Save to onnx too
+        onnx_graph = self.convert_frozen_to_onnx(frozen_graph_def)
         onnx_output_path = self.model_path + "_onnx.onnx"
         with open(onnx_output_path, "wb") as f:
             f.write(onnx_graph.SerializeToString())
@@ -312,7 +309,7 @@ class TFPolicy(Policy):
             )
         return output_graph_def
 
-    def convert_frozen_to_onnx(self, frozen_graph_def, inputs, outputs):
+    def convert_frozen_to_onnx(self, frozen_graph_def):
         # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
         # Some constants in the graph need to be read by the inference system.
@@ -327,6 +324,9 @@ class TFPolicy(Policy):
 
         # TODO set this if --debug is set
         # logging.basicConfig(level=logging.get_verbosity_level(1))
+
+        inputs = TFPolicy._get_input_node_names(frozen_graph_def)
+        outputs = TFPolicy._get_output_node_names(frozen_graph_def)
 
         frozen_graph_def = tf_optimize(inputs, outputs, frozen_graph_def)
 
@@ -347,7 +347,7 @@ class TFPolicy(Policy):
         return model_proto
 
     @staticmethod
-    def _make_onnx_node_for_constant(name, value):
+    def _make_onnx_node_for_constant(name: str, value: int) -> NodeProto:
         dtype_attribute = AttributeProto(
             name="dtype", i=int(TensorProto.INT32), type=AttributeProto.INT
         )
@@ -367,44 +367,42 @@ class TFPolicy(Policy):
             attribute=[dtype_attribute, value_attribute],
         )
 
-    def _get_input_node_names(self) -> List[str]:
+    @staticmethod
+    def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
         input_names = []
+        node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
         for name in ["epsilon", "action_masks", "vector_observation"]:
-            full_name = self._get_tensor_full_name(name)
-            if full_name:
-                input_names.append(full_name)
+            if name in node_names:
+                input_names.append(name)
 
         # Check visual inputs sequentially, and exit as soon as we don't find one
         vis_index = 0
         while True:
             vis_node_name = f"visual_observation_{vis_index}"
-            vis_full_name = self._get_tensor_full_name(vis_node_name)
-            if vis_full_name:
-                input_names.append(vis_full_name)
+            if vis_node_name in node_names:
+                input_names.append(vis_node_name)
             else:
                 break
             vis_index += 1
-        return input_names
+        # Append the port
+        return [f"{n}:0" for n in input_names]
 
-    def _get_output_node_names(self) -> List[str]:
+    @staticmethod
+    def _get_output_node_names(frozen_graph_def: Any) -> List[str]:
         output_names = []
-        for name in self.POSSIBLE_OUTPUT_NODES:
-            full_name = self._get_tensor_full_name(name)
-            if full_name:
-                output_names.append(full_name)
-        return output_names
+        node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
+        for name in TFPolicy.POSSIBLE_OUTPUT_NODES:
+            if name in node_names:
+                output_names.append(name)
+        # Append the port
+        return [f"{n}:0" for n in output_names]
 
-    def _get_tensor_full_name(self, name: str) -> Optional[str]:
-        """
-        See if name + ":0" exists as a tensor in the graph.
-        If so, return name + ":0", otherwise return None
-        """
-        full_name = f"{name}:0"
-        try:
-            self.graph.get_tensor_by_name(full_name)
-            return full_name
-        except KeyError:
-            return None
+    @staticmethod
+    def _get_frozen_graph_node_names(frozen_graph_def: Any) -> Set[str]:
+        names = set()
+        for node in frozen_graph_def.node:
+            names.add(node.name)
+        return names
 
     def _process_graph(self):
         """
