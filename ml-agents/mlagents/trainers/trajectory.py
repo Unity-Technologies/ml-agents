@@ -30,21 +30,20 @@ class SplitObservations(NamedTuple):
         :param obs: List of numpy arrays (observation)
         :returns: A SplitObservations object.
         """
-        vis_obs_indices = []
-        vec_obs_indices = []
-        for index, observation in enumerate(obs):
+        vis_obs_list: List[np.ndarray] = []
+        vec_obs_list: List[np.ndarray] = []
+        for observation in obs:
             if len(observation.shape) == 1:
-                vec_obs_indices.append(index)
+                vec_obs_list.append(observation)
             if len(observation.shape) == 3:
-                vis_obs_indices.append(index)
+                vis_obs_list.append(observation)
         vec_obs = (
-            np.concatenate([obs[i] for i in vec_obs_indices], axis=0)
-            if len(vec_obs_indices) > 0
+            np.concatenate(vec_obs_list, axis=0)
+            if len(vec_obs_list) > 0
             else np.array([], dtype=np.float32)
         )
-        vis_obs = [obs[i] for i in vis_obs_indices]
         return SplitObservations(
-            vector_observations=vec_obs, visual_observations=vis_obs
+            vector_observations=vec_obs, visual_observations=vis_obs_list
         )
 
 
@@ -64,8 +63,8 @@ class Trajectory(NamedTuple):
         step of the trajectory.
         """
         agent_buffer_trajectory = AgentBuffer()
+        vec_vis_obs = SplitObservations.from_observations(self.steps[0].obs)
         for step, exp in enumerate(self.steps):
-            vec_vis_obs = SplitObservations.from_observations(exp.obs)
             if step < len(self.steps) - 1:
                 next_vec_vis_obs = SplitObservations.from_observations(
                     self.steps[step + 1].obs
@@ -108,9 +107,10 @@ class Trajectory(NamedTuple):
                 )
 
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
-
-            # Add the value outputs if needed
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
+
+            # Store the next visual obs as the current
+            vec_vis_obs = next_vec_vis_obs
         return agent_buffer_trajectory
 
     @property
