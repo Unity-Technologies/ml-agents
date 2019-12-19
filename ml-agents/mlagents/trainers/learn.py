@@ -250,7 +250,7 @@ def run_training(
     trainer_config = load_config(trainer_config_path)
     port = options.base_port + (sub_id * options.num_envs)
 
-    # Configure Tensorboard Writers and StatsReporter
+    # Configure CSV, Tensorboard Writers and StatsReporter
     csv_writer = CSVWriter(summaries_dir)
     tb_writer = TensorboardWriter(summaries_dir)
     StatsReporter.add_writer(tb_writer)
