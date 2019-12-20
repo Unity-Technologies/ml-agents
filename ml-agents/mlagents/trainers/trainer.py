@@ -9,7 +9,6 @@ from queue import Queue
 
 from mlagents_envs.exception import UnityException
 from mlagents_envs.timers import set_gauge
-from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
@@ -54,9 +53,6 @@ class Trainer(object):
         self.stats_reporter = StatsReporter(self.summary_path)
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
-        self.trainer_metrics = TrainerMetrics(
-            path=self.summary_path + ".csv", brain_name=self.brain_name
-        )
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.policy_queues: List[Queue] = []
@@ -172,13 +168,6 @@ class Trainer(object):
         Exports the model
         """
         self.policy.export_model()
-
-    def write_training_metrics(self) -> None:
-        """
-        Write training metrics to a CSV  file
-        :return:
-        """
-        self.trainer_metrics.write_training_metrics()
 
     def write_summary(self, global_step: int, delta_train_start: float) -> None:
         """

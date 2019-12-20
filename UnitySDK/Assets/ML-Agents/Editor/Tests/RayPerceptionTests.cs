@@ -30,5 +30,11 @@ namespace MLAgents.Tests
                 tags);
             Assert.IsTrue(result.Count == angles.Length * (tags.Length + 2));
         }
+
+        [Test]
+        public void TestConstants()
+        {
+            Assert.AreEqual(Physics.DefaultRaycastLayers, Physics2D.DefaultRaycastLayers);
+        }
     }
 }

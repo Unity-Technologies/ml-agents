@@ -20,7 +20,7 @@ from mlagents_envs.exception import (
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers.trainer import Trainer, TrainerMetrics
+from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.agent_processor import AgentProcessor
@@ -66,7 +66,6 @@ class TrainerController(object):
         self.run_id = run_id
         self.save_freq = save_freq
         self.train_model = train
-        self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.meta_curriculum = meta_curriculum
         self.training_start_time = time()
         self.sampler_manager = sampler_manager
@@ -112,15 +111,6 @@ class TrainerController(object):
             "Learning was interrupted. Please wait while the graph is generated."
         )
         self._save_model()
-
-    def _write_training_metrics(self):
-        """
-        Write all CSV metrics
-        :return:
-        """
-        for brain_name in self.trainers.keys():
-            if brain_name in self.trainer_metrics:
-                self.trainers[brain_name].write_training_metrics()
 
     def _write_timing_tree(self) -> None:
         timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
@@ -243,7 +233,6 @@ class TrainerController(object):
                 self._save_model_when_interrupted()
             pass
         if self.train_model:
-            self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
 
@@ -296,14 +285,10 @@ class TrainerController(object):
                     _policy = self.managers[brain_name].policy_queue.get_nowait()
                     env.set_policy(brain_name, _policy)
             # Step the environment
-            time_start_step = time()
             new_step_infos = env.step()
-            delta_time_step = time() - time_start_step
         # Add to AgentProcessor
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
-                if brain_name in self.trainer_metrics:
-                    self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
                 if step_info.has_actions_for_brain(brain_name):
                     _processor = self.managers[brain_name].processor
                     _processor.add_experiences(
@@ -313,8 +298,6 @@ class TrainerController(object):
                     )
         # Advance trainers
         for brain_name, trainer in self.trainers.items():
-            if brain_name in self.trainer_metrics:
-                self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             trainer.advance()
 
         return len(new_step_infos)
