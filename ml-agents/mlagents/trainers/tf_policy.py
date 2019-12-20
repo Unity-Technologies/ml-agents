@@ -59,6 +59,7 @@ class TFPolicy(Policy):
         ]
     )
     VISUAL_OBSERVATION_PREFIX = "visual_observation_"
+    ONNX_OPSET = 8
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -346,7 +347,12 @@ class TFPolicy(Policy):
         with tf.Graph().as_default() as tf_graph:
             tf.import_graph_def(frozen_graph_def, name="")
         with tf.Session(graph=tf_graph):
-            g = process_tf_graph(tf_graph, input_names=inputs, output_names=outputs)
+            g = process_tf_graph(
+                tf_graph,
+                input_names=inputs,
+                output_names=outputs,
+                opset=TFPolicy.ONNX_OPSET,
+            )
 
         onnx_graph = optimizer.optimize_graph(g)
         model_proto = onnx_graph.make_model(self.brain.brain_name)
