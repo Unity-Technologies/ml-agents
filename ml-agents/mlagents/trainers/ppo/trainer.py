@@ -177,10 +177,6 @@ class PPOTrainer(RLTrainer):
         The reward signal generators must be updated in this method at their own pace.
         """
         buffer_length = self.update_buffer.num_experiences
-        self.trainer_metrics.start_policy_update_timer(
-            number_experiences=buffer_length,
-            mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
-        )
         self.cumulative_returns_since_policy_update.clear()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
@@ -221,7 +217,6 @@ class PPOTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self.stats_reporter.add_stat(stat, val)
         self.clear_update_buffer()
-        self.trainer_metrics.end_policy_update()
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):

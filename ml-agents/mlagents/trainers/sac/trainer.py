@@ -207,13 +207,8 @@ class SACTrainer(RLTrainer):
         If reward_signal_train_interval is met, update the reward signals from the buffer.
         """
         if self.step % self.train_interval == 0:
-            self.trainer_metrics.start_policy_update_timer(
-                number_experiences=self.update_buffer.num_experiences,
-                mean_return=float(np.mean(self.cumulative_returns_since_policy_update)),
-            )
             self.update_sac_policy()
             self.update_reward_signals()
-            self.trainer_metrics.end_policy_update()
 
     def update_sac_policy(self) -> None:
         """
