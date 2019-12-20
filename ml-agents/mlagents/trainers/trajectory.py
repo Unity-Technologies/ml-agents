@@ -53,7 +53,7 @@ class Trajectory(NamedTuple):
         np.ndarray
     ]  # Observation following the trajectory, for bootstrapping
     agent_id: str
-    agent_group_name: str
+    behavior_id: str
 
     def to_agentbuffer(self) -> AgentBuffer:
         """
