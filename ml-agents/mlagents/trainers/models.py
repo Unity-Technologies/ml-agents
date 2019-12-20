@@ -11,6 +11,9 @@ from mlagents.trainers.brain import CameraResolution
 logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
+EncoderFunction = Callable[
+    [tf.Tensor, int, ActivationFunction, int, str, bool], tf.Tensor
+]
 
 EPSILON = 1e-7
 
@@ -26,8 +29,16 @@ class LearningRateSchedule(Enum):
     LINEAR = "linear"
 
 
-class LearningModel(object):
+class LearningModel:
     _version_number_ = 2
+
+    # Minimum supported side for each encoder type. If refactoring an encoder, please
+    # adjust these also.
+    MIS_RESOLUTION_FOR_ENCODER = {
+        EncoderType.SIMPLE: 20,
+        EncoderType.NATURE_CNN: 36,
+        EncoderType.RESNET: 15,
+    }
 
     def __init__(
         self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
@@ -420,6 +431,17 @@ class LearningModel(object):
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
+
+    @staticmethod
+    def get_encoder_for_type(encoder_type: EncoderType) -> EncoderFunction:
+        ENCODER_FUNCTION_BY_TYPE = {
+            EncoderType.SIMPLE: LearningModel.create_visual_observation_encoder,
+            EncoderType.NATURE_CNN: LearningModel.create_nature_cnn_visual_observation_encoder,
+            EncoderType.RESNET: LearningModel.create_resnet_visual_observation_encoder,
+        }
+        return ENCODER_FUNCTION_BY_TYPE.get(
+            encoder_type, LearningModel.create_visual_observation_encoder
+        )
 
     @staticmethod
     def create_discrete_action_masking_layer(all_logits, action_masks, action_size):

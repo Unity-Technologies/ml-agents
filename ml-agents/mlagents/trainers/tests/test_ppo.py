@@ -11,7 +11,8 @@ from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.rl_trainer import AllRewardsOutput
 from mlagents.trainers.components.reward_signals import RewardSignalResult
-from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.brain import BrainParameters, CameraResolution
+from mlagents.trainers.models import EncoderType, LearningModel
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
@@ -411,6 +412,25 @@ def test_add_rewards_output(dummy_config):
     )
     assert trainer.processing_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
     assert trainer.processing_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
+
+
+def test_min_visual_size():
+    for encoder_type in EncoderType:
+        good_size = LearningModel.MIS_RESOLUTION_FOR_ENCODER[encoder_type]
+        good_res = CameraResolution(width=good_size, height=good_size, num_channels=3)
+        vis_input = LearningModel.create_visual_input(good_res, "test_min_visual_size")
+        enc_func = LearningModel.get_encoder_for_type(encoder_type)
+        enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
+
+        # Anything under the min size should raise an exception. If not, decrease the min size!
+        with pytest.raises(Exception):
+            bad_size = LearningModel.MIS_RESOLUTION_FOR_ENCODER[encoder_type] - 1
+            bad_res = CameraResolution(width=bad_size, height=bad_size, num_channels=3)
+            vis_input = LearningModel.create_visual_input(
+                bad_res, "test_min_visual_size"
+            )
+            enc_func = LearningModel.get_encoder_for_type(encoder_type)
+            enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
 
 
 if __name__ == "__main__":
