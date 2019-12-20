@@ -490,6 +490,17 @@ class LearningModel:
             ),
         )
 
+    @staticmethod
+    def _check_resolution_for_encoder(
+        camera_res: CameraResolution, vis_encoder_type: EncoderType
+    ) -> None:
+        min_res = LearningModel.MIS_RESOLUTION_FOR_ENCODER[vis_encoder_type]
+        if camera_res.height < min_res or camera_res.width < min_res:
+            raise UnityTrainerException(
+                f"Visual observation resolution ({camera_res.width}x{camera_res.height}) is too small for"
+                f"the provided EncoderType ({vis_encoder_type.value}). The min dimension is {min_res}"
+            )
+
     def create_observation_streams(
         self,
         num_streams: int,
@@ -512,23 +523,20 @@ class LearningModel:
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
+            LearningModel._check_resolution_for_encoder(
+                brain.camera_resolutions[i], vis_encode_type
+            )
             visual_input = self.create_visual_input(
                 brain.camera_resolutions[i], name="visual_observation_" + str(i)
             )
             self.visual_in.append(visual_input)
         vector_observation_input = self.create_vector_input()
 
-        # Pick the encoder function based on the EncoderType
-        create_encoder_func = LearningModel.create_visual_observation_encoder
-        if vis_encode_type == EncoderType.RESNET:
-            create_encoder_func = LearningModel.create_resnet_visual_observation_encoder
-        elif vis_encode_type == EncoderType.NATURE_CNN:
-            create_encoder_func = (
-                LearningModel.create_nature_cnn_visual_observation_encoder
-            )
-
         final_hiddens = []
         for i in range(num_streams):
+            # Pick the encoder function based on the EncoderType
+            create_encoder_func = LearningModel.get_encoder_for_type(vis_encode_type)
+
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             _scope_add = stream_scopes[i] if stream_scopes else ""
@@ -539,8 +547,8 @@ class LearningModel:
                         h_size,
                         activation_fn,
                         num_layers,
-                        scope=f"{_scope_add}main_graph_{i}_encoder{j}",
-                        reuse=False,
+                        f"{_scope_add}main_graph_{i}_encoder{j}",  # scope
+                        False,  # reuse
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
