@@ -103,7 +103,7 @@ def test_csv_writer():
         filewriter_dir = "{basedir}/{category}.csv".format(
             basedir=base_dir, category=category
         )
-        # The required keys weren't in the required_keys
+        # The required keys weren't in the stats
         assert not os.path.exists(filewriter_dir)
 
         csv_writer.write_stats(
@@ -113,7 +113,7 @@ def test_csv_writer():
             "category1", {"key1": statssummary1, "key2": statssummary1}, 20
         )
 
-        # The required keys were in the required_keys
+        # The required keys were in the stats
         assert os.path.exists(filewriter_dir)
 
         with open(filewriter_dir) as csv_file:
