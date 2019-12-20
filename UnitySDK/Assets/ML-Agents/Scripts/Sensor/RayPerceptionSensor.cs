@@ -25,6 +25,7 @@ namespace MLAgents.Sensor
         float m_CastRadius;
         CastType m_CastType;
         Transform m_Transform;
+        int m_LayerMask;
 
         /// <summary>
         /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
@@ -67,7 +68,8 @@ namespace MLAgents.Sensor
         }
 
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
-            Transform transform, float startOffset, float endOffset, float castRadius, CastType castType)
+            Transform transform, float startOffset, float endOffset, float castRadius, CastType castType,
+            int rayLayerMask)
         {
             var numObservations = (detectableObjects.Count + 2) * angles.Length;
             m_Shape = new[] { numObservations };
@@ -84,6 +86,7 @@ namespace MLAgents.Sensor
             m_EndOffset = endOffset;
             m_CastRadius = castRadius;
             m_CastType = castType;
+            m_LayerMask = rayLayerMask;
 
             if (Application.isEditor)
             {
@@ -97,7 +100,8 @@ namespace MLAgents.Sensor
             {
                 PerceiveStatic(
                     m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                    m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_DebugDisplayInfo
+                    m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_LayerMask,
+                    m_DebugDisplayInfo
                 );
                 adapter.AddRange(m_Observations);
             }
@@ -164,6 +168,7 @@ namespace MLAgents.Sensor
             float startOffset, float endOffset, float castRadius,
             Transform transform, CastType castType, float[] perceptionBuffer,
             bool legacyHitFractionBehavior = false,
+            int layerMask = Physics.DefaultRaycastLayers,
             DebugDisplayInfo debugInfo = null)
         {
             Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
@@ -221,11 +226,13 @@ namespace MLAgents.Sensor
                     RaycastHit rayHit;
                     if (castRadius > 0f)
                     {
-                        castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit, rayLength);
+                        castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit,
+                            rayLength, layerMask);
                     }
                     else
                     {
-                        castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit, rayLength);
+                        castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit,
+                            rayLength, layerMask);
                     }
 
                     hitFraction = castHit ? rayHit.distance / rayLength : 1.0f;
@@ -236,11 +243,12 @@ namespace MLAgents.Sensor
                     RaycastHit2D rayHit;
                     if (castRadius > 0f)
                     {
-                        rayHit = Physics2D.CircleCast(startPositionWorld, castRadius, rayDirection, rayLength);
+                        rayHit = Physics2D.CircleCast(startPositionWorld, castRadius, rayDirection,
+                            rayLength, layerMask);
                     }
                     else
                     {
-                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, rayLength);
+                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, rayLength, layerMask);
                     }
 
                     castHit = rayHit;
