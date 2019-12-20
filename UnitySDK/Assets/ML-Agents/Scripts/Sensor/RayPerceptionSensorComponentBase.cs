@@ -27,6 +27,9 @@ namespace MLAgents.Sensor
         [Tooltip("Length of the rays to cast.")]
         public float rayLength = 20f;
 
+        [Tooltip("Controls which layers the rays can hit.")]
+        public LayerMask rayLayerMask = Physics.DefaultRaycastLayers;
+
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         public int observationStacks = 1;
@@ -57,7 +60,8 @@ namespace MLAgents.Sensor
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
             m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType()
+                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType(),
+                rayLayerMask
             );
 
             if (observationStacks != 1)
