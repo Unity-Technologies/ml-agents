@@ -198,7 +198,7 @@ class LearningModel:
             [],
             trainable=False,
             dtype=tf.int32,
-            initializer=tf.ones_initializer(),
+            initializer=tf.zeros_initializer(),
         )
         self.running_mean = tf.get_variable(
             "running_mean",
@@ -217,18 +217,24 @@ class LearningModel:
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
-        mean_current_observation = tf.reduce_mean(vector_input, axis=0)
-        new_mean = self.running_mean + (
-            mean_current_observation - self.running_mean
-        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
-        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
-            mean_current_observation - self.running_mean
+        # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
+        # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
+        steps_increment = tf.shape(vector_input)[0]
+        total_new_steps = tf.add(self.normalization_steps, steps_increment)
+
+        # Compute the incremental update and divide by the number of new steps.
+        input_to_old_mean = tf.subtract(vector_input, self.running_mean)
+        new_mean = self.running_mean + tf.reduce_sum(
+            input_to_old_mean / tf.cast(total_new_steps, dtype=tf.float32), axis=0
+        )
+        # Compute difference of input to the new mean for Welford update
+        input_to_new_mean = tf.subtract(vector_input, new_mean)
+        new_variance = self.running_variance + tf.reduce_sum(
+            input_to_new_mean * input_to_old_mean, axis=0
         )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        update_norm_step = tf.assign(
-            self.normalization_steps, self.normalization_steps + 1
-        )
+        update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
         return tf.group([update_mean, update_variance, update_norm_step])
 
     @staticmethod

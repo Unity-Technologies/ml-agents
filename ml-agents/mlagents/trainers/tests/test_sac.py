@@ -11,6 +11,7 @@ from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 
 
 @pytest.fixture
@@ -349,6 +350,43 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     # Wipe Trainer and try to load
     trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
     assert trainer2.update_buffer.num_experiences == buffer_len
+
+
+def test_process_trajectory(dummy_config):
+    brain_params = make_brain_parameters(
+        discrete_action=False, visual_inputs=0, vec_obs_size=6
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
+    trajectory = make_fake_trajectory(
+        length=15, max_step_complete=True, vec_obs_size=6, num_vis_obs=0, action_space=2
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that trainer put trajectory in update buffer
+    assert trainer.update_buffer.num_experiences == 15
+
+    # Check that the stats are being collected as episode isn't complete
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent > 0
+
+    # Add a terminal trajectory
+    trajectory = make_fake_trajectory(
+        length=15,
+        max_step_complete=False,
+        vec_obs_size=6,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that the stats are reset as episode is finished
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent == 0
+    assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
 if __name__ == "__main__":
