@@ -228,6 +228,7 @@ class TrainerController(object):
                         processor=AgentProcessor(
                             trainer,
                             trainer.policy,
+                            name_behavior_id,
                             trainer.stats_reporter,
                             trainer.parameters.get("time_horizon", sys.maxsize),
                         )

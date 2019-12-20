@@ -21,6 +21,7 @@ class AgentProcessor:
         self,
         trainer: Trainer,
         policy: TFPolicy,
+        agent_group_name: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
     ):
@@ -44,6 +45,7 @@ class AgentProcessor:
         self.stats_reporter = stats_reporter
         self.trainer = trainer
         self.max_trajectory_length = max_trajectory_length
+        self.agent_group_name = agent_group_name
 
     def add_experiences(
         self,
@@ -133,6 +135,7 @@ class AgentProcessor:
                         steps=self.experience_buffers[agent_id],
                         agent_id=agent_id,
                         next_obs=next_obs,
+                        agent_group_name=self.agent_group_name,
                     )
                     # This will eventually be replaced with a queue
                     self.trainer.process_trajectory(trajectory)
