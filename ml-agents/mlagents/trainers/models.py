@@ -34,7 +34,7 @@ class LearningModel:
 
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
-    MIS_RESOLUTION_FOR_ENCODER = {
+    MIN_RESOLUTION_FOR_ENCODER = {
         EncoderType.SIMPLE: 20,
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
@@ -500,7 +500,7 @@ class LearningModel:
     def _check_resolution_for_encoder(
         camera_res: CameraResolution, vis_encoder_type: EncoderType
     ) -> None:
-        min_res = LearningModel.MIS_RESOLUTION_FOR_ENCODER[vis_encoder_type]
+        min_res = LearningModel.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
         if camera_res.height < min_res or camera_res.width < min_res:
             raise UnityTrainerException(
                 f"Visual observation resolution ({camera_res.width}x{camera_res.height}) is too small for"

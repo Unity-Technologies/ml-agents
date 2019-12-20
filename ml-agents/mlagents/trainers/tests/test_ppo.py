@@ -503,11 +503,11 @@ def test_normalization(dummy_config):
 
 def test_min_visual_size():
     # Make sure each EncoderType has an entry in MIS_RESOLUTION_FOR_ENCODER
-    assert set(LearningModel.MIS_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
+    assert set(LearningModel.MIN_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
 
     for encoder_type in EncoderType:
         with tf.Graph().as_default():
-            good_size = LearningModel.MIS_RESOLUTION_FOR_ENCODER[encoder_type]
+            good_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
             good_res = CameraResolution(
                 width=good_size, height=good_size, num_channels=3
             )
@@ -521,7 +521,7 @@ def test_min_visual_size():
         # Anything under the min size should raise an exception. If not, decrease the min size!
         with pytest.raises(Exception):
             with tf.Graph().as_default():
-                bad_size = LearningModel.MIS_RESOLUTION_FOR_ENCODER[encoder_type] - 1
+                bad_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
                 bad_res = CameraResolution(
                     width=bad_size, height=bad_size, num_channels=3
                 )
