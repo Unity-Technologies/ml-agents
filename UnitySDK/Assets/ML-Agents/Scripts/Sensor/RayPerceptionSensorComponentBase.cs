@@ -28,7 +28,7 @@ namespace MLAgents.Sensor
         public float rayLength = 20f;
 
         [Tooltip("Controls which layers the rays can hit.")]
-        public int rayLayerMask = Physics.DefaultRaycastLayers;
+        public LayerMask rayLayerMask = Physics.DefaultRaycastLayers;
 
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
