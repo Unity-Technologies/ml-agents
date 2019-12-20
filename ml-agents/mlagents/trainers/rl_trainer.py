@@ -3,6 +3,7 @@ import logging
 from typing import Dict
 from collections import defaultdict
 
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer, UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
@@ -47,7 +48,7 @@ class RLTrainer(Trainer):
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
-    def _update_end_episode_stats(self, agent_id: str) -> None:
+    def _update_end_episode_stats(self, agent_id: str, policy: TFPolicy) -> None:
         self.episode_steps[agent_id] = 0
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
@@ -58,7 +59,7 @@ class RLTrainer(Trainer):
                 rewards[agent_id] = 0
             else:
                 self.stats_reporter.add_stat(
-                    self.policy.reward_signals[name].stat_name, rewards.get(agent_id, 0)
+                    policy.reward_signals[name].stat_name, rewards.get(agent_id, 0)
                 )
                 rewards[agent_id] = 0
 

@@ -154,7 +154,9 @@ class PPOTrainer(RLTrainer):
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
-            self._update_end_episode_stats(agent_id)
+            self._update_end_episode_stats(
+                agent_id, self.get_policy(trajectory.behavior_id)
+            )
 
     def is_ready_update(self):
         """
