@@ -252,11 +252,9 @@ class PPOTrainer(RLTrainer):
         """
         if self.policy:
             logger.warning(
-                "add_policy has been called twice on trainer with name {}.".format(
-                    self.brain_name
-                ),
-                "This trainer does not support multi-agent training!",
-                "self.policy should only be assigned once.",
+                "add_policy has been called twice. {} is not a multi-agent trainer".format(
+                    self.__class__.__name__
+                )
             )
         self.policy = policy
 
