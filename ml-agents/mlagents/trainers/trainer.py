@@ -5,6 +5,7 @@ from typing import Dict, List, Deque, Any
 from mlagents.tf_utils import tf
 
 from collections import deque
+from queue import Queue
 
 from mlagents_envs.exception import UnityException
 from mlagents_envs.timers import set_gauge
@@ -13,6 +14,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.timers import hierarchical_timer
 
 LOGGER = logging.getLogger("mlagents.trainers")
 
@@ -57,6 +59,7 @@ class Trainer(object):
         )
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None  # type: ignore  # this will always get set
+        self.policy_queues: List[Queue] = []
         self.step: int = 0
 
     def check_param_keys(self):
@@ -227,9 +230,7 @@ class Trainer(object):
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        raise UnityTrainerException(
-            "The process_experiences method was not implemented."
-        )
+        self.increment_step(len(trajectory.steps))
 
     def end_episode(self):
         """
@@ -252,4 +253,20 @@ class Trainer(object):
         raise UnityTrainerException("The update_model method was not implemented.")
 
     def advance(self) -> None:
-        pass
+        """
+        Steps the trainer, taking in trajectories and updates if ready.
+        """
+        if self.is_training and self.get_step <= self.get_max_steps:
+            if self.is_ready_update():
+                with hierarchical_timer("update_policy"):
+                    self.update_policy()
+                    for q in self.policy_queues:
+                        q.put(self.policy)
+
+    def publish_policy_queue(self, policy_queue: Queue) -> None:
+        """
+        Adds a policy queue to the list of queues to publish to when this Trainer
+        makes a policy update
+        :param queue: Policy queue to publish to.
+        """
+        self.policy_queues.append(policy_queue)

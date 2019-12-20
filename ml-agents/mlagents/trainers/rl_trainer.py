@@ -68,3 +68,11 @@ class RLTrainer(Trainer):
         we're not training, this should be called instead of update_policy.
         """
         self.update_buffer.reset_agent()
+
+    def advance(self) -> None:
+        """
+        Steps the trainer, taking in trajectories and updates if ready
+        """
+        super().advance()
+        if not self.is_training:
+            self.clear_update_buffer()

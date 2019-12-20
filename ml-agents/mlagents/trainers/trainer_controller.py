@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import logging
+import queue
 from typing import Dict, List, Optional, Set, NamedTuple
 
 import numpy as np
@@ -27,6 +28,8 @@ from mlagents.trainers.agent_processor import AgentProcessor
 
 class AgentManager(NamedTuple):
     processor: AgentProcessor
+    trajectory_queue: queue.Queue
+    policy_queue: queue.Queue
 
 
 class TrainerController(object):
@@ -217,8 +220,11 @@ class TrainerController(object):
                                 trainer.policy,
                                 trainer.stats_reporter,
                                 trainer.parameters.get("time_horizon", sys.maxsize),
-                            )
+                            ),
+                            trajectory_queue=queue.Queue(),
+                            policy_queue=queue.Queue(),
                         )
+                        trainer.publish_policy_queue(agent_manager.policy_queue)
                         self.managers[name] = agent_manager
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
@@ -283,9 +289,17 @@ class TrainerController(object):
     @timed
     def advance(self, env: EnvManager) -> int:
         with hierarchical_timer("env_step"):
+            # Get new policies if found
+            for brain_name, trainer in self.trainers.items():
+                _queue = self.managers[brain_name].policy_queue
+                if not _queue.empty():
+                    _policy = self.managers[brain_name].policy_queue.get_nowait()
+                    env.set_policy(brain_name, _policy)
+            # Step the environment
             time_start_step = time()
             new_step_infos = env.step()
             delta_time_step = time() - time_start_step
+        # Add to AgentProcessor
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
                 if brain_name in self.trainer_metrics:
@@ -297,20 +311,10 @@ class TrainerController(object):
                         step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
                     )
+        # Advance trainers
         for brain_name, trainer in self.trainers.items():
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-            if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                trainer.increment_step(len(new_step_infos))
-                if trainer.is_ready_update():
-                    # Perform gradient descent with experience buffer
-                    with hierarchical_timer("update_policy"):
-                        trainer.update_policy()
-                    env.set_policy(brain_name, trainer.policy)
-            else:
-                # Avoid memory leak during inference
-                # Eventually this whole block will take place in advance()
-                # But currently this only calls clear_update_buffer() in RLTrainer
-                # and nothing in the base class
-                trainer.advance()
+            trainer.advance()
+
         return len(new_step_infos)
