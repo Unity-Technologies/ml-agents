@@ -95,8 +95,17 @@ def test_csv_writer():
     # Test write_stats
     category = "category1"
     with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
-        csv_writer = CSVWriter(base_dir)
+        csv_writer = CSVWriter(base_dir, required_fields=["key1", "key2"])
         statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+        csv_writer.write_stats("category1", {"key1": statssummary1}, 10)
+
+        # Test that the filewriter has been created and the directory has been created.
+        filewriter_dir = "{basedir}/{category}.csv".format(
+            basedir=base_dir, category=category
+        )
+        # The required keys weren't in the required_keys
+        assert not os.path.exists(filewriter_dir)
+
         csv_writer.write_stats(
             "category1", {"key1": statssummary1, "key2": statssummary1}, 10
         )
@@ -104,11 +113,9 @@ def test_csv_writer():
             "category1", {"key1": statssummary1, "key2": statssummary1}, 20
         )
 
-        # Test that the filewriter has been created and the directory has been created.
-        filewriter_dir = "{basedir}/{category}.csv".format(
-            basedir=base_dir, category=category
-        )
+        # The required keys were in the required_keys
         assert os.path.exists(filewriter_dir)
+
         with open(filewriter_dir) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=",")
             line_count = 0

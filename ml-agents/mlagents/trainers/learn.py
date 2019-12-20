@@ -251,7 +251,11 @@ def run_training(
     port = options.base_port + (sub_id * options.num_envs)
 
     # Configure CSV, Tensorboard Writers and StatsReporter
-    csv_writer = CSVWriter(summaries_dir)
+    # We assume reward and episode length are needed in the CSV.
+    csv_writer = CSVWriter(
+        summaries_dir,
+        required_fields=["Environment/Cumulative Reward", "Environment/Episode Length"],
+    )
     tb_writer = TensorboardWriter(summaries_dir)
     StatsReporter.add_writer(tb_writer)
     StatsReporter.add_writer(csv_writer)
