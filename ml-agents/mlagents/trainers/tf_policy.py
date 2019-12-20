@@ -36,6 +36,16 @@ class TFPolicy(Policy):
     functions to interact with it to perform evaluate and updating.
     """
 
+    POSSIBLE_INPUT_NODES = frozenset(
+        [
+            "epsilon",
+            "action_masks",
+            "vector_observation",
+            "recurrent_in",
+            "sequence_length",
+            "prev_action",
+        ]
+    )
     POSSIBLE_OUTPUT_NODES = frozenset(
         ["action", "value_estimate", "action_probs", "recurrent_out"]
     )
@@ -48,6 +58,7 @@ class TFPolicy(Policy):
             "action_output_shape",
         ]
     )
+    VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -327,8 +338,10 @@ class TFPolicy(Policy):
 
         inputs = TFPolicy._get_input_node_names(frozen_graph_def)
         outputs = TFPolicy._get_output_node_names(frozen_graph_def)
-
-        frozen_graph_def = tf_optimize(inputs, outputs, frozen_graph_def)
+        logger.info(f"onnx export - inputs:{inputs} outputs:{outputs}")
+        frozen_graph_def = tf_optimize(
+            inputs, outputs, frozen_graph_def, fold_constant=True
+        )
 
         with tf.Graph().as_default() as tf_graph:
             tf.import_graph_def(frozen_graph_def, name="")
@@ -371,14 +384,15 @@ class TFPolicy(Policy):
     def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
         input_names = []
         node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
-        for name in ["epsilon", "action_masks", "vector_observation"]:
+        for name in TFPolicy.POSSIBLE_INPUT_NODES:
             if name in node_names:
                 input_names.append(name)
 
         # Check visual inputs sequentially, and exit as soon as we don't find one
         vis_index = 0
         while True:
-            vis_node_name = f"visual_observation_{vis_index}"
+
+            vis_node_name = f"{TFPolicy.VISUAL_OBSERVATION_PREFIX}{vis_index}"
             if vis_node_name in node_names:
                 input_names.append(vis_node_name)
             else:
