@@ -108,10 +108,8 @@ class CSVWriter(StatsWriter):
                     writer = csv.writer(file)
                     writer.writerow(title_row)
                 return True
-            else:
-                return False
-        else:
-            return True
+            return False
+        return True
 
     def _get_filepath(self, category: str) -> str:
         file_dir = os.path.join(self.base_dir, category + ".csv")
