@@ -217,17 +217,19 @@ class TrainerController(object):
                                 "Hyperparameters", trainer.parameters
                             )
 
-                    trainer.add_policy(env_manager.external_brains[name_behavior_id])
-                    env_manager.set_policy(
-                        name_behavior_id, trainer.get_policy(name_behavior_id)
+                    policy = trainer.create_policy(
+                        env_manager.external_brains[name_behavior_id]
                     )
+                    trainer.add_policy(name_behavior_id, policy)
+
+                    env_manager.set_policy(name_behavior_id, policy)
 
                     self.brain_name_to_identifier[brain_name].add(name_behavior_id)
 
                     agent_manager = AgentManager(
                         processor=AgentProcessor(
                             trainer,
-                            trainer.policy,
+                            policy,
                             name_behavior_id,
                             trainer.stats_reporter,
                             trainer.parameters.get("time_horizon", sys.maxsize),

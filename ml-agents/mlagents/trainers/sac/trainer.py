@@ -18,7 +18,7 @@ from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 
 
-LOGGER = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents.trainers")
 BUFFER_TRUNCATE_PERCENT = 0.8
 
 
@@ -111,7 +111,7 @@ class SACTrainer(RLTrainer):
         filename = os.path.join(
             self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
         )
-        LOGGER.info("Saving Experience Replay Buffer to {}".format(filename))
+        logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
 
@@ -122,10 +122,10 @@ class SACTrainer(RLTrainer):
         filename = os.path.join(
             self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
         )
-        LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
+        logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
-        LOGGER.info(
+        logger.info(
             "Experience replay buffer has {} experiences.".format(
                 self.update_buffer.num_experiences
             )
@@ -213,31 +213,31 @@ class SACTrainer(RLTrainer):
             self.trainer_metrics.end_policy_update()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
-        self.sac_policy = SACPolicy(
+        policy = SACPolicy(
             self.seed,
             brain_parameters,
             self.trainer_parameters,
             self.is_training,
             self.load,
         )
-        for _reward_signal in self.sac_policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = {}
+        for _reward_signal in policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
                 self.load_replay_buffer()
             except (AttributeError, FileNotFoundError):
-                LOGGER.warning(
+                logger.warning(
                     "Replay buffer was unable to load, starting from scratch."
                 )
-            LOGGER.debug(
+            logger.debug(
                 "Loaded update buffer with {} sequences".format(
                     self.update_buffer.num_experiences
                 )
             )
 
-        return self.sac_policy
+        return policy
 
     def update_sac_policy(self) -> None:
         """
@@ -256,7 +256,7 @@ class SACTrainer(RLTrainer):
         num_updates = self.trainer_parameters["num_update"]
         batch_update_stats: Dict[str, list] = defaultdict(list)
         for _ in range(num_updates):
-            LOGGER.debug("Updating SAC policy at step {}".format(self.step))
+            logger.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.update_buffer
             if (
                 self.update_buffer.num_experiences
@@ -286,7 +286,7 @@ class SACTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
-        bc_module = self.sac_policy.bc_module
+        bc_module = self.policy.bc_module
         if bc_module:
             update_stats = bc_module.update()
             for stat, val in update_stats.items():
@@ -312,17 +312,40 @@ class SACTrainer(RLTrainer):
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name, signal in self.policy.reward_signals.items():
-                LOGGER.debug("Updating {} at step {}".format(name, self.step))
+                logger.debug("Updating {} at step {}".format(name, self.step))
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
                         self.trainer_parameters["batch_size"],
                         sequence_length=self.policy.sequence_length,
                     )
-            update_stats = self.sac_policy.update_reward_signals(
+            update_stats = self.policy.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer.
+        :param brain_parameters: specifications for policy construction
+        """
+        if self.policy:
+            logger.warning(
+                "add_policy has been called twice on trainer with name {}.".format(
+                    self.brain_name
+                ),
+                "This trainer does not support multi-agent training!",
+                "self.policy should only be assigned once.",
+            )
+        self.policy = policy
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer associated with name_behavior_id
+        :param name_behavior_id: full identifier of policy
+        """
+
+        return self.policy

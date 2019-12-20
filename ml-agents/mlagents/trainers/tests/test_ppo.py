@@ -327,7 +327,9 @@ def test_trainer_increment_step(dummy_config):
         vector_action_space_type=0,
     )
 
-    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
+    )
     policy_mock = mock.Mock()
     step_count = 10
     policy_mock.increment_step = mock.Mock(return_value=step_count)
@@ -363,7 +365,8 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer = PPOTrainer(
         mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
-    trainer.add_policy(mock_brain)
+    policy = trainer.create_policy(mock_brain)
+    trainer.add_policy(mock_brain.brain_name, policy)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
@@ -395,7 +398,9 @@ def test_process_trajectory(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -404,6 +409,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
     trainer.process_trajectory(trajectory)
 
     # Check that trainer put trajectory in update buffer
@@ -448,7 +455,9 @@ def test_normalization(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
     time_horizon = 6
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -460,10 +469,13 @@ def test_normalization(dummy_config):
     # Change half of the obs to 0
     for i in range(3):
         trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
+
     trainer.process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
-    steps, mean, variance = trainer.ppo_policy.sess.run(
+    steps, mean, variance = trainer.policy.sess.run(
         [
             trainer.policy.model.normalization_steps,
             trainer.policy.model.running_mean,
@@ -489,7 +501,7 @@ def test_normalization(dummy_config):
     trainer.process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
-    steps, mean, variance = trainer.ppo_policy.sess.run(
+    steps, mean, variance = trainer.policy.sess.run(
         [
             trainer.policy.model.normalization_steps,
             trainer.policy.model.running_mean,

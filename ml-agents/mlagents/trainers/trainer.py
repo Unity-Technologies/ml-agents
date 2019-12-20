@@ -257,17 +257,17 @@ class Trainer(object):
         """
         raise UnityTrainerException("The create_policy method was not implemented.")
 
-    def add_policy(self, brain_parameters: BrainParameters) -> None:
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         """
         Adds policy to trainer
         """
-        raise UnityTrainerException("The add_policy method was not implemented.")
+        raise UnityTrainerException("The add_policy method was not implemented")
 
-    def get_policy(self, brain_name: str) -> TFPolicy:
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
         Gets policy from trainer
         """
-        return self.policy
+        raise UnityTrainerException("The get_policy method was not implemented.")
 
     def advance(self) -> None:
         pass

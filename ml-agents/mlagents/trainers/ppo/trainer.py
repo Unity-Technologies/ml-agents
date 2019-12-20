@@ -217,8 +217,14 @@ class PPOTrainer(RLTrainer):
         self.trainer_metrics.end_policy_update()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates a PPO policy to trainers list of policies.
+        :param brain_parameters: specifications for policy construction
+        :return policy
+        """
+
         if self.multi_gpu and len(get_devices()) > 1:
-            self.ppo_policy: PPOPolicy = MultiGpuPPOPolicy(
+            policy: PPOPolicy = MultiGpuPPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -226,7 +232,7 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
         else:
-            self.ppo_policy = PPOPolicy(
+            policy = PPOPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -234,10 +240,33 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
 
-        for _reward_signal in self.ppo_policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = {}
+        for _reward_signal in policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        return self.ppo_policy
+        return policy
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer.
+        :param brain_parameters: specifications for policy construction
+        """
+        if self.policy:
+            logger.warning(
+                "add_policy has been called twice on trainer with name {}.".format(
+                    self.brain_name
+                ),
+                "This trainer does not support multi-agent training!",
+                "self.policy should only be assigned once.",
+            )
+        self.policy = policy
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer associated with name_behavior_id
+        :param name_behavior_id: full identifier of policy
+        """
+
+        return self.policy
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):
