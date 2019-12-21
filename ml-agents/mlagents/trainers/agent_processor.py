@@ -3,7 +3,6 @@ from queue import Queue
 from typing import List, Dict
 from collections import defaultdict, Counter
 
-from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
@@ -20,7 +19,6 @@ class AgentProcessor:
 
     def __init__(
         self,
-        trainer: Trainer,
         policy: TFPolicy,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
@@ -43,7 +41,6 @@ class AgentProcessor:
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
         self.stats_reporter = stats_reporter
-        self.trainer = trainer
         self.max_trajectory_length = max_trajectory_length
         self.trajectory_queues: List[Queue] = []
 
