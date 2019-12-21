@@ -248,10 +248,11 @@ class Trainer(object):
         """
         Steps the trainer, taking in trajectories and updates if ready.
         """
-        for _traj_queue in self.trajectory_queues:
-            if not _traj_queue.empty():
-                _t = _traj_queue.get_nowait()
-                self._process_trajectory(_t)
+        with hierarchical_timer("process_trajectory"):
+            for _traj_queue in self.trajectory_queues:
+                if not _traj_queue.empty():
+                    _t = _traj_queue.get_nowait()
+                    self._process_trajectory(_t)
         if self.is_training and self.get_step <= self.get_max_steps:
             if self.is_ready_update():
                 with hierarchical_timer("update_policy"):
