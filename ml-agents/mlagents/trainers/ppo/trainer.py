@@ -77,13 +77,12 @@ class PPOTrainer(RLTrainer):
         for _reward_signal in self.policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        super().process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         # Add to episode_steps

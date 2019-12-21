@@ -214,7 +214,13 @@ class TrainerController(object):
                             trajectory_queue=queue.Queue(),
                             policy_queue=queue.Queue(),
                         )
+                        agent_manager.processor.publish_trajectory_queue(
+                            agent_manager.trajectory_queue
+                        )
                         trainer.publish_policy_queue(agent_manager.policy_queue)
+                        trainer.subscribe_trajectory_queue(
+                            agent_manager.trajectory_queue
+                        )
                         self.managers[name] = agent_manager
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
@@ -296,6 +302,8 @@ class TrainerController(object):
                         step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
                     )
+                # NOTE: Keeping old stepping behavior for now.
+                trainer.increment_step(len(new_step_infos))
         # Advance trainers
         for brain_name, trainer in self.trainers.items():
             trainer.advance()

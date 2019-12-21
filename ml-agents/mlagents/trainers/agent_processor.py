@@ -1,4 +1,5 @@
 import sys
+from queue import Queue
 from typing import List, Dict
 from collections import defaultdict, Counter
 
@@ -44,6 +45,7 @@ class AgentProcessor:
         self.stats_reporter = stats_reporter
         self.trainer = trainer
         self.max_trajectory_length = max_trajectory_length
+        self.trajectory_queues: List[Queue] = []
 
     def add_experiences(
         self,
@@ -134,8 +136,8 @@ class AgentProcessor:
                         agent_id=agent_id,
                         next_obs=next_obs,
                     )
-                    # This will eventually be replaced with a queue
-                    self.trainer.process_trajectory(trajectory)
+                    for _traj_queue in self.trajectory_queues:
+                        _traj_queue.put(trajectory)
                     self.experience_buffers[agent_id] = []
                     if next_info.local_done[next_idx]:
                         self.stats_reporter.add_stat(
@@ -153,3 +155,11 @@ class AgentProcessor:
         self.policy.save_previous_action(
             curr_info.agents, take_action_outputs["action"]
         )
+
+    def publish_trajectory_queue(self, trajectory_queue: Queue) -> None:
+        """
+        Adds a trajectory queue to the list of queues to publish to when this AgentProcessor
+        assembles a Trajectory
+        :param trajectory_queue: Trajectory queue to publish to.
+        """
+        self.trajectory_queues.append(trajectory_queue)

@@ -56,6 +56,7 @@ class Trainer(object):
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.policy_queues: List[Queue] = []
+        self.trajectory_queues: List[Queue] = []
         self.step: int = 0
 
     def check_param_keys(self):
@@ -213,13 +214,15 @@ class Trainer(object):
                 )
             self.stats_reporter.write_stats(int(step))
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        self.increment_step(len(trajectory.steps))
+        raise UnityTrainerException(
+            "The process_trajectory method was not implemented."
+        )
 
     def end_episode(self):
         """
@@ -245,6 +248,10 @@ class Trainer(object):
         """
         Steps the trainer, taking in trajectories and updates if ready.
         """
+        for _traj_queue in self.trajectory_queues:
+            if not _traj_queue.empty():
+                _t = _traj_queue.get_nowait()
+                self._process_trajectory(_t)
         if self.is_training and self.get_step <= self.get_max_steps:
             if self.is_ready_update():
                 with hierarchical_timer("update_policy"):
@@ -259,3 +266,10 @@ class Trainer(object):
         :param queue: Policy queue to publish to.
         """
         self.policy_queues.append(policy_queue)
+
+    def subscribe_trajectory_queue(self, trajectory_queue: Queue) -> None:
+        """
+        Adds a trajectory queue to the list of queues for the trainer injest Trajectories from.
+        :param queue: Trajectory queue to publish to.
+        """
+        self.trajectory_queues.append(trajectory_queue)

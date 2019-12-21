@@ -134,11 +134,10 @@ class SACTrainer(RLTrainer):
             )
         )
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the replay buffer.
         """
-        super().process_trajectory(trajectory)
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
