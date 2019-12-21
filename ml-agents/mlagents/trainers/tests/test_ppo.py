@@ -1,5 +1,6 @@
 import unittest.mock as mock
 import pytest
+import queue
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -395,6 +396,8 @@ def test_process_trajectory(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trajectory_queue = queue.Queue()
+    trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -403,7 +406,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that trainer put trajectory in update buffer
     assert trainer.update_buffer.num_experiences == 15
@@ -427,7 +431,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that the stats are reset as episode is finished
     for reward in trainer.collected_rewards.values():
@@ -459,7 +464,7 @@ def test_normalization(dummy_config):
     # Change half of the obs to 0
     for i in range(3):
         trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
-    trainer.process_trajectory(trajectory)
+    trainer._process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.ppo_policy.sess.run(
@@ -485,7 +490,7 @@ def test_normalization(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trainer._process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.ppo_policy.sess.run(

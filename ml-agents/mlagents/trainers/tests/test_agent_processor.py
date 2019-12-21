@@ -29,12 +29,9 @@ def create_mock_policy():
 @pytest.mark.parametrize("num_vis_obs", [0, 1, 2], ids=["vec", "1 viz", "2 viz"])
 def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
-    trainer = mock.Mock()
+    tqueue = mock.Mock()
     processor = AgentProcessor(
-        trainer,
-        policy,
-        max_trajectory_length=5,
-        stats_reporter=StatsReporter("testcat"),
+        policy, max_trajectory_length=5, stats_reporter=StatsReporter("testcat")
     )
     fake_action_outputs = {
         "action": [0.1, 0.1],
@@ -49,14 +46,15 @@ def test_agentprocessor(num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
+    processor.publish_trajectory_queue(tqueue)
     for i in range(5):
         processor.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
 
     # Assert that two trajectories have been added to the Trainer
-    assert len(trainer.process_trajectory.call_args_list) == 2
+    assert len(tqueue.put.call_args_list) == 2
 
     # Assert that the trajectory is of length 5
-    trajectory = trainer.process_trajectory.call_args_list[0][0][0]
+    trajectory = tqueue.put.call_args_list[0][0][0]
     assert len(trajectory.steps) == 5
 
     # Assert that the AgentProcessor is empty
