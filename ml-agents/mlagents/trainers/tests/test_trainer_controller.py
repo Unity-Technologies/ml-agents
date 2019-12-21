@@ -124,7 +124,13 @@ def trainer_controller_with_take_step_mocks(basic_trainer_controller):
 
     tc = basic_trainer_controller
     tc.trainers = {"testbrain": trainer_mock}
-    tc.managers = {"testbrain": AgentManager(processor=processor_mock)}
+    tc.managers = {
+        "testbrain": AgentManager(
+            processor=processor_mock,
+            policy_queue=MagicMock(),
+            trajectory_queue=MagicMock(),
+        )
+    }
 
     return tc, trainer_mock
 
@@ -158,7 +164,7 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
         new_step_info.brain_name_to_action_info[brain_name].outputs,
     )
 
-    trainer_mock.update_policy.assert_called_once()
+    trainer_mock.advance.assert_called_once()
     trainer_mock.increment_step.assert_called_once()
 
 
