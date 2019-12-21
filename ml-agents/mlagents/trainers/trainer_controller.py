@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import logging
-import queue
+from queue import Queue
 from typing import Dict, List, Optional, Set, NamedTuple
 
 import numpy as np
@@ -28,8 +28,8 @@ from mlagents.trainers.agent_processor import AgentProcessor
 
 class AgentManager(NamedTuple):
     processor: AgentProcessor
-    trajectory_queue: queue.Queue
-    policy_queue: queue.Queue
+    trajectory_queue: Queue
+    policy_queue: Queue
 
 
 class TrainerController(object):
@@ -206,13 +206,12 @@ class TrainerController(object):
                         self.start_trainer(trainer, env_manager)
                         agent_manager = AgentManager(
                             processor=AgentProcessor(
-                                trainer,
                                 trainer.policy,
                                 trainer.stats_reporter,
                                 trainer.parameters.get("time_horizon", sys.maxsize),
                             ),
-                            trajectory_queue=queue.Queue(),
-                            policy_queue=queue.Queue(),
+                            trajectory_queue=Queue(),
+                            policy_queue=Queue(),
                         )
                         agent_manager.processor.publish_trajectory_queue(
                             agent_manager.trajectory_queue
