@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
 from mlagents.trainers.trainer_util import load_config, _load_config
-from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.brain import BrainParameters
@@ -119,7 +118,6 @@ def test_initialize_trainer_parameters_override_defaults(
         run_id,
         multi_gpu,
     ):
-        self.trainer_metrics = TrainerMetrics("", "")
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
@@ -180,7 +178,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         run_id,
         multi_gpu,
     ):
-        self.trainer_metrics = TrainerMetrics("", "")
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
