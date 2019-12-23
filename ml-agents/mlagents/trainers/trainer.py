@@ -1,6 +1,7 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Deque, Any
+import time
 
 from mlagents.tf_utils import tf
 
@@ -58,6 +59,8 @@ class Trainer(object):
         self.policy_queues: List[Queue] = []
         self.trajectory_queues: List[Queue] = []
         self.step: int = 0
+        self.training_start_time = time.time()
+        self.last_summary_written: int = 0
 
     def check_param_keys(self):
         for k in self.param_keys:
@@ -150,7 +153,7 @@ class Trainer(object):
         """
         return self._reward_buffer
 
-    def increment_step(self, n_steps: int) -> None:
+    def _increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
 
@@ -170,49 +173,45 @@ class Trainer(object):
         """
         self.policy.export_model()
 
-    def write_summary(self, global_step: int, delta_train_start: float) -> None:
+    def _write_summary(self) -> None:
         """
         Saves training statistics to Tensorboard.
         :param delta_train_start:  Time elapsed since training started.
         :param global_step: The number of steps the simulation has been going for
         """
-        if (
-            global_step % self.trainer_parameters["summary_freq"] == 0
-            and global_step != 0
-        ):
-            is_training = (
-                "Training."
-                if self.is_training and self.get_step <= self.get_max_steps
-                else "Not Training."
-            )
-            step = min(self.get_step, self.get_max_steps)
-            stats_summary = self.stats_reporter.get_stats_summaries(
-                "Environment/Cumulative Reward"
-            )
-            if stats_summary.num > 0:
-                LOGGER.info(
-                    " {}: {}: Step: {}. "
-                    "Time Elapsed: {:0.3f} s "
-                    "Mean "
-                    "Reward: {:0.3f}"
-                    ". Std of Reward: {:0.3f}. {}".format(
-                        self.run_id,
-                        self.brain_name,
-                        step,
-                        delta_train_start,
-                        stats_summary.mean,
-                        stats_summary.std,
-                        is_training,
-                    )
+        is_training = (
+            "Training."
+            if self.is_training and self.get_step <= self.get_max_steps
+            else "Not Training."
+        )
+        step = min(self.get_step, self.get_max_steps)
+        stats_summary = self.stats_reporter.get_stats_summaries(
+            "Environment/Cumulative Reward"
+        )
+        if stats_summary.num > 0:
+            LOGGER.info(
+                " {}: {}: Step: {}. "
+                "Time Elapsed: {:0.3f} s "
+                "Mean "
+                "Reward: {:0.3f}"
+                ". Std of Reward: {:0.3f}. {}".format(
+                    self.run_id,
+                    self.brain_name,
+                    step,
+                    time.time() - self.training_start_time,
+                    stats_summary.mean,
+                    stats_summary.std,
+                    is_training,
                 )
-                set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
-            else:
-                LOGGER.info(
-                    " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
-                        self.run_id, self.brain_name, step, is_training
-                    )
+            )
+            set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
+        else:
+            LOGGER.info(
+                " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
+                    self.run_id, self.brain_name, step, is_training
                 )
-            self.stats_reporter.write_stats(int(step))
+            )
+        self.stats_reporter.write_stats(int(step))
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -220,9 +219,7 @@ class Trainer(object):
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        raise UnityTrainerException(
-            "The process_trajectory method was not implemented."
-        )
+        self._increment_step(len(trajectory.steps))
 
     def end_episode(self):
         """
@@ -248,6 +245,13 @@ class Trainer(object):
         """
         Steps the trainer, taking in trajectories and updates if ready.
         """
+        if (
+            self.get_step - self.last_summary_written
+            > self.trainer_parameters["summary_freq"]
+            and self.get_step != 0
+        ):
+            self._write_summary()
+            self.last_summary_written = self.get_step
         with hierarchical_timer("process_trajectory"):
             for _traj_queue in self.trajectory_queues:
                 if not _traj_queue.empty():

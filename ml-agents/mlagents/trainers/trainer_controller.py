@@ -11,7 +11,6 @@ from typing import Dict, List, Optional, Set, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
-from time import time
 
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
 from mlagents_envs.exception import (
@@ -67,7 +66,6 @@ class TrainerController(object):
         self.save_freq = save_freq
         self.train_model = train
         self.meta_curriculum = meta_curriculum
-        self.training_start_time = time()
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
         np.random.seed(training_seed)
@@ -167,20 +165,6 @@ class TrainerController(object):
             or not self.train_model
         ) or len(self.trainers) == 0
 
-    def write_to_tensorboard(self, global_step: int) -> None:
-        for brain_name, trainer in self.trainers.items():
-            # Write training statistics to Tensorboard.
-            delta_train_start = time() - self.training_start_time
-            if (
-                self.meta_curriculum
-                and brain_name in self.meta_curriculum.brains_to_curriculums
-            ):
-                lesson_num = self.meta_curriculum.brains_to_curriculums[
-                    brain_name
-                ].lesson_num
-                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
-            trainer.write_summary(global_step, delta_train_start)
-
     def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
         self.trainers[trainer.brain_name] = trainer
         self.logger.info(trainer)
@@ -228,7 +212,6 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         # Save Tensorflow model
                         self._save_model()
-                    self.write_to_tensorboard(global_step)
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
@@ -250,6 +233,14 @@ class TrainerController(object):
             trainer.end_episode()
         for brain_name, changed in lessons_incremented.items():
             if changed:
+                if self.meta_curriculum:
+                    # Add changed lesson to stats
+                    lesson_num = self.meta_curriculum.brains_to_curriculums[
+                        brain_name
+                    ].lesson_num
+                    self.trainers[brain_name].stats_reporter.add_stat(
+                        "Environment/Lesson", lesson_num
+                    )
                 self.trainers[brain_name].reward_buffer.clear()
 
     def reset_env_if_ready(self, env: EnvManager, steps: int) -> None:
@@ -279,8 +270,7 @@ class TrainerController(object):
         if meta_curriculum_reset or generalization_reset:
             self.end_trainer_episodes(env, lessons_incremented)
 
-    @timed
-    def advance(self, env: EnvManager) -> int:
+    def _get_and_process_experiences(self, env: EnvManager) -> int:
         with hierarchical_timer("env_step"):
             # Get new policies if found
             for brain_name, trainer in self.trainers.items():
@@ -300,10 +290,15 @@ class TrainerController(object):
                         step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
                     )
-                # NOTE: Keeping old stepping behavior for now.
-                trainer.increment_step(len(new_step_infos))
-        # Advance trainers
+        return len(new_step_infos)
+
+    @timed
+    def advance(self, env: EnvManager) -> int:
+        # Get steps
+        num_steps = self._get_and_process_experiences(env)
+
+        # Advance trainers. This can be done in a separate loop in the future.
         for brain_name, trainer in self.trainers.items():
             trainer.advance()
 
-        return len(new_step_infos)
+        return num_steps
