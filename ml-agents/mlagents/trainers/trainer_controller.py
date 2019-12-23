@@ -188,6 +188,25 @@ class TrainerController(object):
             trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
         env_manager.set_policy(trainer.brain_name, trainer.policy)
 
+    def _create_trainer_and_manager(
+        self, env_manager: EnvManager, brain_name: str
+    ) -> None:
+        trainer = self.trainer_factory.generate(env_manager.external_brains[brain_name])
+        self.start_trainer(trainer, env_manager)
+        agent_manager = AgentManager(
+            processor=AgentProcessor(
+                trainer.policy,
+                trainer.stats_reporter,
+                trainer.parameters.get("time_horizon", sys.maxsize),
+            ),
+            trajectory_queue=Queue(),
+            policy_queue=Queue(),
+        )
+        agent_manager.processor.publish_trajectory_queue(agent_manager.trajectory_queue)
+        trainer.publish_policy_queue(agent_manager.policy_queue)
+        trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
+        self.managers[brain_name] = agent_manager
+
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
@@ -200,27 +219,7 @@ class TrainerController(object):
                 new_brains = external_brains - last_brain_names
                 if last_brain_names != env_manager.external_brains.keys():
                     for name in new_brains:
-                        trainer = self.trainer_factory.generate(
-                            env_manager.external_brains[name]
-                        )
-                        self.start_trainer(trainer, env_manager)
-                        agent_manager = AgentManager(
-                            processor=AgentProcessor(
-                                trainer.policy,
-                                trainer.stats_reporter,
-                                trainer.parameters.get("time_horizon", sys.maxsize),
-                            ),
-                            trajectory_queue=Queue(),
-                            policy_queue=Queue(),
-                        )
-                        agent_manager.processor.publish_trajectory_queue(
-                            agent_manager.trajectory_queue
-                        )
-                        trainer.publish_policy_queue(agent_manager.policy_queue)
-                        trainer.subscribe_trajectory_queue(
-                            agent_manager.trajectory_queue
-                        )
-                        self.managers[name] = agent_manager
+                        self._create_trainer_and_manager(env_manager, name)
                     last_brain_names = external_brains
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
