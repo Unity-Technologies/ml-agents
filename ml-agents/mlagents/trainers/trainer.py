@@ -155,7 +155,7 @@ class Trainer(object):
 
         :param n_steps: number of steps to increment the step count by
         """
-        self.step += n_steps  # self.policy.increment_step(n_steps)
+        self.step += n_steps
 
     def save_model(self, name_behavior_id: str) -> None:
         """

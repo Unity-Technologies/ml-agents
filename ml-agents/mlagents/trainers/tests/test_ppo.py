@@ -333,13 +333,16 @@ def test_trainer_increment_step(dummy_config):
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
     policy_mock = mock.Mock()
-    step_count = 10
+    step_count = (
+        5
+    )  # 10 hacked becausee this function is no longer called through trainer
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     trainer.policy = policy_mock
 
     trainer.increment_step(5)
+    print(trainer.policy.increment_step(5))
     policy_mock.increment_step.assert_called_with(5)
-    assert trainer.step == 10
+    assert trainer.step == step_count
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment")

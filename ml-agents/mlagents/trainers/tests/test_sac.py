@@ -348,7 +348,7 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
     buffer_len = trainer.update_buffer.num_experiences
-    trainer.save_model()
+    trainer.save_model(mock_brain.brain_name)
 
     # Wipe Trainer and try to load
     trainer2 = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, True, 0, 0)
