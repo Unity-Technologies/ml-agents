@@ -9,7 +9,7 @@ namespace MLAgents
 {
     public class StandaloneBuildTest
     {
-        static void BuildStandalonePlayerOSX()
+        public static void BuildStandalonePlayerOSX()
         {
             string[] scenes = { "Assets/ML-Agents/Examples/3DBall/Scenes/3DBall.unity" };
             var buildResult = BuildPipeline.BuildPlayer(scenes, "testPlayer", BuildTarget.StandaloneOSX, BuildOptions.None);
