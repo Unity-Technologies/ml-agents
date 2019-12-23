@@ -68,7 +68,7 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.multi_gpu = multi_gpu
         self.seed = seed
-        self.policy = None
+        self.policy: TFPolicy = None
 
     def process_trajectory(self, trajectory: Trajectory) -> None:
         """

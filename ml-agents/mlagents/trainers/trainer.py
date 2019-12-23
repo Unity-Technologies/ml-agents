@@ -56,7 +56,6 @@ class Trainer(object):
             path=self.summary_path + ".csv", brain_name=self.brain_name
         )
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy
         self.step: int = 0
 
     def check_param_keys(self):
@@ -156,19 +155,19 @@ class Trainer(object):
 
         :param n_steps: number of steps to increment the step count by
         """
-        self.step = self.policy.increment_step(n_steps)
+        self.step += n_steps  # self.policy.increment_step(n_steps)
 
-    def save_model(self) -> None:
+    def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model
         """
-        self.policy.save_model(self.get_step)
+        self.get_policy(name_behavior_id).save_model(self.get_step)
 
-    def export_model(self) -> None:
+    def export_model(self, name_behavior_id: str) -> None:
         """
         Exports the model
         """
-        self.policy.export_model()
+        self.get_policy(name_behavior_id).export_model()
 
     def write_training_metrics(self) -> None:
         """

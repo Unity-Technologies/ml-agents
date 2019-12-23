@@ -103,7 +103,8 @@ class TrainerController(object):
         Saves current model to checkpoint folder.
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].save_model()
+            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                self.trainers[brain_name].save_model(name_behavior_id)
         self.logger.info("Saved Model")
 
     def _save_model_when_interrupted(self):
@@ -136,7 +137,8 @@ class TrainerController(object):
         Exports latest saved models to .nn format for Unity embedding.
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].export_model()
+            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                self.trainers[brain_name].export_model(name_behavior_id)
 
     @staticmethod
     def _create_model_path(model_path):
@@ -323,7 +325,10 @@ class TrainerController(object):
             if brain_name in self.trainer_metrics:
                 self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                trainer.increment_step(len(new_step_infos))
+                n_steps = len(new_step_infos)
+                trainer.increment_step(n_steps)
+                for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                    trainer.get_policy(name_behavior_id).increment_step(n_steps)
                 if trainer.is_ready_update():
                     # Perform gradient descent with experience buffer
                     with hierarchical_timer("update_policy"):

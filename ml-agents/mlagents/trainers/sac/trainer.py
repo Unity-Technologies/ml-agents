@@ -75,7 +75,7 @@ class SACTrainer(RLTrainer):
         self.check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy = None
+        self.policy: TFPolicy = None
 
         self.step = 0
         self.train_interval = (
@@ -95,7 +95,7 @@ class SACTrainer(RLTrainer):
             else False
         )
 
-    def save_model(self) -> None:
+    def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model. Overrides the default save_model since we want to save
         the replay buffer as well.
