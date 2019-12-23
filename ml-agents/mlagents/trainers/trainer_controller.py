@@ -310,6 +310,8 @@ class TrainerController(object):
             if self.train_model and trainer.get_step <= trainer.get_max_steps:
                 n_steps = len(new_step_infos)
                 trainer.increment_step(n_steps)
+                for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                    trainer.get_policy(name_behavior_id).increment_step(n_steps)
                 if trainer.is_ready_update():
                     # Perform gradient descent with experience buffer
                     with hierarchical_timer("update_policy"):
