@@ -11,6 +11,9 @@ from mlagents.trainers.brain import CameraResolution
 logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
+EncoderFunction = Callable[
+    [tf.Tensor, int, ActivationFunction, int, str, bool], tf.Tensor
+]
 
 EPSILON = 1e-7
 
@@ -26,8 +29,16 @@ class LearningRateSchedule(Enum):
     LINEAR = "linear"
 
 
-class LearningModel(object):
+class LearningModel:
     _version_number_ = 2
+
+    # Minimum supported side for each encoder type. If refactoring an encoder, please
+    # adjust these also.
+    MIN_RESOLUTION_FOR_ENCODER = {
+        EncoderType.SIMPLE: 20,
+        EncoderType.NATURE_CNN: 36,
+        EncoderType.RESNET: 15,
+    }
 
     def __init__(
         self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
@@ -187,7 +198,7 @@ class LearningModel(object):
             [],
             trainable=False,
             dtype=tf.int32,
-            initializer=tf.ones_initializer(),
+            initializer=tf.zeros_initializer(),
         )
         self.running_mean = tf.get_variable(
             "running_mean",
@@ -206,18 +217,24 @@ class LearningModel(object):
         self.update_normalization = self.create_normalizer_update(vector_obs)
 
     def create_normalizer_update(self, vector_input):
-        mean_current_observation = tf.reduce_mean(vector_input, axis=0)
-        new_mean = self.running_mean + (
-            mean_current_observation - self.running_mean
-        ) / tf.cast(tf.add(self.normalization_steps, 1), tf.float32)
-        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
-            mean_current_observation - self.running_mean
+        # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
+        # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
+        steps_increment = tf.shape(vector_input)[0]
+        total_new_steps = tf.add(self.normalization_steps, steps_increment)
+
+        # Compute the incremental update and divide by the number of new steps.
+        input_to_old_mean = tf.subtract(vector_input, self.running_mean)
+        new_mean = self.running_mean + tf.reduce_sum(
+            input_to_old_mean / tf.cast(total_new_steps, dtype=tf.float32), axis=0
+        )
+        # Compute difference of input to the new mean for Welford update
+        input_to_new_mean = tf.subtract(vector_input, new_mean)
+        new_variance = self.running_variance + tf.reduce_sum(
+            input_to_new_mean * input_to_old_mean, axis=0
         )
         update_mean = tf.assign(self.running_mean, new_mean)
         update_variance = tf.assign(self.running_variance, new_variance)
-        update_norm_step = tf.assign(
-            self.normalization_steps, self.normalization_steps + 1
-        )
+        update_norm_step = tf.assign(self.normalization_steps, total_new_steps)
         return tf.group([update_mean, update_variance, update_norm_step])
 
     @staticmethod
@@ -422,6 +439,17 @@ class LearningModel(object):
         return hidden_flat
 
     @staticmethod
+    def get_encoder_for_type(encoder_type: EncoderType) -> EncoderFunction:
+        ENCODER_FUNCTION_BY_TYPE = {
+            EncoderType.SIMPLE: LearningModel.create_visual_observation_encoder,
+            EncoderType.NATURE_CNN: LearningModel.create_nature_cnn_visual_observation_encoder,
+            EncoderType.RESNET: LearningModel.create_resnet_visual_observation_encoder,
+        }
+        return ENCODER_FUNCTION_BY_TYPE.get(
+            encoder_type, LearningModel.create_visual_observation_encoder
+        )
+
+    @staticmethod
     def create_discrete_action_masking_layer(all_logits, action_masks, action_size):
         """
         Creates a masking layer for the discrete actions
@@ -468,6 +496,17 @@ class LearningModel(object):
             ),
         )
 
+    @staticmethod
+    def _check_resolution_for_encoder(
+        camera_res: CameraResolution, vis_encoder_type: EncoderType
+    ) -> None:
+        min_res = LearningModel.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
+        if camera_res.height < min_res or camera_res.width < min_res:
+            raise UnityTrainerException(
+                f"Visual observation resolution ({camera_res.width}x{camera_res.height}) is too small for"
+                f"the provided EncoderType ({vis_encoder_type.value}). The min dimension is {min_res}"
+            )
+
     def create_observation_streams(
         self,
         num_streams: int,
@@ -490,23 +529,20 @@ class LearningModel(object):
 
         self.visual_in = []
         for i in range(brain.number_visual_observations):
+            LearningModel._check_resolution_for_encoder(
+                brain.camera_resolutions[i], vis_encode_type
+            )
             visual_input = self.create_visual_input(
                 brain.camera_resolutions[i], name="visual_observation_" + str(i)
             )
             self.visual_in.append(visual_input)
         vector_observation_input = self.create_vector_input()
 
-        # Pick the encoder function based on the EncoderType
-        create_encoder_func = LearningModel.create_visual_observation_encoder
-        if vis_encode_type == EncoderType.RESNET:
-            create_encoder_func = LearningModel.create_resnet_visual_observation_encoder
-        elif vis_encode_type == EncoderType.NATURE_CNN:
-            create_encoder_func = (
-                LearningModel.create_nature_cnn_visual_observation_encoder
-            )
-
         final_hiddens = []
         for i in range(num_streams):
+            # Pick the encoder function based on the EncoderType
+            create_encoder_func = LearningModel.get_encoder_for_type(vis_encode_type)
+
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             _scope_add = stream_scopes[i] if stream_scopes else ""
@@ -517,8 +553,8 @@ class LearningModel(object):
                         h_size,
                         activation_fn,
                         num_layers,
-                        scope=f"{_scope_add}main_graph_{i}_encoder{j}",
-                        reuse=False,
+                        f"{_scope_add}main_graph_{i}_encoder{j}",  # scope
+                        False,  # reuse
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)

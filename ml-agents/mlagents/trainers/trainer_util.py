@@ -90,9 +90,7 @@ def initialize_trainer(
         )
 
     trainer_parameters = trainer_config.get("default", {}).copy()
-    trainer_parameters["summary_path"] = "{basedir}/{name}".format(
-        basedir=summaries_dir, name=str(run_id) + "_" + brain_name
-    )
+    trainer_parameters["summary_path"] = str(run_id) + "_" + brain_name
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name
     )

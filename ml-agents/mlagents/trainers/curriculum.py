@@ -1,6 +1,7 @@
 import os
 import json
 import math
+from typing import Dict, Any, TextIO
 
 from .exception import CurriculumConfigError, CurriculumLoadingError
 
@@ -51,14 +52,14 @@ class Curriculum(object):
                 )
 
     @property
-    def lesson_num(self):
+    def lesson_num(self) -> int:
         return self._lesson_num
 
     @lesson_num.setter
-    def lesson_num(self, lesson_num):
+    def lesson_num(self, lesson_num: int) -> None:
         self._lesson_num = max(0, min(lesson_num, self.max_lesson_num))
 
-    def increment_lesson(self, measure_val):
+    def increment_lesson(self, measure_val: float) -> bool:
         """
         Increments the lesson number depending on the progress given.
         :param measure_val: Measure of progress (either reward or percentage
@@ -87,7 +88,7 @@ class Curriculum(object):
                 return True
         return False
 
-    def get_config(self, lesson=None):
+    def get_config(self, lesson: int = None) -> Dict[str, Any]:
         """
         Returns reset parameters which correspond to the lesson.
         :param lesson: The lesson you want to get the config of. If None, the
@@ -106,7 +107,7 @@ class Curriculum(object):
         return config
 
     @staticmethod
-    def load_curriculum_file(location):
+    def load_curriculum_file(location: str) -> None:
         try:
             with open(location) as data_file:
                 return Curriculum._load_curriculum(data_file)
@@ -120,7 +121,7 @@ class Curriculum(object):
             )
 
     @staticmethod
-    def _load_curriculum(fp):
+    def _load_curriculum(fp: TextIO) -> None:
         try:
             return json.load(fp)
         except json.decoder.JSONDecodeError as e:

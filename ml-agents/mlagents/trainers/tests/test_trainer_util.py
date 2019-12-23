@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import mlagents.trainers.trainer_util as trainer_util
 from mlagents.trainers.trainer_util import load_config, _load_config
-from mlagents.trainers.trainer_metrics import TrainerMetrics
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.brain import BrainParameters
@@ -46,8 +45,8 @@ def dummy_config():
 
 
 @pytest.fixture
-def dummy_config_with_override():
-    base = dummy_config()
+def dummy_config_with_override(dummy_config):
+    base = dummy_config
     base["testbrain"] = {}
     base["testbrain"]["normalize"] = False
     return base
@@ -83,7 +82,9 @@ def dummy_bad_config():
 
 
 @patch("mlagents.trainers.brain.BrainParameters")
-def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
+def test_initialize_trainer_parameters_override_defaults(
+    BrainParametersMock, dummy_config_with_override
+):
     summaries_dir = "test_dir"
     run_id = "testrun"
     model_path = "model_dir"
@@ -93,9 +94,9 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
     seed = 11
     expected_reward_buff_cap = 1
 
-    base_config = dummy_config_with_override()
+    base_config = dummy_config_with_override
     expected_config = base_config["default"]
-    expected_config["summary_path"] = summaries_dir + f"/{run_id}_testbrain"
+    expected_config["summary_path"] = f"{run_id}_testbrain"
     expected_config["model_path"] = model_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
@@ -117,7 +118,6 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
         run_id,
         multi_gpu,
     ):
-        self.trainer_metrics = TrainerMetrics("", "")
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
@@ -148,7 +148,7 @@ def test_initialize_trainer_parameters_override_defaults(BrainParametersMock):
 
 
 @patch("mlagents.trainers.brain.BrainParameters")
-def test_initialize_ppo_trainer(BrainParametersMock):
+def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     brain_params_mock = BrainParametersMock()
     BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
@@ -161,9 +161,9 @@ def test_initialize_ppo_trainer(BrainParametersMock):
     seed = 11
     expected_reward_buff_cap = 1
 
-    base_config = dummy_config()
+    base_config = dummy_config
     expected_config = base_config["default"]
-    expected_config["summary_path"] = summaries_dir + f"/{run_id}_testbrain"
+    expected_config["summary_path"] = f"{run_id}_testbrain"
     expected_config["model_path"] = model_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
@@ -178,7 +178,6 @@ def test_initialize_ppo_trainer(BrainParametersMock):
         run_id,
         multi_gpu,
     ):
-        self.trainer_metrics = TrainerMetrics("", "")
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
@@ -207,7 +206,9 @@ def test_initialize_ppo_trainer(BrainParametersMock):
 
 
 @patch("mlagents.trainers.brain.BrainParameters")
-def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
+def test_initialize_invalid_trainer_raises_exception(
+    BrainParametersMock, dummy_bad_config
+):
     summaries_dir = "test_dir"
     run_id = "testrun"
     model_path = "model_dir"
@@ -215,7 +216,7 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
     train_model = True
     load_model = False
     seed = 11
-    bad_config = dummy_bad_config()
+    bad_config = dummy_bad_config
     BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
 
@@ -235,13 +236,12 @@ def test_initialize_invalid_trainer_raises_exception(BrainParametersMock):
             trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
 
 
-def test_handles_no_default_section():
+def test_handles_no_default_section(dummy_config):
     """
     Make sure the trainer setup handles a missing "default" in the config.
     """
     brain_name = "testbrain"
-    config = dummy_config()
-    no_default_config = {brain_name: config["default"]}
+    no_default_config = {brain_name: dummy_config["default"]}
     brain_parameters = BrainParameters(
         brain_name=brain_name,
         vector_observation_space_size=1,
@@ -264,14 +264,13 @@ def test_handles_no_default_section():
     trainer_factory.generate(brain_parameters.brain_name)
 
 
-def test_raise_if_no_config_for_brain():
+def test_raise_if_no_config_for_brain(dummy_config):
     """
     Make sure the trainer setup raises a friendlier exception if both "default" and the brain name
     are missing from the config.
     """
     brain_name = "testbrain"
-    config = dummy_config()
-    bad_config = {"some_other_brain": config["default"]}
+    bad_config = {"some_other_brain": dummy_config["default"]}
     brain_parameters = BrainParameters(
         brain_name=brain_name,
         vector_observation_space_size=1,
