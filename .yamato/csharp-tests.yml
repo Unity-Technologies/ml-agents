@@ -17,7 +17,6 @@ test_mac_editmode_{{ editor.version }}:
     pull_requests:
       - targets:
           only:
-            - "develop"
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"
