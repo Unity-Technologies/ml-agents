@@ -336,7 +336,7 @@ def test_trainer_increment_step(dummy_config):
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     trainer.policy = policy_mock
 
-    trainer.increment_step(5)
+    trainer._increment_step(5)
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == 10
 

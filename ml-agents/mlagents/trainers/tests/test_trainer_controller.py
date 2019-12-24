@@ -165,7 +165,6 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
     )
 
     trainer_mock.advance.assert_called_once()
-    trainer_mock.increment_step.assert_called_once()
 
 
 def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
