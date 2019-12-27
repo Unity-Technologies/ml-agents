@@ -208,9 +208,8 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
 
-    def set_policy(self, policy: TFPolicy) -> None:
+    def set_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         self.policy = policy
-        self.sac_policy: SACPolicy = policy
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         policy = SACPolicy(

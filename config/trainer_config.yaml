@@ -22,7 +22,6 @@ default:
         extrinsic:
             strength: 1.0
             gamma: 0.99
-    ghost: false
 
 FoodCollector:
     normalize: false
@@ -171,9 +170,9 @@ Tennis:
     normalize: true
     max_steps: 5e7
     ghost:
-        window: 20
-        current_prob: .7
-        snapshot_per: 1000
+        window: 5
+        current_prob: 0.0
+        snapshot_per: 5000
 
 Tennis_SAC:
     trainer: sac

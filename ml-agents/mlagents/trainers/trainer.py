@@ -263,5 +263,11 @@ class Trainer(object):
         """
         raise UnityTrainerException("The get_policy method was not implemented.")
 
+    def set_learning_policy(self, name_behavior_id: str) -> None:
+        """
+        sets policy in trainer
+        """
+        pass
+
     def advance(self) -> None:
         pass

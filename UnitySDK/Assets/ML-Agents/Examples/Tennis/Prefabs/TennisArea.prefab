@@ -1201,6 +1201,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Tennis
   m_TeamID: 0
+  m_useChildSensors: 1
 --- !u!114 &114399072728845634
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1221,8 +1222,9 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: ddeebf56ea07142cba1fd96aba6d8d4d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Tennis_SAC
+  m_BehaviorName: Tennis
   m_TeamID: 1
+  m_useChildSensors: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
   m_ObjectHideFlags: 1
