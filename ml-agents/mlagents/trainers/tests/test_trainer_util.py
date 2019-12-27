@@ -118,7 +118,7 @@ def test_initialize_trainer_parameters_override_defaults(
         run_id,
         multi_gpu,
     ):
-        assert brain == brain_params_mock
+        assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
@@ -140,7 +140,9 @@ def test_initialize_trainer_parameters_override_defaults(
         )
         trainers = {}
         for _, brain_parameters in external_brains.items():
-            trainers["testbrain"] = trainer_factory.generate(brain_parameters)
+            trainers["testbrain"] = trainer_factory.generate(
+                brain_parameters.brain_name
+            )
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
@@ -176,7 +178,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         run_id,
         multi_gpu,
     ):
-        assert brain == brain_params_mock
+        assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
@@ -198,7 +200,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
-            trainers[brain_name] = trainer_factory.generate(brain_parameters)
+            trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
@@ -231,7 +233,7 @@ def test_initialize_invalid_trainer_raises_exception(
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
-            trainers[brain_name] = trainer_factory.generate(brain_parameters)
+            trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
 
 
 def test_handles_no_default_section(dummy_config):
@@ -259,7 +261,7 @@ def test_handles_no_default_section(dummy_config):
         load_model=False,
         seed=42,
     )
-    trainer_factory.generate(brain_parameters)
+    trainer_factory.generate(brain_parameters.brain_name)
 
 
 def test_raise_if_no_config_for_brain(dummy_config):

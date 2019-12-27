@@ -10,6 +10,8 @@ import numpy as np
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.trajectory import Trajectory
 
 logger = logging.getLogger("mlagents.trainers")
@@ -20,26 +22,28 @@ class PPOTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
-        multi_gpu,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        load: bool,
+        seed: int,
+        run_id: str,
+        multi_gpu: bool,
     ):
         """
         Responsible for collecting experiences and training PPO model.
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
+        :param multi_gpu: Boolean for multi-gpu policy model
         """
         super(PPOTrainer, self).__init__(
-            brain, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_parameters, training, run_id, reward_buff_cap
         )
         self.param_keys = [
             "batch_size",
@@ -63,19 +67,10 @@ class PPOTrainer(RLTrainer):
             "reward_signals",
         ]
         self.check_param_keys()
-
-        if multi_gpu and len(get_devices()) > 1:
-            self.ppo_policy = MultiGpuPPOPolicy(
-                seed, brain, trainer_parameters, self.is_training, load
-            )
-        else:
-            self.ppo_policy = PPOPolicy(
-                seed, brain, trainer_parameters, self.is_training, load
-            )
-        self.policy = self.ppo_policy
-
-        for _reward_signal in self.policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+        self.load = load
+        self.multi_gpu = multi_gpu
+        self.seed = seed
+        self.policy: TFPolicy = None
 
     def process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -161,7 +156,9 @@ class PPOTrainer(RLTrainer):
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
-            self._update_end_episode_stats(agent_id)
+            self._update_end_episode_stats(
+                agent_id, self.get_policy(trajectory.behavior_id)
+            )
 
     def is_ready_update(self):
         """
@@ -217,6 +214,56 @@ class PPOTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self.stats_reporter.add_stat(stat, val)
         self.clear_update_buffer()
+
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates a PPO policy to trainers list of policies.
+        :param brain_parameters: specifications for policy construction
+        :return policy
+        """
+
+        if self.multi_gpu and len(get_devices()) > 1:
+            policy: PPOPolicy = MultiGpuPPOPolicy(
+                self.seed,
+                brain_parameters,
+                self.trainer_parameters,
+                self.is_training,
+                self.load,
+            )
+        else:
+            policy = PPOPolicy(
+                self.seed,
+                brain_parameters,
+                self.trainer_parameters,
+                self.is_training,
+                self.load,
+            )
+
+        for _reward_signal in policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        return policy
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer.
+        :param brain_parameters: specifications for policy construction
+        """
+        if self.policy:
+            logger.warning(
+                "add_policy has been called twice. {} is not a multi-agent trainer".format(
+                    self.__class__.__name__
+                )
+            )
+        self.policy = policy
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer associated with name_behavior_id
+        :param name_behavior_id: full identifier of policy
+        """
+
+        return self.policy
 
 
 def discount_rewards(r, gamma=0.99, value_next=0.0):

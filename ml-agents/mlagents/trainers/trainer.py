@@ -29,7 +29,7 @@ class Trainer(object):
 
     def __init__(
         self,
-        brain: BrainParameters,
+        brain_name: str,
         trainer_parameters: dict,
         training: bool,
         run_id: str,
@@ -44,7 +44,7 @@ class Trainer(object):
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []
-        self.brain_name = brain.brain_name
+        self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
@@ -52,7 +52,6 @@ class Trainer(object):
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None  # type: ignore  # this will always get set
         self.step: int = 0
 
     def check_param_keys(self):
@@ -152,19 +151,19 @@ class Trainer(object):
 
         :param n_steps: number of steps to increment the step count by
         """
-        self.step = self.policy.increment_step(n_steps)
+        self.step += n_steps
 
-    def save_model(self) -> None:
+    def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model
         """
-        self.policy.save_model(self.get_step)
+        self.get_policy(name_behavior_id).save_model(self.get_step)
 
-    def export_model(self) -> None:
+    def export_model(self, name_behavior_id: str) -> None:
         """
         Exports the model
         """
-        self.policy.export_model()
+        self.get_policy(name_behavior_id).export_model()
 
     def write_summary(self, global_step: int, delta_train_start: float) -> None:
         """
@@ -239,6 +238,24 @@ class Trainer(object):
         Uses demonstration_buffer to update model.
         """
         raise UnityTrainerException("The update_model method was not implemented.")
+
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates policy
+        """
+        raise UnityTrainerException("The create_policy method was not implemented.")
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer
+        """
+        raise UnityTrainerException("The add_policy method was not implemented")
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer
+        """
+        raise UnityTrainerException("The get_policy method was not implemented.")
 
     def advance(self) -> None:
         pass

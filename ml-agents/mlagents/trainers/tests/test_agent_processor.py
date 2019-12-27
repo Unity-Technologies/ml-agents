@@ -30,9 +30,11 @@ def create_mock_policy():
 def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
     trainer = mock.Mock()
+    name_behavior_id = "test_brain_name"
     processor = AgentProcessor(
         trainer,
         policy,
+        name_behavior_id,
         max_trajectory_length=5,
         stats_reporter=StatsReporter("testcat"),
     )

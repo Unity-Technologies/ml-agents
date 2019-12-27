@@ -1,5 +1,6 @@
 using Barracuda;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MLAgents
@@ -34,6 +35,8 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         string m_BehaviorName = "My Behavior";
+        [HideInInspector] [SerializeField]
+        int m_TeamID = 0;
         [HideInInspector]
         [SerializeField]
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
@@ -51,7 +54,9 @@ namespace MLAgents
 
         public string behaviorName
         {
-            get { return m_BehaviorName; }
+            
+            get { return m_BehaviorName + "?team=" + m_TeamID;} 
+
         }
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)
@@ -65,7 +70,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, m_BehaviorName);
+                        return new RemotePolicy(m_BrainParameters, behaviorName);
                     }
                     if (m_Model != null)
                     {

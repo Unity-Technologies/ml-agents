@@ -30,7 +30,7 @@ def create_mock_brain():
 
 def create_rl_trainer():
     mock_brainparams = create_mock_brain()
-    trainer = RLTrainer(mock_brainparams, dummy_config(), True, 0)
+    trainer = RLTrainer(mock_brainparams.brain_name, dummy_config(), True, 0)
     return trainer
 
 
