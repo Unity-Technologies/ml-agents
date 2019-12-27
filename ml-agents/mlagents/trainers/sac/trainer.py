@@ -9,6 +9,7 @@ import os
 
 import numpy as np
 
+
 from mlagents_envs.timers import timed
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.sac.policy import SACPolicy
@@ -29,16 +30,18 @@ class SACTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain_name,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        load: bool,
+        seed: int,
+        run_id: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
+        :param brain_name: The name of the brain associated with trainer config
+        :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.

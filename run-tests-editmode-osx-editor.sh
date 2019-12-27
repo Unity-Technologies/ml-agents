@@ -30,7 +30,7 @@ else
 
     echo "Starting tests via $UNITY"
 
-    CMD_LINE="$UNITY -runTests -logfile - -projectPath $BASETPATH/UnitySDK -testResults $BASETPATH/results.xml -testPlatform editmode"
+    CMD_LINE="$UNITY -batchmode -runTests -logfile - -projectPath $BASETPATH/UnitySDK -testResults $BASETPATH/results.xml -testPlatform editmode"
 
     echo "$CMD_LINE ..."
 

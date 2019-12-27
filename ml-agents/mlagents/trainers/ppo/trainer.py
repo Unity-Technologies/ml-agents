@@ -22,23 +22,25 @@ class PPOTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain_name,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
-        multi_gpu,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        load: bool,
+        seed: int,
+        run_id: str,
+        multi_gpu: bool,
     ):
         """
         Responsible for collecting experiences and training PPO model.
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
+        :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
+        :param multi_gpu: Boolean for multi-gpu policy model
         """
         super(PPOTrainer, self).__init__(
             brain_name, trainer_parameters, training, run_id, reward_buff_cap
