@@ -30,13 +30,13 @@ class SACTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain_name,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        load: bool,
+        seed: int,
+        run_id: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
