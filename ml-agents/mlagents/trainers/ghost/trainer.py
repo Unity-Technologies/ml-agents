@@ -1,7 +1,7 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Ghost Trainer)
 
-import logging
+# import logging
 from typing import Dict
 
 import numpy as np
@@ -14,29 +14,16 @@ from mlagents.trainers.trajectory import Trajectory
 
 from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
 
-logger = logging.getLogger("mlagents.trainers")
+# logger = logging.getLogger("mlagents.trainers")
 
 
 class GhostTrainer(object):
-    def __init__(
-        self,
-        trainer,
-        brain_name,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
-    ):
+    def __init__(self, trainer, brain_name, self_play_parameters):
         """
-        Responsible for collecting experiences and training PPO model.
-        :param trainer_parameters: The parameters for the trainer (dictionary).
-        :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param training: Whether the trainer is set for training.
-        :param load: Whether the model should be loaded.
-        :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        Responsible for collecting experiences and training trainer model via self_play.
+        :param trainer: The trainer of the policy/policies being trained with self_play
+        :param brain_name: The name of the brain associated with trainer config
+        :param self_play_parameters: The parameters for self play (dictionary).
         """
 
         self.trainer = trainer
@@ -50,13 +37,9 @@ class GhostTrainer(object):
         self.learning_policy_name: str = None
         self.current_policy_snapshot = None
         self.last_step = 0
-        self.window = trainer_parameters["ghost"]["window"]
-        self.current_prob = trainer_parameters["ghost"]["current_prob"]
-        self.steps_between_snapshots = trainer_parameters["ghost"]["snapshot_per"]
-
-    # def __getattribute__(self, name):
-    #    trainer = object.__getattribute__(self, "trainer")
-    #    return trainer.__getattribute__(name)
+        self.window = self_play_parameters["window"]
+        self.current_prob = self_play_parameters["current_prob"]
+        self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
     def __getattr__(self, name):
         trainer = object.__getattribute__(self, "trainer")
