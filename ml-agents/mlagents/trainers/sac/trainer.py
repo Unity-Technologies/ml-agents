@@ -77,7 +77,7 @@ class SACTrainer(RLTrainer):
         self.check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: TFPolicy = None
+        self.policy: TFPolicy = None  #
 
         self.step = 0
         self.train_interval = (
