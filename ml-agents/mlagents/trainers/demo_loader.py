@@ -31,7 +31,7 @@ def make_demo_buffer(
     for idx, experience in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
-        current_pair_info = pair_infos[idx]
+        current_pair_info = experience
         next_pair_info = pair_infos[idx + 1]
         current_brain_info = BrainInfo.from_agent_proto(
             0, [current_pair_info.agent_info], brain_params

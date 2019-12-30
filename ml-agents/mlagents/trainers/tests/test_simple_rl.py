@@ -224,7 +224,7 @@ def _check_environment_trains(
         # Begin training
         tc.start_learning(env_manager)
         print(tc._get_measure_vals())
-        for brain_name, mean_reward in tc._get_measure_vals().items():
+        for mean_reward in tc._get_measure_vals().values():
             assert not math.isnan(mean_reward)
             assert mean_reward > success_threshold
 

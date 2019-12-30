@@ -49,7 +49,7 @@ repos:
                 .*_pb2_grpc.py
             )$
         # flake8-tidy-imports is used for banned-modules, not actually tidying
-        additional_dependencies: [flake8-comprehensions, flake8-tidy-imports]
+        additional_dependencies: [flake8-comprehensions, flake8-tidy-imports, flake8-bugbear]
     -   id: trailing-whitespace
         name: trailing-whitespace-markdown
         types: [markdown]

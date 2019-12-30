@@ -107,7 +107,7 @@ def create_mock_group_spec(
         else:
             vector_action_space_size = tuple(vector_action_space_size)
     obs_shapes = [(vector_observation_space_size,)]
-    for i in range(number_visual_observations):
+    for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
     return AgentGroupSpec(obs_shapes, act_type, vector_action_space_size)
 
