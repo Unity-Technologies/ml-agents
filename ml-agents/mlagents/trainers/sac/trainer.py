@@ -74,12 +74,10 @@ class SACTrainer(RLTrainer):
             "vis_encode_type",
         ]
 
-        x: int = "foo"
-
         self.check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: TFPolicy = None  #
+        self.policy: SACPolicy = None  # type: ignore
 
         self.step = 0
         self.train_interval = (
@@ -339,8 +337,9 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        self.policy = policy
-        reveal_type(self.policy)
+        if not isinstance(policy, SACPolicy):
+            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
+        self.policy = policy  # type: ignore
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
