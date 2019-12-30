@@ -95,9 +95,9 @@ jobs:
             cat .pre-commit-config.yaml > pre-commit-deps.txt
             python -VV >> pre-commit-deps.txt
 
-      - restore_cache:
-          keys:
-          - v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
+#      - restore_cache:
+#          keys:
+#          - v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
 
       - run:
           name: Install Dependencies
