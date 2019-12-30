@@ -53,7 +53,6 @@ class Trainer(object):
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.step: int = 0
-        x: int = "foo"
 
     def check_param_keys(self):
         for k in self.param_keys:

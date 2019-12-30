@@ -74,6 +74,8 @@ class SACTrainer(RLTrainer):
             "vis_encode_type",
         ]
 
+        x: int = "foo"
+
         self.check_param_keys()
         self.load = load
         self.seed = seed
