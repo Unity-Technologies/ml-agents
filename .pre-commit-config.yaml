@@ -20,16 +20,19 @@ repos:
         name: mypy-ml-agents
         files: "ml-agents/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+        verbose: true
     -   id: mypy
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
         # Exclude protobuf files and don't follow them when imported
         exclude: ".*_pb2.py"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+        verbose: true
     -   id: mypy
         name: mypy-gym-unity
         files: "gym-unity/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
+        verbose: true
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
