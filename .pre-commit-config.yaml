@@ -21,6 +21,7 @@ repos:
         files: "ml-agents/.*"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
         verbose: true
+        require_serial: true
     -   id: mypy
         name: mypy-ml-agents-envs
         files: "ml-agents-envs/.*"
