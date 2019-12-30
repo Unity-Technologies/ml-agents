@@ -9,13 +9,14 @@ import yaml
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.rl_trainer import AllRewardsOutput
-from mlagents.trainers.components.reward_signals import RewardSignalResult
-from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.models import EncoderType, LearningModel
+from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
+from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,
@@ -42,6 +43,7 @@ def dummy_config():
         sequence_length: 64
         summary_freq: 1000
         use_recurrent: false
+        normalize: true
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
@@ -93,42 +95,47 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
     tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0
-    )
-    env = UnityEnvironment(" ")
-    env.reset()
-    brain_name = env.get_agent_groups()[0]
-    brain_info = step_result_to_brain_info(
-        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
-    )
-    brain_params = group_spec_to_brain_parameters(
-        brain_name, env.get_agent_group_spec(brain_name)
-    )
 
-    trainer_parameters = dummy_config
-    model_path = brain_name
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
-    run_out = policy.get_value_estimates(brain_info, 0, done=False)
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    policy = PPOPolicy(0, brain_params, dummy_config, False, False)
+    time_horizon = 15
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=False)
     for key, val in run_out.items():
         assert type(key) is str
         assert type(val) is float
 
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val == 0.0
 
     # Check if we ignore terminal states properly
     policy.reward_signals["extrinsic"].use_terminal_states = False
-    run_out = policy.get_value_estimates(brain_info, 0, done=True)
+    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
     for key, val in run_out.items():
         assert type(key) is str
         assert val != 0.0
 
-    env.close()
+    agentbuffer = trajectory.to_agentbuffer()
+    batched_values = policy.get_batched_value_estimates(agentbuffer)
+    for values in batched_values.values():
+        assert len(values) == 15
 
 
 def test_ppo_model_cc_vector():
@@ -322,15 +329,20 @@ def test_trainer_increment_step(dummy_config):
         vector_action_space_type=0,
     )
 
-    trainer = PPOTrainer(brain_params, 0, trainer_params, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
+    )
     policy_mock = mock.Mock()
-    step_count = 10
+    step_count = (
+        5
+    )  # 10 hacked becausee this function is no longer called through trainer
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     trainer.policy = policy_mock
 
     trainer.increment_step(5)
+    print(trainer.policy.increment_step(5))
     policy_mock.increment_step.assert_called_with(5)
-    assert trainer.step == 10
+    assert trainer.step == step_count
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment")
@@ -355,7 +367,11 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
     trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
 
-    trainer = PPOTrainer(mock_brain, 0, trainer_params, True, False, 0, "0", False)
+    trainer = PPOTrainer(
+        mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
+    )
+    policy = trainer.create_policy(mock_brain)
+    trainer.add_policy(mock_brain.brain_name, policy)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
     # Mock out reward signal eval
@@ -376,7 +392,7 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     trainer.update_policy()
 
 
-def test_add_rewards_output(dummy_config):
+def test_process_trajectory(dummy_config):
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
@@ -387,30 +403,156 @@ def test_add_rewards_output(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
-    rewardsout = AllRewardsOutput(
-        reward_signals={
-            "extrinsic": RewardSignalResult(
-                scaled_reward=np.array([1.0, 1.0], dtype=np.float32),
-                unscaled_reward=np.array([1.0, 1.0], dtype=np.float32),
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
+    time_horizon = 15
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
+    trainer.process_trajectory(trajectory)
+
+    # Check that trainer put trajectory in update buffer
+    assert trainer.update_buffer.num_experiences == 15
+
+    # Check that GAE worked
+    assert (
+        "advantages" in trainer.update_buffer
+        and "discounted_returns" in trainer.update_buffer
+    )
+
+    # Check that the stats are being collected as episode isn't complete
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent > 0
+
+    # Add a terminal trajectory
+    trajectory = make_fake_trajectory(
+        length=time_horizon + 1,
+        max_step_complete=False,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that the stats are reset as episode is finished
+    for reward in trainer.collected_rewards.values():
+        for agent in reward.values():
+            assert agent == 0
+    assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
+
+
+def test_normalization(dummy_config):
+    brain_params = BrainParameters(
+        brain_name="test_brain",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = PPOTrainer(
+        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
+    )
+    time_horizon = 6
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    # Change half of the obs to 0
+    for i in range(3):
+        trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
+
+    trainer.process_trajectory(trajectory)
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = trainer.policy.sess.run(
+        [
+            trainer.policy.model.normalization_steps,
+            trainer.policy.model.running_mean,
+            trainer.policy.model.running_variance,
+        ]
+    )
+
+    assert steps == 6
+    assert mean[0] == 0.5
+    # Note: variance is divided by number of steps, and initialized to 1 to avoid
+    # divide by 0. The right answer is 0.25
+    assert (variance[0] - 1) / steps == 0.25
+
+    # Make another update, this time with all 1's
+    time_horizon = 10
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=1,
+        num_vis_obs=0,
+        action_space=2,
+    )
+    trainer.process_trajectory(trajectory)
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = trainer.policy.sess.run(
+        [
+            trainer.policy.model.normalization_steps,
+            trainer.policy.model.running_mean,
+            trainer.policy.model.running_variance,
+        ]
+    )
+
+    assert steps == 16
+    assert mean[0] == 0.8125
+    assert (variance[0] - 1) / steps == pytest.approx(0.152, abs=0.01)
+
+
+def test_min_visual_size():
+    # Make sure each EncoderType has an entry in MIS_RESOLUTION_FOR_ENCODER
+    assert set(LearningModel.MIN_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
+
+    for encoder_type in EncoderType:
+        with tf.Graph().as_default():
+            good_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
+            good_res = CameraResolution(
+                width=good_size, height=good_size, num_channels=3
             )
-        },
-        environment=np.array([1.0, 1.0], dtype=np.float32),
-    )
-    values = {"extrinsic": np.array([[2.0]], dtype=np.float32)}
-    agent_id = "123"
-    idx = 0
-    # make sure that we're grabbing from the next_idx for rewards. If we're not, the test will fail.
-    next_idx = 1
-    trainer.add_rewards_outputs(
-        rewardsout,
-        values=values,
-        agent_id=agent_id,
-        agent_idx=idx,
-        agent_next_idx=next_idx,
-    )
-    assert trainer.processing_buffer[agent_id]["extrinsic_value_estimates"][0] == 2.0
-    assert trainer.processing_buffer[agent_id]["extrinsic_rewards"][0] == 1.0
+            LearningModel._check_resolution_for_encoder(good_res, encoder_type)
+            vis_input = LearningModel.create_visual_input(
+                good_res, "test_min_visual_size"
+            )
+            enc_func = LearningModel.get_encoder_for_type(encoder_type)
+            enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
+
+        # Anything under the min size should raise an exception. If not, decrease the min size!
+        with pytest.raises(Exception):
+            with tf.Graph().as_default():
+                bad_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
+                bad_res = CameraResolution(
+                    width=bad_size, height=bad_size, num_channels=3
+                )
+
+                with pytest.raises(UnityTrainerException):
+                    # Make sure we'd hit a friendly error during model setup time.
+                    LearningModel._check_resolution_for_encoder(bad_res, encoder_type)
+
+                vis_input = LearningModel.create_visual_input(
+                    bad_res, "test_min_visual_size"
+                )
+                enc_func = LearningModel.get_encoder_for_type(encoder_type)
+                enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
 
 
 if __name__ == "__main__":

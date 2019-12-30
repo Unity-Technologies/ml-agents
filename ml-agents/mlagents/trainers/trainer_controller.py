@@ -3,9 +3,11 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
+import sys
 import json
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, NamedTuple
+from collections import defaultdict
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -18,9 +20,14 @@ from mlagents_envs.exception import (
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers.trainer import Trainer, TrainerMetrics
+from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.agent_processor import AgentProcessor
+
+
+class AgentManager(NamedTuple):
+    processor: AgentProcessor
 
 
 class TrainerController(object):
@@ -49,6 +56,8 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
+        self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
+        self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
@@ -56,7 +65,6 @@ class TrainerController(object):
         self.run_id = run_id
         self.save_freq = save_freq
         self.train_model = train
-        self.trainer_metrics: Dict[str, TrainerMetrics] = {}
         self.meta_curriculum = meta_curriculum
         self.training_start_time = time()
         self.sampler_manager = sampler_manager
@@ -94,7 +102,8 @@ class TrainerController(object):
         Saves current model to checkpoint folder.
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].save_model()
+            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                self.trainers[brain_name].save_model(name_behavior_id)
         self.logger.info("Saved Model")
 
     def _save_model_when_interrupted(self):
@@ -102,15 +111,6 @@ class TrainerController(object):
             "Learning was interrupted. Please wait while the graph is generated."
         )
         self._save_model()
-
-    def _write_training_metrics(self):
-        """
-        Write all CSV metrics
-        :return:
-        """
-        for brain_name in self.trainers.keys():
-            if brain_name in self.trainer_metrics:
-                self.trainers[brain_name].write_training_metrics()
 
     def _write_timing_tree(self) -> None:
         timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
@@ -127,7 +127,8 @@ class TrainerController(object):
         Exports latest saved models to .nn format for Unity embedding.
         """
         for brain_name in self.trainers.keys():
-            self.trainers[brain_name].export_model()
+            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                self.trainers[brain_name].export_model(name_behavior_id)
 
     @staticmethod
     def _create_model_path(model_path):
@@ -175,40 +176,61 @@ class TrainerController(object):
                 self.meta_curriculum
                 and brain_name in self.meta_curriculum.brains_to_curriculums
             ):
-                trainer.write_summary(
-                    global_step,
-                    delta_train_start,
-                    lesson_num=self.meta_curriculum.brains_to_curriculums[
-                        brain_name
-                    ].lesson_num,
-                )
-            else:
-                trainer.write_summary(global_step, delta_train_start)
-
-    def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
-        self.trainers[trainer.brain_name] = trainer
-        self.logger.info(trainer)
-        if self.train_model:
-            trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
-        env_manager.set_policy(trainer.brain_name, trainer.policy)
+                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    brain_name
+                ].lesson_num
+                trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
+            trainer.write_summary(global_step, delta_train_start)
 
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
         global_step = 0
-        last_brain_names: Set[str] = set()
+        last_brain_behavior_ids: Set[str] = set()
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
-                external_brains = set(env_manager.external_brains.keys())
-                new_brains = external_brains - last_brain_names
-                if last_brain_names != env_manager.external_brains.keys():
-                    for name in new_brains:
-                        trainer = self.trainer_factory.generate(
-                            env_manager.external_brains[name]
+                external_brain_behavior_ids = set(env_manager.external_brains.keys())
+                new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
+                for name_behavior_id in new_behavior_ids:
+                    try:
+                        brain_name, _ = name_behavior_id.split("?")
+                    except ValueError:
+                        brain_name = name_behavior_id
+
+                    try:
+                        trainer = self.trainers[brain_name]
+                    except KeyError:
+                        trainer = self.trainer_factory.generate(brain_name)
+                        self.trainers[brain_name] = trainer
+                        self.logger.info(trainer)
+                        if self.train_model:
+                            trainer.write_tensorboard_text(
+                                "Hyperparameters", trainer.parameters
+                            )
+
+                    policy = trainer.create_policy(
+                        env_manager.external_brains[name_behavior_id]
+                    )
+                    trainer.add_policy(name_behavior_id, policy)
+
+                    env_manager.set_policy(name_behavior_id, policy)
+
+                    self.brain_name_to_identifier[brain_name].add(name_behavior_id)
+
+                    agent_manager = AgentManager(
+                        processor=AgentProcessor(
+                            trainer,
+                            policy,
+                            name_behavior_id,
+                            trainer.stats_reporter,
+                            trainer.parameters.get("time_horizon", sys.maxsize),
                         )
-                        self.start_trainer(trainer, env_manager)
-                    last_brain_names = external_brains
+                    )
+                    self.managers[name_behavior_id] = agent_manager
+
+                last_brain_behavior_ids = external_brain_behavior_ids
+
                 n_steps = self.advance(env_manager)
                 for i in range(n_steps):
                     global_step += 1
@@ -225,7 +247,6 @@ class TrainerController(object):
                 self._save_model_when_interrupted()
             pass
         if self.train_model:
-            self._write_training_metrics()
             self._export_graph()
         self._write_timing_tree()
 
@@ -271,33 +292,34 @@ class TrainerController(object):
     @timed
     def advance(self, env: EnvManager) -> int:
         with hierarchical_timer("env_step"):
-            time_start_step = time()
             new_step_infos = env.step()
-            delta_time_step = time() - time_start_step
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
-                if brain_name in self.trainer_metrics:
-                    self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
-                if step_info.has_actions_for_brain(brain_name):
-                    trainer.add_experiences(
-                        step_info.previous_all_brain_info[brain_name],
-                        step_info.current_all_brain_info[brain_name],
-                        step_info.brain_name_to_action_info[brain_name].outputs,
-                    )
-                    trainer.process_experiences(
-                        step_info.previous_all_brain_info[brain_name],
-                        step_info.current_all_brain_info[brain_name],
-                    )
+                for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                    if step_info.has_actions_for_brain(name_behavior_id):
+                        _processor = self.managers[name_behavior_id].processor
+                        _processor.add_experiences(
+                            step_info.previous_all_brain_info[name_behavior_id],
+                            step_info.current_all_brain_info[name_behavior_id],
+                            step_info.brain_name_to_action_info[
+                                name_behavior_id
+                            ].outputs,
+                        )
+
         for brain_name, trainer in self.trainers.items():
-            if brain_name in self.trainer_metrics:
-                self.trainer_metrics[brain_name].add_delta_step(delta_time_step)
             if self.train_model and trainer.get_step <= trainer.get_max_steps:
-                trainer.increment_step(len(new_step_infos))
+                n_steps = len(new_step_infos)
+                trainer.increment_step(n_steps)
+                for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                    trainer.get_policy(name_behavior_id).increment_step(n_steps)
                 if trainer.is_ready_update():
                     # Perform gradient descent with experience buffer
                     with hierarchical_timer("update_policy"):
                         trainer.update_policy()
-                    env.set_policy(brain_name, trainer.policy)
+                    for name_behavior_id in self.brain_name_to_identifier[brain_name]:
+                        env.set_policy(
+                            name_behavior_id, trainer.get_policy(name_behavior_id)
+                        )
             else:
                 # Avoid memory leak during inference
                 # Eventually this whole block will take place in advance()

@@ -19,6 +19,7 @@ The versions can be found in
 * Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
 Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
 * `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused problems with some of our tooling such as mypy and pylint.
+* The official version of Unity ML-Agents supports is now 2018.4 LTS.  If you run into issues, please consider deleting your library folder and reponening your projects.  You will need to install the Barracuda package into your project in order to ML-Agents to compile correctly.
 
 ### Steps to Migrate
  * If you had a custom `Training Configuration` in the Academy inspector, you will need to pass your custom configuration at every training run using the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate`.

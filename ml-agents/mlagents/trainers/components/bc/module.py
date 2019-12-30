@@ -150,7 +150,6 @@ class BCModule:
                 feed_dict[self.policy.model.prev_action] = mini_batch_demo[
                     "prev_action"
                 ]
-
         network_out = self.policy.sess.run(
             list(self.out_dict.values()), feed_dict=feed_dict
         )
