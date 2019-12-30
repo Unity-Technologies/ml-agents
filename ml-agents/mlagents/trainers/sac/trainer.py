@@ -339,7 +339,7 @@ class SACTrainer(RLTrainer):
             )
         if not isinstance(policy, SACPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
-        self.policy = policy  # type: ignore
+        self.policy = policy
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
