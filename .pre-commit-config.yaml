@@ -18,7 +18,8 @@ repos:
     hooks:
     -   id: mypy
         name: mypy-ml-agents
-        files: "ml-agents/.*"
+        #files: "ml-agents/.*"
+        files: "ml-agents/mlagents/trainers/sac/trainer.py"
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
         verbose: true
         require_serial: true
