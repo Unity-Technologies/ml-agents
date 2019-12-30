@@ -38,24 +38,25 @@ class TFPolicy(Policy):
 
     POSSIBLE_INPUT_NODES = frozenset(
         [
-            "epsilon",
             "action_masks",
-            "vector_observation",
+            "epsilon",
+            "prev_action",
             "recurrent_in",
             "sequence_length",
-            "prev_action",
+            "vector_observation",
         ]
     )
+
     POSSIBLE_OUTPUT_NODES = frozenset(
-        ["action", "value_estimate", "action_probs", "recurrent_out"]
+        ["action", "action_probs", "recurrent_out", "value_estimate"]
     )
 
     MODEL_CONSTANTS = frozenset(
         [
+            "action_output_shape",
+            "is_continuous_control",
             "memory_size",
             "version_number",
-            "is_continuous_control",
-            "action_output_shape",
         ]
     )
     VISUAL_OBSERVATION_PREFIX = "visual_observation_"
@@ -388,19 +389,15 @@ class TFPolicy(Policy):
 
     @staticmethod
     def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
-        input_names = []
         node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
-        for name in TFPolicy.POSSIBLE_INPUT_NODES:
-            if name in node_names:
-                input_names.append(name)
+        input_names = node_names & TFPolicy.POSSIBLE_INPUT_NODES
 
         # Check visual inputs sequentially, and exit as soon as we don't find one
         vis_index = 0
         while True:
-
             vis_node_name = f"{TFPolicy.VISUAL_OBSERVATION_PREFIX}{vis_index}"
             if vis_node_name in node_names:
-                input_names.append(vis_node_name)
+                input_names.add(vis_node_name)
             else:
                 break
             vis_index += 1
@@ -409,11 +406,8 @@ class TFPolicy(Policy):
 
     @staticmethod
     def _get_output_node_names(frozen_graph_def: Any) -> List[str]:
-        output_names = []
         node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
-        for name in TFPolicy.POSSIBLE_OUTPUT_NODES:
-            if name in node_names:
-                output_names.append(name)
+        output_names = node_names & TFPolicy.POSSIBLE_OUTPUT_NODES
         # Append the port
         return [f"{n}:0" for n in output_names]
 
