@@ -340,6 +340,7 @@ class SACTrainer(RLTrainer):
                 )
             )
         self.policy = policy
+        reveal_type(self.policy)
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
