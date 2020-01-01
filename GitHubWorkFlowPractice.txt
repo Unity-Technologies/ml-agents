@@ -1,0 +1,14 @@
+Hello! I'm JaAlSaDev!
+
+I'm going through the Software Engineering Immersive course pre-work by General Assembly.
+
+I'm practicing GitHub's workflow, which goes as follows:
+	1- Forking
+	2- Cloning
+	3- Editing
+	4- Adding/committing
+	5- Pushing
+	6- Submitting a pull request
+
+You can ignore or reject my pull request :P.
+	
