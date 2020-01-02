@@ -166,10 +166,12 @@ class Trainer(object):
     def _increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
-
         :param n_steps: number of steps to increment the step count by
         """
         self.step = self.policy.increment_step(n_steps)
+        self.next_update_step = self.step + (
+            self.summary_freq - self.step % self.summary_freq
+        )
 
     def save_model(self) -> None:
         """
@@ -221,10 +223,8 @@ class Trainer(object):
         Takes a trajectory and processes it, putting it into the update buffer.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        trajectory_length = len(trajectory.steps)
-        step_after_process = self.get_step + trajectory_length
-        self._maybe_write_summary(step_after_process)
-        self._increment_step(trajectory_length)
+        self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        self._increment_step(len(trajectory.steps))
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
@@ -234,9 +234,6 @@ class Trainer(object):
         """
         if step_after_process >= self.next_update_step and self.get_step != 0:
             self._write_summary(self.next_update_step)
-            self.next_update_step = step_after_process + (
-                self.summary_freq - step_after_process % self.summary_freq
-            )
 
     def end_episode(self):
         """
