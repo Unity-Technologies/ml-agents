@@ -144,6 +144,15 @@ class Trainer(object):
         return self.step
 
     @property
+    def should_still_train(self) -> bool:
+        """
+        Returns whether or not the trainer should train. A Trainer could
+        stop training if it wasn't training to begin with, or if max_steps
+        is reached.
+        """
+        return self.is_training and self.get_step <= self.get_max_steps
+
+    @property
     def reward_buffer(self) -> Deque[float]:
         """
         Returns the reward buffer. The reward buffer contains the cumulative
@@ -179,11 +188,7 @@ class Trainer(object):
         :param delta_train_start:  Time elapsed since training started.
         :param global_step: The number of steps the simulation has been going for
         """
-        is_training = (
-            "Training."
-            if self.is_training and self.get_step <= self.get_max_steps
-            else "Not Training."
-        )
+        is_training = "Training." if self.should_still_train else "Not Training."
         step = min(self.get_step, self.get_max_steps)
         stats_summary = self.stats_reporter.get_stats_summaries(
             "Environment/Cumulative Reward"
@@ -257,7 +262,7 @@ class Trainer(object):
                 if not _traj_queue.empty():
                     _t = _traj_queue.get_nowait()
                     self._process_trajectory(_t)
-        if self.is_training and self.get_step <= self.get_max_steps:
+        if self.should_still_train:
             if self.is_ready_update():
                 with hierarchical_timer("update_policy"):
                     self.update_policy()
