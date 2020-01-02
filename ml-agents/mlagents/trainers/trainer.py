@@ -60,7 +60,8 @@ class Trainer(object):
         self.trajectory_queues: List[Queue] = []
         self.step: int = 0
         self.training_start_time = time.time()
-        self.last_summary_written: int = 0
+        self.summary_freq = self.trainer_parameters["summary_freq"]
+        self.next_update_step = self.summary_freq
 
     def check_param_keys(self):
         for k in self.param_keys:
@@ -182,12 +183,11 @@ class Trainer(object):
         """
         self.policy.export_model()
 
-    def _write_summary(self) -> None:
+    def _write_summary(self, step: int) -> None:
         """
         Saves training statistics to Tensorboard.
         """
         is_training = "Training." if self.should_still_train else "Not Training."
-        step = self.get_step
         stats_summary = self.stats_reporter.get_stats_summaries(
             "Environment/Cumulative Reward"
         )
@@ -219,10 +219,24 @@ class Trainer(object):
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
-        Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        self._increment_step(len(trajectory.steps))
+        trajectory_length = len(trajectory.steps)
+        step_after_process = self.get_step + trajectory_length
+        self._maybe_write_summary(step_after_process)
+        self._increment_step(trajectory_length)
+
+    def _maybe_write_summary(self, step_after_process: int) -> None:
+        """
+        If processing the trajectory will make the step exceed the next summary write,
+        write the summary. This logic ensures summaries are written on the update step and not in between.
+        :param step_after_process: the step count after processing the next trajectory.
+        """
+        if step_after_process >= self.next_update_step and self.get_step != 0:
+            self._write_summary(self.next_update_step)
+            self.next_update_step = step_after_process + (
+                self.summary_freq - step_after_process % self.summary_freq
+            )
 
     def end_episode(self):
         """
@@ -248,17 +262,10 @@ class Trainer(object):
         """
         Steps the trainer, taking in trajectories and updates if ready.
         """
-        if (
-            self.get_step - self.last_summary_written
-            > self.trainer_parameters["summary_freq"]
-            and self.get_step != 0
-        ):
-            self._write_summary()
-            self.last_summary_written = self.get_step
         with hierarchical_timer("process_trajectory"):
-            for _traj_queue in self.trajectory_queues:
-                if not _traj_queue.empty():
-                    _t = _traj_queue.get_nowait()
+            for traj_queue in self.trajectory_queues:
+                if not traj_queue.empty():
+                    _t = traj_queue.get_nowait()
                     self._process_trajectory(_t)
         if self.should_still_train:
             if self.is_ready_update():
