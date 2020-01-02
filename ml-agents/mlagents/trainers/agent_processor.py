@@ -1,11 +1,12 @@
 import sys
 from queue import Queue
-from typing import List, Dict
-from collections import defaultdict, Counter
+from typing import List, Dict, Deque, Union
+from collections import defaultdict, Counter, deque
 
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
 
@@ -133,8 +134,8 @@ class AgentProcessor:
                         agent_id=agent_id,
                         next_obs=next_obs,
                     )
-                    for _traj_queue in self.trajectory_queues:
-                        _traj_queue.put(trajectory)
+                    for traj_queue in self.trajectory_queues:
+                        traj_queue.put(trajectory)
                     self.experience_buffers[agent_id] = []
                     if next_info.local_done[next_idx]:
                         self.stats_reporter.add_stat(
@@ -160,3 +161,36 @@ class AgentProcessor:
         :param trajectory_queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)
+
+
+class AgentManagerQueue:
+    """
+    Queue used by the AgentManager. Note that we make our own class here because in most implementations
+    deque is sufficient and faster. However, if we want to switch to multiprocessing, we'll need to change
+    out this implementation.
+    """
+
+    def __init__(self):
+        self.queue: Deque[Union[Trajectory, Policy]] = deque()
+
+    def empty(self) -> bool:
+        return len(self.queue) == 0
+
+    def get_nowait(self) -> Union[Trajectory, Policy]:
+        return self.queue.popleft()
+
+    def put(self, item: Union[Trajectory, Policy]) -> None:
+        self.queue.append(item)
+
+
+class AgentManager(AgentProcessor):
+    """
+    An AgentManager is an AgentProcessor that also holds a single trajectory and policy queue.
+    Note: this leaves room for adding AgentProcessors that publish multiple trajectory queues.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trajectory_queue = AgentManagerQueue()
+        self.policy_queue = AgentManagerQueue()
+        self.publish_trajectory_queue(self.trajectory_queue)

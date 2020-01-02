@@ -6,8 +6,7 @@ import os
 import sys
 import json
 import logging
-from queue import Queue
-from typing import Dict, List, Optional, Set, NamedTuple
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -22,13 +21,7 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.trainers.agent_processor import AgentProcessor
-
-
-class AgentManager(NamedTuple):
-    processor: AgentProcessor
-    trajectory_queue: Queue
-    policy_queue: Queue
+from mlagents.trainers.agent_processor import AgentManager
 
 
 class TrainerController(object):
@@ -178,15 +171,10 @@ class TrainerController(object):
         trainer = self.trainer_factory.generate(env_manager.external_brains[brain_name])
         self.start_trainer(trainer, env_manager)
         agent_manager = AgentManager(
-            processor=AgentProcessor(
-                trainer.policy,
-                trainer.stats_reporter,
-                trainer.parameters.get("time_horizon", sys.maxsize),
-            ),
-            trajectory_queue=Queue(),
-            policy_queue=Queue(),
+            trainer.policy,
+            trainer.stats_reporter,
+            trainer.parameters.get("time_horizon", sys.maxsize),
         )
-        agent_manager.processor.publish_trajectory_queue(agent_manager.trajectory_queue)
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
         self.managers[brain_name] = agent_manager
@@ -284,8 +272,7 @@ class TrainerController(object):
         for step_info in new_step_infos:
             for brain_name, trainer in self.trainers.items():
                 if step_info.has_actions_for_brain(brain_name):
-                    _processor = self.managers[brain_name].processor
-                    _processor.add_experiences(
+                    self.managers[brain_name].add_experiences(
                         step_info.previous_all_brain_info[brain_name],
                         step_info.current_all_brain_info[brain_name],
                         step_info.brain_name_to_action_info[brain_name].outputs,
