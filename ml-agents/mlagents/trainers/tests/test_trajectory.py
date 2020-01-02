@@ -19,9 +19,9 @@ def make_fake_trajectory(
     the trajectory is terminated by a max step rather than a done.
     """
     steps_list = []
-    for i in range(length - 1):
+    for _i in range(length - 1):
         obs = []
-        for i in range(num_vis_obs):
+        for _j in range(num_vis_obs):
             obs.append(np.ones((84, 84, 3), dtype=np.float32))
         obs.append(np.ones(vec_obs_size, dtype=np.float32))
         reward = 1.0
@@ -70,9 +70,9 @@ def make_fake_trajectory(
 @pytest.mark.parametrize("num_vec_obs", [0, 1])
 def test_split_obs(num_visual_obs, num_vec_obs):
     obs = []
-    for i in range(num_visual_obs):
+    for _ in range(num_visual_obs):
         obs.append(np.ones((84, 84, 3), dtype=np.float32))
-    for i in range(num_vec_obs):
+    for _ in range(num_vec_obs):
         obs.append(np.ones(VEC_OBS_SIZE, dtype=np.float32))
     split_observations = SplitObservations.from_observations(obs)
 
