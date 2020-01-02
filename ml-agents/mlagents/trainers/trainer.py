@@ -2,6 +2,7 @@
 import logging
 from typing import Dict, List, Deque, Any
 import time
+import abc
 
 from mlagents.tf_utils import tf
 
@@ -27,7 +28,7 @@ class UnityTrainerException(UnityException):
     pass
 
 
-class Trainer(object):
+class Trainer(abc.ABC):
     """This class is the base class for the mlagents_envs.trainers"""
 
     def __init__(
@@ -218,6 +219,7 @@ class Trainer(object):
             )
         self.stats_reporter.write_stats(int(step))
 
+    @abc.abstractmethod
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
@@ -235,25 +237,28 @@ class Trainer(object):
         if step_after_process >= self.next_update_step and self.get_step != 0:
             self._write_summary(self.next_update_step)
 
+    @abc.abstractmethod
     def end_episode(self):
         """
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
-        raise UnityTrainerException("The end_episode method was not implemented.")
+        pass
 
+    @abc.abstractmethod
     def is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
-        raise UnityTrainerException("The is_ready_update method was not implemented.")
+        return False
 
+    @abc.abstractmethod
     def update_policy(self):
         """
         Uses demonstration_buffer to update model.
         """
-        raise UnityTrainerException("The update_model method was not implemented.")
+        pass
 
     def advance(self) -> None:
         """
