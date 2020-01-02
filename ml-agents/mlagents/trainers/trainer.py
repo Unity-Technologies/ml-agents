@@ -1,6 +1,8 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Deque, Any
+import time
+import abc
 
 from mlagents.tf_utils import tf
 
@@ -26,7 +28,7 @@ class UnityTrainerException(UnityException):
     pass
 
 
-class Trainer(object):
+class Trainer(abc.ABC):
     """This class is the base class for the mlagents_envs.trainers"""
 
     def __init__(
@@ -58,6 +60,9 @@ class Trainer(object):
         self.policy_queues: List[Queue] = []
         self.trajectory_queues: List[Queue] = []
         self.step: int = 0
+        self.training_start_time = time.time()
+        self.summary_freq = self.trainer_parameters["summary_freq"]
+        self.next_update_step = self.summary_freq
 
     def check_param_keys(self):
         for k in self.param_keys:
@@ -141,6 +146,15 @@ class Trainer(object):
         return self.step
 
     @property
+    def should_still_train(self) -> bool:
+        """
+        Returns whether or not the trainer should train. A Trainer could
+        stop training if it wasn't training to begin with, or if max_steps
+        is reached.
+        """
+        return self.is_training and self.get_step <= self.get_max_steps
+
+    @property
     def reward_buffer(self) -> Deque[float]:
         """
         Returns the reward buffer. The reward buffer contains the cumulative
@@ -150,13 +164,15 @@ class Trainer(object):
         """
         return self._reward_buffer
 
-    def increment_step(self, n_steps: int) -> None:
+    def _increment_step(self, n_steps: int) -> None:
         """
         Increment the step count of the trainer
-
         :param n_steps: number of steps to increment the step count by
         """
         self.step = self.policy.increment_step(n_steps)
+        self.next_update_step = self.step + (
+            self.summary_freq - self.step % self.summary_freq
+        )
 
     def save_model(self) -> None:
         """
@@ -170,90 +186,90 @@ class Trainer(object):
         """
         self.policy.export_model()
 
-    def write_summary(self, global_step: int, delta_train_start: float) -> None:
+    def _write_summary(self, step: int) -> None:
         """
         Saves training statistics to Tensorboard.
-        :param delta_train_start:  Time elapsed since training started.
-        :param global_step: The number of steps the simulation has been going for
         """
-        if (
-            global_step % self.trainer_parameters["summary_freq"] == 0
-            and global_step != 0
-        ):
-            is_training = (
-                "Training."
-                if self.is_training and self.get_step <= self.get_max_steps
-                else "Not Training."
-            )
-            step = min(self.get_step, self.get_max_steps)
-            stats_summary = self.stats_reporter.get_stats_summaries(
-                "Environment/Cumulative Reward"
-            )
-            if stats_summary.num > 0:
-                LOGGER.info(
-                    " {}: {}: Step: {}. "
-                    "Time Elapsed: {:0.3f} s "
-                    "Mean "
-                    "Reward: {:0.3f}"
-                    ". Std of Reward: {:0.3f}. {}".format(
-                        self.run_id,
-                        self.brain_name,
-                        step,
-                        delta_train_start,
-                        stats_summary.mean,
-                        stats_summary.std,
-                        is_training,
-                    )
+        is_training = "Training." if self.should_still_train else "Not Training."
+        stats_summary = self.stats_reporter.get_stats_summaries(
+            "Environment/Cumulative Reward"
+        )
+        if stats_summary.num > 0:
+            LOGGER.info(
+                " {}: {}: Step: {}. "
+                "Time Elapsed: {:0.3f} s "
+                "Mean "
+                "Reward: {:0.3f}"
+                ". Std of Reward: {:0.3f}. {}".format(
+                    self.run_id,
+                    self.brain_name,
+                    step,
+                    time.time() - self.training_start_time,
+                    stats_summary.mean,
+                    stats_summary.std,
+                    is_training,
                 )
-                set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
-            else:
-                LOGGER.info(
-                    " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
-                        self.run_id, self.brain_name, step, is_training
-                    )
+            )
+            set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
+        else:
+            LOGGER.info(
+                " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
+                    self.run_id, self.brain_name, step, is_training
                 )
-            self.stats_reporter.write_stats(int(step))
+            )
+        self.stats_reporter.write_stats(int(step))
 
+    @abc.abstractmethod
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
-        Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        raise UnityTrainerException(
-            "The process_trajectory method was not implemented."
-        )
+        self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        self._increment_step(len(trajectory.steps))
 
+    def _maybe_write_summary(self, step_after_process: int) -> None:
+        """
+        If processing the trajectory will make the step exceed the next summary write,
+        write the summary. This logic ensures summaries are written on the update step and not in between.
+        :param step_after_process: the step count after processing the next trajectory.
+        """
+        if step_after_process >= self.next_update_step and self.get_step != 0:
+            self._write_summary(self.next_update_step)
+
+    @abc.abstractmethod
     def end_episode(self):
         """
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
-        raise UnityTrainerException("The end_episode method was not implemented.")
+        pass
 
+    @abc.abstractmethod
     def is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to wether or not update_model() can be run
         """
-        raise UnityTrainerException("The is_ready_update method was not implemented.")
+        return False
 
+    @abc.abstractmethod
     def update_policy(self):
         """
         Uses demonstration_buffer to update model.
         """
-        raise UnityTrainerException("The update_model method was not implemented.")
+        pass
 
     def advance(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
         """
         with hierarchical_timer("process_trajectory"):
-            for _traj_queue in self.trajectory_queues:
-                if not _traj_queue.empty():
-                    _t = _traj_queue.get_nowait()
+            for traj_queue in self.trajectory_queues:
+                if not traj_queue.empty():
+                    _t = traj_queue.get_nowait()
                     self._process_trajectory(_t)
-        if self.is_training and self.get_step <= self.get_max_steps:
+        if self.should_still_train:
             if self.is_ready_update():
                 with hierarchical_timer("update_policy"):
                     self.update_policy()

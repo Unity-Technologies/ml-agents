@@ -15,7 +15,6 @@ RewardSignalResults = Dict[str, RewardSignalResult]
 class RLTrainer(Trainer):
     """
     This class is the base class for trainers that use Reward Signals.
-    Contains methods for adding BrainInfos to the Buffer.
     """
 
     def __init__(self, *args, **kwargs):

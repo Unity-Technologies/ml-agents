@@ -19,11 +19,13 @@ The versions can be found in
 * Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
 Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
 * `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused problems with some of our tooling such as mypy and pylint.
+* Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
 
 ### Steps to Migrate
  * If you had a custom `Training Configuration` in the Academy inspector, you will need to pass your custom configuration at every training run using the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate`.
  * If you were using `--slow` in `mlagents-learn`, you will need to pass your old `Inference Configuration` of the Academy inspector with the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` instead.
  * Any imports from `mlagents.envs` should be replaced with `mlagents_envs`.
+ * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 
 ## Migrating from ML-Agents toolkit v0.11.0 to v0.12.0
 
