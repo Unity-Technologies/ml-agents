@@ -9,7 +9,7 @@ import numpy as np
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
 
-# from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory
 
 from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
@@ -17,33 +17,44 @@ from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
 # logger = logging.getLogger("mlagents.trainers")
 
 
-class GhostTrainer(object):
-    def __init__(self, trainer, brain_name, self_play_parameters):
+class GhostTrainer(RLTrainer):
+    def __init__(
+        self, trainer, brain_name, reward_buff_cap, trainer_parameters, training, run_id
+    ):
         """
         Responsible for collecting experiences and training trainer model via self_play.
         :param trainer: The trainer of the policy/policies being trained with self_play
         :param brain_name: The name of the brain associated with trainer config
-        :param self_play_parameters: The parameters for self play (dictionary).
+        :param reward_buff_cap: Max reward history to track in the reward buffer
+        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param training: Whether the trainer is set for training.
+        :param run_id: The identifier of the current run
         """
+
+        super(GhostTrainer, self).__init__(
+            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+        )
 
         self.trainer = trainer
 
-        # super(GhostTrainer, self).__init__(
-        #    brain_name, trainer_parameters, training, run_id, reward_buff_cap
-        # )
+        # assign ghosts stats collection to wrapped trainer's
+        self.stats_reporter = self.trainer.stats_reporter
 
         self.policies: Dict[str, TFPolicy] = {}
         self.policy_snapshots = []
         self.learning_policy_name: str = None
         self.current_policy_snapshot = None
         self.last_step = 0
+
+        self_play_parameters = trainer_parameters["ghost"]
+
         self.window = self_play_parameters["window"]
         self.current_prob = self_play_parameters["current_prob"]
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
-    def __getattr__(self, name):
-        trainer = object.__getattribute__(self, "trainer")
-        return trainer.__getattribute__(name)
+    # def __getattr__(self, name):
+    #    trainer = object.__getattribute__(self, "trainer")
+    #    return trainer.__getattribute__(name)
 
     # def __get__(self, name):
     #    print("getting {} ".format(name))
@@ -56,8 +67,8 @@ class GhostTrainer(object):
     # def write_summary(self, global_step: int, delta_train_start: float) -> None:
     #    self.trainer.write_summary(global_step, delta_train_start)
 
-    # def is_ready_update(self) -> bool:
-    #    return self.trainer.is_ready_update()
+    def is_ready_update(self) -> bool:
+        return self.trainer.is_ready_update()
 
     def save_model(self, name_behavior_id: str) -> None:
         policy = self.trainer.get_policy(name_behavior_id)

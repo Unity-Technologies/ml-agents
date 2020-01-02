@@ -23,7 +23,7 @@ public class HitWall : MonoBehaviour
         m_AgentA.Done();
         m_AgentB.Done();
         m_Area.MatchReset();
-        lastFloorHit = -1;
+        lastFloorHit = -2;
     }
     
     private void AgentAWins()
@@ -76,7 +76,7 @@ public class HitWall : MonoBehaviour
             else if (collision.gameObject.name == "floorA")
             {
                 //Agent A hits into floor or double bounce
-                if (lastAgentHit == 0 || lastFloorHit == 0)
+                if (lastAgentHit == 0 || lastFloorHit == 0 || lastFloorHit == -2)
                 {
                     AgentBWins();
                 }
@@ -88,7 +88,7 @@ public class HitWall : MonoBehaviour
             else if (collision.gameObject.name == "floorB")
             {
                 //Agent B hits into floor or double bounce
-                if (lastAgentHit == 1 || lastFloorHit == 1)
+                if (lastAgentHit == 1 || lastFloorHit == 1 || lastFloorHit == -2)
                 {
                     AgentAWins();
                 }

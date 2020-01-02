@@ -154,7 +154,14 @@ def initialize_trainer(
         )
 
     if "ghost" in trainer_parameters:
-        trainer = GhostTrainer(trainer, brain_name, trainer_parameters["ghost"])
+        trainer = GhostTrainer(
+            trainer,
+            brain_name,
+            min_lesson_length,
+            trainer_parameters,
+            train_model,
+            run_id,
+        )
     return trainer
 
 
