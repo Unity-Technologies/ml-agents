@@ -866,9 +866,6 @@ class SACModel(LearningModel):
             rewards_holder = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )
-            rewards_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
-            )
             self.rewards_holders[name] = rewards_holder
 
         q1_losses = []
