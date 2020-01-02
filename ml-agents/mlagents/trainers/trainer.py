@@ -185,11 +185,9 @@ class Trainer(object):
     def _write_summary(self) -> None:
         """
         Saves training statistics to Tensorboard.
-        :param delta_train_start:  Time elapsed since training started.
-        :param global_step: The number of steps the simulation has been going for
         """
         is_training = "Training." if self.should_still_train else "Not Training."
-        step = min(self.get_step, self.get_max_steps)
+        step = self.get_step
         stats_summary = self.stats_reporter.get_stats_summaries(
             "Environment/Cumulative Reward"
         )
