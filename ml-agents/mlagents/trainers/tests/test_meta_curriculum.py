@@ -10,16 +10,10 @@ from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
     BRAIN_NAME,
 )
-from mlagents.trainers.tests.test_curriculum import dummy_curriculum_json_str
-
-
-class MetaCurriculumTest(MetaCurriculum):
-    """This class allows us to test MetaCurriculum objects without calling
-    MetaCurriculum's __init__ function.
-    """
-
-    def __init__(self, brains_to_curriculums):
-        self._brains_to_curriculums = brains_to_curriculums
+from mlagents.trainers.tests.test_curriculum import (
+    dummy_curriculum_json_str,
+    dummy_curriculum_config,
+)
 
 
 @pytest.fixture
@@ -43,12 +37,15 @@ def reward_buff_sizes():
 
 
 @patch("mlagents.trainers.curriculum.Curriculum.get_config", return_value={})
-@patch("mlagents.trainers.curriculum.Curriculum.__init__", return_value=None)
+@patch(
+    "mlagents.trainers.curriculum.Curriculum.load_curriculum_file",
+    return_value=dummy_curriculum_config,
+)
 @patch("os.listdir", return_value=["Brain1.json", "Brain2.test.json"])
 def test_init_meta_curriculum_happy_path(
     listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
 ):
-    meta_curriculum = MetaCurriculum("test/")
+    meta_curriculum = MetaCurriculum.from_folder("test/")
 
     assert len(meta_curriculum.brains_to_curriculums) == 2
 
@@ -63,15 +60,13 @@ def test_init_meta_curriculum_happy_path(
 @patch("os.listdir", side_effect=NotADirectoryError())
 def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
     with pytest.raises(MetaCurriculumError):
-        MetaCurriculum("test/")
+        MetaCurriculum.from_folder("test/")
 
 
 @patch("mlagents.trainers.curriculum.Curriculum")
 @patch("mlagents.trainers.curriculum.Curriculum")
 def test_set_lesson_nums(curriculum_a, curriculum_b):
-    meta_curriculum = MetaCurriculumTest(
-        {"Brain1": curriculum_a, "Brain2": curriculum_b}
-    )
+    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
     meta_curriculum.lesson_nums = {"Brain1": 1, "Brain2": 3}
 
@@ -82,9 +77,7 @@ def test_set_lesson_nums(curriculum_a, curriculum_b):
 @patch("mlagents.trainers.curriculum.Curriculum")
 @patch("mlagents.trainers.curriculum.Curriculum")
 def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):
-    meta_curriculum = MetaCurriculumTest(
-        {"Brain1": curriculum_a, "Brain2": curriculum_b}
-    )
+    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
     meta_curriculum.increment_lessons(measure_vals)
 
@@ -99,9 +92,7 @@ def test_increment_lessons_with_reward_buff_sizes(
 ):
     curriculum_a.min_lesson_length = 5
     curriculum_b.min_lesson_length = 10
-    meta_curriculum = MetaCurriculumTest(
-        {"Brain1": curriculum_a, "Brain2": curriculum_b}
-    )
+    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
     meta_curriculum.increment_lessons(measure_vals, reward_buff_sizes=reward_buff_sizes)
 
@@ -112,9 +103,7 @@ def test_increment_lessons_with_reward_buff_sizes(
 @patch("mlagents.trainers.curriculum.Curriculum")
 @patch("mlagents.trainers.curriculum.Curriculum")
 def test_set_all_curriculums_to_lesson_num(curriculum_a, curriculum_b):
-    meta_curriculum = MetaCurriculumTest(
-        {"Brain1": curriculum_a, "Brain2": curriculum_b}
-    )
+    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
     meta_curriculum.set_all_curriculums_to_lesson_num(2)
 
@@ -129,9 +118,7 @@ def test_get_config(
 ):
     curriculum_a.get_config.return_value = default_reset_parameters
     curriculum_b.get_config.return_value = default_reset_parameters
-    meta_curriculum = MetaCurriculumTest(
-        {"Brain1": curriculum_a, "Brain2": curriculum_b}
-    )
+    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
     assert meta_curriculum.get_config() == default_reset_parameters
 
@@ -175,6 +162,7 @@ def test_simple_metacurriculum(curriculum_brain_name):
     with patch(
         "builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str
     ):
-        curriculum = Curriculum("TestBrain.json")
-    mc = MetaCurriculumTest({curriculum_brain_name: curriculum})
+        curriculum_config = Curriculum.load_curriculum_file("TestBrain.json")
+        curriculum = Curriculum("TestBrain", curriculum_config)
+    mc = MetaCurriculum({curriculum_brain_name: curriculum})
     _check_environment_trains(env, META_CURRICULUM_CONFIG, mc, -100.0)
