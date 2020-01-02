@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
+using UnityEngine;
 
 namespace MLAgents.Sensor
 {
@@ -14,17 +15,20 @@ namespace MLAgents.Sensor
         TensorProxy m_Proxy;
         int m_Batch;
 
+        int[] m_Shape;
+
         /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="offset"></param>
-        public void SetTarget(IList<float> data, int offset)
+        public void SetTarget(IList<float> data, int[] shape, int offset)
         {
             m_Data = data;
             m_Offset = offset;
             m_Proxy = null;
-            m_Batch = -1;
+            m_Batch = 0;
+            m_Shape = shape;
         }
 
         /// <summary>
@@ -33,12 +37,13 @@ namespace MLAgents.Sensor
         /// <param name="tensorProxy"></param>
         /// <param name="batchIndex"></param>
         /// <param name="channelOffset"></param>
-        public void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
+        public void SetTarget(TensorProxy tensorProxy, int[] shape, int batchIndex, int channelOffset)
         {
             m_Proxy = tensorProxy;
             m_Batch = batchIndex;
             m_Offset = channelOffset;
             m_Data = null;
+            m_Shape = shape;
         }
 
         /// <summary>
@@ -49,6 +54,7 @@ namespace MLAgents.Sensor
         {
             set
             {
+                // TODO check shape is 1D?
                 if (m_Data != null)
                 {
                     m_Data[index + m_Offset] = value;
@@ -70,8 +76,21 @@ namespace MLAgents.Sensor
         {
             set
             {
-                // Only TensorProxy supports 3D access
-                m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                // TODO check shape is 3D?
+                // TODO check ranges
+                if (m_Data != null)
+                {
+                    var height = m_Shape[0];
+                    var width = m_Shape[1];
+                    var channels = m_Shape[2];
+                    var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
+                    // Debug.Log($"hwc=({h},{w},{ch}) shape=({height},{width},{channels}) index={index} offset={m_Offset} len={m_Data.Count}");
+                    m_Data[index + m_Offset] = value;
+                }
+                else
+                {
+                    m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                }
             }
         }
 

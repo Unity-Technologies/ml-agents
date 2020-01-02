@@ -548,6 +548,7 @@ namespace MLAgents
                 }
             }
 
+            // Debug.Log($"{name}  numFloatObservations = {numFloatObservations}");
             m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
@@ -617,9 +618,9 @@ namespace MLAgents
                 var sensor = sensors[i];
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    // only handles 1D
+                    // only handles 1D ??
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
+                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetFloatObservationShape(), floatsWritten);
                     var numFloats = sensor.Write(m_WriteAdapter);
                     var floatObs = new Observation
                     {

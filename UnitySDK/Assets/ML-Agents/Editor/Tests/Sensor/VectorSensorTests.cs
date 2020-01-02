@@ -18,7 +18,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(fill, output[0]);
 
             WriteAdapter writer = new WriteAdapter();
-            writer.SetTarget(output, 0);
+            writer.SetTarget(output, sensor.GetFloatObservationShape(), 0);
 
             // Make sure WriteAdapter didn't touch anything
             Assert.AreEqual(fill, output[0]);
