@@ -237,7 +237,7 @@ class TrainerController(object):
                 last_brain_behavior_ids = external_brain_behavior_ids
 
                 n_steps = self.advance(env_manager)
-                for i in range(n_steps):
+                for _ in range(n_steps):
                     global_step += 1
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
@@ -267,7 +267,7 @@ class TrainerController(object):
         self._reset_env(env)
         # Reward buffers reset takes place only for curriculum learning
         # else no reset.
-        for brain_name, trainer in self.trainers.items():
+        for trainer in self.trainers.values():
             trainer.end_episode()
         for brain_name, changed in lessons_incremented.items():
             if changed:
@@ -305,7 +305,7 @@ class TrainerController(object):
         with hierarchical_timer("env_step"):
             new_step_infos = env.step()
         for step_info in new_step_infos:
-            for brain_name, trainer in self.trainers.items():
+            for brain_name in self.trainers.keys():
                 for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                     if step_info.has_actions_for_brain(name_behavior_id):
                         _processor = self.managers[name_behavior_id].processor

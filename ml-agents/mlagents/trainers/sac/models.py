@@ -830,7 +830,7 @@ class SACModel(LearningModel):
         self.rewards_holders = {}
         self.min_policy_qs = {}
 
-        for i, name in enumerate(stream_names):
+        for name in stream_names:
             if discrete:
                 _branched_mpq1 = self.apply_as_branches(
                     self.policy_network.q1_pheads[name]
@@ -863,9 +863,6 @@ class SACModel(LearningModel):
                     self.policy_network.q2_pheads[name],
                 )
 
-            rewards_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
-            )
             rewards_holder = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )

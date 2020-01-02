@@ -70,7 +70,7 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.multi_gpu = multi_gpu
         self.seed = seed
-        self.policy: TFPolicy = None
+        self.policy: PPOPolicy = None  # type: ignore
 
     def process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -258,6 +258,8 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
+        if not isinstance(policy, PPOPolicy):
+            raise RuntimeError("Non-PPOPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:

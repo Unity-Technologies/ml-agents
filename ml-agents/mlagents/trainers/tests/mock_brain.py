@@ -95,7 +95,7 @@ def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
 
 def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     brain_info_list = []
-    for i in range(buffer_init_samples):
+    for _ in range(buffer_init_samples):
         brain_info_list.append(env.step()[env.external_brain_names[0]])
     buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
     # If a key_list was given, remove those keys
@@ -113,7 +113,7 @@ def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
     for idx, experience in enumerate(brain_infos):
         if idx > len(brain_infos) - 2:
             break
-        current_brain_info = brain_infos[idx]
+        current_brain_info = experience
         next_brain_info = brain_infos[idx + 1]
         buffer.last_brain_info = current_brain_info
         buffer["done"].append(next_brain_info.local_done[0])
@@ -162,10 +162,16 @@ def setup_mock_env_and_brains(
     use_discrete,
     use_visual,
     num_agents=12,
-    discrete_action_space=[3, 3, 3, 2],
-    vector_action_space=[2],
+    discrete_action_space=None,
+    vector_action_space=None,
     vector_obs_space=8,
 ):
+    # defaults
+    discrete_action_space = (
+        [3, 3, 3, 2] if discrete_action_space is None else discrete_action_space
+    )
+    vector_action_space = [2] if vector_action_space is None else vector_action_space
+
     if not use_visual:
         mock_brain = create_mock_brainparams(
             vector_action_space_type="discrete" if use_discrete else "continuous",

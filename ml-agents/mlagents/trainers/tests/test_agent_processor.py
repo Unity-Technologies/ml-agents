@@ -51,7 +51,7 @@ def test_agentprocessor(num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
-    for i in range(5):
+    for _ in range(5):
         processor.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
 
     # Assert that two trajectories have been added to the Trainer

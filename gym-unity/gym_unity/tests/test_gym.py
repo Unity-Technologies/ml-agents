@@ -23,6 +23,7 @@ def test_gym_wrapper(mock_env):
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
     assert isinstance(done, (bool, np.bool_))
+    assert isinstance(info, dict)
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -41,6 +42,7 @@ def test_multi_agent(mock_env):
     assert isinstance(obs, list)
     assert isinstance(rew, list)
     assert isinstance(done, list)
+    assert isinstance(info, dict)
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -79,6 +81,7 @@ def test_gym_wrapper_visual(mock_env, use_uint8):
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
     assert isinstance(done, (bool, np.bool_))
+    assert isinstance(info, dict)
 
 
 # Helper methods
@@ -107,7 +110,7 @@ def create_mock_group_spec(
         else:
             vector_action_space_size = tuple(vector_action_space_size)
     obs_shapes = [(vector_observation_space_size,)]
-    for i in range(number_visual_observations):
+    for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
     return AgentGroupSpec(obs_shapes, act_type, vector_action_space_size)
 
