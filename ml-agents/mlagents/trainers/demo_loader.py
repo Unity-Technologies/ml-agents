@@ -135,7 +135,8 @@ def load_demonstration(
                     meta_data_proto.ParseFromString(data[pos : pos + next_pos])
                     total_expected += meta_data_proto.number_steps
                     # first 32 bytes of file dedicated to metadata
-                    pos = 33
+                    INITIAL_POS = 33
+                    pos = INITIAL_POS
                 elif obs_decoded == 1:
                     brain_param_proto = BrainParametersProto()
                     brain_param_proto.ParseFromString(data[pos : pos + next_pos])
