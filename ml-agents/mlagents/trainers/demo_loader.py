@@ -1,4 +1,3 @@
-import pathlib
 import logging
 import os
 from typing import List, Tuple
@@ -102,7 +101,9 @@ def get_demo_files(path: str) -> List[str]:
             raise ValueError("There are no '.demo' files in the provided directory.")
         return fpaths
     else:
-        raise FileNotFoundError(f"The demonstration file or directory {path} does not exist.")
+        raise FileNotFoundError(
+            f"The demonstration file or directory {path} does not exist."
+        )
 
 
 @timed
