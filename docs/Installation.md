@@ -4,7 +4,7 @@ To install and use ML-Agents, you need to install Unity, clone this repository a
 install Python with additional dependencies. Each of the subsections below
 overviews each step, in addition to a Docker set-up.
 
-## Install **Unity 2017.4** or Later
+## Install **Unity 2018.4** or Later
 
 [Download](https://store.unity.com/download) and install Unity. If you would
 like to use our Docker set-up (introduced later), make sure to select the _Linux
@@ -42,10 +42,6 @@ to help you get started.
 
 If you intend to copy the `UnitySDK` folder in to your project, ensure that
 you have the [Barracuda preview package](https://docs.unity3d.com/Packages/com.unity.barracuda@0.3/manual/index.html) installed.
-
-To install the Barracuda package in Unity **2017.4.x**, you will have to copy the
-`UnityPackageManager` folder under the `UnitySDK` folder to the root directory of your
-project.
 
 To install the Barrcuda package in later versions of Unity, navigate to the Package
 Manager window by navigating to the menu `Window` -> `Package Manager`.  Click on the

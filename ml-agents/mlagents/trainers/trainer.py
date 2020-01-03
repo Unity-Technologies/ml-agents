@@ -14,6 +14,7 @@ from mlagents_envs.timers import set_gauge
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
 from mlagents_envs.timers import hierarchical_timer
 
@@ -33,7 +34,7 @@ class Trainer(abc.ABC):
 
     def __init__(
         self,
-        brain: BrainParameters,
+        brain_name: str,
         trainer_parameters: dict,
         training: bool,
         run_id: str,
@@ -48,7 +49,7 @@ class Trainer(abc.ABC):
         :int reward_buff_cap:
         """
         self.param_keys: List[str] = []
-        self.brain_name = brain.brain_name
+        self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
@@ -56,9 +57,8 @@ class Trainer(abc.ABC):
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy: TFPolicy = None  # type: ignore  # this will always get set
-        self.policy_queues: List[Queue] = []
-        self.trajectory_queues: List[Queue] = []
+        self.policy_queues: List[AgentManagerQueue] = []
+        self.trajectory_queues: List[AgentManagerQueue] = []
         self.step: int = 0
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
@@ -164,27 +164,28 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    def _increment_step(self, n_steps: int) -> None:
+    def _increment_step(self, n_steps: int, behavior_id: str) -> None:
         """
         Increment the step count of the trainer
         :param n_steps: number of steps to increment the step count by
         """
-        self.step = self.policy.increment_step(n_steps)
+        self.step += n_steps
         self.next_update_step = self.step + (
             self.summary_freq - self.step % self.summary_freq
         )
+        self.get_policy(behavior_id).increment_step(n_steps)
 
-    def save_model(self) -> None:
+    def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model
         """
-        self.policy.save_model(self.get_step)
+        self.get_policy(name_behavior_id).save_model(self.get_step)
 
-    def export_model(self) -> None:
+    def export_model(self, name_behavior_id: str) -> None:
         """
         Exports the model
         """
-        self.policy.export_model()
+        self.get_policy(name_behavior_id).export_model()
 
     def _write_summary(self, step: int) -> None:
         """
@@ -226,7 +227,7 @@ class Trainer(abc.ABC):
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps))
+        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
@@ -260,6 +261,24 @@ class Trainer(abc.ABC):
         """
         pass
 
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates policy
+        """
+        raise UnityTrainerException("The create_policy method was not implemented.")
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer
+        """
+        raise UnityTrainerException("The add_policy method was not implemented")
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer
+        """
+        raise UnityTrainerException("The get_policy method was not implemented.")
+
     def advance(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
@@ -274,7 +293,8 @@ class Trainer(abc.ABC):
                 with hierarchical_timer("update_policy"):
                     self.update_policy()
                     for q in self.policy_queues:
-                        q.put(self.policy)
+                        # Get policies that correspond to the policy queue in question
+                        q.put(self.get_policy(q.behavior_id))
 
     def publish_policy_queue(self, policy_queue: Queue) -> None:
         """

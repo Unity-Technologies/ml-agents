@@ -123,13 +123,13 @@ def batched_step_result_from_proto(
         is_visual = len(obs_shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_shape)
-            obs_list += [
+            obs_list.append(
                 _process_visual_observation(obs_index, obs_shape, agent_info_list)
-            ]
+            )
         else:
-            obs_list += [
+            obs_list.append(
                 _process_vector_observation(obs_index, obs_shape, agent_info_list)
-            ]
+            )
     rewards = np.array(
         [agent_info.reward for agent_info in agent_info_list], dtype=np.float32
     )

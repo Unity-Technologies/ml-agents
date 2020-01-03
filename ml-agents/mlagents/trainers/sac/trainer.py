@@ -1,4 +1,3 @@
-# # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (SAC)
 # Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
 # and implemented in https://github.com/hill-a/stable-baselines
@@ -10,13 +9,16 @@ import os
 
 import numpy as np
 
+
 from mlagents_envs.timers import timed
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
+from mlagents.trainers.brain import BrainParameters
 
 
-LOGGER = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents.trainers")
 BUFFER_TRUNCATE_PERCENT = 0.8
 
 
@@ -27,17 +29,28 @@ class SACTrainer(RLTrainer):
     """
 
     def __init__(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_parameters: dict,
+        training: bool,
+        load: bool,
+        seed: int,
+        run_id: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
+        :param brain_name: The name of the brain associated with trainer config
+        :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The The identifier of the current run
         """
-        super().__init__(brain, trainer_parameters, training, run_id, reward_buff_cap)
+        super().__init__(
+            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+        )
         self.param_keys = [
             "batch_size",
             "buffer_size",
@@ -62,6 +75,9 @@ class SACTrainer(RLTrainer):
         ]
 
         self.check_param_keys()
+        self.load = load
+        self.seed = seed
+        self.policy: SACPolicy = None  # type: ignore
 
         self.step = 0
         self.train_interval = (
@@ -80,29 +96,8 @@ class SACTrainer(RLTrainer):
             if "save_replay_buffer" in trainer_parameters
             else False
         )
-        self.sac_policy = SACPolicy(
-            seed, brain, trainer_parameters, self.is_training, load
-        )
-        self.policy = self.sac_policy
 
-        # Load the replay buffer if load
-        if load and self.checkpoint_replay_buffer:
-            try:
-                self.load_replay_buffer()
-            except (AttributeError, FileNotFoundError):
-                LOGGER.warning(
-                    "Replay buffer was unable to load, starting from scratch."
-                )
-            LOGGER.debug(
-                "Loaded update buffer with {} sequences".format(
-                    self.update_buffer.num_experiences
-                )
-            )
-
-        for _reward_signal in self.policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
-
-    def save_model(self) -> None:
+    def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model. Overrides the default save_model since we want to save
         the replay buffer as well.
@@ -115,8 +110,10 @@ class SACTrainer(RLTrainer):
         """
         Save the training buffer's update buffer to a pickle file.
         """
-        filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
-        LOGGER.info("Saving Experience Replay Buffer to {}".format(filename))
+        filename = os.path.join(
+            self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
+        )
+        logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
 
@@ -124,11 +121,13 @@ class SACTrainer(RLTrainer):
         """
         Loads the last saved replay buffer from a file.
         """
-        filename = os.path.join(self.policy.model_path, "last_replay_buffer.hdf5")
-        LOGGER.info("Loading Experience Replay Buffer from {}".format(filename))
+        filename = os.path.join(
+            self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
+        )
+        logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
-        LOGGER.info(
+        logger.info(
             "Experience replay buffer has {} experiences.".format(
                 self.update_buffer.num_experiences
             )
@@ -189,7 +188,9 @@ class SACTrainer(RLTrainer):
         )
 
         if trajectory.done_reached:
-            self._update_end_episode_stats(agent_id)
+            self._update_end_episode_stats(
+                agent_id, self.get_policy(trajectory.behavior_id)
+            )
 
     def is_ready_update(self) -> bool:
         """
@@ -211,6 +212,33 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
 
+    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        policy = SACPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_parameters,
+            self.is_training,
+            self.load,
+        )
+        for _reward_signal in policy.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        # Load the replay buffer if load
+        if self.load and self.checkpoint_replay_buffer:
+            try:
+                self.load_replay_buffer()
+            except (AttributeError, FileNotFoundError):
+                logger.warning(
+                    "Replay buffer was unable to load, starting from scratch."
+                )
+            logger.debug(
+                "Loaded update buffer with {} sequences".format(
+                    self.update_buffer.num_experiences
+                )
+            )
+
+        return policy
+
     def update_sac_policy(self) -> None:
         """
         Uses demonstration_buffer to update the policy.
@@ -228,7 +256,7 @@ class SACTrainer(RLTrainer):
         num_updates = self.trainer_parameters["num_update"]
         batch_update_stats: Dict[str, list] = defaultdict(list)
         for _ in range(num_updates):
-            LOGGER.debug("Updating SAC policy at step {}".format(self.step))
+            logger.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.update_buffer
             if (
                 self.update_buffer.num_experiences
@@ -258,7 +286,7 @@ class SACTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
-        bc_module = self.sac_policy.bc_module
+        bc_module = self.policy.bc_module
         if bc_module:
             update_stats = bc_module.update()
             for stat, val in update_stats.items():
@@ -284,17 +312,40 @@ class SACTrainer(RLTrainer):
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name, signal in self.policy.reward_signals.items():
-                LOGGER.debug("Updating {} at step {}".format(name, self.step))
+                logger.debug("Updating {} at step {}".format(name, self.step))
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
                         self.trainer_parameters["batch_size"],
                         sequence_length=self.policy.sequence_length,
                     )
-            update_stats = self.sac_policy.update_reward_signals(
+            update_stats = self.policy.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
+
+    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+        """
+        Adds policy to trainer.
+        :param brain_parameters: specifications for policy construction
+        """
+        if self.policy:
+            logger.warning(
+                "add_policy has been called twice. {} is not a multi-agent trainer".format(
+                    self.__class__.__name__
+                )
+            )
+        if not isinstance(policy, SACPolicy):
+            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
+        self.policy = policy
+
+    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy from trainer associated with name_behavior_id
+        :param name_behavior_id: full identifier of policy
+        """
+
+        return self.policy

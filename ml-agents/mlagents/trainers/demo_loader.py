@@ -28,10 +28,9 @@ def make_demo_buffer(
     # Create and populate buffer using experiences
     demo_raw_buffer = AgentBuffer()
     demo_processed_buffer = AgentBuffer()
-    for idx, experience in enumerate(pair_infos):
+    for idx, current_pair_info in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
-        current_pair_info = pair_infos[idx]
         next_pair_info = pair_infos[idx + 1]
         current_brain_info = BrainInfo.from_agent_proto(
             0, [current_pair_info.agent_info], brain_params

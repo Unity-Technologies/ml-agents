@@ -152,6 +152,8 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
     env_mock.step.return_value = [new_step_info]
     env_mock.reset.return_value = [old_step_info]
 
+    tc.brain_name_to_identifier[brain_name].add(brain_name)
+
     tc.advance(env_mock)
 
     env_mock.reset.assert_not_called()
@@ -183,6 +185,8 @@ def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
     env_mock = MagicMock()
     env_mock.step.return_value = [new_step_info]
     env_mock.reset.return_value = [old_step_info]
+
+    tc.brain_name_to_identifier[brain_name].add(brain_name)
 
     tc.advance(env_mock)
     env_mock.reset.assert_not_called()

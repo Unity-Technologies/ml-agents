@@ -341,15 +341,21 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     trainer_params["summary_path"] = str(tmpdir)
     trainer_params["model_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
-    trainer = SACTrainer(mock_brain, 1, trainer_params, True, False, 0, 0)
+    trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
+    policy = trainer.create_policy(mock_brain)
+    trainer.add_policy(mock_brain.brain_name, policy)
+
     trainer.update_buffer = mb.simulate_rollout(
         env, trainer.policy, BUFFER_INIT_SAMPLES
     )
     buffer_len = trainer.update_buffer.num_experiences
-    trainer.save_model()
+    trainer.save_model(mock_brain.brain_name)
 
     # Wipe Trainer and try to load
-    trainer2 = SACTrainer(mock_brain, 1, trainer_params, True, True, 0, 0)
+    trainer2 = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, True, 0, 0)
+
+    policy = trainer2.create_policy(mock_brain)
+    trainer2.add_policy(mock_brain.brain_name, policy)
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
@@ -360,8 +366,12 @@ def test_process_trajectory(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
+
     trajectory_queue = queue.Queue()
     trainer.subscribe_trajectory_queue(trajectory_queue)
+
     trajectory = make_fake_trajectory(
         length=15, max_step_complete=True, vec_obs_size=6, num_vis_obs=0, action_space=2
     )

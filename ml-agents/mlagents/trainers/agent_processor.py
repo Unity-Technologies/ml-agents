@@ -21,6 +21,7 @@ class AgentProcessor:
     def __init__(
         self,
         policy: TFPolicy,
+        behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
     ):
@@ -44,6 +45,7 @@ class AgentProcessor:
         self.stats_reporter = stats_reporter
         self.max_trajectory_length = max_trajectory_length
         self.trajectory_queues: List[Queue] = []
+        self.behavior_id = behavior_id
 
     def add_experiences(
         self,
@@ -133,6 +135,7 @@ class AgentProcessor:
                         steps=self.experience_buffers[agent_id],
                         agent_id=agent_id,
                         next_obs=next_obs,
+                        behavior_id=self.behavior_id,
                     )
                     for traj_queue in self.trajectory_queues:
                         traj_queue.put(trajectory)
@@ -170,8 +173,13 @@ class AgentManagerQueue:
     out this implementation.
     """
 
-    def __init__(self):
+    def __init__(self, behavior_id: str = None):
+        """
+        Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
+        separately from an AgentManager.
+        """
         self.queue: Deque[Union[Trajectory, Policy]] = deque()
+        self.behavior_id = behavior_id
 
     def empty(self) -> bool:
         return len(self.queue) == 0
@@ -191,6 +199,6 @@ class AgentManager(AgentProcessor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.trajectory_queue = AgentManagerQueue()
-        self.policy_queue = AgentManagerQueue()
+        self.trajectory_queue = AgentManagerQueue(self.behavior_id)
+        self.policy_queue = AgentManagerQueue(self.behavior_id)
         self.publish_trajectory_queue(self.trajectory_queue)

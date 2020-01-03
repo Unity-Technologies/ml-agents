@@ -30,8 +30,12 @@ def create_mock_policy():
 def test_agentprocessor(num_vis_obs):
     policy = create_mock_policy()
     tqueue = mock.Mock()
+    name_behavior_id = "test_brain_name"
     processor = AgentProcessor(
-        policy, max_trajectory_length=5, stats_reporter=StatsReporter("testcat")
+        policy,
+        name_behavior_id,
+        max_trajectory_length=5,
+        stats_reporter=StatsReporter("testcat"),
     )
     fake_action_outputs = {
         "action": [0.1, 0.1],
@@ -47,7 +51,7 @@ def test_agentprocessor(num_vis_obs):
         num_vis_observations=num_vis_obs,
     )
     processor.publish_trajectory_queue(tqueue)
-    for i in range(5):
+    for _ in range(5):
         processor.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
 
     # Assert that two trajectories have been added to the Trainer
