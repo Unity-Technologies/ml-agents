@@ -22,6 +22,7 @@ namespace MLAgents.Sensor
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="shape"></param>
         /// <param name="offset"></param>
         public void SetTarget(IList<float> data, int[] shape, int offset)
         {
@@ -36,6 +37,7 @@ namespace MLAgents.Sensor
         /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
         /// <param name="tensorProxy"></param>
+        /// <param name="shape"></param>
         /// <param name="batchIndex"></param>
         /// <param name="channelOffset"></param>
         public void SetTarget(TensorProxy tensorProxy, int[] shape, int batchIndex, int channelOffset)
@@ -85,7 +87,7 @@ namespace MLAgents.Sensor
                     Debug.Assert(h > 0 && h < height);
                     Debug.Assert(w >= 0 && w < width);
                     Debug.Assert(ch >= 0 && ch < channels);
-                    
+
                     // Math copied from TensorShape.Index(). Note that m_Batch should always be 0
                     var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
                     m_Data[index + m_Offset] = value;
