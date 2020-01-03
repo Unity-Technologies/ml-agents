@@ -95,11 +95,14 @@ def get_demo_files(path: str) -> List[str]:
             raise ValueError("The path provided is not a '.demo' file.")
         return [path]
     elif os.path.isdir(path):
-        fnames = filter(lambda fname: fname.endswith(".demo"), os.listdir(path))
-        fpaths = list(map(lambda fname: os.path.join(path, fname), fnames))
-        if len(fpaths) == 0:
+        paths = [
+            os.path.join(path, name)
+            for name in os.listdir(path)
+            if name.endswith(".demo")
+        ]
+        if not paths:
             raise ValueError("There are no '.demo' files in the provided directory.")
-        return fpaths
+        return paths
     else:
         raise FileNotFoundError(
             f"The demonstration file or directory {path} does not exist."
