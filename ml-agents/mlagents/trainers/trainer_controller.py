@@ -236,14 +236,6 @@ class TrainerController(object):
             trainer.end_episode()
         for brain_name, changed in lessons_incremented.items():
             if changed:
-                if self.meta_curriculum:
-                    # Add changed lesson to stats
-                    lesson_num = self.meta_curriculum.brains_to_curricula[
-                        brain_name
-                    ].lesson_num
-                    self.trainers[brain_name].stats_reporter.add_stat(
-                        "Environment/Lesson", lesson_num
-                    )
                 self.trainers[brain_name].reward_buffer.clear()
 
     def reset_env_if_ready(self, env: EnvManager, steps: int) -> None:
@@ -306,8 +298,16 @@ class TrainerController(object):
         # Get steps
         num_steps = self._get_and_process_experiences(env)
 
+        # Report current lesson
+        if self.meta_curriculum:
+            for brain_name, curr in self.meta_curriculum.brains_to_curricula.items():
+                self.trainers[brain_name].stats_reporter.set_stat(
+                    "Environment/Lesson", curr.lesson_num
+                )
+
         # Advance trainers. This can be done in a separate loop in the future.
-        for trainer in self.trainers.values():
-            trainer.advance()
+        with hierarchical_timer("trainer_advance"):
+            for trainer in self.trainers.values():
+                trainer.advance()
 
         return num_steps
