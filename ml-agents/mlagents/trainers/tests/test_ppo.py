@@ -333,7 +333,7 @@ def test_trainer_increment_step(dummy_config):
     trainer = PPOTrainer(
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
-    policy_mock = mock.Mock()
+    policy_mock = mock.Mock(spec=PPOPolicy)
     step_count = (
         5
     )  # 10 hacked because this function is no longer called through trainer
@@ -404,6 +404,8 @@ def test_process_trajectory(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
     trajectory_queue = queue.Queue()
     trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15

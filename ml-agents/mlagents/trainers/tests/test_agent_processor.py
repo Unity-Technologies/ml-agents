@@ -2,7 +2,12 @@ import unittest.mock as mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
-from mlagents.trainers.agent_processor import AgentProcessor
+from mlagents.trainers.agent_processor import (
+    AgentProcessor,
+    AgentManager,
+    AgentManagerQueue,
+)
+from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter
 
 
@@ -63,3 +68,27 @@ def test_agentprocessor(num_vis_obs):
 
     # Assert that the AgentProcessor is empty
     assert len(processor.experience_buffers[0]) == 0
+
+
+def test_agent_manager():
+    policy = create_mock_policy()
+    name_behavior_id = "test_brain_name"
+    manager = AgentManager(
+        policy,
+        name_behavior_id,
+        max_trajectory_length=5,
+        stats_reporter=StatsReporter("testcat"),
+    )
+    assert len(manager.trajectory_queues) == 1
+    assert isinstance(manager.trajectory_queues[0], AgentManagerQueue)
+
+
+def test_agent_manager_queue():
+    queue = AgentManagerQueue(behavior_id="testbehavior")
+    trajectory = mock.Mock(spec=Trajectory)
+    assert queue.empty()
+    queue.put(trajectory)
+    assert not queue.empty()
+    queue_traj = queue.get_nowait()
+    assert isinstance(queue_traj, Trajectory)
+    assert queue.empty()

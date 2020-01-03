@@ -164,7 +164,7 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    def _increment_step(self, n_steps: int, behavior_id: str) -> None:
+    def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """
         Increment the step count of the trainer
         :param n_steps: number of steps to increment the step count by
@@ -173,7 +173,9 @@ class Trainer(abc.ABC):
         self.next_update_step = self.step + (
             self.summary_freq - self.step % self.summary_freq
         )
-        self.get_policy(behavior_id).increment_step(n_steps)
+        p = self.get_policy(name_behavior_id)
+        if p:
+            p.increment_step(n_steps)
 
     def save_model(self, name_behavior_id: str) -> None:
         """
@@ -273,11 +275,12 @@ class Trainer(abc.ABC):
         """
         raise UnityTrainerException("The add_policy method was not implemented")
 
+    @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
         Gets policy from trainer
         """
-        raise UnityTrainerException("The get_policy method was not implemented.")
+        return None
 
     def advance(self) -> None:
         """
