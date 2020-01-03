@@ -7,7 +7,6 @@ import abc
 from mlagents.tf_utils import tf
 
 from collections import deque
-from queue import Queue
 
 from mlagents_envs.exception import UnityException
 from mlagents_envs.timers import set_gauge
@@ -16,6 +15,7 @@ from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.policy import Policy
 from mlagents_envs.timers import hierarchical_timer
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -253,7 +253,7 @@ class Trainer(abc.ABC):
         """
         Creates policy
         """
-        return None
+        pass
 
     @abc.abstractmethod
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
@@ -267,7 +267,7 @@ class Trainer(abc.ABC):
         """
         Gets policy from trainer
         """
-        return None
+        pass
 
     @abc.abstractmethod
     def _is_ready_update(self):
@@ -301,7 +301,7 @@ class Trainer(abc.ABC):
                         # Get policies that correspond to the policy queue in question
                         q.put(self.get_policy(q.behavior_id))
 
-    def publish_policy_queue(self, policy_queue: Queue) -> None:
+    def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
         Adds a policy queue to the list of queues to publish to when this Trainer
         makes a policy update
@@ -309,7 +309,9 @@ class Trainer(abc.ABC):
         """
         self.policy_queues.append(policy_queue)
 
-    def subscribe_trajectory_queue(self, trajectory_queue: Queue) -> None:
+    def subscribe_trajectory_queue(
+        self, trajectory_queue: AgentManagerQueue[Trajectory]
+    ) -> None:
         """
         Adds a trajectory queue to the list of queues for the trainer injest Trajectories from.
         :param queue: Trajectory queue to publish to.
