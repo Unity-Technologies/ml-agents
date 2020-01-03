@@ -1,7 +1,6 @@
-import unittest.mock as mock
 import yaml
+from unittest import mock
 import mlagents.trainers.tests.mock_brain as mb
-import numpy as np
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 
@@ -10,6 +9,7 @@ def dummy_config():
     return yaml.safe_load(
         """
         summary_path: "test/"
+        summary_freq: 1000
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -28,24 +28,31 @@ def create_mock_brain():
     return mock_brain
 
 
+# Add concrete implementations of abstract methods
+class FakeTrainer(RLTrainer):
+    def get_policy(self, name_behavior_id):
+        return mock.Mock()
+
+    def _is_ready_update(self):
+        return True
+
+    def _update_policy(self):
+        pass
+
+    def add_policy(self):
+        pass
+
+    def create_policy(self):
+        return mock.Mock()
+
+    def _process_trajectory(self, trajectory):
+        super()._process_trajectory(trajectory)
+
+
 def create_rl_trainer():
     mock_brainparams = create_mock_brain()
-    trainer = RLTrainer(mock_brainparams.brain_name, dummy_config(), True, 0)
+    trainer = FakeTrainer(mock_brainparams, dummy_config(), True, 0)
     return trainer
-
-
-def create_mock_all_brain_info(brain_info):
-    return {"MockBrain": brain_info}
-
-
-def create_mock_policy():
-    mock_policy = mock.Mock()
-    mock_policy.reward_signals = {}
-    mock_policy.retrieve_memories.return_value = np.zeros((1, 1), dtype=np.float32)
-    mock_policy.retrieve_previous_action.return_value = np.zeros(
-        (1, 1), dtype=np.float32
-    )
-    return mock_policy
 
 
 def test_rl_trainer():

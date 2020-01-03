@@ -12,6 +12,7 @@ from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.models import EncoderType, LearningModel
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
@@ -332,15 +333,14 @@ def test_trainer_increment_step(dummy_config):
     trainer = PPOTrainer(
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
-    policy_mock = mock.Mock()
+    policy_mock = mock.Mock(spec=PPOPolicy)
     step_count = (
         5
-    )  # 10 hacked becausee this function is no longer called through trainer
+    )  # 10 hacked because this function is no longer called through trainer
     policy_mock.increment_step = mock.Mock(return_value=step_count)
-    trainer.policy = policy_mock
+    trainer.add_policy("testbehavior", policy_mock)
 
-    trainer.increment_step(5)
-    print(trainer.policy.increment_step(5))
+    trainer._increment_step(5, "testbehavior")
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == step_count
 
@@ -383,13 +383,13 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     buffer["curiosity_value_estimates"] = buffer["rewards"]
 
     trainer.update_buffer = buffer
-    trainer.update_policy()
+    trainer._update_policy()
     # Make batch length a larger multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 128
-    trainer.update_policy()
+    trainer._update_policy()
     # Make batch length a larger non-multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 100
-    trainer.update_policy()
+    trainer._update_policy()
 
 
 def test_process_trajectory(dummy_config):
@@ -403,9 +403,11 @@ def test_process_trajectory(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(
-        brain_params.brain_name, 0, dummy_config, True, False, 0, "0", False
-    )
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    policy = trainer.create_policy(brain_params)
+    trainer.add_policy(brain_params.brain_name, policy)
+    trajectory_queue = AgentManagerQueue("testbrain")
+    trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -414,9 +416,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    policy = trainer.create_policy(brain_params)
-    trainer.add_policy(brain_params.brain_name, policy)
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that trainer put trajectory in update buffer
     assert trainer.update_buffer.num_experiences == 15
@@ -440,7 +441,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that the stats are reset as episode is finished
     for reward in trainer.collected_rewards.values():
@@ -477,7 +479,7 @@ def test_normalization(dummy_config):
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
-    trainer.process_trajectory(trajectory)
+    trainer._process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.policy.sess.run(
@@ -503,7 +505,7 @@ def test_normalization(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trainer._process_trajectory(trajectory)
 
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.policy.sess.run(
