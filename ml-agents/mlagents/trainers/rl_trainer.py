@@ -13,7 +13,7 @@ LOGGER = logging.getLogger("mlagents.trainers")
 RewardSignalResults = Dict[str, RewardSignalResult]
 
 
-class RLTrainer(Trainer):
+class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
     This class is the base class for trainers that use Reward Signals.
     """
