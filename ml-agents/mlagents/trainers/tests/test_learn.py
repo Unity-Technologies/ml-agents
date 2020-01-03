@@ -35,12 +35,12 @@ def test_run_training(
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
-            learn.run_training(0, 0, basic_options(), MagicMock())
+            learn.run_training(0, basic_options())
             mock_init.assert_called_once_with(
                 trainer_factory_mock.return_value,
-                "./models/ppo-0",
+                "./models/ppo",
                 "./summaries",
-                "ppo-0",
+                "ppo",
                 50000,
                 None,
                 False,
@@ -69,9 +69,9 @@ def test_docker_target_path(
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
-            learn.run_training(0, 0, options_with_docker_target, MagicMock())
+            learn.run_training(0, options_with_docker_target)
             mock_init.assert_called_once()
-            assert mock_init.call_args[0][1] == "/dockertarget/models/ppo-0"
+            assert mock_init.call_args[0][1] == "/dockertarget/models/ppo"
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
 
 
@@ -111,7 +111,6 @@ def test_commandline_args():
         "--lesson=3",
         "--load",
         "--run-id=myawesomerun",
-        "--num-runs=3",
         "--save-freq=123456",
         "--seed=7890",
         "--train",
