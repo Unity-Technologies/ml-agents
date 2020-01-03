@@ -45,12 +45,12 @@ def reward_buff_sizes():
 def test_init_meta_curriculum_happy_path(
     listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
 ):
-    meta_curriculum = MetaCurriculum.from_folder("test/")
+    meta_curriculum = MetaCurriculum.from_directory("test/")
 
-    assert len(meta_curriculum.brains_to_curriculums) == 2
+    assert len(meta_curriculum.brains_to_curricula) == 2
 
-    assert "Brain1" in meta_curriculum.brains_to_curriculums
-    assert "Brain2.test" in meta_curriculum.brains_to_curriculums
+    assert "Brain1" in meta_curriculum.brains_to_curricula
+    assert "Brain2.test" in meta_curriculum.brains_to_curricula
 
     calls = [call("test/Brain1.json"), call("test/Brain2.test.json")]
 
@@ -60,7 +60,7 @@ def test_init_meta_curriculum_happy_path(
 @patch("os.listdir", side_effect=NotADirectoryError())
 def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
     with pytest.raises(MetaCurriculumError):
-        MetaCurriculum.from_folder("test/")
+        MetaCurriculum.from_directory("test/")
 
 
 @patch("mlagents.trainers.curriculum.Curriculum")
@@ -105,7 +105,7 @@ def test_increment_lessons_with_reward_buff_sizes(
 def test_set_all_curriculums_to_lesson_num(curriculum_a, curriculum_b):
     meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
 
-    meta_curriculum.set_all_curriculums_to_lesson_num(2)
+    meta_curriculum.set_all_curricula_to_lesson_num(2)
 
     assert curriculum_a.lesson_num == 2
     assert curriculum_b.lesson_num == 2

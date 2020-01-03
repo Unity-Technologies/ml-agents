@@ -13,13 +13,12 @@ class Curriculum:
     def __init__(self, brain_name: str, config: Dict):
         """
         Initializes a Curriculum object.
-        :param location: Path to JSON defining curriculum.
+        :param brain_name: Name of the brain this Curriculum is associated with
+        :param config: Dictionary of fields needed to configure the Curriculum
         """
         self.max_lesson_num = 0
         self.measure = None
         self._lesson_num = 0
-        # The name of the brain should be the basename of the file without the
-        # extension.
         self.brain_name = brain_name
         self.config = config
 

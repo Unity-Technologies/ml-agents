@@ -18,22 +18,19 @@ class MetaCurriculum:
     def __init__(self, curricula: Dict[str, Curriculum]):
         """Initializes a MetaCurriculum object.
 
-        Args:
-            curriculum_folder (str): The relative or absolute path of the
-                folder which holds the curricula for this environment.
-                The folder should contain JSON files whose names are the
-                brains that the curricula belong to.
+        :param curriculum_folder: Dictionary of brain_name to the
+          Curriculum for each brain.
         """
         used_reset_parameters: Set[str] = set()
-        self._brains_to_curriculums: Dict[str, Curriculum] = {}
+        self._brains_to_curricula: Dict[str, Curriculum] = {}
         for brain_name, curriculum in curricula.items():
-            self._brains_to_curriculums[brain_name] = curriculum
+            self._brains_to_curricula[brain_name] = curriculum
             config_keys: Set[str] = set(curriculum.get_config().keys())
 
-            # Check if any two curriculums use the same reset params.
+            # Check if any two curricula use the same reset params.
             if config_keys & used_reset_parameters:
                 logger.warning(
-                    "Two or more curriculums will "
+                    "Two or more curricula will "
                     "attempt to change the same reset "
                     "parameter. The result will be "
                     "non-deterministic."
@@ -42,15 +39,15 @@ class MetaCurriculum:
             used_reset_parameters.update(config_keys)
 
     @property
-    def brains_to_curriculums(self):
+    def brains_to_curricula(self):
         """A dict from brain_name to the brain's curriculum."""
-        return self._brains_to_curriculums
+        return self._brains_to_curricula
 
     @property
     def lesson_nums(self):
         """A dict from brain name to the brain's curriculum's lesson number."""
         lesson_nums = {}
-        for brain_name, curriculum in self.brains_to_curriculums.items():
+        for brain_name, curriculum in self.brains_to_curricula.items():
             lesson_nums[brain_name] = curriculum.lesson_num
 
         return lesson_nums
@@ -58,7 +55,7 @@ class MetaCurriculum:
     @lesson_nums.setter
     def lesson_nums(self, lesson_nums):
         for brain_name, lesson in lesson_nums.items():
-            self.brains_to_curriculums[brain_name].lesson_num = lesson
+            self.brains_to_curricula[brain_name].lesson_num = lesson
 
     def _lesson_ready_to_increment(
         self, brain_name: str, reward_buff_size: int
@@ -76,15 +73,15 @@ class MetaCurriculum:
             Whether the curriculum of the specified brain should attempt to
             increment its lesson.
         """
-        if brain_name not in self.brains_to_curriculums:
+        if brain_name not in self.brains_to_curricula:
             return False
 
         return reward_buff_size >= (
-            self.brains_to_curriculums[brain_name].min_lesson_length
+            self.brains_to_curricula[brain_name].min_lesson_length
         )
 
     def increment_lessons(self, measure_vals, reward_buff_sizes=None):
-        """Attempts to increments all the lessons of all the curriculums in this
+        """Attempts to increments all the lessons of all the curricula in this
         MetaCurriculum. Note that calling this method does not guarantee the
         lesson of a curriculum will increment. The lesson of a curriculum will
         only increment if the specified measure threshold defined in the
@@ -105,43 +102,43 @@ class MetaCurriculum:
             for brain_name, buff_size in reward_buff_sizes.items():
                 if self._lesson_ready_to_increment(brain_name, buff_size):
                     measure_val = measure_vals[brain_name]
-                    ret[brain_name] = self.brains_to_curriculums[
+                    ret[brain_name] = self.brains_to_curricula[
                         brain_name
                     ].increment_lesson(measure_val)
         else:
             for brain_name, measure_val in measure_vals.items():
-                ret[brain_name] = self.brains_to_curriculums[
-                    brain_name
-                ].increment_lesson(measure_val)
+                ret[brain_name] = self.brains_to_curricula[brain_name].increment_lesson(
+                    measure_val
+                )
         return ret
 
-    def set_all_curriculums_to_lesson_num(self, lesson_num):
-        """Sets all the curriculums in this meta curriculum to a specified
+    def set_all_curricula_to_lesson_num(self, lesson_num):
+        """Sets all the curricula in this meta curriculum to a specified
         lesson number.
 
         Args:
-            lesson_num (int): The lesson number which all the curriculums will
+            lesson_num (int): The lesson number which all the curricula will
                 be set to.
         """
-        for _, curriculum in self.brains_to_curriculums.items():
+        for _, curriculum in self.brains_to_curricula.items():
             curriculum.lesson_num = lesson_num
 
     def get_config(self):
-        """Get the combined configuration of all curriculums in this
+        """Get the combined configuration of all curricula in this
         MetaCurriculum.
 
         :return: A dict from parameter to value.
         """
         config = {}
 
-        for _, curriculum in self.brains_to_curriculums.items():
+        for _, curriculum in self.brains_to_curricula.items():
             curr_config = curriculum.get_config()
             config.update(curr_config)
 
         return config
 
     @staticmethod
-    def from_folder(folder_path: str) -> "MetaCurriculum":
+    def from_directory(folder_path: str) -> "MetaCurriculum":
         """
         Creates a MetaCurriculum given a folder full of curriculum config files.
 
