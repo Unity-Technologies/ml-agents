@@ -618,12 +618,12 @@ namespace MLAgents
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetFloatObservationShape(), floatsWritten);
+                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetObservationShape(), floatsWritten);
                     var numFloats = sensor.Write(m_WriteAdapter);
                     var floatObs = new Observation
                     {
                         FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
-                        Shape = sensor.GetFloatObservationShape(),
+                        Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
                     m_Info.observations.Add(floatObs);
@@ -634,7 +634,7 @@ namespace MLAgents
                     var compressedObs = new Observation
                     {
                         CompressedData = sensor.GetCompressedObservation(),
-                        Shape = sensor.GetFloatObservationShape(),
+                        Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
                     m_Info.observations.Add(compressedObs);
