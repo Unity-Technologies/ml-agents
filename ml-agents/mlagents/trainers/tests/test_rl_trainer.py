@@ -39,6 +39,12 @@ class FakeTrainer(RLTrainer):
     def _update_policy(self):
         pass
 
+    def add_policy(self):
+        pass
+
+    def create_policy(self):
+        return mock.Mock()
+
     def _process_trajectory(self, trajectory):
         super()._process_trajectory(trajectory)
 
