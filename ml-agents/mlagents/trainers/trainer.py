@@ -130,12 +130,12 @@ class Trainer(abc.ABC):
         return self.trainer_parameters
 
     @property
-    def get_max_steps(self) -> float:
+    def get_max_steps(self) -> int:
         """
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return float(self.trainer_parameters["max_steps"])
+        return int(self.trainer_parameters["max_steps"])
 
     @property
     def get_step(self) -> int:

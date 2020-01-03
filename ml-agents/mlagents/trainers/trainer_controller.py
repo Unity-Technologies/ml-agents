@@ -77,9 +77,8 @@ class TrainerController(object):
                 if brain_name not in self.trainers:
                     continue
                 if curriculum.measure == "progress":
-                    measure_val = (
-                        self.trainers[brain_name].get_step
-                        / self.trainers[brain_name].get_max_steps
+                    measure_val = self.trainers[brain_name].get_step / float(
+                        self.trainers[brain_name].get_max_steps
                     )
                     brain_names_to_measure_vals[brain_name] = measure_val
                 elif curriculum.measure == "reward":
@@ -161,13 +160,6 @@ class TrainerController(object):
             any(t.should_still_train for t in self.trainers.values())
             or not self.train_model
         ) or len(self.trainers) == 0
-
-    def start_trainer(self, trainer: Trainer, env_manager: EnvManager) -> None:
-        self.trainers[trainer.brain_name] = trainer
-        self.logger.info(trainer)
-        if self.train_model:
-            trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
-        env_manager.set_policy(trainer.brain_name, trainer.policy)
 
     def _create_trainer_and_manager(
         self, env_manager: EnvManager, name_behavior_id: str

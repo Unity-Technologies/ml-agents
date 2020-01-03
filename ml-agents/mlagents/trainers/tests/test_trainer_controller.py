@@ -48,6 +48,7 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
     trainer_mock = MagicMock()
     trainer_mock.get_step = 0
     trainer_mock.get_max_steps = 5
+    trainer_mock.should_still_train = True
     trainer_mock.parameters = {"some": "parameter"}
     trainer_mock.write_tensorboard_text = MagicMock()
 
@@ -59,6 +60,11 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
 
     def take_step_sideeffect(env):
         tc.trainers["testbrain"].get_step += 1
+        if (
+            not tc.trainers["testbrain"].get_step
+            <= tc.trainers["testbrain"].get_max_steps
+        ):
+            tc.trainers["testbrain"].should_still_train = False
         if tc.trainers["testbrain"].get_step > 10:
             raise KeyboardInterrupt
         return 1
