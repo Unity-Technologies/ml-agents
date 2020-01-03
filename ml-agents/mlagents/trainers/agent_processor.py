@@ -1,6 +1,5 @@
 import sys
-from queue import Queue
-from typing import List, Dict, Deque, Union
+from typing import List, Dict, Deque, TypeVar, Generic
 from collections import defaultdict, Counter, deque
 
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
@@ -9,6 +8,8 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
+
+T = TypeVar("T")
 
 
 class AgentProcessor:
@@ -44,7 +45,7 @@ class AgentProcessor:
         self.episode_rewards: Dict[str, float] = defaultdict(float)
         self.stats_reporter = stats_reporter
         self.max_trajectory_length = max_trajectory_length
-        self.trajectory_queues: List[Queue] = []
+        self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.behavior_id = behavior_id
 
     def add_experiences(
@@ -157,7 +158,9 @@ class AgentProcessor:
             curr_info.agents, take_action_outputs["action"]
         )
 
-    def publish_trajectory_queue(self, trajectory_queue: Queue) -> None:
+    def publish_trajectory_queue(
+        self, trajectory_queue: "AgentManagerQueue[Trajectory]"
+    ) -> None:
         """
         Adds a trajectory queue to the list of queues to publish to when this AgentProcessor
         assembles a Trajectory
@@ -166,7 +169,7 @@ class AgentProcessor:
         self.trajectory_queues.append(trajectory_queue)
 
 
-class AgentManagerQueue:
+class AgentManagerQueue(Generic[T]):
     """
     Queue used by the AgentManager. Note that we make our own class here because in most implementations
     deque is sufficient and faster. However, if we want to switch to multiprocessing, we'll need to change
@@ -178,16 +181,16 @@ class AgentManagerQueue:
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.queue: Deque[Union[Trajectory, Policy]] = deque()
+        self.queue: Deque[T] = deque()
         self.behavior_id = behavior_id
 
     def empty(self) -> bool:
         return len(self.queue) == 0
 
-    def get_nowait(self) -> Union[Trajectory, Policy]:
+    def get_nowait(self) -> T:
         return self.queue.popleft()
 
-    def put(self, item: Union[Trajectory, Policy]) -> None:
+    def put(self, item: T) -> None:
         self.queue.append(item)
 
 
@@ -199,6 +202,10 @@ class AgentManager(AgentProcessor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.trajectory_queue = AgentManagerQueue(self.behavior_id)
-        self.policy_queue = AgentManagerQueue(self.behavior_id)
+        self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
+            self.behavior_id
+        )
+        self.policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
+            self.behavior_id
+        )
         self.publish_trajectory_queue(self.trajectory_queue)
