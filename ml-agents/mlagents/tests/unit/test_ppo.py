@@ -14,9 +14,9 @@ from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.mock_communicator import MockCommunicator
-from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.tests.mock_brain import make_brain_parameters
-from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.tests.unit import mock_brain as mb
+from mlagents.tests.unit.mock_brain import make_brain_parameters
+from mlagents.tests.unit.test_trajectory import make_fake_trajectory
 from mlagents.trainers.brain_conversion_utils import (
     step_result_to_brain_info,
     group_spec_to_brain_parameters,

@@ -1,6 +1,6 @@
 import unittest.mock as mock
 import pytest
-import mlagents.trainers.tests.mock_brain as mb
+import mlagents.tests.unit.mock_brain as mb
 import numpy as np
 from mlagents.trainers.agent_processor import AgentProcessor
 from mlagents.trainers.stats import StatsReporter

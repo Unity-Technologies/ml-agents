@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy
-from mlagents.trainers.tests.mock_brain import create_mock_brainparams
+from mlagents.tests.unit.mock_brain import create_mock_brainparams
 
 
 @pytest.fixture

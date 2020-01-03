@@ -1,9 +1,9 @@
 import unittest.mock as mock
 import yaml
-import mlagents.trainers.tests.mock_brain as mb
+import mlagents.tests.unit.mock_brain as mb
 import numpy as np
 from mlagents.trainers.rl_trainer import RLTrainer
-from mlagents.trainers.tests.test_buffer import construct_fake_buffer
+from mlagents.tests.unit.test_buffer import construct_fake_buffer
 
 
 def dummy_config():

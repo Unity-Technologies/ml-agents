@@ -9,9 +9,9 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.tests.mock_brain import make_brain_parameters
-from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.tests.unit import mock_brain as mb
+from mlagents.tests.unit.mock_brain import make_brain_parameters
+from mlagents.tests.unit.test_trajectory import make_fake_trajectory
 
 
 @pytest.fixture
