@@ -1,7 +1,11 @@
 import os
 import pytest
 
-from mlagents.trainers.demo_loader import load_demonstration, demo_to_buffer, get_demo_files
+from mlagents.trainers.demo_loader import (
+    load_demonstration,
+    demo_to_buffer,
+    get_demo_files,
+)
 
 
 def test_load_demo():
@@ -32,7 +36,7 @@ def test_load_demo_dir():
 
 def test_nonexisting_paths():
     path_prefix = os.path.dirname(os.path.abspath(__file__))
-    with pytest.raises(FileNotFoundError) as error:
+    with pytest.raises(FileNotFoundError):
         get_demo_files(os.path.join(path_prefix, "idontexistfile.demo"))
-    with pytest.raises(FileNotFoundError) as error:
+    with pytest.raises(FileNotFoundError):
         get_demo_files(os.path.join(path_prefix, "idontexistdirectory"))
