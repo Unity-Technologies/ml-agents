@@ -72,7 +72,7 @@ class TrainerController(object):
             for (
                 brain_name,
                 curriculum,
-            ) in self.meta_curriculum.brains_to_curriculums.items():
+            ) in self.meta_curriculum.brains_to_curricula.items():
                 # Skip brains that are in the metacurriculum but no trainer yet.
                 if brain_name not in self.trainers:
                     continue
@@ -238,7 +238,7 @@ class TrainerController(object):
             if changed:
                 if self.meta_curriculum:
                     # Add changed lesson to stats
-                    lesson_num = self.meta_curriculum.brains_to_curriculums[
+                    lesson_num = self.meta_curriculum.brains_to_curricula[
                         brain_name
                     ].lesson_num
                     self.trainers[brain_name].stats_reporter.add_stat(

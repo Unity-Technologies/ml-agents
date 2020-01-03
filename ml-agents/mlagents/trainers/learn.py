@@ -349,10 +349,10 @@ def try_create_meta_curriculum(
         return None
 
     else:
-        meta_curriculum = MetaCurriculum(curriculum_folder)
+        meta_curriculum = MetaCurriculum.from_directory(curriculum_folder)
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
-        meta_curriculum.set_all_curriculums_to_lesson_num(lesson)
+        meta_curriculum.set_all_curricula_to_lesson_num(lesson)
 
         return meta_curriculum
 

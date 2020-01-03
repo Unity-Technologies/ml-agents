@@ -102,14 +102,14 @@ def initialize_trainer(
 
     min_lesson_length = 1
     if meta_curriculum:
-        if brain_name in meta_curriculum.brains_to_curriculums:
-            min_lesson_length = meta_curriculum.brains_to_curriculums[
+        if brain_name in meta_curriculum.brains_to_curricula:
+            min_lesson_length = meta_curriculum.brains_to_curricula[
                 brain_name
             ].min_lesson_length
         else:
             logger.warning(
                 f"Metacurriculum enabled, but no curriculum for brain {brain_name}. "
-                f"Brains with curricula: {meta_curriculum.brains_to_curriculums.keys()}. "
+                f"Brains with curricula: {meta_curriculum.brains_to_curricula.keys()}. "
             )
 
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
