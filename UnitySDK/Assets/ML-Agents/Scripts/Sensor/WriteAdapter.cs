@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using MLAgents.InferenceBrain;
 using UnityEngine;
 
@@ -76,15 +77,17 @@ namespace MLAgents.Sensor
         {
             set
             {
-                // TODO check shape is 3D?
-                // TODO check ranges
                 if (m_Data != null)
                 {
                     var height = m_Shape[0];
                     var width = m_Shape[1];
                     var channels = m_Shape[2];
+                    Debug.Assert(h > 0 && h < height);
+                    Debug.Assert(w >= 0 && w < width);
+                    Debug.Assert(ch >= 0 && ch < channels);
+                    
+                    // Math copied from TensorShape.Index(). Note that m_Batch should always be 0
                     var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
-                    // Debug.Log($"hwc=({h},{w},{ch}) shape=({height},{width},{channels}) index={index} offset={m_Offset} len={m_Data.Count}");
                     m_Data[index + m_Offset] = value;
                 }
                 else

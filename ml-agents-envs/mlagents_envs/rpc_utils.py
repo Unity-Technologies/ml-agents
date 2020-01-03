@@ -63,9 +63,15 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 
 @timed
 def observation_to_np_array(
-    obs: ObservationProto, expected_shape: Optional[Iterable[int]]
+    obs: ObservationProto, expected_shape: Optional[Iterable[int]] = None
 ) -> np.ndarray:
-    if expected_shape:
+    """
+    Converts observation proto into numpy array of the appropriate size.
+    :param obs: observation proto to be converted
+    :param expected_shape: optional shape information, used for sanity checks.
+    :return: processed numpy array of observation from environment
+    """
+    if expected_shape is not None:
         if list(obs.shape) != list(expected_shape):
             raise UnityObservationException(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
