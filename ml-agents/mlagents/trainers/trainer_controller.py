@@ -301,9 +301,10 @@ class TrainerController(object):
         # Report current lesson
         if self.meta_curriculum:
             for brain_name, curr in self.meta_curriculum.brains_to_curricula.items():
-                self.trainers[brain_name].stats_reporter.set_stat(
-                    "Environment/Lesson", curr.lesson_num
-                )
+                if brain_name in self.trainers:
+                    self.trainers[brain_name].stats_reporter.set_stat(
+                        "Environment/Lesson", curr.lesson_num
+                    )
 
         # Advance trainers. This can be done in a separate loop in the future.
         with hierarchical_timer("trainer_advance"):
