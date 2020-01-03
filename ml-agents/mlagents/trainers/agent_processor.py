@@ -176,6 +176,13 @@ class AgentManagerQueue(Generic[T]):
     out this implementation.
     """
 
+    class Empty(Exception):
+        """
+        Exception for when the queue is empty.
+        """
+
+        pass
+
     def __init__(self, behavior_id: str):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
@@ -188,7 +195,10 @@ class AgentManagerQueue(Generic[T]):
         return len(self.queue) == 0
 
     def get_nowait(self) -> T:
-        return self.queue.popleft()
+        try:
+            return self.queue.popleft()
+        except IndexError:
+            raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:
         self.queue.append(item)

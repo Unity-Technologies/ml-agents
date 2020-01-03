@@ -135,7 +135,7 @@ class Trainer(abc.ABC):
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return int(self.trainer_parameters["max_steps"])
+        return int(float(self.trainer_parameters["max_steps"]))
 
     @property
     def get_step(self) -> int:
@@ -290,9 +290,11 @@ class Trainer(abc.ABC):
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
-                if not traj_queue.empty():
-                    _t = traj_queue.get_nowait()
-                    self._process_trajectory(_t)
+                try:
+                    t = traj_queue.get_nowait()
+                    self._process_trajectory(t)
+                except AgentManagerQueue.Empty:
+                    pass
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):

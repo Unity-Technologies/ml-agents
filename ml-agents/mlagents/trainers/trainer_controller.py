@@ -22,7 +22,7 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.trainers.agent_processor import AgentManager
+from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 
 
 class TrainerController(object):
@@ -278,12 +278,13 @@ class TrainerController(object):
             # Get new policies if found
             for brain_name in self.trainers.keys():
                 for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                    _queue = self.managers[name_behavior_id].policy_queue
-                    if not _queue.empty():
+                    try:
                         _policy = self.managers[
                             name_behavior_id
                         ].policy_queue.get_nowait()
                         env.set_policy(name_behavior_id, _policy)
+                    except AgentManagerQueue.Empty:
+                        pass
             # Step the environment
             new_step_infos = env.step()
         # Add to AgentProcessor
