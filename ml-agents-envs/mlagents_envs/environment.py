@@ -51,7 +51,7 @@ logger = logging.getLogger("mlagents_envs")
 class UnityEnvironment(BaseEnv):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    API_VERSION = "API-12"
+    API_VERSION = "API-13"
 
     def __init__(
         self,

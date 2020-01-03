@@ -41,7 +41,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public abstract class Academy : MonoBehaviour
     {
-        const string k_ApiVersion = "API-12";
+        const string k_ApiVersion = "API-13";
         const int k_EditorTrainingPort = 5004;
 
         /// Temporary storage for global gravity value
