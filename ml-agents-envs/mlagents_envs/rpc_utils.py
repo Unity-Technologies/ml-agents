@@ -1,11 +1,16 @@
 from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents_envs.communicator_objects.observation_pb2 import (
+    ObservationProto,
+    NONE as COMPRESSION_NONE,
+)
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import logging
 import numpy as np
 import io
-from typing import cast, List, Tuple, Union, Collection
+from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
 
 logger = logging.getLogger("mlagents_envs")
@@ -57,6 +62,31 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 
 
 @timed
+def observation_to_np_array(
+    obs: ObservationProto, expected_shape: Optional[Iterable[int]]
+) -> np.ndarray:
+    if expected_shape:
+        if list(obs.shape) != list(expected_shape):
+            raise UnityObservationException(
+                f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
+            )
+    gray_scale = obs.shape[2] == 1
+    if obs.compression_type == COMPRESSION_NONE:
+        img = np.array(obs.float_data.data)
+        img = np.reshape(img, obs.shape)
+        return img
+    else:
+        img = process_pixels(obs.compressed_data, gray_scale)
+        # Compare decompressed image size to observation shape and make sure they match
+        if list(obs.shape) != list(img.shape):
+            raise UnityObservationException(
+                f"Decompressed observation did not have the expected shape - "
+                f"decompressed had {img.shape} but expected {obs.shape}"
+            )
+        return img
+
+
+@timed
 def _process_visual_observation(
     obs_index: int,
     shape: Tuple[int, int, int],
@@ -67,9 +97,8 @@ def _process_visual_observation(
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
 
-    gray_scale = shape[2] == 1
     batched_visual = [
-        process_pixels(agent_obs.observations[obs_index].compressed_data, gray_scale)
+        observation_to_np_array(agent_obs.observations[obs_index], shape)
         for agent_obs in agent_info_list
     ]
     return np.array(batched_visual, dtype=np.float32)

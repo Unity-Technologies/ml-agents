@@ -1,13 +1,12 @@
 import logging
 import numpy as np
-import io
 
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.observation_pb2 import ObservationProto
-from mlagents_envs.timers import hierarchical_timer, timed
+from mlagents_envs.timers import timed
+from mlagents_envs import rpc_utils
 from typing import Dict, List, NamedTuple, Collection
-from PIL import Image
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -121,27 +120,6 @@ class BrainInfo:
 
     @staticmethod
     @timed
-    def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
-        """
-        Converts byte array observation image into numpy array, re-sizes it,
-        and optionally converts it to grey scale
-        :param gray_scale: Whether to convert the image to grayscale.
-        :param image_bytes: input byte array corresponding to image
-        :return: processed numpy array of observation from environment
-        """
-        with hierarchical_timer("image_decompress"):
-            image_bytearray = bytearray(image_bytes)
-            image = Image.open(io.BytesIO(image_bytearray))
-            # Normally Image loads lazily, this forces it to do loading in the timer scope.
-            image.load()
-        s = np.array(image) / 255.0
-        if gray_scale:
-            s = np.mean(s, axis=2)
-            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-        return s
-
-    @staticmethod
-    @timed
     def from_agent_proto(
         worker_id: int,
         agent_info_list: Collection[
@@ -207,11 +185,9 @@ class BrainInfo:
 
         vis_obs: List[np.ndarray] = []
         for i in range(brain_params.number_visual_observations):
-            # TODO check compression type, handle uncompressed visuals
             obs = [
-                BrainInfo.process_pixels(
-                    agent_obs[i].compressed_data,
-                    brain_params.camera_resolutions[i].gray_scale,
+                rpc_utils.observation_to_np_array(
+                    agent_obs[i], brain_params.camera_resolutions[i]
                 )
                 for agent_obs in visual_observation_protos
             ]
