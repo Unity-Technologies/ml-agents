@@ -62,7 +62,7 @@ jobs:
             . venv/bin/activate
             mkdir test-reports
             pip freeze > test-reports/pip_versions.txt
-            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings  --durations=0
 
       - run:
           name: Verify there are no hidden/missing metafiles.
