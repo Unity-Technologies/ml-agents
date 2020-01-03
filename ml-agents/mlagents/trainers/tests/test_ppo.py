@@ -347,7 +347,7 @@ def test_trainer_increment_step(dummy_config):
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment")
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
+def test_trainer__update_policy(mock_env, dummy_config, use_discrete):
     env, mock_brain, _ = mb.setup_mock_env_and_brains(
         mock_env,
         use_discrete,
@@ -383,13 +383,13 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     buffer["curiosity_value_estimates"] = buffer["rewards"]
 
     trainer.update_buffer = buffer
-    trainer.update_policy()
+    trainer._update_policy()
     # Make batch length a larger multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 128
-    trainer.update_policy()
+    trainer._update_policy()
     # Make batch length a larger non-multiple of sequence length
     trainer.trainer_parameters["batch_size"] = 100
-    trainer.update_policy()
+    trainer._update_policy()
 
 
 def test_process_trajectory(dummy_config):

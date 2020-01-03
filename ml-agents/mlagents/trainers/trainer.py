@@ -93,7 +93,7 @@ class Trainer(abc.ABC):
             LOGGER.info("Could not write text summary for Tensorboard.")
             pass
 
-    def dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
+    def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
         Takes a parameter dictionary and converts it to a human-readable string.
         Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
@@ -109,7 +109,7 @@ class Trainer(abc.ABC):
                     "\t"
                     + "  " * num_tabs
                     + "{0}:\t{1}".format(
-                        x, self.dict_to_str(param_dict[x], num_tabs + 1)
+                        x, self._dict_to_str(param_dict[x], num_tabs + 1)
                     )
                     for x in param_dict
                 ]
@@ -119,7 +119,7 @@ class Trainer(abc.ABC):
         return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
             self.__class__.__name__,
             self.brain_name,
-            self.dict_to_str(self.trainer_parameters, 0),
+            self._dict_to_str(self.trainer_parameters, 0),
         )
 
     @property
@@ -249,31 +249,18 @@ class Trainer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def is_ready_update(self):
-        """
-        Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to wether or not update_model() can be run
-        """
-        return False
-
-    @abc.abstractmethod
-    def update_policy(self):
-        """
-        Uses demonstration_buffer to update model.
-        """
-        pass
-
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """
         Creates policy
         """
-        raise UnityTrainerException("The create_policy method was not implemented.")
+        return None
 
+    @abc.abstractmethod
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         """
         Adds policy to trainer
         """
-        raise UnityTrainerException("The add_policy method was not implemented")
+        pass
 
     @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
@@ -281,6 +268,21 @@ class Trainer(abc.ABC):
         Gets policy from trainer
         """
         return None
+
+    @abc.abstractmethod
+    def _is_ready_update(self):
+        """
+        Returns whether or not the trainer has enough elements to run update model
+        :return: A boolean corresponding to wether or not update_model() can be run
+        """
+        return False
+
+    @abc.abstractmethod
+    def _update_policy(self):
+        """
+        Uses demonstration_buffer to update model.
+        """
+        pass
 
     def advance(self) -> None:
         """
@@ -292,9 +294,9 @@ class Trainer(abc.ABC):
                     _t = traj_queue.get_nowait()
                     self._process_trajectory(_t)
         if self.should_still_train:
-            if self.is_ready_update():
-                with hierarchical_timer("update_policy"):
-                    self.update_policy()
+            if self._is_ready_update():
+                with hierarchical_timer("_update_policy"):
+                    self._update_policy()
                     for q in self.policy_queues:
                         # Get policies that correspond to the policy queue in question
                         q.put(self.get_policy(q.behavior_id))

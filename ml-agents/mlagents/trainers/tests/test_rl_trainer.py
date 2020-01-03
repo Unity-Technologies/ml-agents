@@ -33,10 +33,10 @@ class FakeTrainer(RLTrainer):
     def get_policy(self, name_behavior_id):
         return mock.Mock()
 
-    def is_ready_update(self):
+    def _is_ready_update(self):
         return True
 
-    def update_policy(self):
+    def _update_policy(self):
         pass
 
     def _process_trajectory(self, trajectory):

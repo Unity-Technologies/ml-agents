@@ -64,8 +64,7 @@ class RLTrainer(Trainer):
 
     def clear_update_buffer(self) -> None:
         """
-        Clear the buffers that have been built up during inference. If
-        we're not training, this should be called instead of update_policy.
+        Clear the buffers that have been built up during inference.
         """
         self.update_buffer.reset_agent()
 

@@ -192,7 +192,7 @@ class SACTrainer(RLTrainer):
                 agent_id, self.get_policy(trajectory.behavior_id)
             )
 
-    def is_ready_update(self) -> bool:
+    def _is_ready_update(self) -> bool:
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
@@ -203,7 +203,7 @@ class SACTrainer(RLTrainer):
         )
 
     @timed
-    def update_policy(self) -> None:
+    def _update_policy(self) -> None:
         """
         If train_interval is met, update the SAC policy given the current reward signals.
         If reward_signal_train_interval is met, update the reward signals from the buffer.

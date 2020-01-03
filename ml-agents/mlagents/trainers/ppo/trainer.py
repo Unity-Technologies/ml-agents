@@ -161,7 +161,7 @@ class PPOTrainer(RLTrainer):
                 agent_id, self.get_policy(trajectory.behavior_id)
             )
 
-    def is_ready_update(self):
+    def _is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
@@ -169,7 +169,7 @@ class PPOTrainer(RLTrainer):
         size_of_buffer = self.update_buffer.num_experiences
         return size_of_buffer > self.trainer_parameters["buffer_size"]
 
-    def update_policy(self):
+    def _update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.

@@ -138,7 +138,7 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
     brain_info_dict = {brain_name: Mock()}
     old_step_info = EnvironmentStep(brain_info_dict, brain_info_dict, action_info_dict)
     new_step_info = EnvironmentStep(brain_info_dict, brain_info_dict, action_info_dict)
-    trainer_mock.is_ready_update = MagicMock(return_value=True)
+    trainer_mock._is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
     env_mock.step.return_value = [new_step_info]
@@ -172,7 +172,7 @@ def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
     old_step_info = EnvironmentStep(brain_info_dict, brain_info_dict, action_info_dict)
     new_step_info = EnvironmentStep(brain_info_dict, brain_info_dict, action_info_dict)
 
-    trainer_mock.is_ready_update = MagicMock(return_value=False)
+    trainer_mock._is_ready_update = MagicMock(return_value=False)
 
     env_mock = MagicMock()
     env_mock.step.return_value = [new_step_info]
