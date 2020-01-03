@@ -7,7 +7,7 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.12 to latest
+## Migrating from 0.12 to 0.13
 
 ### Important changes
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. This should only affect you if you're writing a custom trainer; if you use `mlagents-learn` for training, this should be a transparent change.
