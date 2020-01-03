@@ -1,7 +1,6 @@
 import unittest.mock as mock
 import pytest
 import yaml
-import queue
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -10,6 +9,7 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -369,7 +369,7 @@ def test_process_trajectory(dummy_config):
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
-    trajectory_queue = queue.Queue()
+    trajectory_queue = AgentManagerQueue()
     trainer.subscribe_trajectory_queue(trajectory_queue)
 
     trajectory = make_fake_trajectory(

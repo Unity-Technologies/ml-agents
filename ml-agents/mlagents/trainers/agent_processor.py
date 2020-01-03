@@ -200,8 +200,14 @@ class AgentManager(AgentProcessor):
     Note: this leaves room for adding AgentProcessors that publish multiple trajectory queues.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        policy: TFPolicy,
+        behavior_id: str,
+        stats_reporter: StatsReporter,
+        max_trajectory_length: int = sys.maxsize,
+    ):
+        super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
             self.behavior_id
         )

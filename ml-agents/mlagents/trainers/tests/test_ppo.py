@@ -1,6 +1,5 @@
 import unittest.mock as mock
 import pytest
-import queue
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -13,6 +12,7 @@ from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.models import EncoderType, LearningModel
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
@@ -406,7 +406,7 @@ def test_process_trajectory(dummy_config):
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
-    trajectory_queue = queue.Queue()
+    trajectory_queue = AgentManagerQueue()
     trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
     trajectory = make_fake_trajectory(

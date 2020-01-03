@@ -57,8 +57,8 @@ class Trainer(abc.ABC):
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy_queues: List[AgentManagerQueue] = []
-        self.trajectory_queues: List[AgentManagerQueue] = []
+        self.policy_queues: List[AgentManagerQueue[Policy]] = []
+        self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
