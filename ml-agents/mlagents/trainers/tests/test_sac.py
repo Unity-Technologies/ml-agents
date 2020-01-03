@@ -369,7 +369,7 @@ def test_process_trajectory(dummy_config):
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
-    trajectory_queue = AgentManagerQueue()
+    trajectory_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
 
     trajectory = make_fake_trajectory(

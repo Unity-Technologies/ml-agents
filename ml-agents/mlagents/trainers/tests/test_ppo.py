@@ -347,7 +347,7 @@ def test_trainer_increment_step(dummy_config):
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment")
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_trainer__update_policy(mock_env, dummy_config, use_discrete):
+def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     env, mock_brain, _ = mb.setup_mock_env_and_brains(
         mock_env,
         use_discrete,
@@ -406,7 +406,7 @@ def test_process_trajectory(dummy_config):
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
-    trajectory_queue = AgentManagerQueue()
+    trajectory_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
     trajectory = make_fake_trajectory(
