@@ -78,7 +78,7 @@ class TrainerController(object):
             for (
                 brain_name,
                 curriculum,
-            ) in self.meta_curriculum.brains_to_curriculums.items():
+            ) in self.meta_curriculum.brains_to_curricula.items():
                 # Skip brains that are in the metacurriculum but no trainer yet.
                 if brain_name not in self.trainers:
                     continue
@@ -174,9 +174,9 @@ class TrainerController(object):
             delta_train_start = time() - self.training_start_time
             if (
                 self.meta_curriculum
-                and brain_name in self.meta_curriculum.brains_to_curriculums
+                and brain_name in self.meta_curriculum.brains_to_curricula
             ):
-                lesson_num = self.meta_curriculum.brains_to_curriculums[
+                lesson_num = self.meta_curriculum.brains_to_curricula[
                     brain_name
                 ].lesson_num
                 trainer.stats_reporter.add_stat("Environment/Lesson", lesson_num)
