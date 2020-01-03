@@ -1,4 +1,5 @@
 import yaml
+from unittest import mock
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
@@ -29,6 +30,9 @@ def create_mock_brain():
 
 # Add concrete implementations of abstract methods
 class FakeTrainer(RLTrainer):
+    def get_policy(self, name_behavior_id):
+        return mock.Mock()
+
     def is_ready_update(self):
         return True
 
