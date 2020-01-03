@@ -64,7 +64,7 @@ class Trainer(abc.ABC):
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_update_step = self.summary_freq
 
-    def check_param_keys(self):
+    def _check_param_keys(self):
         for k in self.param_keys:
             if k not in self.trainer_parameters:
                 raise UnityTrainerException(

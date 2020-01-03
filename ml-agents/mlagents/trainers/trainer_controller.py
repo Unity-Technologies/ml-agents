@@ -158,7 +158,7 @@ class TrainerController(object):
 
     def _not_done_training(self) -> bool:
         return (
-            any(t.get_step <= t.get_max_steps for k, t in self.trainers.items())
+            any(t.should_still_train for t in self.trainers.values())
             or not self.train_model
         ) or len(self.trainers) == 0
 

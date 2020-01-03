@@ -74,7 +74,7 @@ class SACTrainer(RLTrainer):
             "vis_encode_type",
         ]
 
-        self.check_param_keys()
+        self._check_param_keys()
         self.load = load
         self.seed = seed
         self.policy: SACPolicy = None  # type: ignore

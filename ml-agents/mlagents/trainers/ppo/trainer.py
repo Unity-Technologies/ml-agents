@@ -66,7 +66,7 @@ class PPOTrainer(RLTrainer):
             "model_path",
             "reward_signals",
         ]
-        self.check_param_keys()
+        self._check_param_keys()
         self.load = load
         self.multi_gpu = multi_gpu
         self.seed = seed
