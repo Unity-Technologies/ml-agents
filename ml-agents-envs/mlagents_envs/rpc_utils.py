@@ -54,7 +54,7 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         image = Image.open(io.BytesIO(image_bytearray))
         # Normally Image loads lazily, this forces it to do loading in the timer scope.
         image.load()
-    s = np.array(image) / 255.0
+    s = np.array(image, dtype=np.float32) / 255.0
     if gray_scale:
         s = np.mean(s, axis=2)
         s = np.reshape(s, [s.shape[0], s.shape[1], 1])
@@ -78,7 +78,7 @@ def observation_to_np_array(
             )
     gray_scale = obs.shape[2] == 1
     if obs.compression_type == COMPRESSION_NONE:
-        img = np.array(obs.float_data.data)
+        img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
         return img
     else:
