@@ -115,6 +115,8 @@ def load_demonstration(
     :return: BrainParameter and list of AgentInfoActionPairProto containing demonstration data.
     """
 
+    # First 32 bytes of file dedicated to meta-data.
+    INITIAL_POS = 33
     file_paths = get_demo_files(file_path)
 
     brain_params = None
@@ -132,13 +134,12 @@ def load_demonstration(
                     meta_data_proto = DemonstrationMetaProto()
                     meta_data_proto.ParseFromString(data[pos : pos + next_pos])
                     total_expected += meta_data_proto.number_steps
-                    # first 32 bytes of file dedicated to meta-data.
-                    pos = 33
-                elif obs_decoded == 1:
+                    pos = INITIAL_POS
+                if obs_decoded == 1:
                     brain_param_proto = BrainParametersProto()
                     brain_param_proto.ParseFromString(data[pos : pos + next_pos])
                     pos += next_pos
-                else:
+                if obs_decoded > 1:
                     agent_info_action = AgentInfoActionPairProto()
                     agent_info_action.ParseFromString(data[pos : pos + next_pos])
                     if brain_params is None:
@@ -147,7 +148,6 @@ def load_demonstration(
                         )
                     info_action_pairs.append(agent_info_action)
                     if len(info_action_pairs) == total_expected:
-                        breakpoint()
                         break
                     pos += next_pos
                 obs_decoded += 1
