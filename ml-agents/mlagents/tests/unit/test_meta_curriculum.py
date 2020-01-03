@@ -5,7 +5,7 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.exception import MetaCurriculumError
 
-from mlagents.tests.unit.test_simple_rl import (
+from mlagents.tests.integration.test_simple_rl import (
     Simple1DEnvironment,
     _check_environment_trains,
     BRAIN_NAME,
