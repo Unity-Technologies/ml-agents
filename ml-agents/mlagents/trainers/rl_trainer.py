@@ -28,7 +28,6 @@ class RLTrainer(Trainer, abc.ABC):  # pylint: disable=abstract-method
     def __init__(self, *args, **kwargs):
         super(RLTrainer, self).__init__(*args, **kwargs)
         self.param_keys: List[str] = []
-        self.cumulative_returns_since_policy_update: List[float] = []
         self.step: int = 0
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
@@ -120,19 +119,13 @@ class RLTrainer(Trainer, abc.ABC):  # pylint: disable=abstract-method
         A signal that the Episode has ended. The buffer must be reset.
         Get only called when the academy resets.
         """
-        for agent_id in self.episode_steps:
-            self.episode_steps[agent_id] = 0
         for rewards in self.collected_rewards.values():
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
     def _update_end_episode_stats(self, agent_id: str, policy: TFPolicy) -> None:
-        self.episode_steps[agent_id] = 0
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
-                self.cumulative_returns_since_policy_update.append(
-                    rewards.get(agent_id, 0)
-                )
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:

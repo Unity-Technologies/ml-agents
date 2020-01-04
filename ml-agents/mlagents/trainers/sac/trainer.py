@@ -247,8 +247,6 @@ class SACTrainer(RLTrainer):
         N times, then the reward signals are updated N times, then reward_signal_updates_per_train
         is greater than 1 and the reward signals are not updated in parallel.
         """
-
-        self.cumulative_returns_since_policy_update.clear()
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
