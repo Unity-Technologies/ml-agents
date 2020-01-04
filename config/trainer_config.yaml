@@ -8,14 +8,14 @@ default:
     lambd: 0.95
     learning_rate: 3.0e-4
     learning_rate_schedule: linear
-    max_steps: 5.0e4
+    max_steps: 5.0e5
     memory_size: 256
     normalize: false
     num_epoch: 3
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
-    summary_freq: 1000
+    summary_freq: 10000
     use_recurrent: false
     vis_encode_type: simple
     reward_signals:
@@ -28,68 +28,68 @@ FoodCollector:
     beta: 5.0e-3
     batch_size: 1024
     buffer_size: 10240
-    max_steps: 1.0e5
+    max_steps: 2.0e6
 
 Bouncer:
     normalize: true
-    max_steps: 1.0e6
+    max_steps: 2.0e7
     num_layers: 2
     hidden_units: 64
 
 PushBlock:
-    max_steps: 5.0e4
+    max_steps: 1.5e7
     batch_size: 128
     buffer_size: 2048
     beta: 1.0e-2
     hidden_units: 256
-    summary_freq: 2000
+    summary_freq: 60000
     time_horizon: 64
     num_layers: 2
 
 SmallWallJump:
-    max_steps: 1.0e6
+    max_steps: 3e7
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
     hidden_units: 256
-    summary_freq: 2000
+    summary_freq: 20000
     time_horizon: 128
     num_layers: 2
     normalize: false
 
 BigWallJump:
-    max_steps: 1.0e6
+    max_steps: 3e7
     batch_size: 128
     buffer_size: 2048
     beta: 5.0e-3
     hidden_units: 256
-    summary_freq: 2000
+    summary_freq: 20000
     time_horizon: 128
     num_layers: 2
     normalize: false
 
 Striker:
-    max_steps: 5.0e5
+    max_steps: 5.0e6
     learning_rate: 1e-3
     batch_size: 128
     num_epoch: 3
     buffer_size: 2000
     beta: 1.0e-2
     hidden_units: 256
-    summary_freq: 2000
+    summary_freq: 20000
     time_horizon: 128
     num_layers: 2
     normalize: false
 
 Goalie:
-    max_steps: 5.0e5
+    max_steps: 5.0e6
     learning_rate: 1e-3
     batch_size: 320
     num_epoch: 3
     buffer_size: 2000
     beta: 1.0e-2
     hidden_units: 256
-    summary_freq: 2000
+    summary_freq: 20000
     time_horizon: 128
     num_layers: 2
     normalize: false
@@ -107,14 +107,14 @@ Soccer:
         snapshot_per: 1000
 
 Pyramids:
-    summary_freq: 2000
+    summary_freq: 30000
     time_horizon: 128
     batch_size: 128
     buffer_size: 2048
     hidden_units: 512
     num_layers: 2
     beta: 1.0e-2
-    max_steps: 5.0e5
+    max_steps: 1.0e7
     num_epoch: 3
     reward_signals:
         extrinsic:
@@ -132,7 +132,7 @@ VisualPyramids:
     hidden_units: 256
     num_layers: 1
     beta: 1.0e-2
-    max_steps: 5.0e5
+    max_steps: 1.0e7
     num_epoch: 3
     reward_signals:
         extrinsic:
@@ -147,7 +147,7 @@ VisualPyramids:
     normalize: true
     batch_size: 64
     buffer_size: 12000
-    summary_freq: 1000
+    summary_freq: 12000
     time_horizon: 1000
     lambd: 0.99
     beta: 0.001
@@ -156,7 +156,7 @@ VisualPyramids:
     normalize: true
     batch_size: 1200
     buffer_size: 12000
-    summary_freq: 1000
+    summary_freq: 12000
     time_horizon: 1000
     max_steps: 5.0e5
     beta: 0.001
@@ -174,46 +174,14 @@ Tennis:
         current_prob: 0.0
         snapshot_per: 5000
 
-Tennis_SAC:
-    trainer: sac
-    batch_size: 128
-    buffer_size: 50000
-    buffer_init_steps: 0
-    hidden_units: 128
-    init_entcoef: 1.0
-    learning_rate: 3.0e-4
-    learning_rate_schedule: constant
-    memory_size: 256
-    num_update: 1
-    train_interval: 1
-    num_layers: 2
-    time_horizon: 64
-    sequence_length: 64
-    summary_freq: 1000
-    tau: 0.005
-    use_recurrent: false
-    vis_encode_type: simple
-    reward_signals:
-        extrinsic:
-            strength: 1.0
-            gamma: 0.99
-    normalize: true
-    max_steps: 5e7
-    ghost:
-        window: 20
-        current_prob: .7
-        snapshot_per: 1000
-
-
-
 CrawlerStatic:
     normalize: true
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e6
-    summary_freq: 3000
+    max_steps: 1e7
+    summary_freq: 30000
     num_layers: 3
     hidden_units: 512
     reward_signals:
@@ -227,8 +195,8 @@ CrawlerDynamic:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e6
-    summary_freq: 3000
+    max_steps: 1e7
+    summary_freq: 30000
     num_layers: 3
     hidden_units: 512
     reward_signals:
@@ -242,8 +210,8 @@ Walker:
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
-    max_steps: 2e6
-    summary_freq: 3000
+    max_steps: 2e7
+    summary_freq: 30000
     num_layers: 3
     hidden_units: 512
     reward_signals:
@@ -257,8 +225,8 @@ Reacher:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e6
-    summary_freq: 3000
+    max_steps: 2e7
+    summary_freq: 60000
     reward_signals:
         extrinsic:
             strength: 1.0
@@ -274,8 +242,8 @@ Hallway:
     num_epoch: 3
     buffer_size: 1024
     batch_size: 128
-    max_steps: 5.0e5
-    summary_freq: 1000
+    max_steps: 1.0e7
+    summary_freq: 10000
     time_horizon: 64
 
 VisualHallway:
@@ -288,8 +256,8 @@ VisualHallway:
     num_epoch: 3
     buffer_size: 1024
     batch_size: 64
-    max_steps: 5.0e5
-    summary_freq: 1000
+    max_steps: 1.0e7
+    summary_freq: 10000
     time_horizon: 64
 
 VisualPushBlock:
@@ -302,8 +270,8 @@ VisualPushBlock:
     num_epoch: 3
     buffer_size: 1024
     batch_size: 64
-    max_steps: 5.0e5
-    summary_freq: 1000
+    max_steps: 3.0e6
+    summary_freq: 60000
     time_horizon: 64
 
 GridWorld:
@@ -313,8 +281,8 @@ GridWorld:
     hidden_units: 256
     beta: 5.0e-3
     buffer_size: 256
-    max_steps: 50000
-    summary_freq: 2000
+    max_steps: 500000
+    summary_freq: 20000
     time_horizon: 5
     reward_signals:
         extrinsic:
