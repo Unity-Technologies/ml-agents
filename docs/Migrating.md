@@ -7,7 +7,15 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.12 to latest
+## Migrating from 0.13 to latest
+
+### Important changes
+* Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
+
+### Steps to Migrate
+* Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
+
+## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
 
 ### Important changes
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. This should only affect you if you're writing a custom trainer; if you use `mlagents-learn` for training, this should be a transparent change.
