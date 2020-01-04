@@ -1,5 +1,6 @@
 import os
 import pytest
+import tempfile
 
 from mlagents.trainers.demo_loader import (
     load_demonstration,
@@ -7,9 +8,10 @@ from mlagents.trainers.demo_loader import (
     get_demo_files,
 )
 
+path_prefix = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_load_demo():
-    path_prefix = os.path.dirname(os.path.abspath(__file__))
     brain_parameters, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test.demo"
     )
@@ -22,7 +24,6 @@ def test_load_demo():
 
 
 def test_load_demo_dir():
-    path_prefix = os.path.dirname(os.path.abspath(__file__))
     brain_parameters, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test_demo_dir"
     )
@@ -34,9 +35,26 @@ def test_load_demo_dir():
     assert len(demo_buffer["actions"]) == total_expected - 1
 
 
-def test_nonexisting_paths():
-    path_prefix = os.path.dirname(os.path.abspath(__file__))
+def test_edge_cases():
+    # nonexistent file and directory
     with pytest.raises(FileNotFoundError):
-        get_demo_files(os.path.join(path_prefix, "idontexistfile.demo"))
+        get_demo_files(os.path.join(path_prefix, "nonexistent_file.demo"))
     with pytest.raises(FileNotFoundError):
-        get_demo_files(os.path.join(path_prefix, "idontexistdirectory"))
+        get_demo_files(os.path.join(path_prefix, "nonexistent_directory"))
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        # empty directory
+        with pytest.raises(ValueError):
+            get_demo_files(tmpdirname)
+        # invalid file
+        invalid_fname = tmpdirname + "/mydemo.notademo"
+        with open(invalid_fname, "w") as f:
+            f.write("I'm not a demo")
+        with pytest.raises(ValueError):
+            get_demo_files(invalid_fname)
+        # valid file
+        valid_fname = tmpdirname + "/mydemo.demo"
+        with open(valid_fname, "w") as f:
+            f.write("I'm a demo file")
+        assert get_demo_files(valid_fname) == [valid_fname]
+        # valid directory
+        assert get_demo_files(tmpdirname) == [valid_fname]
