@@ -77,9 +77,7 @@ class TrainerController(object):
                 if brain_name not in self.trainers:
                     continue
                 if curriculum.measure == "progress":
-                    measure_val = self.trainers[brain_name].get_step / float(
-                        self.trainers[brain_name].get_max_steps
-                    )
+                    measure_val = self.trainers[brain_name].training_progress
                     brain_names_to_measure_vals[brain_name] = measure_val
                 elif curriculum.measure == "reward":
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
@@ -157,7 +155,7 @@ class TrainerController(object):
 
     def _not_done_training(self) -> bool:
         return (
-            any(t.should_still_train for t in self.trainers.values())
+            any(t.training_progress < 1.0 for t in self.trainers.values())
             or not self.train_model
         ) or len(self.trainers) == 0
 
@@ -175,8 +173,6 @@ class TrainerController(object):
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
             self.logger.info(trainer)
-            if self.train_model:
-                trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
         trainer.add_policy(name_behavior_id, policy)
@@ -189,7 +185,7 @@ class TrainerController(object):
             policy,
             name_behavior_id,
             trainer.stats_reporter,
-            trainer.parameters.get("time_horizon", sys.maxsize),
+            trainer.trainer_parameters.get("time_horizon", sys.maxsize),
         )
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)

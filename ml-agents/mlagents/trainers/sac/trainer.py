@@ -102,7 +102,7 @@ class SACTrainer(RLTrainer):
         Saves the model. Overrides the default save_model since we want to save
         the replay buffer as well.
         """
-        self.policy.save_model(self.get_step)
+        super().save_model(name_behavior_id)
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
 

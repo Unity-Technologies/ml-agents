@@ -171,7 +171,7 @@ class PPOTrainer(RLTrainer):
 
     def _update_policy(self):
         """
-        Uses demonstration_buffer to update the policy.
+        Uses update buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
         buffer_length = self.update_buffer.num_experiences
