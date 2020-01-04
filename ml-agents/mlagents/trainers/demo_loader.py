@@ -32,7 +32,7 @@ def make_demo_buffer(
         for pair_info in pair_infos
     ]
     for idx in range(len(brain_infos) - 1):
-        current_brain_info, next_brain_info = brain_infos[idx:idx+2]
+        current_brain_info, next_brain_info = brain_infos[idx : idx + 2]
         previous_action = (
             np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
         )
