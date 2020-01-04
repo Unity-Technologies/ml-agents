@@ -27,16 +27,12 @@ def make_demo_buffer(
     # Create and populate buffer using experiences
     demo_raw_buffer = AgentBuffer()
     demo_processed_buffer = AgentBuffer()
-    for idx, current_pair_info in enumerate(pair_infos):
-        if idx > len(pair_infos) - 2:
-            break
-        next_pair_info = pair_infos[idx + 1]
-        current_brain_info = BrainInfo.from_agent_proto(
-            0, [current_pair_info.agent_info], brain_params
-        )
-        next_brain_info = BrainInfo.from_agent_proto(
-            0, [next_pair_info.agent_info], brain_params
-        )
+    brain_infos = [
+        BrainInfo.from_agent_proto(0, [pair_info.agent_info], brain_params)
+        for pair_info in pair_infos
+    ]
+    for idx in range(len(brain_infos) - 1):
+        current_brain_info, next_brain_info = brain_infos[idx:idx+2]
         previous_action = (
             np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
         )
@@ -54,7 +50,7 @@ def make_demo_buffer(
             demo_raw_buffer["vector_obs"].append(
                 current_brain_info.vector_observations[0]
             )
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        demo_raw_buffer["actions"].append(pair_infos[idx].action_info.vector_actions)
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_brain_info.local_done[0]:
             demo_raw_buffer.resequence_and_append(
