@@ -83,9 +83,16 @@ namespace MLAgents.Sensor
                     var height = m_Shape[0];
                     var width = m_Shape[1];
                     var channels = m_Shape[2];
-                    Debug.Assert(h > 0 && h < height);
-                    Debug.Assert(w >= 0 && w < width);
-                    Debug.Assert(ch >= 0 && ch < channels);
+
+                    Debug.AssertFormat(
+                        h >= 0 && h < height, "height value {0} must be in range [0, {1}]", h, height-1
+                    );
+                    Debug.AssertFormat(
+                        w >= 0 && w < width, "width value {0} must be in range [0, {1}]", w, width-1
+                    );
+                    Debug.AssertFormat(
+                        ch >= 0 && ch < channels, "channel value {0} must be in range [0, {1}]", ch, channels-1
+                    );
 
                     // Math copied from TensorShape.Index(). Note that m_Batch should always be 0
                     var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
