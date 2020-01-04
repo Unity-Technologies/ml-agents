@@ -46,7 +46,6 @@ class RLTrainer(Trainer, abc.ABC):  # pylint: disable=abstract-method
             "environment": defaultdict(lambda: 0)
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
-        self.episode_steps: Dict[str, int] = defaultdict(lambda: 0)
         # Write hyperparameters to Tensorboard
         if self.is_training:
             self.write_tensorboard_text("Hyperparameters", self.trainer_parameters)

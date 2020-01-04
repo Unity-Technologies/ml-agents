@@ -81,9 +81,6 @@ class PPOTrainer(RLTrainer):
         super()._process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
-        # Add to episode_steps
-        self.episode_steps[agent_id] += len(trajectory.steps)
-
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:

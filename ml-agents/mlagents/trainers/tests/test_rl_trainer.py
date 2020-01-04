@@ -58,12 +58,9 @@ def create_rl_trainer():
 def test_rl_trainer():
     trainer = create_rl_trainer()
     agent_id = "0"
-    trainer.episode_steps[agent_id] = 3
     trainer.collected_rewards["extrinsic"] = {agent_id: 3}
     # Test end episode
     trainer.end_episode()
-    for agent_id in trainer.episode_steps:
-        assert trainer.episode_steps[agent_id] == 0
     for rewards in trainer.collected_rewards.values():
         for agent_id in rewards:
             assert rewards[agent_id] == 0
