@@ -24,6 +24,8 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.agent_processor import AgentProcessor
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers, Cycle
+from mlagents.trainers.ghost.trainer import GhostTrainer
 
 
 class AgentManager(NamedTuple):
@@ -43,6 +45,7 @@ class TrainerController(object):
         training_seed: int,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
+        ghost_interval: int,
     ):
         """
         :param model_path: Path to save the model.
@@ -69,6 +72,7 @@ class TrainerController(object):
         self.training_start_time = time()
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
+        self.ghost_interval = ghost_interval
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
@@ -187,22 +191,18 @@ class TrainerController(object):
         tf.reset_default_graph()
         global_step = 0
         last_global_step = 0
-        counter = 0
         last_brain_behavior_ids: Set[str] = set()
-        all_brain_behavior_ids: List[str] = []
+        self_play_brain_behavior_ids = Cycle()
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
-                all_brain_behavior_ids += list(new_behavior_ids)
 
                 for name_behavior_id in new_behavior_ids:
-                    try:
-                        brain_name, _ = name_behavior_id.split("?")
-                    except ValueError:
-                        brain_name = name_behavior_id
-
+                    brain_name = BehaviorIdentifiers.from_name_behavior_id(
+                        name_behavior_id
+                    ).brain_name
                     try:
                         trainer = self.trainers[brain_name]
                     except KeyError:
@@ -218,11 +218,8 @@ class TrainerController(object):
                         env_manager.external_brains[name_behavior_id]
                     )
                     trainer.add_policy(name_behavior_id, policy)
-
                     env_manager.set_policy(name_behavior_id, policy)
-
                     self.brain_name_to_identifier[brain_name].add(name_behavior_id)
-
                     agent_manager = AgentManager(
                         processor=AgentProcessor(
                             trainer,
@@ -233,7 +230,8 @@ class TrainerController(object):
                         )
                     )
                     self.managers[name_behavior_id] = agent_manager
-
+                    if isinstance(trainer, GhostTrainer):
+                        self_play_brain_behavior_ids.add(name_behavior_id)
                 last_brain_behavior_ids = external_brain_behavior_ids
 
                 n_steps = self.advance(env_manager)
@@ -241,14 +239,19 @@ class TrainerController(object):
                     global_step += 1
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
-                        # Save Tensorflow model
                         self._save_model()
+
                     self.write_to_tensorboard(global_step)
-                if global_step - last_global_step > 1000:
+                if (
+                    self.ghost_interval > 0
+                    and global_step - last_global_step > self.ghost_interval
+                ):
                     for trainer in self.trainers.values():
-                        trainer.set_learning_policy(all_brain_behavior_ids[counter])
+                        if isinstance(trainer, GhostTrainer):
+                            trainer.set_learning_policy(
+                                self_play_brain_behavior_ids.get()
+                            )
                     last_global_step = global_step
-                    counter = (counter + 1) % len(all_brain_behavior_ids)
 
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:

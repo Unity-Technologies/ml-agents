@@ -37,7 +37,7 @@ class GhostTrainer(RLTrainer):
 
         self.trainer = trainer
 
-        # assign ghosts stats collection to wrapped trainer's
+        # assign ghost's stats collection to wrapped trainer's
         self.stats_reporter = self.trainer.stats_reporter
 
         self.policies: Dict[str, TFPolicy] = {}
