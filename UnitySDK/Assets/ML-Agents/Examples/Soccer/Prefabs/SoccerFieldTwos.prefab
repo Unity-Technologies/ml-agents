@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 114734187185382186}
   - component: {fileID: 114492261207303438}
   - component: {fileID: 114320493772006642}
-  - component: {fileID: 114273769854953772}
+  - component: {fileID: 114413496910417180}
   m_Layer: 13
   m_Name: PurpleStriker
   m_TagString: purpleAgent
@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 114105115387635628}
   - component: {fileID: 114698199869072806}
   - component: {fileID: 114402225209785518}
-  - component: {fileID: 114418861898808642}
+  - component: {fileID: 114691053776668376}
   m_Layer: 11
   m_Name: BlueGoalie
   m_TagString: blueAgent
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 114387866097048300}
   - component: {fileID: 114850431417842684}
   - component: {fileID: 114516244030127556}
-  - component: {fileID: 114398438888130450}
+  - component: {fileID: 114736358897902410}
   m_Layer: 13
   m_Name: BlueStriker
   m_TagString: blueAgent
@@ -256,22 +256,6 @@ GameObject:
   - component: {fileID: 23636378949999014}
   m_Layer: 0
   m_Name: Headband
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1234564391509938
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4520861679467606}
-  - component: {fileID: 114848654067075804}
-  m_Layer: 13
-  m_Name: Backwards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -395,22 +379,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
   m_IsActive: 1
---- !u!1 &1458640082673790
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4851153914712014}
-  - component: {fileID: 114736411599150038}
-  m_Layer: 13
-  m_Name: Backwards
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1475025089682726
 GameObject:
   m_ObjectHideFlags: 0
@@ -429,22 +397,6 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 1
-  m_IsActive: 1
---- !u!1 &1523075096001520
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4554909908365536}
-  - component: {fileID: 114206013089446802}
-  m_Layer: 13
-  m_Name: Backwards
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!1 &1526808285443624
 GameObject:
@@ -818,26 +770,10 @@ GameObject:
   - component: {fileID: 114529615399004778}
   - component: {fileID: 114284769194328828}
   - component: {fileID: 114742734491650780}
-  - component: {fileID: 114803290947599792}
+  - component: {fileID: 114206319503468014}
   m_Layer: 11
   m_Name: PurpleGoalie
   m_TagString: purpleAgent
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1899281182629456
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4662286350653884}
-  - component: {fileID: 114327045934315760}
-  m_Layer: 13
-  m_Name: Backwards
-  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -956,12 +892,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1890219402901316}
-  m_LocalRotation: {x: -0, y: -0.99254596, z: 0, w: -0.12187083}
-  m_LocalPosition: {x: 0.27804244, y: 0.5000001, z: 2.3017578}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 4.16, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4571870848582906}
-  - {fileID: 4520861679467606}
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -972,7 +907,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1081996550758964}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1700, y: 200, z: 0}
+  m_LocalPosition: {x: -1100, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1107,7 +1042,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1850200619918880}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1680, y: 200, z: 0}
+  m_LocalPosition: {x: 1180, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1158,12 +1093,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1095606497496374}
-  m_LocalRotation: {x: -0, y: -0.819151, z: -0, w: 0.57357794}
-  m_LocalPosition: {x: 2.1327908, y: 0.5000002, z: 4.839447}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 4.16, y: 0.5, z: 2.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4540034559941056}
-  - {fileID: 4662286350653884}
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -1251,12 +1185,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1131626411948014}
-  m_LocalRotation: {x: -0, y: 0.9063063, z: -0, w: -0.42262137}
-  m_LocalPosition: {x: 8.404677, y: 0.5000001, z: -0.6017685}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.19, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4991109413118678}
-  - {fileID: 4554909908365536}
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -1266,12 +1199,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1124213441168130}
-  m_LocalRotation: {x: -0, y: 0.84804744, z: -0, w: 0.5299204}
-  m_LocalPosition: {x: -11.085514, y: 0.5000002, z: 1.1502457}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.19, y: 0.5, z: 2.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4522598849494762}
-  - {fileID: 4851153914712014}
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -1287,19 +1219,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4571870848582906}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!4 &4520861679467606
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1234564391509938}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4002186104597906}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4522598849494762
 Transform:
@@ -1344,25 +1263,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1682753582128710}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.1107923, y: 0.62417185, z: -0.40660095}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
   m_Children: []
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4554909908365536
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1523075096001520}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4444285537983296}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4558743310993102
 Transform:
   m_ObjectHideFlags: 1
@@ -1370,7 +1276,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1141134673700168}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -51}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4540201673231058}
@@ -1427,19 +1333,6 @@ Transform:
   m_Father: {fileID: 4522598849494762}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!4 &4662286350653884
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1899281182629456}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4277721046484044}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4671048899227928
 Transform:
   m_ObjectHideFlags: 1
@@ -1486,7 +1379,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1763572357542770}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1700, y: 200, z: 0}
+  m_LocalPosition: {x: 1100, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1564,7 +1457,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1331814686035208}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1680, y: 200, z: 0}
+  m_LocalPosition: {x: -1180, y: 200, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
@@ -1595,19 +1488,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4522598849494762}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!4 &4851153914712014
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1458640082673790}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4485793831109164}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4857307866975302
 Transform:
@@ -2067,7 +1947,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: ff03c5911bd5dfa49a040cf45420a0e4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3647,67 +3527,42 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 07000000
+    vectorActionSize: 05000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: Soccer
-  m_TeamID: 0
-  m_useChildSensors: 1
---- !u!114 &114206013089446802
+  m_UseHeuristic: 0
+  m_BehaviorName: Goalie
+--- !u!114 &114206319503468014
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1523075096001520}
+  m_GameObject: {fileID: 1890219402901316}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueBackwardRayPerceptionSensor
-  detectableTags:
-  - blueGoal
-  - purpleGoal
-  - wall
-  - blueAgent
-  - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
-  sphereCastRadius: 0.5
-  rayLength: 20
-  observationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
---- !u!114 &114273769854953772
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1095606497496374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: PurpleVerticalBallRayPerceptionSensor
+  sensorName: PurpleOffsetRayPerceptionSensor
   detectableTags:
   - ball
-  raysPerDirection: 8
-  maxRayDegrees: 70
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 2
-  endVerticalOffset: 2
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114273807544954564
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3719,7 +3574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93558b952b37a4b0ebaca3ca6711bcc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  area: {fileID: 114559182131992928}
+  area: {fileID: 0}
   lastTouchedBy: {fileID: 0}
   agentTag: agent
   purpleGoalTag: purpleGoal
@@ -3741,9 +3596,9 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 0
-  agentRole: 0
+  agentRole: 1
   area: {fileID: 114559182131992928}
-  agentRb: {fileID: 54629836435839708}
+  agentRb: {fileID: 0}
 --- !u!114 &114320493772006642
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3757,50 +3612,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensorName: PurpleRayPerceptionSensor
   detectableTags:
+  - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  - ball
-  raysPerDirection: 12
+  raysPerDirection: 3
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
---- !u!114 &114327045934315760
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1899281182629456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: PurpleBackwardRayPerceptionSensor
-  detectableTags:
-  - purpleGoal
-  - blueGoal
-  - wall
-  - purpleAgent
-  - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
-  sphereCastRadius: 0.5
-  rayLength: 20
-  observationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114387866097048300
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3818,36 +3645,10 @@ MonoBehaviour:
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: Soccer
-  m_TeamID: 0
-  m_useChildSensors: 1
---- !u!114 &114398438888130450
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1131626411948014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: BlueVerticalBallRayPerceptionSensor
-  detectableTags:
-  - ball
-  raysPerDirection: 8
-  maxRayDegrees: 70
-  sphereCastRadius: 0.5
-  rayLength: 20
-  observationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
-  startVerticalOffset: 2
-  endVerticalOffset: 2
+  m_UseHeuristic: 0
+  m_BehaviorName: Striker
 --- !u!114 &114402225209785518
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3861,46 +3662,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensorName: BlueRayPerceptionSensor
   detectableTags:
+  - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  - ball
-  raysPerDirection: 12
+  raysPerDirection: 3
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
---- !u!114 &114418861898808642
+  startVerticalOffset: 0
+  endVerticalOffset: 0
+--- !u!114 &114413496910417180
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1124213441168130}
+  m_GameObject: {fileID: 1095606497496374}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueVerticalBallRayPerceptionSensor
+  sensorName: PurpleOffsetRayPerceptionSensor
   detectableTags:
   - ball
-  raysPerDirection: 8
-  maxRayDegrees: 70
+  - purpleGoal
+  - blueGoal
+  - wall
+  - purpleAgent
+  - blueAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 2
-  endVerticalOffset: 2
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3920,7 +3726,7 @@ MonoBehaviour:
   team: 0
   agentRole: 0
   area: {fileID: 114559182131992928}
-  agentRb: {fileID: 54348679551516588}
+  agentRb: {fileID: 0}
 --- !u!114 &114516244030127556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3934,22 +3740,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensorName: BlueRayPerceptionSensor
   detectableTags:
+  - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  - ball
-  raysPerDirection: 12
+  raysPerDirection: 3
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114529615399004778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3964,15 +3770,13 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 0
     numStackedVectorObservations: 1
-    vectorActionSize: 07000000
+    vectorActionSize: 05000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: Soccer
-  m_TeamID: 1
-  m_useChildSensors: 1
+  m_UseHeuristic: 0
+  m_BehaviorName: Goalie
 --- !u!114 &114559182131992928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3985,33 +3789,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ball: {fileID: 1682753582128710}
-  ballRb: {fileID: 54100138833592438}
+  ballRb: {fileID: 0}
   ground: {fileID: 1475025089682726}
   centerPitch: {fileID: 1526808285443624}
-  playerStates:
-  - playerIndex: 0
-    agentRb: {fileID: 54609996481602788}
-    startingPos: {x: -3.19, y: 0.5, z: -76}
-    agentScript: {fileID: 114850431417842684}
-    ballPosReward: 0
-  - playerIndex: 1
-    agentRb: {fileID: 54250052574815742}
-    startingPos: {x: -3.19, y: 0.5, z: -73.6}
-    agentScript: {fileID: 114698199869072806}
-    ballPosReward: 0
-  - playerIndex: 2
-    agentRb: {fileID: 54348679551516588}
-    startingPos: {x: 4.16, y: 0.5, z: -73.6}
-    agentScript: {fileID: 114492261207303438}
-    ballPosReward: 0
-  - playerIndex: 3
-    agentRb: {fileID: 54629836435839708}
-    startingPos: {x: 4.16, y: 0.5, z: -76}
-    agentScript: {fileID: 114284769194328828}
-    ballPosReward: 0
-  ballStartingPos: {x: 0, y: 1, z: -76}
+  playerStates: []
+  ballStartingPos: {x: 0, y: 0, z: 0}
   goalTextUI: {fileID: 0}
-  canResetBall: 1
+  canResetBall: 0
+--- !u!114 &114691053776668376
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1124213441168130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorName: BlueOffsetRayPerceptionSensor
+  detectableTags:
+  - ball
+  - blueGoal
+  - purpleGoal
+  - wall
+  - blueAgent
+  - purpleAgent
+  raysPerDirection: 3
+  maxRayDegrees: 90
+  sphereCastRadius: 0.5
+  rayLength: 20
+  observationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  useWorldPositions: 1
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114698199869072806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4029,9 +3842,9 @@ MonoBehaviour:
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
   team: 1
-  agentRole: 0
+  agentRole: 1
   area: {fileID: 114559182131992928}
-  agentRb: {fileID: 54250052574815742}
+  agentRb: {fileID: 0}
 --- !u!114 &114734187185382186
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4049,40 +3862,39 @@ MonoBehaviour:
     vectorActionSize: 07000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 7ffb8a4041bb14b7f9d42ce21a70855e, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: Soccer
-  m_TeamID: 1
-  m_useChildSensors: 1
---- !u!114 &114736411599150038
+  m_UseHeuristic: 0
+  m_BehaviorName: Striker
+--- !u!114 &114736358897902410
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1458640082673790}
+  m_GameObject: {fileID: 1131626411948014}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueBackwardRayPerceptionSensor
+  sensorName: BlueOffsetRayPerceptionSensor
   detectableTags:
+  - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 3
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  startVerticalOffset: 1
+  endVerticalOffset: 1
 --- !u!114 &114742734491650780
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4096,74 +3908,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensorName: PurpleRayPerceptionSensor
   detectableTags:
+  - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  - ball
-  raysPerDirection: 12
+  raysPerDirection: 3
   maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
-  observationStacks: 3
+  observationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
---- !u!114 &114803290947599792
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1890219402901316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: PurpleVerticalBallRayPerceptionSensor
-  detectableTags:
-  - ball
-  raysPerDirection: 8
-  maxRayDegrees: 70
-  sphereCastRadius: 0.5
-  rayLength: 20
-  observationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
-  startVerticalOffset: 2
-  endVerticalOffset: 2
---- !u!114 &114848654067075804
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1234564391509938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sensorName: PurpleBackwardRayPerceptionSensor
-  detectableTags:
-  - purpleGoal
-  - blueGoal
-  - wall
-  - purpleAgent
-  - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
-  sphereCastRadius: 0.5
-  rayLength: 20
-  observationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  startVerticalOffset: 0
+  endVerticalOffset: 0
 --- !u!114 &114850431417842684
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4183,7 +3943,7 @@ MonoBehaviour:
   team: 1
   agentRole: 0
   area: {fileID: 114559182131992928}
-  agentRb: {fileID: 54609996481602788}
+  agentRb: {fileID: 0}
 --- !u!135 &135133947297127334
 SphereCollider:
   m_ObjectHideFlags: 1

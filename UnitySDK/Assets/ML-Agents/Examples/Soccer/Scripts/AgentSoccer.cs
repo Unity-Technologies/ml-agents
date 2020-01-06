@@ -80,20 +80,6 @@ public class AgentSoccer : Agent
         playerState.playerIndex = m_PlayerIndex;
     }
 
-    //public override void CollectObservations()
-    //{
-    //      //float relX = area.ball.transform.localPosition.x - transform.localPosition.x;
-    //      //float relY = area.ball.transform.localPosition.y - transform.localPosition.y;
-    //      //float relZ = area.ball.transform.localPosition.z - transform.localPosition.z;
-    //
-    //      //Vector3 relVec = new Vector3(relX, relY, relZ);
-    //      Vector3 dirToTarget = area.ball.transform.localPosition - transform.localPosition;
-    //      AddVectorObs(transform.InverseTransformDirection(dirToTarget));
-    //      //AddVectorObs(new Vector3(relX, relY, relZ));
-    //      //AddVectorObs(transform.forward);
-    ////      AddVectorObs(area.ball.transform.localPosition.y);
-    //}
-
     public void MoveAgent(float[] act)
     {
         var dirToGo = Vector3.zero;
@@ -102,58 +88,57 @@ public class AgentSoccer : Agent
         var action = Mathf.FloorToInt(act[0]);
 
         // Goalies and Strikers have slightly different action spaces.
-        //if (agentRole == AgentRole.Goalie)
-        //{
-        //    m_KickPower = 0f;
-        //    switch (action)
-        //    {
-        //        case 1:
-        //            dirToGo = transform.forward * 1f;
-        //            m_KickPower = 1f;
-        //            break;
-        //        case 2:
-        //            dirToGo = transform.forward * -1f;
-        //            break;
-        //        case 4:
-        //            dirToGo = transform.right * -1f;
-        //            break;
-        //        case 3:
-        //            dirToGo = transform.right * 1f;
-        //            break;
-        //    }
-        //}
-        //else
-        //{
-        m_KickPower = 0f;
-        switch (action)
+        if (agentRole == AgentRole.Goalie)
         {
-            case 1:
-                dirToGo = transform.forward * 1f;
-                m_KickPower = 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -1f;
-                break;
-            case 3:
-                rotateDir = transform.up * 1f;
-                break;
-            case 4:
-                rotateDir = transform.up * -1f;
-                break;
-            case 5:
-                dirToGo = transform.right * -0.75f;
-                break;
-            case 6:
-                dirToGo = transform.right * 0.75f;
-                break;
+            m_KickPower = 0f;
+            switch (action)
+            {
+                case 1:
+                    dirToGo = transform.forward * 1f;
+                    m_KickPower = 1f;
+                    break;
+                case 2:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 4:
+                    dirToGo = transform.right * -1f;
+                    break;
+                case 3:
+                    dirToGo = transform.right * 1f;
+                    break;
+            }
         }
-        
+        else
+        {
+            m_KickPower = 0f;
+            switch (action)
+            {
+                case 1:
+                    dirToGo = transform.forward * 1f;
+                    m_KickPower = 1f;
+                    break;
+                case 2:
+                    dirToGo = transform.forward * -1f;
+                    break;
+                case 3:
+                    rotateDir = transform.up * 1f;
+                    break;
+                case 4:
+                    rotateDir = transform.up * -1f;
+                    break;
+                case 5:
+                    dirToGo = transform.right * -0.75f;
+                    break;
+                case 6:
+                    dirToGo = transform.right * 0.75f;
+                    break;
+            }
+        }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
             ForceMode.VelocityChange);
     }
 
-    
     public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
@@ -161,11 +146,11 @@ public class AgentSoccer : Agent
         {
             AddReward(-1f / 3000f);
         }
-        //// Existential bonus for goalies.
-        //if (agentRole == AgentRole.Goalie)
-        //{
-        //    AddReward(1f / 3000f);
-        //}
+        // Existential bonus for goalies.
+        if (agentRole == AgentRole.Goalie)
+        {
+            AddReward(1f / 3000f);
+        }
         MoveAgent(vectorAction);
     }
 
@@ -177,7 +162,6 @@ public class AgentSoccer : Agent
         var force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
-            //AddReward(1f / 3000f);
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
