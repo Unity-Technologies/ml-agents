@@ -147,11 +147,7 @@ namespace MLAgents
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
             unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
-#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
-#else
-            EditorApplication.playmodeStateChanged += HandleOnPlayModeChanged;
-#endif
 #endif
             return result.UnityInput;
 #else
@@ -525,7 +521,6 @@ namespace MLAgents
         #endregion
 
 #if UNITY_EDITOR
-#if UNITY_2017_2_OR_NEWER
         /// <summary>
         /// When the editor exits, the communicator must be closed
         /// </summary>
@@ -539,20 +534,6 @@ namespace MLAgents
             }
         }
 
-#else
-        /// <summary>
-        /// When the editor exits, the communicator must be closed
-        /// </summary>
-        private void HandleOnPlayModeChanged()
-        {
-            // This method is run whenever the playmode state is changed.
-            if (!EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                Close();
-            }
-        }
-
-#endif
 #endif
     }
 }
