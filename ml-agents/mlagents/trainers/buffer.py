@@ -226,7 +226,7 @@ class AgentBuffer(dict):
         """
         Saves the AgentBuffer to a file-like object.
         """
-        with h5py.File(file_object) as write_file:
+        with h5py.File(file_object, "w") as write_file:
             for key, data in self.items():
                 write_file.create_dataset(key, data=data, dtype="f", compression="gzip")
 
@@ -234,7 +234,7 @@ class AgentBuffer(dict):
         """
         Loads the AgentBuffer from a file-like object.
         """
-        with h5py.File(file_object) as read_file:
+        with h5py.File(file_object, "r") as read_file:
             for key in list(read_file.keys()):
                 self[key] = AgentBuffer.AgentBufferField()
                 # extend() will convert the numpy array's first dimension into list
