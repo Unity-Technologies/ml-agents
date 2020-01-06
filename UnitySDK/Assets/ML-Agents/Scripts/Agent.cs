@@ -246,13 +246,12 @@ namespace MLAgents
         /// action that we wish to reinforce/reward, and set to a negative value
         /// when the agent performs a "bad" action that we wish to punish/deter.
         /// Additionally, the magnitude of the reward should not exceed 1.0
-        IRewardProvider m_RewardProvider;
-        
-        /// <summary>
-        /// Here for ease of upgrading from the old reward system.
-        /// </summary>
-        LegacyRewardProvider m_LegacyRewardProvider;
-        
+        LowLevelRewardProviderComponent m_RewardProviderComponent;
+
+        public IRewardProvider rewardProvider
+        {
+            get { return m_RewardProviderComponent.GetRewardProvider(); }
+        }
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -288,7 +287,7 @@ namespace MLAgents
             academy.AgentForceReset += _AgentReset;
             InitializeRewardProvider();
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProvider);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProviderComponent.GetRewardProvider());
             ResetData();
             InitializeAgent();
             InitializeSensors();
@@ -330,7 +329,7 @@ namespace MLAgents
         {
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProvider);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, rewardProvider);
         }
 
         /// <summary>
@@ -345,15 +344,25 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Resets the step reward and possibly the episode reward for the agent.
+        /// </summary>
+        public void ResetReward()
+        {
+            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
+                "legacy method 'ResetReward' was called.");
+            rewardProvider.ResetReward(m_Done);
+        }
+
+        /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
         /// reward accordingly.
         /// </summary>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
                 "legacy method 'SetReward' was called.");
-            m_LegacyRewardProvider.SetReward(reward);
+            rewardProvider.SetReward(reward);
         }
 
         /// <summary>
@@ -362,9 +371,9 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
                 "legacy method 'AddReward' was called.");
-            m_LegacyRewardProvider.AddReward(increment);
+            rewardProvider.AddReward(increment);
         }
 
         /// <summary>
@@ -373,9 +382,9 @@ namespace MLAgents
         /// <returns>The step reward.</returns>
         public float GetReward()
         {
-            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
                 "legacy method 'GetReward' was called.");
-            return m_LegacyRewardProvider.GetIncrementalReward();
+            return rewardProvider.GetIncrementalReward();
         }
 
         /// <summary>
@@ -384,9 +393,9 @@ namespace MLAgents
         /// <returns>The episode reward.</returns>
         public float GetCumulativeReward()
         {
-            Debug.Assert(m_LegacyRewardProvider != null, "LegacyRewardProvider is null and " +
+            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
                 "legacy method 'GetCumulativeReward' was called.");
-            return m_LegacyRewardProvider.GetCumulativeReward();
+            return rewardProvider.GetCumulativeReward();
         }
 
         /// <summary>
@@ -557,19 +566,11 @@ namespace MLAgents
         void InitializeRewardProvider()
         {
             // Look for a legacy reward provider.
-            var rewardProviderComponent = GetComponent<BaseRewardProviderComponent>();
-            if (rewardProviderComponent != null)
+            m_RewardProviderComponent = GetComponent<LowLevelRewardProviderComponent>();
+            if (m_RewardProviderComponent == null)
             {
-                m_RewardProvider = rewardProviderComponent.GetRewardProvider();
+                m_RewardProviderComponent = gameObject.AddComponent<LowLevelRewardProviderComponent>();
             }
-            
-            if (m_RewardProvider == null)
-            {
-                var legacyRewardProviderComponent = gameObject.AddComponent<LegacyRewardProviderComponent>();
-                m_RewardProvider = legacyRewardProviderComponent.GetTypedRewardProvider();
-            }
-            
-            m_LegacyRewardProvider = m_RewardProvider as LegacyRewardProvider;
         }
 
         /// <summary>
@@ -594,12 +595,11 @@ namespace MLAgents
 
             // var param = m_PolicyFactory.brainParameters; // look, no brain params!
 
-            m_Info.reward = m_RewardProvider.GetIncrementalReward();
+            m_Info.reward = rewardProvider.GetIncrementalReward();
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            // TODO(cgoy): Decouple Agent/Policy.
             m_Brain.RequestDecision(this);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
@@ -699,6 +699,8 @@ namespace MLAgents
         public virtual void CollectObservations()
         {
         }
+        
+        
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
@@ -970,6 +972,7 @@ namespace MLAgents
             if (m_RequestDecision)
             {
                 SendInfoToBrain();
+                ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
@@ -984,6 +987,7 @@ namespace MLAgents
             if (m_Terminate)
             {
                 m_Terminate = false;
+                ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;

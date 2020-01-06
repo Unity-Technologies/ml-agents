@@ -1,18 +1,23 @@
+using UnityEngine;
+
 namespace MLAgents.RewardProvider
 {
     /// <summary>
     /// A legacy reward provider that can be used in an Agent as a way to easily upgrade
     /// from the old reward system.
     /// </summary>
-    public class LegacyRewardProvider : IRewardProvider
+    public class LowLevelRewardProvider : IRewardProvider
     {
         float m_IncrementalReward;
         float m_CumulativeReward;
-        
+
+        public delegate void RewardReset(float reward);
+
+        public event RewardReset OnRewardProviderReset;
+
         public float GetIncrementalReward()
         {
             var reward = m_IncrementalReward;
-            ResetReward();
             return reward;
         }
         
@@ -20,12 +25,14 @@ namespace MLAgents.RewardProvider
         /// <summary>
         /// Resets the step reward and possibly the episode reward for the agent.
         /// </summary>
-        void ResetReward(bool done = false)
+        public void ResetReward(bool done = false)
         {
             m_IncrementalReward = 0f;
             if (done)
             {
+                var reward = m_CumulativeReward;
                 m_CumulativeReward = 0f;
+                OnRewardProviderReset?.Invoke(reward);
             }
         }
 

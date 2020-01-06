@@ -11,5 +11,26 @@ namespace MLAgents.RewardProvider
         /// </summary>
         /// <returns></returns>
         float GetIncrementalReward();
+
+        /// <summary>
+        /// Adds a scalar value to the current reward for this step.
+        /// </summary>
+        void AddReward(float reward);
+
+        void SetReward(float reward);
+
+        /// <summary>
+        /// Retrieves the step reward for the Agent.
+        /// </summary>
+        /// <returns>The step reward.</returns>
+        float GetReward();
+        
+        /// <summary>
+        /// Retrieves the episode reward for the Agent.
+        /// </summary>
+        /// <returns>The episode reward.</returns>
+        float GetCumulativeReward();
+
+        void ResetReward(bool done);
     }
 }

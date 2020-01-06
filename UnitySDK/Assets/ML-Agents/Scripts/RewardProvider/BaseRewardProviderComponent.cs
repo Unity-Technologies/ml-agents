@@ -1,13 +1,18 @@
-using System;
 using UnityEngine;
 
 namespace MLAgents.RewardProvider
 {
-    public class BaseRewardProviderComponent: MonoBehaviour
+    /// <summary>
+    /// A typed reward provider that provides easy, typed access to RewardProvider implementations.
+    /// Subclasses should
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class BaseRewardProviderComponent<T> : MonoBehaviour
+    where T : IRewardProvider, new()
     {
-        IRewardProvider m_RewardProvider;
+        T m_RewardProvider = new T();
 
-        public virtual IRewardProvider GetRewardProvider()
+        public T GetRewardProvider()
         {
             return m_RewardProvider;
         }
