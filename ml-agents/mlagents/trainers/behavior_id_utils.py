@@ -1,5 +1,6 @@
 from typing import Dict, List, NamedTuple
 
+
 class BehaviorIdentifiers(NamedTuple):
     brain_name: str
     behavior_ids: Dict[str, int]
@@ -15,9 +16,9 @@ class BehaviorIdentifiers(NamedTuple):
         """
 
         ids: Dict[str, int] = {}
-        if '?' in name_behavior_id:
+        if "?" in name_behavior_id:
             name, identifiers = name_behavior_id.split("?")
-            if '&' in identifiers:
+            if "&" in identifiers:
                 identifiers = identifiers.split("&")
             else:
                 identifiers = [identifiers]
@@ -26,19 +27,16 @@ class BehaviorIdentifiers(NamedTuple):
                 key, value = identifier.split("=")
                 ids[key] = value
         else:
-            name = name_behavior_id   
+            name = name_behavior_id
 
         return BehaviorIdentifiers(brain_name=name, behavior_ids=ids)
 
-class Cycle():
-    def __init__(self):
-        self.iterable : List[str] = []
-        self.counter : int = 0
 
-    def add(self, name: str) -> None:
-        self.iterable.append(name)
+class Cycle(list):
+    def __init__(self):
+        self.counter: int = 0
 
     def get(self) -> str:
-        name = self.iterable[self.counter]
-        self.counter = (self.counter + 1) % len(self.iterable)
+        name = self.__getitem__(self.counter)
+        self.counter = (self.counter + 1) % self.__len__()
         return name

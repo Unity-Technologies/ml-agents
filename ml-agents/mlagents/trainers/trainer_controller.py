@@ -55,6 +55,7 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
+        self.ghost_learning: List[Trainer] = Cycle()
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
         self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
@@ -169,23 +170,23 @@ class TrainerController(object):
     def _create_trainer_and_manager(
         self, env_manager: EnvManager, name_behavior_id: str
     ) -> None:
-        try:
-            brain_name, _ = name_behavior_id.split("?")
-        except ValueError:
-            brain_name = name_behavior_id
 
+        brain_name = BehaviorIdentifiers.from_name_behavior_id(
+            name_behavior_id
+        ).brain_name
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
+            if isinstance(trainer, GhostTrainer):
+                self.ghost_learning.append(trainer)
             self.logger.info(trainer)
             if self.train_model:
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
         trainer.add_policy(name_behavior_id, policy)
-
         env_manager.set_policy(name_behavior_id, policy)
 
         self.brain_name_to_identifier[brain_name].add(name_behavior_id)
@@ -206,7 +207,6 @@ class TrainerController(object):
         global_step = 0
         last_global_step = 0
         last_brain_behavior_ids: Set[str] = set()
-        self_play_brain_behavior_ids = Cycle()
         try:
             self._reset_env(env_manager)
             while self._not_done_training():
@@ -215,8 +215,7 @@ class TrainerController(object):
 
                 for name_behavior_id in new_behavior_ids:
                     self._create_trainer_and_manager(env_manager, name_behavior_id)
-                    if isinstance(trainer, GhostTrainer):
-                        self_play_brain_behavior_ids.add(name_behavior_id)
+
                 last_brain_behavior_ids = external_brain_behavior_ids
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
@@ -225,16 +224,16 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         self._save_model()
 
-                    self.write_to_tensorboard(global_step)
                 if (
                     self.ghost_interval > 0
                     and global_step - last_global_step > self.ghost_interval
                 ):
-                    for trainer in self.trainers.values():
-                        if isinstance(trainer, GhostTrainer):
-                            trainer.set_learning_policy(
-                                self_play_brain_behavior_ids.get()
-                            )
+                    new_learning_trainer = self.ghost_learning.get()
+                    for trainer in self.ghost_learning:
+                        trainer.set_learning(
+                            new_learning_trainer.learning_behavior_name
+                            == trainer.learning_behavior_name
+                        )
                     last_global_step = global_step
 
             # Final save Tensorflow model

@@ -262,22 +262,10 @@ class Trainer(abc.ABC):
         """
         pass
 
-    def set_policy(self, policy: TFPolicy) -> None:
-        """
-        Sets self.(x_)policy in trainer
-        """
-        raise UnityTrainerException("The set_policy method was not implemented.")
-
     @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
         Gets policy from trainer
-        """
-        pass
-
-    def set_learning_policy(self, name_behavior_id: str) -> None:
-        """
-        sets policy in trainer
         """
         pass
 
@@ -327,7 +315,7 @@ class Trainer(abc.ABC):
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
         """
-        Adds a trajectory queue to the list of queues for the trainer injest Trajectories from.
+        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
         :param queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)

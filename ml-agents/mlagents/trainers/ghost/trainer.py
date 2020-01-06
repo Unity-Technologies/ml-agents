@@ -9,15 +9,16 @@ import numpy as np
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
 
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.agent_processor import AgentManagerQueue
 
 from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
 
 # logger = logging.getLogger("mlagents.trainers")
 
 
-class GhostTrainer(RLTrainer):
+class GhostTrainer(Trainer):
     def __init__(
         self, trainer, brain_name, reward_buff_cap, trainer_parameters, training, run_id
     ):
@@ -42,7 +43,7 @@ class GhostTrainer(RLTrainer):
 
         self.policies: Dict[str, TFPolicy] = {}
         self.policy_snapshots = []
-        self.learning_policy_name: str = None
+        self.learning_behavior_name: str = None
         self.current_policy_snapshot = None
         self.last_step = 0
 
@@ -52,23 +53,34 @@ class GhostTrainer(RLTrainer):
         self.current_prob = self_play_parameters["current_prob"]
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
-    # def __getattr__(self, name):
-    #    trainer = object.__getattribute__(self, "trainer")
-    #    return trainer.__getattribute__(name)
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
+        self.trainer.process_trajectory(trajectory)
 
-    # def __get__(self, name):
-    #    print("getting {} ".format(name))
-    #    return self.trainer.__get__(name)
+    def _is_ready_update(self) -> bool:
+        return self.trainer._is_ready_update()
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
-        if trajectory.behavior_id == self.learning_policy_name:
-            self.trainer.process_trajectory(trajectory)
+    def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
+        self._increment_step(n_steps, name_behavior_id)
 
-    # def write_summary(self, global_step: int, delta_train_start: float) -> None:
-    #    self.trainer.write_summary(global_step, delta_train_start)
+    def _update_policy(self) -> None:
+        self.trainer.update_policy()
 
-    def is_ready_update(self) -> bool:
-        return self.trainer.is_ready_update()
+        with self.trainer.policy.graph.as_default():
+            weights = self.trainer.policy.tfvars.get_weights()
+            self.current_policy_snapshot = weights
+
+        if self.get_step - self.last_step > self.steps_between_snapshots:
+            self.save_snapshot(self.trainer.policy)
+            self.last_step = self.get_step
+
+    def end_episode(self):
+        self.trainer.end_episode()
+
+    def subscribe_trajectory_queue(
+        self, trajectory_queue: AgentManagerQueue[Trajectory]
+    ) -> None:
+        if trajectory_queue.behavior_id == self.learning_behavior_name:
+            self.trainer.subscribe_trajectory_queue(trajectory_queue)
 
     def save_model(self, name_behavior_id: str) -> None:
         policy = self.trainer.get_policy(name_behavior_id)
@@ -81,17 +93,6 @@ class GhostTrainer(RLTrainer):
         with policy.graph.as_default():
             policy.tfvars.set_weights(self.current_policy_snapshot)
         policy.export_model()
-
-    def update_policy(self) -> None:
-        self.trainer.update_policy()
-
-        with self.trainer.policy.graph.as_default():
-            weights = self.trainer.policy.tfvars.get_weights()
-            self.current_policy_snapshot = weights
-
-        if self.get_step - self.last_step > self.steps_between_snapshots:
-            self.save_snapshot(self.trainer.policy)
-            self.last_step = self.get_step
 
     def create_policy(self, brain_parameters: BrainParameters) -> None:
         return self.trainer.create_policy(brain_parameters)
@@ -108,8 +109,9 @@ class GhostTrainer(RLTrainer):
 
         self.policies[name_behavior_id] = policy
 
-        if not self.learning_policy_name:
-            self.set_learning_policy(name_behavior_id)
+        if not self.learning_behavior_name:
+            self.trainer.add_policy(name_behavior_id, policy)
+            self.learning_behavior_name = name_behavior_id
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         return self.policies[name_behavior_id]
@@ -124,8 +126,8 @@ class GhostTrainer(RLTrainer):
     def swap_snapshots(self) -> None:
         for name_behavior_id, policy in self.policies.items():
             # here is the place for a sampling protocol
-            if name_behavior_id != self.learning_policy_name and np.random.uniform() < (
-                1 - self.current_prob
+            if name_behavior_id != self.learning_behavior_name and np.random.uniform() < (
+                1 - self.current_prob and not self.is_training
             ):
                 # snapshot = np.random.choice(self.policy_snapshots)
                 x = np.random.randint(len(self.policy_snapshots))
@@ -135,17 +137,21 @@ class GhostTrainer(RLTrainer):
                 x = "current"
             print(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
-                    self.get_step, x, name_behavior_id, self.learning_policy_name
+                    self.get_step, x, name_behavior_id, self.learning_behavior_name
                 )
             )
             with policy.graph.as_default():
                 policy.tfvars.set_weights(snapshot)
 
-    def set_learning_policy(self, name_behavior_id: str) -> None:
-        self.learning_policy_name = name_behavior_id
+    def set_learning(self, training: bool) -> None:
+        self.is_training = training
         self.swap_snapshots()
-        try:
-            policy = self.policies[self.learning_policy_name]
-            self.trainer.set_policy(self.learning_policy_name, policy)
-        except KeyError:
-            pass
+
+    # def set_learning_policy(self, name_behavior_id: str) -> None:
+    #    self.learning_policy_name = name_behavior_id
+    #    self.swap_snapshots()
+    #    try:
+    #        policy = self.policies[self.learning_policy_name]
+    #        self.trainer.set_policy(self.learning_policy_name, policy)
+    #    except KeyError:
+    #        pass
