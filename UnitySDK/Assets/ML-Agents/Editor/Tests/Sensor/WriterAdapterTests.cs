@@ -48,13 +48,13 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint,
                 data = new Tensor(2, 3)
             };
-            var shape = new[] { 3 };
-            writer.SetTarget(t, shape, 0, 0);
+
+            writer.SetTarget(t, 0, 0);
             Assert.AreEqual(0f, t.data[0, 0]);
             writer[0] = 1f;
             Assert.AreEqual(1f, t.data[0, 0]);
 
-            writer.SetTarget(t, shape, 1, 1);
+            writer.SetTarget(t, 1, 1);
             writer[0] = 2f;
             writer[1] = 3f;
             // [0, 0] shouldn't change
@@ -69,7 +69,7 @@ namespace MLAgents.Tests
                 data = new Tensor(2, 3)
             };
 
-            writer.SetTarget(t, shape, 1, 1);
+            writer.SetTarget(t, 1, 1);
             writer.AddRange(new [] {-1f, -2f});
             Assert.AreEqual(0f, t.data[0, 0]);
             Assert.AreEqual(0f, t.data[0, 1]);
@@ -91,11 +91,11 @@ namespace MLAgents.Tests
 
             var shape = new[] { 2, 2, 3 };
 
-            writer.SetTarget(t, shape,  0, 0);
+            writer.SetTarget(t, 0, 0);
             writer[1, 0, 1] = 1f;
             Assert.AreEqual(1f, t.data[0, 1, 0, 1]);
 
-            writer.SetTarget(t, shape, 0, 1);
+            writer.SetTarget(t, 0, 1);
             writer[1, 0, 0] = 2f;
             Assert.AreEqual(2f, t.data[0, 1, 0, 1]);
         }
