@@ -1,4 +1,8 @@
+import io
+import numpy as np
+import pytest
 from typing import List, Tuple
+
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.observation_pb2 import (
     ObservationProto,
@@ -6,9 +10,8 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
     PNG,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-import numpy as np
 from mlagents_envs.base_env import AgentGroupSpec, ActionType
-import io
+from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.rpc_utils import (
     agent_group_spec_from_proto,
     process_pixels,
@@ -58,20 +61,28 @@ def generate_compressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     return obs_proto
 
 
+def generate_uncompressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
+    obs_proto = ObservationProto()
+    obs_proto.float_data.data.extend(in_array.flatten().tolist())
+    obs_proto.compression_type = NONE
+    obs_proto.shape.extend(in_array.shape)
+    return obs_proto
+
+
 def test_process_pixels():
-    in_array = np.random.rand(128, 128, 3)
+    in_array = np.random.rand(128, 64, 3)
     byte_arr = generate_compressed_data(in_array)
     out_array = process_pixels(byte_arr, False)
-    assert out_array.shape == (128, 128, 3)
+    assert out_array.shape == (128, 64, 3)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
     assert (in_array - out_array < 0.01).all()
 
 
 def test_process_pixels_gray():
-    in_array = np.random.rand(128, 128, 3)
+    in_array = np.random.rand(128, 64, 3)
     byte_arr = generate_compressed_data(in_array)
     out_array = process_pixels(byte_arr, True)
-    assert out_array.shape == (128, 128, 1)
+    assert out_array.shape == (128, 64, 1)
     assert np.mean(in_array.mean(axis=2, keepdims=True) - out_array) < 0.01
     assert (in_array.mean(axis=2, keepdims=True) - out_array < 0.01).all()
 
@@ -87,19 +98,29 @@ def test_vector_observation():
 
 
 def test_process_visual_observation():
-    in_array_1 = np.random.rand(128, 128, 3)
+    in_array_1 = np.random.rand(128, 64, 3)
     proto_obs_1 = generate_compressed_proto_obs(in_array_1)
-    in_array_2 = np.random.rand(128, 128, 3)
-    proto_obs_2 = generate_compressed_proto_obs(in_array_2)
+    in_array_2 = np.random.rand(128, 64, 3)
+    proto_obs_2 = generate_uncompressed_proto_obs(in_array_2)
     ap1 = AgentInfoProto()
     ap1.observations.extend([proto_obs_1])
     ap2 = AgentInfoProto()
     ap2.observations.extend([proto_obs_2])
     ap_list = [ap1, ap2]
-    arr = _process_visual_observation(0, (128, 128, 3), ap_list)
-    assert list(arr.shape) == [2, 128, 128, 3]
+    arr = _process_visual_observation(0, (128, 64, 3), ap_list)
+    assert list(arr.shape) == [2, 128, 64, 3]
     assert (arr[0, :, :, :] - in_array_1 < 0.01).all()
     assert (arr[1, :, :, :] - in_array_2 < 0.01).all()
+
+
+def test_process_visual_observation_bad_shape():
+    in_array_1 = np.random.rand(128, 64, 3)
+    proto_obs_1 = generate_compressed_proto_obs(in_array_1)
+    ap1 = AgentInfoProto()
+    ap1.observations.extend([proto_obs_1])
+    ap_list = [ap1]
+    with pytest.raises(UnityObservationException):
+        _process_visual_observation(0, (128, 42, 3), ap_list)
 
 
 def test_batched_step_result_from_proto():

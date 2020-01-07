@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 
@@ -14,31 +15,37 @@ namespace MLAgents.Sensor
         TensorProxy m_Proxy;
         int m_Batch;
 
+        int[] m_Shape;
+
         /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="offset"></param>
-        public void SetTarget(IList<float> data, int offset)
+        /// <param name="data">Float array or list that will be written to.</param>
+        /// <param name="shape">Shape of the observations to be written.</param>
+        /// <param name="offset">Offset from the start of the float data to write to.</param>
+        public void SetTarget(IList<float> data, int[] shape, int offset)
         {
             m_Data = data;
             m_Offset = offset;
             m_Proxy = null;
-            m_Batch = -1;
+            m_Batch = 0;
+            m_Shape = shape;
         }
 
         /// <summary>
         /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="batchIndex"></param>
-        /// <param name="channelOffset"></param>
-        public void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
+        /// <param name="tensorProxy">Tensor proxy that will be writtent to.</param>
+        /// <param name="shape">Shape of the observations to be written.</param>
+        /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent)</param>
+        /// <param name="channelOffset">Offset from the start of the channel to write to.</param>
+        public void SetTarget(TensorProxy tensorProxy, int[] shape, int batchIndex, int channelOffset)
         {
             m_Proxy = tensorProxy;
             m_Batch = batchIndex;
             m_Offset = channelOffset;
             m_Data = null;
+            m_Shape = shape;
         }
 
         /// <summary>
@@ -49,6 +56,7 @@ namespace MLAgents.Sensor
         {
             set
             {
+                // TODO check shape is 1D?
                 if (m_Data != null)
                 {
                     m_Data[index + m_Offset] = value;
@@ -70,8 +78,33 @@ namespace MLAgents.Sensor
         {
             set
             {
-                // Only TensorProxy supports 3D access
-                m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                if (m_Data != null)
+                {
+                    var height = m_Shape[0];
+                    var width = m_Shape[1];
+                    var channels = m_Shape[2];
+
+                    if (h < 0 || h >= height)
+                    {
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {height-1}]");
+                    }
+                    if (w < 0 || w >= width)
+                    {
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {width-1}]");
+                    }
+                    if (ch < 0 || ch >= channels)
+                    {
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {channels-1}]");
+                    }
+
+                    // Math copied from TensorShape.Index(). Note that m_Batch should always be 0
+                    var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
+                    m_Data[index + m_Offset] = value;
+                }
+                else
+                {
+                    m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                }
             }
         }
 

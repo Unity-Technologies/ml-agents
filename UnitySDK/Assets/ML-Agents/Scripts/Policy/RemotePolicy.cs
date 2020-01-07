@@ -57,7 +57,7 @@ namespace MLAgents
                 // First agent, save the sensor sizes
                 foreach (var sensor in agent.sensors)
                 {
-                    m_SensorShapes.Add(sensor.GetFloatObservationShape());
+                    m_SensorShapes.Add(sensor.GetObservationShape());
                 }
             }
             else
@@ -68,7 +68,7 @@ namespace MLAgents
                 for (var i = 0; i < m_SensorShapes.Count; i++)
                 {
                     var cachedShape = m_SensorShapes[i];
-                    var sensorShape = agent.sensors[i].GetFloatObservationShape();
+                    var sensorShape = agent.sensors[i].GetObservationShape();
                     Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
                     for (var j = 0; j < cachedShape.Length; j++)
                     {

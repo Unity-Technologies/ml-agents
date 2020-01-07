@@ -105,8 +105,9 @@ namespace MLAgents.InferenceBrain
                 // Write each sensor consecutively to the tensor
                 foreach (var sensorIndex in m_SensorIndices)
                 {
-                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
                     var sensor = agent.sensors[sensorIndex];
+                    var shape = sensor.GetObservationShape();
+                    m_WriteAdapter.SetTarget(tensorProxy, shape, agentIndex, tensorOffset);
                     var numWritten = sensor.Write(m_WriteAdapter);
                     tensorOffset += numWritten;
                 }
@@ -353,8 +354,9 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var agent in agents)
             {
-                m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
-                agent.sensors[m_SensorIndex].Write(m_WriteAdapter);
+                var sensor = agent.sensors[m_SensorIndex];
+                m_WriteAdapter.SetTarget(tensorProxy, sensor.GetObservationShape(), agentIndex, 0);
+                sensor.Write(m_WriteAdapter);
                 agentIndex++;
             }
         }

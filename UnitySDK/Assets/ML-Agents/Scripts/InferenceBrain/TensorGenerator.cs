@@ -88,7 +88,7 @@ namespace MLAgents.InferenceBrain
             for (var sensorIndex = 0; sensorIndex < agent.sensors.Count; sensorIndex++)
             {
                 var sensor = agent.sensors[sensorIndex];
-                var shape = sensor.GetFloatObservationShape();
+                var shape = sensor.GetObservationShape();
                 // TODO generalize - we currently only have vector or visual, but can't handle "2D" observations
                 var isVectorSensor = (shape.Length == 1);
                 if (isVectorSensor)

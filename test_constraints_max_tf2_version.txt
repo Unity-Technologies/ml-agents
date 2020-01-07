@@ -3,3 +3,4 @@
 grpcio>=1.23.0
 numpy>=1.17.2
 tensorflow>=2.0.0,<2.1.0
+h5py>=2.10.0
