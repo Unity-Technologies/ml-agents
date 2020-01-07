@@ -1,5 +1,7 @@
 using System;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace MLAgents.RewardProvider
@@ -21,6 +23,7 @@ namespace MLAgents.RewardProvider
 
         void RewardReset(float reward)
         {
+#if UNITY_EDITOR
             var keyframe = new Keyframe
             {
                 time = Time.realtimeSinceStartup,
@@ -31,6 +34,7 @@ namespace MLAgents.RewardProvider
             var index = rewardCurve.AddKey(keyframe);
             AnimationUtility.SetKeyLeftTangentMode(rewardCurve, index, AnimationUtility.TangentMode.Linear);
             AnimationUtility.SetKeyRightTangentMode(rewardCurve, index, AnimationUtility.TangentMode.Linear);
+#endif
         }
     }
 }
