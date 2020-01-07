@@ -32,7 +32,7 @@ Pyramids:
     max_steps: 5.0e5
     num_epoch: 3
     behavioral_cloning:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
     reward_signals:
@@ -60,7 +60,7 @@ CrawlerStatic:
     num_layers: 3
     hidden_units: 512
     behavioral_cloning:
-        demo_path: ./demos/ExpertCrawlerSta.demo
+        demo_path: demos/ExpertCrawlerSta.demo
         strength: 0.5
         steps: 5000
     reward_signals:
@@ -125,6 +125,6 @@ FoodCollector:
             encoding_size: 128
             demo_path: demos/ExpertFood.demo
     behavioral_cloning:
-        demo_path: ./demos/ExpertFood.demo
+        demo_path: demos/ExpertFood.demo
         strength: 1.0
         steps: 0
