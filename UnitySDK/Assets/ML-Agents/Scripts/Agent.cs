@@ -258,6 +258,7 @@ namespace MLAgents
         void OnEnable()
         {
             m_Id = gameObject.GetInstanceID();
+            InitializeRewardProvider();
             var academy = FindObjectOfType<Academy>();
             academy.LazyInitialization();
             OnEnableHelper(academy);
@@ -285,7 +286,6 @@ namespace MLAgents
             academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
-            InitializeRewardProvider();
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProviderComponent.GetRewardProvider());
             ResetData();

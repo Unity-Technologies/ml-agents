@@ -15,9 +15,14 @@ namespace MLAgents.RewardProvider
         {
             return m_RewardProvider;
         }
-        public virtual void Start()
+
+        void Awake()
         {
             m_RewardProvider = new LowLevelRewardProvider();
+        }
+
+        public virtual void Start()
+        {
             GetRewardProvider().OnRewardProviderReset += RewardReset;
         }
 
