@@ -176,9 +176,6 @@ namespace MLAgents
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
-        
-        /// Keeps track of the cumulative reward in this episode.
-        float m_CumulativeReward;
 
         /// Whether or not the agent requests an action.
         bool m_RequestAction;
