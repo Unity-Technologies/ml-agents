@@ -67,7 +67,7 @@ namespace MLAgents
                 case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(heuristic);
                 case BehaviorType.InferenceOnly:
-                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice, rewardProvider);
+                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
@@ -75,7 +75,7 @@ namespace MLAgents
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice, rewardProvider);
+                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
                     }
                     else
                     {
