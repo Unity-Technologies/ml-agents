@@ -45,7 +45,6 @@ namespace MLAgents.Sensor
         /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
         /// <param name="tensorProxy">Tensor proxy that will be writtent to.</param>
-        /// <param name="shape">Shape of the observations to be written.</param>
         /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent)</param>
         /// <param name="channelOffset">Offset from the start of the channel to write to.</param>
         public void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
