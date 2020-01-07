@@ -7,7 +7,7 @@ import glob
 import shutil
 import numpy as np
 
-from typing import Any, Callable, Optional, List, NamedTuple
+from typing import Callable, Optional, List, NamedTuple, Dict
 
 import mlagents.trainers
 import mlagents_envs
@@ -25,35 +25,194 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 
-class CommandLineOptions(NamedTuple):
-    debug: bool
-    seed: int
-    env_path: str
-    run_id: str
-    load_model: bool
-    train_model: bool
-    save_freq: int
-    keep_checkpoints: int
-    base_port: int
-    num_envs: int
-    curriculum_folder: Optional[str]
-    lesson: int
-    no_graphics: bool
-    multi_gpu: bool  # ?
-    trainer_config_path: str
-    sampler_file_path: Optional[str]
-    docker_target_name: Optional[str]
-    env_args: Optional[List[str]]
-    cpu: bool
-    width: int
-    height: int
-    quality_level: int
-    time_scale: float
-    target_frame_rate: int
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("trainer_config_path")
+parser.add_argument(
+    "--env", default=None, dest="env_path", help="Name of the Unity executable "
+)
+parser.add_argument(
+    "--curriculum",
+    default=None,
+    dest="curriculum_config_path",
+    help="Curriculum config yaml file for environment",
+)
+parser.add_argument(
+    "--sampler",
+    default=None,
+    dest="sampler_file_path",
+    help="Reset parameter yaml file for environment",
+)
+parser.add_argument(
+    "--keep-checkpoints", default=5, type=int, help="How many model checkpoints to keep"
+)
+parser.add_argument(
+    "--lesson", default=0, type=int, help="Start learning from this lesson"
+)
+parser.add_argument(
+    "--load",
+    default=False,
+    dest="load_model",
+    action="store_true",
+    help="Whether to load the model or randomly initialize",
+)
+parser.add_argument(
+    "--run-id",
+    default="ppo",
+    help="The directory name for model and summary statistics",
+)
+parser.add_argument(
+    "--save-freq", default=50000, type=int, help="Frequency at which to save model"
+)
+parser.add_argument(
+    "--seed", default=-1, type=int, help="Random seed used for training"
+)
+parser.add_argument(
+    "--train",
+    default=False,
+    dest="train_model",
+    action="store_true",
+    help="Whether to train model, or only run inference",
+)
+parser.add_argument(
+    "--base-port",
+    default=5005,
+    type=int,
+    help="Base port for environment communication",
+)
+parser.add_argument(
+    "--num-envs",
+    default=1,
+    type=int,
+    help="Number of parallel environments to use for training",
+)
+parser.add_argument(
+    "--docker-target-name",
+    default=None,
+    dest="docker_target_name",
+    help="Docker volume to store training-specific files",
+)
+parser.add_argument(
+    "--no-graphics",
+    default=False,
+    action="store_true",
+    help="Whether to run the environment in no-graphics mode",
+)
+parser.add_argument(
+    "--debug",
+    default=False,
+    action="store_true",
+    help="Whether to run ML-Agents in debug mode with detailed logging",
+)
+parser.add_argument(
+    "--multi-gpu",
+    default=False,
+    action="store_true",
+    help="Setting this flag enables the use of multiple GPU's (if available) during training",
+)
+parser.add_argument(
+    "--env-args",
+    default=None,
+    nargs=argparse.REMAINDER,
+    help="Arguments passed to the Unity executable.",
+)
+parser.add_argument(
+    "--cpu", default=False, action="store_true", help="Run with CPU only"
+)
+
+parser.add_argument("--version", action="version", version="")
+
+eng_conf = parser.add_argument_group(title="Engine Configuration")
+eng_conf.add_argument(
+    "--width",
+    default=84,
+    type=int,
+    help="The width of the executable window of the environment(s)",
+)
+eng_conf.add_argument(
+    "--height",
+    default=84,
+    type=int,
+    help="The height of the executable window of the environment(s)",
+)
+eng_conf.add_argument(
+    "--quality-level",
+    default=5,
+    type=int,
+    help="The quality level of the environment(s)",
+)
+eng_conf.add_argument(
+    "--time-scale",
+    default=20,
+    type=float,
+    help="The time scale of the Unity environment(s)",
+)
+eng_conf.add_argument(
+    "--target-frame-rate",
+    default=-1,
+    type=int,
+    help="The target frame rate of the Unity environment(s)",
+)
+
+
+class RunOptions(NamedTuple):
+    trainer_config: Dict
+    debug: bool = parser.get_default("debug")
+    seed: int = parser.get_default("seed")
+    env_path: Optional[str] = parser.get_default("env_path")
+    run_id: str = parser.get_default("run_id")
+    load_model: bool = parser.get_default("load_model")
+    train_model: bool = parser.get_default("train_model")
+    save_freq: int = parser.get_default("save_freq")
+    keep_checkpoints: int = parser.get_default("keep_checkpoints")
+    base_port: int = parser.get_default("base_port")
+    num_envs: int = parser.get_default("num_envs")
+    curriculum_config: Optional[Dict] = None
+    lesson: int = parser.get_default("lesson")
+    no_graphics: bool = parser.get_default("no_graphics")
+    multi_gpu: bool = parser.get_default("multi_gpu")
+    sampler_config: Optional[Dict] = None
+    docker_target_name: Optional[str] = parser.get_default("docker_target_name")
+    env_args: Optional[List[str]] = parser.get_default("env_args")
+    cpu: bool = parser.get_default("cpu")
+    width: int = parser.get_default("width")
+    height: int = parser.get_default("height")
+    quality_level: int = parser.get_default("quality_level")
+    time_scale: float = parser.get_default("time_scale")
+    target_frame_rate: int = parser.get_default("target_frame_rate")
 
     @staticmethod
-    def from_argparse(args: Any) -> "CommandLineOptions":
-        return CommandLineOptions(**vars(args))
+    def from_argparse(args: argparse.Namespace) -> "RunOptions":
+        """
+        Takes an argparse.Namespace as specified in `parse_command_line`, loads input configuration files
+        from file paths, and converts to a CommandLineOptions instance.
+        :param args: collection of command-line parameters passed to mlagents-learn
+        :return: CommandLineOptions representing the passed in arguments, with trainer config, curriculum and sampler
+          configs loaded from files.
+        """
+        argparse_args = vars(args)
+        docker_target_name = argparse_args["docker_target_name"]
+        trainer_config_path = argparse_args["trainer_config_path"]
+        curriculum_config_path = argparse_args["curriculum_config_path"]
+        if docker_target_name is not None:
+            trainer_config_path = f"/{docker_target_name}/{trainer_config_path}"
+            if curriculum_config_path is not None:
+                curriculum_config_path = (
+                    f"/{docker_target_name}/{curriculum_config_path}"
+                )
+        argparse_args["trainer_config"] = load_config(trainer_config_path)
+        if curriculum_config_path is not None:
+            argparse_args["curriculum_config"] = load_config(curriculum_config_path)
+        if argparse_args["sampler_file_path"] is not None:
+            argparse_args["sampler_config"] = load_config(
+                argparse_args["sampler_file_path"]
+            )
+
+        # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
+        # these keys will need to be deleted to use the **/splat operator below.
+        argparse_args.pop("sampler_file_path")
+        argparse_args.pop("curriculum_config_path")
+        argparse_args.pop("trainer_config_path")
+        return RunOptions(**vars(args))
 
 
 def get_version_string() -> str:
@@ -65,165 +224,25 @@ def get_version_string() -> str:
   TensorFlow: {tf_utils.tf.__version__}"""
 
 
-def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument("trainer_config_path")
-    parser.add_argument(
-        "--env", default=None, dest="env_path", help="Name of the Unity executable "
-    )
-    parser.add_argument(
-        "--curriculum",
-        default=None,
-        dest="curriculum_folder",
-        help="Curriculum json directory for environment",
-    )
-    parser.add_argument(
-        "--sampler",
-        default=None,
-        dest="sampler_file_path",
-        help="Reset parameter yaml file for environment",
-    )
-    parser.add_argument(
-        "--keep-checkpoints",
-        default=5,
-        type=int,
-        help="How many model checkpoints to keep",
-    )
-    parser.add_argument(
-        "--lesson", default=0, type=int, help="Start learning from this lesson"
-    )
-    parser.add_argument(
-        "--load",
-        default=False,
-        dest="load_model",
-        action="store_true",
-        help="Whether to load the model or randomly initialize",
-    )
-    parser.add_argument(
-        "--run-id",
-        default="ppo",
-        help="The directory name for model and summary statistics",
-    )
-    parser.add_argument(
-        "--save-freq", default=50000, type=int, help="Frequency at which to save model"
-    )
-    parser.add_argument(
-        "--seed", default=-1, type=int, help="Random seed used for training"
-    )
-    parser.add_argument(
-        "--train",
-        default=False,
-        dest="train_model",
-        action="store_true",
-        help="Whether to train model, or only run inference",
-    )
-    parser.add_argument(
-        "--base-port",
-        default=5005,
-        type=int,
-        help="Base port for environment communication",
-    )
-    parser.add_argument(
-        "--num-envs",
-        default=1,
-        type=int,
-        help="Number of parallel environments to use for training",
-    )
-    parser.add_argument(
-        "--docker-target-name",
-        default=None,
-        dest="docker_target_name",
-        help="Docker volume to store training-specific files",
-    )
-    parser.add_argument(
-        "--no-graphics",
-        default=False,
-        action="store_true",
-        help="Whether to run the environment in no-graphics mode",
-    )
-    parser.add_argument(
-        "--debug",
-        default=False,
-        action="store_true",
-        help="Whether to run ML-Agents in debug mode with detailed logging",
-    )
-    parser.add_argument(
-        "--multi-gpu",
-        default=False,
-        action="store_true",
-        help="Setting this flag enables the use of multiple GPU's (if available) during training",
-    )
-    parser.add_argument(
-        "--env-args",
-        default=None,
-        nargs=argparse.REMAINDER,
-        help="Arguments passed to the Unity executable.",
-    )
-    parser.add_argument(
-        "--cpu", default=False, action="store_true", help="Run with CPU only"
-    )
-
-    parser.add_argument("--version", action="version", version="")
-
-    eng_conf = parser.add_argument_group(title="Engine Configuration")
-    eng_conf.add_argument(
-        "--width",
-        default=84,
-        type=int,
-        help="The width of the executable window of the environment(s)",
-    )
-    eng_conf.add_argument(
-        "--height",
-        default=84,
-        type=int,
-        help="The height of the executable window of the environment(s)",
-    )
-    eng_conf.add_argument(
-        "--quality-level",
-        default=5,
-        type=int,
-        help="The quality level of the environment(s)",
-    )
-    eng_conf.add_argument(
-        "--time-scale",
-        default=20,
-        type=float,
-        help="The time scale of the Unity environment(s)",
-    )
-    eng_conf.add_argument(
-        "--target-frame-rate",
-        default=-1,
-        type=int,
-        help="The target frame rate of the Unity environment(s)",
-    )
-
+def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
     args = parser.parse_args(argv)
-    return CommandLineOptions.from_argparse(args)
+    return RunOptions.from_argparse(args)
 
 
-def run_training(run_seed: int, options: CommandLineOptions) -> None:
+def run_training(run_seed: int, options: RunOptions) -> None:
     """
     Launches training session.
     :param options: parsed command line arguments
     :param run_seed: Random seed used for training.
     :param run_options: Command line arguments for training.
     """
-    # Docker Parameters
-    trainer_config_path = options.trainer_config_path
-    curriculum_folder = options.curriculum_folder
     # Recognize and use docker volume if one is passed as an argument
     if not options.docker_target_name:
         model_path = f"./models/{options.run_id}"
         summaries_dir = "./summaries"
     else:
-        trainer_config_path = f"/{options.docker_target_name}/{trainer_config_path}"
-        if curriculum_folder is not None:
-            curriculum_folder = f"/{options.docker_target_name}/{curriculum_folder}"
         model_path = f"/{options.docker_target_name}/models/{options.run_id}"
         summaries_dir = f"/{options.docker_target_name}/summaries"
-    trainer_config = load_config(trainer_config_path)
     port = options.base_port
 
     # Configure CSV, Tensorboard Writers and StatsReporter
@@ -255,13 +274,13 @@ def run_training(run_seed: int, options: CommandLineOptions) -> None:
     )
     env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
     maybe_meta_curriculum = try_create_meta_curriculum(
-        curriculum_folder, env_manager, options.lesson
+        options.curriculum_config, env_manager, options.lesson
     )
     sampler_manager, resampling_interval = create_sampler_manager(
-        options.sampler_file_path, run_seed
+        options.sampler_config, run_seed
     )
     trainer_factory = TrainerFactory(
-        trainer_config,
+        options.trainer_config,
         summaries_dir,
         options.run_id,
         model_path,
@@ -292,11 +311,9 @@ def run_training(run_seed: int, options: CommandLineOptions) -> None:
         env_manager.close()
 
 
-def create_sampler_manager(sampler_file_path, run_seed=None):
-    sampler_config = None
+def create_sampler_manager(sampler_config, run_seed=None):
     resample_interval = None
-    if sampler_file_path is not None:
-        sampler_config = load_config(sampler_file_path)
+    if sampler_config is not None:
         if "resampling-interval" in sampler_config:
             # Filter arguments that do not exist in the environment
             resample_interval = sampler_config.pop("resampling-interval")
@@ -317,17 +334,15 @@ def create_sampler_manager(sampler_file_path, run_seed=None):
 
 
 def try_create_meta_curriculum(
-    curriculum_folder: Optional[str], env: SubprocessEnvManager, lesson: int
+    curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
 ) -> Optional[MetaCurriculum]:
-    if curriculum_folder is None:
+    if curriculum_config is None:
         return None
-
     else:
-        meta_curriculum = MetaCurriculum.from_directory(curriculum_folder)
+        meta_curriculum = MetaCurriculum(curriculum_config)
         # TODO: Should be able to start learning at different lesson numbers
         # for each curriculum.
         meta_curriculum.set_all_curricula_to_lesson_num(lesson)
-
         return meta_curriculum
 
 
@@ -354,7 +369,7 @@ def prepare_for_docker_run(docker_target_name, env_path):
 
 
 def create_environment_factory(
-    env_path: str,
+    env_path: Optional[str],
     docker_target_name: Optional[str],
     no_graphics: bool,
     seed: Optional[int],
@@ -402,7 +417,7 @@ def create_environment_factory(
     return create_unity_environment
 
 
-def main():
+def run_cli(options: RunOptions) -> None:
     try:
         print(
             """
@@ -425,7 +440,6 @@ def main():
     except Exception:
         print("\n\n\tUnity Technologies\n")
     print(get_version_string())
-    options = parse_command_line()
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents_envs")
     trainer_logger.info(options)
@@ -443,6 +457,10 @@ def main():
     if options.seed == -1:
         run_seed = np.random.randint(0, 10000)
     run_training(run_seed, options)
+
+
+def main():
+    run_cli(parse_command_line())
 
 
 # For python debugger to directly run this script

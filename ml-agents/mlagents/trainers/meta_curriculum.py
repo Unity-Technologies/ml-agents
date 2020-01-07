@@ -1,9 +1,7 @@
 """Contains the MetaCurriculum class."""
 
-import os
 from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
-from mlagents.trainers.exception import MetaCurriculumError
 
 import logging
 
@@ -15,17 +13,21 @@ class MetaCurriculum:
     particular brain in the environment.
     """
 
-    def __init__(self, curricula: Dict[str, Curriculum]):
+    def __init__(self, curriculum_configs: Dict[str, Dict]):
         """Initializes a MetaCurriculum object.
 
         :param curriculum_folder: Dictionary of brain_name to the
           Curriculum for each brain.
         """
-        used_reset_parameters: Set[str] = set()
         self._brains_to_curricula: Dict[str, Curriculum] = {}
-        for brain_name, curriculum in curricula.items():
-            self._brains_to_curricula[brain_name] = curriculum
-            config_keys: Set[str] = set(curriculum.get_config().keys())
+        used_reset_parameters: Set[str] = set()
+        for brain_name, curriculum_config in curriculum_configs.items():
+            self._brains_to_curricula[brain_name] = Curriculum(
+                brain_name, curriculum_config
+            )
+            config_keys: Set[str] = set(
+                self._brains_to_curricula[brain_name].get_config().keys()
+            )
 
             # Check if any two curricula use the same reset params.
             if config_keys & used_reset_parameters:
@@ -136,29 +138,3 @@ class MetaCurriculum:
             config.update(curr_config)
 
         return config
-
-    @staticmethod
-    def from_directory(folder_path: str) -> "MetaCurriculum":
-        """
-        Creates a MetaCurriculum given a folder full of curriculum config files.
-
-        :param folder_path: The path to the folder which holds the curriculum configs
-                for this environment. The folder should contain JSON files whose names
-                are the brains that the curricula belong to.
-        """
-        try:
-            curricula = {}
-            for curriculum_filename in os.listdir(folder_path):
-                # This process requires JSON files
-                brain_name, extension = os.path.splitext(curriculum_filename)
-                if extension.lower() != ".json":
-                    continue
-                curriculum_filepath = os.path.join(folder_path, curriculum_filename)
-                curriculum_config = Curriculum.load_curriculum_file(curriculum_filepath)
-                curricula[brain_name] = Curriculum(brain_name, curriculum_config)
-            return MetaCurriculum(curricula)
-        except NotADirectoryError:
-            raise MetaCurriculumError(
-                f"{folder_path} is not a directory. Refer to the ML-Agents "
-                "curriculum learning docs."
-            )

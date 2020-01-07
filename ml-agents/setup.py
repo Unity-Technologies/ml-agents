@@ -67,6 +67,11 @@ setup(
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",
-    entry_points={"console_scripts": ["mlagents-learn=mlagents.trainers.learn:main"]},
+    entry_points={
+        "console_scripts": [
+            "mlagents-learn=mlagents.trainers.learn:main",
+            "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
+        ]
+    },
     cmdclass={"verify": VerifyVersionCommand},
 )
