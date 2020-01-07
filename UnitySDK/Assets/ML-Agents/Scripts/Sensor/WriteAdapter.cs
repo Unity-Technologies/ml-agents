@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
-using UnityEngine;
 
 namespace MLAgents.Sensor
 {
@@ -20,9 +20,9 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="shape"></param>
-        /// <param name="offset"></param>
+        /// <param name="data">Float array or list that will be written to.</param>
+        /// <param name="shape">Shape of the observations to be written.</param>
+        /// <param name="offset">Offset from the start of the float data to write to.</param>
         public void SetTarget(IList<float> data, int[] shape, int offset)
         {
             m_Data = data;
@@ -35,10 +35,10 @@ namespace MLAgents.Sensor
         /// <summary>
         /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
-        /// <param name="tensorProxy"></param>
-        /// <param name="shape"></param>
-        /// <param name="batchIndex"></param>
-        /// <param name="channelOffset"></param>
+        /// <param name="tensorProxy">Tensor proxy that will be writtent to.</param>
+        /// <param name="shape">Shape of the observations to be written.</param>
+        /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent)</param>
+        /// <param name="channelOffset">Offset from the start of the channel to write to.</param>
         public void SetTarget(TensorProxy tensorProxy, int[] shape, int batchIndex, int channelOffset)
         {
             m_Proxy = tensorProxy;
@@ -84,15 +84,18 @@ namespace MLAgents.Sensor
                     var width = m_Shape[1];
                     var channels = m_Shape[2];
 
-                    Debug.AssertFormat(
-                        h >= 0 && h < height, "height value {0} must be in range [0, {1}]", h, height-1
-                    );
-                    Debug.AssertFormat(
-                        w >= 0 && w < width, "width value {0} must be in range [0, {1}]", w, width-1
-                    );
-                    Debug.AssertFormat(
-                        ch >= 0 && ch < channels, "channel value {0} must be in range [0, {1}]", ch, channels-1
-                    );
+                    if (h < 0 || h >= height)
+                    {
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {height-1}]");
+                    }
+                    if (w < 0 || w >= width)
+                    {
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {width-1}]");
+                    }
+                    if (ch < 0 || ch >= channels)
+                    {
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {channels-1}]");
+                    }
 
                     // Math copied from TensorShape.Index(). Note that m_Batch should always be 0
                     var index = m_Batch * height * width * channels + h * width * channels + w * channels + ch;
