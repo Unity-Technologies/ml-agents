@@ -258,7 +258,6 @@ namespace MLAgents
         void OnEnable()
         {
             m_Id = gameObject.GetInstanceID();
-            InitializeRewardProvider();
             var academy = FindObjectOfType<Academy>();
             academy.LazyInitialization();
             OnEnableHelper(academy);
@@ -270,6 +269,7 @@ namespace MLAgents
         /// facilitate testing.
         void OnEnableHelper(Academy academy)
         {
+            InitializeRewardProvider();
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();

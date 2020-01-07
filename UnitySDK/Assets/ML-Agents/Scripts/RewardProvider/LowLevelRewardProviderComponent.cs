@@ -8,17 +8,12 @@ namespace MLAgents.RewardProvider
 {
     public class LowLevelRewardProviderComponent : MonoBehaviour
     {
-        LowLevelRewardProvider m_RewardProvider;
+        LowLevelRewardProvider m_RewardProvider = new LowLevelRewardProvider();
         public AnimationCurve rewardCurve = new AnimationCurve();
 
         public LowLevelRewardProvider GetRewardProvider()
         {
             return m_RewardProvider;
-        }
-
-        void Awake()
-        {
-            m_RewardProvider = new LowLevelRewardProvider();
         }
 
         public virtual void Start()

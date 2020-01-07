@@ -89,6 +89,12 @@ namespace MLAgents
                 InstantiateCanvas();
                 s_IsInstantiated = true;
             }
+            
+            if (s_Canvas == null)
+            {
+                Debug.LogWarning("Canvas was null and as assumed to be non-null.");
+                return;
+            }
 
             if (target == null)
             {
@@ -159,6 +165,12 @@ namespace MLAgents
                 InstantiateCanvas();
                 s_IsInstantiated = true;
             }
+            
+            if (s_Canvas == null)
+            {
+                Debug.LogWarning("Canvas was null and as assumed to be non-null.");
+                return;
+            }
 
             if (target == null)
             {
@@ -220,6 +232,12 @@ namespace MLAgents
             {
                 InstantiateCanvas();
                 s_IsInstantiated = true;
+            }
+
+            if (s_Canvas == null)
+            {
+                Debug.LogWarning("Canvas was null and as assumed to be non-null.");
+                return;
             }
 
             if (target == null)
