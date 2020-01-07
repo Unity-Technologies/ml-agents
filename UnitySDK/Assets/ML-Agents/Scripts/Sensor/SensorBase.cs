@@ -6,12 +6,12 @@ namespace MLAgents.Sensor
     {
         /// <summary>
         /// Write the observations to the output buffer. This size of the buffer will be product of the sizes returned
-        /// by GetFloatObservationShape().
+        /// by GetObservationShape().
         /// </summary>
         /// <param name="output"></param>
         public abstract void WriteObservation(float[] output);
 
-        public abstract int[] GetFloatObservationShape();
+        public abstract int[] GetObservationShape();
 
         public abstract string GetName();
 
@@ -22,7 +22,7 @@ namespace MLAgents.Sensor
         /// <param name="adapter"></param>
         public virtual int Write(WriteAdapter adapter)
         {
-            // TODO reuse buffer for similar agents, don't call GetFloatObservationShape()
+            // TODO reuse buffer for similar agents, don't call GetObservationShape()
             var numFloats = this.ObservationSize();
             float[] buffer = new float[numFloats];
             WriteObservation(buffer);
