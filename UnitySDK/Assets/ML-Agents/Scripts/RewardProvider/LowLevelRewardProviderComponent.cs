@@ -4,11 +4,18 @@ using UnityEngine;
 
 namespace MLAgents.RewardProvider
 {
-    public class LowLevelRewardProviderComponent : BaseRewardProviderComponent<LowLevelRewardProvider>
+    public class LowLevelRewardProviderComponent : MonoBehaviour
     {
+        LowLevelRewardProvider m_RewardProvider;
         public AnimationCurve rewardCurve = new AnimationCurve();
+
+        public LowLevelRewardProvider GetRewardProvider()
+        {
+            return m_RewardProvider;
+        }
         public virtual void Start()
         {
+            m_RewardProvider = new LowLevelRewardProvider();
             GetRewardProvider().OnRewardProviderReset += RewardReset;
         }
 
