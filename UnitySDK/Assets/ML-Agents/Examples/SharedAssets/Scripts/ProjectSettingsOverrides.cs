@@ -4,12 +4,14 @@ using MLAgents;
 public class ProjectSettingsOverrides : MonoBehaviour
 {
     // Original values
+    float m_OriginalMonitorVerticalOffset;
     Vector3 m_OriginalGravity;
     float m_OriginalFixedDeltaTime;
     float m_OriginalMaximumDeltaTime;
     int m_OriginalSolverIterations;
     int m_OriginalSolverVelocityIterations;
 
+    public float monitorVerticalOffset = 0.0f;
     public float gravityMultiplier = 1.0f;
     public float fixedDeltaTime = .02f;
     public float maximumDeltaTime = 1.0f / 3.0f;
@@ -21,6 +23,7 @@ public class ProjectSettingsOverrides : MonoBehaviour
     public void Awake()
     {
         // Save the original values
+        m_OriginalMonitorVerticalOffset = Monitor.verticalOffset;
         m_OriginalGravity = Physics.gravity;
         m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
         m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
@@ -28,6 +31,7 @@ public class ProjectSettingsOverrides : MonoBehaviour
         m_OriginalSolverVelocityIterations = Physics.defaultSolverVelocityIterations;
 
         // Override
+        Monitor.verticalOffset = monitorVerticalOffset;
         Physics.gravity *= gravityMultiplier;
         Time.fixedDeltaTime = fixedDeltaTime;
         Time.maximumDeltaTime = maximumDeltaTime;
@@ -42,6 +46,7 @@ public class ProjectSettingsOverrides : MonoBehaviour
 
     public void OnDestroy()
     {
+        Monitor.verticalOffset = m_OriginalMonitorVerticalOffset;
         Physics.gravity = m_OriginalGravity;
         Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
         Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
