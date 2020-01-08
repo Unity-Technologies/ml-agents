@@ -296,15 +296,12 @@ class TrainerController(object):
         for step_info in new_step_infos:
             for brain_name in self.trainers.keys():
                 for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                    if step_info.has_actions_for_brain(name_behavior_id):
-                        _processor = self.managers[name_behavior_id].processor
-                        _processor.add_experiences(
-                            step_info.previous_all_brain_info[name_behavior_id],
-                            step_info.current_all_brain_info[name_behavior_id],
-                            step_info.brain_name_to_action_info[
-                                name_behavior_id
-                            ].outputs,
-                        )
+                    _processor = self.managers[name_behavior_id].processor
+                    _processor.add_experiences(
+                        step_info.previous_all_brain_info[name_behavior_id],
+                        step_info.current_all_brain_info[name_behavior_id],
+                        step_info.brain_name_to_action_info[name_behavior_id].outputs,
+                    )
 
         for brain_name, trainer in self.trainers.items():
             if self.train_model and trainer.get_step <= trainer.get_max_steps:

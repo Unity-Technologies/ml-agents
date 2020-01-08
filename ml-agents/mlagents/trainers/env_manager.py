@@ -10,11 +10,6 @@ class EnvironmentStep(NamedTuple):
     current_all_brain_info: AllBrainInfo
     brain_name_to_action_info: Dict[str, ActionInfo]
 
-    def has_actions_for_brain(self, brain_name: str) -> bool:
-        return brain_name in self.brain_name_to_action_info and bool(
-            self.brain_name_to_action_info[brain_name].outputs
-        )
-
 
 class EnvManager(ABC):
     def __init__(self):
