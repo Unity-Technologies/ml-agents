@@ -3,7 +3,7 @@ import yaml
 import io
 from unittest.mock import patch
 
-import mlagents.trainers.trainer_util as trainer_util
+from mlagents.trainers import trainer_util
 from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError

@@ -1,4 +1,4 @@
-import unittest.mock as mock
+from unittest import mock
 from unittest.mock import Mock, MagicMock
 import unittest
 from queue import Empty as EmptyQueue
