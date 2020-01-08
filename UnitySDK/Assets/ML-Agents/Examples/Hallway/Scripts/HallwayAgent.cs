@@ -15,12 +15,14 @@ public class HallwayAgent : Agent
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
     HallwayAcademy m_Academy;
+    HallwaySettings m_HallwaySettings;
     int m_Selection;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
         m_Academy = FindObjectOfType<HallwayAcademy>();
+        m_HallwaySettings = FindObjectOfType<HallwaySettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
@@ -63,7 +65,7 @@ public class HallwayAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 150f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed, ForceMode.VelocityChange);
+        m_AgentRb.AddForce(dirToGo * m_HallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
     }
 
     public override void AgentAction(float[] vectorAction)
@@ -80,12 +82,12 @@ public class HallwayAgent : Agent
                 (m_Selection == 1 && col.gameObject.CompareTag("symbol_X_Goal")))
             {
                 SetReward(1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 0.5f));
+                StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.goalScoredMaterial, 0.5f));
             }
             else
             {
                 SetReward(-0.1f);
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.failMaterial, 0.5f));
+                StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
             }
             Done();
         }
