@@ -14,14 +14,12 @@ public class HallwayAgent : Agent
     Rigidbody m_AgentRb;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
-    HallwayAcademy m_Academy;
     HallwaySettings m_HallwaySettings;
     int m_Selection;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_Academy = FindObjectOfType<HallwayAcademy>();
         m_HallwaySettings = FindObjectOfType<HallwaySettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
