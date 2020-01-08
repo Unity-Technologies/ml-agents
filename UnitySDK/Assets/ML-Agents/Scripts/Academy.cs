@@ -39,7 +39,7 @@ namespace MLAgents
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
-    public abstract class Academy : MonoBehaviour
+    public class Academy : MonoBehaviour
     {
         const string k_ApiVersion = "API-12";
         const int k_EditorTrainingPort = 5004;

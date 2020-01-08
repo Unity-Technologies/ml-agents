@@ -1,7 +1,7 @@
 using UnityEngine;
 using MLAgents;
 
-public class SettingsOverrides : MonoBehaviour
+public class ProjectSettingsOverrides : MonoBehaviour
 {
     // Original values
     Vector3 m_OriginalGravity;
@@ -12,7 +12,7 @@ public class SettingsOverrides : MonoBehaviour
 
     public float gravityMultiplier = 1.0f;
     public float fixedDeltaTime = .02f;
-    public float maximumDeltaTime = .33f;
+    public float maximumDeltaTime = 1.0f / 3.0f;
 
     [Header("Advanced physics settings")]
     public int solverIterations = 6;
@@ -22,7 +22,6 @@ public class SettingsOverrides : MonoBehaviour
     {
         // Save the original values
         m_OriginalGravity = Physics.gravity;
-        Debug.Log($"Time.fixedDeltaTime = {Time.fixedDeltaTime}  Time.maximumDeltaTime={Time.maximumDeltaTime}");
         m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
         m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
         m_OriginalSolverIterations = Physics.defaultSolverIterations;
