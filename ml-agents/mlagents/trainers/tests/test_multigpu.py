@@ -1,4 +1,4 @@
-import unittest.mock as mock
+from unittest import mock
 import pytest
 
 from mlagents.tf_utils import tf
