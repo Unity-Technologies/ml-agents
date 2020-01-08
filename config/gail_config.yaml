@@ -32,7 +32,7 @@ Pyramids:
     max_steps: 5.0e5
     num_epoch: 3
     behavioral_cloning:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
     reward_signals:
@@ -60,7 +60,7 @@ CrawlerStatic:
     num_layers: 3
     hidden_units: 512
     behavioral_cloning:
-        demo_path: ./demos/ExpertCrawlerSta.demo
+        demo_path: demos/ExpertCrawlerSta.demo
         strength: 0.5
         steps: 5000
     reward_signals:
@@ -108,3 +108,23 @@ Hallway:
             gamma: 0.99
             encoding_size: 128
             demo_path: demos/ExpertHallway.demo
+
+FoodCollector:
+    batch_size: 64
+    summary_freq: 1000
+    max_steps: 5.0e4
+    use_recurrent: false
+    hidden_units: 128
+    learning_rate: 3.0e-4
+    num_layers: 2
+    sequence_length: 32
+    reward_signals:
+        gail:
+            strength: 0.1
+            gamma: 0.99
+            encoding_size: 128
+            demo_path: demos/ExpertFood.demo
+    behavioral_cloning:
+        demo_path: demos/ExpertFood.demo
+        strength: 1.0
+        steps: 0
