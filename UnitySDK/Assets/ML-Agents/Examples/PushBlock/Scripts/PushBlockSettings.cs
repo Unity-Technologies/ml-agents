@@ -1,11 +1,6 @@
-//Every scene needs an academy script.
-//Create an empty gameObject and attach this script.
-//The brain needs to be a child of the Academy gameObject.
-
 using UnityEngine;
-using MLAgents;
 
-public class PushBlockAcademy : Academy
+public class PushBlockSettings : MonoBehaviour
 {
     /// <summary>
     /// The "walking speed" of the agents in the scene.
@@ -37,14 +32,4 @@ public class PushBlockAcademy : Academy
     /// </summary>
     public Material failMaterial;
 
-    /// <summary>
-    /// The gravity multiplier.
-    /// Use ~3 to make things less floaty
-    /// </summary>
-    public float gravityMultiplier;
-
-    void State()
-    {
-        Physics.gravity *= gravityMultiplier;
-    }
 }
