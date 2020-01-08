@@ -12,7 +12,7 @@ namespace MLAgents.Tests
             ISensor wrapped = new VectorSensor(4);
             ISensor sensor = new StackingSensor(wrapped, 4);
             Assert.AreEqual("StackingSensor_size4_VectorSensor_size4", sensor.GetName());
-            Assert.AreEqual(sensor.GetFloatObservationShape(), new [] {16});
+            Assert.AreEqual(sensor.GetObservationShape(), new [] {16});
         }
 
         [Test]

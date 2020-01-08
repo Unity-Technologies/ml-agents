@@ -47,7 +47,10 @@ importing the ML-Agents assets into it:
 3. In a file system window, navigate to the folder containing your cloned
     ML-Agents repository.
 4. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity
-    Editor Project window.
+    Editor Project window. If you see console errors about Barracuda, make sure
+    you've installed Barracuda from the Unity Package Manager. More information
+    can be found in the [installation instructions](Installation.md) under
+    **Package Installation**.
 
 Your Unity **Project** window should contain the following assets:
 

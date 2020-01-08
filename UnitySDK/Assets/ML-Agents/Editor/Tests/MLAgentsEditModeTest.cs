@@ -80,7 +80,7 @@ namespace MLAgents.Tests
             sensorName = n;
         }
 
-        public int[] GetFloatObservationShape()
+        public int[] GetObservationShape()
         {
             return new[] { 0 };
         }

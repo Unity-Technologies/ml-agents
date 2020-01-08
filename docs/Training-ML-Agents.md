@@ -114,10 +114,6 @@ environment, you can set the following command line options when invoking
   the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>`: Specify which lesson to start with when performing curriculum
   training. Defaults to 0.
-* `--num-runs=<n>`: Sets the number of concurrent training sessions to perform.
-  Default is set to 1. Set to higher values when benchmarking performance and
-  multiple training sessions is desired. Training sessions are independent, and
-  do not improve learning performance.
 * `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to
   collect experiences from when training. Defaults to 1.
 * `--run-id=<path>`: Specifies an identifier for each training run. This

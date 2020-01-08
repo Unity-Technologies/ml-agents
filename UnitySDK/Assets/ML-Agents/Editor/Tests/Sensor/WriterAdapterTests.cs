@@ -15,25 +15,26 @@ namespace MLAgents.Tests
         {
             WriteAdapter writer = new WriteAdapter();
             var buffer = new[] { 0f, 0f, 0f };
+            var shape = new[] { 3 };
 
-            writer.SetTarget(buffer, 0);
+            writer.SetTarget(buffer, shape, 0);
             // Elementwise writes
             writer[0] = 1f;
             writer[2] = 2f;
             Assert.AreEqual(new[] { 1f, 0f, 2f }, buffer);
 
             // Elementwise writes with offset
-            writer.SetTarget(buffer, 1);
+            writer.SetTarget(buffer, shape, 1);
             writer[0] = 3f;
             Assert.AreEqual(new[] { 1f, 3f, 2f }, buffer);
 
             // AddRange
-            writer.SetTarget(buffer, 0);
+            writer.SetTarget(buffer, shape, 0);
             writer.AddRange(new [] {4f, 5f});
             Assert.AreEqual(new[] { 4f, 5f, 2f }, buffer);
 
             // AddRange with offset
-            writer.SetTarget(buffer, 1);
+            writer.SetTarget(buffer, shape, 1);
             writer.AddRange(new [] {6f, 7f});
             Assert.AreEqual(new[] { 4f, 6f, 7f }, buffer);
         }
@@ -47,6 +48,7 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint,
                 data = new Tensor(2, 3)
             };
+
             writer.SetTarget(t, 0, 0);
             Assert.AreEqual(0f, t.data[0, 0]);
             writer[0] = 1f;
@@ -86,6 +88,8 @@ namespace MLAgents.Tests
                 valueType = TensorProxy.TensorType.FloatingPoint,
                 data = new Tensor(2, 2, 2, 3)
             };
+
+            var shape = new[] { 2, 2, 3 };
 
             writer.SetTarget(t, 0, 0);
             writer[1, 0, 1] = 1f;
