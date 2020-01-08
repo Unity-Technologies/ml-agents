@@ -296,6 +296,11 @@ class TrainerController(object):
         for step_info in new_step_infos:
             for name_behavior_id in step_info.name_behavior_ids:
                 if name_behavior_id not in self.managers:
+                    self.logger.warning(
+                        "Agent manager was not created for behavior id {}.".format(
+                            name_behavior_id
+                        )
+                    )
                     continue
                 _processor = self.managers[name_behavior_id].processor
                 _processor.add_experiences(
