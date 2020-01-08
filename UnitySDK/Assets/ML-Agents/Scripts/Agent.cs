@@ -538,7 +538,7 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
-            // Create a buffer for writing vector sensor data too
+            // Create a buffer for writing uncompressed (i.e. float) sensor data to
             int numFloatObservations = 0;
             for (var i = 0; i < sensors.Count; i++)
             {
@@ -617,14 +617,13 @@ namespace MLAgents
                 var sensor = sensors[i];
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    // only handles 1D
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
+                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetObservationShape(), floatsWritten);
                     var numFloats = sensor.Write(m_WriteAdapter);
                     var floatObs = new Observation
                     {
                         FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
-                        Shape = sensor.GetFloatObservationShape(),
+                        Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
                     m_Info.observations.Add(floatObs);
@@ -635,7 +634,7 @@ namespace MLAgents
                     var compressedObs = new Observation
                     {
                         CompressedData = sensor.GetCompressedObservation(),
-                        Shape = sensor.GetFloatObservationShape(),
+                        Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
                     m_Info.observations.Add(compressedObs);

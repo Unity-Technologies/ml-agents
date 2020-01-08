@@ -56,7 +56,7 @@ namespace MLAgents.Sensor
             Clear();
         }
 
-        public int[] GetFloatObservationShape()
+        public int[] GetObservationShape()
         {
             return m_Shape;
         }

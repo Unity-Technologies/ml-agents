@@ -9,8 +9,10 @@ namespace MLAgents.Sensor
         bool m_Grayscale;
         string m_Name;
         int[] m_Shape;
+        SensorCompressionType m_CompressionType;
 
-        public RenderTextureSensor(RenderTexture renderTexture, bool grayscale, string name)
+        public RenderTextureSensor(RenderTexture renderTexture, bool grayscale, string name,
+            SensorCompressionType compressionType)
         {
             m_RenderTexture = renderTexture;
             var width = renderTexture != null ? renderTexture.width : 0;
@@ -18,6 +20,7 @@ namespace MLAgents.Sensor
             m_Grayscale = grayscale;
             m_Name = name;
             m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            m_CompressionType = compressionType;
         }
 
         public string GetName()
@@ -25,7 +28,7 @@ namespace MLAgents.Sensor
             return m_Name;
         }
 
-        public int[] GetFloatObservationShape()
+        public int[] GetObservationShape()
         {
             return m_Shape;
         }
@@ -57,11 +60,11 @@ namespace MLAgents.Sensor
 
         public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.PNG;
+            return m_CompressionType;
         }
 
         /// <summary>
-        /// Converts a RenderTexture and correspinding resolution to a 2D texture.
+        /// Converts a RenderTexture to a 2D texture.
         /// </summary>
         /// <returns>The 2D texture.</returns>
         /// <param name="obsTexture">RenderTexture.</param>

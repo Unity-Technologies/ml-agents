@@ -1,4 +1,4 @@
-import unittest.mock as mock
+from unittest import mock
 import pytest
 import yaml
 
@@ -9,6 +9,7 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -368,10 +369,14 @@ def test_process_trajectory(dummy_config):
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
+    trajectory_queue = AgentManagerQueue("testbrain")
+    trainer.subscribe_trajectory_queue(trajectory_queue)
+
     trajectory = make_fake_trajectory(
         length=15, max_step_complete=True, vec_obs_size=6, num_vis_obs=0, action_space=2
     )
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that trainer put trajectory in update buffer
     assert trainer.update_buffer.num_experiences == 15
@@ -389,7 +394,8 @@ def test_process_trajectory(dummy_config):
         num_vis_obs=0,
         action_space=2,
     )
-    trainer.process_trajectory(trajectory)
+    trajectory_queue.put(trajectory)
+    trainer.advance()
 
     # Check that the stats are reset as episode is finished
     for reward in trainer.collected_rewards.values():
