@@ -7,6 +7,7 @@ from typing import Dict
 import numpy as np
 
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.tf_policy import TFPolicy
 
 from mlagents.trainers.trainer import Trainer
@@ -60,7 +61,7 @@ class GhostTrainer(Trainer):
         return self.trainer._is_ready_update()
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
-        self._increment_step(n_steps, name_behavior_id)
+        self.trainer._increment_step(n_steps, name_behavior_id)
 
     def _update_policy(self) -> None:
         self.trainer.update_policy()
@@ -147,6 +148,22 @@ class GhostTrainer(Trainer):
         self.is_training = training
         self.swap_snapshots()
 
+    def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
+        """
+        Adds a policy queue to the list of queues to publish to when this Trainer
+        makes a policy update
+        :param queue: Policy queue to publish to.
+        """
+        self.trainer.policy_queues.append(policy_queue)
+
+    def subscribe_trajectory_queue(
+        self, trajectory_queue: AgentManagerQueue[Trajectory]
+    ) -> None:
+        """
+        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
+        :param queue: Trajectory queue to publish to.
+        """
+        self.trainer.trajectory_queues.append(trajectory_queue)
     # def set_learning_policy(self, name_behavior_id: str) -> None:
     #    self.learning_policy_name = name_behavior_id
     #    self.swap_snapshots()
