@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NamedTuple
+from typing import List, Dict, NamedTuple, Iterable
 from mlagents.trainers.brain import AllBrainInfo, BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
@@ -9,6 +9,10 @@ class EnvironmentStep(NamedTuple):
     previous_all_brain_info: AllBrainInfo
     current_all_brain_info: AllBrainInfo
     brain_name_to_action_info: Dict[str, ActionInfo]
+
+    @property
+    def name_behavior_ids(self) -> Iterable[str]:
+        return self.brain_name_to_action_info.keys()
 
 
 class EnvManager(ABC):
