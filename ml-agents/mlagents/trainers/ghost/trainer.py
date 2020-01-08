@@ -54,7 +54,11 @@ class GhostTrainer(Trainer):
         self.current_prob = self_play_parameters["current_prob"]
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
+    def _write_summary(self, step: int) -> int:
+        self.trainer._write_summary(step)
+
     def _process_trajectory(self, trajectory: Trajectory) -> None:
+        super()._process_trajectory(trajectory)
         self.trainer.process_trajectory(trajectory)
 
     def _is_ready_update(self) -> bool:
@@ -128,7 +132,7 @@ class GhostTrainer(Trainer):
         for name_behavior_id, policy in self.policies.items():
             # here is the place for a sampling protocol
             if name_behavior_id != self.learning_behavior_name and np.random.uniform() < (
-                1 - self.current_prob and not self.is_training
+                1 - self.current_prob
             ):
                 # snapshot = np.random.choice(self.policy_snapshots)
                 x = np.random.randint(len(self.policy_snapshots))
@@ -145,7 +149,7 @@ class GhostTrainer(Trainer):
                 policy.tfvars.set_weights(snapshot)
 
     def set_learning(self, training: bool) -> None:
-        self.is_training = training
+        #self.is_training = training
         self.swap_snapshots()
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
