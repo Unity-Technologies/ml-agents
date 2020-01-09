@@ -6,6 +6,7 @@ import os
 import glob
 import shutil
 import numpy as np
+import json
 
 from typing import Callable, Optional, List, NamedTuple, Dict
 
@@ -25,133 +26,143 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 
-parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("trainer_config_path")
-parser.add_argument(
-    "--env", default=None, dest="env_path", help="Name of the Unity executable "
-)
-parser.add_argument(
-    "--curriculum",
-    default=None,
-    dest="curriculum_config_path",
-    help="Curriculum config yaml file for environment",
-)
-parser.add_argument(
-    "--sampler",
-    default=None,
-    dest="sampler_file_path",
-    help="Reset parameter yaml file for environment",
-)
-parser.add_argument(
-    "--keep-checkpoints", default=5, type=int, help="How many model checkpoints to keep"
-)
-parser.add_argument(
-    "--lesson", default=0, type=int, help="Start learning from this lesson"
-)
-parser.add_argument(
-    "--load",
-    default=False,
-    dest="load_model",
-    action="store_true",
-    help="Whether to load the model or randomly initialize",
-)
-parser.add_argument(
-    "--run-id",
-    default="ppo",
-    help="The directory name for model and summary statistics",
-)
-parser.add_argument(
-    "--save-freq", default=50000, type=int, help="Frequency at which to save model"
-)
-parser.add_argument(
-    "--seed", default=-1, type=int, help="Random seed used for training"
-)
-parser.add_argument(
-    "--train",
-    default=False,
-    dest="train_model",
-    action="store_true",
-    help="Whether to train model, or only run inference",
-)
-parser.add_argument(
-    "--base-port",
-    default=5005,
-    type=int,
-    help="Base port for environment communication",
-)
-parser.add_argument(
-    "--num-envs",
-    default=1,
-    type=int,
-    help="Number of parallel environments to use for training",
-)
-parser.add_argument(
-    "--docker-target-name",
-    default=None,
-    dest="docker_target_name",
-    help="Docker volume to store training-specific files",
-)
-parser.add_argument(
-    "--no-graphics",
-    default=False,
-    action="store_true",
-    help="Whether to run the environment in no-graphics mode",
-)
-parser.add_argument(
-    "--debug",
-    default=False,
-    action="store_true",
-    help="Whether to run ML-Agents in debug mode with detailed logging",
-)
-parser.add_argument(
-    "--multi-gpu",
-    default=False,
-    action="store_true",
-    help="Setting this flag enables the use of multiple GPU's (if available) during training",
-)
-parser.add_argument(
-    "--env-args",
-    default=None,
-    nargs=argparse.REMAINDER,
-    help="Arguments passed to the Unity executable.",
-)
-parser.add_argument(
-    "--cpu", default=False, action="store_true", help="Run with CPU only"
-)
+def _create_parser():
+    argparser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    argparser.add_argument("trainer_config_path")
+    argparser.add_argument(
+        "--env", default=None, dest="env_path", help="Name of the Unity executable "
+    )
+    argparser.add_argument(
+        "--curriculum",
+        default=None,
+        dest="curriculum_config_path",
+        help="Curriculum config yaml file for environment",
+    )
+    argparser.add_argument(
+        "--sampler",
+        default=None,
+        dest="sampler_file_path",
+        help="Reset parameter yaml file for environment",
+    )
+    argparser.add_argument(
+        "--keep-checkpoints",
+        default=5,
+        type=int,
+        help="How many model checkpoints to keep",
+    )
+    argparser.add_argument(
+        "--lesson", default=0, type=int, help="Start learning from this lesson"
+    )
+    argparser.add_argument(
+        "--load",
+        default=False,
+        dest="load_model",
+        action="store_true",
+        help="Whether to load the model or randomly initialize",
+    )
+    argparser.add_argument(
+        "--run-id",
+        default="ppo",
+        help="The directory name for model and summary statistics",
+    )
+    argparser.add_argument(
+        "--save-freq", default=50000, type=int, help="Frequency at which to save model"
+    )
+    argparser.add_argument(
+        "--seed", default=-1, type=int, help="Random seed used for training"
+    )
+    argparser.add_argument(
+        "--train",
+        default=False,
+        dest="train_model",
+        action="store_true",
+        help="Whether to train model, or only run inference",
+    )
+    argparser.add_argument(
+        "--base-port",
+        default=5005,
+        type=int,
+        help="Base port for environment communication",
+    )
+    argparser.add_argument(
+        "--num-envs",
+        default=1,
+        type=int,
+        help="Number of parallel environments to use for training",
+    )
+    argparser.add_argument(
+        "--docker-target-name",
+        default=None,
+        dest="docker_target_name",
+        help="Docker volume to store training-specific files",
+    )
+    argparser.add_argument(
+        "--no-graphics",
+        default=False,
+        action="store_true",
+        help="Whether to run the environment in no-graphics mode",
+    )
+    argparser.add_argument(
+        "--debug",
+        default=False,
+        action="store_true",
+        help="Whether to run ML-Agents in debug mode with detailed logging",
+    )
+    argparser.add_argument(
+        "--multi-gpu",
+        default=False,
+        action="store_true",
+        help="Setting this flag enables the use of multiple GPU's (if available) during training",
+    )
+    argparser.add_argument(
+        "--env-args",
+        default=None,
+        nargs=argparse.REMAINDER,
+        help="Arguments passed to the Unity executable.",
+    )
+    argparser.add_argument(
+        "--cpu", default=False, action="store_true", help="Run with CPU only"
+    )
 
-parser.add_argument("--version", action="version", version="")
+    argparser.add_argument("--version", action="version", version="")
 
-eng_conf = parser.add_argument_group(title="Engine Configuration")
-eng_conf.add_argument(
-    "--width",
-    default=84,
-    type=int,
-    help="The width of the executable window of the environment(s)",
-)
-eng_conf.add_argument(
-    "--height",
-    default=84,
-    type=int,
-    help="The height of the executable window of the environment(s)",
-)
-eng_conf.add_argument(
-    "--quality-level",
-    default=5,
-    type=int,
-    help="The quality level of the environment(s)",
-)
-eng_conf.add_argument(
-    "--time-scale",
-    default=20,
-    type=float,
-    help="The time scale of the Unity environment(s)",
-)
-eng_conf.add_argument(
-    "--target-frame-rate",
-    default=-1,
-    type=int,
-    help="The target frame rate of the Unity environment(s)",
-)
+    eng_conf = argparser.add_argument_group(title="Engine Configuration")
+    eng_conf.add_argument(
+        "--width",
+        default=84,
+        type=int,
+        help="The width of the executable window of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--height",
+        default=84,
+        type=int,
+        help="The height of the executable window of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--quality-level",
+        default=5,
+        type=int,
+        help="The quality level of the environment(s)",
+    )
+    eng_conf.add_argument(
+        "--time-scale",
+        default=20,
+        type=float,
+        help="The time scale of the Unity environment(s)",
+    )
+    eng_conf.add_argument(
+        "--target-frame-rate",
+        default=-1,
+        type=int,
+        help="The target frame rate of the Unity environment(s)",
+    )
+    return argparser
+
+
+parser = _create_parser()
 
 
 class RunOptions(NamedTuple):
@@ -442,13 +453,16 @@ def run_cli(options: RunOptions) -> None:
     print(get_version_string())
     trainer_logger = logging.getLogger("mlagents.trainers")
     env_logger = logging.getLogger("mlagents_envs")
-    trainer_logger.info(options)
+
     if options.debug:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
     else:
         # disable noisy warnings from tensorflow.
         tf_utils.set_warnings_enabled(False)
+
+    trainer_logger.debug("Configuration for this run:")
+    trainer_logger.debug(json.dumps(options._asdict(), indent=4))
 
     run_seed = options.seed
     if options.cpu:

@@ -6,6 +6,7 @@ BigWallJump:
   parameters:
     big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
     big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
+
 SmallWallJump:
     measure: progress
     thresholds: [0.1, 0.3, 0.5]

@@ -17,6 +17,7 @@ The versions can be found in
 ### Steps to Migrate
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
+  A tool like https://www.json2yaml.com may be useful to help with the conversion.
 
 ## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
 
