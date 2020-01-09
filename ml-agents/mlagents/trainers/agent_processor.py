@@ -154,9 +154,11 @@ class AgentProcessor:
                         del self.episode_rewards[agent_id]
                 elif not next_info.local_done[next_idx]:
                     self.episode_steps[agent_id] += 1
-        self.policy.save_previous_action(
-            curr_info.agents, take_action_outputs["action"]
-        )
+
+        if "action" in take_action_outputs:
+            self.policy.save_previous_action(
+                curr_info.agents, take_action_outputs["action"]
+            )
 
     def publish_trajectory_queue(
         self, trajectory_queue: "AgentManagerQueue[Trajectory]"
