@@ -695,8 +695,6 @@ namespace MLAgents
         public virtual void CollectObservations()
         {
         }
-        
-        
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
