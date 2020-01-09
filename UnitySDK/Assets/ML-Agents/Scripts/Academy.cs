@@ -44,18 +44,6 @@ namespace MLAgents
         const string k_ApiVersion = "API-12";
         const int k_EditorTrainingPort = 5004;
 
-        /// Temporary storage for global gravity value
-        /// Used to restore oringal value when deriving Academy modifies it
-        Vector3 m_OriginalGravity;
-
-        /// Temporary storage for global fixedDeltaTime value
-        /// Used to restore original value when deriving Academy modifies it
-        float m_OriginalFixedDeltaTime;
-
-        /// Temporary storage for global maximumDeltaTime value
-        /// Used to restore original value when deriving Academy modifies it
-        float m_OriginalMaximumDeltaTime;
-
         public IFloatProperties FloatProperties;
 
 
@@ -185,10 +173,6 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
-            m_OriginalGravity = Physics.gravity;
-            m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
-            m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
-
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
             InitializeAcademy();
@@ -424,10 +408,6 @@ namespace MLAgents
         /// </summary>
         protected virtual void OnDestroy()
         {
-            Physics.gravity = m_OriginalGravity;
-            Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
-            Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
-
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 

@@ -11,13 +11,20 @@ public class ProjectSettingsOverrides : MonoBehaviour
     int m_OriginalSolverIterations;
     int m_OriginalSolverVelocityIterations;
 
-    public float monitorVerticalOffset = 0.0f;
+    [Tooltip("Increase or decrease the scene gravity. Use ~3x to make things less floaty")]
     public float gravityMultiplier = 1.0f;
-    public float fixedDeltaTime = .02f;
-    public float maximumDeltaTime = 1.0f / 3.0f;
+
+    [Header("Display Settings")]
+    public float monitorVerticalOffset = 0.0f;
 
     [Header("Advanced physics settings")]
+    [Tooltip("The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.")]
+    public float fixedDeltaTime = .02f;
+    [Tooltip("The maximum time a frame can take. Physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) will be performed only for this duration of time per frame.")]
+    public float maximumDeltaTime = 1.0f / 3.0f;
+    [Tooltip("Determines how accurately Rigidbody joints and collision contacts are resolved. (default 6). Must be positive.")]
     public int solverIterations = 6;
+    [Tooltip("Affects how accurately the Rigidbody joints and collision contacts are resolved. (default 1). Must be positive.")]
     public int solverVelocityIterations = 1;
 
     public void Awake()
