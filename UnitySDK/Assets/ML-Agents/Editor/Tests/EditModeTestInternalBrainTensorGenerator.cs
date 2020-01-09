@@ -13,8 +13,8 @@ namespace MLAgents.Tests
         static IEnumerable<Agent> GetFakeAgents()
         {
             var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<TestAcademy>();
-            var aca = acaGo.GetComponent<TestAcademy>();
+            acaGo.AddComponent<Academy>();
+            var aca = acaGo.GetComponent<Academy>();
 
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();

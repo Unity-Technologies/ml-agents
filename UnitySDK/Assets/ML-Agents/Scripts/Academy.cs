@@ -1,11 +1,16 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine.Serialization;
+using UnityEngine.Experimental.LowLevel;
+using UnityEngine.Experimental.PlayerLoop;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using MLAgents.InferenceBrain;
 using Barracuda;
+using Random = UnityEngine.Random;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -20,9 +25,10 @@ using Barracuda;
  * https://github.com/Unity-Technologies/ml-agents/blob/master/docs/
  */
 
+
+
 namespace MLAgents
 {
-
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
     /// Currently, this class is expected to be extended to
@@ -117,6 +123,9 @@ namespace MLAgents
         // Signals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
+        // Signals that the Academy has been reset by the training process
+        public event System.Action OnEnvironmentReset;
+
         /// <summary>
         /// MonoBehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
@@ -175,7 +184,6 @@ namespace MLAgents
         {
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
-            InitializeAcademy();
 
 
             // Try to launch the communicator by using the arguments passed at launch
@@ -234,7 +242,7 @@ namespace MLAgents
             AgentSendState += () => { };
             AgentAct += () => { };
             AgentForceReset += () => { };
-
+            OnEnvironmentReset += () => { };
         }
 
         static void OnQuitCommandReceived()
@@ -249,31 +257,6 @@ namespace MLAgents
         {
             ForcedFullReset();
         }
-
-        /// <summary>
-        /// Initializes the academy and environment. Called during the waking-up
-        /// phase of the environment before any of the scene objects/agents have
-        /// been initialized.
-        /// </summary>
-        public virtual void InitializeAcademy()
-        {
-        }
-
-        /// <summary>
-        /// Specifies the academy behavior at every step of the environment.
-        /// </summary>
-        public virtual void AcademyStep()
-        {
-        }
-
-        /// <summary>
-        /// Specifies the academy behavior when being reset (i.e. at the completion
-        /// of a global episode).
-        /// </summary>
-        public virtual void AcademyReset()
-        {
-        }
-
 
         /// <summary>
         /// Returns the current episode counter.
@@ -348,11 +331,6 @@ namespace MLAgents
                 DecideAction?.Invoke();
             }
 
-            using (TimerStack.Instance.Scoped("AcademyStep"))
-            {
-                AcademyStep();
-            }
-
             using (TimerStack.Instance.Scoped("AgentAct"))
             {
                 AgentAct?.Invoke();
@@ -369,7 +347,7 @@ namespace MLAgents
         {
             m_StepCount = 0;
             m_EpisodeCount++;
-            AcademyReset();
+            OnEnvironmentReset?.Invoke();
         }
 
         /// <summary>
@@ -406,7 +384,7 @@ namespace MLAgents
         /// <summary>
         /// Cleanup function
         /// </summary>
-        protected virtual void OnDestroy()
+        protected void OnDestroy()
         {
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
