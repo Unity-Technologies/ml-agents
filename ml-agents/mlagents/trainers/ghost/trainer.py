@@ -47,45 +47,59 @@ class GhostTrainer(Trainer):
         self.learning_behavior_name: str = None
         self.current_policy_snapshot = None
         self.last_step = 0
-
         self_play_parameters = trainer_parameters["ghost"]
 
         self.window = self_play_parameters["window"]
         self.current_prob = self_play_parameters["current_prob"]
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
-    def _write_summary(self, step: int) -> int:
-        self.trainer._write_summary(step)
+        self.initial_elo: float = 1200.0
+        self.current_elo: float = self.initial_elo
+        self.policy_elos: List[float] = []
+        self.current_opponent: int = 0
+
+    #def _write_summary(self, step: int) -> int:
+    #@    self.trainer._write_summary(step)
+
+    @property
+    def get_step(self) -> int:
+        """
+        Returns the number of steps the trainer has performed
+        :return: the step count of the trainer
+        """
+        return self.trainer.get_step
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
-        super()._process_trajectory(trajectory)
-        self.trainer.process_trajectory(trajectory)
+        pass
+        #self._increment_step(len(trajectory.steps), trajectory.behavior_id)
+        #self.trainer.process_trajectory(trajectory)
 
     def _is_ready_update(self) -> bool:
-        return self.trainer._is_ready_update()
+        pass
+        #return self.trainer._is_ready_update()
 
-    def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
-        self.trainer._increment_step(n_steps, name_behavior_id)
+    #def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
+    #    self.trainer._increment_step(n_steps, name_behavior_id)
 
     def _update_policy(self) -> None:
-        self.trainer.update_policy()
+        pass
+    #    self.trainer.update_policy()
 
-        with self.trainer.policy.graph.as_default():
-            weights = self.trainer.policy.tfvars.get_weights()
-            self.current_policy_snapshot = weights
+    #    with self.trainer.policy.graph.as_default():
+    #        weights = self.trainer.policy.tfvars.get_weights()
+    #        self.current_policy_snapshot = weights
 
+    #    if self.get_step - self.last_step > self.steps_between_snapshots:
+    #        self.save_snapshot(self.trainer.policy)
+    #        self.last_step = self.get_step
+    def advance(self) -> None:
+        self.trainer.advance()
         if self.get_step - self.last_step > self.steps_between_snapshots:
             self.save_snapshot(self.trainer.policy)
             self.last_step = self.get_step
 
     def end_episode(self):
         self.trainer.end_episode()
-
-    def subscribe_trajectory_queue(
-        self, trajectory_queue: AgentManagerQueue[Trajectory]
-    ) -> None:
-        if trajectory_queue.behavior_id == self.learning_behavior_name:
-            self.trainer.subscribe_trajectory_queue(trajectory_queue)
 
     def save_model(self, name_behavior_id: str) -> None:
         policy = self.trainer.get_policy(name_behavior_id)
@@ -127,19 +141,23 @@ class GhostTrainer(Trainer):
             self.policy_snapshots.append(weights)
         if len(self.policy_snapshots) > self.window:
             del self.policy_snapshots[0]
+        self.policy_elos[-1] = self.initial_elo
 
     def swap_snapshots(self) -> None:
         for name_behavior_id, policy in self.policies.items():
             # here is the place for a sampling protocol
-            if name_behavior_id != self.learning_behavior_name and np.random.uniform() < (
-                1 - self.current_prob
-            ):
-                # snapshot = np.random.choice(self.policy_snapshots)
+            if name_behavior_id == self.learning_behavior_name and self.is_training:
+                continue
+            elif np.random.uniform() < (1 - self.current_prob):
                 x = np.random.randint(len(self.policy_snapshots))
                 snapshot = self.policy_snapshots[x]
             else:
+                with self.trainer.policy.graph.as_default():
+                    weights = self.trainer.policy.tfvars.get_weights()
+                    self.current_policy_snapshot = weights
                 snapshot = self.current_policy_snapshot
                 x = "current"
+            self.current_opponent = x
             print(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
                     self.get_step, x, name_behavior_id, self.learning_behavior_name
@@ -149,7 +167,7 @@ class GhostTrainer(Trainer):
                 policy.tfvars.set_weights(snapshot)
 
     def set_learning(self, training: bool) -> None:
-        #self.is_training = training
+        self.is_training = training
         self.swap_snapshots()
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
@@ -158,21 +176,26 @@ class GhostTrainer(Trainer):
         makes a policy update
         :param queue: Policy queue to publish to.
         """
-        self.trainer.policy_queues.append(policy_queue)
+        if policy_queue.behavior_id == self.learning_behavior_name:
+            self.trainer.policy_queues.append(policy_queue)
 
     def subscribe_trajectory_queue(
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
-        """
-        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
-        :param queue: Trajectory queue to publish to.
-        """
-        self.trainer.trajectory_queues.append(trajectory_queue)
-    # def set_learning_policy(self, name_behavior_id: str) -> None:
-    #    self.learning_policy_name = name_behavior_id
-    #    self.swap_snapshots()
-    #    try:
-    #        policy = self.policies[self.learning_policy_name]
-    #        self.trainer.set_policy(self.learning_policy_name, policy)
-    #    except KeyError:
-    #        pass
+        if trajectory_queue.behavior_id == self.learning_behavior_name:
+            self.trainer.subscribe_trajectory_queue(trajectory_queue)
+
+#ELO calculation
+#Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975
+def compute_elo_rating_changes(rating1, rating2, result):
+    r1 = pow(10, rating1 / 400)
+    r2 = pow(10, rating2 / 400)
+
+    sum = r1 + r2
+    e1 = r1 / sum
+
+    s1 = 1 if result == "win" else 0
+
+    change = K * (s1 - e1)
+
+    return change

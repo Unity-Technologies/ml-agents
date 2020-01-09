@@ -168,11 +168,11 @@ VisualPyramids:
 Tennis:
     trainer: ppo
     normalize: true
-    max_steps: 5e7
+    max_steps: 5e8
     ghost:
         window: 5
         current_prob: 0.0
-        snapshot_per: 5000
+        snapshot_per: 50000
 
 CrawlerStatic:
     normalize: true
