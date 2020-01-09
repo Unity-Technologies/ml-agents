@@ -1,16 +1,10 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEngine.Serialization;
-using UnityEngine.Experimental.LowLevel;
-using UnityEngine.Experimental.PlayerLoop;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using MLAgents.InferenceBrain;
 using Barracuda;
-using Random = UnityEngine.Random;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -24,8 +18,6 @@ using Random = UnityEngine.Random;
  * Unity scene, please browse our documentation pages on GitHub:
  * https://github.com/Unity-Technologies/ml-agents/blob/master/docs/
  */
-
-
 
 namespace MLAgents
 {
