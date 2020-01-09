@@ -151,7 +151,7 @@ class AgentProcessor:
                 elif not curr_info.local_done[next_idx]:
                     self.episode_steps[agent_id] += 1
 
-        self.last_brain_info[agent_id] = curr_info
+            self.last_brain_info[agent_id] = curr_info
 
         if "action" in take_action_outputs:
             self.policy.save_previous_action(
