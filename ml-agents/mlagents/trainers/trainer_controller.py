@@ -290,9 +290,8 @@ class TrainerController(object):
                     )
                     continue
                 self.managers[name_behavior_id].add_experiences(
-                    step_info.previous_all_brain_info[name_behavior_id],
                     step_info.current_all_brain_info[name_behavior_id],
-                    step_info.brain_name_to_action_info[name_behavior_id].outputs,
+                    step_info.brain_name_to_action_info[name_behavior_id],
                 )
         return len(new_step_infos)
 

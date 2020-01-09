@@ -6,7 +6,6 @@ from mlagents.trainers.action_info import ActionInfo
 
 
 class EnvironmentStep(NamedTuple):
-    previous_all_brain_info: AllBrainInfo
     current_all_brain_info: AllBrainInfo
     brain_name_to_action_info: Dict[str, ActionInfo]
 
