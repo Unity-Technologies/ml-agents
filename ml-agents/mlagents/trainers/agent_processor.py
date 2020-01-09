@@ -73,8 +73,10 @@ class AgentProcessor:
 
         for next_idx, agent_id in enumerate(curr_info.agents):
             stored_info = self.last_brain_info.get(agent_id, None)
-            if stored_info is not None:
-                stored_take_action_outputs = self.last_take_action_outputs[agent_id]
+            stored_take_action_outputs = self.last_take_action_outputs.get(
+                agent_id, None
+            )
+            if stored_info is not None and stored_take_action_outputs is not None:
                 idx = stored_info.agents.index(agent_id)
                 obs = []
                 if not stored_info.local_done[idx]:

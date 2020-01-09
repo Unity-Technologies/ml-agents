@@ -11,7 +11,7 @@ class EnvironmentStep(NamedTuple):
 
     @property
     def name_behavior_ids(self) -> Iterable[str]:
-        return self.brain_name_to_action_info.keys()
+        return self.current_all_brain_info.keys()
 
 
 class EnvManager(ABC):
