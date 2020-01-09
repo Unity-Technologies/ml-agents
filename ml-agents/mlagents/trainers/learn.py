@@ -36,7 +36,6 @@ class CommandLineOptions(NamedTuple):
     keep_checkpoints: int
     base_port: int
     num_envs: int
-    ghost_interval: int
     curriculum_folder: Optional[str]
     lesson: int
     no_graphics: bool
@@ -131,12 +130,6 @@ def parse_command_line(argv: Optional[List[str]] = None) -> CommandLineOptions:
         default=1,
         type=int,
         help="Number of parallel environments to use for training",
-    )
-    parser.add_argument(
-        "--ghost-interval",
-        default=-1,
-        type=int,
-        help="Number of global steps between swapping learning brain in self-play",
     )
     parser.add_argument(
         "--docker-target-name",
@@ -291,7 +284,6 @@ def run_training(run_seed: int, options: CommandLineOptions) -> None:
         run_seed,
         sampler_manager,
         resampling_interval,
-        options.ghost_interval,
     )
     # Begin training
     try:

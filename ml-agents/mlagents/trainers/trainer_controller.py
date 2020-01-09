@@ -22,9 +22,7 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
-from mlagents.trainers.agent_processor import AgentProcessor
-from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers, Cycle
-from mlagents.trainers.ghost.trainer import GhostTrainer
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 
 
@@ -41,7 +39,6 @@ class TrainerController(object):
         training_seed: int,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
-        ghost_interval: int,
     ):
         """
         :param model_path: Path to save the model.
@@ -55,7 +52,6 @@ class TrainerController(object):
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         """
         self.trainers: Dict[str, Trainer] = {}
-        self.ghost_learning: List[Trainer] = Cycle()
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
         self.managers: Dict[str, AgentManager] = {}
         self.trainer_factory = trainer_factory
@@ -68,7 +64,6 @@ class TrainerController(object):
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
-        self.ghost_interval = ghost_interval
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
@@ -179,8 +174,6 @@ class TrainerController(object):
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
-            if isinstance(trainer, GhostTrainer):
-                self.ghost_learning.append(trainer)
             self.logger.info(trainer)
             if self.train_model:
                 trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
@@ -205,7 +198,6 @@ class TrainerController(object):
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
         global_step = 0
-        last_global_step = 0
         last_brain_behavior_ids: Set[str] = set()
         try:
             self._reset_env(env_manager)
@@ -223,18 +215,6 @@ class TrainerController(object):
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
                         self._save_model()
-
-                if (
-                    self.ghost_interval > 0
-                    and global_step - last_global_step > self.ghost_interval
-                ):
-                    new_learning_trainer = self.ghost_learning.get()
-                    for trainer in self.ghost_learning:
-                        trainer.set_learning(
-                            new_learning_trainer.learning_behavior_name
-                            == trainer.learning_behavior_name
-                        )
-                    last_global_step = global_step
 
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:

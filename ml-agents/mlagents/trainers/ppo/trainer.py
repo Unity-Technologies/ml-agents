@@ -216,9 +216,6 @@ class PPOTrainer(RLTrainer):
                 self.stats_reporter.add_stat(stat, val)
         self.clear_update_buffer()
 
-    def set_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
-        self.policy = policy
-
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.

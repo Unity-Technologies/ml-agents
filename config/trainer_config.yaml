@@ -170,7 +170,7 @@ Tennis:
     normalize: true
     max_steps: 5e8
     ghost:
-        window: 5
+        window: 20
         current_prob: 0.0
         snapshot_per: 50000
 

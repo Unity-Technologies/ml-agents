@@ -1,4 +1,4 @@
-from typing import Dict, List, NamedTuple
+from typing import Dict, NamedTuple
 
 
 class BehaviorIdentifiers(NamedTuple):
@@ -19,24 +19,14 @@ class BehaviorIdentifiers(NamedTuple):
         if "?" in name_behavior_id:
             name, identifiers = name_behavior_id.split("?")
             if "&" in identifiers:
-                identifiers = identifiers.split("&")
+                list_of_identifiers = identifiers.split("&")
             else:
-                identifiers = [identifiers]
+                list_of_identifiers = [identifiers]
 
-            for identifier in identifiers:
+            for identifier in list_of_identifiers:
                 key, value = identifier.split("=")
-                ids[key] = value
+                ids[key] = int(value)
         else:
             name = name_behavior_id
 
         return BehaviorIdentifiers(brain_name=name, behavior_ids=ids)
-
-
-class Cycle(list):
-    def __init__(self):
-        self.counter: int = 0
-
-    def get(self) -> str:
-        name = self.__getitem__(self.counter)
-        self.counter = (self.counter + 1) % self.__len__()
-        return name

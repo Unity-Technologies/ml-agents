@@ -50,6 +50,10 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
         """
+
+        # for ghost trainer save/load snapshots
+        self.tfvars = None
+
         self.m_size = None
         self.model = None
         self.inference_dict = {}
