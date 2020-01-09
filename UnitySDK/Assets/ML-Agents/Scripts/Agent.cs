@@ -249,10 +249,15 @@ namespace MLAgents
         /// </summary>
         public IRewardProvider rewardProvider
         {
-            get { return m_RewardProviderComponent.GetRewardProvider(); }
+            get
+            {
+                Debug.Assert(m_RewardProviderComponent != null,
+                    nameof(m_RewardProviderComponent) + " != null");
+                return m_RewardProviderComponent.GetRewardProvider();
+            }
         }
 
-        public CumulativeRewardProvider defaultRewardProvider
+        CumulativeRewardProvider DefaultRewardProvider
         {
             get { return rewardProvider as CumulativeRewardProvider; }
         }
@@ -352,10 +357,10 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+            Debug.Assert(DefaultRewardProvider != null, "the DefaultRewardProvider is null and " +
                 "method 'ResetReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
                 "remove the call from ResetReward.");
-            defaultRewardProvider.ResetReward(m_Done);
+            DefaultRewardProvider.ResetReward(m_Done);
         }
 
         /// <summary>
@@ -365,10 +370,10 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+            Debug.Assert(DefaultRewardProvider != null, "the DefaultRewardProvider is null and " +
                 "method 'SetReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
                 "remove the call from 'SetReward'.");
-            defaultRewardProvider.SetReward(reward);
+            DefaultRewardProvider.SetReward(reward);
         }
 
         /// <summary>
@@ -377,10 +382,10 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+            Debug.Assert(DefaultRewardProvider != null, "the DefaultRewardProvider is null and " +
                 "method 'AddReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
                 "remove the call from 'AddReward'.");
-            defaultRewardProvider.AddReward(increment);
+            DefaultRewardProvider.AddReward(increment);
         }
 
         /// <summary>
