@@ -18,16 +18,12 @@ namespace MLAgents
         /// </summary>
         List<int[]> m_SensorShapes;
 
-        IRewardProvider m_RewardProvider;
-
         /// <inheritdoc />
         public RemotePolicy(
             BrainParameters brainParameters,
-            string behaviorName,
-            IRewardProvider rewardProvider)
+            string behaviorName)
         {
             m_BehaviorName = behaviorName;
-            m_RewardProvider = rewardProvider;
             var aca = Object.FindObjectOfType<Academy>();
             aca.LazyInitialization();
             m_Communicator = aca.Communicator;

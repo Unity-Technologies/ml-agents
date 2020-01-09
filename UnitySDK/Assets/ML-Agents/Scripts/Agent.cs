@@ -237,17 +237,24 @@ namespace MLAgents
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
 
+        RewardProviderComponent m_RewardProviderComponent;
+
+        /// <summary>
         /// Represents the reward the agent accumulated during the current step.
-        /// It is reset to 0 at the beginning of every step.
-        /// Should be set to a positive value when the agent performs a "good"
+        /// It is reset at the beginning of every step.
+        /// The reward should be set to a positive value when the agent performs a "good"
         /// action that we wish to reinforce/reward, and set to a negative value
         /// when the agent performs a "bad" action that we wish to punish/deter.
         /// Additionally, the magnitude of the reward should not exceed 1.0
-        LowLevelRewardProviderComponent m_RewardProviderComponent;
-
+        /// </summary>
         public IRewardProvider rewardProvider
         {
             get { return m_RewardProviderComponent.GetRewardProvider(); }
+        }
+
+        public CumulativeRewardProvider defaultRewardProvider
+        {
+            get { return rewardProvider as CumulativeRewardProvider; }
         }
 
         /// MonoBehaviour function that is called when the attached GameObject
@@ -284,7 +291,7 @@ namespace MLAgents
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, m_RewardProviderComponent.GetRewardProvider());
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
             InitializeSensors();
@@ -326,7 +333,7 @@ namespace MLAgents
         {
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic, rewardProvider);
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
         /// <summary>
@@ -345,9 +352,10 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
-                "legacy method 'ResetReward' was called.");
-            rewardProvider.ResetReward(m_Done);
+            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+                "method 'ResetReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
+                "remove the call from ResetReward.");
+            defaultRewardProvider.ResetReward(m_Done);
         }
 
         /// <summary>
@@ -357,9 +365,10 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
-                "legacy method 'SetReward' was called.");
-            rewardProvider.SetReward(reward);
+            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+                "method 'SetReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
+                "remove the call from 'SetReward'.");
+            defaultRewardProvider.SetReward(reward);
         }
 
         /// <summary>
@@ -368,31 +377,21 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
-                "legacy method 'AddReward' was called.");
-            rewardProvider.AddReward(increment);
+            Debug.Assert(defaultRewardProvider != null, "the defaultRewardProvider is null and " +
+                "method 'AddReward' was called.  If your agent doesn't have the CumulativeRewardProvider," +
+                "remove the call from 'AddReward'.");
+            defaultRewardProvider.AddReward(increment);
         }
 
         /// <summary>
         /// Retrieves the step reward for the Agent.
         /// </summary>
         /// <returns>The step reward.</returns>
-        public float GetReward()
+        public float GetIncrementalReward()
         {
             Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
-                "legacy method 'GetReward' was called.");
+                "method 'GetIncrementalReward' was called.");
             return rewardProvider.GetIncrementalReward();
-        }
-
-        /// <summary>
-        /// Retrieves the episode reward for the Agent.
-        /// </summary>
-        /// <returns>The episode reward.</returns>
-        public float GetCumulativeReward()
-        {
-            Debug.Assert(rewardProvider != null, "m_RewardProviderComponent is null and " +
-                "legacy method 'GetCumulativeReward' was called.");
-            return rewardProvider.GetCumulativeReward();
         }
 
         /// <summary>
@@ -563,10 +562,10 @@ namespace MLAgents
         void InitializeRewardProvider()
         {
             // Look for a legacy reward provider.
-            m_RewardProviderComponent = GetComponent<LowLevelRewardProviderComponent>();
+            m_RewardProviderComponent = GetComponent<RewardProviderComponent>();
             if (m_RewardProviderComponent == null)
             {
-                m_RewardProviderComponent = gameObject.AddComponent<LowLevelRewardProviderComponent>();
+                m_RewardProviderComponent = gameObject.AddComponent<CumulativeRewardProviderComponent>();
             }
         }
 

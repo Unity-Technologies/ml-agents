@@ -1,11 +1,9 @@
-
 namespace MLAgents.RewardProvider
 {
     /// <summary>
-    /// A legacy reward provider that can be used in an Agent as a way to easily upgrade
-    /// from the old reward system.
+    /// A reward provider that can be used to accumulate reward during a simulation step. 
     /// </summary>
-    public class LowLevelRewardProvider : IRewardProvider
+    public class CumulativeRewardProvider : IRewardProvider
     {
         float m_IncrementalReward;
         float m_CumulativeReward;
@@ -13,13 +11,6 @@ namespace MLAgents.RewardProvider
         public delegate void RewardReset(float reward);
 
         public event RewardReset OnRewardProviderReset;
-
-        public float GetIncrementalReward()
-        {
-            var reward = m_IncrementalReward;
-            return reward;
-        }
-        
         
         /// <summary>
         /// Resets the step reward and possibly the episode reward for the agent.
@@ -42,7 +33,7 @@ namespace MLAgents.RewardProvider
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            m_CumulativeReward += (reward - m_IncrementalReward);
+            m_CumulativeReward += reward - m_IncrementalReward;
             m_IncrementalReward = reward;
         }
 
@@ -60,7 +51,7 @@ namespace MLAgents.RewardProvider
         /// Retrieves the step reward for the Agent.
         /// </summary>
         /// <returns>The step reward.</returns>
-        public float GetReward()
+        public float GetIncrementalReward()
         {
             return m_IncrementalReward;
         }

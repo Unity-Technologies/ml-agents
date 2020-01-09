@@ -6,24 +6,27 @@ using UnityEngine;
 
 namespace MLAgents.RewardProvider
 {
-    public class LowLevelRewardProviderComponent : MonoBehaviour
+    public class CumulativeRewardProviderComponent : RewardProviderComponent
     {
-        LowLevelRewardProvider m_RewardProvider = new LowLevelRewardProvider();
+        CumulativeRewardProvider m_RewardProvider = new CumulativeRewardProvider();
+        
+#if UNITY_EDITOR
         public AnimationCurve rewardCurve = new AnimationCurve();
+#endif
 
-        public LowLevelRewardProvider GetRewardProvider()
+        public override IRewardProvider GetRewardProvider()
         {
             return m_RewardProvider;
         }
 
-        public virtual void Start()
+#if UNITY_EDITOR
+        public void Start()
         {
-            GetRewardProvider().OnRewardProviderReset += RewardReset;
+            m_RewardProvider.OnRewardProviderReset += RewardReset;
         }
-
+        
         void RewardReset(float reward)
         {
-#if UNITY_EDITOR
             var keyframe = new Keyframe
             {
                 time = Time.realtimeSinceStartup,
@@ -34,7 +37,7 @@ namespace MLAgents.RewardProvider
             var index = rewardCurve.AddKey(keyframe);
             AnimationUtility.SetKeyLeftTangentMode(rewardCurve, index, AnimationUtility.TangentMode.Linear);
             AnimationUtility.SetKeyRightTangentMode(rewardCurve, index, AnimationUtility.TangentMode.Linear);
-#endif
         }
+#endif
     }
 }

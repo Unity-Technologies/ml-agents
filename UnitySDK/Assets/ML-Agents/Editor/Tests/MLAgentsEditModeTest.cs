@@ -1,6 +1,7 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
+using MLAgents.RewardProvider;
 using MLAgents.Sensor;
 
 namespace MLAgents.Tests
@@ -571,11 +572,13 @@ namespace MLAgents.Tests
 
 
             var j = 0;
+            var rewardProvider1 = agent1.rewardProvider as CumulativeRewardProvider;
+            var rewardProvider2 = agent2.rewardProvider as CumulativeRewardProvider;
             for (var i = 0; i < 500; i++)
             {
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(j * 0.1f + j * 10f - agent1.GetCumulativeReward()), 0.05f);
-                Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(j * 0.1f + j * 10f - rewardProvider1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(i * 0.1f - rewardProvider2.GetCumulativeReward()), 0.05f);
 
 
                 academyStepMethod?.Invoke(aca, new object[] { });

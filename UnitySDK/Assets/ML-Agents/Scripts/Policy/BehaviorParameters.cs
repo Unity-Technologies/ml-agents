@@ -60,7 +60,7 @@ namespace MLAgents
 
         }
 
-        public IPolicy GeneratePolicy(Func<float[]> heuristic, IRewardProvider rewardProvider)
+        public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {
@@ -71,7 +71,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (FindObjectOfType<Academy>().IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, m_BehaviorName, rewardProvider);
+                        return new RemotePolicy(m_BrainParameters, m_BehaviorName);
                     }
                     if (m_Model != null)
                     {
