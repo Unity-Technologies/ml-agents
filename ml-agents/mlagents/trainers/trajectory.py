@@ -32,16 +32,28 @@ class SplitObservations(NamedTuple):
         """
         vis_obs_list: List[np.ndarray] = []
         vec_obs_list: List[np.ndarray] = []
+        last_obs = None
         for observation in obs:
-            if len(observation.shape) == 1:
+            # Obs could be batched or single
+            if len(observation.shape) == 1 or len(observation.shape) == 2:
                 vec_obs_list.append(observation)
-            if len(observation.shape) == 3:
+            if len(observation.shape) == 3 or len(observation.shape) == 4:
                 vis_obs_list.append(observation)
-        vec_obs = (
-            np.concatenate(vec_obs_list, axis=0)
-            if len(vec_obs_list) > 0
-            else np.array([], dtype=np.float32)
-        )
+            last_obs = observation
+        if last_obs:
+            is_batched = len(last_obs.shape) == 2 or len(last_obs.shape) == 4
+            if is_batched:
+                vec_obs = (
+                    np.concatenate(vec_obs_list, axis=1)
+                    if len(vec_obs_list) > 0
+                    else np.zeros((last_obs.shape[0], 0), dtype=np.float32)
+                )
+            else:
+                vec_obs = (
+                    np.concatenate(vec_obs_list, axis=0)
+                    if len(vec_obs_list) > 0
+                    else np.array([], dtype=np.float32)
+                )
         return SplitObservations(
             vector_observations=vec_obs, visual_observations=vis_obs_list
         )

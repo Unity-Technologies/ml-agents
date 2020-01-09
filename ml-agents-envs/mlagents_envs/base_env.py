@@ -22,7 +22,7 @@ from typing import List, NamedTuple, Tuple, Optional, Union, Dict
 import numpy as np
 from enum import Enum
 
-AgentId = int
+AgentId = Union[int, str]
 AgentGroup = str
 
 
@@ -88,9 +88,9 @@ class BatchedStepResult:
         self.reward: np.ndarray = reward
         self.done: np.ndarray = done
         self.max_step: np.ndarray = max_step
-        self.agent_id: np.ndarray = agent_id
+        self.agent_id: List[AgentId] = list(agent_id)
         self.action_mask: Optional[List[np.ndarray]] = action_mask
-        self._agent_id_to_index: Optional[Dict[int, int]] = None
+        self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
     def contains_agent(self, agent_id: AgentId) -> bool:
         if self._agent_id_to_index is None:

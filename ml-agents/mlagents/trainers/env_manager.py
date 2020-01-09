@@ -1,17 +1,21 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, NamedTuple, Iterable
-from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 
+AllStepResult = Dict[str, BatchedStepResult]
+AllGroupSpec = Dict[str, AgentGroupSpec]
+
 
 class EnvironmentStep(NamedTuple):
-    current_all_brain_info: AllBrainInfo
+    current_all_step_result: AllStepResult
     brain_name_to_action_info: Dict[str, ActionInfo]
 
     @property
     def name_behavior_ids(self) -> Iterable[str]:
-        return self.current_all_brain_info.keys()
+        return self.current_all_step_result.keys()
 
 
 class EnvManager(ABC):

@@ -8,7 +8,7 @@ from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv
-from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
+from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
     TimerNode,
     timed,
@@ -44,7 +44,7 @@ class EnvironmentResponse(NamedTuple):
 
 
 class StepResponse(NamedTuple):
-    all_brain_info: AllBrainInfo
+    all_step_result: AllStepResult
     timer_root: Optional[TimerNode]
 
 
@@ -113,6 +113,17 @@ def worker(
             )
         return all_brain_info
 
+    def _generate_all_results() -> AllStepResult:
+        all_step_result: AllStepResult = {}
+        for brain_name in env.get_agent_groups():
+            all_step_result[brain_name] = env.get_step_result(brain_name)
+            # Append worker ID to agent IDs
+            all_step_result[brain_name].agent_id = [
+                f"${worker_id}-{ag_id}"
+                for ag_id in all_step_result[brain_name].agent_id
+            ]
+        return all_step_result
+
     def external_brains():
         result = {}
         for brain_name in env.get_agent_groups():
@@ -130,13 +141,13 @@ def worker(
                     if len(action_info.action) != 0:
                         env.set_actions(brain_name, action_info.action)
                 env.step()
-                all_brain_info = _generate_all_brain_info()
+                all_step_result = _generate_all_results()
                 # The timers in this process are independent from all the processes and the "main" process
                 # So after we send back the root timer, we can safely clear them.
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
                 # TODO get gauges from the workers and merge them in the main process too.
-                step_response = StepResponse(all_brain_info, get_timer_root())
+                step_response = StepResponse(all_step_result, get_timer_root())
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":
@@ -148,8 +159,8 @@ def worker(
                 for k, v in cmd.payload.items():
                     shared_float_properties.set_property(k, v)
                 env.reset()
-                all_brain_info = _generate_all_brain_info()
-                _send_response("reset", all_brain_info)
+                all_step_result = _generate_all_results()
+                _send_response("reset", all_step_result)
             elif cmd.name == "close":
                 break
     except (KeyboardInterrupt, UnityCommunicationException, UnityTimeOutException):
@@ -282,7 +293,7 @@ class SubprocessEnvManager(EnvManager):
             payload: StepResponse = step.payload
             env_worker = self.env_workers[step.worker_id]
             new_step = EnvironmentStep(
-                payload.all_brain_info, env_worker.previous_all_action_info
+                payload.all_step_result, env_worker.previous_all_action_info
             )
             step_infos.append(new_step)
             env_worker.previous_step = new_step
@@ -302,9 +313,9 @@ class SubprocessEnvManager(EnvManager):
     @timed
     def _take_step(self, last_step: EnvironmentStep) -> Dict[str, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
-        for brain_name, brain_info in last_step.current_all_brain_info.items():
+        for brain_name, batch_step_result in last_step.current_all_step_result.items():
             if brain_name in self.policies:
                 all_action_info[brain_name] = self.policies[brain_name].get_action(
-                    brain_info
+                    batch_step_result
                 )
         return all_action_info

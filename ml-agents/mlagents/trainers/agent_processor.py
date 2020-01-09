@@ -2,8 +2,8 @@ import sys
 from typing import List, Dict, Deque, TypeVar, Generic
 from collections import defaultdict, Counter, deque
 
+from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
@@ -35,7 +35,7 @@ class AgentProcessor:
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
-        self.last_brain_info: Dict[str, BrainInfo] = {}
+        self.last_step_result: Dict[str, BatchedStepResult] = {}
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
         # Note: this is needed until we switch to AgentExperiences as the data input type.
         # We still need some info from the policy (memories, previous actions)
@@ -49,7 +49,7 @@ class AgentProcessor:
         self.behavior_id = behavior_id
 
     def add_experiences(
-        self, curr_info: BrainInfo, previous_action: ActionInfo
+        self, batched_step_result: BatchedStepResult, previous_action: ActionInfo
     ) -> None:
         """
         Adds experiences to each agent's experience history.
@@ -68,29 +68,25 @@ class AgentProcessor:
         for agent_id in previous_action.agents:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
-        # Store the environment reward
-        tmp_environment_reward = curr_info.rewards
-
-        for next_idx, agent_id in enumerate(curr_info.agents):
-            stored_info = self.last_brain_info.get(agent_id, None)
+        for agent_id in batched_step_result.agent_id:
+            curr_agent_step = batched_step_result.get_agent_step_result(agent_id)
+            stored_step = self.last_step_result.get(agent_id, None)
             stored_take_action_outputs = self.last_take_action_outputs.get(
                 agent_id, None
             )
-            if stored_info is not None and stored_take_action_outputs is not None:
-                idx = stored_info.agents.index(agent_id)
-                obs = []
-                if not stored_info.local_done[idx]:
-                    for i, _ in enumerate(stored_info.visual_observations):
-                        obs.append(stored_info.visual_observations[i][idx])
-                    if self.policy.use_vec_obs:
-                        obs.append(stored_info.vector_observations[idx])
+            if stored_step is not None and stored_take_action_outputs is not None:
+                stored_agent_step = stored_step.get_agent_step_result(agent_id)
+
+                idx = stored_step.agent_id.index(agent_id)
+                obs = stored_agent_step.obs
+                if not stored_agent_step.done:
                     if self.policy.use_recurrent:
                         memory = self.policy.retrieve_memories([agent_id])[0, :]
                     else:
                         memory = None
 
-                    done = curr_info.local_done[next_idx]
-                    max_step = curr_info.max_reached[next_idx]
+                    done = curr_agent_step.done
+                    max_step = curr_agent_step.max_step
 
                     # Add the outputs of the last eval
                     action = stored_take_action_outputs["action"][idx]
@@ -99,12 +95,12 @@ class AgentProcessor:
                     else:
                         action_pre = None
                     action_probs = stored_take_action_outputs["log_probs"][idx]
-                    action_masks = stored_info.action_masks[idx]
+                    action_masks = stored_step.action_mask
                     prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
 
                     experience = AgentExperience(
                         obs=obs,
-                        reward=tmp_environment_reward[next_idx],
+                        reward=curr_agent_step.reward,
                         done=done,
                         action=action,
                         action_probs=action_probs,
@@ -116,20 +112,16 @@ class AgentProcessor:
                     )
                     # Add the value outputs if needed
                     self.experience_buffers[agent_id].append(experience)
-                    self.episode_rewards[agent_id] += tmp_environment_reward[next_idx]
+                    self.episode_rewards[agent_id] += curr_agent_step.reward
                 if (
-                    curr_info.local_done[next_idx]
+                    curr_agent_step.done
                     or (
                         len(self.experience_buffers[agent_id])
                         >= self.max_trajectory_length
                     )
                 ) and len(self.experience_buffers[agent_id]) > 0:
                     # Make next AgentExperience
-                    next_obs = []
-                    for i, _ in enumerate(curr_info.visual_observations):
-                        next_obs.append(curr_info.visual_observations[i][next_idx])
-                    if self.policy.use_vec_obs:
-                        next_obs.append(curr_info.vector_observations[next_idx])
+                    next_obs = curr_agent_step.obs
                     trajectory = Trajectory(
                         steps=self.experience_buffers[agent_id],
                         agent_id=agent_id,
@@ -139,7 +131,7 @@ class AgentProcessor:
                     for traj_queue in self.trajectory_queues:
                         traj_queue.put(trajectory)
                     self.experience_buffers[agent_id] = []
-                    if curr_info.local_done[next_idx]:
+                    if curr_agent_step.done:
                         self.stats_reporter.add_stat(
                             "Environment/Cumulative Reward",
                             self.episode_rewards.get(agent_id, 0),
@@ -150,10 +142,10 @@ class AgentProcessor:
                         )
                         del self.episode_steps[agent_id]
                         del self.episode_rewards[agent_id]
-                elif not curr_info.local_done[next_idx]:
+                elif not curr_agent_step.done:
                     self.episode_steps[agent_id] += 1
 
-            self.last_brain_info[agent_id] = curr_info
+            self.last_step_result[agent_id] = batched_step_result
 
         if "action" in take_action_outputs:
             self.policy.save_previous_action(
