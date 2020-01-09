@@ -15,7 +15,7 @@ public class ProjectSettingsOverrides : MonoBehaviour
     public float gravityMultiplier = 1.0f;
 
     [Header("Display Settings")]
-    public float monitorVerticalOffset = 0.0f;
+    public float monitorVerticalOffset;
 
     [Header("Advanced physics settings")]
     [Tooltip("The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.")]
