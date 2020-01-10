@@ -74,9 +74,25 @@ The Academy object orchestrates Agents and their decision making processes. Only
 place a single Academy object in a scene.
 
 #### Academy resetting
+To alter the environment at the start of each episode, add your method to the Academy's OnEnvironmentReset action.
 
-Register with the Academy's OnEnvironmentReset delegate
-to alter the environment at the start of each episode.
+```csharp
+public class MySceneBehavior : MonoBehaviour
+{
+    public void Awake()
+    {
+        var academy = FindObjectOfType<Academy>();
+        academy.LazyInitialization();
+        academy.OnEnvironmentReset += EnvironmentReset;
+    }
+
+    void EnvironmentReset()
+    {
+        // Reset the scene here
+    }
+}
+```
+
 For example, you might want to reset an Agent to its starting
 position or move a goal to a random position. An environment resets when the
 `reset()` method is called on the Python `UnityEnvironment`.
