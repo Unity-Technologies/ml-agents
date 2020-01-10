@@ -42,6 +42,9 @@ class GhostTrainer(Trainer):
 
         self.trainer = trainer
 
+        self.internal_policy_queues: List[AgentManagerQueue[Policy]] = []
+        self.internal_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
+
         # assign ghost's stats collection to wrapped trainer's
         self.stats_reporter = self.trainer.stats_reporter
 
@@ -111,7 +114,7 @@ class GhostTrainer(Trainer):
         Steps the trainer, taking in trajectories and updates if ready.
         """
         for traj_queue, internal_traj_queue in zip(
-            self.trajectory_queues, self.trainer.trajectory_queues
+            self.trajectory_queues, self.internal_trajectory_queues
         ):
             try:
                 t = traj_queue.get_nowait()
@@ -125,11 +128,16 @@ class GhostTrainer(Trainer):
         self.trainer.advance()
         self._maybe_write_summary(self.get_step)
 
-        for q in self.trainer.policy_queues:
+        for q, internal_q in zip(self.policy_queues, self.internal_policy_queues):
             # Get policies that correspond to the policy queue in question
-            with self.trainer.get_policy(q.behavior_id).graph.as_default():
-                weights = self.trainer.policy.tfvars.get_weights()
-                self.current_policy_snapshot = weights
+            try:
+                policy = internal_q.get_nowait()
+                with policy.graph.as_default():
+                    weights = policy.tfvars.get_weights()
+                    self.current_policy_snapshot = weights
+                q.put(policy)
+            except AgentManagerQueue.Empty:
+                pass
 
         if self.get_step - self.last_step > self.steps_between_snapshots:
             self.save_snapshot(self.trainer.policy)
@@ -176,7 +184,8 @@ class GhostTrainer(Trainer):
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
     def swap_snapshots(self) -> None:
-        for name_behavior_id, policy in self.policies.items():
+        for q in self.policy_queues:
+            name_behavior_id = q.behavior_id
             # here is the place for a sampling protocol
             if name_behavior_id == self.learning_behavior_name:
                 continue
@@ -192,8 +201,11 @@ class GhostTrainer(Trainer):
                     self.get_step, x, name_behavior_id, self.learning_behavior_name
                 )
             )
+            policy = self.get_policy(name_behavior_id)
             with policy.graph.as_default():
                 policy.tfvars.set_weights(snapshot)
+            # not necessary in the single machine case
+            q.put(policy)
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
@@ -201,18 +213,27 @@ class GhostTrainer(Trainer):
         makes a policy update
         :param queue: Policy queue to publish to.
         """
+        super().publish_policy_queue(policy_queue)
         if policy_queue.behavior_id == self.learning_behavior_name:
-            super().publish_policy_queue(policy_queue)
-            self.trainer.publish_policy_queue(policy_queue)
+
+            internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
+                policy_queue.behavior_id
+            )
+
+            self.internal_policy_queues.append(internal_policy_queue)
+            self.trainer.publish_policy_queue(internal_policy_queue)
 
     def subscribe_trajectory_queue(
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
         if trajectory_queue.behavior_id == self.learning_behavior_name:
             super().subscribe_trajectory_queue(trajectory_queue)
+
             internal_trajectory_queue: AgentManagerQueue[
                 Trajectory
             ] = AgentManagerQueue(trajectory_queue.behavior_id)
+
+            self.internal_trajectory_queues.append(internal_trajectory_queue)
             self.trainer.subscribe_trajectory_queue(internal_trajectory_queue)
 
 
