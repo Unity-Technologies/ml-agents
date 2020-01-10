@@ -181,7 +181,7 @@ def test_curiosity_cc(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_dc(mock_env, trainer_config, curiosity_dummy_config):
+def test_curiosity_dc(trainer_config, curiosity_dummy_config):
     policy = create_policy_mock(
         trainer_config, curiosity_dummy_config, False, True, False
     )
@@ -192,7 +192,7 @@ def test_curiosity_dc(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_visual(mock_env, trainer_config, curiosity_dummy_config):
+def test_curiosity_visual(trainer_config, curiosity_dummy_config):
     policy = create_policy_mock(
         trainer_config, curiosity_dummy_config, False, False, True
     )
@@ -203,7 +203,7 @@ def test_curiosity_visual(mock_env, trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_rnn(mock_env, trainer_config, curiosity_dummy_config):
+def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
     policy = create_policy_mock(
         trainer_config, curiosity_dummy_config, True, False, False
     )

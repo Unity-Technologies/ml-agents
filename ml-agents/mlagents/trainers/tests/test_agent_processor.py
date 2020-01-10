@@ -54,7 +54,7 @@ def test_agentprocessor(num_vis_obs):
     mock_step = mb.create_mock_batchedstep(
         num_agents=2,
         num_vector_observations=8,
-        num_vector_acts=2,
+        action_shape=[2],
         num_vis_observations=num_vis_obs,
     )
     fake_action_info = ActionInfo(

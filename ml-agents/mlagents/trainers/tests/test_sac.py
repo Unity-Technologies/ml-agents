@@ -1,4 +1,3 @@
-from unittest import mock
 import pytest
 import yaml
 
@@ -10,6 +9,7 @@ from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.sac.policy import SACPolicy
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.agent_processor import AgentManagerQueue
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -55,49 +55,44 @@ BUFFER_INIT_SAMPLES = 32
 NUM_AGENTS = 12
 
 
-def create_sac_policy_mock(mock_env, dummy_config, use_rnn, use_discrete, use_visual):
-    env, mock_brain, _ = mb.setup_mock_env_and_brains(
-        mock_env,
+def create_sac_policy_mock(dummy_config, use_rnn, use_discrete, use_visual):
+    mock_brain = mb.setup_mock_brain(
         use_discrete,
         use_visual,
-        num_agents=NUM_AGENTS,
         vector_action_space=VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
     trainer_parameters = dummy_config
-    model_path = env.external_brain_names[0]
+    model_path = "testmodel"
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
     policy = SACPolicy(0, mock_brain, trainer_parameters, False, False)
-    return env, policy
+    return policy
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_sac_cc_policy(mock_env, dummy_config):
+def test_sac_cc_policy(dummy_config):
     # Test evaluate
     tf.reset_default_graph()
-    env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+    policy = create_sac_policy_mock(
+        dummy_config, use_rnn=False, use_discrete=False, use_visual=False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
-    run_out = policy.evaluate(brain_info)
+    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+
+    run_out = policy.evaluate(step)
     assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
     # Test update
-    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
     policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
-    env.close()
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
+def test_sac_update_reward_signals(dummy_config, discrete):
     # Test evaluate
     tf.reset_default_graph()
     # Add a Curiosity module
@@ -105,82 +100,77 @@ def test_sac_update_reward_signals(mock_env, dummy_config, discrete):
     dummy_config["reward_signals"]["curiosity"]["strength"] = 1.0
     dummy_config["reward_signals"]["curiosity"]["gamma"] = 0.99
     dummy_config["reward_signals"]["curiosity"]["encoding_size"] = 128
-    env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=discrete, use_visual=False
+    policy = create_sac_policy_mock(
+        dummy_config, use_rnn=False, use_discrete=discrete, use_visual=False
     )
 
     # Test update, while removing PPO-specific buffer elements.
-    update_buffer = mb.simulate_rollout(
-        env, policy, BUFFER_INIT_SAMPLES, exclude_key_list=["advantages", "actions_pre"]
-    )
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
 
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
-    update_buffer["curiosity_rewards"] = update_buffer["rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
+    update_buffer["curiosity_rewards"] = update_buffer["environment_rewards"]
     policy.update_reward_signals(
         {"curiosity": update_buffer}, num_sequences=update_buffer.num_experiences
     )
-    env.close()
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_sac_dc_policy(mock_env, dummy_config):
+def test_sac_dc_policy(dummy_config):
     # Test evaluate
     tf.reset_default_graph()
-    env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=False
+    policy = create_sac_policy_mock(
+        dummy_config, use_rnn=False, use_discrete=True, use_visual=False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
-    run_out = policy.evaluate(brain_info)
+    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+
+    run_out = policy.evaluate(step)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
     policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
-    env.close()
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_sac_visual_policy(mock_env, dummy_config):
+def test_sac_visual_policy(dummy_config):
     # Test evaluate
     tf.reset_default_graph()
-    env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=False, use_discrete=True, use_visual=True
+    policy = create_sac_policy_mock(
+        dummy_config, use_rnn=False, use_discrete=True, use_visual=True
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
-    run_out = policy.evaluate(brain_info)
+    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+    run_out = policy.evaluate(step)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
+    update_buffer["extrinsic_rewards"] = update_buffer["environment_rewards"]
     run_out = policy.update(update_buffer, num_sequences=update_buffer.num_experiences)
     assert type(run_out) is dict
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_sac_rnn_policy(mock_env, dummy_config):
+def test_sac_rnn_policy(dummy_config):
     # Test evaluate
     tf.reset_default_graph()
-    env, policy = create_sac_policy_mock(
-        mock_env, dummy_config, use_rnn=True, use_discrete=True, use_visual=False
+    policy = create_sac_policy_mock(
+        dummy_config, use_rnn=True, use_discrete=True, use_visual=False
     )
-    brain_infos = env.reset()
-    brain_info = brain_infos[env.external_brain_names[0]]
-    run_out = policy.evaluate(brain_info)
+    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+    run_out = policy.evaluate(step)
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
-    update_buffer = mb.simulate_rollout(env, policy, BUFFER_INIT_SAMPLES)
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain, memory_size=8)
     # Mock out reward signal eval
-    update_buffer["extrinsic_rewards"] = update_buffer["rewards"]
-    policy.update(update_buffer, num_sequences=2)
-    env.close()
+    buffer["extrinsic_rewards"] = buffer["environment_rewards"]
+    update_buffer = AgentBuffer()
+    buffer.resequence_and_append(update_buffer, training_length=policy.sequence_length)
+    run_out = policy.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // policy.sequence_length,
+    )
 
 
 def test_sac_model_cc_vector():
@@ -328,11 +318,9 @@ def test_sac_model_cc_vector_rnn():
 
 
 def test_sac_save_load_buffer(tmpdir, dummy_config):
-    env, mock_brain, _ = mb.setup_mock_env_and_brains(
-        mock.Mock(),
+    mock_brain = mb.setup_mock_brain(
         False,
         False,
-        num_agents=NUM_AGENTS,
         vector_action_space=VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
@@ -345,9 +333,7 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     policy = trainer.create_policy(mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
 
-    trainer.update_buffer = mb.simulate_rollout(
-        env, trainer.policy, BUFFER_INIT_SAMPLES
-    )
+    trainer.update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
     buffer_len = trainer.update_buffer.num_experiences
     trainer.save_model(mock_brain.brain_name)
 

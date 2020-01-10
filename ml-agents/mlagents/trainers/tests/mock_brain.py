@@ -37,11 +37,11 @@ def create_mock_batchedstep(
     num_agents: int = 1,
     num_vector_observations: int = 0,
     num_vis_observations: int = 0,
-    num_vector_acts: int = 2,
+    action_shape: List[int] = None,
     discrete: bool = False,
 ) -> BatchedStepResult:
     """
-    Creates a mock BrainInfo with observations. Imitates constant
+    Creates a mock BatchedStepResult with observations. Imitates constant
     vector/visual observations, rewards, dones, and agents.
 
     :int num_agents: Number of "agents" to imitate in your BrainInfo values.
@@ -50,6 +50,9 @@ def create_mock_batchedstep(
     :int num_vector_acts: Number of actions in your action space
     :bool discrete: Whether or not action space is discrete
     """
+    if action_shape is None:
+        action_shape = [2]
+
     obs_list = []
     for _ in range(num_vis_observations):
         obs_list.append(np.ones((num_agents, 84, 84, 3), dtype=np.float32))
@@ -57,13 +60,12 @@ def create_mock_batchedstep(
         obs_list.append(
             np.array(num_agents * [num_vector_observations * [1]], dtype=np.float32)
         )
-
+    action_mask = None
     if discrete:
-        action_mask = np.array(
-            num_agents * [num_vector_acts * [False]], dtype=np.float32
-        )
-    else:
-        action_mask = None
+        action_mask = [
+            np.array(num_agents * [action_size * [False]])
+            for action_size in action_shape
+        ]
 
     reward = np.array(num_agents * [1.0])
     done = np.array(num_agents * [False])
@@ -73,12 +75,25 @@ def create_mock_batchedstep(
     return BatchedStepResult(obs_list, reward, done, max_step, agent_id, action_mask)
 
 
+def create_batchedstep_from_brainparams(
+    brain_params: BrainParameters, num_agents: int = 1
+) -> BatchedStepResult:
+    return create_mock_batchedstep(
+        num_agents=num_agents,
+        num_vector_observations=brain_params.vector_observation_space_size,
+        num_vis_observations=brain_params.number_visual_observations,
+        action_shape=brain_params.vector_action_space_size,
+        discrete=brain_params.vector_action_space_type == "discrete",
+    )
+
+
 def make_fake_trajectory(
     length: int,
     max_step_complete: bool = False,
     vec_obs_size: int = 1,
     num_vis_obs: int = 1,
     action_space: List[int] = None,
+    memory_size: int = 10,
     is_discrete: bool = True,
 ) -> Trajectory:
     """
@@ -109,7 +124,7 @@ def make_fake_trajectory(
         )
         prev_action = np.ones(action_size, dtype=np.float32)
         max_step = False
-        memory = np.ones(10, dtype=np.float32)
+        memory = np.ones(memory_size, dtype=np.float32)
         agent_id = "test_agent"
         behavior_id = "test_brain"
         experience = AgentExperience(
@@ -144,7 +159,10 @@ def make_fake_trajectory(
 
 
 def simulate_rollout(
-    length: int, brain_params: BrainParameters, exclude_key_list: List[str] = None
+    length: int,
+    brain_params: BrainParameters,
+    memory_size: int = 10,
+    exclude_key_list: List[str] = None,
 ) -> AgentBuffer:
     vec_obs_size = brain_params.vector_observation_space_size
     num_vis_obs = brain_params.number_visual_observations
@@ -156,6 +174,7 @@ def simulate_rollout(
         vec_obs_size=vec_obs_size,
         num_vis_obs=num_vis_obs,
         action_space=action_space,
+        memory_size=memory_size,
         is_discrete=is_discrete,
     )
     buffer = trajectory.to_agentbuffer()
