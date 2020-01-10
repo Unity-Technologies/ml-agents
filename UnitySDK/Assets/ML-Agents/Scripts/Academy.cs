@@ -39,7 +39,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public class Academy : MonoBehaviour
     {
-        const string k_ApiVersion = "API-12";
+        const string k_ApiVersion = "API-13";
         const int k_EditorTrainingPort = 5004;
 
         public IFloatProperties FloatProperties;
