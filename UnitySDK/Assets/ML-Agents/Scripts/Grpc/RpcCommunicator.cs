@@ -11,6 +11,7 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -26,9 +27,7 @@ namespace MLAgents
         /// The default number of agents in the scene
         const int k_NumAgents = 32;
 
-        /// Keeps track of the agents of each brain on the current step
-        Dictionary<string, List<Agent>> m_CurrentAgents =
-            new Dictionary<string, List<Agent>>();
+        List<string> m_BehaviorNames = new List<string>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
@@ -114,11 +113,11 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            if (m_CurrentAgents.ContainsKey(brainKey))
+            if (m_BehaviorNames.Contains(brainKey))
             {
                 return;
             }
-            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
+            m_BehaviorNames.Add(brainKey);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new UnityRLOutputProto.Types.ListAgentInfoProto()
@@ -250,7 +249,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        public void PutObservations(string brainKey, Agent agent)
+        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
             m_CurrentAgents[brainKey].Add(agent);
         }

@@ -497,7 +497,7 @@ namespace MLAgents
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
-            if(m_PolicyFactory.useChildSensors)
+            if (m_PolicyFactory.useChildSensors)
             {
                 attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
             }
@@ -578,7 +578,7 @@ namespace MLAgents
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            m_Brain.RequestDecision(this);
+            m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {

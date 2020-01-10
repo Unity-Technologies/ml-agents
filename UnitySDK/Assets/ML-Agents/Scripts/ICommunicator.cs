@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -121,7 +122,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        void PutObservations(string brainKey, Agent agent);
+        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> agent);
 
         /// <summary>
         /// Signals the ICommunicator that the Agents are now ready to receive their action
