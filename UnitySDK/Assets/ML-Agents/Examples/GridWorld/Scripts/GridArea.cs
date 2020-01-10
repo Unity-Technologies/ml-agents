@@ -83,7 +83,7 @@ public class GridArea : MonoBehaviour
 
     public void AreaReset()
     {
-        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f); ;
+        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f);
         foreach (var actor in actorObjs)
         {
             DestroyImmediate(actor);

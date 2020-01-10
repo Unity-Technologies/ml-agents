@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using MLAgents;
 
-public class FoodCollectorAcademy : Academy
+public class FoodCollectorSettings : MonoBehaviour
 {
     [HideInInspector]
     public GameObject[] agents;
@@ -11,7 +12,15 @@ public class FoodCollectorAcademy : Academy
 
     public int totalScore;
     public Text scoreText;
-    public override void AcademyReset()
+
+    public void Awake()
+    {
+        var academy = FindObjectOfType<Academy>();
+        academy.LazyInitialization();
+        academy.OnEnvironmentReset += EnvironmentReset;
+    }
+
+    public void EnvironmentReset()
     {
         ClearObjects(GameObject.FindGameObjectsWithTag("food"));
         ClearObjects(GameObject.FindGameObjectsWithTag("badFood"));
@@ -34,8 +43,8 @@ public class FoodCollectorAcademy : Academy
         }
     }
 
-    public override void AcademyStep()
+    public void Update()
     {
-        scoreText.text = string.Format(@"Score: {0}", totalScore);
+        scoreText.text = $"Score: {totalScore}";
     }
 }

@@ -50,19 +50,7 @@ to speed up training since all twelve agents contribute to training in parallel.
 
 ### Academy
 
-The Academy object for the scene is placed on the Ball3DAcademy GameObject. Since
-the base Academy class is abstract, you must always define a subclass. There are
-three functions you can implement, though they are all optional:
-
-* Academy.InitializeAcademy() — Called once when the environment is launched.
-* Academy.AcademyStep() — Called at every simulation step before
-  agent.AgentAction() (and after the Agents collect their observations).
-* Academy.AcademyReset() — Called when the Academy starts or restarts the
-  simulation (including the first time).
-
-The 3D Balance Ball environment does not use these functions — each Agent resets
-itself when needed — but many environments do use these functions to control the
-environment around the Agents.
+The Academy object for the scene is placed on the Ball3DAcademy GameObject.
 
 ### Agent
 

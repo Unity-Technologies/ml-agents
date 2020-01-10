@@ -139,9 +139,7 @@ organize the Unity scene:
   receives and assigning a reward (positive / negative) when appropriate. Each
   Agent is linked to a Policy.
 - **Academy** - which orchestrates the observation and decision making process.
-  Within the Academy, several environment-wide parameters such as the rendering
-  quality and the speed at which the environment is run can be specified. The
-  External Communicator lives within the Academy.
+  The External Communicator lives within the Academy.
 
 Every Learning Environment will always have one global Academy and one Agent for
 every character in the scene. While each Agent must be linked to a Policy, it is
