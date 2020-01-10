@@ -19,7 +19,12 @@ def test_take_action_returns_empty_with_no_agents():
     test_seed = 3
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
     no_agent_step = BatchedStepResult(
-        [], np.array([]), np.array([]), np.array([]), np.array([]), None
+        [],
+        np.array([], dtype=np.float32),
+        np.array([False], dtype=np.bool),
+        np.array([], dtype=np.bool),
+        [],
+        None,
     )
     result = policy.get_action(no_agent_step)
     assert result == ActionInfo([], [], {}, [])
@@ -31,7 +36,12 @@ def test_take_action_returns_nones_on_missing_values():
     policy.evaluate = MagicMock(return_value={})
     policy.save_memories = MagicMock()
     step_with_agents = BatchedStepResult(
-        [], np.array([]), np.array([False]), np.array([]), ["an-agent-id"], None
+        [],
+        np.array([], dtype=np.float32),
+        np.array([False], dtype=np.bool),
+        np.array([], dtype=np.bool),
+        ["an-agent-id"],
+        None,
     )
     result = policy.get_action(step_with_agents)
     assert result == ActionInfo(None, None, {}, ["an-agent-id"])
