@@ -2,7 +2,7 @@
 # ## ML-Agent Learning (Ghost Trainer)
 
 # import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, cast
 
 import numpy as np
 import logging
@@ -131,7 +131,7 @@ class GhostTrainer(Trainer):
         for q, internal_q in zip(self.policy_queues, self.internal_policy_queues):
             # Get policies that correspond to the policy queue in question
             try:
-                policy = internal_q.get_nowait()
+                policy = cast(TFPolicy, internal_q.get_nowait())
                 with policy.graph.as_default():
                     weights = policy.tfvars.get_weights()
                     self.current_policy_snapshot = weights
