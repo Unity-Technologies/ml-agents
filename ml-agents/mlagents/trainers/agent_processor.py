@@ -58,9 +58,8 @@ class AgentProcessor:
         """
         take_action_outputs = previous_action.outputs
         if take_action_outputs:
-            self.stats_reporter.add_stat(
-                "Policy/Entropy", take_action_outputs["entropy"].mean()
-            )
+            for _entropy in take_action_outputs["entropy"]:
+                self.stats_reporter.add_stat("Policy/Entropy", _entropy)
             self.stats_reporter.add_stat(
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
