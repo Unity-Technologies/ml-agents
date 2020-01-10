@@ -17,7 +17,7 @@ class BehaviorIdentifiers(NamedTuple):
 
         ids: Dict[str, int] = {}
         if "?" in name_behavior_id:
-            name, identifiers = name_behavior_id.split("?")
+            name, identifiers = name_behavior_id.rsplit("?", 1)
             if "&" in identifiers:
                 list_of_identifiers = identifiers.split("&")
             else:
