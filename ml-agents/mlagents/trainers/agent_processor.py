@@ -53,8 +53,8 @@ class AgentProcessor:
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: current BrainInfo.
-        :param take_action_outputs: The outputs of the Policy's get_action method.
+        :param batched_step_result: current BatchedStepResult.
+        :param previous_action: The outputs of the Policy's get_action method.
         """
         take_action_outputs = previous_action.outputs
         if take_action_outputs:

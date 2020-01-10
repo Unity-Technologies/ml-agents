@@ -16,7 +16,7 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.brain import AllBrainInfo, BrainParameters
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents_envs.side_channel.engine_configuration_channel import (
@@ -24,10 +24,7 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfig,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents.trainers.brain_conversion_utils import (
-    step_result_to_brain_info,
-    group_spec_to_brain_parameters,
-)
+from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -102,16 +99,6 @@ def worker(
 
     def _send_response(cmd_name, payload):
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
-
-    def _generate_all_brain_info() -> AllBrainInfo:
-        all_brain_info = {}
-        for brain_name in env.get_agent_groups():
-            all_brain_info[brain_name] = step_result_to_brain_info(
-                env.get_step_result(brain_name),
-                env.get_agent_group_spec(brain_name),
-                worker_id,
-            )
-        return all_brain_info
 
     def _generate_all_results() -> AllStepResult:
         all_step_result: AllStepResult = {}
