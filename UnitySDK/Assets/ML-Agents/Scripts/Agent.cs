@@ -586,7 +586,7 @@ namespace MLAgents
                 // But we need these to be generated for the recorder. So generate them here.
                 if (m_Info.observations.Count == 0)
                 {
-                    GenerateSensorData();
+                    GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, m_Info);
                 }
 
                 m_Recorder.WriteExperience(m_Info);
@@ -608,7 +608,7 @@ namespace MLAgents
         /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
-        public void GenerateSensorData()
+        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, AgentInfo info)
         {
             int floatsWritten = 0;
             // Generate data for all Sensors
@@ -618,15 +618,15 @@ namespace MLAgents
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetObservationShape(), floatsWritten);
-                    var numFloats = sensor.Write(m_WriteAdapter);
+                    adapter.SetTarget(buffer, sensor.GetObservationShape(), floatsWritten);
+                    var numFloats = sensor.Write(adapter);
                     var floatObs = new Observation
                     {
-                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
+                        FloatData = new ArraySegment<float>(buffer, floatsWritten, numFloats),
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(floatObs);
+                    info.observations.Add(floatObs);
                     floatsWritten += numFloats;
                 }
                 else
@@ -637,7 +637,7 @@ namespace MLAgents
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(compressedObs);
+                    info.observations.Add(compressedObs);
                 }
             }
         }

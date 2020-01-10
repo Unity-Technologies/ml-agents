@@ -18,6 +18,12 @@ namespace MLAgents
     /// Responsible for communication with External using gRPC.
     public class RpcCommunicator : ICommunicator
     {
+
+        public struct IdCallbackPair
+        {
+            public int AgentId;
+            public Action<AgentAction> Callback;
+        }
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
 
@@ -28,13 +34,17 @@ namespace MLAgents
         const int k_NumAgents = 32;
 
         List<string> m_BehaviorNames = new List<string>();
+        bool m_NeedCommunicateThisStep;
+        float[] m_VectorObservationBuffer = new float[0];
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
-        Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
-            new Dictionary<string, Dictionary<Agent, AgentAction>>();
+        Dictionary<string, Dictionary<int, AgentAction>> m_LastActionsReceived =
+            new Dictionary<string, Dictionary<int, AgentAction>>();
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
@@ -113,6 +123,11 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
+            var obsSize = brainParameters.numStackedVectorObservations * brainParameters.vectorObservationSize;
+            if (obsSize > m_VectorObservationBuffer.Length)
+            {
+                m_VectorObservationBuffer = new float[obsSize];
+            }
             if (m_BehaviorNames.Contains(brainKey))
             {
                 return;
@@ -216,32 +231,13 @@ namespace MLAgents
 
         public void DecideBatch()
         {
-            if (m_CurrentAgents.Values.All(l => l.Count == 0))
+            if (!m_NeedCommunicateThisStep)
             {
                 return;
             }
-            foreach (var brainKey in m_CurrentAgents.Keys)
-            {
-                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
-                {
-                    if (m_CurrentAgents[brainKey].Count > 0)
-                    {
-                        foreach (var agent in m_CurrentAgents[brainKey])
-                        {
-                            // Update the sensor data on the AgentInfo
-                            agent.GenerateSensorData();
-                            var agentInfoProto = agent.Info.ToAgentInfoProto();
-                            m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                        }
+            m_NeedCommunicateThisStep = false;
 
-                    }
-                }
-            }
             SendBatchedMessageHelper();
-            foreach (var brainKey in m_CurrentAgents.Keys)
-            {
-                m_CurrentAgents[brainKey].Clear();
-            }
         }
 
         /// <summary>
@@ -251,7 +247,18 @@ namespace MLAgents
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            m_CurrentAgents[brainKey].Add(agent);
+            using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
+            {
+                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, info);
+                var agentInfoProto = info.ToAgentInfoProto();
+                m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                m_NeedCommunicateThisStep = true;
+            }
+            if (!m_ActionCallbacks.ContainsKey(brainKey))
+            {
+                m_ActionCallbacks[brainKey] = new List<IdCallbackPair>();
+            }
+            m_ActionCallbacks[brainKey].Add(new IdCallbackPair { AgentId = info.id, Callback = action });
         }
 
         /// <summary>
@@ -293,7 +300,7 @@ namespace MLAgents
             m_LastActionsReceived.Clear();
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_CurrentAgents[brainName].Any())
+                if (!m_ActionCallbacks[brainName].Any())
                 {
                     continue;
                 }
@@ -304,20 +311,21 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_CurrentAgents[brainName].Count;
-                var agentActionDict = new Dictionary<Agent, AgentAction>(numAgents);
+                var numAgents = m_ActionCallbacks[brainName].Count;
+                var agentActionDict = new Dictionary<int, AgentAction>(numAgents);
                 m_LastActionsReceived[brainName] = agentActionDict;
                 for (var i = 0; i < numAgents; i++)
                 {
-                    var agent = m_CurrentAgents[brainName][i];
                     var agentAction = agentActions[i];
-                    agentActionDict[agent] = agentAction;
-                    agent.UpdateAgentAction(agentAction);
+                    var agentId = m_ActionCallbacks[brainName][i].AgentId;
+                    agentActionDict[agentId] = agentAction;
+                    m_ActionCallbacks[brainName][i].Callback.Invoke(agentAction);
                 }
+                m_ActionCallbacks[brainName].Clear();
             }
         }
 
-        public Dictionary<Agent, AgentAction> GetActions(string key)
+        public Dictionary<int, AgentAction> GetActions(string key)
         {
             return m_LastActionsReceived[key];
         }

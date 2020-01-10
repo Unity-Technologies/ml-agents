@@ -136,7 +136,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
-        Dictionary<Agent, AgentAction> GetActions(string key);
+        Dictionary<int, AgentAction> GetActions(string key);
 
         /// <summary>
         /// Registers a side channel to the communicator. The side channel will exchange 

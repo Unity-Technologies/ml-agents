@@ -89,15 +89,15 @@ namespace MLAgents.Sensor
                 {
                     if (h < 0 || h >= m_TensorShape.height)
                     {
-                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.height-1}]");
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.height - 1}]");
                     }
                     if (w < 0 || w >= m_TensorShape.width)
                     {
-                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.width-1}]");
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.width - 1}]");
                     }
                     if (ch < 0 || ch >= m_TensorShape.channels)
                     {
-                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.channels-1}]");
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.channels - 1}]");
                     }
 
                     var index = m_TensorShape.Index(m_Batch, h, w, ch + m_Offset);
