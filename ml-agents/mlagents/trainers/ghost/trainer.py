@@ -15,7 +15,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 
-from mlagents.trainers.ghost.tf_utils import TensorFlowVariables
+from mlagents.tf_utils.tf import TensorFlowVariables
 
 # logger = logging.getLogger("mlagents.trainers")
 
