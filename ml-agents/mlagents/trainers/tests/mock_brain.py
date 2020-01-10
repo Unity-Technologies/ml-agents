@@ -1,8 +1,11 @@
 from unittest import mock
+from typing import List
 import numpy as np
 
 from mlagents.trainers.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.trajectory import Trajectory, AgentExperience
+from mlagents_envs.base_env import BatchedStepResult
 
 
 def create_mock_brainparams(
@@ -30,14 +33,13 @@ def create_mock_brainparams(
     return mock_brain()
 
 
-def create_mock_braininfo(
-    num_agents=1,
-    num_vector_observations=0,
-    num_vis_observations=0,
-    num_vector_acts=2,
-    discrete=False,
-    num_discrete_branches=1,
-):
+def create_mock_batchedstep(
+    num_agents: int = 1,
+    num_vector_observations: int = 0,
+    num_vis_observations: int = 0,
+    num_vector_acts: int = 2,
+    discrete: bool = False,
+) -> BatchedStepResult:
     """
     Creates a mock BrainInfo with observations. Imitates constant
     vector/visual observations, rewards, dones, and agents.
@@ -48,56 +50,115 @@ def create_mock_braininfo(
     :int num_vector_acts: Number of actions in your action space
     :bool discrete: Whether or not action space is discrete
     """
-    mock_braininfo = mock.Mock()
-
-    mock_braininfo.return_value.visual_observations = num_vis_observations * [
-        np.ones((num_agents, 84, 84, 3), dtype=np.float32)
-    ]
-    mock_braininfo.return_value.vector_observations = np.array(
-        num_agents * [num_vector_observations * [1]], dtype=np.float32
-    )
-    if discrete:
-        mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_discrete_branches * [0.5]], dtype=np.float32
+    obs_list = []
+    for _ in range(num_vis_observations):
+        obs_list.append(np.ones((num_agents, 84, 84, 3), dtype=np.float32))
+    if num_vector_observations > 1:
+        obs_list.append(
+            np.array(num_agents * [num_vector_observations * [1]], dtype=np.float32)
         )
-        mock_braininfo.return_value.action_masks = np.array(
-            num_agents * [num_vector_acts * [1.0]], dtype=np.float32
+
+    if discrete:
+        action_mask = np.array(
+            num_agents * [num_vector_acts * [False]], dtype=np.float32
         )
     else:
-        mock_braininfo.return_value.previous_vector_actions = np.array(
-            num_agents * [num_vector_acts * [0.5]], dtype=np.float32
+        action_mask = None
+
+    reward = np.array(num_agents * [1.0])
+    done = np.array(num_agents * [False])
+    max_step = np.array(num_agents * [False])
+    agent_id = list(range(0, num_agents))
+
+    return BatchedStepResult(obs_list, reward, done, max_step, agent_id, action_mask)
+
+
+def make_fake_trajectory(
+    length: int,
+    max_step_complete: bool = False,
+    vec_obs_size: int = 1,
+    num_vis_obs: int = 1,
+    action_space: List[int] = None,
+    is_discrete: bool = True,
+) -> Trajectory:
+    """
+    Makes a fake trajectory of length length. If max_step_complete,
+    the trajectory is terminated by a max step rather than a done.
+    """
+    if action_space is None:
+        action_space = [2]
+    steps_list = []
+    for _i in range(length - 1):
+        obs = []
+        for _j in range(num_vis_obs):
+            obs.append(np.ones((84, 84, 3), dtype=np.float32))
+        obs.append(np.ones(vec_obs_size, dtype=np.float32))
+        reward = 1.0
+        done = False
+        if is_discrete:
+            action_size = len(action_space)
+        else:
+            action_size = action_space[0]
+        action = np.zeros(action_size, dtype=np.float32)
+        action_probs = np.ones(action_size, dtype=np.float32)
+        action_pre = np.zeros(action_size, dtype=np.float32)
+        action_mask = (
+            [[False for _ in range(branch)] for branch in action_space]
+            if is_discrete
+            else None
         )
-    mock_braininfo.return_value.memories = np.ones((num_agents, 8), dtype=np.float32)
-    mock_braininfo.return_value.rewards = num_agents * [1.0]
-    mock_braininfo.return_value.local_done = num_agents * [False]
-    mock_braininfo.return_value.max_reached = num_agents * [100]
-    mock_braininfo.return_value.action_masks = num_agents * [num_vector_acts * [1.0]]
-    mock_braininfo.return_value.agents = range(0, num_agents)
-    return mock_braininfo()
+        prev_action = np.ones(action_size, dtype=np.float32)
+        max_step = False
+        memory = np.ones(10, dtype=np.float32)
+        agent_id = "test_agent"
+        behavior_id = "test_brain"
+        experience = AgentExperience(
+            obs=obs,
+            reward=reward,
+            done=done,
+            action=action,
+            action_probs=action_probs,
+            action_pre=action_pre,
+            action_mask=action_mask,
+            prev_action=prev_action,
+            max_step=max_step,
+            memory=memory,
+        )
+        steps_list.append(experience)
+    last_experience = AgentExperience(
+        obs=obs,
+        reward=reward,
+        done=not max_step_complete,
+        action=action,
+        action_probs=action_probs,
+        action_pre=action_pre,
+        action_mask=action_mask,
+        prev_action=prev_action,
+        max_step=max_step_complete,
+        memory=memory,
+    )
+    steps_list.append(last_experience)
+    return Trajectory(
+        steps=steps_list, agent_id=agent_id, behavior_id=behavior_id, next_obs=obs
+    )
 
 
-def setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo):
-    """
-    Takes a mock UnityEnvironment and adds the appropriate properties, defined by the mock
-    BrainParameters and BrainInfo.
+def simulate_rollout(
+    length: int, brain_params: BrainParameters, exclude_key_list: List[str] = None
+) -> AgentBuffer:
+    vec_obs_size = brain_params.vector_observation_space_size
+    num_vis_obs = brain_params.number_visual_observations
+    action_space = brain_params.vector_action_space_size
+    is_discrete = brain_params.vector_action_space_type == "discrete"
 
-    :Mock mock_env: A mock UnityEnvironment, usually empty.
-    :Mock mock_brain: A mock Brain object that specifies the params of this environment.
-    :Mock mock_braininfo: A mock BrainInfo object that will be returned at each step and reset.
-    """
-    brain_name = mock_brain.brain_name
-    mock_env.return_value.academy_name = "MockAcademy"
-    mock_env.return_value.brains = {brain_name: mock_brain}
-    mock_env.return_value.external_brain_names = [brain_name]
-    mock_env.return_value.reset.return_value = {brain_name: mock_braininfo}
-    mock_env.return_value.step.return_value = {brain_name: mock_braininfo}
-
-
-def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
-    brain_info_list = []
-    for _ in range(buffer_init_samples):
-        brain_info_list.append(env.step()[env.external_brain_names[0]])
-    buffer = create_buffer(brain_info_list, policy.brain, policy.sequence_length)
+    trajectory = make_fake_trajectory(
+        length,
+        vec_obs_size=vec_obs_size,
+        num_vis_obs=num_vis_obs,
+        action_space=action_space,
+        is_discrete=is_discrete,
+    )
+    buffer = trajectory.to_agentbuffer()
     # If a key_list was given, remove those keys
     if exclude_key_list:
         for key in exclude_key_list:
@@ -106,62 +167,9 @@ def simulate_rollout(env, policy, buffer_init_samples, exclude_key_list=None):
     return buffer
 
 
-def create_buffer(brain_infos, brain_params, sequence_length, memory_size=8):
-    buffer = AgentBuffer()
-    update_buffer = AgentBuffer()
-    # Make a buffer
-    for idx, experience in enumerate(brain_infos):
-        if idx > len(brain_infos) - 2:
-            break
-        current_brain_info = experience
-        next_brain_info = brain_infos[idx + 1]
-        buffer.last_brain_info = current_brain_info
-        buffer["done"].append(next_brain_info.local_done[0])
-        buffer["rewards"].append(next_brain_info.rewards[0])
-        for i in range(brain_params.number_visual_observations):
-            buffer["visual_obs%d" % i].append(
-                current_brain_info.visual_observations[i][0]
-            )
-            buffer["next_visual_obs%d" % i].append(
-                current_brain_info.visual_observations[i][0]
-            )
-        if brain_params.vector_observation_space_size > 0:
-            buffer["vector_obs"].append(current_brain_info.vector_observations[0])
-            buffer["next_vector_in"].append(current_brain_info.vector_observations[0])
-        fake_action_size = len(brain_params.vector_action_space_size)
-        if brain_params.vector_action_space_type == "continuous":
-            fake_action_size = brain_params.vector_action_space_size[0]
-        buffer["actions"].append(np.zeros(fake_action_size, dtype=np.float32))
-        buffer["prev_action"].append(np.zeros(fake_action_size, dtype=np.float32))
-        buffer["masks"].append(1.0)
-        buffer["advantages"].append(1.0)
-        if brain_params.vector_action_space_type == "discrete":
-            buffer["action_probs"].append(
-                np.ones(sum(brain_params.vector_action_space_size), dtype=np.float32)
-            )
-        else:
-            buffer["action_probs"].append(
-                np.ones(buffer["actions"][0].shape, dtype=np.float32)
-            )
-        buffer["actions_pre"].append(
-            np.ones(buffer["actions"][0].shape, dtype=np.float32)
-        )
-        buffer["action_mask"].append(
-            np.ones(np.sum(brain_params.vector_action_space_size), dtype=np.float32)
-        )
-        buffer["memory"].append(np.ones(memory_size, dtype=np.float32))
-
-    buffer.resequence_and_append(
-        update_buffer, batch_size=None, training_length=sequence_length
-    )
-    return update_buffer
-
-
-def setup_mock_env_and_brains(
-    mock_env,
+def setup_mock_brain(
     use_discrete,
     use_visual,
-    num_agents=12,
     discrete_action_space=None,
     vector_action_space=None,
     vector_obs_space=8,
@@ -180,15 +188,6 @@ def setup_mock_env_and_brains(
             else vector_action_space,
             vector_observation_space_size=vector_obs_space,
         )
-        mock_braininfo = create_mock_braininfo(
-            num_agents=num_agents,
-            num_vector_observations=vector_obs_space,
-            num_vector_acts=sum(
-                discrete_action_space if use_discrete else vector_action_space
-            ),
-            discrete=use_discrete,
-            num_discrete_branches=len(discrete_action_space),
-        )
     else:
         mock_brain = create_mock_brainparams(
             vector_action_space_type="discrete" if use_discrete else "continuous",
@@ -198,18 +197,7 @@ def setup_mock_env_and_brains(
             vector_observation_space_size=0,
             number_visual_observations=1,
         )
-        mock_braininfo = create_mock_braininfo(
-            num_agents=num_agents,
-            num_vis_observations=1,
-            num_vector_acts=sum(
-                discrete_action_space if use_discrete else vector_action_space
-            ),
-            discrete=use_discrete,
-            num_discrete_branches=len(discrete_action_space),
-        )
-    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
-    env = mock_env()
-    return env, mock_brain, mock_braininfo
+    return mock_brain
 
 
 def create_mock_3dball_brain():

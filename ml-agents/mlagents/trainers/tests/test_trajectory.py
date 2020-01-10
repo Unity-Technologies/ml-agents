@@ -1,69 +1,11 @@
 import numpy as np
 import pytest
 
-from mlagents.trainers.trajectory import AgentExperience, Trajectory, SplitObservations
+from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.tests.mock_brain import make_fake_trajectory
 
 VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
-
-
-def make_fake_trajectory(
-    length: int,
-    max_step_complete: bool = False,
-    vec_obs_size: int = VEC_OBS_SIZE,
-    num_vis_obs: int = 1,
-    action_space: int = ACTION_SIZE,
-) -> Trajectory:
-    """
-    Makes a fake trajectory of length length. If max_step_complete,
-    the trajectory is terminated by a max step rather than a done.
-    """
-    steps_list = []
-    for _i in range(length - 1):
-        obs = []
-        for _j in range(num_vis_obs):
-            obs.append(np.ones((84, 84, 3), dtype=np.float32))
-        obs.append(np.ones(vec_obs_size, dtype=np.float32))
-        reward = 1.0
-        done = False
-        action = np.zeros(action_space, dtype=np.float32)
-        action_probs = np.ones(action_space, dtype=np.float32)
-        action_pre = np.zeros(action_space, dtype=np.float32)
-        action_mask = [[False for _ in range(action_space)]]
-        prev_action = np.ones(action_space, dtype=np.float32)
-        max_step = False
-        memory = np.ones(10, dtype=np.float32)
-        agent_id = "test_agent"
-        behavior_id = "test_brain"
-        experience = AgentExperience(
-            obs=obs,
-            reward=reward,
-            done=done,
-            action=action,
-            action_probs=action_probs,
-            action_pre=action_pre,
-            action_mask=action_mask,
-            prev_action=prev_action,
-            max_step=max_step,
-            memory=memory,
-        )
-        steps_list.append(experience)
-    last_experience = AgentExperience(
-        obs=obs,
-        reward=reward,
-        done=not max_step_complete,
-        action=action,
-        action_probs=action_probs,
-        action_pre=action_pre,
-        action_mask=action_mask,
-        prev_action=prev_action,
-        max_step=max_step_complete,
-        memory=memory,
-    )
-    steps_list.append(last_experience)
-    return Trajectory(
-        steps=steps_list, agent_id=agent_id, behavior_id=behavior_id, next_obs=obs
-    )
 
 
 @pytest.mark.parametrize("num_visual_obs", [0, 1, 2])
@@ -103,7 +45,9 @@ def test_trajectory_to_agentbuffer():
         "environment_rewards",
     ]
     wanted_keys = set(wanted_keys)
-    trajectory = make_fake_trajectory(length=length)
+    trajectory = make_fake_trajectory(
+        length=length, vec_obs_size=VEC_OBS_SIZE, action_space=ACTION_SIZE
+    )
     agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()
     for key, field in agentbuffer.items():

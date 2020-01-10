@@ -373,7 +373,11 @@ def test_process_trajectory(dummy_config):
     trainer.subscribe_trajectory_queue(trajectory_queue)
 
     trajectory = make_fake_trajectory(
-        length=15, max_step_complete=True, vec_obs_size=6, num_vis_obs=0, action_space=2
+        length=15,
+        max_step_complete=True,
+        vec_obs_size=6,
+        num_vis_obs=0,
+        action_space=[2],
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -392,7 +396,7 @@ def test_process_trajectory(dummy_config):
         max_step_complete=False,
         vec_obs_size=6,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
