@@ -341,7 +341,7 @@ namespace MLAgents
         {
             return m_StepCount;
         }
-        void WarnDefaultRewardProvider(string callee) {
+        void CheckCumulativeRewardProviderExistence(string callee) {
             if (CumulativeRewardProvider == null)
             {
                 Debug.LogWarningFormat("the CumulativeRewardProvider is null and " +
@@ -355,7 +355,7 @@ namespace MLAgents
         /// </summary>
         public void ResetReward()
         {
-            WarnDefaultRewardProvider("ResetReward");
+            CheckCumulativeRewardProviderExistence("ResetReward");
             InternalResetReward();
         }
 
@@ -371,7 +371,7 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            WarnDefaultRewardProvider("SetReward");
+            CheckCumulativeRewardProviderExistence("SetReward");
             CumulativeRewardProvider?.SetReward(reward);
         }
 
@@ -381,7 +381,7 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            WarnDefaultRewardProvider("AddReward");
+            CheckCumulativeRewardProviderExistence("AddReward");
             CumulativeRewardProvider?.AddReward(increment);
         }
 
