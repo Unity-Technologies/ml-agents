@@ -85,7 +85,11 @@ class GhostTrainer(Trainer):
         self.stats_reporter.add_stat("ELO", self.current_elo)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
-        if trajectory.done_reached and not trajectory.max_step_reached:
+        if (
+            trajectory.done_reached
+            and not trajectory.max_step_reached
+            and self.current_opponent > -1
+        ):
             result = "win"
             final_reward = trajectory.steps[-1].reward
             if final_reward < 0:
@@ -182,7 +186,7 @@ class GhostTrainer(Trainer):
             else:
                 snapshot = self.current_policy_snapshot
                 x = "current"
-            self.current_opponent = x
+            self.current_opponent = -1 if x == "current" else x
             print(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
                     self.get_step, x, name_behavior_id, self.learning_behavior_name
