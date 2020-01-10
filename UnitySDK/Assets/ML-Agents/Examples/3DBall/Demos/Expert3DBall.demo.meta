@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: bbf6756da134740eaa002a1b84f655cb
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400000: Assets/ML-Agents/Examples/3DBall/Demos/Expert3DBall.demo
+  externalObjects: {}
+  userData: ' (MLAgents.Demonstration)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}

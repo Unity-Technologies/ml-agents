@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 6285af622c80e493b906f26cf5b2327f
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400000: Assets/ML-Agents/Examples/Bouncer/Demos/ExpertBouncer.demo
+  externalObjects: {}
+  userData: ' (MLAgents.Demonstration)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}
