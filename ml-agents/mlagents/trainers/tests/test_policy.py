@@ -47,7 +47,12 @@ def test_take_action_returns_action_info_when_available():
     }
     policy.evaluate = MagicMock(return_value=policy_eval_out)
     step_with_agents = BatchedStepResult(
-        [], np.array([]), np.array([False]), np.array([]), ["an-agent-id"], None
+        [],
+        np.array([], dtype=np.float32),
+        np.array([False], dtype=np.bool),
+        np.array([], dtype=np.bool),
+        ["an-agent-id"],
+        None,
     )
     result = policy.get_action(step_with_agents)
     expected = ActionInfo(

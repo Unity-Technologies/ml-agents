@@ -123,7 +123,7 @@ class Trajectory(NamedTuple):
                 # This should never be needed unless the environment somehow doesn't supply the
                 # action mask in a discrete space.
                 agent_buffer_trajectory["action_mask"].append(
-                    np.ones(exp.action_probs.shape), padding_value=1
+                    np.ones(exp.action_probs.shape, dtype=np.float32), padding_value=1
                 )
 
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
