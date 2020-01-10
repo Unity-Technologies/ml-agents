@@ -39,7 +39,6 @@ class AgentInfoProto(google___protobuf___message___Message):
     done = ... # type: builtin___bool
     max_step_reached = ... # type: builtin___bool
     id = ... # type: builtin___int
-    team_id = ... # type: builtin___int
     action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
 
     @property
@@ -51,7 +50,6 @@ class AgentInfoProto(google___protobuf___message___Message):
         done : typing___Optional[builtin___bool] = None,
         max_step_reached : typing___Optional[builtin___bool] = None,
         id : typing___Optional[builtin___int] = None,
-        team_id : typing___Optional[builtin___int] = None,
         action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
         observations : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___observation_pb2___ObservationProto]] = None,
         ) -> None: ...
