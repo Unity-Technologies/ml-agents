@@ -29,7 +29,7 @@ def make_fake_trajectory(
         action = np.zeros(action_space, dtype=np.float32)
         action_probs = np.ones(action_space, dtype=np.float32)
         action_pre = np.zeros(action_space, dtype=np.float32)
-        action_mask = np.ones(action_space, dtype=np.float32)
+        action_mask = [[False for _ in range(action_space)]]
         prev_action = np.ones(action_space, dtype=np.float32)
         max_step = False
         memory = np.ones(10, dtype=np.float32)

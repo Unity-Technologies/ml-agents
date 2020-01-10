@@ -54,6 +54,8 @@ class SplitObservations(NamedTuple):
                     if len(vec_obs_list) > 0
                     else np.array([], dtype=np.float32)
                 )
+        else:
+            vec_obs = []
         return SplitObservations(
             vector_observations=vec_obs, visual_observations=vis_obs_list
         )
