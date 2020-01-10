@@ -44,7 +44,7 @@ def create_mock_batchedstep(
     Creates a mock BatchedStepResult with observations. Imitates constant
     vector/visual observations, rewards, dones, and agents.
 
-    :int num_agents: Number of "agents" to imitate in your BrainInfo values.
+    :int num_agents: Number of "agents" to imitate.
     :int num_vector_observations: Number of "observations" in your observation space
     :int num_vis_observations: Number of "observations" in your observation space
     :int num_vector_acts: Number of actions in your action space

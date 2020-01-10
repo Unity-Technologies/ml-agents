@@ -3,7 +3,6 @@ import logging
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -66,23 +65,6 @@ class GAILRewardSignal(RewardSignal):
             "Policy/GAIL Policy Estimate": "gail_policy_estimate",
             "Policy/GAIL Expert Estimate": "gail_expert_estimate",
         }
-
-    def evaluate(
-        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
-    ) -> RewardSignalResult:
-        if len(current_info.agents) == 0:
-            return RewardSignalResult([], [])
-        mini_batch: Dict[str, np.array] = {}
-        # Construct the batch
-        mini_batch["actions"] = action
-        mini_batch["done"] = np.reshape(next_info.local_done, [-1, 1])
-        for i, obs in enumerate(current_info.visual_observations):
-            mini_batch["visual_obs%d" % i] = obs
-        if self.policy.use_vec_obs:
-            mini_batch["vector_obs"] = current_info.vector_observations
-
-        result = self.evaluate_batch(mini_batch)
-        return result
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {

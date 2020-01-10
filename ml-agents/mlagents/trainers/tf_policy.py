@@ -116,7 +116,7 @@ class TFPolicy(Policy):
     def evaluate(self, batched_step_result: BatchedStepResult) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo input to network.
+        :param brain_info: BatchedStepResult input to network.
         :return: Output from policy based on self.inference_dict.
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
@@ -124,7 +124,7 @@ class TFPolicy(Policy):
     def get_action(self, batched_step_result: BatchedStepResult) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BrainInfo from environment.
+        :param brain_info: A dictionary of brain names and BatchedStepResult from environment.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
