@@ -39,15 +39,14 @@ use.
 
 The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
-1. Calls your Academy subclass's `AcademyReset()` function.
+1. Calls your Academy's `OnEnvironmentReset` delegate.
 2. Calls the `AgentReset()` function for each Agent in the scene.
 3. Calls the  `CollectObservations()` function for each Agent in the scene.
 4. Uses each Agent's Policy to decide on the Agent's next action.
-5. Calls your subclass's `AcademyStep()` function.
-6. Calls the `AgentAction()` function for each Agent in the scene, passing in
+5. Calls the `AgentAction()` function for each Agent in the scene, passing in
    the action chosen by the Agent's Policy. (This function is not called if the
    Agent is done.)
-7. Calls the Agent's `AgentOnDone()` function if the Agent has reached its `Max
+6. Calls the Agent's `AgentOnDone()` function if the Agent has reached its `Max
    Step` count or has otherwise marked itself as `done`. Optionally, you can set
    an Agent to restart if it finishes before the end of an episode. In this
    case, the Academy calls the `AgentReset()` function.
@@ -57,7 +56,7 @@ implement the above methods. The `Agent.CollectObservations()` and
 `Agent.AgentAction()` functions are required; the other methods are optional —
 whether you need to implement them or not depends on your specific scenario.
 
-**Note:** The API used by the Python PPO training process to communicate with
+**Note:** The API used by the Python training process to communicate with
 and control the Academy during training can be used for other purposes as well.
 For example, you could use the API to use Unity as the simulation engine for
 your own machine learning algorithms. See [Python API](Python-API.md) for more
@@ -66,8 +65,7 @@ information.
 ## Organizing the Unity Scene
 
 To train and use the ML-Agents toolkit in a Unity scene, the scene must contain
-a single Academy subclass and as many Agent subclasses
-as you need.
+a single Academy and as many Agent subclasses as you need.
 Agent instances should be attached to the GameObject representing that Agent.
 
 ### Academy
@@ -75,23 +73,19 @@ Agent instances should be attached to the GameObject representing that Agent.
 The Academy object orchestrates Agents and their decision making processes. Only
 place a single Academy object in a scene.
 
-You must create a subclass of the Academy class (since the base class is
-abstract). When you create your Academy subclass, you can implement the
-following methods (all are optional):
+#### Academy resetting
 
-* `InitializeAcademy()` — Prepare the environment the first time it launches.
-* `AcademyReset()` — Prepare the environment and Agents for the next training
-  episode. Use this function to place and initialize entities in the scene as
-  necessary.
-* `AcademyStep()` — Prepare the environment for the next simulation step. The
-  base Academy class calls this function before calling any `AgentAction()`
-  methods for the current step. You can use this function to update other
-  objects in the scene before the Agents take their actions. Note that the
-  Agents have already collected their observations and chosen an action before
-  the Academy invokes this method.
+Register with the Academy's OnEnvironmentReset delegate
+to alter the environment at the start of each episode.
+For example, you might want to reset an Agent to its starting
+position or move a goal to a random position. An environment resets when the
+`reset()` method is called on the Python `UnityEnvironment`.
 
-See [Academy](Learning-Environment-Design-Academy.md) for a complete list of
-the Academy properties and their uses.
+When you reset an environment, consider the factors that should change so that
+training is generalizable to different conditions. For example, if you were
+training a maze-solving agent, you would probably want to change the maze itself
+for each training episode. Otherwise, the agent would probably on learn to solve
+one, particular maze, not mazes in general.
 
 ### Agent
 
