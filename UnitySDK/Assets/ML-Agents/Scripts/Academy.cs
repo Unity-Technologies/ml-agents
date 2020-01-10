@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -22,7 +21,6 @@ using Barracuda;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
     /// Currently, this class is expected to be extended to
@@ -39,22 +37,10 @@ namespace MLAgents
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
-    public abstract class Academy : MonoBehaviour
+    public class Academy : MonoBehaviour
     {
         const string k_ApiVersion = "API-13";
         const int k_EditorTrainingPort = 5004;
-
-        /// Temporary storage for global gravity value
-        /// Used to restore oringal value when deriving Academy modifies it
-        Vector3 m_OriginalGravity;
-
-        /// Temporary storage for global fixedDeltaTime value
-        /// Used to restore original value when deriving Academy modifies it
-        float m_OriginalFixedDeltaTime;
-
-        /// Temporary storage for global maximumDeltaTime value
-        /// Used to restore original value when deriving Academy modifies it
-        float m_OriginalMaximumDeltaTime;
 
         public IFloatProperties FloatProperties;
 
@@ -129,6 +115,9 @@ namespace MLAgents
         // Signals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
 
+        // Signals that the Academy has been reset by the training process
+        public event System.Action OnEnvironmentReset;
+
         /// <summary>
         /// MonoBehavior function called at the very beginning of environment
         /// creation. Academy uses this time to initialize internal data
@@ -185,13 +174,8 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
-            m_OriginalGravity = Physics.gravity;
-            m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
-            m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
-
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
-            InitializeAcademy();
 
 
             // Try to launch the communicator by using the arguments passed at launch
@@ -250,7 +234,7 @@ namespace MLAgents
             AgentSendState += () => { };
             AgentAct += () => { };
             AgentForceReset += () => { };
-
+            OnEnvironmentReset += () => { };
         }
 
         static void OnQuitCommandReceived()
@@ -265,31 +249,6 @@ namespace MLAgents
         {
             ForcedFullReset();
         }
-
-        /// <summary>
-        /// Initializes the academy and environment. Called during the waking-up
-        /// phase of the environment before any of the scene objects/agents have
-        /// been initialized.
-        /// </summary>
-        public virtual void InitializeAcademy()
-        {
-        }
-
-        /// <summary>
-        /// Specifies the academy behavior at every step of the environment.
-        /// </summary>
-        public virtual void AcademyStep()
-        {
-        }
-
-        /// <summary>
-        /// Specifies the academy behavior when being reset (i.e. at the completion
-        /// of a global episode).
-        /// </summary>
-        public virtual void AcademyReset()
-        {
-        }
-
 
         /// <summary>
         /// Returns the current episode counter.
@@ -364,11 +323,6 @@ namespace MLAgents
                 DecideAction?.Invoke();
             }
 
-            using (TimerStack.Instance.Scoped("AcademyStep"))
-            {
-                AcademyStep();
-            }
-
             using (TimerStack.Instance.Scoped("AgentAct"))
             {
                 AgentAct?.Invoke();
@@ -385,7 +339,7 @@ namespace MLAgents
         {
             m_StepCount = 0;
             m_EpisodeCount++;
-            AcademyReset();
+            OnEnvironmentReset?.Invoke();
         }
 
         /// <summary>
@@ -422,12 +376,8 @@ namespace MLAgents
         /// <summary>
         /// Cleanup function
         /// </summary>
-        protected virtual void OnDestroy()
+        protected void OnDestroy()
         {
-            Physics.gravity = m_OriginalGravity;
-            Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
-            Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
-
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
