@@ -119,6 +119,12 @@ class Trajectory(NamedTuple):
             if exp.action_mask is not None:
                 mask = 1 - np.concatenate(exp.action_mask)
                 agent_buffer_trajectory["action_mask"].append(mask, padding_value=1)
+            else:
+                # This should never be needed unless the environment somehow doesn't supply the
+                # action mask in a discrete space.
+                agent_buffer_trajectory["action_mask"].append(
+                    np.ones(exp.action_probs.shape), padding_value=1
+                )
 
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
