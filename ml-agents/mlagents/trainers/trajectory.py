@@ -40,7 +40,7 @@ class SplitObservations(NamedTuple):
             if len(observation.shape) == 3 or len(observation.shape) == 4:
                 vis_obs_list.append(observation)
             last_obs = observation
-        if last_obs:
+        if last_obs is not None:
             is_batched = len(last_obs.shape) == 2 or len(last_obs.shape) == 4
             if is_batched:
                 vec_obs = (
@@ -112,12 +112,11 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["actions"].append(exp.action)
             agent_buffer_trajectory["action_probs"].append(exp.action_probs)
 
-            # Store action masks if necessary. Eventually these will be
-            # None for continuous actions
+            # Store action masks if necessary. Note that 1 means active, while
+            # in AgentExperience False means active.
             if exp.action_mask is not None:
-                agent_buffer_trajectory["action_mask"].append(
-                    exp.action_mask, padding_value=1
-                )
+                mask = 1 - np.concatenate(exp.action_mask)
+                agent_buffer_trajectory["action_mask"].append(mask, padding_value=1)
 
             agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)

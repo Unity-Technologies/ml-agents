@@ -95,7 +95,7 @@ class AgentProcessor:
                     else:
                         action_pre = None
                     action_probs = stored_take_action_outputs["log_probs"][idx]
-                    action_masks = stored_step.action_mask
+                    action_mask = stored_agent_step.action_mask
                     prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
 
                     experience = AgentExperience(
@@ -105,7 +105,7 @@ class AgentProcessor:
                         action=action,
                         action_probs=action_probs,
                         action_pre=action_pre,
-                        action_mask=action_masks,
+                        action_mask=action_mask,
                         prev_action=prev_action,
                         max_step=max_step,
                         memory=memory,
