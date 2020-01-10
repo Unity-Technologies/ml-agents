@@ -4,7 +4,7 @@ using MLAgents;
 public class BasicAgent : Agent
 {
     [Header("Specific to Basic")]
-    BasicAcademy m_Academy;
+    Academy m_Academy;
     public float timeBetweenDecisionsAtInference;
     float m_TimeSinceDecision;
     int m_Position;
@@ -17,7 +17,7 @@ public class BasicAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(BasicAcademy)) as BasicAcademy;
+        m_Academy = FindObjectOfType(typeof(Academy)) as Academy;
     }
 
     public override void CollectObservations()

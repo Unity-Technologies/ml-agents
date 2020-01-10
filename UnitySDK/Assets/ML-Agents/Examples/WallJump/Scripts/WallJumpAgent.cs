@@ -29,7 +29,8 @@ public class WallJumpAgent : Agent
     Rigidbody m_AgentRb;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
-    WallJumpAcademy m_Academy;
+    Academy m_Academy;
+    WallJumpSettings m_WallJumpSettings;
 
     public float jumpingTime;
     public float jumpTime;
@@ -43,7 +44,8 @@ public class WallJumpAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType<WallJumpAcademy>();
+        m_Academy = FindObjectOfType<Academy>();
+        m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
         m_Configuration = Random.Range(0, 5);
 
         m_AgentRb = GetComponent<Rigidbody>();
@@ -201,17 +203,17 @@ public class WallJumpAgent : Agent
             }
 
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 300f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
+        m_AgentRb.AddForce(dirToGo * m_WallJumpSettings.agentRunSpeed,
             ForceMode.VelocityChange);
 
         if (jumpingTime > 0f)
         {
             m_JumpTargetPos =
                 new Vector3(m_AgentRb.position.x,
-                    m_JumpStartingPos.y + m_Academy.agentJumpHeight,
+                    m_JumpStartingPos.y + m_WallJumpSettings.agentJumpHeight,
                     m_AgentRb.position.z) + dirToGo;
-            MoveTowards(m_JumpTargetPos, m_AgentRb, m_Academy.agentJumpVelocity,
-                m_Academy.agentJumpVelocityMaxChange);
+            MoveTowards(m_JumpTargetPos, m_AgentRb, m_WallJumpSettings.agentJumpVelocity,
+                m_WallJumpSettings.agentJumpVelocityMaxChange);
         }
 
         if (!(jumpingTime > 0f) && !largeGrounded)
@@ -232,7 +234,7 @@ public class WallJumpAgent : Agent
             SetReward(-1f);
             ResetBlock(m_ShortBlockRb);
             StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_Academy.failMaterial, .5f));
+                GoalScoredSwapGroundMaterial(m_WallJumpSettings.failMaterial, .5f));
         }
     }
 
@@ -267,7 +269,7 @@ public class WallJumpAgent : Agent
             SetReward(1f);
             Done();
             StartCoroutine(
-                GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 2));
+                GoalScoredSwapGroundMaterial(m_WallJumpSettings.goalScoredMaterial, 2));
         }
     }
 

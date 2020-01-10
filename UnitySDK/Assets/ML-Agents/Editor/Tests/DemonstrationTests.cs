@@ -91,8 +91,8 @@ namespace MLAgents.Tests
             demoRecorder.InitializeDemoStore(fileSystem);
 
             var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<TestAcademy>();
-            var aca = acaGo.GetComponent<TestAcademy>();
+            acaGo.AddComponent<Academy>();
+            var aca = acaGo.GetComponent<Academy>();
 
             var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
                 BindingFlags.Instance | BindingFlags.NonPublic);

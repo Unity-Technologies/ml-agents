@@ -1,29 +1,15 @@
 import pytest
-from unittest.mock import patch, call, mock_open
+from unittest.mock import patch, Mock
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.curriculum import Curriculum
-from mlagents.trainers.exception import MetaCurriculumError
+import json
 
 from mlagents.trainers.tests.test_simple_rl import (
     Simple1DEnvironment,
     _check_environment_trains,
     BRAIN_NAME,
 )
-from mlagents.trainers.tests.test_curriculum import (
-    dummy_curriculum_json_str,
-    dummy_curriculum_config,
-)
-
-
-@pytest.fixture
-def default_reset_parameters():
-    return {"param1": 1, "param2": 2, "param3": 3}
-
-
-@pytest.fixture
-def more_reset_parameters():
-    return {"param4": 4, "param5": 5, "param6": 6}
+from mlagents.trainers.tests.test_curriculum import dummy_curriculum_json_str
 
 
 @pytest.fixture
@@ -36,53 +22,43 @@ def reward_buff_sizes():
     return {"Brain1": 7, "Brain2": 8}
 
 
-@patch("mlagents.trainers.curriculum.Curriculum.get_config", return_value={})
-@patch(
-    "mlagents.trainers.curriculum.Curriculum.load_curriculum_file",
-    return_value=dummy_curriculum_config,
-)
-@patch("os.listdir", return_value=["Brain1.json", "Brain2.test.json"])
-def test_init_meta_curriculum_happy_path(
-    listdir, mock_curriculum_init, mock_curriculum_get_config, default_reset_parameters
-):
-    meta_curriculum = MetaCurriculum.from_directory("test/")
-
-    assert len(meta_curriculum.brains_to_curricula) == 2
-
-    assert "Brain1" in meta_curriculum.brains_to_curricula
-    assert "Brain2.test" in meta_curriculum.brains_to_curricula
-
-    calls = [call("test/Brain1.json"), call("test/Brain2.test.json")]
-
-    mock_curriculum_init.assert_has_calls(calls)
+def test_curriculum_config(param_name="test_param1", min_lesson_length=100):
+    return {
+        "measure": "progress",
+        "thresholds": [0.1, 0.3, 0.5],
+        "min_lesson_length": min_lesson_length,
+        "signal_smoothing": True,
+        "parameters": {f"{param_name}": [0.0, 4.0, 6.0, 8.0]},
+    }
 
 
-@patch("os.listdir", side_effect=NotADirectoryError())
-def test_init_meta_curriculum_bad_curriculum_folder_raises_error(listdir):
-    with pytest.raises(MetaCurriculumError):
-        MetaCurriculum.from_directory("test/")
+test_meta_curriculum_config = {
+    "Brain1": test_curriculum_config("test_param1"),
+    "Brain2": test_curriculum_config("test_param2"),
+}
 
 
-@patch("mlagents.trainers.curriculum.Curriculum")
-@patch("mlagents.trainers.curriculum.Curriculum")
-def test_set_lesson_nums(curriculum_a, curriculum_b):
-    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
-
+def test_set_lesson_nums():
+    meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
     meta_curriculum.lesson_nums = {"Brain1": 1, "Brain2": 3}
 
-    assert curriculum_a.lesson_num == 1
-    assert curriculum_b.lesson_num == 3
+    assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 1
+    assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 3
 
 
-@patch("mlagents.trainers.curriculum.Curriculum")
-@patch("mlagents.trainers.curriculum.Curriculum")
-def test_increment_lessons(curriculum_a, curriculum_b, measure_vals):
-    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
+def test_increment_lessons(measure_vals):
+    meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
+    meta_curriculum.brains_to_curricula["Brain1"] = Mock()
+    meta_curriculum.brains_to_curricula["Brain2"] = Mock()
 
     meta_curriculum.increment_lessons(measure_vals)
 
-    curriculum_a.increment_lesson.assert_called_with(0.2)
-    curriculum_b.increment_lesson.assert_called_with(0.3)
+    meta_curriculum.brains_to_curricula["Brain1"].increment_lesson.assert_called_with(
+        0.2
+    )
+    meta_curriculum.brains_to_curricula["Brain2"].increment_lesson.assert_called_with(
+        0.3
+    )
 
 
 @patch("mlagents.trainers.curriculum.Curriculum")
@@ -92,7 +68,9 @@ def test_increment_lessons_with_reward_buff_sizes(
 ):
     curriculum_a.min_lesson_length = 5
     curriculum_b.min_lesson_length = 10
-    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
+    meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
+    meta_curriculum.brains_to_curricula["Brain1"] = curriculum_a
+    meta_curriculum.brains_to_curricula["Brain2"] = curriculum_b
 
     meta_curriculum.increment_lessons(measure_vals, reward_buff_sizes=reward_buff_sizes)
 
@@ -100,37 +78,21 @@ def test_increment_lessons_with_reward_buff_sizes(
     curriculum_b.increment_lesson.assert_not_called()
 
 
-@patch("mlagents.trainers.curriculum.Curriculum")
-@patch("mlagents.trainers.curriculum.Curriculum")
-def test_set_all_curriculums_to_lesson_num(curriculum_a, curriculum_b):
-    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
+def test_set_all_curriculums_to_lesson_num():
+    meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
 
     meta_curriculum.set_all_curricula_to_lesson_num(2)
 
-    assert curriculum_a.lesson_num == 2
-    assert curriculum_b.lesson_num == 2
+    assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 2
+    assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 2
 
 
-@patch("mlagents.trainers.curriculum.Curriculum")
-@patch("mlagents.trainers.curriculum.Curriculum")
-def test_get_config(
-    curriculum_a, curriculum_b, default_reset_parameters, more_reset_parameters
-):
-    curriculum_a.get_config.return_value = default_reset_parameters
-    curriculum_b.get_config.return_value = default_reset_parameters
-    meta_curriculum = MetaCurriculum({"Brain1": curriculum_a, "Brain2": curriculum_b})
-
-    assert meta_curriculum.get_config() == default_reset_parameters
-
-    curriculum_b.get_config.return_value = more_reset_parameters
-
-    new_reset_parameters = dict(default_reset_parameters)
-    new_reset_parameters.update(more_reset_parameters)
-
-    assert meta_curriculum.get_config() == new_reset_parameters
+def test_get_config():
+    meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
+    assert meta_curriculum.get_config() == {"test_param1": 0.0, "test_param2": 0.0}
 
 
-META_CURRICULUM_CONFIG = """
+TRAINER_CONFIG = """
     default:
         trainer: ppo
         batch_size: 16
@@ -159,10 +121,6 @@ META_CURRICULUM_CONFIG = """
 @pytest.mark.parametrize("curriculum_brain_name", [BRAIN_NAME, "WrongBrainName"])
 def test_simple_metacurriculum(curriculum_brain_name):
     env = Simple1DEnvironment(use_discrete=False)
-    with patch(
-        "builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str
-    ):
-        curriculum_config = Curriculum.load_curriculum_file("TestBrain.json")
-        curriculum = Curriculum("TestBrain", curriculum_config)
-    mc = MetaCurriculum({curriculum_brain_name: curriculum})
-    _check_environment_trains(env, META_CURRICULUM_CONFIG, mc, -100.0)
+    curriculum_config = json.loads(dummy_curriculum_json_str)
+    mc = MetaCurriculum({curriculum_brain_name: curriculum_config})
+    _check_environment_trains(env, TRAINER_CONFIG, mc, -100.0)
