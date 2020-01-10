@@ -26,6 +26,12 @@ namespace MLAgents.RewardProvider
             }
         }
 
+        public void RewardStep()
+        {
+            // Do Nothing.  There is a special case for this reward provider in agent which resets
+            // the reward.
+        }
+
         /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
         /// reward accordingly.

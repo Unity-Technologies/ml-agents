@@ -11,5 +11,13 @@ namespace MLAgents.RewardProvider
         /// </summary>
         /// <returns></returns>
         float GetIncrementalReward();
+
+        /// <summary>
+        /// This function is called on every step of the simulation and should be
+        /// used as a place to store an <see cref="Agent"/>'s incremental reward
+        /// before the reward is sent off to the brain from the
+        /// <see cref="GetIncrementalReward"/> method.
+        /// </summary>
+        void RewardStep();
     }
 }
