@@ -123,11 +123,7 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            var obsSize = brainParameters.numStackedVectorObservations * brainParameters.vectorObservationSize;
-            if (obsSize > m_VectorObservationBuffer.Length)
-            {
-                m_VectorObservationBuffer = new float[obsSize];
-            }
+
             if (m_BehaviorNames.Contains(brainKey))
             {
                 return;
@@ -249,6 +245,25 @@ namespace MLAgents
         {
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
+
+                if (!m_ActionCallbacks.ContainsKey(brainKey))
+                {
+                    int numFloatObservations = 0;
+                    for (var i = 0; i < sensors.Count; i++)
+                    {
+                        if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                        {
+                            numFloatObservations += sensors[i].ObservationSize();
+                        }
+                    }
+
+                    if (m_VectorObservationBuffer.Length < numFloatObservations)
+                    {
+                        m_VectorObservationBuffer = new float[numFloatObservations];
+                    }
+                }
+
+
                 Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, info);
                 var agentInfoProto = info.ToAgentInfoProto();
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
