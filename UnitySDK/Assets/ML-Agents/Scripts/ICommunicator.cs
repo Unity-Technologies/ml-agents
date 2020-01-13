@@ -122,7 +122,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> agent);
+        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action);
 
         /// <summary>
         /// Signals the ICommunicator that the Agents are now ready to receive their action
