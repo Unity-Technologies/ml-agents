@@ -7,7 +7,7 @@ from mlagents_envs.exception import UnityCommunicationException, UnityTimeOutExc
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv, AgentGroup
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
     TimerNode,
@@ -255,12 +255,12 @@ class SubprocessEnvManager(EnvManager):
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
-    def external_brains(self) -> Dict[str, BrainParameters]:
+    def external_brains(self) -> Dict[AgentGroup, BrainParameters]:
         self.env_workers[0].send("external_brains")
         return self.env_workers[0].recv().payload
 
     @property
-    def get_properties(self) -> Dict[str, float]:
+    def get_properties(self) -> Dict[AgentGroup, float]:
         self.env_workers[0].send("get_properties")
         return self.env_workers[0].recv().payload
 
@@ -298,7 +298,7 @@ class SubprocessEnvManager(EnvManager):
         return step_infos
 
     @timed
-    def _take_step(self, last_step: EnvironmentStep) -> Dict[str, ActionInfo]:
+    def _take_step(self, last_step: EnvironmentStep) -> Dict[AgentGroup, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
         for brain_name, batch_step_result in last_step.current_all_step_result.items():
             if brain_name in self.policies:

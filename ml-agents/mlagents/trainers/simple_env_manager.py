@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.base_env import BaseEnv, AgentGroup
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
@@ -36,7 +36,7 @@ class SimpleEnvManager(EnvManager):
         return [step_info]
 
     def reset(
-        self, config: Dict[str, float] = None
+        self, config: Dict[AgentGroup, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:
             for k, v in config.items():
@@ -47,7 +47,7 @@ class SimpleEnvManager(EnvManager):
         return [self.previous_step]
 
     @property
-    def external_brains(self) -> Dict[str, BrainParameters]:
+    def external_brains(self) -> Dict[AgentGroup, BrainParameters]:
         result = {}
         for brain_name in self.env.get_agent_groups():
             result[brain_name] = group_spec_to_brain_parameters(
@@ -56,14 +56,14 @@ class SimpleEnvManager(EnvManager):
         return result
 
     @property
-    def get_properties(self) -> Dict[str, float]:
+    def get_properties(self) -> Dict[AgentGroup, float]:
         return self.shared_float_properties.get_property_dict_copy()
 
     def close(self):
         self.env.close()
 
     @timed
-    def _take_step(self, last_step: EnvironmentStep) -> Dict[str, ActionInfo]:
+    def _take_step(self, last_step: EnvironmentStep) -> Dict[AgentGroup, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
         for brain_name, step_info in last_step.current_all_step_result.items():
             all_action_info[brain_name] = self.policies[brain_name].get_action(
