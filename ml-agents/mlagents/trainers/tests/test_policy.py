@@ -1,5 +1,5 @@
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec
 from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
 import numpy as np
@@ -18,14 +18,9 @@ def basic_params():
 def test_take_action_returns_empty_with_no_agents():
     test_seed = 3
     policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
-    no_agent_step = BatchedStepResult(
-        [],
-        np.array([], dtype=np.float32),
-        np.array([False], dtype=np.bool),
-        np.array([], dtype=np.bool),
-        [],
-        None,
-    )
+    # Doesn't really matter what this is
+    dummy_groupspec = AgentGroupSpec([(1,)], "continuous", 1)
+    no_agent_step = BatchedStepResult.empty(dummy_groupspec)
     result = policy.get_action(no_agent_step)
     assert result == ActionInfo([], [], {}, [])
 

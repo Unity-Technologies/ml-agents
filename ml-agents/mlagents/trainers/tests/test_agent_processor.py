@@ -61,7 +61,7 @@ def test_agentprocessor(num_vis_obs):
         action=[0.1, 0.1],
         value=[0.1, 0.1],
         outputs=fake_action_outputs,
-        agents=mock_step.agent_id,
+        agent_ids=mock_step.agent_id,
     )
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
