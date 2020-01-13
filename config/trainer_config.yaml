@@ -157,7 +157,7 @@ Tennis:
     trainer: ppo
     normalize: true
     max_steps: 5e8
-    ghost:
+    self_play:
         window: 20
         play_against_current_self_ratio: 0.0
         snapshot_per: 50000

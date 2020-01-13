@@ -43,12 +43,13 @@ class GhostTrainer(Trainer):
         self.trainer = trainer
 
         self.internal_policy_queues: List[AgentManagerQueue[Policy]] = []
+        self.learning_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
         self.internal_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
 
         # assign ghost's stats collection to wrapped trainer's
         self.stats_reporter = self.trainer.stats_reporter
 
-        self_play_parameters = trainer_parameters["ghost"]
+        self_play_parameters = trainer_parameters["self_play"]
         self.window = self_play_parameters["window"]
         self.play_against_current_self_ratio = self_play_parameters[
             "play_against_current_self_ratio"
@@ -130,14 +131,14 @@ class GhostTrainer(Trainer):
         self.trainer.advance()
         self._maybe_write_summary(self.get_step)
 
-        for q, internal_q in zip(self.policy_queues, self.internal_policy_queues):
+        for internal_q in self.internal_policy_queues:
             # Get policies that correspond to the policy queue in question
             try:
                 policy = cast(TFPolicy, internal_q.get_nowait())
                 with policy.graph.as_default():
                     weights = policy.tfvars.get_weights()
                     self.current_policy_snapshot = weights
-                q.put(policy)
+                self.learning_policy_queues[internal_q.behavior_id].put(policy)
             except AgentManagerQueue.Empty:
                 pass
 
@@ -223,6 +224,7 @@ class GhostTrainer(Trainer):
             )
 
             self.internal_policy_queues.append(internal_policy_queue)
+            self.learning_policy_queues[policy_queue.behavior_id] = policy_queue
             self.trainer.publish_policy_queue(internal_policy_queue)
 
     def subscribe_trajectory_queue(
@@ -241,7 +243,6 @@ class GhostTrainer(Trainer):
 
 # Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975
 # ELO calculation
-K = 1  # Constant for rating changes, higher is less stable but converges faster
 
 
 def compute_elo_rating_changes(rating1, rating2, result):
@@ -253,6 +254,6 @@ def compute_elo_rating_changes(rating1, rating2, result):
 
     s1 = 1 if result == "win" else 0
 
-    change = K * (s1 - e1)
+    change = s1 - e1
     #    change = -change if result != "win" else change
     return change

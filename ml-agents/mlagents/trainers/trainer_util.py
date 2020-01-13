@@ -153,7 +153,7 @@ def initialize_trainer(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
         )
 
-    if "ghost" in trainer_parameters:
+    if "self_play" in trainer_parameters:
         trainer = GhostTrainer(
             trainer,
             brain_name,
