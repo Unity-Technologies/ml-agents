@@ -50,7 +50,9 @@ class GhostTrainer(Trainer):
 
         self_play_parameters = trainer_parameters["ghost"]
         self.window = self_play_parameters["window"]
-        self.current_prob = self_play_parameters["current_prob"]
+        self.play_against_current_self_ratio = self_play_parameters[
+            "play_against_current_self_ratio"
+        ]
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
         self.policies: Dict[str, TFPolicy] = {}
@@ -189,7 +191,7 @@ class GhostTrainer(Trainer):
             # here is the place for a sampling protocol
             if name_behavior_id == self.learning_behavior_name:
                 continue
-            elif np.random.uniform() < (1 - self.current_prob):
+            elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
                 snapshot = self.policy_snapshots[x]
             else:

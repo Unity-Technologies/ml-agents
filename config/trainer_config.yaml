@@ -94,18 +94,6 @@ Goalie:
     num_layers: 2
     normalize: false
 
-Soccer:
-    trainer: ppo
-    normalize: true
-    max_steps: 5e7
-    hidden_units: 512
-    num_layers: 2
-    learning_rate_schedule: constant
-    ghost:
-        window: 20
-        current_prob: .7
-        snapshot_per: 1000
-
 Pyramids:
     summary_freq: 30000
     time_horizon: 128
@@ -171,7 +159,7 @@ Tennis:
     max_steps: 5e8
     ghost:
         window: 20
-        current_prob: 0.0
+        play_against_current_self_ratio: 0.0
         snapshot_per: 50000
 
 CrawlerStatic:
