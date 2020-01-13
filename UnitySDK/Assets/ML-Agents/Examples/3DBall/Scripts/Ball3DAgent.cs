@@ -14,6 +14,8 @@ public class Ball3DAgent : Agent
         var academy = FindObjectOfType<Academy>();
         m_ResetParams = academy.FloatProperties;
         SetResetParameters();
+
+        AcademySingleton.Instance.ConnectToGameLoop();
     }
 
     public override void CollectObservations()

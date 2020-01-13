@@ -1,10 +1,14 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using MLAgents.InferenceBrain;
+using UnityEngine.Experimental.LowLevel;
+
 using Barracuda;
+using UnityEngine.Experimental.PlayerLoop;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -21,6 +25,90 @@ using Barracuda;
 
 namespace MLAgents
 {
+    public class AcademySingleton
+    {
+        // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
+        private static readonly Lazy<AcademySingleton> lazy =
+            new Lazy<AcademySingleton>(() => new AcademySingleton());
+
+        public static AcademySingleton Instance { get { return lazy.Value; } }
+
+        private AcademySingleton()
+        {
+
+        }
+
+        public int numUpdates = 0;
+        bool connectedToGameLoop;
+
+        public void ConnectToGameLoop()
+        {
+            if (connectedToGameLoop)
+            {
+                return;
+            }
+            connectedToGameLoop = ModifyGameLoop(true);
+        }
+        public void DisconnectFromGameLoop()
+        {
+            if (!connectedToGameLoop)
+            {
+                return;
+            }
+            var success = ModifyGameLoop(true);
+            connectedToGameLoop = !success;
+        }
+
+        bool ModifyGameLoop(bool connect)
+        {
+            var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
+            for (var i=0; i< playerLoop.subSystemList.Length; i++)
+            {
+                var subSystem = playerLoop.subSystemList[i];
+                if (subSystem.type == typeof(FixedUpdate))
+                {
+                    if (true)
+                    {
+                        if (connect)
+                        {
+                            playerLoop.subSystemList[i].updateDelegate += Update;
+                        }
+                        else
+                        {
+                            playerLoop.subSystemList[i].updateDelegate -= Update;
+                        }
+                        PlayerLoop.SetPlayerLoop(playerLoop);
+                        return true;
+                    }
+                }
+            }
+
+            Debug.Log("cant find FixedUpdate in game loop");
+            return false;
+        }
+
+        void Init()
+        {
+            Application.quitting += Deinit;
+        }
+
+        void Update()
+        {
+            if (numUpdates % 100 == 0)
+            {
+                Debug.Log($"Update step {numUpdates}");
+            }
+
+            numUpdates++;
+        }
+
+        void Deinit()
+        {
+            Debug.Log("Stopping");
+        }
+    }
+
+
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
     /// Currently, this class is expected to be extended to
@@ -205,7 +293,7 @@ namespace MLAgents
                             version = k_ApiVersion,
                             name = gameObject.name,
                         });
-                    Random.InitState(unityRLInitParameters.seed);
+                    UnityEngine.Random.InitState(unityRLInitParameters.seed);
                 }
                 catch
                 {
