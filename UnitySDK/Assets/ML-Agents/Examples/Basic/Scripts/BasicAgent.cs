@@ -4,7 +4,6 @@ using MLAgents;
 public class BasicAgent : Agent
 {
     [Header("Specific to Basic")]
-    Academy m_Academy;
     public float timeBetweenDecisionsAtInference;
     float m_TimeSinceDecision;
     int m_Position;
@@ -17,6 +16,7 @@ public class BasicAgent : Agent
 
     public override void InitializeAgent()
     {
+        Academy.Instance.ConnectToGameLoop();
     }
 
     public override void CollectObservations()
