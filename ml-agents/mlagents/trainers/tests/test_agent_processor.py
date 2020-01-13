@@ -7,6 +7,7 @@ from mlagents.trainers.agent_processor import (
     AgentManager,
     AgentManagerQueue,
 )
+from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter
 
@@ -42,6 +43,7 @@ def test_agentprocessor(num_vis_obs):
         max_trajectory_length=5,
         stats_reporter=StatsReporter("testcat"),
     )
+
     fake_action_outputs = {
         "action": [0.1, 0.1],
         "entropy": np.array([1.0], dtype=np.float32),
@@ -55,9 +57,17 @@ def test_agentprocessor(num_vis_obs):
         num_vector_acts=2,
         num_vis_observations=num_vis_obs,
     )
+    fake_action_info = ActionInfo(
+        action=[0.1, 0.1],
+        value=[0.1, 0.1],
+        outputs=fake_action_outputs,
+        agents=mock_braininfo.agents,
+    )
     processor.publish_trajectory_queue(tqueue)
+    # This is like the initial state after the env reset
+    processor.add_experiences(mock_braininfo, ActionInfo([], [], {}, []))
     for _ in range(5):
-        processor.add_experiences(mock_braininfo, mock_braininfo, fake_action_outputs)
+        processor.add_experiences(mock_braininfo, fake_action_info)
 
     # Assert that two trajectories have been added to the Trainer
     assert len(tqueue.put.call_args_list) == 2

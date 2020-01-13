@@ -23,6 +23,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 
 
@@ -194,20 +195,28 @@ class TrainerController(object):
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
         self.managers[name_behavior_id] = agent_manager
 
+    def _create_trainers_and_managers(
+        self, env_manager: EnvManager, behavior_ids: Set[str]
+    ) -> None:
+        for behavior_id in behavior_ids:
+            self._create_trainer_and_manager(env_manager, behavior_id)
+
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
         global_step = 0
         last_brain_behavior_ids: Set[str] = set()
         try:
-            self._reset_env(env_manager)
+            initial_step = self._reset_env(env_manager)
+            # Create the initial set of trainers and managers
+            initial_brain_behaviors = set(env_manager.external_brains.keys())
+            self._create_trainers_and_managers(env_manager, initial_brain_behaviors)
+            last_brain_behavior_ids = initial_brain_behaviors
+            self._process_step_infos(initial_step)
             while self._not_done_training():
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
-
-                for name_behavior_id in new_behavior_ids:
-                    self._create_trainer_and_manager(env_manager, name_behavior_id)
-
+                self._create_trainers_and_managers(env_manager, new_behavior_ids)
                 last_brain_behavior_ids = external_brain_behavior_ids
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
@@ -230,7 +239,8 @@ class TrainerController(object):
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
     ) -> None:
-        self._reset_env(env)
+        reset_step = self._reset_env(env)
+        self._process_step_infos(reset_step)
         # Reward buffers reset takes place only for curriculum learning
         # else no reset.
         for trainer in self.trainers.values():
@@ -281,7 +291,11 @@ class TrainerController(object):
             # Step the environment
             new_step_infos = env.step()
         # Add to AgentProcessor
-        for step_info in new_step_infos:
+        num_step_infos = self._process_step_infos(new_step_infos)
+        return num_step_infos
+
+    def _process_step_infos(self, step_infos: List[EnvironmentStep]) -> int:
+        for step_info in step_infos:
             for name_behavior_id in step_info.name_behavior_ids:
                 if name_behavior_id not in self.managers:
                     self.logger.warning(
@@ -291,11 +305,12 @@ class TrainerController(object):
                     )
                     continue
                 self.managers[name_behavior_id].add_experiences(
-                    step_info.previous_all_brain_info[name_behavior_id],
                     step_info.current_all_brain_info[name_behavior_id],
-                    step_info.brain_name_to_action_info[name_behavior_id].outputs,
+                    step_info.brain_name_to_action_info.get(
+                        name_behavior_id, ActionInfo([], [], {}, [])
+                    ),
                 )
-        return len(new_step_infos)
+        return len(step_infos)
 
     @timed
     def advance(self, env: EnvManager) -> int:
