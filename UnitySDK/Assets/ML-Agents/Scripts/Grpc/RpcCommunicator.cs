@@ -243,32 +243,35 @@ namespace MLAgents
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
+
+
+            if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
-
-                if (!m_ActionCallbacks.ContainsKey(brainKey))
+                int numFloatObservations = 0;
+                for (var i = 0; i < sensors.Count; i++)
                 {
-                    int numFloatObservations = 0;
-                    for (var i = 0; i < sensors.Count; i++)
+                    if (sensors[i].GetCompressionType() == SensorCompressionType.None)
                     {
-                        if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                        {
-                            numFloatObservations += sensors[i].ObservationSize();
-                        }
-                    }
-
-                    if (m_VectorObservationBuffer.Length < numFloatObservations)
-                    {
-                        m_VectorObservationBuffer = new float[numFloatObservations];
+                        numFloatObservations += sensors[i].ObservationSize();
                     }
                 }
 
+                if (m_VectorObservationBuffer.Length < numFloatObservations)
+                {
+                    m_VectorObservationBuffer = new float[numFloatObservations];
+                }
+            }
 
+            using (TimerStack.Instance.Scoped("GenerateSensorData"))
+            {
                 Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, info);
+            }
+            using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
+            {
                 var agentInfoProto = info.ToAgentInfoProto();
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                m_NeedCommunicateThisStep = true;
             }
+            m_NeedCommunicateThisStep = true;
             if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
                 m_ActionCallbacks[brainKey] = new List<IdCallbackPair>();
