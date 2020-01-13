@@ -178,7 +178,7 @@ namespace MLAgents
             {
                 return;
             }
-            var success = ModifyGameLoop(true);
+            var success = ModifyGameLoop(false);
             m_ConnectedToPlayerLoop = !success;
         }
 
@@ -195,19 +195,16 @@ namespace MLAgents
                 var subSystem = playerLoop.subSystemList[i];
                 if (subSystem.type == typeof(FixedUpdate))
                 {
-                    if (true)
+                    if (connect)
                     {
-                        if (connect)
-                        {
-                            playerLoop.subSystemList[i].updateDelegate += EnvironmentStep;
-                        }
-                        else
-                        {
-                            playerLoop.subSystemList[i].updateDelegate -= EnvironmentStep;
-                        }
-                        PlayerLoop.SetPlayerLoop(playerLoop);
-                        return true;
+                        playerLoop.subSystemList[i].updateDelegate += EnvironmentStep;
                     }
+                    else
+                    {
+                        playerLoop.subSystemList[i].updateDelegate -= EnvironmentStep;
+                    }
+                    PlayerLoop.SetPlayerLoop(playerLoop);
+                    return true;
                 }
             }
 
@@ -385,7 +382,7 @@ namespace MLAgents
         /// Performs a single environment update to the Academy, and Agent
         /// objects within the environment.
         /// </summary>
-        void EnvironmentStep()
+        public void EnvironmentStep()
         {
             if (!m_FirstAcademyReset)
             {
@@ -455,7 +452,7 @@ namespace MLAgents
         /// Shut down the Academy. Note that if you want to use it again after calling this,
         /// you must call Academy.LazyInitialization() first.
         /// </summary>
-        protected void OnDestroy()
+        public void OnDestroy()
         {
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();

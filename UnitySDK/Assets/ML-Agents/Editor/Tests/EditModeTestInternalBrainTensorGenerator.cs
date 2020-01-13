@@ -12,9 +12,7 @@ namespace MLAgents.Tests
     {
         static IEnumerable<Agent> GetFakeAgents()
         {
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
+            Academy.Instance.LazyInitialization();
 
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
@@ -33,7 +31,7 @@ namespace MLAgents.Tests
             {
                 var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                agentEnableMethod?.Invoke(agent, new object[] { aca });
+                agentEnableMethod?.Invoke(agent, new object[] { });
             }
             agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
             agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));
@@ -113,6 +111,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 4);
             Assert.AreEqual(inputTensor.data[1, 2], 6);
             alloc.Dispose();
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -135,6 +134,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 3);
             Assert.AreEqual(inputTensor.data[1, 1], 4);
             alloc.Dispose();
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -156,6 +156,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 0);
             Assert.AreEqual(inputTensor.data[1, 4], 1);
             alloc.Dispose();
+            Academy.Instance.OnDestroy();
         }
     }
 }

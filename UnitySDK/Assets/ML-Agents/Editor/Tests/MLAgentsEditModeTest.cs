@@ -95,14 +95,13 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademy()
         {
-            // Use the Assert class to test conditions.
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
             Assert.AreNotEqual(null, aca);
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -113,6 +112,7 @@ namespace MLAgents.Tests
             var agent = agentGo.GetComponent<TestAgent>();
             Assert.AreNotEqual(null, agent);
             Assert.AreEqual(0, agent.initializeAgentCalls);
+            Academy.Instance.OnDestroy();
         }
     }
 
@@ -121,26 +121,27 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademy()
         {
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
+            var aca = Academy.Instance;
+            aca.OnDestroy();
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
             Assert.AreEqual(null, aca.FloatProperties);
-            //This will call the method even though it is private
-            var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] { });
+
+            aca.LazyInitialization();
+
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
             Assert.AreNotEqual(null, aca.FloatProperties);
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
         public void TestAgent()
         {
+            Academy.Instance.OnDestroy();
+            Academy.Instance.LazyInitialization();
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
@@ -148,8 +149,6 @@ namespace MLAgents.Tests
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
             var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -162,13 +161,9 @@ namespace MLAgents.Tests
 
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-            var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
-                BindingFlags.Instance | BindingFlags.NonPublic);
 
-
-            agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { aca });
+            agentEnableMethod?.Invoke(agent2, new object[] { });
+            agentEnableMethod?.Invoke(agent1, new object[] { });
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -184,6 +179,7 @@ namespace MLAgents.Tests
             // Make sure the Sensors were sorted
             Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
             Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
+            Academy.Instance.OnDestroy();
         }
     }
 
@@ -192,15 +188,8 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademy()
         {
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
-            var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-
-            var academyStepMethod = typeof(Academy).GetMethod("EnvironmentStep",
-                BindingFlags.Instance | BindingFlags.NonPublic);
+            var aca = Academy.Instance;
+            Academy.Instance.LazyInitialization();
 
             var numberReset = 0;
             for (var i = 0; i < 10; i++)
@@ -213,8 +202,9 @@ namespace MLAgents.Tests
                 {
                     numberReset += 1;
                 }
-                academyStepMethod?.Invoke(aca, new object[] { });
+                Academy.Instance.EnvironmentStep();
             }
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -226,15 +216,12 @@ namespace MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
 
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-            var academyInitializeMethod = typeof(Academy).GetMethod(
-                "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
@@ -245,11 +232,7 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
 
-            agentEnableMethod?.Invoke(agent1, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-
-            var academyStepMethod = typeof(Academy).GetMethod(
-                "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
+            agentEnableMethod?.Invoke(agent1, new object[] { });
 
             var numberAgent1Reset = 0;
             var numberAgent2Initialization = 0;
@@ -274,7 +257,7 @@ namespace MLAgents.Tests
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent2, new object[] { aca });
+                    agentEnableMethod?.Invoke(agent2, new object[] { });
                     numberAgent2Initialization += 1;
                 }
 
@@ -293,8 +276,10 @@ namespace MLAgents.Tests
                     requestAction += 1;
                     agent2.RequestAction();
                 }
-                academyStepMethod?.Invoke(aca, new object[] { });
+                aca.EnvironmentStep();
             }
+
+            Academy.Instance.OnDestroy();
         }
     }
 
@@ -303,15 +288,8 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademy()
         {
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
-            var academyInitializeMethod = typeof(Academy).GetMethod(
-                "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-
-            var academyStepMethod = typeof(Academy).GetMethod(
-                "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
 
             var numberReset = 0;
             var stepsSinceReset = 0;
@@ -327,8 +305,9 @@ namespace MLAgents.Tests
                 }
 
                 stepsSinceReset += 1;
-                academyStepMethod.Invoke(aca, new object[] { });
+                aca.EnvironmentStep();
             }
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -340,18 +319,12 @@ namespace MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
 
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-            var academyInitializeMethod = typeof(Academy).GetMethod(
-                "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            var academyStepMethod = typeof(Academy).GetMethod(
-                "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
@@ -361,8 +334,7 @@ namespace MLAgents.Tests
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
+            agentEnableMethod?.Invoke(agent2, new object[] { });
 
             var numberAgent1Reset = 0;
             var numberAgent2Reset = 0;
@@ -389,7 +361,7 @@ namespace MLAgents.Tests
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent1, new object[] { aca });
+                    agentEnableMethod?.Invoke(agent1, new object[] { });
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
@@ -428,8 +400,9 @@ namespace MLAgents.Tests
                 //Agent 1 is only initialized at step 2
                 if (i < 2)
                 { }
-                academyStepMethod?.Invoke(aca, new object[] { });
+                aca.EnvironmentStep();
             }
+            Academy.Instance.OnDestroy();
         }
     }
 
@@ -444,18 +417,12 @@ namespace MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
 
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-            var academyInitializeMethod = typeof(Academy).GetMethod(
-                "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            var academyStepMethod = typeof(Academy).GetMethod(
-                "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
@@ -470,9 +437,8 @@ namespace MLAgents.Tests
             agent1.agentParameters.resetOnDone = false;
             agent2.agentParameters.resetOnDone = false;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { aca });
+            agentEnableMethod?.Invoke(agent2, new object[] { });
+            agentEnableMethod?.Invoke(agent1, new object[] { });
 
             var agent1ResetOnDone = 0;
             var agent2ResetOnDone = 0;
@@ -506,9 +472,9 @@ namespace MLAgents.Tests
                     agent2.Done();
                 }
 
-
-                academyStepMethod?.Invoke(aca, new object[] { });
+                aca.EnvironmentStep();
             }
+            Academy.Instance.OnDestroy();
         }
 
         [Test]
@@ -520,19 +486,11 @@ namespace MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
-
+            var aca = Academy.Instance;
+            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-            var academyInitializeMethod = typeof(Academy).GetMethod(
-                "InitializeEnvironment", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            var academyStepMethod = typeof(Academy).GetMethod(
-                "EnvironmentStep", BindingFlags.Instance | BindingFlags.NonPublic);
-
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             // We use event based so the agent will now try to send anything to the brain
@@ -543,9 +501,8 @@ namespace MLAgents.Tests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { aca });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { aca });
+            agentEnableMethod?.Invoke(agent2, new object[] { });
+            agentEnableMethod?.Invoke(agent1, new object[] { });
 
 
             var j = 0;
@@ -556,7 +513,7 @@ namespace MLAgents.Tests
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
 
-                academyStepMethod?.Invoke(aca, new object[] { });
+                aca.EnvironmentStep();
                 agent1.AddReward(10f);
 
                 if ((i % 21 == 0) && (i > 0))
@@ -565,6 +522,7 @@ namespace MLAgents.Tests
                 }
                 j++;
             }
+            Academy.Instance.OnDestroy();
         }
     }
 }

@@ -90,19 +90,14 @@ namespace MLAgents.Tests
             demoRecorder.record = true;
             demoRecorder.InitializeDemoStore(fileSystem);
 
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
+            Academy.Instance.LazyInitialization();
 
-            var academyInitializeMethod = typeof(Academy).GetMethod("InitializeEnvironment",
-                BindingFlags.Instance | BindingFlags.NonPublic);
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             var agentSendInfo = typeof(Agent).GetMethod("SendInfo",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
             agentEnableMethod?.Invoke(agent1, new object[] { });
-            academyInitializeMethod?.Invoke(aca, new object[] { });
 
             // Step the agent
             agent1.RequestDecision();
@@ -125,6 +120,8 @@ namespace MLAgents.Tests
                     Assert.AreEqual((float)i + 1, vecObs[i]);
                 }
             }
+
+            Academy.Instance.OnDestroy();
 
 
         }
