@@ -13,10 +13,6 @@ namespace MLAgents
     /// </summary>
     public struct AgentInfo
     {
-        /// <summary>
-        /// Most recent observations.
-        /// </summary>
-        public List<Observation> observations;
 
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -456,8 +452,6 @@ namespace MLAgents
                     m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
                 }
             }
-
-            m_Info.observations = new List<Observation>();
         }
 
         /// <summary>
@@ -562,7 +556,6 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -584,12 +577,9 @@ namespace MLAgents
             {
                 // This is a bit of a hack - if we're in inference mode, observations won't be generated
                 // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.observations.Count == 0)
-                {
-                    GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, m_Info);
-                }
+                var observations = GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter);
 
-                m_Recorder.WriteExperience(m_Info);
+                m_Recorder.WriteExperience(m_Info, observations);
             }
 
         }
@@ -608,8 +598,9 @@ namespace MLAgents
         /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
-        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, AgentInfo info)
+        public static List<Observation> GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter)
         {
+            var observations = new List<Observation>();
             int floatsWritten = 0;
             // Generate data for all Sensors
             for (var i = 0; i < sensors.Count; i++)
@@ -626,7 +617,7 @@ namespace MLAgents
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    info.observations.Add(floatObs);
+                    observations.Add(floatObs);
                     floatsWritten += numFloats;
                 }
                 else
@@ -637,9 +628,10 @@ namespace MLAgents
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    info.observations.Add(compressedObs);
+                    observations.Add(compressedObs);
                 }
             }
+            return observations;
         }
 
         /// <summary>

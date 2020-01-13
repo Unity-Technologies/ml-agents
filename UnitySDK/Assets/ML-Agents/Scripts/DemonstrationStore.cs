@@ -1,7 +1,8 @@
 using System.IO;
 using System.IO.Abstractions;
 using Google.Protobuf;
-using UnityEngine;
+using System.Collections.Generic;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -91,7 +92,7 @@ namespace MLAgents
         /// <summary>
         /// Write AgentInfo experience to file.
         /// </summary>
-        public void Record(AgentInfo info)
+        public void Record(AgentInfo info, List<Observation> observations)
         {
             // Increment meta-data counters.
             m_MetaData.numberExperiences++;
@@ -102,7 +103,7 @@ namespace MLAgents
             }
 
             // Write AgentInfo to file.
-            var agentProto = info.ToInfoActionPairProto();
+            var agentProto = info.ToInfoActionPairProto(observations);
             agentProto.WriteDelimitedTo(m_Writer);
         }
 

@@ -243,8 +243,6 @@ namespace MLAgents
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-
-
             if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
                 int numFloatObservations = 0;
@@ -262,13 +260,10 @@ namespace MLAgents
                 }
             }
 
-            using (TimerStack.Instance.Scoped("GenerateSensorData"))
-            {
-                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, info);
-            }
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
-                var agentInfoProto = info.ToAgentInfoProto();
+                var observations = Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter);
+                var agentInfoProto = info.ToAgentInfoProto(observations);
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
             }
             m_NeedCommunicateThisStep = true;

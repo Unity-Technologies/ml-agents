@@ -35,7 +35,16 @@ namespace MLAgents
         public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
 #if DEBUG
-            ValidateAgentSensorShapes(info);
+            int numFloatObservations = 0;
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                {
+                    numFloatObservations += sensors[i].ObservationSize();
+                }
+            }
+            var observations = Agent.GenerateSensorData(sensors, new float[numFloatObservations], new WriteAdapter());
+            ValidateAgentSensorShapes(observations);
 #endif
             m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
         }
@@ -51,13 +60,13 @@ namespace MLAgents
         /// If this is the first Agent being checked, its Sensor sizes will be saved.
         /// </summary>
         /// <param name="agent">The Agent to check</param>
-        void ValidateAgentSensorShapes(AgentInfo info)
+        void ValidateAgentSensorShapes(List<Observation> observations)
         {
             if (m_SensorShapes == null)
             {
-                m_SensorShapes = new List<int[]>(info.observations.Count);
+                m_SensorShapes = new List<int[]>(observations.Count);
                 // First agent, save the sensor sizes
-                foreach (var obs in info.observations)
+                foreach (var obs in observations)
                 {
                     m_SensorShapes.Add(obs.Shape);
                 }
@@ -66,11 +75,11 @@ namespace MLAgents
             {
                 // Check for compatibility with the other Agents' Sensors
                 // TODO make sure this only checks once per agent
-                Debug.Assert(m_SensorShapes.Count == info.observations.Count, $"Number of Sensors must match. {m_SensorShapes.Count} != {info.observations.Count}");
+                Debug.Assert(m_SensorShapes.Count == observations.Count, $"Number of Sensors must match. {m_SensorShapes.Count} != {observations.Count}");
                 for (var i = 0; i < m_SensorShapes.Count; i++)
                 {
                     var cachedShape = m_SensorShapes[i];
-                    var sensorShape = info.observations[i].Shape;
+                    var sensorShape = observations[i].Shape;
                     Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
                     for (var j = 0; j < cachedShape.Length; j++)
                     {
