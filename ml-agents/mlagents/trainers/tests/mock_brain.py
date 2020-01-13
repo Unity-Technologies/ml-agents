@@ -70,7 +70,7 @@ def create_mock_batchedstep(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     done = np.array(num_agents * [False], dtype=np.bool)
     max_step = np.array(num_agents * [False], dtype=np.bool)
-    agent_id = list(range(0, num_agents))
+    agent_id = np.arange(num_agents, dtype=np.int32)
 
     return BatchedStepResult(obs_list, reward, done, max_step, agent_id, action_mask)
 
