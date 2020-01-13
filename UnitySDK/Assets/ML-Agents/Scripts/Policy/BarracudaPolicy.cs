@@ -32,6 +32,7 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice)
         {
+            Academy.Instance.LazyInitialization();
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
         }

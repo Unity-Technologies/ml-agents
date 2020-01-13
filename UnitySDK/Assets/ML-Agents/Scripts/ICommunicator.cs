@@ -144,7 +144,7 @@ namespace MLAgents
         void RegisterSideChannel(SideChannel sideChannel);
 
         /// <summary>
-        /// Shut down the communicator and clean up anything that it owns..
+        /// Shut down the communicator and clean up anything that it owns.
         /// </summary>
         void Dispose();
     }

@@ -264,6 +264,7 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
+            Academy.Instance.LazyInitialization();
             Academy.Instance.AgentSetStatus += SetStatus;
             Academy.Instance.AgentResetIfDone += ResetIfDone;
             Academy.Instance.AgentSendState += SendInfo;
