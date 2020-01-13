@@ -27,8 +27,6 @@ namespace MLAgents
 {
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
-    /// Currently, this class is expected to be extended to
-    /// implement the desired academy behavior.
     /// </summary>
     /// <remarks>
     /// When an academy is run, it can either be in inference or training mode.
@@ -47,8 +45,7 @@ namespace MLAgents
         const int k_EditorTrainingPort = 5004;
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
-        private static readonly Lazy<Academy> lazy =
-            new Lazy<Academy>(() => new Academy());
+        static readonly Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
 
         public static Academy Instance { get { return lazy.Value; } }
 
@@ -85,13 +82,13 @@ namespace MLAgents
         public ICommunicator Communicator;
 
         bool m_Initialized;
-        List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
+        List<ModelRunner> m_ModelRunners;
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
 
         // Whether or not the Academy was added to the game loop.
-        bool m_ConnectedToGameLoop;
+        bool m_ConnectedToPlayerLoop;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -144,6 +141,10 @@ namespace MLAgents
             LazyInitialization();
         }
 
+        /// <summary>
+        /// Initialize the Academy if it hasn't already been initialized.
+        /// This method is always safe to call; it will have no effect if the Academy is already initialized.
+        /// </summary>
         public void LazyInitialization()
         {
             if (!m_Initialized)
@@ -153,25 +154,39 @@ namespace MLAgents
             }
         }
 
-        public void ConnectToGameLoop()
+        /// <summary>
+        /// Add Academy.Instance.EnvironmentStep to the FixedUpdate step of the Player Loop.
+        /// You can also call Academy.Instance.EnvironmentStep instead of connecting to the loop.
+        /// Note that if you've already made customizations to the Player Loop, this may overwrite those.
+        /// </summary>
+        public void ConnectToPlayerLoop()
         {
-            if (m_ConnectedToGameLoop)
+            if (m_ConnectedToPlayerLoop)
             {
                 return;
             }
-            m_ConnectedToGameLoop = ModifyGameLoop(true);
+            m_ConnectedToPlayerLoop = ModifyGameLoop(true);
         }
 
-        public void DisconnectFromGameLoop()
+        /// <summary>
+        /// Remove Academy.Instance.EnvironmentStep from the FixedUpdate step of the Player Loop.
+        /// Note that if you've already made customizations to the Player Loop, this may overwrite those.
+        /// </summary>
+        public void DisconnectFromPlayerLoop()
         {
-            if (!m_ConnectedToGameLoop)
+            if (!m_ConnectedToPlayerLoop)
             {
                 return;
             }
             var success = ModifyGameLoop(true);
-            m_ConnectedToGameLoop = !success;
+            m_ConnectedToPlayerLoop = !success;
         }
 
+        /// <summary>
+        /// Add or remove the Academy step from the FixedUpdate step of the Player Loop
+        /// </summary>
+        /// <param name="connect">whether to connect or disconnect</param>
+        /// <returns>Whether the loop was modified.</returns>
         bool ModifyGameLoop(bool connect)
         {
             var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
@@ -203,7 +218,7 @@ namespace MLAgents
         // Used to read Python-provided environment parameters
         static int ReadPortFromArgs()
         {
-            var args = System.Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs();
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
@@ -240,11 +255,10 @@ namespace MLAgents
             m_StepCount = 0;
             m_TotalStepCount = 0;
             m_FirstAcademyReset = false;
-            m_ConnectedToGameLoop = false;
+            m_ModelRunners = new List<ModelRunner>();
 
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
-
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
@@ -446,7 +460,8 @@ namespace MLAgents
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
-            DisconnectFromGameLoop();
+            // Disconnect from the loop. No effect if we weren't already connected.
+            DisconnectFromPlayerLoop();
 
             // TODO Communicator shutdown
 

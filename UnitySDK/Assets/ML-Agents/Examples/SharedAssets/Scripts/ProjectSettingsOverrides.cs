@@ -47,12 +47,12 @@ public class ProjectSettingsOverrides : MonoBehaviour
 
         Academy.Instance.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
 
-        Academy.Instance.ConnectToGameLoop();
+        Academy.Instance.ConnectToPlayerLoop();
     }
 
     public void OnDestroy()
     {
-        Academy.Instance.DisconnectFromGameLoop();
+        Academy.Instance.DisconnectFromPlayerLoop();
         Monitor.verticalOffset = m_OriginalMonitorVerticalOffset;
         Physics.gravity = m_OriginalGravity;
         Time.fixedDeltaTime = m_OriginalFixedDeltaTime;

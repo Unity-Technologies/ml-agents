@@ -16,7 +16,7 @@ public class PyramidAgent : Agent
 
     public override void InitializeAgent()
     {
-        Academy.Instance.ConnectToGameLoop();
+        Academy.Instance.ConnectToPlayerLoop();
         base.InitializeAgent();
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<PyramidArea>();
