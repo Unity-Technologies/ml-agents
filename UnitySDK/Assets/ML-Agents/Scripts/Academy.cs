@@ -243,7 +243,6 @@ namespace MLAgents
                 return -1;
 #endif
             }
-
         }
 
         /// <summary>
@@ -453,7 +452,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Cleanup function
+        /// Shut down the Academy. Note that if you want to use it again after calling this,
+        /// you must call Academy.LazyInitialization() first.
         /// </summary>
         protected void OnDestroy()
         {
@@ -463,14 +463,17 @@ namespace MLAgents
             // Disconnect from the loop. No effect if we weren't already connected.
             DisconnectFromPlayerLoop();
 
-            // TODO Communicator shutdown
+            Communicator?.Dispose();
+            Communicator = null;
 
-            foreach (var mr in m_ModelRunners)
+            if (m_ModelRunners != null)
             {
-                mr.Dispose();
+                foreach (var mr in m_ModelRunners)
+                {
+                    mr.Dispose();
+                }
+                m_ModelRunners = null;
             }
-
-            m_ModelRunners = null;
 
             // Clear out the actions so we're not keeping references to any old objects
             ResetActions();
@@ -479,7 +482,7 @@ namespace MLAgents
             // so that multiple envs won't overwrite each others stats.
             TimerStack.Instance.SaveJsonTimers();
 
-            // TODO SideChannel cleanup
+            FloatProperties = null;
 
             m_Initialized = false;
         }

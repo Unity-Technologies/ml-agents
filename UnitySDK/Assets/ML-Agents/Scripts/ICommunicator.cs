@@ -95,7 +95,6 @@ namespace MLAgents
         /// </summary>
         event QuitCommandHandler QuitCommandReceived;
 
-
         /// <summary>
         /// Reset command sent back from the communicator.
         /// </summary>
@@ -117,7 +116,7 @@ namespace MLAgents
         void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
-        /// Sends the observations of one Agent. 
+        /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
@@ -138,10 +137,15 @@ namespace MLAgents
         Dictionary<Agent, AgentAction> GetActions(string key);
 
         /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// Registers a side channel to the communicator. The side channel will exchange
         /// messages with its Python equivalent.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
         void RegisterSideChannel(SideChannel sideChannel);
+
+        /// <summary>
+        /// Shut down the communicator and clean up anything that it owns..
+        /// </summary>
+        void Dispose();
     }
 }
