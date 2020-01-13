@@ -65,7 +65,7 @@ class AgentProcessor:
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
 
-        for agent_id in previous_action.agents:
+        for agent_id in previous_action.agent_ids:
             self.last_take_action_outputs[agent_id] = take_action_outputs
 
         for agent_id in batched_step_result.agent_id:
@@ -149,7 +149,7 @@ class AgentProcessor:
 
         if "action" in take_action_outputs:
             self.policy.save_previous_action(
-                previous_action.agents, take_action_outputs["action"]
+                previous_action.agent_ids, take_action_outputs["action"]
             )
 
     def publish_trajectory_queue(

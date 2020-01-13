@@ -150,7 +150,7 @@ class TFPolicy(Policy):
             action=run_out.get("action"),
             value=run_out.get("value"),
             outputs=run_out,
-            agents=batched_step_result.agent_id,
+            agent_ids=batched_step_result.agent_id,
         )
 
     def update(self, mini_batch, num_sequences):
