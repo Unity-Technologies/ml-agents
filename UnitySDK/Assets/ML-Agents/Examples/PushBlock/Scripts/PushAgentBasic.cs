@@ -19,7 +19,8 @@ public class PushAgentBasic : Agent
     [HideInInspector]
     public Bounds areaBounds;
 
-    PushBlockAcademy m_Academy;
+    PushBlockSettings m_PushBlockSettings;
+    Academy m_Academy;
 
     /// <summary>
     /// The goal to push the block to.
@@ -50,7 +51,8 @@ public class PushAgentBasic : Agent
 
     void Awake()
     {
-        m_Academy = FindObjectOfType<PushBlockAcademy>(); //cache the academy
+        m_Academy = FindObjectOfType<Academy>(); //cache the academy
+        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
     }
 
     public override void InitializeAgent()
@@ -82,11 +84,11 @@ public class PushAgentBasic : Agent
         var randomSpawnPos = Vector3.zero;
         while (foundNewSpawnLocation == false)
         {
-            var randomPosX = Random.Range(-areaBounds.extents.x * m_Academy.spawnAreaMarginMultiplier,
-                areaBounds.extents.x * m_Academy.spawnAreaMarginMultiplier);
+            var randomPosX = Random.Range(-areaBounds.extents.x * m_PushBlockSettings.spawnAreaMarginMultiplier,
+                areaBounds.extents.x * m_PushBlockSettings.spawnAreaMarginMultiplier);
 
-            var randomPosZ = Random.Range(-areaBounds.extents.z * m_Academy.spawnAreaMarginMultiplier,
-                areaBounds.extents.z * m_Academy.spawnAreaMarginMultiplier);
+            var randomPosZ = Random.Range(-areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier,
+                areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
             if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
             {
@@ -108,7 +110,7 @@ public class PushAgentBasic : Agent
         Done();
 
         // Swap ground material for a bit to indicate we scored.
-        StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.goalScoredMaterial, 0.5f));
+        StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
     }
 
     /// <summary>
@@ -154,7 +156,7 @@ public class PushAgentBasic : Agent
                 break;
         }
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
-        m_AgentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
+        m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
 

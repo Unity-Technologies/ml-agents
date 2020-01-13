@@ -7,7 +7,7 @@ public class ReacherAgent : Agent
     public GameObject pendulumB;
     public GameObject hand;
     public GameObject goal;
-    ReacherAcademy m_MyAcademy;
+    Academy m_MyAcademy;
     float m_GoalDegree;
     Rigidbody m_RbA;
     Rigidbody m_RbB;
@@ -28,7 +28,7 @@ public class ReacherAgent : Agent
     {
         m_RbA = pendulumA.GetComponent<Rigidbody>();
         m_RbB = pendulumB.GetComponent<Rigidbody>();
-        m_MyAcademy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
+        m_MyAcademy = GameObject.Find("Academy").GetComponent<Academy>();
 
         SetResetParameters();
     }

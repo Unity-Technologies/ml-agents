@@ -36,10 +36,11 @@ class AgentProcessor:
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
         self.last_step_result: Dict[str, BatchedStepResult] = {}
+        # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
+        # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
-        # Note: this is needed until we switch to AgentExperiences as the data input type.
-        # We still need some info from the policy (memories, previous actions)
-        # that really should be gathered by the env-manager.
+        # Note: In the future this policy reference will be the policy of the env_manager and not the trainer.
+        # We can in that case just grab the action from the policy rather than having it passed in.
         self.policy = policy
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
@@ -58,9 +59,8 @@ class AgentProcessor:
         """
         take_action_outputs = previous_action.outputs
         if take_action_outputs:
-            self.stats_reporter.add_stat(
-                "Policy/Entropy", take_action_outputs["entropy"].mean()
-            )
+            for _entropy in take_action_outputs["entropy"]:
+                self.stats_reporter.add_stat("Policy/Entropy", _entropy)
             self.stats_reporter.add_stat(
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
