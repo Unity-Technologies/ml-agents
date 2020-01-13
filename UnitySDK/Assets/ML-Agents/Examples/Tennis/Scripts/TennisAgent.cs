@@ -90,7 +90,6 @@ public class TennisAgent : Agent
         var action = new float[2];
 
         action[0] = Input.GetAxis("Horizontal");
-
         action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;
         return action;
     }

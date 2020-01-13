@@ -54,7 +54,7 @@ class GhostTrainer(Trainer):
         self.steps_between_snapshots = self_play_parameters["snapshot_per"]
 
         self.policies: Dict[str, TFPolicy] = {}
-        self.policy_snapshots: List[Any] = [None for _ in range(self.window)]
+        self.policy_snapshots: List[Any] = [None] * self.window
         self.snapshot_counter: int = 0
         self.learning_behavior_name: str = None
         self.current_policy_snapshot = None
@@ -62,7 +62,7 @@ class GhostTrainer(Trainer):
 
         self.initial_elo: float = 1200.0
         self.current_elo: float = self.initial_elo
-        self.policy_elos: List[float] = [self.initial_elo for _ in range(self.window)]
+        self.policy_elos: List[float] = [self.initial_elo] * self.window
         self.current_opponent: int = 0
 
     @property
@@ -104,7 +104,7 @@ class GhostTrainer(Trainer):
             self.policy_elos[self.current_opponent] -= change
 
     def _is_ready_update(self) -> bool:
-        pass
+        return False
 
     def _update_policy(self) -> None:
         pass
@@ -196,7 +196,7 @@ class GhostTrainer(Trainer):
                 snapshot = self.current_policy_snapshot
                 x = "current"
             self.current_opponent = -1 if x == "current" else x
-            print(
+            LOGGER.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
                     self.get_step, x, name_behavior_id, self.learning_behavior_name
                 )

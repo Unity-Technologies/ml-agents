@@ -2,6 +2,7 @@ from typing import Dict, NamedTuple
 
 
 class BehaviorIdentifiers(NamedTuple):
+    name_behavior_id: str
     brain_name: str
     behavior_ids: Dict[str, int]
 
@@ -29,4 +30,6 @@ class BehaviorIdentifiers(NamedTuple):
         else:
             name = name_behavior_id
 
-        return BehaviorIdentifiers(brain_name=name, behavior_ids=ids)
+        return BehaviorIdentifiers(
+            name_behavior_id=name_behavior_id, brain_name=name, behavior_ids=ids
+        )
