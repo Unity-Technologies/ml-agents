@@ -88,7 +88,7 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator
+    public interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.
@@ -142,10 +142,5 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
         void RegisterSideChannel(SideChannel sideChannel);
-
-        /// <summary>
-        /// Shut down the communicator and clean up anything that it owns.
-        /// </summary>
-        void Dispose();
     }
 }

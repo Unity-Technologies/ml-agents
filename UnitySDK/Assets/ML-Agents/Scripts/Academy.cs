@@ -39,7 +39,7 @@ namespace MLAgents
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
-    public class Academy
+    public class Academy : IDisposable
     {
         const string k_ApiVersion = "API-13";
         const int k_EditorTrainingPort = 5004;
@@ -136,7 +136,7 @@ namespace MLAgents
         /// </summary>
         private Academy()
         {
-            Application.quitting += OnDestroy;
+            Application.quitting += Dispose;
 
             LazyInitialization();
         }
@@ -452,7 +452,7 @@ namespace MLAgents
         /// Shut down the Academy. Note that if you want to use it again after calling this,
         /// you must call Academy.LazyInitialization() first.
         /// </summary>
-        public void OnDestroy()
+        public void Dispose()
         {
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();

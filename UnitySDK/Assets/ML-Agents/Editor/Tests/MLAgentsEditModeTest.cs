@@ -101,7 +101,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace MLAgents.Tests
             var agent = agentGo.GetComponent<TestAgent>();
             Assert.AreNotEqual(null, agent);
             Assert.AreEqual(0, agent.initializeAgentCalls);
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 
@@ -122,7 +122,7 @@ namespace MLAgents.Tests
         public void TestAcademy()
         {
             var aca = Academy.Instance;
-            aca.OnDestroy();
+            aca.Dispose();
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
@@ -134,13 +134,13 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
             Assert.AreNotEqual(null, aca.FloatProperties);
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
         public void TestAgent()
         {
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
             Academy.Instance.LazyInitialization();
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
@@ -179,7 +179,7 @@ namespace MLAgents.Tests
             // Make sure the Sensors were sorted
             Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
             Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 
@@ -204,7 +204,7 @@ namespace MLAgents.Tests
                 }
                 Academy.Instance.EnvironmentStep();
             }
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -279,7 +279,7 @@ namespace MLAgents.Tests
                 aca.EnvironmentStep();
             }
 
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 
@@ -307,7 +307,7 @@ namespace MLAgents.Tests
                 stepsSinceReset += 1;
                 aca.EnvironmentStep();
             }
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -402,7 +402,7 @@ namespace MLAgents.Tests
                 { }
                 aca.EnvironmentStep();
             }
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 
@@ -474,7 +474,7 @@ namespace MLAgents.Tests
 
                 aca.EnvironmentStep();
             }
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -522,7 +522,7 @@ namespace MLAgents.Tests
                 }
                 j++;
             }
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 }

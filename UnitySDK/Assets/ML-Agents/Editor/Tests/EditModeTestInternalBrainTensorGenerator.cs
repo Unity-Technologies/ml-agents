@@ -111,7 +111,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 4);
             Assert.AreEqual(inputTensor.data[1, 2], 6);
             alloc.Dispose();
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 3);
             Assert.AreEqual(inputTensor.data[1, 1], 4);
             alloc.Dispose();
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -156,7 +156,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 0);
             Assert.AreEqual(inputTensor.data[1, 4], 1);
             alloc.Dispose();
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
         }
     }
 }

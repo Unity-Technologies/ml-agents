@@ -121,7 +121,7 @@ namespace MLAgents.Tests
                 }
             }
 
-            Academy.Instance.OnDestroy();
+            Academy.Instance.Dispose();
 
 
         }
