@@ -25,90 +25,6 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace MLAgents
 {
-    public class AcademySingleton
-    {
-        // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
-        private static readonly Lazy<AcademySingleton> lazy =
-            new Lazy<AcademySingleton>(() => new AcademySingleton());
-
-        public static AcademySingleton Instance { get { return lazy.Value; } }
-
-        private AcademySingleton()
-        {
-
-        }
-
-        public int numUpdates = 0;
-        bool connectedToGameLoop;
-
-        public void ConnectToGameLoop()
-        {
-            if (connectedToGameLoop)
-            {
-                return;
-            }
-            connectedToGameLoop = ModifyGameLoop(true);
-        }
-        public void DisconnectFromGameLoop()
-        {
-            if (!connectedToGameLoop)
-            {
-                return;
-            }
-            var success = ModifyGameLoop(true);
-            connectedToGameLoop = !success;
-        }
-
-        bool ModifyGameLoop(bool connect)
-        {
-            var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
-            for (var i=0; i< playerLoop.subSystemList.Length; i++)
-            {
-                var subSystem = playerLoop.subSystemList[i];
-                if (subSystem.type == typeof(FixedUpdate))
-                {
-                    if (true)
-                    {
-                        if (connect)
-                        {
-                            playerLoop.subSystemList[i].updateDelegate += Update;
-                        }
-                        else
-                        {
-                            playerLoop.subSystemList[i].updateDelegate -= Update;
-                        }
-                        PlayerLoop.SetPlayerLoop(playerLoop);
-                        return true;
-                    }
-                }
-            }
-
-            Debug.Log("cant find FixedUpdate in game loop");
-            return false;
-        }
-
-        void Init()
-        {
-            Application.quitting += Deinit;
-        }
-
-        void Update()
-        {
-            if (numUpdates % 100 == 0)
-            {
-                Debug.Log($"Update step {numUpdates}");
-            }
-
-            numUpdates++;
-        }
-
-        void Deinit()
-        {
-            Debug.Log("Stopping");
-        }
-    }
-
-
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
     /// Currently, this class is expected to be extended to
@@ -125,10 +41,16 @@ namespace MLAgents
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design-Academy.md")]
-    public class Academy : MonoBehaviour
+    public class Academy
     {
         const string k_ApiVersion = "API-13";
         const int k_EditorTrainingPort = 5004;
+
+        // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
+        private static readonly Lazy<Academy> lazy =
+            new Lazy<Academy>(() => new Academy());
+
+        public static Academy Instance { get { return lazy.Value; } }
 
         public IFloatProperties FloatProperties;
 
@@ -167,6 +89,9 @@ namespace MLAgents
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
+
+        // Whether or not the Academy was added to the game loop.
+        bool m_ConnectedToGameLoop;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -207,13 +132,15 @@ namespace MLAgents
         public event System.Action OnEnvironmentReset;
 
         /// <summary>
-        /// MonoBehavior function called at the very beginning of environment
-        /// creation. Academy uses this time to initialize internal data
+        /// Private constructor called the first time the Academy is used.
+        /// Academy uses this time to initialize internal data
         /// structures, initialize the environment and check for the existence
         /// of a communicator.
         /// </summary>
-        void Awake()
+        private Academy()
         {
+            Application.quitting += OnDestroy;
+
             LazyInitialization();
         }
 
@@ -224,6 +151,53 @@ namespace MLAgents
                 InitializeEnvironment();
                 m_Initialized = true;
             }
+        }
+
+        public void ConnectToGameLoop()
+        {
+            if (m_ConnectedToGameLoop)
+            {
+                return;
+            }
+            m_ConnectedToGameLoop = ModifyGameLoop(true);
+        }
+
+        public void DisconnectFromGameLoop()
+        {
+            if (!m_ConnectedToGameLoop)
+            {
+                return;
+            }
+            var success = ModifyGameLoop(true);
+            m_ConnectedToGameLoop = !success;
+        }
+
+        bool ModifyGameLoop(bool connect)
+        {
+            var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
+            for (var i=0; i< playerLoop.subSystemList.Length; i++)
+            {
+                var subSystem = playerLoop.subSystemList[i];
+                if (subSystem.type == typeof(FixedUpdate))
+                {
+                    if (true)
+                    {
+                        if (connect)
+                        {
+                            playerLoop.subSystemList[i].updateDelegate += EnvironmentStep;
+                        }
+                        else
+                        {
+                            playerLoop.subSystemList[i].updateDelegate -= EnvironmentStep;
+                        }
+                        PlayerLoop.SetPlayerLoop(playerLoop);
+                        return true;
+                    }
+                }
+            }
+
+            Debug.Log("cant find FixedUpdate in game loop");
+            return false;
         }
 
         // Used to read Python-provided environment parameters
@@ -262,6 +236,12 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
+            m_EpisodeCount = 0;
+            m_StepCount = 0;
+            m_TotalStepCount = 0;
+            m_FirstAcademyReset = false;
+            m_ConnectedToGameLoop = false;
+
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
 
@@ -291,7 +271,7 @@ namespace MLAgents
                         new CommunicatorInitParameters
                         {
                             version = k_ApiVersion,
-                            name = gameObject.name,
+                            name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRLInitParameters.seed);
                 }
@@ -315,14 +295,19 @@ namespace MLAgents
             // training mode. In the absence of a communicator, we assume we are
             // in inference mode.
 
-            DecideAction += () => { };
-            DestroyAction += () => { };
-            AgentSetStatus += i => { };
-            AgentResetIfDone += () => { };
-            AgentSendState += () => { };
-            AgentAct += () => { };
-            AgentForceReset += () => { };
-            OnEnvironmentReset += () => { };
+            ResetActions();
+        }
+
+        void ResetActions()
+        {
+            DecideAction = () => { };
+            DestroyAction = () => { };
+            AgentSetStatus = i => { };
+            AgentResetIfDone = () => { };
+            AgentSendState = () => { };
+            AgentAct = () => { };
+            AgentForceReset = () => { };
+            OnEnvironmentReset = () => { };
         }
 
         static void OnQuitCommandReceived()
@@ -431,14 +416,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// MonoBehaviour function that dictates each environment step.
-        /// </summary>
-        void FixedUpdate()
-        {
-            EnvironmentStep();
-        }
-
-        /// <summary>
         /// Creates or retrieves an existing ModelRunner that uses the same
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
@@ -469,14 +446,27 @@ namespace MLAgents
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
+            DisconnectFromGameLoop();
+
+            // TODO Communicator shutdown
+
             foreach (var mr in m_ModelRunners)
             {
                 mr.Dispose();
             }
 
+            m_ModelRunners = null;
+
+            // Clear out the actions so we're not keeping references to any old objects
+            ResetActions();
+
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.
             TimerStack.Instance.SaveJsonTimers();
+
+            // TODO SideChannel cleanup
+
+            m_Initialized = false;
         }
     }
 }

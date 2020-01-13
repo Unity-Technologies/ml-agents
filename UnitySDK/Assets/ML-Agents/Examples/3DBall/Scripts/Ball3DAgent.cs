@@ -11,11 +11,10 @@ public class Ball3DAgent : Agent
     public override void InitializeAgent()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
-        var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.FloatProperties;
+        m_ResetParams = Academy.Instance.FloatProperties;
         SetResetParameters();
 
-        AcademySingleton.Instance.ConnectToGameLoop();
+        Academy.Instance.ConnectToGameLoop();
     }
 
     public override void CollectObservations()

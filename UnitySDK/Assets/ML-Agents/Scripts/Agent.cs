@@ -251,33 +251,25 @@ namespace MLAgents
         void OnEnable()
         {
             m_Id = gameObject.GetInstanceID();
-            var academy = FindObjectOfType<Academy>();
-            academy.LazyInitialization();
-            OnEnableHelper(academy);
+            OnEnableHelper();
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
-        void OnEnableHelper(Academy academy)
+        void OnEnableHelper()
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            if (academy == null)
-            {
-                throw new UnityAgentsException(
-                    "No Academy Component could be found in the scene.");
-            }
-
-            academy.AgentSetStatus += SetStatus;
-            academy.AgentResetIfDone += ResetIfDone;
-            academy.AgentSendState += SendInfo;
-            academy.DecideAction += DecideAction;
-            academy.AgentAct += AgentStep;
-            academy.AgentForceReset += _AgentReset;
+            Academy.Instance.AgentSetStatus += SetStatus;
+            Academy.Instance.AgentResetIfDone += ResetIfDone;
+            Academy.Instance.AgentSendState += SendInfo;
+            Academy.Instance.DecideAction += DecideAction;
+            Academy.Instance.AgentAct += AgentStep;
+            Academy.Instance.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
@@ -289,16 +281,12 @@ namespace MLAgents
         /// becomes disabled or inactive.
         void OnDisable()
         {
-            var academy = FindObjectOfType<Academy>();
-            if (academy != null)
-            {
-                academy.AgentSetStatus -= SetStatus;
-                academy.AgentResetIfDone -= ResetIfDone;
-                academy.AgentSendState -= SendInfo;
-                academy.DecideAction -= DecideAction;
-                academy.AgentAct -= AgentStep;
-                academy.AgentForceReset -= _AgentReset;
-            }
+            Academy.Instance.AgentSetStatus -= SetStatus;
+            Academy.Instance.AgentResetIfDone -= ResetIfDone;
+            Academy.Instance.AgentSendState -= SendInfo;
+            Academy.Instance.DecideAction -= DecideAction;
+            Academy.Instance.AgentAct -= AgentStep;
+            Academy.Instance.AgentForceReset -= _AgentReset;
             m_Brain?.Dispose();
         }
 

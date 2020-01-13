@@ -17,7 +17,6 @@ public class BasicAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType(typeof(Academy)) as Academy;
     }
 
     public override void CollectObservations()
@@ -97,7 +96,7 @@ public class BasicAgent : Agent
 
     void WaitTimeInference()
     {
-        if (!m_Academy.IsCommunicatorOn)
+        if (!Academy.Instance.IsCommunicatorOn)
         {
             RequestDecision();
         }
