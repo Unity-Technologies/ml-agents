@@ -160,6 +160,7 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
     manager_mock = tc.managers[brain_name]
     manager_mock.add_experiences.assert_called_once_with(
         new_step_info.current_all_step_result[brain_name],
+        0,
         new_step_info.brain_name_to_action_info[brain_name],
     )
 
@@ -191,6 +192,7 @@ def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
     manager_mock = tc.managers[brain_name]
     manager_mock.add_experiences.assert_called_once_with(
         new_step_info.current_all_step_result[brain_name],
+        0,
         new_step_info.brain_name_to_action_info[brain_name],
     )
     trainer_mock.advance.assert_called_once()

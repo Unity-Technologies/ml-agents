@@ -65,9 +65,9 @@ def test_agentprocessor(num_vis_obs):
     )
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_step, ActionInfo([], [], {}, []))
+    processor.add_experiences(mock_step, 0, ActionInfo([], [], {}, []))
     for _ in range(5):
-        processor.add_experiences(mock_step, fake_action_info)
+        processor.add_experiences(mock_step, 0, fake_action_info)
 
     # Assert that two trajectories have been added to the Trainer
     assert len(tqueue.put.call_args_list) == 2

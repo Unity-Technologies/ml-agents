@@ -11,6 +11,7 @@ AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
 
 class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
+    worker_id: int
     brain_name_to_action_info: Dict[AgentGroup, ActionInfo]
 
     @property
@@ -18,8 +19,8 @@ class EnvironmentStep(NamedTuple):
         return self.current_all_step_result.keys()
 
     @staticmethod
-    def empty() -> "EnvironmentStep":
-        return EnvironmentStep({}, {})
+    def empty(worker_id: int) -> "EnvironmentStep":
+        return EnvironmentStep({}, worker_id, {})
 
 
 class EnvManager(ABC):

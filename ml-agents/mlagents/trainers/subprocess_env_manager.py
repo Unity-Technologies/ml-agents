@@ -50,7 +50,7 @@ class UnityEnvWorker:
         self.process = process
         self.worker_id = worker_id
         self.conn = conn
-        self.previous_step: EnvironmentStep = EnvironmentStep.empty()
+        self.previous_step: EnvironmentStep = EnvironmentStep.empty(worker_id)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 
@@ -104,11 +104,6 @@ def worker(
         all_step_result: AllStepResult = {}
         for brain_name in env.get_agent_groups():
             all_step_result[brain_name] = env.get_step_result(brain_name)
-            # Append worker ID to agent IDs
-            all_step_result[brain_name].agent_id = [
-                f"${worker_id}-{ag_id}"
-                for ag_id in all_step_result[brain_name].agent_id
-            ]
         return all_step_result
 
     def external_brains():
@@ -251,7 +246,7 @@ class SubprocessEnvManager(EnvManager):
             ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
-            ew.previous_step = EnvironmentStep(ew.recv().payload, {})
+            ew.previous_step = EnvironmentStep(ew.recv().payload, ew.worker_id, {})
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
@@ -280,7 +275,9 @@ class SubprocessEnvManager(EnvManager):
             payload: StepResponse = step.payload
             env_worker = self.env_workers[step.worker_id]
             new_step = EnvironmentStep(
-                payload.all_step_result, env_worker.previous_all_action_info
+                payload.all_step_result,
+                step.worker_id,
+                env_worker.previous_all_action_info,
             )
             step_infos.append(new_step)
             env_worker.previous_step = new_step
