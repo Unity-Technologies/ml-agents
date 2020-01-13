@@ -16,7 +16,6 @@ public class BasicAgent : Agent
 
     public override void InitializeAgent()
     {
-        Academy.Instance.ConnectToPlayerLoop();
     }
 
     public override void CollectObservations()

@@ -13,8 +13,6 @@ public class Ball3DAgent : Agent
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.FloatProperties;
         SetResetParameters();
-
-        Academy.Instance.ConnectToPlayerLoop();
     }
 
     public override void CollectObservations()
