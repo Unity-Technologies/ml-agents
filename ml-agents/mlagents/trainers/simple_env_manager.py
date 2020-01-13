@@ -19,7 +19,7 @@ class SimpleEnvManager(EnvManager):
         super().__init__()
         self.shared_float_properties = float_prop_channel
         self.env = env
-        self.previous_step: EnvironmentStep = EnvironmentStep({}, {})
+        self.previous_step: EnvironmentStep = EnvironmentStep.empty()
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
     def step(self) -> List[EnvironmentStep]:

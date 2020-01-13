@@ -50,7 +50,7 @@ class UnityEnvWorker:
         self.process = process
         self.worker_id = worker_id
         self.conn = conn
-        self.previous_step: EnvironmentStep = EnvironmentStep({}, {})
+        self.previous_step: EnvironmentStep = EnvironmentStep.empty()
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
         self.waiting = False
 

@@ -17,6 +17,10 @@ class EnvironmentStep(NamedTuple):
     def name_behavior_ids(self) -> Iterable[AgentGroup]:
         return self.current_all_step_result.keys()
 
+    @staticmethod
+    def empty() -> "EnvironmentStep":
+        return EnvironmentStep({}, {})
+
 
 class EnvManager(ABC):
     def __init__(self):
