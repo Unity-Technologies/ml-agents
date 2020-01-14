@@ -16,9 +16,9 @@ namespace MLAgents
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfoActionPairProto.</returns>
-        public static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai)
+        public static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai, List<Observation> observations)
         {
-            var agentInfoProto = ai.ToAgentInfoProto();
+            var agentInfoProto = ai.ToAgentInfoProto(observations);
 
             var agentActionProto = new AgentActionProto
             {
@@ -36,7 +36,7 @@ namespace MLAgents
         /// Converts a AgentInfo to a protobuf generated AgentInfoProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfo.</returns>
-        public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
+        public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai, List<Observation> observations)
         {
             var agentInfoProto = new AgentInfoProto
             {
@@ -51,9 +51,9 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            if (ai.observations != null)
+            if (observations != null)
             {
-                foreach (var obs in ai.observations)
+                foreach (var obs in observations)
                 {
                     agentInfoProto.Observations.Add(obs.ToProto());
                 }

@@ -17,13 +17,11 @@ steps:
 1. Create an environment for your agents to live in. An environment can range
     from a simple physical simulation containing a few objects to an entire game
     or ecosystem.
-2. Add an Academy MonoBehaviour to a GameObject in the Unity scene
-    containing the environment.
-3. Implement your Agent subclasses. An Agent subclass defines the code an Agent
+2. Implement your Agent subclasses. An Agent subclass defines the code an Agent
     uses to observe its environment, to carry out assigned actions, and to
     calculate the rewards used for reinforcement training. You can also implement
     optional methods to reset the Agent when it has finished or failed its task.
-4. Add your Agent subclasses to appropriate GameObjects, typically, the object
+3. Add your Agent subclasses to appropriate GameObjects, typically, the object
     in the scene that represents the Agent in the simulation.
 
 **Note:** If you are unfamiliar with Unity, refer to
@@ -102,27 +100,6 @@ different material from the list of all materials currently in the project.)
 
 Note that we will create an Agent subclass to add to this GameObject as a
 component later in the tutorial.
-
-### Add an Empty GameObject to Hold the Academy
-
-1. Right click in Hierarchy window, select Create Empty.
-2. Name the GameObject "Academy"
-
-![The scene hierarchy](images/mlagents-NewTutHierarchy.png)
-
-You can adjust the camera angles to give a better view of the scene at runtime.
-The next steps will be to create and add the ML-Agent components.
-
-## Add an Academy
-The Academy object coordinates the ML-Agents in the scene and drives the
-decision-making portion of the simulation loop. Every ML-Agent scene needs one
-(and only one) Academy instance.
-
-First, add an Academy component to the Academy GameObject created earlier:
-
-1. Select the Academy GameObject to view it in the Inspector window.
-2. Click **Add Component**.
-3. Select **Academy** in the list of components.
 
 ## Implement an Agent
 
@@ -524,7 +501,6 @@ to use Unity ML-Agents: an Academy and one or more Agents.
 
 Keep in mind:
 
-* There can only be one Academy game object in a scene.
 * If you are using multiple training areas, make sure all the Agents have the same `Behavior Name`
 and `Behavior Parameters`
 

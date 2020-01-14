@@ -7,9 +7,7 @@ public class GridSettings : MonoBehaviour
 
     public void Awake()
     {
-        var academy = FindObjectOfType<Academy>();
-        academy.LazyInitialization();
-        academy.FloatProperties.RegisterCallback("gridSize", f =>
+        Academy.Instance.FloatProperties.RegisterCallback("gridSize", f =>
         {
             MainCamera.transform.position = new Vector3(-(f - 1) / 2f, f * 1.25f, -(f - 1) / 2f);
             MainCamera.orthographicSize = (f + 5f) / 2f;

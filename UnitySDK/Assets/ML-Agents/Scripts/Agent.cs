@@ -13,10 +13,6 @@ namespace MLAgents
     /// </summary>
     public struct AgentInfo
     {
-        /// <summary>
-        /// Most recent observations.
-        /// </summary>
-        public List<Observation> observations;
 
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -251,33 +247,25 @@ namespace MLAgents
         void OnEnable()
         {
             m_Id = gameObject.GetInstanceID();
-            var academy = FindObjectOfType<Academy>();
-            academy.LazyInitialization();
-            OnEnableHelper(academy);
+            OnEnableHelper();
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
-        void OnEnableHelper(Academy academy)
+        void OnEnableHelper()
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            if (academy == null)
-            {
-                throw new UnityAgentsException(
-                    "No Academy Component could be found in the scene.");
-            }
-
-            academy.AgentSetStatus += SetStatus;
-            academy.AgentResetIfDone += ResetIfDone;
-            academy.AgentSendState += SendInfo;
-            academy.DecideAction += DecideAction;
-            academy.AgentAct += AgentStep;
-            academy.AgentForceReset += _AgentReset;
+            Academy.Instance.AgentSetStatus += SetStatus;
+            Academy.Instance.AgentResetIfDone += ResetIfDone;
+            Academy.Instance.AgentSendState += SendInfo;
+            Academy.Instance.DecideAction += DecideAction;
+            Academy.Instance.AgentAct += AgentStep;
+            Academy.Instance.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
@@ -289,15 +277,16 @@ namespace MLAgents
         /// becomes disabled or inactive.
         void OnDisable()
         {
-            var academy = FindObjectOfType<Academy>();
-            if (academy != null)
+            // If Academy.Dispose has already been called, we don't need to unregister with it.
+            // We don't want to even try, because this will lazily create a new Academy!
+            if (Academy.IsInitialized)
             {
-                academy.AgentSetStatus -= SetStatus;
-                academy.AgentResetIfDone -= ResetIfDone;
-                academy.AgentSendState -= SendInfo;
-                academy.DecideAction -= DecideAction;
-                academy.AgentAct -= AgentStep;
-                academy.AgentForceReset -= _AgentReset;
+                Academy.Instance.AgentSetStatus -= SetStatus;
+                Academy.Instance.AgentResetIfDone -= ResetIfDone;
+                Academy.Instance.AgentSendState -= SendInfo;
+                Academy.Instance.DecideAction -= DecideAction;
+                Academy.Instance.AgentAct -= AgentStep;
+                Academy.Instance.AgentForceReset -= _AgentReset;
             }
             m_Brain?.Dispose();
         }
@@ -456,8 +445,6 @@ namespace MLAgents
                     m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
                 }
             }
-
-            m_Info.observations = new List<Observation>();
         }
 
         /// <summary>
@@ -497,7 +484,7 @@ namespace MLAgents
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
-            if(m_PolicyFactory.useChildSensors)
+            if (m_PolicyFactory.useChildSensors)
             {
                 attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
             }
@@ -538,17 +525,6 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
-            // Create a buffer for writing uncompressed (i.e. float) sensor data to
-            int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                {
-                    numFloatObservations += sensors[i].ObservationSize();
-                }
-            }
-
-            m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -562,7 +538,6 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -578,18 +553,23 @@ namespace MLAgents
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            m_Brain.RequestDecision(this);
+            m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-                // This is a bit of a hack - if we're in inference mode, observations won't be generated
-                // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.observations.Count == 0)
+
+                if (m_VectorSensorBuffer == null)
                 {
-                    GenerateSensorData();
+                    // Create a buffer for writing uncompressed (i.e. float) sensor data to
+                    m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
                 }
 
-                m_Recorder.WriteExperience(m_Info);
+                // This is a bit of a hack - if we're in inference mode, observations won't be generated
+                // But we need these to be generated for the recorder. So generate them here.
+                var observations = new List<Observation>();
+                GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
+
+                m_Recorder.WriteExperience(m_Info, observations);
             }
 
         }
@@ -603,12 +583,17 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Generate data for each sensor and store it on the Agent's AgentInfo.
+        /// Generate data for each sensor and store it in the observations input.
         /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
         /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
-        public void GenerateSensorData()
+        /// <param name="sensors"> List of ISensors that will be used to generate the data.</param>
+        /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
+        /// be at least the same length as the total number of uncompressed floats in the observations</param>
+        /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
+        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//  
+        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
         {
             int floatsWritten = 0;
             // Generate data for all Sensors
@@ -618,15 +603,15 @@ namespace MLAgents
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
                     // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, sensor.GetObservationShape(), floatsWritten);
-                    var numFloats = sensor.Write(m_WriteAdapter);
+                    adapter.SetTarget(buffer, sensor.GetObservationShape(), floatsWritten);
+                    var numFloats = sensor.Write(adapter);
                     var floatObs = new Observation
                     {
-                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
+                        FloatData = new ArraySegment<float>(buffer, floatsWritten, numFloats),
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(floatObs);
+                    observations.Add(floatObs);
                     floatsWritten += numFloats;
                 }
                 else
@@ -637,7 +622,7 @@ namespace MLAgents
                         Shape = sensor.GetObservationShape(),
                         CompressionType = sensor.GetCompressionType()
                     };
-                    m_Info.observations.Add(compressedObs);
+                    observations.Add(compressedObs);
                 }
             }
         }

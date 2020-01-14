@@ -11,14 +11,14 @@ The versions can be found in
 ## Migrating from 0.13 to latest
 
 ### Important changes
-* The Academy class was changed to be sealed and its virtual methods were removed.
+* The Academy class was changed to a singleton, and its virtual methods were removed.
 * Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
 * Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
 * The `--num-runs` command-line option has been removed.
 
 ### Steps to Migrate
 * If you have a class that inherits from Academy:
-  * If the class didn't override any of the virtual methods and didn't store any additional data, you can just replace the instance of it in the scene with an Academy.
+  * If the class didn't override any of the virtual methods and didn't store any additional data, you can just remove the old script from the scene.
   * If the class had additional data, create a new MonoBehaviour and store the data on this instead.
   * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
     * Move the InitializeAcademy code to MonoBehaviour.OnAwake

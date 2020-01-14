@@ -2,7 +2,7 @@
 
 The ML-Agents toolkit conducts training using an external Python training
 process. During training, this external process communicates with the Academy
-object in the Unity scene to generate a block of agent experiences. These
+to generate a block of agent experiences. These
 experiences become the training set for a neural network used to optimize the
 agent's policy (which is essentially a mathematical function mapping
 observations to actions). In reinforcement learning, the neural network

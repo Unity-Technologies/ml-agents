@@ -34,7 +34,6 @@ public class SoccerFieldArea : MonoBehaviour
     Renderer m_GroundRenderer;
 
     SoccerSettings m_SoccerSettings;
-    Academy m_Academy;
 
     public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
@@ -46,7 +45,6 @@ public class SoccerFieldArea : MonoBehaviour
     void Awake()
     {
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
-        m_Academy = FindObjectOfType<Academy>();
         m_GroundRenderer = centerPitch.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
         canResetBall = true;
@@ -161,7 +159,7 @@ public class SoccerFieldArea : MonoBehaviour
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = m_Academy.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
+        var ballScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
         ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }
