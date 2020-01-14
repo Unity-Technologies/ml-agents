@@ -254,15 +254,20 @@ namespace MLAgents
                 }
             }
 
+# if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(brainKey))
             {
                 m_SensorShapeValidators[brainKey] = new SensorShapeValidator();
             }
             m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
+# endif
 
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
-                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
+                using (TimerStack.Instance.Scoped("GenerateSensorData"))
+                {
+                    Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
+                }
                 var agentInfoProto = info.ToAgentInfoProto(m_ObservationBuffer);
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
                 m_ObservationBuffer.Clear();

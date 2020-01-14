@@ -121,7 +121,9 @@ namespace MLAgents.InferenceBrain
 
         public void PutObservations(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
+#if DEBUG
             m_SensorShapeValidator.ValidateSensors(sensors);
+#endif
             m_Infos.Add(new AgentInfoSensorsPair
             {
                 agentInfo = info,
