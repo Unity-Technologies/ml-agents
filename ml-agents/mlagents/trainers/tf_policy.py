@@ -12,6 +12,7 @@ from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.env_manager import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
 
 
@@ -121,7 +122,9 @@ class TFPolicy(Policy):
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
 
-    def get_action(self, batched_step_result: BatchedStepResult) -> ActionInfo:
+    def get_action(
+        self, batched_step_result: BatchedStepResult, worker_id: int = 0
+    ) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
         :param brain_info: A dictionary of brain names and BatchedStepResult from environment.
@@ -145,7 +148,12 @@ class TFPolicy(Policy):
         run_out = self.evaluate(  # pylint: disable=assignment-from-no-return
             batched_step_result
         )
-        self.save_memories(batched_step_result.agent_id, run_out.get("memory_out"))
+
+        global_agent_ids = [
+            get_global_agent_id(worker_id, int(agent_id))
+            for agent_id in batched_step_result.agent_id
+        ]  # For 1-D array, the iterator order is correct.
+        self.save_memories(global_agent_ids, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),
