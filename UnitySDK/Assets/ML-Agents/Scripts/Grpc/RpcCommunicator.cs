@@ -38,6 +38,7 @@ namespace MLAgents
         float[] m_VectorObservationBuffer = new float[0];
         List<Observation> m_ObservationBuffer = new List<Observation>();
         WriteAdapter m_WriteAdapter = new WriteAdapter();
+        Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
         Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
@@ -252,6 +253,12 @@ namespace MLAgents
                     m_VectorObservationBuffer = new float[numFloatObservations];
                 }
             }
+
+            if (!m_SensorShapeValidators.ContainsKey(brainKey))
+            {
+                m_SensorShapeValidators[brainKey] = new SensorShapeValidator();
+            }
+            m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
 
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {

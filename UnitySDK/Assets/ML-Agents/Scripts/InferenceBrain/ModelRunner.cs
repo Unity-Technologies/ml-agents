@@ -34,6 +34,8 @@ namespace MLAgents.InferenceBrain
         IReadOnlyList<TensorProxy> m_InferenceOutputs;
         Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
 
+        SensorShapeValidator m_SensorShapeValidator = new SensorShapeValidator();
+
         bool m_VisualObservationsInitialized;
 
         /// <summary>
@@ -119,6 +121,7 @@ namespace MLAgents.InferenceBrain
 
         public void PutObservations(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
+            m_SensorShapeValidator.ValidateSensors(sensors);
             m_Infos.Add(new AgentInfoSensorsPair
             {
                 agentInfo = info,

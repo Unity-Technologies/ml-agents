@@ -34,11 +34,6 @@ namespace MLAgents
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-#if DEBUG
-            var observations = new List<Observation>();
-            Agent.GenerateSensorData(sensors, new float[sensors.GetSensorFloatObservationSize()], new WriteAdapter(), observations);
-            ValidateAgentSensorShapes(observations);
-#endif
             m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
         }
 
@@ -46,40 +41,6 @@ namespace MLAgents
         public void DecideAction()
         {
             m_Communicator?.DecideBatch();
-        }
-
-        /// <summary>
-        /// Check that the Agent Sensors are the same shape as the the other Agents using the same Brain.
-        /// If this is the first Agent being checked, its Sensor sizes will be saved.
-        /// </summary>
-        /// <param name="agent">The Agent to check</param>
-        void ValidateAgentSensorShapes(List<Observation> observations)
-        {
-            if (m_SensorShapes == null)
-            {
-                m_SensorShapes = new List<int[]>(observations.Count);
-                // First agent, save the sensor sizes
-                foreach (var obs in observations)
-                {
-                    m_SensorShapes.Add(obs.Shape);
-                }
-            }
-            else
-            {
-                // Check for compatibility with the other Agents' Sensors
-                // TODO make sure this only checks once per agent
-                Debug.Assert(m_SensorShapes.Count == observations.Count, $"Number of Sensors must match. {m_SensorShapes.Count} != {observations.Count}");
-                for (var i = 0; i < m_SensorShapes.Count; i++)
-                {
-                    var cachedShape = m_SensorShapes[i];
-                    var sensorShape = observations[i].Shape;
-                    Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
-                    for (var j = 0; j < cachedShape.Length; j++)
-                    {
-                        Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes much match.");
-                    }
-                }
-            }
         }
 
         public void Dispose()
