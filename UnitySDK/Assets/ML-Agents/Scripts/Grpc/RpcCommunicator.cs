@@ -260,18 +260,18 @@ namespace MLAgents
                 m_SensorShapeValidators[brainKey] = new SensorShapeValidator();
             }
             m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
-# endif
+#endif
 
+            using (TimerStack.Instance.Scoped("GenerateSensorData"))
+            {
+                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
+            }
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
-                using (TimerStack.Instance.Scoped("GenerateSensorData"))
-                {
-                    Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
-                }
                 var agentInfoProto = info.ToAgentInfoProto(m_ObservationBuffer);
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                m_ObservationBuffer.Clear();
             }
+            m_ObservationBuffer.Clear();
             m_NeedCommunicateThisStep = true;
             if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
