@@ -8,12 +8,17 @@ using System.Reflection;
 
 namespace MLAgents.Tests
 {
+    [TestFixture]
     public class EditModeTestInternalBrainTensorGenerator
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         static IEnumerable<Agent> GetFakeAgents()
         {
-            Academy.Instance.LazyInitialization();
-
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
             bpA.brainParameters.vectorObservationSize = 3;
@@ -111,7 +116,6 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 4);
             Assert.AreEqual(inputTensor.data[1, 2], 6);
             alloc.Dispose();
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -134,7 +138,6 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 3);
             Assert.AreEqual(inputTensor.data[1, 1], 4);
             alloc.Dispose();
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -156,7 +159,6 @@ namespace MLAgents.Tests
             Assert.AreEqual(inputTensor.data[1, 0], 0);
             Assert.AreEqual(inputTensor.data[1, 4], 1);
             alloc.Dispose();
-            Academy.Instance.Dispose();
         }
     }
 }

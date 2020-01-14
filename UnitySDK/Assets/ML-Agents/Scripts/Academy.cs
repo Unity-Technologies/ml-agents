@@ -431,8 +431,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Shut down the Academy. Note that if you want to use it again after calling this,
-        /// you must call Academy.LazyInitialization() first.
+        /// Shut down the Academy.
         /// </summary>
         public void Dispose()
         {
@@ -463,7 +462,7 @@ namespace MLAgents
             m_Initialized = false;
 
             // Reset the Lazy instance
-            //lazy = new Lazy<Academy>(() => new Academy());
+            lazy = new Lazy<Academy>(() => new Academy());
         }
     }
 }

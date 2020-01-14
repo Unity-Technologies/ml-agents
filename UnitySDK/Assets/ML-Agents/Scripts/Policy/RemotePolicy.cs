@@ -23,7 +23,6 @@ namespace MLAgents
             string behaviorName)
         {
             m_BehaviorName = behaviorName;
-            Academy.Instance.LazyInitialization();
             m_Communicator = Academy.Instance.Communicator;
             m_Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
         }

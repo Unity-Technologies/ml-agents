@@ -90,18 +90,23 @@ namespace MLAgents.Tests
         public void Update() { }
     }
 
+    [TestFixture]
     public class EditModeTestGeneration
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         [Test]
         public void TestAcademy()
         {
             var aca = Academy.Instance;
-            aca.LazyInitialization();
             Assert.AreNotEqual(null, aca);
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -112,36 +117,51 @@ namespace MLAgents.Tests
             var agent = agentGo.GetComponent<TestAgent>();
             Assert.AreNotEqual(null, agent);
             Assert.AreEqual(0, agent.initializeAgentCalls);
-            Academy.Instance.Dispose();
         }
     }
 
+    [TestFixture]
     public class EditModeTestInitialization
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         [Test]
         public void TestAcademy()
         {
             var aca = Academy.Instance;
-            aca.Dispose();
-            Assert.AreEqual(0, aca.GetStepCount());
-            Assert.AreEqual(0, aca.GetEpisodeCount());
-            Assert.AreEqual(0, aca.GetTotalStepCount());
-            Assert.AreEqual(null, aca.FloatProperties);
-
+            // Check that init is idempotent
+            aca.LazyInitialization();
             aca.LazyInitialization();
 
             Assert.AreEqual(0, aca.GetEpisodeCount());
             Assert.AreEqual(0, aca.GetStepCount());
             Assert.AreEqual(0, aca.GetTotalStepCount());
             Assert.AreNotEqual(null, aca.FloatProperties);
+
+            // Check that Dispose is idempotent
+            aca.Dispose();
+            aca.Dispose();
+        }
+
+        [Test]
+        public void TestAcademyDispose()
+        {
+            var floatProperties1 = Academy.Instance.FloatProperties;
             Academy.Instance.Dispose();
+
+            var floatProperties2 = Academy.Instance.FloatProperties;
+            Academy.Instance.Dispose();
+
+            Assert.AreNotEqual(floatProperties1, floatProperties2);
         }
 
         [Test]
         public void TestAgent()
         {
-            Academy.Instance.Dispose();
-            Academy.Instance.LazyInitialization();
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
@@ -179,17 +199,22 @@ namespace MLAgents.Tests
             // Make sure the Sensors were sorted
             Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
             Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
-            Academy.Instance.Dispose();
         }
     }
 
+    [TestFixture]
     public class EditModeTestStep
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         [Test]
         public void TestAcademy()
         {
             var aca = Academy.Instance;
-            Academy.Instance.LazyInitialization();
 
             var numberReset = 0;
             for (var i = 0; i < 10; i++)
@@ -204,7 +229,6 @@ namespace MLAgents.Tests
                 }
                 Academy.Instance.EnvironmentStep();
             }
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -218,7 +242,6 @@ namespace MLAgents.Tests
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
             var aca = Academy.Instance;
-            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -278,18 +301,22 @@ namespace MLAgents.Tests
                 }
                 aca.EnvironmentStep();
             }
-
-            Academy.Instance.Dispose();
         }
     }
 
+    [TestFixture]
     public class EditModeTestReset
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         [Test]
         public void TestAcademy()
         {
             var aca = Academy.Instance;
-            aca.LazyInitialization();
 
             var numberReset = 0;
             var stepsSinceReset = 0;
@@ -307,7 +334,6 @@ namespace MLAgents.Tests
                 stepsSinceReset += 1;
                 aca.EnvironmentStep();
             }
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -321,7 +347,6 @@ namespace MLAgents.Tests
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
             var aca = Academy.Instance;
-            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -402,12 +427,18 @@ namespace MLAgents.Tests
                 { }
                 aca.EnvironmentStep();
             }
-            Academy.Instance.Dispose();
         }
     }
 
+    [TestFixture]
     public class EditModeTestMiscellaneous
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
+
         [Test]
         public void TestResetOnDone()
         {
@@ -419,7 +450,6 @@ namespace MLAgents.Tests
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
             var aca = Academy.Instance;
-            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -474,7 +504,6 @@ namespace MLAgents.Tests
 
                 aca.EnvironmentStep();
             }
-            Academy.Instance.Dispose();
         }
 
         [Test]
@@ -487,7 +516,6 @@ namespace MLAgents.Tests
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
             var aca = Academy.Instance;
-            aca.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod(
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -522,7 +550,6 @@ namespace MLAgents.Tests
                 }
                 j++;
             }
-            Academy.Instance.Dispose();
         }
     }
 }

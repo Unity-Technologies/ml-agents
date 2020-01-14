@@ -6,11 +6,18 @@ using MLAgents.CommunicatorObjects;
 
 namespace MLAgents.Tests
 {
+    [TestFixture]
     public class DemonstrationTests : MonoBehaviour
     {
         const string k_DemoDirecory = "Assets/Demonstrations/";
         const string k_ExtensionType = ".demo";
         const string k_DemoName = "Test";
+
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.Dispose();
+        }
 
         [Test]
         public void TestSanitization()
@@ -89,8 +96,6 @@ namespace MLAgents.Tests
             demoRecorder.demonstrationName = "TestBrain";
             demoRecorder.record = true;
             demoRecorder.InitializeDemoStore(fileSystem);
-
-            Academy.Instance.LazyInitialization();
 
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",
                 BindingFlags.Instance | BindingFlags.NonPublic);
