@@ -15,9 +15,7 @@ public class FoodCollectorSettings : MonoBehaviour
 
     public void Awake()
     {
-        var academy = FindObjectOfType<Academy>();
-        academy.LazyInitialization();
-        academy.OnEnvironmentReset += EnvironmentReset;
+        Academy.Instance.OnEnvironmentReset += EnvironmentReset;
     }
 
     public void EnvironmentReset()

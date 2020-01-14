@@ -89,13 +89,12 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator
+    public interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.
         /// </summary>
         event QuitCommandHandler QuitCommandReceived;
-
 
         /// <summary>
         /// Reset command sent back from the communicator.
@@ -118,7 +117,7 @@ namespace MLAgents
         void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
-        /// Sends the observations of one Agent. 
+        /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="info">Agent info.</param>
@@ -141,7 +140,7 @@ namespace MLAgents
         Dictionary<int, AgentAction> GetActions(string key);
 
         /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// Registers a side channel to the communicator. The side channel will exchange
         /// messages with its Python equivalent.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
