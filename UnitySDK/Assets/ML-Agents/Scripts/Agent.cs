@@ -532,17 +532,6 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
-            // Create a buffer for writing uncompressed (i.e. float) sensor data to
-            int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                {
-                    numFloatObservations += sensors[i].ObservationSize();
-                }
-            }
-
-            m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -575,9 +564,17 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
+
+                if (m_VectorSensorBuffer == null)
+                {
+                    // Create a buffer for writing uncompressed (i.e. float) sensor data to
+                    m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
+                }
+
                 // This is a bit of a hack - if we're in inference mode, observations won't be generated
                 // But we need these to be generated for the recorder. So generate them here.
-                var observations = GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter);
+                var observations = new List<Observation>();
+                GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
 
                 m_Recorder.WriteExperience(m_Info, observations);
             }
@@ -598,9 +595,8 @@ namespace MLAgents
         /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
-        public static List<Observation> GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter)
+        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
         {
-            var observations = new List<Observation>();
             int floatsWritten = 0;
             // Generate data for all Sensors
             for (var i = 0; i < sensors.Count; i++)
@@ -631,7 +627,6 @@ namespace MLAgents
                     observations.Add(compressedObs);
                 }
             }
-            return observations;
         }
 
         /// <summary>

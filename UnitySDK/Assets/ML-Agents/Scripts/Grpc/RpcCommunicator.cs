@@ -36,6 +36,7 @@ namespace MLAgents
         List<string> m_BehaviorNames = new List<string>();
         bool m_NeedCommunicateThisStep;
         float[] m_VectorObservationBuffer = new float[0];
+        List<Observation> m_ObservationBuffer = new List<Observation>();
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
 
@@ -245,15 +246,7 @@ namespace MLAgents
         {
             if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
-                int numFloatObservations = 0;
-                for (var i = 0; i < sensors.Count; i++)
-                {
-                    if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                    {
-                        numFloatObservations += sensors[i].ObservationSize();
-                    }
-                }
-
+                int numFloatObservations = sensors.GetSensorFloatObservationSize();
                 if (m_VectorObservationBuffer.Length < numFloatObservations)
                 {
                     m_VectorObservationBuffer = new float[numFloatObservations];
@@ -262,9 +255,10 @@ namespace MLAgents
 
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
-                var observations = Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter);
-                var agentInfoProto = info.ToAgentInfoProto(observations);
+                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
+                var agentInfoProto = info.ToAgentInfoProto(m_ObservationBuffer);
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                m_ObservationBuffer.Clear();
             }
             m_NeedCommunicateThisStep = true;
             if (!m_ActionCallbacks.ContainsKey(brainKey))

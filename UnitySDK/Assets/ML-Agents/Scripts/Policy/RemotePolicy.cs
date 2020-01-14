@@ -35,15 +35,8 @@ namespace MLAgents
         public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
 #if DEBUG
-            int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                {
-                    numFloatObservations += sensors[i].ObservationSize();
-                }
-            }
-            var observations = Agent.GenerateSensorData(sensors, new float[numFloatObservations], new WriteAdapter());
+            var observations = new List<Observation>();
+            Agent.GenerateSensorData(sensors, new float[sensors.GetSensorFloatObservationSize()], new WriteAdapter(), observations);
             ValidateAgentSensorShapes(observations);
 #endif
             m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
