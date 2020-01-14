@@ -275,7 +275,8 @@ class TrainerController(object):
     @timed
     def advance(self, env: EnvManager) -> int:
         # Get steps
-        num_steps = env.advance()
+        with hierarchical_timer("env_step"):
+            num_steps = env.advance()
 
         # Report current lesson
         if self.meta_curriculum:
