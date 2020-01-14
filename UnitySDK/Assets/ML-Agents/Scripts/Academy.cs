@@ -182,7 +182,7 @@ namespace MLAgents
             m_StepperObject = new GameObject("AcademyFixedUpdateStepper");
             // Don't show this object in the hierarchy
             m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
-            m_FixedUpdateStepper  = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
+            m_FixedUpdateStepper = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
         }
 
         /// <summary>
