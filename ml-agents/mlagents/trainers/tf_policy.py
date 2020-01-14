@@ -52,7 +52,8 @@ class TFPolicy(Policy):
         """
 
         # for ghost trainer save/load snapshots
-        self.tfvars = None
+        self.assign_phs = []
+        self.assign_ops = []
 
         self.m_size = None
         self.model = None
@@ -116,6 +117,28 @@ class TFPolicy(Policy):
                     "--run-id".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+
+    def get_weights(self):
+        with self.graph.as_default():
+            trainable_vars = tf.trainable_variables()
+            values = [v.eval(session=self.sess) for v in trainable_vars]
+            return values
+
+    def init_load_weights(self):
+        with self.graph.as_default():
+            trainable_vars = tf.trainable_variables()
+            values = [v.eval(session=self.sess) for v in trainable_vars]
+            for var, value in zip(trainable_vars, values):
+                assign_ph = tf.placeholder(var.dtype, shape=value.shape)
+                self.assign_phs.append(assign_ph)
+                self.assign_ops.append(tf.assign(var, assign_ph))
+
+    def load_weights(self, values):
+        with self.graph.as_default():
+            feed_dict = {}
+            for assign_ph, value in zip(self.assign_phs, values):
+                feed_dict[assign_ph] = value
+            self.sess.run(self.assign_ops, feed_dict=feed_dict)
 
     def evaluate(self, brain_info: BrainInfo) -> Dict[str, Any]:
         """

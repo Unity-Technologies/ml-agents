@@ -15,10 +15,6 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 
-from mlagents.tf_utils.tf import TensorFlowVariables
-
-# logger = logging.getLogger("mlagents.trainers")
-
 LOGGER = logging.getLogger("mlagents.trainers")
 
 
@@ -135,9 +131,7 @@ class GhostTrainer(Trainer):
             # Get policies that correspond to the policy queue in question
             try:
                 policy = cast(TFPolicy, internal_q.get_nowait())
-                with policy.graph.as_default():
-                    weights = policy.tfvars.get_weights()
-                    self.current_policy_snapshot = weights
+                self.current_policy_snapshot = policy.get_weights()
                 self.learning_policy_queues[internal_q.behavior_id].put(policy)
             except AgentManagerQueue.Empty:
                 pass
@@ -161,16 +155,14 @@ class GhostTrainer(Trainer):
 
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         # for saving/swapping snapshots
-        with policy.graph.as_default():
-            policy.tfvars = TensorFlowVariables(policy.model.output, policy.sess)
-
+        policy.init_load_weights()
         self.policies[name_behavior_id] = policy
 
         # First policy encountered
         if not self.learning_behavior_name:
-            with policy.graph.as_default():
-                weights = policy.tfvars.get_weights()
-                self.current_policy_snapshot = weights
+
+            weights = policy.get_weights()
+            self.current_policy_snapshot = weights
             for i in range(self.window):
                 self.policy_snapshots[i] = weights
             self.trainer.add_policy(name_behavior_id, policy)
@@ -180,9 +172,8 @@ class GhostTrainer(Trainer):
         return self.policies[name_behavior_id]
 
     def save_snapshot(self, policy: TFPolicy) -> None:
-        with policy.graph.as_default():
-            weights = policy.tfvars.get_weights()
-            self.policy_snapshots[self.snapshot_counter] = weights
+        weights = policy.get_weights()
+        self.policy_snapshots[self.snapshot_counter] = weights
         self.policy_elos[self.snapshot_counter] = self.current_elo
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
@@ -205,9 +196,8 @@ class GhostTrainer(Trainer):
                 )
             )
             policy = self.get_policy(name_behavior_id)
-            with policy.graph.as_default():
-                policy.tfvars.set_weights(snapshot)
-            # not necessary in the single machine case
+
+            policy.load_weights(snapshot)
             q.put(policy)
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
