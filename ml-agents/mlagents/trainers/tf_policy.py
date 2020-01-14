@@ -69,6 +69,7 @@ class TFPolicy(Policy):
             self.num_branches = self.brain.vector_action_space_size[0]
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
+        self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
