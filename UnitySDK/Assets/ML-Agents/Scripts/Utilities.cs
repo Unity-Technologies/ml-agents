@@ -137,6 +137,9 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Calculates the number of uncompressed floats in a list of ISensor
+        /// </summary>
         public static int GetSensorFloatObservationSize(this List<ISensor> sensors)
         {
             int numFloatObservations = 0;

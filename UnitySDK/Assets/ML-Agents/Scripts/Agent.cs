@@ -590,11 +590,16 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Generate data for each sensor and store it on the Agent's AgentInfo.
+        /// Generate data for each sensor and store it in the observations input.
         /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
         /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
         /// future to be controlled by the type of brain being used.
         /// </summary>
+        /// <param name="sensors"> List of ISensors that will be used to generate the data.</param>
+        /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
+        /// be at least the same length as the total number of uncompressed floats in the observations</param>
+        /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
+        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//  
         public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
         {
             int floatsWritten = 0;
