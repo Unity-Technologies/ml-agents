@@ -178,7 +178,6 @@ namespace MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            var acaGo = new GameObject("TestAcademy");
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -249,7 +248,7 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
             Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
-            aca.DisableAutomaticStepping();
+            aca.DisableAutomaticStepping(true);
             Assert.IsFalse(aca.IsAutomaticSteppingEnabled);
             aca.EnableAutomaticStepping();
             Assert.IsTrue(aca.IsAutomaticSteppingEnabled);

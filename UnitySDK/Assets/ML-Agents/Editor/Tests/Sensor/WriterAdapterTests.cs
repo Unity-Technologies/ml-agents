@@ -89,8 +89,6 @@ namespace MLAgents.Tests
                 data = new Tensor(2, 2, 2, 3)
             };
 
-            var shape = new[] { 2, 2, 3 };
-
             writer.SetTarget(t, 0, 0);
             writer[1, 0, 1] = 1f;
             Assert.AreEqual(1f, t.data[0, 1, 0, 1]);

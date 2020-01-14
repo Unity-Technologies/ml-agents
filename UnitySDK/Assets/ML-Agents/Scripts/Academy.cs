@@ -25,7 +25,7 @@ namespace MLAgents
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
     /// </summary>
-    public class AcademyStepper : MonoBehaviour
+    public class AcademyFixedUpdateStepper : MonoBehaviour
     {
         void FixedUpdate()
         {
@@ -84,7 +84,7 @@ namespace MLAgents
 
         /// The number of steps completed within the current episode. Incremented
         /// each time a step is taken in the environment. Is reset to 0 during
-        /// <see cref="AcademyReset"/>.
+        /// <see cref="EnvironmentReset"/>.
         int m_StepCount;
 
         /// The number of total number of steps completed during the whole simulation. Incremented
@@ -138,7 +138,7 @@ namespace MLAgents
         // Signals that the Academy has been reset by the training process
         public event System.Action OnEnvironmentReset;
 
-        AcademyStepper m_Stepper;
+        AcademyFixedUpdateStepper m_FixedUpdateStepper;
         GameObject m_StepperObject;
 
 
@@ -148,7 +148,7 @@ namespace MLAgents
         /// structures, initialize the environment and check for the existence
         /// of a communicator.
         /// </summary>
-        private Academy()
+        Academy()
         {
             Application.quitting += Dispose;
 
@@ -174,31 +174,39 @@ namespace MLAgents
         /// </summary>
         public void EnableAutomaticStepping()
         {
-            if (m_Stepper != null)
+            if (m_FixedUpdateStepper != null)
             {
                 return;
             }
 
-            m_StepperObject = new GameObject("AcademyStepper");
+            m_StepperObject = new GameObject("AcademyFixedUpdateStepper");
             // Don't show this object in the hierarchy
             m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
-            m_StepperObject.AddComponent<AcademyStepper>();
-            m_Stepper = m_StepperObject.GetComponent<AcademyStepper>();
+            m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
+            m_FixedUpdateStepper = m_StepperObject.GetComponent<AcademyFixedUpdateStepper>();
         }
 
         /// <summary>
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
-        public void DisableAutomaticStepping()
+        public void DisableAutomaticStepping(bool destroyImmediate = false)
         {
-            if (m_Stepper == null)
+            if (m_FixedUpdateStepper == null)
             {
                 return;
             }
 
-            m_Stepper = null;
-            UnityEngine.Object.Destroy(m_StepperObject);
+            m_FixedUpdateStepper = null;
+            if (destroyImmediate)
+            {
+                UnityEngine.Object.DestroyImmediate(m_StepperObject);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(m_StepperObject);
+            }
+
             m_StepperObject = null;
         }
 
@@ -207,7 +215,7 @@ namespace MLAgents
         /// </summary>
         public bool IsAutomaticSteppingEnabled
         {
-            get { return m_Stepper != null; }
+            get { return m_FixedUpdateStepper != null; }
         }
 
         // Used to read Python-provided environment parameters
@@ -447,7 +455,7 @@ namespace MLAgents
         /// </summary>
         public void Dispose()
         {
-            DisableAutomaticStepping();
+            DisableAutomaticStepping(true);
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
