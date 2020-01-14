@@ -23,8 +23,23 @@ else:
 
 def set_warnings_enabled(is_enabled: bool) -> None:
     """
-    Enable or disable tensorflow warnings (notabley, this disables deprecation warnings.
+    Enable or disable tensorflow warnings (notably, this disables deprecation warnings.
     :param is_enabled:
     """
     level = tf_logging.WARN if is_enabled else tf_logging.ERROR
     tf_logging.set_verbosity(level)
+
+
+def generate_session_config() -> tf.ConfigProto:
+    """
+    Generate a ConfigProto to use for ML-Agents that doesn't consume all of the GPU memory
+    and allows for soft placement in the case of multi-GPU.
+    """
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    # For multi-GPU training, set allow_soft_placement to True to allow
+    # placing the operation into an alternative device automatically
+    # to prevent from exceptions if the device doesn't suppport the operation
+    # or the device does not exist
+    config.allow_soft_placement = True
+    return config
