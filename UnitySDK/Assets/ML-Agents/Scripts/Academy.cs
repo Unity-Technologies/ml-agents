@@ -22,6 +22,9 @@ using Barracuda;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Helper class to step the Academy during FixedUpdate phase.
+    /// </summary>
     public class AcademyStepper : MonoBehaviour
     {
         void FixedUpdate()
@@ -92,13 +95,10 @@ namespace MLAgents
         public ICommunicator Communicator;
 
         bool m_Initialized;
-        List<ModelRunner> m_ModelRunners;
+        List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_FirstAcademyReset;
-
-        // Whether or not the Academy was added to the game loop.
-        bool m_ConnectedToPlayerLoop;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -168,6 +168,10 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Enable stepping of the Academy during the FixedUpdate phase.  This is done by creating a temporary
+        /// GameObject with a MonoBehavior that calls Academy.EnvironmentStep().
+        /// </summary>
         public void EnableAutomaticStepping()
         {
             if (m_Stepper != null)
@@ -182,6 +186,10 @@ namespace MLAgents
             m_Stepper = m_StepperObject.GetComponent<AcademyStepper>();
         }
 
+        /// <summary>
+        /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
+        /// stepped manually by the user by calling Academy.EnvironmentStep().
+        /// </summary>
         public void DisableAutomaticStepping()
         {
             if (m_Stepper == null)
@@ -194,6 +202,9 @@ namespace MLAgents
             m_StepperObject = null;
         }
 
+        /// <summary>
+        /// Returns whether or not the Academy is automatically stepped during the FixedUpdate phase.
+        /// </summary>
         public bool IsAutomaticSteppingEnabled
         {
             get { return m_Stepper != null; }
@@ -235,12 +246,6 @@ namespace MLAgents
         void InitializeEnvironment()
         {
             EnableAutomaticStepping();
-
-            m_EpisodeCount = 0;
-            m_StepCount = 0;
-            m_TotalStepCount = 0;
-            m_FirstAcademyReset = false;
-            m_ModelRunners = new List<ModelRunner>();
 
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
@@ -465,7 +470,6 @@ namespace MLAgents
             TimerStack.Instance.SaveJsonTimers();
 
             FloatProperties = null;
-
             m_Initialized = false;
 
             // Reset the Lazy instance
