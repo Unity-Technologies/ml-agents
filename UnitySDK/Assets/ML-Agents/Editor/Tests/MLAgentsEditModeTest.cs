@@ -50,6 +50,7 @@ namespace MLAgents.Tests
         {
             return new float[0];
         }
+
     }
 
     public class TestSensor : ISensor

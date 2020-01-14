@@ -102,10 +102,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
                 self.assertEqual(
                     manager.env_workers[i].previous_step.current_all_brain_info, i
                 )
-                self.assertEqual(
-                    manager.env_workers[i].previous_step.previous_all_brain_info,
-                    last_steps[i].current_all_brain_info,
-                )
         assert res == [
             manager.env_workers[0].previous_step,
             manager.env_workers[1].previous_step,

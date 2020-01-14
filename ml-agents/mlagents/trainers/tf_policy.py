@@ -129,7 +129,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if len(brain_info.agents) == 0:
-            return ActionInfo([], [], {})
+            return ActionInfo([], [], {}, [])
 
         agents_done = [
             agent
@@ -143,7 +143,10 @@ class TFPolicy(Policy):
         run_out = self.evaluate(brain_info)  # pylint: disable=assignment-from-no-return
         self.save_memories(brain_info.agents, run_out.get("memory_out"))
         return ActionInfo(
-            action=run_out.get("action"), value=run_out.get("value"), outputs=run_out
+            action=run_out.get("action"),
+            value=run_out.get("value"),
+            outputs=run_out,
+            agents=brain_info.agents,
         )
 
     def update(self, mini_batch, num_sequences):

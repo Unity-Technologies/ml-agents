@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -119,8 +120,10 @@ namespace MLAgents
         /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
-        /// <param name="agent">Agent info.</param>
-        void PutObservations(string brainKey, Agent agent);
+        /// <param name="info">Agent info.</param>
+        /// <param name="sensors">The list of ISensors of the Agent.</param>
+        /// <param name="action">The action that will be called once the next AgentAction is ready.</param>
+        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action);
 
         /// <summary>
         /// Signals the ICommunicator that the Agents are now ready to receive their action
@@ -134,7 +137,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
-        Dictionary<Agent, AgentAction> GetActions(string key);
+        Dictionary<int, AgentAction> GetActions(string key);
 
         /// <summary>
         /// Registers a side channel to the communicator. The side channel will exchange
