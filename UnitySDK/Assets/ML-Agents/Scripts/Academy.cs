@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using MLAgents.InferenceBrain;
-using UnityEngine.Experimental.LowLevel;
-
 using Barracuda;
-using UnityEngine.Experimental.PlayerLoop;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -25,6 +22,14 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace MLAgents
 {
+    public class AcademyStepper : MonoBehaviour
+    {
+        void FixedUpdate()
+        {
+            Academy.Instance.EnvironmentStep();
+        }
+    }
+
     /// <summary>
     /// An Academy is where Agent objects go to train their behaviors.
     /// </summary>
@@ -45,7 +50,7 @@ namespace MLAgents
         const int k_EditorTrainingPort = 5004;
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
-        static readonly Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
+        static Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
 
         public static Academy Instance { get { return lazy.Value; } }
 
@@ -128,6 +133,10 @@ namespace MLAgents
         // Signals that the Academy has been reset by the training process
         public event System.Action OnEnvironmentReset;
 
+        AcademyStepper m_Stepper;
+        GameObject m_StepperObject;
+
+
         /// <summary>
         /// Private constructor called the first time the Academy is used.
         /// Academy uses this time to initialize internal data
@@ -154,62 +163,33 @@ namespace MLAgents
             }
         }
 
-        /// <summary>
-        /// Add Academy.Instance.EnvironmentStep to the FixedUpdate step of the Player Loop.
-        /// You can also call Academy.Instance.EnvironmentStep instead of connecting to the loop.
-        /// Note that if you've already made customizations to the Player Loop, this may overwrite those.
-        /// </summary>
-        public void ConnectToPlayerLoop()
+        public void EnableAutomaticStepping()
         {
-            if (m_ConnectedToPlayerLoop)
+            if (m_Stepper != null)
             {
                 return;
             }
-            m_ConnectedToPlayerLoop = ModifyGameLoop(true);
+
+            m_StepperObject = new GameObject("AcademyStepper");
+            m_StepperObject.AddComponent<AcademyStepper>();
+            m_Stepper = m_StepperObject.GetComponent<AcademyStepper>();
         }
 
-        /// <summary>
-        /// Remove Academy.Instance.EnvironmentStep from the FixedUpdate step of the Player Loop.
-        /// Note that if you've already made customizations to the Player Loop, this may overwrite those.
-        /// </summary>
-        public void DisconnectFromPlayerLoop()
+        public void DisableAutomaticStepping()
         {
-            if (!m_ConnectedToPlayerLoop)
+            if (m_Stepper == null)
             {
                 return;
             }
-            var success = ModifyGameLoop(false);
-            m_ConnectedToPlayerLoop = !success;
+
+            m_Stepper = null;
+            UnityEngine.Object.Destroy(m_StepperObject);
+            m_StepperObject = null;
         }
 
-        /// <summary>
-        /// Add or remove the Academy step from the FixedUpdate step of the Player Loop
-        /// </summary>
-        /// <param name="connect">whether to connect or disconnect</param>
-        /// <returns>Whether the loop was modified.</returns>
-        bool ModifyGameLoop(bool connect)
+        public bool IsAutomaticSteppingEnabled
         {
-            var playerLoop = PlayerLoop.GetDefaultPlayerLoop();
-            for (var i=0; i< playerLoop.subSystemList.Length; i++)
-            {
-                var subSystem = playerLoop.subSystemList[i];
-                if (subSystem.type == typeof(FixedUpdate))
-                {
-                    if (connect)
-                    {
-                        playerLoop.subSystemList[i].updateDelegate += EnvironmentStep;
-                    }
-                    else
-                    {
-                        playerLoop.subSystemList[i].updateDelegate -= EnvironmentStep;
-                    }
-                    PlayerLoop.SetPlayerLoop(playerLoop);
-                    return true;
-                }
-            }
-
-            Debug.Log("cant find FixedUpdate in game loop");
-            return false;
+            get { return m_Stepper != null; }
         }
 
         // Used to read Python-provided environment parameters
@@ -247,6 +227,8 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
+            EnableAutomaticStepping();
+
             m_EpisodeCount = 0;
             m_StepCount = 0;
             m_TotalStepCount = 0;
@@ -457,9 +439,6 @@ namespace MLAgents
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
-            // Disconnect from the loop. No effect if we weren't already connected.
-            DisconnectFromPlayerLoop();
-
             Communicator?.Dispose();
             Communicator = null;
 
@@ -482,6 +461,9 @@ namespace MLAgents
             FloatProperties = null;
 
             m_Initialized = false;
+
+            // Reset the Lazy instance
+            //lazy = new Lazy<Academy>(() => new Academy());
         }
     }
 }

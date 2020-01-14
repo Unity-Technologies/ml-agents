@@ -15,7 +15,6 @@ public class FoodCollectorSettings : MonoBehaviour
 
     public void Awake()
     {
-        Academy.Instance.ConnectToPlayerLoop();
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
     }
 

@@ -9,11 +9,6 @@ public class PyramidArea : Area
     public int numPyra;
     public float range;
 
-    void Awake()
-    {
-        Academy.Instance.ConnectToPlayerLoop();
-    }
-
     public void CreatePyramid(int numObjects, int spawnAreaIndex)
     {
         CreateObject(numObjects, pyramid, spawnAreaIndex);
