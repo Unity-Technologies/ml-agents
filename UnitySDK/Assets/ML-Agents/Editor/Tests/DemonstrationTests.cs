@@ -16,7 +16,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]
@@ -125,10 +128,6 @@ namespace MLAgents.Tests
                     Assert.AreEqual((float)i + 1, vecObs[i]);
                 }
             }
-
-            Academy.Instance.Dispose();
-
-
         }
     }
 }

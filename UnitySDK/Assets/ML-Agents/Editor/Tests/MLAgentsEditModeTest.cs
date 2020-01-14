@@ -96,7 +96,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]
@@ -126,13 +129,19 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]
         public void TestAcademy()
         {
+            Assert.AreEqual(false, Academy.IsInitialized);
             var aca = Academy.Instance;
+            Assert.AreEqual(true, Academy.IsInitialized);
+
             // Check that init is idempotent
             aca.LazyInitialization();
             aca.LazyInitialization();
@@ -144,6 +153,7 @@ namespace MLAgents.Tests
 
             // Check that Dispose is idempotent
             aca.Dispose();
+            Assert.AreEqual(false, Academy.IsInitialized);
             aca.Dispose();
         }
 
@@ -208,7 +218,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]
@@ -310,7 +323,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]
@@ -436,7 +452,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         [Test]

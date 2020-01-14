@@ -14,7 +14,10 @@ namespace MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            Academy.Instance.Dispose();
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
         }
 
         static IEnumerable<Agent> GetFakeAgents()

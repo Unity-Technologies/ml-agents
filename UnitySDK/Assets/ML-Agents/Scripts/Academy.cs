@@ -52,6 +52,11 @@ namespace MLAgents
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
 
+        public static bool IsInitialized
+        {
+            get { return lazy.IsValueCreated; }
+        }
+
         public static Academy Instance { get { return lazy.Value; } }
 
         public IFloatProperties FloatProperties;
