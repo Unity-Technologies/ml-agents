@@ -54,7 +54,7 @@ namespace MLAgents.Tests
                 storedVectorActions = new[] { 0f, 1f },
             };
 
-            demoStore.Record(agentInfo);
+            demoStore.Record(agentInfo, new System.Collections.Generic.List<Sensor.Observation>());
             demoStore.Close();
         }
 
