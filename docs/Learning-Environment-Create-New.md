@@ -501,7 +501,6 @@ to use Unity ML-Agents: an Academy and one or more Agents.
 
 Keep in mind:
 
-* There can only be one Academy game object in a scene.
 * If you are using multiple training areas, make sure all the Agents have the same `Behavior Name`
 and `Behavior Parameters`
 
