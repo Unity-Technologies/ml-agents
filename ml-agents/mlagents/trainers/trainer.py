@@ -70,7 +70,11 @@ class Trainer(object):
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            with tf.Session() as sess:
+            # Prevent GPU memory from being eaten up by this small writing session
+            config = tf.ConfigProto()
+            config.gpu_options.allow_growth = True
+            config.allow_soft_placement = True
+            with tf.Session(config=config) as sess:
                 s_op = tf.summary.text(
                     key,
                     tf.convert_to_tensor(
