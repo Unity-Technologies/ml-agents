@@ -245,6 +245,17 @@ namespace MLAgents.Tests
         }
 
         [Test]
+        public void TestAcademyAutostep()
+        {
+            var aca = Academy.Instance;
+            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
+            aca.DisableAutomaticStepping();
+            Assert.IsFalse(aca.IsAutomaticSteppingEnabled);
+            aca.EnableAutomaticStepping();
+            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
+        }
+
+        [Test]
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");

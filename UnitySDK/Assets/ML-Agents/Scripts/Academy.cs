@@ -447,6 +447,7 @@ namespace MLAgents
         /// </summary>
         public void Dispose()
         {
+            DisableAutomaticStepping();
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
