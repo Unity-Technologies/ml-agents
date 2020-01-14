@@ -273,10 +273,6 @@ public class FoodCollectorAgent : Agent
         }
     }
 
-    public override void AgentOnDone()
-    {
-    }
-
     public void SetLaserLengths()
     {
         m_LaserLength = m_Academy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);

@@ -121,8 +121,4 @@ public class PyramidAgent : Agent
             Done();
         }
     }
-
-    public override void AgentOnDone()
-    {
-    }
 }

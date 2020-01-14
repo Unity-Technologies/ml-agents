@@ -68,9 +68,6 @@ public class BouncerAgent : Agent
         SetResetParameters();
     }
 
-    public override void AgentOnDone()
-    {
-    }
 
     void FixedUpdate()
     {
