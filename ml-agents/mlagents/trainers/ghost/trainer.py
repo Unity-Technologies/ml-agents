@@ -59,6 +59,7 @@ class GhostTrainer(Trainer):
         self.current_policy_snapshot = None
         self.last_step = 0
 
+        # Chosen because it is the initial ELO in Chess
         self.initial_elo: float = 1200.0
         self.current_elo: float = self.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * self.window
@@ -78,10 +79,13 @@ class GhostTrainer(Trainer):
         """
         opponents = np.array(self.policy_elos)
         LOGGER.info(
-            " ELO: {}\n"
+            " Learning brain {} ELO: {}\n"
             "Mean Opponent ELO: {}"
             " Std Opponent ELO: {}".format(
-                self.current_elo, opponents.mean(), opponents.std()
+                self.learning_behavior_name,
+                self.current_elo,
+                opponents.mean(),
+                opponents.std(),
             )
         )
         self.stats_reporter.add_stat("ELO", self.current_elo)
