@@ -190,6 +190,14 @@ namespace MLAgents
             return obsProto;
         }
 
+        /// <summary>
+        /// Generate an ObservationProto for the sensor using the provided WriteAdapter.
+        /// This is equivalent to producing an Observation and calling Observation.ToProto(),
+        /// but avoid some intermediate memory allocations.
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="writeAdapter"></param>
+        /// <returns></returns>
         public static ObservationProto GetObservationProto(this ISensor sensor, WriteAdapter writeAdapter)
         {
             var shape = sensor.GetObservationShape();
@@ -199,6 +207,7 @@ namespace MLAgents
                 var numFloats = sensor.ObservationSize();
                 var floatDataProto = new ObservationProto.Types.FloatData();
                 // Resize the float array
+                // TODO upgrade protobuf versions so that we can set the Capacity directly - see https://github.com/protocolbuffers/protobuf/pull/6530
                 for (var i = 0; i < numFloats; i++)
                 {
                     floatDataProto.Data.Add(0.0f);
