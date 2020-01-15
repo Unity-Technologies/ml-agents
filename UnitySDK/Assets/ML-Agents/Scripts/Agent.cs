@@ -280,25 +280,10 @@ namespace MLAgents
 
         void NotifyAgentDone()
         {
-            if (m_VectorSensorBuffer == null)
-            {
-                m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
-            }
-
-            var observations = new List<Observation>();
-            GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
-
             m_Info.done = true;
-            // We copy the observations of the sensors into new FixedSensors so the original
-            // sensors are not used at a later time (and possibly destroyed) when using Inference.
-            var fixedSensors = new List<ISensor>();
-            for (int i = 0; i < sensors.Count; i++)
-            {
-                fixedSensors.Add(new FixedSensor(sensors[i].GetName(), observations[i]));
-            }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is disabled
-            m_Brain?.RequestDecision(m_Info, fixedSensors, (a) => { });
+            m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
         }
 
         /// <summary>
