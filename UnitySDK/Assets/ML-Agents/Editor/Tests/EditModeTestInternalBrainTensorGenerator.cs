@@ -8,14 +8,20 @@ using System.Reflection;
 
 namespace MLAgents.Tests
 {
+    [TestFixture]
     public class EditModeTestInternalBrainTensorGenerator
     {
+        [SetUp]
+        public void SetUp()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+        }
+
         static List<Agent> GetFakeAgents()
         {
-            var acaGo = new GameObject("TestAcademy");
-            acaGo.AddComponent<Academy>();
-            var aca = acaGo.GetComponent<Academy>();
-
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
             bpA.brainParameters.vectorObservationSize = 3;
@@ -33,7 +39,7 @@ namespace MLAgents.Tests
             {
                 var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                agentEnableMethod?.Invoke(agent, new object[] { aca });
+                agentEnableMethod?.Invoke(agent, new object[] { });
             }
             agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
             agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));

@@ -94,7 +94,7 @@ UnityEnvironment(file_name=filename, worker_id=X)
 
 If you receive a message `Mean reward : nan` when attempting to train a model
 using PPO, this is due to the episodes of the Learning Environment not
-terminating. In order to address this, set `Max Steps` for either the Academy or
+terminating. In order to address this, set `Max Steps` for the
 Agents within the Scene Inspector to a value greater than 0. Alternatively, it
 is possible to manually set `done` conditions for episodes from within scripts
 for custom episode-terminating events.

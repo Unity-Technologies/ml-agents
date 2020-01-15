@@ -48,9 +48,6 @@ it contains not one, but several agent cubes.  Each agent cube in the scene is a
 independent agent, but they all share the same Behavior. 3D Balance Ball does this
 to speed up training since all twelve agents contribute to training in parallel.
 
-### Academy
-
-The Academy object for the scene is placed on the Ball3DAcademy GameObject.
 
 ### Agent
 

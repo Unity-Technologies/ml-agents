@@ -25,10 +25,8 @@ namespace MLAgents
             string behaviorName)
         {
             m_BehaviorName = behaviorName;
-            var aca = GameObject.FindObjectOfType<Academy>();
-            aca.LazyInitialization();
-            m_Communicator = aca.Communicator;
-            aca.Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
+            m_Communicator = Academy.Instance.Communicator;
+            m_Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
         }
 
         /// <inheritdoc />
