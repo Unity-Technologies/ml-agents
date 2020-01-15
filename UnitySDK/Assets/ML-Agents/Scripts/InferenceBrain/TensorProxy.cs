@@ -90,6 +90,12 @@ namespace MLAgents.InferenceBrain
             };
         }
 
+        /// <summary>
+        /// Fill a specific batch of a TensorProxy with a given value
+        /// </summary>
+        /// <param name="tensorProxy"></param>
+        /// <param name="batch">The batch index to fill.</param>
+        /// <param name="fillValue"></param>
         public static void FillTensorBatch(TensorProxy tensorProxy, int batch, float fillValue)
         {
             var height = tensorProxy.data.height;
