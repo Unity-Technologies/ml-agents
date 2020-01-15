@@ -263,7 +263,6 @@ i = env.reset()
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var academy = FindObjectOfType<Academy>();
-var sharedProperties = academy.FloatProperties;
+var sharedProperties = Academy.Instance.FloatProperties;
 float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```

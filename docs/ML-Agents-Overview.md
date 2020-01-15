@@ -131,17 +131,15 @@ components:
 
 _Simplified block diagram of ML-Agents._
 
-The Learning Environment contains two additional components that help
+The Learning Environment contains an additional component that help
 organize the Unity scene:
 
 - **Agents** - which is attached to a Unity GameObject (any character within a
   scene) and handles generating its observations, performing the actions it
   receives and assigning a reward (positive / negative) when appropriate. Each
   Agent is linked to a Policy.
-- **Academy** - which orchestrates the observation and decision making process.
-  The External Communicator lives within the Academy.
 
-Every Learning Environment will always have one global Academy and one Agent for
+Every Learning Environment will always have one Agent for
 every character in the scene. While each Agent must be linked to a Policy, it is
 possible for Agents that have similar observations and actions to have
 the same Policy type. In our sample game, we have two teams each with their own medic.

@@ -21,7 +21,7 @@ Ball scale of 0.5          |  Ball scale of 4
 ## Introducing Generalization Using Reset Parameters
 
 To enable variations in the environments, we implemented `Reset Parameters`.
-`Reset Parameters` are `Academy.FloatProperties` that are used only when
+`Reset Parameters` are `Academy.Instance.FloatProperties` that are used only when
 resetting the environment. We
 also included different sampling methods and the ability to create new kinds of
 sampling methods for each `Reset Parameter`. In the 3D ball environment example displayed

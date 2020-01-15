@@ -29,7 +29,6 @@ public class WallJumpAgent : Agent
     Rigidbody m_AgentRb;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
-    Academy m_Academy;
     WallJumpSettings m_WallJumpSettings;
 
     public float jumpingTime;
@@ -44,7 +43,6 @@ public class WallJumpAgent : Agent
 
     public override void InitializeAgent()
     {
-        m_Academy = FindObjectOfType<Academy>();
         m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
         m_Configuration = Random.Range(0, 5);
 
@@ -314,7 +312,7 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
+                Academy.Instance.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", noWallBrain);
@@ -323,15 +321,15 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_Academy.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
+                Academy.Instance.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
             GiveModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var min = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
-            var max = m_Academy.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var min = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
             var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,

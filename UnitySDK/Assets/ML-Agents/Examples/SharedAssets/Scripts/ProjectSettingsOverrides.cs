@@ -45,10 +45,7 @@ public class ProjectSettingsOverrides : MonoBehaviour
         Physics.defaultSolverIterations = solverIterations;
         Physics.defaultSolverVelocityIterations = solverVelocityIterations;
 
-        var academy = FindObjectOfType<Academy>();
-        academy.LazyInitialization();
-
-        academy.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
+        Academy.Instance.FloatProperties.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
     }
 
     public void OnDestroy()

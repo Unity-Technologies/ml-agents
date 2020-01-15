@@ -11,8 +11,7 @@ public class Ball3DHardAgent : Agent
     public override void InitializeAgent()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
-        var academy = FindObjectOfType<Academy>();
-        m_ResetParams = academy.FloatProperties;
+        m_ResetParams = Academy.Instance.FloatProperties;
         SetResetParameters();
     }
 

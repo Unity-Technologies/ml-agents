@@ -49,7 +49,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 6. Calls the Agent's `AgentReset()` function if the Agent has reached its `Max
    Step` count or has otherwise marked itself as `done`.
 
-To create a training environment, extend the Academy and Agent classes to
+To create a training environment, extend the Agent class to
 implement the above methods. The `Agent.CollectObservations()` and
 `Agent.AgentAction()` functions are required; the other methods are optional —
 whether you need to implement them or not depends on your specific scenario.
@@ -62,14 +62,13 @@ information.
 
 ## Organizing the Unity Scene
 
-To train and use the ML-Agents toolkit in a Unity scene, the scene must contain
-a single Academy and as many Agent subclasses as you need.
+To train and use the ML-Agents toolkit in a Unity scene, the scene as many Agent subclasses as you need.
 Agent instances should be attached to the GameObject representing that Agent.
 
 ### Academy
 
-The Academy object orchestrates Agents and their decision making processes. Only
-place a single Academy object in a scene.
+The Academy is a singleton which orchestrates Agents and their decision making processes. Only
+a single Academy exists at a time.
 
 #### Academy resetting
 To alter the environment at the start of each episode, add your method to the Academy's OnEnvironmentReset action.
@@ -79,9 +78,7 @@ public class MySceneBehavior : MonoBehaviour
 {
     public void Awake()
     {
-        var academy = FindObjectOfType<Academy>();
-        academy.LazyInitialization();
-        academy.OnEnvironmentReset += EnvironmentReset;
+        Academy.Instance.OnEnvironmentReset += EnvironmentReset;
     }
 
     void EnvironmentReset()
@@ -140,8 +137,6 @@ training and for testing trained agents. Or, you may be training agents to
 operate in a complex game or simulation. In this case, it might be more
 efficient and practical to create a purpose-built training scene.
 
-Both training and testing (or normal game) scenes must contain an Academy object
-to control the agent decision making process.
 When you create a training environment in Unity, you must set up the scene so
 that it can be controlled by the external training process. Considerations
 include:
