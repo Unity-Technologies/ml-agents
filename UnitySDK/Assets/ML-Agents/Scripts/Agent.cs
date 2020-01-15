@@ -235,13 +235,6 @@ namespace MLAgents
         /// </summary>
         public VectorSensor collectObservationsSensor;
 
-        /// <summary>
-        /// Internal buffer used for generating float observations.
-        /// </summary>
-        float[] m_VectorSensorBuffer;
-
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
-
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
@@ -546,8 +539,6 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
-
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -557,19 +548,7 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-
-                if (m_VectorSensorBuffer == null)
-                {
-                    // Create a buffer for writing uncompressed (i.e. float) sensor data to
-                    m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
-                }
-
-                // This is a bit of a hack - if we're in inference mode, observations won't be generated
-                // But we need these to be generated for the recorder. So generate them here.
-                var observations = new List<Observation>();
-                GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
-
-                m_Recorder.WriteExperience(m_Info, observations);
+                m_Recorder.WriteExperience(m_Info, sensors);
             }
 
         }
@@ -592,7 +571,7 @@ namespace MLAgents
         /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
         /// be at least the same length as the total number of uncompressed floats in the observations</param>
         /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
-        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//  
+        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//
         public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
         {
             int floatsWritten = 0;

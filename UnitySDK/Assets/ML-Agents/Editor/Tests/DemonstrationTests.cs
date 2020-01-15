@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
@@ -64,7 +65,7 @@ namespace MLAgents.Tests
                 storedVectorActions = new[] { 0f, 1f },
             };
 
-            demoStore.Record(agentInfo, new System.Collections.Generic.List<Sensor.Observation>());
+            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
             demoStore.Close();
         }
 
