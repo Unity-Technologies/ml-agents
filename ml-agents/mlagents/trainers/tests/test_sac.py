@@ -81,7 +81,7 @@ def test_sac_cc_policy(dummy_config):
     )
     step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
 
-    run_out = policy.evaluate(step)
+    run_out = policy.evaluate(step, list(step.agent_id))
     assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
     # Test update
@@ -123,7 +123,7 @@ def test_sac_dc_policy(dummy_config):
     )
     step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
 
-    run_out = policy.evaluate(step)
+    run_out = policy.evaluate(step, list(step.agent_id))
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
@@ -140,7 +140,7 @@ def test_sac_visual_policy(dummy_config):
         dummy_config, use_rnn=False, use_discrete=True, use_visual=True
     )
     step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
-    run_out = policy.evaluate(step)
+    run_out = policy.evaluate(step, list(step.agent_id))
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update
@@ -158,7 +158,7 @@ def test_sac_rnn_policy(dummy_config):
         dummy_config, use_rnn=True, use_discrete=True, use_visual=False
     )
     step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
-    run_out = policy.evaluate(step)
+    run_out = policy.evaluate(step, list(step.agent_id))
     assert run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
 
     # Test update

@@ -82,7 +82,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
-    run_out = policy.evaluate(batched_step)
+    run_out = policy.evaluate(batched_step, list(batched_step.agent_id))
     assert run_out["action"].shape == (3, 2)
     env.close()
 
