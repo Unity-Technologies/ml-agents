@@ -46,10 +46,8 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 5. Calls the `AgentAction()` function for each Agent in the scene, passing in
    the action chosen by the Agent's Policy. (This function is not called if the
    Agent is done.)
-6. Calls the Agent's `AgentOnDone()` function if the Agent has reached its `Max
-   Step` count or has otherwise marked itself as `done`. Optionally, you can set
-   an Agent to restart if it finishes before the end of an episode. In this
-   case, the Academy calls the `AgentReset()` function.
+6. Calls the Agent's `AgentReset()` function if the Agent has reached its `Max
+   Step` count or has otherwise marked itself as `done`.
 
 To create a training environment, extend the Academy and Agent classes to
 implement the above methods. The `Agent.CollectObservations()` and
@@ -125,10 +123,8 @@ You must also determine how an Agent finishes its task or times out. You can
 manually set an Agent to done in your `AgentAction()` function when the Agent
 has finished (or irrevocably failed) its task by calling the `Done()` function.
 You can also set the Agent's `Max Steps` property to a positive value and the
-Agent will consider itself done after it has taken that many steps. If you
-set an Agent's `ResetOnDone` property to true, then the Agent can attempt its
-task several times in one episode. (Use the `Agent.AgentReset()` function to
-prepare the Agent to start again.)
+Agent will consider itself done after it has taken that many steps. You can
+use the `Agent.AgentReset()` function to prepare the Agent to start again.
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information
 about programming your own Agents.
