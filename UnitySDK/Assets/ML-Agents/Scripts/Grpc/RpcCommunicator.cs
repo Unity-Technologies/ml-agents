@@ -245,13 +245,10 @@ namespace MLAgents
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            if (!m_ActionCallbacks.ContainsKey(brainKey))
+            int numFloatObservations = sensors.GetSensorFloatObservationSize();
+            if (m_VectorObservationBuffer.Length < numFloatObservations)
             {
-                int numFloatObservations = sensors.GetSensorFloatObservationSize();
-                if (m_VectorObservationBuffer.Length < numFloatObservations)
-                {
-                    m_VectorObservationBuffer = new float[numFloatObservations];
-                }
+                m_VectorObservationBuffer = new float[numFloatObservations];
             }
 
 # if DEBUG

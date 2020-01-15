@@ -343,6 +343,12 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
+#if DEBUG
+            if (float.IsNaN(reward))
+            {
+                throw new ArgumentException("NaN reward passed to SetReward.");
+            }
+#endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
         }
@@ -353,6 +359,12 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
+#if DEBUG
+            if (float.IsNaN(increment))
+            {
+                throw new ArgumentException("NaN reward passed to AddReward.");
+            }
+#endif
             m_Reward += increment;
             m_CumulativeReward += increment;
         }
@@ -592,7 +604,7 @@ namespace MLAgents
         /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
         /// be at least the same length as the total number of uncompressed floats in the observations</param>
         /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
-        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//  
+        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//
         public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
         {
             int floatsWritten = 0;
