@@ -569,51 +569,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Generate data for each sensor and store it in the observations input.
-        /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
-        /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
-        /// future to be controlled by the type of brain being used.
-        /// </summary>
-        /// <param name="sensors"> List of ISensors that will be used to generate the data.</param>
-        /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
-        /// be at least the same length as the total number of uncompressed floats in the observations</param>
-        /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
-        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//
-        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
-        {
-            int floatsWritten = 0;
-            // Generate data for all Sensors
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                var sensor = sensors[i];
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
-                {
-                    // TODO handle in communicator code instead
-                    adapter.SetTarget(buffer, sensor.GetObservationShape(), floatsWritten);
-                    var numFloats = sensor.Write(adapter);
-                    var floatObs = new Observation
-                    {
-                        FloatData = new ArraySegment<float>(buffer, floatsWritten, numFloats),
-                        Shape = sensor.GetObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    observations.Add(floatObs);
-                    floatsWritten += numFloats;
-                }
-                else
-                {
-                    var compressedObs = new Observation
-                    {
-                        CompressedData = sensor.GetCompressedObservation(),
-                        Shape = sensor.GetObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    observations.Add(compressedObs);
-                }
-            }
-        }
-
-        /// <summary>
         /// Collects the (vector, visual) observations of the agent.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
