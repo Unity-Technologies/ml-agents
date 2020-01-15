@@ -299,13 +299,13 @@ namespace MLAgents
             GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
 
             m_Info.done = true;
-            var nullSensors = new List<ISensor>();
+            var fixedSensors = new List<ISensor>();
             for (int i = 0; i < sensors.Count; i++)
             {
-                nullSensors.Add(new NullSensor(sensors[i].GetName(), sensors[i].GetObservationShape()));
-                // nullSensors.Add(new FixedSensor(sensors[i].GetName(), observations[i]));
+                fixedSensors.Add(new FixedSensor(sensors[i].GetName(), observations[i]));
             }
-            m_Brain?.RequestDecision(m_Info, nullSensors, (a) => { });
+            // Request the last decision with no callbacks
+            m_Brain?.RequestDecision(m_Info, fixedSensors, (a) => { });
         }
 
         /// <summary>
