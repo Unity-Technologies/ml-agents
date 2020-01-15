@@ -19,5 +19,13 @@ namespace MLAgents.RewardProvider
         /// <see cref="GetIncrementalReward"/> method.
         /// </summary>
         void RewardStep();
+
+        /// <summary>
+        /// Notifies the RewardProvider that the current reward should be reset.  If done is false,
+        /// the incremental reward should only be reset, otherwise both the incremental and cumulative
+        /// reward should be reset.
+        /// <param name="done">Flag indicating whether the Agent episode is done or not.</param>
+        /// </summary>
+        void ResetReward(bool done=false);
     }
 }

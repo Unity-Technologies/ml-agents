@@ -247,9 +247,9 @@ namespace MLAgents
         /// </summary>
         public IRewardProvider rewardProvider;
 
-        CumulativeRewardProvider CumulativeRewardProvider
+        RewardProviderComponent RewardProviderComponent
         {
-            get { return rewardProvider as CumulativeRewardProvider; }
+            get { return rewardProvider as RewardProviderComponent; }
         }
 
         /// MonoBehaviour function that is called when the attached GameObject
@@ -341,27 +341,13 @@ namespace MLAgents
         {
             return m_StepCount;
         }
-        void CheckCumulativeRewardProviderExistence(string callee) {
-            if (CumulativeRewardProvider == null)
+        void CheckRewardProviderExistence(string callee) {
+            if (RewardProviderComponent == null)
             {
-                Debug.LogWarningFormat("the CumulativeRewardProvider is null and " +
-                    "method '{0}' was called.  If your agent doesn't have the CumulativeRewardProvider," +
+                Debug.LogWarningFormat("the RewardProviderComponent is null and " +
+                    "method '{0}' was called.  If your agent doesn't have the RewardProviderComponent," +
                     "remove the call to '{0}'.", callee);
             }
-        }
-
-        /// <summary>
-        /// Resets the step reward and possibly the episode reward for the agent.
-        /// </summary>
-        public void ResetReward()
-        {
-            CheckCumulativeRewardProviderExistence("ResetReward");
-            InternalResetReward();
-        }
-
-        void InternalResetReward()
-        {
-            CumulativeRewardProvider?.ResetReward(m_Done);
         }
 
         /// <summary>
@@ -371,8 +357,8 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
-            CheckCumulativeRewardProviderExistence("SetReward");
-            CumulativeRewardProvider?.SetReward(reward);
+            CheckRewardProviderExistence("SetReward");
+            RewardProviderComponent.SetReward(reward);
         }
 
         /// <summary>
@@ -381,8 +367,8 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
-            CheckCumulativeRewardProviderExistence("AddReward");
-            CumulativeRewardProvider?.AddReward(increment);
+            CheckRewardProviderExistence("AddReward");
+            RewardProviderComponent.AddReward(increment);
         }
 
         /// <summary>
@@ -481,7 +467,6 @@ namespace MLAgents
         {
         }
 
-
         /// <summary>
         /// When the Agent uses Heuristics, it will call this method every time it
         /// needs an action. This can be used for debugging or controlling the agent
@@ -565,8 +550,7 @@ namespace MLAgents
             var rewardProviderComponent = GetComponent<RewardProviderComponent>();
             if (rewardProviderComponent == null)
             {
-                rewardProviderComponent = gameObject.AddComponent<CumulativeRewardProviderComponent>();
-                rewardProvider = rewardProviderComponent.GetRewardProvider();
+                rewardProvider = gameObject.AddComponent<RewardProviderComponent>();
             }
         }
 
@@ -967,7 +951,7 @@ namespace MLAgents
             if (m_RequestDecision)
             {
                 SendInfoToBrain();
-                InternalResetReward();
+                rewardProvider.ResetReward(m_Done);
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
@@ -981,7 +965,7 @@ namespace MLAgents
             if (m_Terminate)
             {
                 m_Terminate = false;
-                InternalResetReward();
+                rewardProvider.ResetReward(m_Done);
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;

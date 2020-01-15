@@ -572,8 +572,8 @@ namespace MLAgents.Tests
 
 
             var j = 0;
-            var rewardProvider1 = agent1.rewardProvider as CumulativeRewardProvider;
-            var rewardProvider2 = agent2.rewardProvider as CumulativeRewardProvider;
+            var rewardProvider1 = agent1.rewardProvider as RewardProviderComponent;
+            var rewardProvider2 = agent2.rewardProvider as RewardProviderComponent;
             for (var i = 0; i < 500; i++)
             {
                 agent2.RequestAction();
