@@ -130,6 +130,8 @@ class TFPolicy(Policy):
         """
         Decides actions given observations information, and takes them in environment.
         :param batched_step_result: A dictionary of brain names and BatchedStepResult from environment.
+        :param worker_id: In parallel environment training, the unique id of the environment worker that
+            the BatchedStepResult came from. Used to construct a globally unique id for each agent.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
