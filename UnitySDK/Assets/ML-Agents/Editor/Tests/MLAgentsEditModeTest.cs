@@ -454,6 +454,16 @@ namespace MLAgents.Tests
     [TestFixture]
     public class EditModeTestMiscellaneous
     {
+
+        [SetUp]
+        public void SetUp()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+        }
+
         [Test]
         public void TestCumulativeReward()
         {

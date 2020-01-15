@@ -274,11 +274,11 @@ namespace MLAgents
                 Academy.Instance.AgentAct -= AgentStep;
                 Academy.Instance.AgentForceReset -= _AgentReset;
             }
-            OnDisableHelper();
+            NotifyAgentDone();
             m_Brain?.Dispose();
         }
 
-        void OnDisableHelper()
+        void NotifyAgentDone()
         {
             if (m_VectorSensorBuffer == null)
             {
