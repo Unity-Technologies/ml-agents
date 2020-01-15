@@ -177,7 +177,7 @@ class UnityEnv(gym.Env):
             observation (object/list): agent's observation of the current environment
             reward (float/list) : amount of reward returned after previous action
             done (boolean/list): whether the episode has ended.
-            info (dict): contains auxiliary diagnostic information, including BrainInfo.
+            info (dict): contains auxiliary diagnostic information, including BatchedStepResult.
         """
 
         # Use random actions for all other agents in environment.

@@ -142,8 +142,8 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
     action_info_dict = {brain_name: MagicMock()}
 
     brain_info_dict = {brain_name: Mock()}
-    old_step_info = EnvironmentStep(brain_info_dict, action_info_dict)
-    new_step_info = EnvironmentStep(brain_info_dict, action_info_dict)
+    old_step_info = EnvironmentStep(brain_info_dict, 0, action_info_dict)
+    new_step_info = EnvironmentStep(brain_info_dict, 0, action_info_dict)
     trainer_mock._is_ready_update = MagicMock(return_value=True)
 
     env_mock = MagicMock()
@@ -159,7 +159,8 @@ def test_take_step_adds_experiences_to_trainer_and_trains(
 
     manager_mock = tc.managers[brain_name]
     manager_mock.add_experiences.assert_called_once_with(
-        new_step_info.current_all_brain_info[brain_name],
+        new_step_info.current_all_step_result[brain_name],
+        0,
         new_step_info.brain_name_to_action_info[brain_name],
     )
 
@@ -174,8 +175,8 @@ def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
     action_info_dict = {brain_name: MagicMock()}
 
     brain_info_dict = {brain_name: Mock()}
-    old_step_info = EnvironmentStep(brain_info_dict, action_info_dict)
-    new_step_info = EnvironmentStep(brain_info_dict, action_info_dict)
+    old_step_info = EnvironmentStep(brain_info_dict, 0, action_info_dict)
+    new_step_info = EnvironmentStep(brain_info_dict, 0, action_info_dict)
 
     trainer_mock._is_ready_update = MagicMock(return_value=False)
 
@@ -190,7 +191,8 @@ def test_take_step_if_not_training(trainer_controller_with_take_step_mocks):
     env_mock.step.assert_called_once()
     manager_mock = tc.managers[brain_name]
     manager_mock.add_experiences.assert_called_once_with(
-        new_step_info.current_all_brain_info[brain_name],
+        new_step_info.current_all_step_result[brain_name],
+        0,
         new_step_info.brain_name_to_action_info[brain_name],
     )
     trainer_mock.advance.assert_called_once()
