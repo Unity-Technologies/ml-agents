@@ -9,9 +9,9 @@ from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
 def test_gym_wrapper(mock_env):
-    mock_brain = create_mock_group_spec()
-    mock_braininfo = create_mock_vector_step_result()
-    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mock_spec = create_mock_group_spec()
+    mock_step = create_mock_vector_step_result()
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
 
     env = UnityEnv(" ", use_visual=False, multiagent=False)
     assert isinstance(env, UnityEnv)
@@ -28,9 +28,9 @@ def test_gym_wrapper(mock_env):
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
 def test_multi_agent(mock_env):
-    mock_brain = create_mock_group_spec()
-    mock_braininfo = create_mock_vector_step_result(num_agents=2)
-    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mock_spec = create_mock_group_spec()
+    mock_step = create_mock_vector_step_result(num_agents=2)
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
 
     with pytest.raises(UnityGymException):
         UnityEnv(" ", multiagent=False)
@@ -47,11 +47,11 @@ def test_multi_agent(mock_env):
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
 def test_branched_flatten(mock_env):
-    mock_brain = create_mock_group_spec(
+    mock_spec = create_mock_group_spec(
         vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
     )
-    mock_braininfo = create_mock_vector_step_result(num_agents=1)
-    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mock_step = create_mock_vector_step_result(num_agents=1)
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
 
     env = UnityEnv(" ", use_visual=False, multiagent=False, flatten_branched=True)
     assert isinstance(env.action_space, spaces.Discrete)
@@ -67,9 +67,9 @@ def test_branched_flatten(mock_env):
 @pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
 @mock.patch("gym_unity.envs.UnityEnvironment")
 def test_gym_wrapper_visual(mock_env, use_uint8):
-    mock_brain = create_mock_group_spec(number_visual_observations=1)
-    mock_braininfo = create_mock_vector_step_result(number_visual_observations=1)
-    setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
+    mock_spec = create_mock_group_spec(number_visual_observations=1)
+    mock_step = create_mock_vector_step_result(number_visual_observations=1)
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
 
     env = UnityEnv(" ", use_visual=True, multiagent=False, uint8_visual=use_uint8)
     assert isinstance(env, UnityEnv)
@@ -117,10 +117,10 @@ def create_mock_group_spec(
 
 def create_mock_vector_step_result(num_agents=1, number_visual_observations=0):
     """
-    Creates a mock BrainInfo with vector observations. Imitates constant
+    Creates a mock BatchedStepResult with vector observations. Imitates constant
     vector observations, rewards, dones, and agents.
 
-    :int num_agents: Number of "agents" to imitate in your BrainInfo values.
+    :int num_agents: Number of "agents" to imitate in your BatchedStepResult values.
     """
     obs = [np.array([num_agents * [1, 2, 3]])]
     if number_visual_observations:
@@ -134,7 +134,7 @@ def create_mock_vector_step_result(num_agents=1, number_visual_observations=0):
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_result):
     """
     Takes a mock UnityEnvironment and adds the appropriate properties, defined by the mock
-    BrainParameters and BrainInfo.
+    GroupSpec and BatchedStepResult.
 
     :Mock mock_env: A mock UnityEnvironment, usually empty.
     :Mock mock_spec: An AgentGroupSpec object that specifies the params of this environment.

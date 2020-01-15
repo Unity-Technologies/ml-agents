@@ -1,10 +1,11 @@
 import logging
 import numpy as np
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from mlagents.tf_utils import tf
 
 from mlagents_envs.timers import timed
+from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
@@ -137,29 +138,32 @@ class PPOPolicy(TFPolicy):
                 self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
     @timed
-    def evaluate(self, brain_info):
+    def evaluate(
+        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+    ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo object containing inputs.
+        :param batched_step_result: BatchedStepResult object containing inputs.
+        :param global_agent_ids: The global (with worker ID) agent ids of the data in the batched_step_result.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
-            self.model.batch_size: len(brain_info.vector_observations),
+            self.model.batch_size: batched_step_result.n_agents(),
             self.model.sequence_length: 1,
         }
         epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = self.retrieve_previous_action(
-                    brain_info.agents
+                    global_agent_ids
                 )
-            feed_dict[self.model.memory_in] = self.retrieve_memories(brain_info.agents)
+            feed_dict[self.model.memory_in] = self.retrieve_memories(global_agent_ids)
         if self.use_continuous_act:
             epsilon = np.random.normal(
-                size=(len(brain_info.vector_observations), self.model.act_size[0])
+                size=(batched_step_result.n_agents(), self.model.act_size[0])
             )
             feed_dict[self.model.epsilon] = epsilon
-        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, batched_step_result)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 

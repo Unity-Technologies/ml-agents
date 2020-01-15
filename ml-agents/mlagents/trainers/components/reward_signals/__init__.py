@@ -6,7 +6,6 @@ import abc
 
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.trainer import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
@@ -48,27 +47,10 @@ class RewardSignal(abc.ABC):
         self.strength = strength
         self.stats_name_to_update_name: Dict[str, str] = {}
 
-    def evaluate(
-        self, current_info: BrainInfo, action: np.array, next_info: BrainInfo
-    ) -> RewardSignalResult:
-        """
-        Evaluates the reward for the agents present in current_info given the next_info
-        :param current_info: The current BrainInfo.
-        :param action: the action that was taken between the two infos
-        :param next_info: The BrainInfo from the next timestep.
-        :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
-        """
-        return RewardSignalResult(
-            self.strength * np.zeros(len(current_info.agents), dtype=np.float32),
-            np.zeros(len(current_info.agents), dtype=np.float32),
-        )
-
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         """
-        Evaluates the reward for the data present in the Dict mini_batch. Note the distiction between
-        evaluate(), which takes in two BrainInfos. This reflects the different data formats (i.e. from the Buffer
-        vs. before being placed into the Buffer. Use this when evaluating a reward function drawn straight from a
-        Buffer.
+        Evaluates the reward for the data present in the Dict mini_batch. Use this when evaluating a reward
+        function drawn straight from a Buffer.
         :param mini_batch: A Dict of numpy arrays (the format used by our Buffer)
             when drawing from the update buffer.
         :return: a RewardSignalResult of (scaled intrinsic reward, unscaled intrinsic reward) provided by the generator
