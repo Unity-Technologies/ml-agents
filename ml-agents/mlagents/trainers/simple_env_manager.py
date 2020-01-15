@@ -67,7 +67,7 @@ class SimpleEnvManager(EnvManager):
         all_action_info: Dict[str, ActionInfo] = {}
         for brain_name, step_info in last_step.current_all_step_result.items():
             all_action_info[brain_name] = self.policies[brain_name].get_action(
-                step_info
+                step_info, 0
             )
         return all_action_info
 

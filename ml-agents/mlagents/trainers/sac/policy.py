@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, Optional, Mapping
+from typing import Dict, Any, Optional, Mapping, List
 import numpy as np
 from mlagents.tf_utils import tf
 
@@ -162,7 +162,9 @@ class SACPolicy(TFPolicy):
                         self, self.model, reward_signal, config
                     )
 
-    def evaluate(self, batched_step_result: BatchedStepResult) -> Dict[str, np.ndarray]:
+    def evaluate(
+        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+    ) -> Dict[str, np.ndarray]:
         """
         Evaluates policy for the agent experiences provided.
         :param batched_step_result: BatchedStepResult object containing inputs.
@@ -175,11 +177,9 @@ class SACPolicy(TFPolicy):
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = self.retrieve_previous_action(
-                    batched_step_result.agent_id
+                    global_agent_ids
                 )
-            feed_dict[self.model.memory_in] = self.retrieve_memories(
-                batched_step_result.agent_id
-            )
+            feed_dict[self.model.memory_in] = self.retrieve_memories(global_agent_ids)
 
         feed_dict = self.fill_eval_dict(feed_dict, batched_step_result)
         run_out = self._execute_model(feed_dict, self.inference_dict)

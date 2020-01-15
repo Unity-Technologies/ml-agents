@@ -300,6 +300,6 @@ class SubprocessEnvManager(EnvManager):
         for brain_name, batch_step_result in last_step.current_all_step_result.items():
             if brain_name in self.policies:
                 all_action_info[brain_name] = self.policies[brain_name].get_action(
-                    batch_step_result
+                    batch_step_result, last_step.worker_id
                 )
         return all_action_info
