@@ -9,6 +9,8 @@ namespace MLAgents
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
+    ///
+    [AddComponentMenu("ML Agents/Behavior Parameters")]
     public class BehaviorParameters : MonoBehaviour
     {
 

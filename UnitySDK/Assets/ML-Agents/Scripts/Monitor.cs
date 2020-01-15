@@ -8,6 +8,7 @@ namespace MLAgents
     /// Monitor is used to display information about the Agent within the Unity
     /// scene. Use the log function to add information to your monitor.
     /// </summary>
+    [AddComponentMenu("ML Agents/Monitor")]
     public class Monitor : MonoBehaviour
     {
         /// <summary>

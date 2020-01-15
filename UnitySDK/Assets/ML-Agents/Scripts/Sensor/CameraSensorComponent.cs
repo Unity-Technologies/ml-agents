@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
+    [AddComponentMenu("ML Agents/Sensors/Camera Sensor")]
     public class CameraSensorComponent : SensorComponent
     {
         public new Camera camera;
