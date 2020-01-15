@@ -1,5 +1,9 @@
 namespace MLAgents.Sensor
 {
+    /// <summary>
+    /// FixedSensor will always sense the same data as the observation that was fed as input
+    /// to its constructor. 
+    /// </summary>
     public class FixedSensor : ISensor
     {
         Observation m_Observation;
@@ -28,7 +32,7 @@ namespace MLAgents.Sensor
 
         public int Write(WriteAdapter adapter)
         {
-            using (TimerStack.Instance.Scoped("NullSensor.WriteToTensor"))
+            using (TimerStack.Instance.Scoped("FixedSensor.WriteToTensor"))
             {
                 for (int i = 0; i < m_Observation.FloatData.Count; i++)
                 {

@@ -289,12 +289,9 @@ namespace MLAgents
         {
             if (m_VectorSensorBuffer == null)
             {
-                // Create a buffer for writing uncompressed (i.e. float) sensor data to
                 m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
             }
 
-            // This is a bit of a hack - if we're in inference mode, observations won't be generated
-            // But we need these to be generated for the recorder. So generate them here.
             var observations = new List<Observation>();
             GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
 
