@@ -101,20 +101,30 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (var info in infos)
             {
-                var tensorOffset = 0;
-                // Write each sensor consecutively to the tensor
-                foreach (var sensorIndex in m_SensorIndices)
+                if (info.agentInfo.done)
                 {
-                    var sensor = info.sensors[sensorIndex];
-                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
-                    var numWritten = sensor.Write(m_WriteAdapter);
-                    tensorOffset += numWritten;
+                    // If the agent is done, we might have a stale reference to the sensors
+                    // e.g. a dependent object might have been disposed.
+                    // To avoid this, just fill observation with zeroes instead of calling sensor.Write.
+                    TensorUtils.FillTensorBatch(tensorProxy, agentIndex, 0.0f);
                 }
-                Debug.AssertFormat(
-                    tensorOffset == vecObsSizeT,
-                    "mismatch between vector observation size ({0}) and number of observations written ({1})",
-                    vecObsSizeT, tensorOffset
-                );
+                else
+                {
+                    var tensorOffset = 0;
+                    // Write each sensor consecutively to the tensor
+                    foreach (var sensorIndex in m_SensorIndices)
+                    {
+                        var sensor = info.sensors[sensorIndex];
+                        m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
+                        var numWritten = sensor.Write(m_WriteAdapter);
+                        tensorOffset += numWritten;
+                    }
+                    Debug.AssertFormat(
+                        tensorOffset == vecObsSizeT,
+                        "mismatch between vector observation size ({0}) and number of observations written ({1})",
+                        vecObsSizeT, tensorOffset
+                    );
+                }
 
                 agentIndex++;
             }
@@ -356,8 +366,19 @@ namespace MLAgents.InferenceBrain
             foreach (var infoSensorPair in infos)
             {
                 var sensor = infoSensorPair.sensors[m_SensorIndex];
-                m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
-                sensor.Write(m_WriteAdapter);
+                if (infoSensorPair.agentInfo.done)
+                {
+                    // If the agent is done, we might have a stale reference to the sensors
+                    // e.g. a dependent object might have been disposed.
+                    // To avoid this, just fill observation with zeroes instead of calling sensor.Write.
+                    TensorUtils.FillTensorBatch(tensorProxy, agentIndex, 0.0f);
+                }
+                else
+                {
+                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
+                    sensor.Write(m_WriteAdapter);
+
+                }
                 agentIndex++;
             }
         }
