@@ -48,8 +48,8 @@ class EnvManager(ABC):
     def _reset_env(self, config: Dict = None) -> List[EnvironmentStep]:
         pass
 
-    def reset(self, config: Dict = None) -> None:
-        self._process_step_infos(self._reset_env(config))
+    def reset(self, config: Dict = None) -> int:
+        return self._process_step_infos(self._reset_env(config))
 
     @property
     @abstractmethod
@@ -93,7 +93,7 @@ class EnvManager(ABC):
                     step_info.current_all_step_result[name_behavior_id],
                     step_info.worker_id,
                     step_info.brain_name_to_action_info.get(
-                        name_behavior_id, ActionInfo([], [], {}, [])
+                        name_behavior_id, ActionInfo.empty()
                     ),
                 )
         return len(step_infos)

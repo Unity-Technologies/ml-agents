@@ -136,7 +136,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if batched_step_result.n_agents() == 0:
-            return ActionInfo([], [], {}, [])
+            return ActionInfo.empty()
 
         agents_done = [
             agent
