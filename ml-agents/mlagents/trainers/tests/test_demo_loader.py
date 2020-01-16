@@ -12,11 +12,11 @@ path_prefix = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_load_demo():
-    brain_parameters, pair_infos, total_expected = load_demonstration(
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
+    group_spec, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test.demo"
     )
-    assert brain_parameters.brain_name == "Ball3DBrain"
-    assert brain_parameters.vector_observation_space_size == 8
+    assert np.sum(group_spec.observation_shapes[0]) == 8
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo", 1)
@@ -24,11 +24,11 @@ def test_load_demo():
 
 
 def test_load_demo_dir():
-    brain_parameters, pair_infos, total_expected = load_demonstration(
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
+    group_spec, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test_demo_dir"
     )
-    assert brain_parameters.brain_name == "3DBall"
-    assert brain_parameters.vector_observation_space_size == 8
+    assert np.sum(group_spec.observation_shapes[0]) == 8
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test_demo_dir", 1)
