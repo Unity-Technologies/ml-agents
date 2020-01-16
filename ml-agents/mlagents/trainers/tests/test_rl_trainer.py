@@ -1,4 +1,4 @@
-import unittest.mock as mock
+from unittest import mock
 import yaml
 import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
