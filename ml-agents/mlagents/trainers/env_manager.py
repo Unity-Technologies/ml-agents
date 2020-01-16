@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NamedTuple, Iterable
 import logging
+from typing import List, Dict, NamedTuple, Iterable
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
@@ -11,6 +11,13 @@ AllStepResult = Dict[AgentGroup, BatchedStepResult]
 AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
 
 logger = logging.getLogger("mlagents.trainers")
+
+
+def get_global_agent_id(worker_id: int, agent_id: int) -> str:
+    """
+    Create an agent id that is unique across environment workers using the worker_id.
+    """
+    return f"${worker_id}-{agent_id}"
 
 
 class EnvironmentStep(NamedTuple):

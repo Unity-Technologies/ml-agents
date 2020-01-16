@@ -83,6 +83,12 @@ namespace MLAgents.Sensor
 
         void AddFloatObs(float obs)
         {
+#if DEBUG
+            if (float.IsNaN(obs))
+            {
+                throw new System.ArgumentException("NaN value passed to observation.");
+            }
+#endif
             m_Observations.Add(obs);
         }
 

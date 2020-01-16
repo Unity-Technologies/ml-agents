@@ -1,4 +1,5 @@
-using UnityEngine;
+using MLAgents.Sensor;
+using System.Collections.Generic;
 using System;
 
 namespace MLAgents
@@ -12,7 +13,7 @@ namespace MLAgents
     public class HeuristicPolicy : IPolicy
     {
         Func<float[]> m_Heuristic;
-        Agent m_Agent;
+        Action<AgentAction> m_ActionFunc;
 
         /// <inheritdoc />
         public HeuristicPolicy(Func<float[]> heuristic)
@@ -21,17 +22,18 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(Agent agent)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            m_Agent = agent;
+            m_ActionFunc = action;
         }
 
         /// <inheritdoc />
         public void DecideAction()
         {
-            if (m_Agent != null)
+            if (m_ActionFunc != null)
             {
-                m_Agent.UpdateVectorAction(m_Heuristic.Invoke());
+                m_ActionFunc.Invoke(new AgentAction { vectorActions = m_Heuristic.Invoke() });
+                m_ActionFunc = null;
             }
         }
 

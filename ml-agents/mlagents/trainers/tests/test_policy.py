@@ -35,11 +35,11 @@ def test_take_action_returns_nones_on_missing_values():
         np.array([], dtype=np.float32),
         np.array([False], dtype=np.bool),
         np.array([], dtype=np.bool),
-        ["an-agent-id"],
+        np.array([0]),
         None,
     )
-    result = policy.get_action(step_with_agents)
-    assert result == ActionInfo(None, None, {}, ["an-agent-id"])
+    result = policy.get_action(step_with_agents, worker_id=0)
+    assert result == ActionInfo(None, None, {}, [0])
 
 
 def test_take_action_returns_action_info_when_available():
@@ -56,14 +56,11 @@ def test_take_action_returns_action_info_when_available():
         np.array([], dtype=np.float32),
         np.array([False], dtype=np.bool),
         np.array([], dtype=np.bool),
-        ["an-agent-id"],
+        np.array([0]),
         None,
     )
     result = policy.get_action(step_with_agents)
     expected = ActionInfo(
-        policy_eval_out["action"],
-        policy_eval_out["value"],
-        policy_eval_out,
-        ["an-agent-id"],
+        policy_eval_out["action"], policy_eval_out["value"], policy_eval_out, [0]
     )
     assert result == expected

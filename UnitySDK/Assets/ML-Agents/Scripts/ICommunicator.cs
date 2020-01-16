@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -88,13 +89,12 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator
+    public interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.
         /// </summary>
         event QuitCommandHandler QuitCommandReceived;
-
 
         /// <summary>
         /// Reset command sent back from the communicator.
@@ -117,11 +117,13 @@ namespace MLAgents
         void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
-        /// Sends the observations of one Agent. 
+        /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
-        /// <param name="agent">Agent info.</param>
-        void PutObservations(string brainKey, Agent agent);
+        /// <param name="info">Agent info.</param>
+        /// <param name="sensors">The list of ISensors of the Agent.</param>
+        /// <param name="action">The action that will be called once the next AgentAction is ready.</param>
+        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action);
 
         /// <summary>
         /// Signals the ICommunicator that the Agents are now ready to receive their action
@@ -135,10 +137,10 @@ namespace MLAgents
         /// </summary>
         /// <param name="key">A key to identify which actions to get</param>
         /// <returns></returns>
-        Dictionary<Agent, AgentAction> GetActions(string key);
+        Dictionary<int, AgentAction> GetActions(string key);
 
         /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// Registers a side channel to the communicator. The side channel will exchange
         /// messages with its Python equivalent.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>

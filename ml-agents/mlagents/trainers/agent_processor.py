@@ -9,6 +9,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.env_manager import get_global_agent_id
 
 T = TypeVar("T")
 
@@ -50,12 +51,6 @@ class AgentProcessor:
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.behavior_id = behavior_id
 
-    def _get_global_agent_id(self, worker_id: int, agent_id: int) -> str:
-        """
-        Create an agent id that is unique across environment workers using the worker_id.
-        """
-        return f"${worker_id}-{agent_id}"
-
     def add_experiences(
         self,
         batched_step_result: BatchedStepResult,
@@ -77,8 +72,7 @@ class AgentProcessor:
 
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
-            self._get_global_agent_id(worker_id, ag_id)
-            for ag_id in previous_action.agent_ids
+            get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
         ]
         for global_id in action_global_agent_ids:
             self.last_take_action_outputs[global_id] = take_action_outputs
@@ -88,7 +82,7 @@ class AgentProcessor:
                 _id
             )  # Needed for mypy to pass since ndarray has no content type
             curr_agent_step = batched_step_result.get_agent_step_result(local_id)
-            global_id = self._get_global_agent_id(worker_id, local_id)
+            global_id = get_global_agent_id(worker_id, local_id)
             stored_step = self.last_step_result.get(global_id, None)
             stored_take_action_outputs = self.last_take_action_outputs.get(
                 global_id, None
@@ -198,12 +192,13 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str):
+    def __init__(self, behavior_id: str, maxlen: int = 1000):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.queue: Deque[T] = deque()
+        self.maxlen: int = maxlen
+        self.queue: Deque[T] = deque(maxlen=self.maxlen)
         self.behavior_id = behavior_id
 
     def empty(self) -> bool:

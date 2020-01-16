@@ -20,7 +20,6 @@ public class PushAgentBasic : Agent
     public Bounds areaBounds;
 
     PushBlockSettings m_PushBlockSettings;
-    Academy m_Academy;
 
     /// <summary>
     /// The goal to push the block to.
@@ -51,7 +50,6 @@ public class PushAgentBasic : Agent
 
     void Awake()
     {
-        m_Academy = FindObjectOfType<Academy>(); //cache the academy
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
     }
 
@@ -228,7 +226,7 @@ public class PushAgentBasic : Agent
 
     public void SetGroundMaterialFriction()
     {
-        var resetParams = m_Academy.FloatProperties;
+        var resetParams = Academy.Instance.FloatProperties;
 
         var groundCollider = ground.GetComponent<Collider>();
 
@@ -238,7 +236,7 @@ public class PushAgentBasic : Agent
 
     public void SetBlockProperties()
     {
-        var resetParams = m_Academy.FloatProperties;
+        var resetParams = Academy.Instance.FloatProperties;
 
         var scale = resetParams.GetPropertyWithDefault("block_scale", 2);
         //Set the scale of the block

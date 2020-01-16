@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from mlagents.tf_utils import tf
 
@@ -138,10 +138,13 @@ class PPOPolicy(TFPolicy):
                 self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
     @timed
-    def evaluate(self, batched_step_result: BatchedStepResult) -> Dict[str, Any]:
+    def evaluate(
+        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+    ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
         :param batched_step_result: BatchedStepResult object containing inputs.
+        :param global_agent_ids: The global (with worker ID) agent ids of the data in the batched_step_result.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
@@ -152,11 +155,9 @@ class PPOPolicy(TFPolicy):
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = self.retrieve_previous_action(
-                    batched_step_result.agent_id
+                    global_agent_ids
                 )
-            feed_dict[self.model.memory_in] = self.retrieve_memories(
-                batched_step_result.agent_id
-            )
+            feed_dict[self.model.memory_in] = self.retrieve_memories(global_agent_ids)
         if self.use_continuous_act:
             epsilon = np.random.normal(
                 size=(batched_step_result.n_agents(), self.model.act_size[0])

@@ -1,6 +1,6 @@
 # ML-Agents Toolkit Glossary
 
-* **Academy** - Unity Component which controls timing, reset, and
+* **Academy** - Singleton object which controls timing, reset, and
   training/inference settings of the environment.
 * **Action** - The carrying-out of a decision on the part of an agent within the
   environment.
@@ -12,7 +12,7 @@
   carried out given an observation.
 * **Editor** - The Unity Editor, which may include any pane (e.g. Hierarchy,
   Scene, Inspector).
-* **Environment** - The Unity scene which contains Agents and the Academy.
+* **Environment** - The Unity scene which contains Agents.
 * **FixedUpdate** - Unity method called each time the game engine is
   stepped. ML-Agents logic should be placed here.
 * **Frame** - An instance of rendering the main camera for the display.

@@ -1,6 +1,8 @@
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Collections.Generic;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -68,9 +70,9 @@ namespace MLAgents
         /// <summary>
         /// Forwards AgentInfo to Demonstration Store.
         /// </summary>
-        public void WriteExperience(AgentInfo info)
+        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
-            m_DemoStore.Record(info);
+            m_DemoStore.Record(info, sensors);
         }
 
         public void Close()

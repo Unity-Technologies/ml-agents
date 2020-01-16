@@ -12,6 +12,7 @@ from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.env_manager import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
 
 
@@ -113,18 +114,24 @@ class TFPolicy(Policy):
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
-    def evaluate(self, batched_step_result: BatchedStepResult) -> Dict[str, Any]:
+    def evaluate(
+        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+    ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BatchedStepResult input to network.
+        :param batched_step_result: BatchedStepResult input to network.
         :return: Output from policy based on self.inference_dict.
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
 
-    def get_action(self, batched_step_result: BatchedStepResult) -> ActionInfo:
+    def get_action(
+        self, batched_step_result: BatchedStepResult, worker_id: int = 0
+    ) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
-        :param brain_info: A dictionary of brain names and BatchedStepResult from environment.
+        :param batched_step_result: A dictionary of brain names and BatchedStepResult from environment.
+        :param worker_id: In parallel environment training, the unique id of the environment worker that
+            the BatchedStepResult came from. Used to construct a globally unique id for each agent.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
@@ -142,10 +149,16 @@ class TFPolicy(Policy):
         self.remove_memories(agents_done)
         self.remove_previous_action(agents_done)
 
+        global_agent_ids = [
+            get_global_agent_id(worker_id, int(agent_id))
+            for agent_id in batched_step_result.agent_id
+        ]  # For 1-D array, the iterator order is correct.
+
         run_out = self.evaluate(  # pylint: disable=assignment-from-no-return
-            batched_step_result
+            batched_step_result, global_agent_ids
         )
-        self.save_memories(batched_step_result.agent_id, run_out.get("memory_out"))
+
+        self.save_memories(global_agent_ids, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),
