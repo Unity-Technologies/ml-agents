@@ -12,7 +12,7 @@ test_mac_editmode_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - ./run-tests-editmode-osx-editor.sh
+    - python ml-agents/tests/yamato/editmode_tests.py
   triggers:
     pull_requests:
       - targets:
