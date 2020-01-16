@@ -1,7 +1,9 @@
 # Training with Self-Play
 
 ML-Agents provides the functionality to train symmetric, adversarial games with [Self-Play](https://openai.com/blog/competitive-self-play/).
-With self-play, agents learn in adversarial games by competing against past versions of itself. Competing
+A symmetric game is one in which opposing agents are *equal* in form and function. In reinforcement learning,
+this means both agents have the same observation and action spaces.
+With self-play, an agent learns in adversarial games by competing against past versions of itself. Competing
 against fixed, past versions of the agent's policy provides a more stable, stationary learning environment. This is compared
 to competing against its current self in every episode, which is a constantly changing opponent.
 
@@ -15,29 +17,46 @@ Self-play is triggered by including the self-play hyperparameter hierarchy in th
 
 See the trainer configuration and agent prefabs for our Tennis example environment for an example.
 
-## Training with self-play
+## Best Practices Training with Self-Play
 
-Training with self-play adds additional confounding factors to the usual issues faced by reinforcement learning in general. This guide contains some discussion of the self-play hyperparameters and intuitions for tuning them.
+Training with self-play adds additional confounding factors to the usual
+issues faced by reinforcement learning. In general, the tradeoff is between
+the skill level and generality of the final policy and the stability of learning.
+Training against a set of slowly or unchanging adversaries with low diversity
+results in a more stable learning process than training against a set of quickly
+changing adversaries with high diversity. With this context, this guide discusses the exposed self-play hyperparameters and intuitions for tuning them.
 
-The general tradeoff is between speed/generality/stability of learning
+
 ## Hyperparameters
 
 ### Reward Signals
 
-The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encouraging users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity.
+We make the assumption that the final reward in a trajectory corresponds to the outcome of an episode.
+A final reward of +1 indicates winning, -1 indicates losing and 0 indicates a draw.
+The ELO calculation (discussed below) depends on this final reward being either +1, 0, -1.
+
+The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encourage users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity of reward.
+
+### Save Steps
+
+The `save_steps` parameter corresponds to the number of *trainer steps* between snapshots.  For example, if `save_steps`=10000 then a snapshot of the current policy will be saved every 10000 trainer steps. Note, trainer steps are counted per agent. For more information, please see the [migration doc](Migrating.md) after v0.13.
+
+A larger value of `save_steps` will yield a set of opponents that cover a wider range of skill levels and possibly playstyles since the policy receives more training. As a result, the agent will train against a variety of opponents
+### Swap Steps
+
+The `swap_steps` parameter corresponds to the number of *trainer steps* between swapping the opponents policy with a different snapshot. As in the `save_steps` discussion, notethat trainer steps are counted per agent. For more information, please see the [migration doc](Migrating.md) after v0.13.
 
 ### Play against current self ratio
 
 The `play_against_current_self_ratio` parameter corresponds to the probability
-an agent will play against its ***current*** self. With probability `1 - play_against_current_self_ratio`, the agent will play against a snapshot of itself from a past iteration.
+an agent will play against its ***current*** self. With probability
+1 - `play_against_current_self_ratio`, the agent will play against a snapshot of itself
+from a past iteration.
 
 ### Window
 
 The `window` parameter corresponds to the size of the sliding window of past snapshots from which the agent's opponents are sampled.  For example, a `window` size of 5 will save the last 5 snapshots taken. Each time a new snapshot is taken, the oldest is discarded.
 
-### Snapshot Per
-
-The `snapshot_per` parameter corresponds to the number of *trainer steps* between snapshots.  For example, if `snapshot_per=10000` then a snapshot of the current policy will be saved every 10000 trainer steps. Note, trainer steps are counted per agent. For more information, please see the [migration doc](Migrating.md) after v0.13.
 
 ## Training Statistics
 
@@ -49,3 +68,5 @@ using TensorBoard, see
 In adversarial games, the cumulative environment reward may not be a meaningful metric by which to track learning progress.  This is because cumulative reward is entirely dependent on the skill of the opponent. An agent at a particular skill level will get more or less reward against a worse or better agent, respectively.
 
 We provide an implementation of the ELO rating system, a method for calculating the relative skill level between two players from a given population in a zero-sum game. For more informtion on ELO, please see [the ELO wiki](https://en.wikipedia.org/wiki/Elo_rating_system).
+
+In a proper training run, the ELO of the agent should steadily increase. The absolute value of the ELO is less important than the change in ELO over training iterations

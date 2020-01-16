@@ -46,21 +46,23 @@ class GhostTrainer(Trainer):
         self.stats_reporter = self.trainer.stats_reporter
 
         self_play_parameters = trainer_parameters["self_play"]
-        self.window = self_play_parameters["window"]
-        self.play_against_current_self_ratio = self_play_parameters[
-            "play_against_current_self_ratio"
-        ]
-        self.steps_between_snapshots = self_play_parameters["snapshot_per"]
+        self.window = self_play_parameters.get("window", 10)
+        self.play_against_current_self_ratio = self_play_parameters.get(
+            "play_against_current_self_ratio", 0
+        )
+        self.steps_between_save = self_play_parameters.get("save_steps", 20000)
+        self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
 
         self.policies: Dict[str, TFPolicy] = {}
         self.policy_snapshots: List[Any] = [None] * self.window
         self.snapshot_counter: int = 0
         self.learning_behavior_name: str = None
         self.current_policy_snapshot = None
-        self.last_step = 0
+        self.last_save = 0
+        self.last_swap = 0
 
         # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = 1200.0
+        self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
         self.current_elo: float = self.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * self.window
         self.current_opponent: int = 0
@@ -96,10 +98,21 @@ class GhostTrainer(Trainer):
             and not trajectory.max_step_reached
             and self.current_opponent > -1
         ):
-            result = "win"
+            # Assumption is that final reward is 1/.5/0 for win/draw/loss
             final_reward = trajectory.steps[-1].reward
-            if final_reward < 0:
-                result = "loss"
+
+            if final_reward == 1:
+                result = 1.0
+            elif final_reward == 0:
+                result = 0.5
+            elif final_reward == -1:
+                result = 0.0
+            else:
+                LOGGER.warning(
+                    "The final reward in a trajectory marked as done did not"
+                    "correspond to an outcome recognized for ELO calculation"
+                )
+
             change = compute_elo_rating_changes(
                 self.current_elo, self.policy_elos[self.current_opponent], result
             )
@@ -140,10 +153,13 @@ class GhostTrainer(Trainer):
             except AgentManagerQueue.Empty:
                 pass
 
-        if self.get_step - self.last_step > self.steps_between_snapshots:
+        if self.get_step - self.last_save > self.steps_between_save:
             self.save_snapshot(self.trainer.policy)
-            self.last_step = self.get_step
+            self.last_save = self.get_step
+
+        if self.get_step - self.last_swap > self.steps_between_swap:
             self.swap_snapshots()
+            self.last_swap = self.get_step
 
     def end_episode(self):
         self.trainer.end_episode()
@@ -235,19 +251,17 @@ class GhostTrainer(Trainer):
             self.trainer.subscribe_trajectory_queue(internal_trajectory_queue)
 
 
-# Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975
+# Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
+# https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/
 # ELO calculation
 
 
-def compute_elo_rating_changes(rating1, rating2, result):
+def compute_elo_rating_changes(rating1: float, rating2: float, result: float) -> float:
     r1 = pow(10, rating1 / 400)
     r2 = pow(10, rating2 / 400)
 
     summed = r1 + r2
     e1 = r1 / summed
 
-    s1 = 1 if result == "win" else 0
-
-    change = s1 - e1
-    #    change = -change if result != "win" else change
+    change = result - e1
     return change
