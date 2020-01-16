@@ -31,11 +31,6 @@ namespace MLAgents
                 new GUIContent(
                     "Max Step", "The per-agent maximum number of steps."));
             EditorGUILayout.PropertyField(
-                isResetOnDone,
-                new GUIContent(
-                    "Reset On Done",
-                    "If checked, the agent will reset on done. Else, AgentOnDone() will be called."));
-            EditorGUILayout.PropertyField(
                 isOdd,
                 new GUIContent(
                     "On Demand Decisions",

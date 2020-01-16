@@ -35,8 +35,6 @@ namespace MLAgents
 
         List<string> m_BehaviorNames = new List<string>();
         bool m_NeedCommunicateThisStep;
-        float[] m_VectorObservationBuffer = new float[0];
-        List<Observation> m_ObservationBuffer = new List<Observation>();
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
         Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
@@ -239,18 +237,12 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sends the observations of one Agent. 
+        /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
         public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            int numFloatObservations = sensors.GetSensorFloatObservationSize();
-            if (m_VectorObservationBuffer.Length < numFloatObservations)
-            {
-                m_VectorObservationBuffer = new float[numFloatObservations];
-            }
-
 # if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(brainKey))
             {
@@ -259,16 +251,21 @@ namespace MLAgents
             m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
 #endif
 
-            using (TimerStack.Instance.Scoped("GenerateSensorData"))
-            {
-                Agent.GenerateSensorData(sensors, m_VectorObservationBuffer, m_WriteAdapter, m_ObservationBuffer);
-            }
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
             {
-                var agentInfoProto = info.ToAgentInfoProto(m_ObservationBuffer);
+                var agentInfoProto = info.ToAgentInfoProto();
+
+                using (TimerStack.Instance.Scoped("GenerateSensorData"))
+                {
+                    foreach (var sensor in sensors)
+                    {
+                        var obsProto = sensor.GetObservationProto(m_WriteAdapter);
+                        agentInfoProto.Observations.Add(obsProto);
+                    }
+                }
                 m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
             }
-            m_ObservationBuffer.Clear();
+
             m_NeedCommunicateThisStep = true;
             if (!m_ActionCallbacks.ContainsKey(brainKey))
             {
@@ -451,7 +448,7 @@ namespace MLAgents
         #region Handling side channels
 
         /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// Registers a side channel to the communicator. The side channel will exchange
         /// messages with its Python equivalent.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>

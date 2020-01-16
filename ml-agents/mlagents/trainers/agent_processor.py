@@ -1,13 +1,15 @@
 import sys
+import numpy as np
 from typing import List, Dict, Deque, TypeVar, Generic
 from collections import defaultdict, Counter, deque
 
+from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents.trainers.brain import BrainInfo
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.env_manager import get_global_agent_id
 
 T = TypeVar("T")
 
@@ -35,7 +37,7 @@ class AgentProcessor:
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
-        self.last_brain_info: Dict[str, BrainInfo] = {}
+        self.last_step_result: Dict[str, BatchedStepResult] = {}
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
@@ -50,12 +52,15 @@ class AgentProcessor:
         self.behavior_id = behavior_id
 
     def add_experiences(
-        self, curr_info: BrainInfo, previous_action: ActionInfo
+        self,
+        batched_step_result: BatchedStepResult,
+        worker_id: int,
+        previous_action: ActionInfo,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param curr_info: current BrainInfo.
-        :param previous_action: The return value of the Policy's get_action method.
+        :param batched_step_result: current BatchedStepResult.
+        :param previous_action: The outputs of the Policy's get_action method.
         """
         take_action_outputs = previous_action.outputs
         if take_action_outputs:
@@ -65,99 +70,101 @@ class AgentProcessor:
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
 
-        for agent_id in previous_action.agents:
-            self.last_take_action_outputs[agent_id] = take_action_outputs
+        # Make unique agent_ids that are global across workers
+        action_global_agent_ids = [
+            get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
+        ]
+        for global_id in action_global_agent_ids:
+            self.last_take_action_outputs[global_id] = take_action_outputs
 
-        # Store the environment reward
-        tmp_environment_reward = curr_info.rewards
-
-        for agent_idx, agent_id in enumerate(curr_info.agents):
-            stored_info = self.last_brain_info.get(agent_id, None)
+        for _id in np.nditer(batched_step_result.agent_id):  # Explicit numpy iteration
+            local_id = int(
+                _id
+            )  # Needed for mypy to pass since ndarray has no content type
+            curr_agent_step = batched_step_result.get_agent_step_result(local_id)
+            global_id = get_global_agent_id(worker_id, local_id)
+            stored_step = self.last_step_result.get(global_id, None)
             stored_take_action_outputs = self.last_take_action_outputs.get(
-                agent_id, None
+                global_id, None
             )
-            if stored_info is not None and stored_take_action_outputs is not None:
-                prev_idx = stored_info.agents.index(agent_id)
-                obs = []
-                if not stored_info.local_done[prev_idx]:
-                    for i, _ in enumerate(stored_info.visual_observations):
-                        obs.append(stored_info.visual_observations[i][prev_idx])
-                    if self.policy.use_vec_obs:
-                        obs.append(stored_info.vector_observations[prev_idx])
+            if stored_step is not None and stored_take_action_outputs is not None:
+                # We know the step is from the same worker, so use the local agent id.
+                stored_agent_step = stored_step.get_agent_step_result(local_id)
+                idx = stored_step.agent_id_to_index[local_id]
+                obs = stored_agent_step.obs
+                if not stored_agent_step.done:
                     if self.policy.use_recurrent:
-                        memory = self.policy.retrieve_memories([agent_id])[0, :]
+                        memory = self.policy.retrieve_memories([global_id])[0, :]
                     else:
                         memory = None
 
-                    done = curr_info.local_done[agent_idx]
-                    max_step = curr_info.max_reached[agent_idx]
+                    done = curr_agent_step.done
+                    max_step = curr_agent_step.max_step
 
                     # Add the outputs of the last eval
-                    action = stored_take_action_outputs["action"][prev_idx]
+                    action = stored_take_action_outputs["action"][idx]
                     if self.policy.use_continuous_act:
-                        action_pre = stored_take_action_outputs["pre_action"][prev_idx]
+                        action_pre = stored_take_action_outputs["pre_action"][idx]
                     else:
                         action_pre = None
-                    action_probs = stored_take_action_outputs["log_probs"][prev_idx]
-                    action_masks = stored_info.action_masks[prev_idx]
-                    prev_action = self.policy.retrieve_previous_action([agent_id])[0, :]
+                    action_probs = stored_take_action_outputs["log_probs"][idx]
+                    action_mask = stored_agent_step.action_mask
+                    prev_action = self.policy.retrieve_previous_action([global_id])[
+                        0, :
+                    ]
 
                     experience = AgentExperience(
                         obs=obs,
-                        reward=tmp_environment_reward[agent_idx],
+                        reward=curr_agent_step.reward,
                         done=done,
                         action=action,
                         action_probs=action_probs,
                         action_pre=action_pre,
-                        action_mask=action_masks,
+                        action_mask=action_mask,
                         prev_action=prev_action,
                         max_step=max_step,
                         memory=memory,
                     )
                     # Add the value outputs if needed
-                    self.experience_buffers[agent_id].append(experience)
-                    self.episode_rewards[agent_id] += tmp_environment_reward[agent_idx]
+                    self.experience_buffers[global_id].append(experience)
+                    self.episode_rewards[global_id] += curr_agent_step.reward
                 if (
-                    curr_info.local_done[agent_idx]
+                    curr_agent_step.done
                     or (
-                        len(self.experience_buffers[agent_id])
+                        len(self.experience_buffers[global_id])
                         >= self.max_trajectory_length
                     )
-                ) and len(self.experience_buffers[agent_id]) > 0:
+                ) and len(self.experience_buffers[global_id]) > 0:
                     # Make next AgentExperience
-                    next_obs = []
-                    for i, _ in enumerate(curr_info.visual_observations):
-                        next_obs.append(curr_info.visual_observations[i][agent_idx])
-                    if self.policy.use_vec_obs:
-                        next_obs.append(curr_info.vector_observations[agent_idx])
+                    next_obs = curr_agent_step.obs
                     trajectory = Trajectory(
-                        steps=self.experience_buffers[agent_id],
-                        agent_id=agent_id,
+                        steps=self.experience_buffers[global_id],
+                        agent_id=global_id,
                         next_obs=next_obs,
                         behavior_id=self.behavior_id,
                     )
                     for traj_queue in self.trajectory_queues:
                         traj_queue.put(trajectory)
-                    self.experience_buffers[agent_id] = []
-                    if curr_info.local_done[agent_idx]:
+                    self.experience_buffers[global_id] = []
+                    if curr_agent_step.done:
                         self.stats_reporter.add_stat(
                             "Environment/Cumulative Reward",
-                            self.episode_rewards.get(agent_id, 0),
+                            self.episode_rewards.get(global_id, 0),
                         )
                         self.stats_reporter.add_stat(
                             "Environment/Episode Length",
-                            self.episode_steps.get(agent_id, 0),
+                            self.episode_steps.get(global_id, 0),
                         )
-                        del self.episode_steps[agent_id]
-                        del self.episode_rewards[agent_id]
-                elif not curr_info.local_done[agent_idx]:
-                    self.episode_steps[agent_id] += 1
+                        del self.episode_steps[global_id]
+                        del self.episode_rewards[global_id]
+                elif not curr_agent_step.done:
+                    self.episode_steps[global_id] += 1
 
-            self.last_brain_info[agent_id] = curr_info
+            self.last_step_result[global_id] = batched_step_result
 
         if "action" in take_action_outputs:
             self.policy.save_previous_action(
-                previous_action.agents, take_action_outputs["action"]
+                previous_action.agent_ids, take_action_outputs["action"]
             )
 
     def publish_trajectory_queue(
@@ -185,12 +192,13 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str):
+    def __init__(self, behavior_id: str, maxlen: int = 1000):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.queue: Deque[T] = deque()
+        self.maxlen: int = maxlen
+        self.queue: Deque[T] = deque(maxlen=self.maxlen)
         self.behavior_id = behavior_id
 
     def empty(self) -> bool:

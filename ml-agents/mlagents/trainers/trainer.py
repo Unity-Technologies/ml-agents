@@ -290,11 +290,15 @@ class Trainer(abc.ABC):
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
-                try:
-                    t = traj_queue.get_nowait()
-                    self._process_trajectory(t)
-                except AgentManagerQueue.Empty:
-                    pass
+                # We grab at most the maximum length of the queue.
+                # This ensures that even if the queue is being filled faster than it is
+                # being emptied, the trajectories in the queue are on-policy.
+                for _ in range(traj_queue.maxlen):
+                    try:
+                        t = traj_queue.get_nowait()
+                        self._process_trajectory(t)
+                    except AgentManagerQueue.Empty:
+                        break
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):

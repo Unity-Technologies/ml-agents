@@ -305,7 +305,8 @@ class TrainerController(object):
                     )
                     continue
                 self.managers[name_behavior_id].add_experiences(
-                    step_info.current_all_brain_info[name_behavior_id],
+                    step_info.current_all_step_result[name_behavior_id],
+                    step_info.worker_id,
                     step_info.brain_name_to_action_info.get(
                         name_behavior_id, ActionInfo([], [], {}, [])
                     ),

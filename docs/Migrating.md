@@ -15,6 +15,7 @@ The versions can be found in
 * Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
 * Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
 * The `--num-runs` command-line option has been removed.
+* The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
 
 ### Steps to Migrate
 * If you have a class that inherits from Academy:
@@ -28,6 +29,7 @@ The versions can be found in
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
+* If your Agent implements `AgentOnDone` and your Agent does not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
 
 ## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
 

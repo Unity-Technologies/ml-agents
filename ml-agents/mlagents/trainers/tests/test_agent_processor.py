@@ -51,23 +51,23 @@ def test_agentprocessor(num_vis_obs):
         "pre_action": [0.1, 0.1],
         "log_probs": [0.1, 0.1],
     }
-    mock_braininfo = mb.create_mock_braininfo(
+    mock_step = mb.create_mock_batchedstep(
         num_agents=2,
         num_vector_observations=8,
-        num_vector_acts=2,
+        action_shape=[2],
         num_vis_observations=num_vis_obs,
     )
     fake_action_info = ActionInfo(
         action=[0.1, 0.1],
         value=[0.1, 0.1],
         outputs=fake_action_outputs,
-        agents=mock_braininfo.agents,
+        agent_ids=mock_step.agent_id,
     )
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_braininfo, ActionInfo([], [], {}, []))
+    processor.add_experiences(mock_step, 0, ActionInfo([], [], {}, []))
     for _ in range(5):
-        processor.add_experiences(mock_braininfo, fake_action_info)
+        processor.add_experiences(mock_step, 0, fake_action_info)
 
     # Assert that two trajectories have been added to the Trainer
     assert len(tqueue.put.call_args_list) == 2

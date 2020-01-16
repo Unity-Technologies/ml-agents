@@ -70,9 +70,9 @@ namespace MLAgents
         /// <summary>
         /// Forwards AgentInfo to Demonstration Store.
         /// </summary>
-        public void WriteExperience(AgentInfo info, List<Observation> observations)
+        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
-            m_DemoStore.Record(info, observations);
+            m_DemoStore.Record(info, sensors);
         }
 
         public void Close()

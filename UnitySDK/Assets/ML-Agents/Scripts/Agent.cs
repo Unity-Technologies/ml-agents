@@ -78,16 +78,6 @@ namespace MLAgents
         public int maxStep;
 
         /// <summary>
-        /// Determines the behaviour of the agent when done.
-        /// </summary>
-        /// <remarks>
-        /// If true, the agent will reset when done and start a new episode.
-        /// Otherwise, the agent will remain done and its behavior will be
-        /// dictated by the AgentOnDone method.
-        /// </remarks>
-        public bool resetOnDone = true;
-
-        /// <summary>
         /// Whether to enable On Demand Decisions or make a decision at
         /// every step.
         /// </summary>
@@ -207,10 +197,6 @@ namespace MLAgents
         /// done has not been communicated (required for On Demand Decisions).
         bool m_HasAlreadyReset;
 
-        /// Flag to signify that an agent is done and should not reset until
-        /// the fact that it is done has been communicated.
-        bool m_Terminate;
-
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int m_Id;
@@ -234,13 +220,6 @@ namespace MLAgents
         /// VectorSensor which is written to by AddVectorObs
         /// </summary>
         public VectorSensor collectObservationsSensor;
-
-        /// <summary>
-        /// Internal buffer used for generating float observations.
-        /// </summary>
-        float[] m_VectorSensorBuffer;
-
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -288,7 +267,16 @@ namespace MLAgents
                 Academy.Instance.AgentAct -= AgentStep;
                 Academy.Instance.AgentForceReset -= _AgentReset;
             }
+            NotifyAgentDone();
             m_Brain?.Dispose();
+        }
+
+        void NotifyAgentDone()
+        {
+            m_Info.done = true;
+            // Request the last decision with no callbacks
+            // We request a decision so Python knows the Agent is disabled
+            m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
         }
 
         /// <summary>
@@ -558,8 +546,6 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
-
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
@@ -569,19 +555,7 @@ namespace MLAgents
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-
-                if (m_VectorSensorBuffer == null)
-                {
-                    // Create a buffer for writing uncompressed (i.e. float) sensor data to
-                    m_VectorSensorBuffer = new float[sensors.GetSensorFloatObservationSize()];
-                }
-
-                // This is a bit of a hack - if we're in inference mode, observations won't be generated
-                // But we need these to be generated for the recorder. So generate them here.
-                var observations = new List<Observation>();
-                GenerateSensorData(sensors, m_VectorSensorBuffer, m_WriteAdapter, observations);
-
-                m_Recorder.WriteExperience(m_Info, observations);
+                m_Recorder.WriteExperience(m_Info, sensors);
             }
 
         }
@@ -591,51 +565,6 @@ namespace MLAgents
             for (var i = 0; i < sensors.Count; i++)
             {
                 sensors[i].Update();
-            }
-        }
-
-        /// <summary>
-        /// Generate data for each sensor and store it in the observations input.
-        /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
-        /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
-        /// future to be controlled by the type of brain being used.
-        /// </summary>
-        /// <param name="sensors"> List of ISensors that will be used to generate the data.</param>
-        /// <param name="buffer"> A float array that will be used as buffer when generating the observations. Must
-        /// be at least the same length as the total number of uncompressed floats in the observations</param>
-        /// <param name="adapter"> The WriteAdapter that will be used to write the ISensor data to the observations</param>
-        /// <param name="observations"> A list of observations outputs. This argument will be modified by this method.</param>//
-        public static void GenerateSensorData(List<ISensor> sensors, float[] buffer, WriteAdapter adapter, List<Observation> observations)
-        {
-            int floatsWritten = 0;
-            // Generate data for all Sensors
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                var sensor = sensors[i];
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
-                {
-                    // TODO handle in communicator code instead
-                    adapter.SetTarget(buffer, sensor.GetObservationShape(), floatsWritten);
-                    var numFloats = sensor.Write(adapter);
-                    var floatObs = new Observation
-                    {
-                        FloatData = new ArraySegment<float>(buffer, floatsWritten, numFloats),
-                        Shape = sensor.GetObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    observations.Add(floatObs);
-                    floatsWritten += numFloats;
-                }
-                else
-                {
-                    var compressedObs = new Observation
-                    {
-                        CompressedData = sensor.GetCompressedObservation(),
-                        Shape = sensor.GetObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    observations.Add(compressedObs);
-                }
             }
         }
 
@@ -813,15 +742,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Specifies the agent behavior when done and
-        /// <see cref="AgentParameters.resetOnDone"/> is false. This method can be
-        /// used to remove the agent from the scene.
-        /// </summary>
-        public virtual void AgentOnDone()
-        {
-        }
-
-        /// <summary>
         /// Specifies the agent behavior when being reset, which can be due to
         /// the agent or Academy being done (i.e. completion of local or global
         /// episode).
@@ -910,29 +830,21 @@ namespace MLAgents
             // request for a decision and an action
             if (IsDone())
             {
-                if (agentParameters.resetOnDone)
+                if (agentParameters.onDemandDecision)
                 {
-                    if (agentParameters.onDemandDecision)
+                    if (!m_HasAlreadyReset)
                     {
-                        if (!m_HasAlreadyReset)
-                        {
-                            // If event based, the agent can reset as soon
-                            // as it is done
-                            _AgentReset();
-                            m_HasAlreadyReset = true;
-                        }
-                    }
-                    else if (m_RequestDecision)
-                    {
-                        // If not event based, the agent must wait to request a
-                        // decision before resetting to keep multiple agents in sync.
+                        // If event based, the agent can reset as soon
+                        // as it is done
                         _AgentReset();
+                        m_HasAlreadyReset = true;
                     }
                 }
-                else
+                else if (m_RequestDecision)
                 {
-                    m_Terminate = true;
-                    RequestDecision();
+                    // If not event based, the agent must wait to request a
+                    // decision before resetting to keep multiple agents in sync.
+                    _AgentReset();
                 }
             }
         }
@@ -957,20 +869,6 @@ namespace MLAgents
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if (m_Terminate)
-            {
-                m_Terminate = false;
-                ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
-                m_RequestAction = false;
-
-                m_HasAlreadyReset = false;
-                OnDisable();
-                AgentOnDone();
-            }
-
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;

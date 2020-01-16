@@ -84,10 +84,6 @@ public class BasicAgent : Agent
         return new float[] { 0 };
     }
 
-    public override void AgentOnDone()
-    {
-    }
-
     public void FixedUpdate()
     {
         WaitTimeInference();

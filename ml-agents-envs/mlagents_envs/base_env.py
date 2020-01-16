@@ -90,14 +90,24 @@ class BatchedStepResult:
         self.max_step: np.ndarray = max_step
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
-        self._agent_id_to_index: Optional[Dict[int, int]] = None
+        self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
-    def contains_agent(self, agent_id: AgentId) -> bool:
+    @property
+    def agent_id_to_index(self) -> Dict[AgentId, int]:
+        """
+        Returns the index of the agent_id in this BatchedStepResult, and
+        -1 if agent_id is not in this BatchedStepResult.
+        :param agent_id: The id of the agent
+        :returns: The index of the agent_id, and -1 if not found.
+        """
         if self._agent_id_to_index is None:
             self._agent_id_to_index = {}
             for a_idx, a_id in enumerate(self.agent_id):
                 self._agent_id_to_index[a_id] = a_idx
-        return agent_id in self._agent_id_to_index
+        return self._agent_id_to_index
+
+    def contains_agent(self, agent_id: AgentId) -> bool:
+        return agent_id in self.agent_id_to_index
 
     def get_agent_step_result(self, agent_id: AgentId) -> StepResult:
         """

@@ -18,10 +18,7 @@ from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.brain_conversion_utils import (
-    step_result_to_brain_info,
-    group_spec_to_brain_parameters,
-)
+from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
 
 @pytest.fixture
@@ -75,9 +72,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     env = UnityEnvironment(" ")
     env.reset()
     brain_name = env.get_agent_groups()[0]
-    brain_info = step_result_to_brain_info(
-        env.get_step_result(brain_name), env.get_agent_group_spec(brain_name)
-    )
+    batched_step = env.get_step_result(brain_name)
     brain_params = group_spec_to_brain_parameters(
         brain_name, env.get_agent_group_spec(brain_name)
     )
@@ -87,7 +82,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
-    run_out = policy.evaluate(brain_info)
+    run_out = policy.evaluate(batched_step, list(batched_step.agent_id))
     assert run_out["action"].shape == (3, 2)
     env.close()
 
@@ -114,7 +109,7 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         max_step_complete=True,
         vec_obs_size=1,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=False)
     for key, val in run_out.items():
@@ -345,14 +340,11 @@ def test_trainer_increment_step(dummy_config):
     assert trainer.step == step_count
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
-    env, mock_brain, _ = mb.setup_mock_env_and_brains(
-        mock_env,
+def test_trainer_update_policy(dummy_config, use_discrete):
+    mock_brain = mb.setup_mock_brain(
         use_discrete,
         False,
-        num_agents=NUM_AGENTS,
         vector_action_space=VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
@@ -373,14 +365,15 @@ def test_trainer_update_policy(mock_env, dummy_config, use_discrete):
     policy = trainer.create_policy(mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
     # Test update with sequence length smaller than batch size
-    buffer = mb.simulate_rollout(env, trainer.policy, BUFFER_INIT_SAMPLES)
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_brain)
     # Mock out reward signal eval
-    buffer["extrinsic_rewards"] = buffer["rewards"]
-    buffer["extrinsic_returns"] = buffer["rewards"]
-    buffer["extrinsic_value_estimates"] = buffer["rewards"]
-    buffer["curiosity_rewards"] = buffer["rewards"]
-    buffer["curiosity_returns"] = buffer["rewards"]
-    buffer["curiosity_value_estimates"] = buffer["rewards"]
+    buffer["extrinsic_rewards"] = buffer["environment_rewards"]
+    buffer["extrinsic_returns"] = buffer["environment_rewards"]
+    buffer["extrinsic_value_estimates"] = buffer["environment_rewards"]
+    buffer["curiosity_rewards"] = buffer["environment_rewards"]
+    buffer["curiosity_returns"] = buffer["environment_rewards"]
+    buffer["curiosity_value_estimates"] = buffer["environment_rewards"]
+    buffer["advantages"] = buffer["environment_rewards"]
 
     trainer.update_buffer = buffer
     trainer._update_policy()
@@ -414,7 +407,7 @@ def test_process_trajectory(dummy_config):
         max_step_complete=True,
         vec_obs_size=1,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -439,7 +432,7 @@ def test_process_trajectory(dummy_config):
         max_step_complete=False,
         vec_obs_size=1,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -471,7 +464,7 @@ def test_normalization(dummy_config):
         max_step_complete=True,
         vec_obs_size=1,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     # Change half of the obs to 0
     for i in range(3):
@@ -503,7 +496,7 @@ def test_normalization(dummy_config):
         max_step_complete=True,
         vec_obs_size=1,
         num_vis_obs=0,
-        action_space=2,
+        action_space=[2],
     )
     trainer._process_trajectory(trajectory)
 
