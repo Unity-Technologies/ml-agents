@@ -290,7 +290,10 @@ class Trainer(abc.ABC):
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
-                while True:
+                # We grab at most the maximum length of the queue.
+                # This ensures that even if the queue is being filled faster than it is
+                # being emptied, the trajectories in the queue are on-policy.
+                for _ in range(traj_queue.maxlen):
                     try:
                         t = traj_queue.get_nowait()
                         self._process_trajectory(t)
