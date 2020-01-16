@@ -25,7 +25,7 @@ def get_base_path():
     abs_path = os.path.abspath(script_name)
 
     # Remove the script name to get the absolute path of where it's being run from.
-    return abs_path.replace(script_name, "")
+    return abs_path.replace("/" + script_name, "")
 
 
 def clean_previous_results(base_path):
@@ -83,11 +83,11 @@ def main():
     timeout = 30 * 60  # 30 minutes
     res: subprocess.CompletedProcess = subprocess.run(test_args, timeout=timeout)
 
-    print("-- test stdout --")
-    print(res.stdout)
-
-    print("-- test stderr --")
-    print(res.stderr)
+    # print("-- test stdout --")
+    # print(res.stdout)
+    #
+    # print("-- test stderr --")
+    # print(res.stderr)
 
     stats = parse_results()
     print(
