@@ -100,10 +100,14 @@ def main():
         f"{stats.failed} failed. More details in results.xml"
     )
 
-    if res.returncode == 0 and os.path.exists(results_xml_path):
-        print("Test run SUCCEEDED!")
+    try:
         # copy results to artifacts dir
         shutil.copy2(results_xml_path, artifacts_path)
+    except Exception:
+        pass
+
+    if res.returncode == 0 and os.path.exists(results_xml_path):
+        print("Test run SUCCEEDED!")
     else:
         print("Test run FAILED!")
 
