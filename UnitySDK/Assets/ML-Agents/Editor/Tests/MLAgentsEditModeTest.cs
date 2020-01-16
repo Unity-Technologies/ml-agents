@@ -11,7 +11,6 @@ namespace MLAgents.Tests
         public int collectObservationsCalls;
         public int agentActionCalls;
         public int agentResetCalls;
-        public int agentOnDoneCalls;
         public override void InitializeAgent()
         {
             initializeAgentCalls += 1;
@@ -39,11 +38,6 @@ namespace MLAgents.Tests
         public override void AgentReset()
         {
             agentResetCalls += 1;
-        }
-
-        public override void AgentOnDone()
-        {
-            agentOnDoneCalls += 1;
         }
 
         public override float[] Heuristic()
@@ -460,79 +454,13 @@ namespace MLAgents.Tests
     [TestFixture]
     public class EditModeTestMiscellaneous
     {
+
         [SetUp]
         public void SetUp()
         {
             if (Academy.IsInitialized)
             {
                 Academy.Instance.Dispose();
-            }
-        }
-
-        [Test]
-        public void TestResetOnDone()
-        {
-            var agentGo1 = new GameObject("TestAgent");
-            agentGo1.AddComponent<TestAgent>();
-            var agent1 = agentGo1.GetComponent<TestAgent>();
-            var agentGo2 = new GameObject("TestAgent");
-            agentGo2.AddComponent<TestAgent>();
-            var agent2 = agentGo2.GetComponent<TestAgent>();
-
-            var aca = Academy.Instance;
-
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            agent1.agentParameters = new AgentParameters();
-            agent2.agentParameters = new AgentParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            // agent1 will take an action at every step and request a decision every steps
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 1;
-            // agent2 will request decisions only when RequestDecision is called
-            agent2.agentParameters.onDemandDecision = true;
-            agent1.agentParameters.maxStep = 20;
-            //Here we specify that the agent does not reset when done
-            agent1.agentParameters.resetOnDone = false;
-            agent2.agentParameters.resetOnDone = false;
-
-            agentEnableMethod?.Invoke(agent2, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { });
-
-            var agent1ResetOnDone = 0;
-            var agent2ResetOnDone = 0;
-            var agent1StepSinceReset = 0;
-            var agent2StepSinceReset = 0;
-
-            for (var i = 0; i < 50; i++)
-            {
-                Assert.AreEqual(i, aca.GetTotalStepCount());
-
-                Assert.AreEqual(agent1StepSinceReset, agent1.GetStepCount());
-                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
-                Assert.AreEqual(agent1ResetOnDone, agent1.agentOnDoneCalls);
-                Assert.AreEqual(agent2ResetOnDone, agent2.agentOnDoneCalls);
-
-                // we request a decision at each step
-                agent2.RequestDecision();
-                if (agent1ResetOnDone == 0)
-                    agent1StepSinceReset += 1;
-                if (agent2ResetOnDone == 0)
-                    agent2StepSinceReset += 1;
-
-                if ((i > 2) && (i % 21 == 0))
-                {
-                    agent1ResetOnDone = 1;
-                }
-
-                if (i == 31)
-                {
-                    agent2ResetOnDone = 1;
-                    agent2.Done();
-                }
-
-                aca.EnvironmentStep();
             }
         }
 

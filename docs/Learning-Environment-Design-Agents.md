@@ -606,18 +606,7 @@ can learn more [here](Feature-Monitor.md).
 
 ## Destroying an Agent
 
-Before destroying an Agent GameObject, you must mark it as done (and wait for
-the next step in the simulation) so that the Policy knows that this Agent is no
-longer active. Thus, the best place to destroy an Agent is in the
-`Agent.AgentOnDone()` function:
-
-```csharp
-public override void AgentOnDone()
-{
-    Destroy(gameObject);
-}
-```
-
-Note that in order for `AgentOnDone()` to be called, the Agent's `ResetOnDone`
-property must be false. You can set `ResetOnDone` on the Agent's Inspector or in
-code.
+You can destroy an Agent GameObject during the simulation. Make sure that there is
+always at least one Agent training at all times by either spawning a new Agent
+every time one is destroyed or by re-spawning new Agents when the whole environment
+resets.

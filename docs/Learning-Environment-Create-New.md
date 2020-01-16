@@ -283,14 +283,7 @@ if (distanceToTarget < 1.42f)
 }
 ```
 
-**Note:** When you mark an Agent as done, it stops its activity until it is
-reset. You can have the Agent reset immediately, by setting the
-Agent.ResetOnDone property to true in the inspector or you can wait for the
-Academy to reset the environment. This RollerBall environment relies on the
-`ResetOnDone` mechanism and doesn't set a `Max Steps` limit for the Academy (so
-it never resets the environment).
-
-Finally, if the Agent falls off the platform,  set the Agent to done so that it can reset itself:
+Finally, if the Agent falls off the platform, set the Agent to done so that it can reset itself:
 
 ```csharp
 // Fell off platform
