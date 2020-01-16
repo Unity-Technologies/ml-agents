@@ -12,7 +12,7 @@ test_mac_standalone_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - python -u ml-agents/tests/yamato/standalone_build_tests.py
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests
   triggers:
     pull_requests:
       - targets:
