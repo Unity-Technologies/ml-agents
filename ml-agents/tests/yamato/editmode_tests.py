@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import shutil
 from typing import NamedTuple
 
 
@@ -33,6 +34,11 @@ def clean_previous_results(base_path):
     if os.path.exists(results):
         os.remove(results)
 
+    artifacts_path = os.path.join(base_path, "artifacts/")
+    if os.path.exists(artifacts_path):
+        os.rmdir(artifacts_path)
+    os.mkdir(artifacts_path)
+
 
 class TestResults(NamedTuple):
     total: str
@@ -48,7 +54,8 @@ def parse_results():
 
     for stat in ["total", "passed", "failed", "duration"]:
         stats[stat] = subprocess.run(
-            f"echo 'cat /test-run/test-suite/@{stat}' | xmllint --shell results.xml | awk -F'[=\"]' '!/>/{{print $(NF-1)}}'",  # noqa
+            f"echo 'cat /test-run/test-suite/@{stat}' | xmllint --shell results.xml | "
+            "awk -F'[=\"]' '!/>/{print $(NF-1)}'",  # noqa
             shell=True,
         ).stdout
 
@@ -57,6 +64,8 @@ def parse_results():
 
 def main():
     base_path = get_base_path()
+    artifacts_fact = os.path.join(base_path, "artifacts/")
+    results_xml_path = os.path.join(base_path, "results.xml")
     print(f"Running in base path {base_path}")
 
     print("Cleaning previous results")
@@ -89,9 +98,10 @@ def main():
         f"{stats.failed} failed. More details in results.xml"
     )
 
-    if res.returncode == 0 and os.path.exists(os.path.join(base_path, "results.xml")):
+    if res.returncode == 0 and os.path.exists(results_xml_path):
         print("Test run SUCCEEDED!")
-        os.remove(os.path.join(base_path, "results.xml"))
+        # copy results to artifacts dir
+        shutil.copy2(results_xml_path, artifacts_fact)
     else:
         print("Test run FAILED!")
 
