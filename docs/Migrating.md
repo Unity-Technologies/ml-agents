@@ -16,6 +16,7 @@ The versions can be found in
 * Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
 * The `--num-runs` command-line option has been removed.
 * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
+* Agents will always request a decision after being marked as `Done()` and will no longer wait for the next call to `RequestDecision()`.
 
 ### Steps to Migrate
 * If you have a class that inherits from Academy:

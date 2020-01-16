@@ -436,7 +436,7 @@ namespace MLAgents.Tests
                     // Request an action without decision regularly
                     agent2.RequestAction();
                 }
-                if (agent1.IsDone() && (((acaStepsSinceReset) % agent1.agentParameters.numberOfActionsBetweenDecisions == 0)))
+                if (agent1.IsDone())
                 {
                     numberAgent1Reset += 1;
                 }
