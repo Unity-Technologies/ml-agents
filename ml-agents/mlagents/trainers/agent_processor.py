@@ -192,12 +192,13 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str):
+    def __init__(self, behavior_id: str, maxlen: int = 1000):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.queue: Deque[T] = deque()
+        self.maxlen: int = maxlen
+        self.queue: Deque[T] = deque(maxlen=self.maxlen)
         self.behavior_id = behavior_id
 
     def empty(self) -> bool:
