@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pytest
 import tempfile
 
@@ -7,8 +8,6 @@ from mlagents.trainers.demo_loader import (
     demo_to_buffer,
     get_demo_files,
 )
-
-path_prefix = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_load_demo():
@@ -36,6 +35,7 @@ def test_load_demo_dir():
 
 
 def test_edge_cases():
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
     # nonexistent file and directory
     with pytest.raises(FileNotFoundError):
         get_demo_files(os.path.join(path_prefix, "nonexistent_file.demo"))
