@@ -83,12 +83,6 @@ def main():
     timeout = 30 * 60  # 30 minutes
     res: subprocess.CompletedProcess = subprocess.run(test_args, timeout=timeout)
 
-    # print("-- test stdout --")
-    # print(res.stdout)
-    #
-    # print("-- test stderr --")
-    # print(res.stderr)
-
     stats = parse_results()
     print(
         f"{stats.total} tests executed in {stats.duration}s: {stats.passed} passed, "
