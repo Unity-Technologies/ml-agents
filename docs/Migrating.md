@@ -15,7 +15,7 @@ The versions can be found in
 * Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
 * Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
 * The `--num-runs` command-line option has been removed.
-* The `AgentOnDone` virtual method on the Agent has been removed.
+* The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
 
 ### Steps to Migrate
 * If you have a class that inherits from Academy:
