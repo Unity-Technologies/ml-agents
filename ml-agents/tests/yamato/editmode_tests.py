@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import shutil
+import xml.dom.minidom
 from typing import NamedTuple
 
 
@@ -30,11 +31,15 @@ def get_base_path():
 
 
 def clean_previous_results(base_path):
-    results = os.path.join(base_path, "results.xml")
-    if os.path.exists(results):
-        os.remove(results)
-
+    """
+    Clean up old results and make the artifacts path.
+    """
     artifacts_path = os.path.join(base_path, "artifacts/")
+    results_xml_path = os.path.join(base_path, "results.xml")
+
+    if os.path.exists(results_xml_path):
+        os.remove(results_xml_path)
+
     if os.path.exists(artifacts_path):
         os.rmdir(artifacts_path)
     os.mkdir(artifacts_path)
@@ -47,24 +52,21 @@ class TestResults(NamedTuple):
     duration: str
 
 
-def parse_results():
-    # copied-and-pasted
-    # TODO parse for real?
+def parse_results(results_xml):
+    """
+    Extract the test results from the xml file.
+    """
     stats = {}
-
-    for stat in ["total", "passed", "failed", "duration"]:
-        stats[stat] = subprocess.run(
-            f"echo 'cat /test-run/test-suite/@{stat}' | xmllint --shell results.xml | "
-            "awk -F'[=\"]' '!/>/{print $(NF-1)}'",  # noqa
-            shell=True,
-        ).stdout
-
+    dom_tree = xml.dom.minidom.parse(results_xml)
+    collection = dom_tree.documentElement
+    for attribute in ["total", "passed", "failed", "duration"]:
+        stats[attribute] = collection.getAttribute(attribute)
     return TestResults(**stats)
 
 
 def main():
     base_path = get_base_path()
-    artifacts_fact = os.path.join(base_path, "artifacts/")
+    artifacts_path = os.path.join(base_path, "artifacts/")
     results_xml_path = os.path.join(base_path, "results.xml")
     print(f"Running in base path {base_path}")
 
@@ -87,12 +89,12 @@ def main():
         "-testPlatform",
         "editmode",
     ]
-    print(f"cmd line = {' '.join(test_args)}")
+    print(f"{' '.join(test_args)} ...")
 
-    timeout = 30 * 60  # 30 minutes
+    timeout = 30 * 60  # 30 minutes, just in case
     res: subprocess.CompletedProcess = subprocess.run(test_args, timeout=timeout)
 
-    stats = parse_results()
+    stats = parse_results(results_xml_path)
     print(
         f"{stats.total} tests executed in {stats.duration}s: {stats.passed} passed, "
         f"{stats.failed} failed. More details in results.xml"
@@ -101,7 +103,7 @@ def main():
     if res.returncode == 0 and os.path.exists(results_xml_path):
         print("Test run SUCCEEDED!")
         # copy results to artifacts dir
-        shutil.copy2(results_xml_path, artifacts_fact)
+        shutil.copy2(results_xml_path, artifacts_path)
     else:
         print("Test run FAILED!")
 
