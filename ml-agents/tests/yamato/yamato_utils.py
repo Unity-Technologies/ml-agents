@@ -1,5 +1,4 @@
 import os
-import sys
 
 
 def get_unity_executable_path():
@@ -16,11 +15,7 @@ def get_unity_executable_path():
 
 
 def get_base_path():
-    # E.g. 'ml-agents/tests/yamato/editmode_tests.py'
-    script_name = sys.argv[0]
-
-    # E.g. '/Users/yourname/code/ml-agents/ml-agents/tests/yamato/editmode_tests.py'
-    abs_path = os.path.abspath(script_name)
-
-    # Remove the script name to get the absolute path of where it's being run from.
-    return abs_path.replace("/" + script_name, "")
+    # We might need to do some more work here if the working directory ever changes
+    # E.g. take the full path and back out the main module main.
+    # But for now, this should work
+    return os.getcwd()
