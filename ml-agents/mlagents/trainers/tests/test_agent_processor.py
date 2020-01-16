@@ -79,6 +79,17 @@ def test_agentprocessor(num_vis_obs):
     # Assert that the AgentProcessor is empty
     assert len(processor.experience_buffers[0]) == 0
 
+    # Test empty BatchedStepResult
+    mock_step = mb.create_mock_batchedstep(
+        num_agents=0,
+        num_vector_observations=8,
+        action_shape=[2],
+        num_vis_observations=num_vis_obs,
+    )
+    processor.add_experiences(mock_step, 0, ActionInfo([], [], {}, []))
+    # Assert that the AgentProcessor is still empty
+    assert len(processor.experience_buffers[0]) == 0
+
 
 def test_agent_manager():
     policy = create_mock_policy()
