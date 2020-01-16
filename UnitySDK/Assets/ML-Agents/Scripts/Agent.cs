@@ -193,10 +193,6 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
-        /// Flag to signify that an agent has been reset but the fact that it is
-        /// done has not been communicated (required for On Demand Decisions).
-        bool m_HasAlreadyReset;
-
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int m_Id;
@@ -757,7 +753,6 @@ namespace MLAgents
         /// </summary>
         void ForceReset()
         {
-            m_HasAlreadyReset = false;
             _AgentReset();
         }
 
@@ -826,26 +821,9 @@ namespace MLAgents
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            // If an agent is done, then it will also
-            // request for a decision and an action
             if (IsDone())
             {
-                if (agentParameters.onDemandDecision)
-                {
-                    if (!m_HasAlreadyReset)
-                    {
-                        // If event based, the agent can reset as soon
-                        // as it is done
-                        _AgentReset();
-                        m_HasAlreadyReset = true;
-                    }
-                }
-                else if (m_RequestDecision)
-                {
-                    // If not event based, the agent must wait to request a
-                    // decision before resetting to keep multiple agents in sync.
-                    _AgentReset();
-                }
+                _AgentReset();
             }
         }
 
@@ -854,15 +832,14 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            // If the Agent is done, it has just reset and thus requires a new decision
+            if (m_RequestDecision || IsDone())
             {
                 SendInfoToBrain();
                 ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
-
-                m_HasAlreadyReset = false;
             }
         }
 
