@@ -75,5 +75,4 @@ namespace MLAgents.Sensor
             return count;
         }
     }
-
 }

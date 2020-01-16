@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    [AddComponentMenu("ML Agents/Sensors/Render Texture Sensor")]
+    [AddComponentMenu("ML Agents/Render Texture Sensor", (int) MenuGroup.Sensors)]
     public class RenderTextureSensorComponent : SensorComponent
     {
         public RenderTexture renderTexture;
