@@ -258,6 +258,7 @@ class PPOTrainer(RLTrainer):
         if not isinstance(policy, PPOPolicy):
             raise RuntimeError("Non-PPOPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
+        self.step = policy.get_current_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
