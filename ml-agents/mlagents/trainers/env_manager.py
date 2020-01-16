@@ -13,13 +13,6 @@ AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
 logger = logging.getLogger("mlagents.trainers")
 
 
-def get_global_agent_id(worker_id: int, agent_id: int) -> str:
-    """
-    Create an agent id that is unique across environment workers using the worker_id.
-    """
-    return f"${worker_id}-{agent_id}"
-
-
 class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int

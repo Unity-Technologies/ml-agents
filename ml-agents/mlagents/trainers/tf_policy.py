@@ -12,7 +12,7 @@ from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.env_manager import get_global_agent_id
+from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
 
 
