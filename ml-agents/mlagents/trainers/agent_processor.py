@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 from typing import List, Dict, Deque, TypeVar, Generic
 from collections import defaultdict, Counter, deque
 
@@ -77,7 +76,7 @@ class AgentProcessor:
         for global_id in action_global_agent_ids:
             self.last_take_action_outputs[global_id] = take_action_outputs
 
-        for _id in np.nditer(batched_step_result.agent_id):  # Explicit numpy iteration
+        for _id in batched_step_result.agent_id:  # Assume agent_id is 1-D
             local_id = int(
                 _id
             )  # Needed for mypy to pass since ndarray has no content type
