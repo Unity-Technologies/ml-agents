@@ -26,8 +26,6 @@ public class WalkerAgent : Agent
     public Transform forearmR;
     public Transform handR;
     JointDriveController m_JdController;
-    bool m_IsNewDecisionStep;
-    int m_CurrentDecisionStep;
 
     Rigidbody m_HipsRb;
     Rigidbody m_ChestRb;
@@ -106,49 +104,44 @@ public class WalkerAgent : Agent
 
     public override void AgentAction(float[] vectorAction)
     {
-        m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+        var bpDict = m_JdController.bodyPartsDict;
+        var i = -1;
 
-        // Apply action to all relevant body parts.
-        if (m_IsNewDecisionStep)
-        {
-            var bpDict = m_JdController.bodyPartsDict;
-            var i = -1;
+        bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+        bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
-            bpDict[chest].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
-            bpDict[spine].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
-
-            bpDict[thighL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[thighR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[shinL].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[shinR].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
-            bpDict[footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+        bpDict[thighL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[thighR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[shinL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[shinR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
+        bpDict[footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
 
-            bpDict[armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-            bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
-            bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[forearmR].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[head].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
 
-            //update joint strength settings
-            bpDict[chest].SetJointStrength(vectorAction[++i]);
-            bpDict[spine].SetJointStrength(vectorAction[++i]);
-            bpDict[head].SetJointStrength(vectorAction[++i]);
-            bpDict[thighL].SetJointStrength(vectorAction[++i]);
-            bpDict[shinL].SetJointStrength(vectorAction[++i]);
-            bpDict[footL].SetJointStrength(vectorAction[++i]);
-            bpDict[thighR].SetJointStrength(vectorAction[++i]);
-            bpDict[shinR].SetJointStrength(vectorAction[++i]);
-            bpDict[footR].SetJointStrength(vectorAction[++i]);
-            bpDict[armL].SetJointStrength(vectorAction[++i]);
-            bpDict[forearmL].SetJointStrength(vectorAction[++i]);
-            bpDict[armR].SetJointStrength(vectorAction[++i]);
-            bpDict[forearmR].SetJointStrength(vectorAction[++i]);
-        }
+        //update joint strength settings
+        bpDict[chest].SetJointStrength(vectorAction[++i]);
+        bpDict[spine].SetJointStrength(vectorAction[++i]);
+        bpDict[head].SetJointStrength(vectorAction[++i]);
+        bpDict[thighL].SetJointStrength(vectorAction[++i]);
+        bpDict[shinL].SetJointStrength(vectorAction[++i]);
+        bpDict[footL].SetJointStrength(vectorAction[++i]);
+        bpDict[thighR].SetJointStrength(vectorAction[++i]);
+        bpDict[shinR].SetJointStrength(vectorAction[++i]);
+        bpDict[footR].SetJointStrength(vectorAction[++i]);
+        bpDict[armL].SetJointStrength(vectorAction[++i]);
+        bpDict[forearmL].SetJointStrength(vectorAction[++i]);
+        bpDict[armR].SetJointStrength(vectorAction[++i]);
+        bpDict[forearmR].SetJointStrength(vectorAction[++i]);
+    }
 
-        IncrementDecisionTimer();
-
+    void FixedUpdate()
+    {
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
         // b. Rotation alignment with goal direction.
@@ -161,24 +154,6 @@ public class WalkerAgent : Agent
             - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
                 m_JdController.bodyPartsDict[hips].rb.velocity)
         );
-    }
-
-    /// <summary>
-    /// Only change the joint settings based on decision frequency.
-    /// </summary>
-    public void IncrementDecisionTimer()
-    {
-        if (m_CurrentDecisionStep == agentParameters.numberOfActionsBetweenDecisions ||
-            agentParameters.numberOfActionsBetweenDecisions == 1)
-        {
-            m_CurrentDecisionStep = 1;
-            m_IsNewDecisionStep = true;
-        }
-        else
-        {
-            m_CurrentDecisionStep++;
-            m_IsNewDecisionStep = false;
-        }
     }
 
     /// <summary>
@@ -195,9 +170,6 @@ public class WalkerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-
-        m_IsNewDecisionStep = true;
-        m_CurrentDecisionStep = 1;
         SetResetParameters();
     }
 

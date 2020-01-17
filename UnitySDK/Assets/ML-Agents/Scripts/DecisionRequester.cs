@@ -9,17 +9,21 @@ namespace MLAgents
 {
     public class DecisionRequester : MonoBehaviour
     {
-        public int DecisionPeriod;
+        public int DecisionPeriod = 5;
         public bool RepeatAction = true;
         private Agent m_Agent;
-        private int m_Counter;
-        void Awake()
+        public void Awake()
         {
             m_Agent = gameObject.GetComponent<Agent>();
+            Academy.Instance.AgentSetStatus += MakeRequests;
         }
-        void FixedUpdate()
+        void OnDestroy()
         {
-            if (m_Counter % DecisionPeriod == 0)
+            Academy.Instance.AgentSetStatus -= MakeRequests;
+        }
+        void MakeRequests(int count)
+        {
+            if (count % DecisionPeriod == 0)
             {
                 m_Agent?.RequestDecision();
             }
@@ -27,7 +31,6 @@ namespace MLAgents
             {
                 m_Agent?.RequestAction();
             }
-            m_Counter++;
         }
 
     }

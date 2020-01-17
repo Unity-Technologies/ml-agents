@@ -390,6 +390,8 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
+            AgentSetStatus?.Invoke(m_StepCount);
+
             using (TimerStack.Instance.Scoped("AgentResetIfDone"))
             {
                 AgentResetIfDone?.Invoke();
