@@ -17,19 +17,19 @@ def main():
 
     # TODO pass exe name to build
     mla_learn_cmd = "mlagents-learn config/trainer_config.yaml --train --env=testPlayer --no-graphics --env-args -logFile -"  # noqa
-    subprocess.check_call(
-        f"source venv/bin/activate; PYTHONUNBUFFERED=1 {mla_learn_cmd}", shell=True
+    res = subprocess.run(
+        f"source venv/bin/activate; {mla_learn_cmd}", shell=True, capture_output=True
     )
 
-    # print(res.stdout)
-    # print(res.stderr)
-    #
-    # if res.returncode == 0:
-    #     print("mlagents-learn run SUCCEEDED!")
-    # else:
-    #     print("mlagents-learn run FAILED!")
+    print(res.stdout)
+    print(res.stderr)
 
-    sys.exit(0)
+    if res.returncode == 0:
+        print("mlagents-learn run SUCCEEDED!")
+    else:
+        print("mlagents-learn run FAILED!")
+
+    sys.exit(res.returncode)
 
 
 if __name__ == "__main__":
