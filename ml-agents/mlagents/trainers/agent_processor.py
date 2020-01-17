@@ -177,6 +177,15 @@ class AgentProcessor:
         """
         self.trajectory_queues.append(trajectory_queue)
 
+    def end_episode(self) -> None:
+        """
+        Ends the episode, terminating the current trajectory and stopping stats collection for that
+        episode. Used for forceful reset (e.g. in curriculum or generalization training.)
+        """
+        self.experience_buffers.clear()
+        self.episode_rewards.clear()
+        self.episode_steps.clear()
+
 
 class AgentManagerQueue(Generic[T]):
     """

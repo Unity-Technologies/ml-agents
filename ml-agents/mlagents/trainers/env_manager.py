@@ -49,6 +49,8 @@ class EnvManager(ABC):
         pass
 
     def reset(self, config: Dict = None) -> int:
+        for manager in self.agent_managers.values():
+            manager.end_episode()
         return self._process_step_infos(self._reset_env(config))
 
     @property
