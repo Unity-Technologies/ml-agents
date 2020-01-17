@@ -8,10 +8,11 @@ from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSch
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOModel(LearningModel):
+class PPOOptimizer(LearningModel):
     def __init__(
         self,
         brain,
+        policy,
         lr=1e-4,
         lr_schedule=LearningRateSchedule.LINEAR,
         h_size=128,
@@ -24,7 +25,7 @@ class PPOModel(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
-        vis_encode_type=EncoderType.SIMPLE,
+        vis_encode_type=EncoderType.SIMPLE
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -52,10 +53,11 @@ class PPOModel(LearningModel):
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
 
+        self.policy = policy
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
-            self.create_cc_actor_critic(h_size, num_layers, vis_encode_type)
+            self.create_cc_critic(h_size, num_layers, vis_encode_type)
             self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
@@ -63,6 +65,8 @@ class PPOModel(LearningModel):
         self.learning_rate = self.create_learning_rate(
             lr_schedule, lr, self.global_step, max_step
         )
+        self.vector_in = self.policy.vector_in
+        self.visual_in = self.policy.visual_in
 
         self.create_losses(
             self.log_probs,
@@ -75,7 +79,7 @@ class PPOModel(LearningModel):
             max_step,
         )
 
-    def create_cc_actor_critic(
+    def create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -84,7 +88,7 @@ class PPOModel(LearningModel):
         :param num_layers: Number of hidden linear layers.
         """
         hidden_streams = LearningModel.create_observation_streams(
-            self.visual_in, self.processed_vector_in, 2, h_size, num_layers, vis_encode_type
+            self.policy.visual_in, self.policy.processed_vector_in, 1, h_size, num_layers, vis_encode_type
         )
 
         if self.use_recurrent:
