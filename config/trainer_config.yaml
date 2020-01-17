@@ -8,14 +8,15 @@ default:
     lambd: 0.95
     learning_rate: 3.0e-4
     learning_rate_schedule: linear
-    max_steps: 5.0e5
+    # TODO REVERT
+    max_steps: 10
     memory_size: 256
     normalize: false
     num_epoch: 3
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
-    summary_freq: 10000
+    summary_freq: 2
     use_recurrent: false
     vis_encode_type: simple
     reward_signals:
@@ -279,8 +280,9 @@ Basic:
     hidden_units: 20
     beta: 5.0e-3
     buffer_size: 256
-    max_steps: 5.0e5
-    summary_freq: 2000
+    # TODO REVERT
+    max_steps: 10
+    summary_freq: 2
     time_horizon: 3
     reward_signals:
         extrinsic:
