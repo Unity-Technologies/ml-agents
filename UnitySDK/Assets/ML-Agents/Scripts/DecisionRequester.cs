@@ -14,10 +14,10 @@ namespace MLAgents
     public class DecisionRequester : MonoBehaviour
     {
         [Range(1, 20)]
-        [Tooltip("The agent will automatically request a decision every X steps.")]
+        [Tooltip("The agent will automatically request a decision every X Academy steps.")]
         public int DecisionPeriod = 5;
 
-        [Tooltip("Whether or not AgentAction will be called on steps that decisions aren't requested. Has no effect if DecisionPeriod is 1.")]
+        [Tooltip("Whether or not AgentAction will be called on Academy steps that decisions aren't requested. Has no effect if DecisionPeriod is 1.")]
         public bool RepeatAction = true;
 
         [Tooltip("Whether or not Agent decisions should start at a random offset.")]
