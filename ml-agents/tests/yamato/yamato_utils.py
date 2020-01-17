@@ -46,10 +46,13 @@ def run_standalone_build(base_path: str) -> int:
 def init_venv():
     # Set up the venv and install mlagents
     subprocess.check_call("python -m venv venv", shell=True)
-    subprocess.check_call(
-        "source venv/bin/activate; python -m pip install -e ./ml-agents-envs",
-        shell=True,
-    )
-    subprocess.check_call(
-        "source venv/bin/activate; python -m pip install -e ./ml-agents", shell=True
-    )
+    pip_commands = [
+        "--upgrade pip",
+        "--upgrade setuptools",
+        "-e ./ml-agents-envs",
+        "-e ./ml-agents",
+    ]
+    for cmd in pip_commands:
+        subprocess.check_call(
+            f"source venv/bin/activate; python -m pip install {cmd}", shell=True
+        )
