@@ -25,7 +25,7 @@ class PPOOptimizer(LearningModel):
         m_size=None,
         seed=0,
         stream_names=None,
-        vis_encode_type=EncoderType.SIMPLE
+        vis_encode_type=EncoderType.SIMPLE,
     ):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -88,7 +88,12 @@ class PPOOptimizer(LearningModel):
         :param num_layers: Number of hidden linear layers.
         """
         hidden_streams = LearningModel.create_observation_streams(
-            self.policy.visual_in, self.policy.processed_vector_in, 1, h_size, num_layers, vis_encode_type
+            self.policy.visual_in,
+            self.policy.processed_vector_in,
+            1,
+            h_size,
+            num_layers,
+            vis_encode_type,
         )
 
         if self.use_recurrent:
