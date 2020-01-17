@@ -211,6 +211,10 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
+                        foreach (var brainName in m_ActionCallbacks.Keys)
+                        {
+                            m_ActionCallbacks[brainName].Clear();
+                        }
                         ResetCommandReceived?.Invoke();
                         return;
                     }
@@ -334,6 +338,9 @@ namespace MLAgents
                     agentActionDict[agentId] = agentAction;
                     m_ActionCallbacks[brainName][i].Callback.Invoke(agentAction);
                 }
+            }
+            foreach (var brainName in m_ActionCallbacks.Keys)
+            {
                 m_ActionCallbacks[brainName].Clear();
             }
         }
