@@ -7,23 +7,40 @@ using UnityEngine.Serialization;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// A component that when attached to an Agent will automatically request decisions from it
+    /// at regular intervals.
+    /// </summary>
     public class DecisionRequester : MonoBehaviour
     {
+        [Range(1, 20)]
+        [Tooltip("The agent will automatically request a decision every X steps.")]
         public int DecisionPeriod = 5;
+
+        [Tooltip("Whether or not AgentAction will be called on steps that decisions aren't requested. Has no effect if DecisionPeriod is 1.")]
         public bool RepeatAction = true;
+
+        [Tooltip("Whether or not Agent decisions should start at a random offset.")]
+        public bool offsetStep;
+
         private Agent m_Agent;
+        private int offset;
         public void Awake()
         {
+            offset = offsetStep ? gameObject.GetInstanceID() : 0;
             m_Agent = gameObject.GetComponent<Agent>();
             Academy.Instance.AgentSetStatus += MakeRequests;
         }
         void OnDestroy()
         {
-            Academy.Instance.AgentSetStatus -= MakeRequests;
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.AgentSetStatus -= MakeRequests;
+            }
         }
         void MakeRequests(int count)
         {
-            if (count % DecisionPeriod == 0)
+            if ((count + offset) % DecisionPeriod == 0)
             {
                 m_Agent?.RequestDecision();
             }
