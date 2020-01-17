@@ -19,6 +19,9 @@ def main():
     mla_learn_cmd = "mlagents-learn config/trainer_config.yaml --train --env=testPlayer --no-graphics --env-args -logFile -"  # noqa
     res = subprocess.run(f"source venv/bin/activate; {mla_learn_cmd}", shell=True)
 
+    print(res.stdout)
+    print(res.stderr)
+
     if res.returncode == 0:
         print("mlagents-learn run SUCCEEDED!")
     else:
