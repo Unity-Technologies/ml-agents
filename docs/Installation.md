@@ -43,9 +43,9 @@ to help you get started.
 If you intend to copy the `UnitySDK` folder in to your project, ensure that
 you have the [Barracuda preview package](https://docs.unity3d.com/Packages/com.unity.barracuda@0.3/manual/index.html) installed.
 
-To install the Barrcuda package in later versions of Unity, navigate to the Package
+To install the Barracuda package in later versions of Unity, navigate to the Package
 Manager window by navigating to the menu `Window` -> `Package Manager`.  Click on the
-`Adavanced` dropdown menu to the left of the search bar and make sure "Show Preview Packages"
+`Advanced` dropdown menu to the left of the search bar and make sure "Show Preview Packages"
 is checked.  Search for or select the `Barracuda` package and install the latest version.
 
 <p align="center">
