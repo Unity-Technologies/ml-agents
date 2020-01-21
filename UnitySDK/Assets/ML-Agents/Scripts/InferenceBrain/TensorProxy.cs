@@ -91,6 +91,29 @@ namespace MLAgents.InferenceBrain
         }
 
         /// <summary>
+        /// Fill a specific batch of a TensorProxy with a given value
+        /// </summary>
+        /// <param name="tensorProxy"></param>
+        /// <param name="batch">The batch index to fill.</param>
+        /// <param name="fillValue"></param>
+        public static void FillTensorBatch(TensorProxy tensorProxy, int batch, float fillValue)
+        {
+            var height = tensorProxy.data.height;
+            var width = tensorProxy.data.width;
+            var channels = tensorProxy.data.channels;
+            for (var h = 0; h < height; h++)
+            {
+                for (var w = 0; w < width; w++)
+                {
+                    for (var c = 0; c < channels; c++)
+                    {
+                        tensorProxy.data[batch, h, w, c] = fillValue;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Fill a pre-allocated Tensor with random numbers
         /// </summary>
         /// <param name="tensorProxy">The pre-allocated Tensor to fill</param>

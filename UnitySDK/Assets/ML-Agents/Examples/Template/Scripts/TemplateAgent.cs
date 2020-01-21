@@ -14,8 +14,4 @@ public class TemplateAgent : Agent
     public override void AgentReset()
     {
     }
-
-    public override void AgentOnDone()
-    {
-    }
 }

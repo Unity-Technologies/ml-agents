@@ -1,6 +1,8 @@
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Collections.Generic;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -8,6 +10,7 @@ namespace MLAgents
     /// Demonstration Recorder Component.
     /// </summary>
     [RequireComponent(typeof(Agent))]
+    [AddComponentMenu("ML Agents/Demonstration Recorder", (int) MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
         public bool record;
@@ -68,9 +71,9 @@ namespace MLAgents
         /// <summary>
         /// Forwards AgentInfo to Demonstration Store.
         /// </summary>
-        public void WriteExperience(AgentInfo info)
+        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
-            m_DemoStore.Record(info);
+            m_DemoStore.Record(info, sensors);
         }
 
         public void Close()

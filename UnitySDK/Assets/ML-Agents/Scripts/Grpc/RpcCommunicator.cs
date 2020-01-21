@@ -11,12 +11,19 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
     /// Responsible for communication with External using gRPC.
     public class RpcCommunicator : ICommunicator
     {
+
+        public struct IdCallbackPair
+        {
+            public int AgentId;
+            public Action<AgentAction> Callback;
+        }
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
 
@@ -26,16 +33,18 @@ namespace MLAgents
         /// The default number of agents in the scene
         const int k_NumAgents = 32;
 
-        /// Keeps track of the agents of each brain on the current step
-        Dictionary<string, List<Agent>> m_CurrentAgents =
-            new Dictionary<string, List<Agent>>();
+        List<string> m_BehaviorNames = new List<string>();
+        bool m_NeedCommunicateThisStep;
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
+        Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
-        Dictionary<string, Dictionary<Agent, AgentAction>> m_LastActionsReceived =
-            new Dictionary<string, Dictionary<Agent, AgentAction>>();
+        Dictionary<string, Dictionary<int, AgentAction>> m_LastActionsReceived =
+            new Dictionary<string, Dictionary<int, AgentAction>>();
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
@@ -114,11 +123,12 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-            if (m_CurrentAgents.ContainsKey(brainKey))
+
+            if (m_BehaviorNames.Contains(brainKey))
             {
                 return;
             }
-            m_CurrentAgents[brainKey] = new List<Agent>(k_NumAgents);
+            m_BehaviorNames.Add(brainKey);
             m_CurrentUnityRlOutput.AgentInfos.Add(
                 brainKey,
                 new UnityRLOutputProto.Types.ListAgentInfoProto()
@@ -147,11 +157,7 @@ namespace MLAgents
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
             unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
 #if UNITY_EDITOR
-#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
-#else
-            EditorApplication.playmodeStateChanged += HandleOnPlayModeChanged;
-#endif
 #endif
             return result.UnityInput;
 #else
@@ -205,6 +211,10 @@ namespace MLAgents
                     }
                 case CommandProto.Reset:
                     {
+                        foreach (var brainName in m_ActionCallbacks.Keys)
+                        {
+                            m_ActionCallbacks[brainName].Clear();
+                        }
                         ResetCommandReceived?.Invoke();
                         return;
                     }
@@ -221,42 +231,51 @@ namespace MLAgents
 
         public void DecideBatch()
         {
-            if (m_CurrentAgents.Values.All(l => l.Count == 0))
+            if (!m_NeedCommunicateThisStep)
             {
                 return;
             }
-            foreach (var brainKey in m_CurrentAgents.Keys)
-            {
-                using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
-                {
-                    if (m_CurrentAgents[brainKey].Count > 0)
-                    {
-                        foreach (var agent in m_CurrentAgents[brainKey])
-                        {
-                            // Update the sensor data on the AgentInfo
-                            agent.GenerateSensorData();
-                            var agentInfoProto = agent.Info.ToAgentInfoProto();
-                            m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
-                        }
+            m_NeedCommunicateThisStep = false;
 
-                    }
-                }
-            }
             SendBatchedMessageHelper();
-            foreach (var brainKey in m_CurrentAgents.Keys)
-            {
-                m_CurrentAgents[brainKey].Clear();
-            }
         }
 
         /// <summary>
-        /// Sends the observations of one Agent. 
+        /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        public void PutObservations(string brainKey, Agent agent)
+        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            m_CurrentAgents[brainKey].Add(agent);
+# if DEBUG
+            if (!m_SensorShapeValidators.ContainsKey(brainKey))
+            {
+                m_SensorShapeValidators[brainKey] = new SensorShapeValidator();
+            }
+            m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
+#endif
+
+            using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
+            {
+                var agentInfoProto = info.ToAgentInfoProto();
+
+                using (TimerStack.Instance.Scoped("GenerateSensorData"))
+                {
+                    foreach (var sensor in sensors)
+                    {
+                        var obsProto = sensor.GetObservationProto(m_WriteAdapter);
+                        agentInfoProto.Observations.Add(obsProto);
+                    }
+                }
+                m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+            }
+
+            m_NeedCommunicateThisStep = true;
+            if (!m_ActionCallbacks.ContainsKey(brainKey))
+            {
+                m_ActionCallbacks[brainKey] = new List<IdCallbackPair>();
+            }
+            m_ActionCallbacks[brainKey].Add(new IdCallbackPair { AgentId = info.id, Callback = action });
         }
 
         /// <summary>
@@ -298,7 +317,7 @@ namespace MLAgents
             m_LastActionsReceived.Clear();
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_CurrentAgents[brainName].Any())
+                if (!m_ActionCallbacks[brainName].Any())
                 {
                     continue;
                 }
@@ -309,20 +328,24 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_CurrentAgents[brainName].Count;
-                var agentActionDict = new Dictionary<Agent, AgentAction>(numAgents);
+                var numAgents = m_ActionCallbacks[brainName].Count;
+                var agentActionDict = new Dictionary<int, AgentAction>(numAgents);
                 m_LastActionsReceived[brainName] = agentActionDict;
                 for (var i = 0; i < numAgents; i++)
                 {
-                    var agent = m_CurrentAgents[brainName][i];
                     var agentAction = agentActions[i];
-                    agentActionDict[agent] = agentAction;
-                    agent.UpdateAgentAction(agentAction);
+                    var agentId = m_ActionCallbacks[brainName][i].AgentId;
+                    agentActionDict[agentId] = agentAction;
+                    m_ActionCallbacks[brainName][i].Callback.Invoke(agentAction);
                 }
+            }
+            foreach (var brainName in m_ActionCallbacks.Keys)
+            {
+                m_ActionCallbacks[brainName].Clear();
             }
         }
 
-        public Dictionary<Agent, AgentAction> GetActions(string key)
+        public Dictionary<int, AgentAction> GetActions(string key)
         {
             return m_LastActionsReceived[key];
         }
@@ -432,7 +455,7 @@ namespace MLAgents
         #region Handling side channels
 
         /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange 
+        /// Registers a side channel to the communicator. The side channel will exchange
         /// messages with its Python equivalent.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
@@ -525,7 +548,6 @@ namespace MLAgents
         #endregion
 
 #if UNITY_EDITOR
-#if UNITY_2017_2_OR_NEWER
         /// <summary>
         /// When the editor exits, the communicator must be closed
         /// </summary>
@@ -539,20 +561,6 @@ namespace MLAgents
             }
         }
 
-#else
-        /// <summary>
-        /// When the editor exits, the communicator must be closed
-        /// </summary>
-        private void HandleOnPlayModeChanged()
-        {
-            // This method is run whenever the playmode state is changed.
-            if (!EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                Close();
-            }
-        }
-
-#endif
 #endif
     }
 }

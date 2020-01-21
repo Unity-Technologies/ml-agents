@@ -1,12 +1,26 @@
 using System.Collections.Generic;
 using Barracuda;
 using UnityEngine.Profiling;
+using System;
+using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
+    public struct AgentInfoSensorsPair
+    {
+        public AgentInfo agentInfo;
+        public List<ISensor> sensors;
+    }
+    public struct AgentIdActionPair
+    {
+        public int agentId;
+        public Action<AgentAction> action;
+    }
+
     public class ModelRunner
     {
-        List<Agent> m_Agents = new List<Agent>();
+        List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
+        List<AgentIdActionPair> m_ActionFuncs = new List<AgentIdActionPair>();
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
@@ -19,6 +33,8 @@ namespace MLAgents.InferenceBrain
         IReadOnlyList<TensorProxy> m_InferenceInputs;
         IReadOnlyList<TensorProxy> m_InferenceOutputs;
         Dictionary<int, List<float>> m_Memories = new Dictionary<int, List<float>>();
+
+        SensorShapeValidator m_SensorShapeValidator = new SensorShapeValidator();
 
         bool m_VisualObservationsInitialized;
 
@@ -103,24 +119,32 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(Agent agent)
+        public void PutObservations(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            m_Agents.Add(agent);
+#if DEBUG
+            m_SensorShapeValidator.ValidateSensors(sensors);
+#endif
+            m_Infos.Add(new AgentInfoSensorsPair
+            {
+                agentInfo = info,
+                sensors = sensors
+            });
+
+            m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.id });
         }
         public void DecideBatch()
         {
-            var currentBatchSize = m_Agents.Count;
+            var currentBatchSize = m_Infos.Count;
             if (currentBatchSize == 0)
             {
                 return;
             }
-
             if (!m_VisualObservationsInitialized)
             {
                 // Just grab the first agent in the collection (any will suffice, really).
                 // We check for an empty Collection above, so this will always return successfully.
-                var firstAgent = m_Agents[0];
-                m_TensorGenerator.InitializeObservations(firstAgent, m_TensorAllocator);
+                var firstInfo = m_Infos[0];
+                m_TensorGenerator.InitializeObservations(firstInfo.sensors, m_TensorAllocator);
                 m_VisualObservationsInitialized = true;
             }
 
@@ -128,7 +152,7 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine
-            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Agents);
+            m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Infos);
             Profiler.EndSample();
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.PrepareBarracudaInputs");
@@ -146,12 +170,14 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_Agents);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_ActionFuncs);
             Profiler.EndSample();
 
             Profiler.EndSample();
 
-            m_Agents.Clear();
+            m_Infos.Clear();
+
+            m_ActionFuncs.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)

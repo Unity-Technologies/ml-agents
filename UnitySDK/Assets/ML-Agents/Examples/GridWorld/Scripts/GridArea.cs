@@ -31,7 +31,7 @@ public class GridArea : MonoBehaviour
 
     public void Start()
     {
-        m_ResetParameters = FindObjectOfType<Academy>().FloatProperties;
+        m_ResetParameters = Academy.Instance.FloatProperties;
 
         m_Objects = new[] { goalPref, pitPref };
 
@@ -83,7 +83,7 @@ public class GridArea : MonoBehaviour
 
     public void AreaReset()
     {
-        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f); ;
+        var gridSize = (int)m_ResetParameters.GetPropertyWithDefault("gridSize", 5f);
         foreach (var actor in actorObjs)
         {
             DestroyImmediate(actor);

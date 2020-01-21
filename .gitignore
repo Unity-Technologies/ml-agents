@@ -7,6 +7,7 @@
 /UnitySDK/Assets/AssetStoreTools*
 /UnitySDK/Assets/Plugins*
 /UnitySDK/Assets/Demonstrations*
+/UnitySDK/csharp_timers.json
 
 # Tensorflow Model Info
 /models

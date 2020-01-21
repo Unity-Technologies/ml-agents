@@ -136,5 +136,21 @@ namespace MLAgents
                 dst.Add(item);
             }
         }
+
+        /// <summary>
+        /// Calculates the number of uncompressed floats in a list of ISensor
+        /// </summary>
+        public static int GetSensorFloatObservationSize(this List<ISensor> sensors)
+        {
+            int numFloatObservations = 0;
+            for (var i = 0; i < sensors.Count; i++)
+            {
+                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
+                {
+                    numFloatObservations += sensors[i].ObservationSize();
+                }
+            }
+            return numFloatObservations;
+        }
     }
 }

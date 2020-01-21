@@ -13,10 +13,6 @@ namespace MLAgents
     /// </summary>
     public struct AgentInfo
     {
-        /// <summary>
-        /// Most recent observations.
-        /// </summary>
-        public List<Observation> observations;
 
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -81,27 +77,6 @@ namespace MLAgents
         /// </remarks>
         public int maxStep;
 
-        /// <summary>
-        /// Determines the behaviour of the agent when done.
-        /// </summary>
-        /// <remarks>
-        /// If true, the agent will reset when done and start a new episode.
-        /// Otherwise, the agent will remain done and its behavior will be
-        /// dictated by the AgentOnDone method.
-        /// </remarks>
-        public bool resetOnDone = true;
-
-        /// <summary>
-        /// Whether to enable On Demand Decisions or make a decision at
-        /// every step.
-        /// </summary>
-        public bool onDemandDecision;
-
-        /// <summary>
-        /// Number of actions between decisions (used when On Demand Decisions
-        /// is turned off).
-        /// </summary>
-        public int numberOfActionsBetweenDecisions;
     }
 
 
@@ -207,14 +182,6 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
-        /// Flag to signify that an agent has been reset but the fact that it is
-        /// done has not been communicated (required for On Demand Decisions).
-        bool m_HasAlreadyReset;
-
-        /// Flag to signify that an agent is done and should not reset until
-        /// the fact that it is done has been communicated.
-        bool m_Terminate;
-
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int m_Id;
@@ -239,45 +206,29 @@ namespace MLAgents
         /// </summary>
         public VectorSensor collectObservationsSensor;
 
-        /// <summary>
-        /// Internal buffer used for generating float observations.
-        /// </summary>
-        float[] m_VectorSensorBuffer;
-
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
-
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
             m_Id = gameObject.GetInstanceID();
-            var academy = FindObjectOfType<Academy>();
-            academy.LazyInitialization();
-            OnEnableHelper(academy);
+            OnEnableHelper();
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
-        void OnEnableHelper(Academy academy)
+        void OnEnableHelper()
         {
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            if (academy == null)
-            {
-                throw new UnityAgentsException(
-                    "No Academy Component could be found in the scene.");
-            }
-
-            academy.AgentSetStatus += SetStatus;
-            academy.AgentResetIfDone += ResetIfDone;
-            academy.AgentSendState += SendInfo;
-            academy.DecideAction += DecideAction;
-            academy.AgentAct += AgentStep;
-            academy.AgentForceReset += _AgentReset;
+            Academy.Instance.AgentResetIfDone += ResetIfDone;
+            Academy.Instance.AgentSendState += SendInfo;
+            Academy.Instance.DecideAction += DecideAction;
+            Academy.Instance.AgentAct += AgentStep;
+            Academy.Instance.AgentForceReset += _AgentReset;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
@@ -289,17 +240,26 @@ namespace MLAgents
         /// becomes disabled or inactive.
         void OnDisable()
         {
-            var academy = FindObjectOfType<Academy>();
-            if (academy != null)
+            // If Academy.Dispose has already been called, we don't need to unregister with it.
+            // We don't want to even try, because this will lazily create a new Academy!
+            if (Academy.IsInitialized)
             {
-                academy.AgentSetStatus -= SetStatus;
-                academy.AgentResetIfDone -= ResetIfDone;
-                academy.AgentSendState -= SendInfo;
-                academy.DecideAction -= DecideAction;
-                academy.AgentAct -= AgentStep;
-                academy.AgentForceReset -= _AgentReset;
+                Academy.Instance.AgentResetIfDone -= ResetIfDone;
+                Academy.Instance.AgentSendState -= SendInfo;
+                Academy.Instance.DecideAction -= DecideAction;
+                Academy.Instance.AgentAct -= AgentStep;
+                Academy.Instance.AgentForceReset -= _AgentReset;
             }
+            NotifyAgentDone();
             m_Brain?.Dispose();
+        }
+
+        void NotifyAgentDone()
+        {
+            m_Info.done = true;
+            // Request the last decision with no callbacks
+            // We request a decision so Python knows the Agent is disabled
+            m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
         }
 
         /// <summary>
@@ -354,6 +314,12 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
+#if DEBUG
+            if (float.IsNaN(reward))
+            {
+                throw new ArgumentException("NaN reward passed to SetReward.");
+            }
+#endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
         }
@@ -364,6 +330,12 @@ namespace MLAgents
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
         {
+#if DEBUG
+            if (float.IsNaN(increment))
+            {
+                throw new ArgumentException("NaN reward passed to AddReward.");
+            }
+#endif
             m_Reward += increment;
             m_CumulativeReward += increment;
         }
@@ -456,8 +428,6 @@ namespace MLAgents
                     m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
                 }
             }
-
-            m_Info.observations = new List<Observation>();
         }
 
         /// <summary>
@@ -497,7 +467,7 @@ namespace MLAgents
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
-            if(m_PolicyFactory.useChildSensors)
+            if (m_PolicyFactory.useChildSensors)
             {
                 attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
             }
@@ -538,17 +508,6 @@ namespace MLAgents
                 Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
             }
 #endif
-            // Create a buffer for writing vector sensor data too
-            int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                {
-                    numFloatObservations += sensors[i].ObservationSize();
-                }
-            }
-
-            m_VectorSensorBuffer = new float[numFloatObservations];
         }
 
         /// <summary>
@@ -562,7 +521,6 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
-            m_Info.observations.Clear();
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -571,25 +529,16 @@ namespace MLAgents
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
-            // var param = m_PolicyFactory.brainParameters; // look, no brain params!
-
             m_Info.reward = m_Reward;
             m_Info.done = m_Done;
             m_Info.maxStepReached = m_MaxStepReached;
             m_Info.id = m_Id;
 
-            m_Brain.RequestDecision(this);
+            m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-                // This is a bit of a hack - if we're in inference mode, observations won't be generated
-                // But we need these to be generated for the recorder. So generate them here.
-                if (m_Info.observations.Count == 0)
-                {
-                    GenerateSensorData();
-                }
-
-                m_Recorder.WriteExperience(m_Info);
+                m_Recorder.WriteExperience(m_Info, sensors);
             }
 
         }
@@ -599,47 +548,6 @@ namespace MLAgents
             for (var i = 0; i < sensors.Count; i++)
             {
                 sensors[i].Update();
-            }
-        }
-
-        /// <summary>
-        /// Generate data for each sensor and store it on the Agent's AgentInfo.
-        /// NOTE: At the moment, this is only called during training or when using a DemonstrationRecorder;
-        /// during inference the Sensors are used to write directly to the Tensor data. This will likely change in the
-        /// future to be controlled by the type of brain being used.
-        /// </summary>
-        public void GenerateSensorData()
-        {
-            int floatsWritten = 0;
-            // Generate data for all Sensors
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                var sensor = sensors[i];
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
-                {
-                    // only handles 1D
-                    // TODO handle in communicator code instead
-                    m_WriteAdapter.SetTarget(m_VectorSensorBuffer, floatsWritten);
-                    var numFloats = sensor.Write(m_WriteAdapter);
-                    var floatObs = new Observation
-                    {
-                        FloatData = new ArraySegment<float>(m_VectorSensorBuffer, floatsWritten, numFloats),
-                        Shape = sensor.GetFloatObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    m_Info.observations.Add(floatObs);
-                    floatsWritten += numFloats;
-                }
-                else
-                {
-                    var compressedObs = new Observation
-                    {
-                        CompressedData = sensor.GetCompressedObservation(),
-                        Shape = sensor.GetFloatObservationShape(),
-                        CompressionType = sensor.GetCompressionType()
-                    };
-                    m_Info.observations.Add(compressedObs);
-                }
             }
         }
 
@@ -817,15 +725,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Specifies the agent behavior when done and
-        /// <see cref="AgentParameters.resetOnDone"/> is false. This method can be
-        /// used to remove the agent from the scene.
-        /// </summary>
-        public virtual void AgentOnDone()
-        {
-        }
-
-        /// <summary>
         /// Specifies the agent behavior when being reset, which can be due to
         /// the agent or Academy being done (i.e. completion of local or global
         /// episode).
@@ -841,7 +740,6 @@ namespace MLAgents
         /// </summary>
         void ForceReset()
         {
-            m_HasAlreadyReset = false;
             _AgentReset();
         }
 
@@ -897,47 +795,13 @@ namespace MLAgents
             return rawAction * range + middle;
         }
 
-        /// <summary>
-        /// Sets the status of the agent. Will request decisions or actions according
-        /// to the Academy's stepcount.
-        /// </summary>
-        /// <param name="academyStepCounter">Number of current steps in episode</param>
-        void SetStatus(int academyStepCounter)
-        {
-            MakeRequests(academyStepCounter);
-        }
 
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            // If an agent is done, then it will also
-            // request for a decision and an action
             if (IsDone())
             {
-                if (agentParameters.resetOnDone)
-                {
-                    if (agentParameters.onDemandDecision)
-                    {
-                        if (!m_HasAlreadyReset)
-                        {
-                            // If event based, the agent can reset as soon
-                            // as it is done
-                            _AgentReset();
-                            m_HasAlreadyReset = true;
-                        }
-                    }
-                    else if (m_RequestDecision)
-                    {
-                        // If not event based, the agent must wait to request a
-                        // decision before resetting to keep multiple agents in sync.
-                        _AgentReset();
-                    }
-                }
-                else
-                {
-                    m_Terminate = true;
-                    RequestDecision();
-                }
+                _AgentReset();
             }
         }
 
@@ -946,35 +810,20 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            // If the Agent is done, it has just reset and thus requires a new decision
+            if (m_RequestDecision || IsDone())
             {
                 SendInfoToBrain();
                 ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
-
-                m_HasAlreadyReset = false;
             }
         }
 
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if (m_Terminate)
-            {
-                m_Terminate = false;
-                ResetReward();
-                m_Done = false;
-                m_MaxStepReached = false;
-                m_RequestDecision = false;
-                m_RequestAction = false;
-
-                m_HasAlreadyReset = false;
-                OnDisable();
-                AgentOnDone();
-            }
-
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
@@ -989,25 +838,6 @@ namespace MLAgents
             }
 
             m_StepCount += 1;
-        }
-
-        /// <summary>
-        /// Is called after every step, contains the logic to decide if the agent
-        /// will request a decision at the next step.
-        /// </summary>
-        void MakeRequests(int academyStepCounter)
-        {
-            agentParameters.numberOfActionsBetweenDecisions =
-                Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
-            if (!agentParameters.onDemandDecision)
-            {
-                RequestAction();
-                if (academyStepCounter %
-                    agentParameters.numberOfActionsBetweenDecisions == 0)
-                {
-                    RequestDecision();
-                }
-            }
         }
 
         void DecideAction()

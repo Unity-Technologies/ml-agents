@@ -9,6 +9,8 @@ namespace MLAgents
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
+    ///
+    [AddComponentMenu("ML Agents/Behavior Parameters", (int) MenuGroup.Default)]
     public class BehaviorParameters : MonoBehaviour
     {
 
@@ -54,8 +56,8 @@ namespace MLAgents
 
         public string behaviorName
         {
-            
-            get { return m_BehaviorName + "?team=" + m_TeamID;} 
+
+            get { return m_BehaviorName + "?team=" + m_TeamID;}
 
         }
 
@@ -68,7 +70,7 @@ namespace MLAgents
                 case BehaviorType.InferenceOnly:
                     return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
                 case BehaviorType.Default:
-                    if (FindObjectOfType<Academy>().IsCommunicatorOn)
+                    if (Academy.Instance.IsCommunicatorOn)
                     {
                         return new RemotePolicy(m_BrainParameters, behaviorName);
                     }

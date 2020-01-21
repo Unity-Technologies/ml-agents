@@ -66,18 +66,19 @@ class PPOTrainer(RLTrainer):
             "model_path",
             "reward_signals",
         ]
-        self.check_param_keys()
+        self._check_param_keys()
         self.load = load
         self.multi_gpu = multi_gpu
         self.seed = seed
         self.policy: PPOPolicy = None  # type: ignore
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
+        super()._process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         # Add to episode_steps
@@ -160,7 +161,7 @@ class PPOTrainer(RLTrainer):
                 agent_id, self.get_policy(trajectory.behavior_id)
             )
 
-    def is_ready_update(self):
+    def _is_ready_update(self):
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
@@ -168,7 +169,7 @@ class PPOTrainer(RLTrainer):
         size_of_buffer = self.update_buffer.num_experiences
         return size_of_buffer > self.trainer_parameters["buffer_size"]
 
-    def update_policy(self):
+    def _update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.

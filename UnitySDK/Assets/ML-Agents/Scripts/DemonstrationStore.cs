@@ -1,7 +1,8 @@
 using System.IO;
 using System.IO.Abstractions;
 using Google.Protobuf;
-using UnityEngine;
+using System.Collections.Generic;
+using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -19,6 +20,7 @@ namespace MLAgents
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
         float m_CumulativeReward;
+        WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         public DemonstrationStore(IFileSystem fileSystem)
         {
@@ -91,7 +93,7 @@ namespace MLAgents
         /// <summary>
         /// Write AgentInfo experience to file.
         /// </summary>
-        public void Record(AgentInfo info)
+        public void Record(AgentInfo info, List<ISensor> sensors)
         {
             // Increment meta-data counters.
             m_MetaData.numberExperiences++;
@@ -101,8 +103,13 @@ namespace MLAgents
                 EndEpisode();
             }
 
-            // Write AgentInfo to file.
+            // Generate observations and add AgentInfo to file.
             var agentProto = info.ToInfoActionPairProto();
+            foreach (var sensor in sensors)
+            {
+                agentProto.AgentInfo.Observations.Add(sensor.GetObservationProto(m_WriteAdapter));
+            }
+
             agentProto.WriteDelimitedTo(m_Writer);
         }
 

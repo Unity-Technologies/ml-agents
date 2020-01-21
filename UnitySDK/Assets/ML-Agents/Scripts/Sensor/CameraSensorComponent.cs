@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
+    [AddComponentMenu("ML Agents/Camera Sensor", (int) MenuGroup.Sensors)]
     public class CameraSensorComponent : SensorComponent
     {
         public new Camera camera;
@@ -10,10 +11,11 @@ namespace MLAgents.Sensor
         public int width = 84;
         public int height = 84;
         public bool grayscale;
+        public SensorCompressionType compression = SensorCompressionType.PNG;
 
         public override ISensor CreateSensor()
         {
-            return new CameraSensor(camera, width, height, grayscale, sensorName);
+            return new CameraSensor(camera, width, height, grayscale, sensorName, compression);
         }
 
         public override int[] GetObservationShape()

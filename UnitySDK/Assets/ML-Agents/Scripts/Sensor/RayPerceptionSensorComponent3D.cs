@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
+    [AddComponentMenu("ML Agents/Ray Perception Sensor 3D", (int) MenuGroup.Sensors)]
     public class RayPerceptionSensorComponent3D : RayPerceptionSensorComponentBase
     {
         [Header("3D Properties", order = 100)]

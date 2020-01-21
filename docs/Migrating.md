@@ -7,14 +7,42 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.12 to 0.13
+
+## Migrating from 0.13 to latest
+
+### Important changes
+* The Academy class was changed to a singleton, and its virtual methods were removed.
+* Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
+* Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
+* The `--num-runs` command-line option has been removed.
+* The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
+* Agents will always request a decision after being marked as `Done()` and will no longer wait for the next call to `RequestDecision()`.
+* The `Decision Period` and `On Demand decision` checkbox have been removed from the Agent. On demand decision is now the default (calling `RequestDecision` on the Agent manually.)
+
+### Steps to Migrate
+* If you have a class that inherits from Academy:
+  * If the class didn't override any of the virtual methods and didn't store any additional data, you can just remove the old script from the scene.
+  * If the class had additional data, create a new MonoBehaviour and store the data on this instead.
+  * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
+    * Move the InitializeAcademy code to MonoBehaviour.OnAwake
+    * Move the AcademyStep code to MonoBehaviour.FixedUpdate
+    * Move the OnDestroy code to MonoBehaviour.OnDestroy or add it to the to Academy.DestroyAction action.
+    * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
+* Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
+* Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
+  A tool like https://www.json2yaml.com may be useful to help with the conversion.
+* If your Agent implements `AgentOnDone` and your Agent does not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
+* If you were not using `On Demand Decision` for your Agent, you must add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.
+
+## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
 
 ### Important changes
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. This should only affect you if you're writing a custom trainer; if you use `mlagents-learn` for training, this should be a transparent change.
   * `reset()` on the Low-Level Python API no longer takes a `train_mode` argument. To modify the performance/speed of the engine, you must use an `EngineConfigurationChannel`
   * `reset()` on the Low-Level Python API no longer takes a `config` argument. `UnityEnvironment` no longer has a `reset_parameters` field. To modify float properties in the environment, you must use a `FloatPropertiesChannel`. For more information, refer to the [Low Level Python API documentation](Python-API.md)
 * `CustomResetParameters` are now removed.
-* The Academy no longer has a `Training Configuration` nor `Inference Configuration` field in the inspector. To modify the configuration from the Low-Level Python API, use an `EngineConfigurationChannel`. To modify it during training, use the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` in `mlagents-learn`.
+* The Academy no longer has a `Training Configuration` nor `Inference Configuration` field in the inspector. To modify the configuration from the Low-Level Python API, use an `EngineConfigurationChannel`.
+To modify it during training, use the new command line arguments `--width`, `--height`, `--quality-level`, `--time-scale` and `--target-frame-rate` in `mlagents-learn`.
 * The Academy no longer has a `Default Reset Parameters` field in the inspector. The Academy class no longer has a `ResetParameters`. To access shared float properties with Python, use the new `FloatProperties` field on the Academy.
 * Offline Behavioral Cloning has been removed. To learn from demonstrations, use the GAIL and
 Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Training-Imitation-Learning.md) for more information.
@@ -38,7 +66,9 @@ Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Tra
 * Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager.
 
 ### Steps to Migrate
-* We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
+* We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`.
+To reproduce the old behavior, you should increase the the value of `endOffset` by `startOffset`.
+You can verify your raycasts are performing as expected in scene view using the debug rays.
 * If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D (and similarly for 2D). The settings, such as ray angles and detectable tags, are configured on the component now.
 RayPerception3D would contribute `(# of rays) * (# of tags + 2)` to the State Size in Behavior Parameters, but this is no longer necessary, so you should reduce the State Size by this amount.
 Making this change will require retraining your model, since the observations that RayPerceptionSensorComponent3D produces are different from the old behavior.
@@ -60,7 +90,8 @@ Making this change will require retraining your model, since the observations th
 #### Steps to Migrate
 * In order to be able to train, make sure both your ML-Agents Python package and UnitySDK code come from the v0.11 release. Training will not work, for example, if you update the ML-Agents Python package, and only update the API Version in UnitySDK.
 * If your Agents used visual observations, you must add a CameraSensorComponent corresponding to each old Camera in the Agent's camera list (and similarly for RenderTextures).
-* Since Brain ScriptableObjects have been removed, you will need to delete all the Brain ScriptableObjects from your `Assets` folder. Then, add a `Behavior Parameters` component to each `Agent` GameObject. You will then need to complete the fields on the new `Behavior Parameters` component with the BrainParameters of the old Brain.
+* Since Brain ScriptableObjects have been removed, you will need to delete all the Brain ScriptableObjects from your `Assets` folder. Then, add a `Behavior Parameters` component to each `Agent` GameObject.
+You will then need to complete the fields on the new `Behavior Parameters` component with the BrainParameters of the old Brain.
 
 ## Migrating from ML-Agents toolkit v0.9 to v0.10
 
@@ -71,7 +102,9 @@ Making this change will require retraining your model, since the observations th
 #### Steps to Migrate
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
 * The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
-* We have removed the `Done` call as well as the capacity to set `Max Steps` on the Academy. Therefore an AcademyReset will never be triggered from C# (only from Python). If you want to reset the simulation after a fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as BananaCollector). In our examples, groups of Agents can be reset through an "Area" that can reset groups of Agents.
+* We have removed the `Done` call as well as the capacity to set `Max Steps` on the Academy. Therefore an AcademyReset will never be triggered from C# (only from Python). If you want to reset the simulation after a
+fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as BananaCollector).
+In our examples, groups of Agents can be reset through an "Area" that can reset groups of Agents.
 * The import for `mlagents.envs.UnityEnvironment` was removed. If you are using the Python API, change `from mlagents_envs import UnityEnvironment` to `from mlagents_envs.environment import UnityEnvironment`.
 
 

@@ -3,7 +3,7 @@ using MLAgents;
 
 public class FoodCollectorAgent : Agent
 {
-    FoodCollectorAcademy m_MyAcademy;
+    FoodCollectorSettings m_FoodCollecterSettings;
     public GameObject area;
     FoodCollectorArea m_MyArea;
     bool m_Frozen;
@@ -34,7 +34,7 @@ public class FoodCollectorAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         Monitor.verticalOffset = 1f;
         m_MyArea = area.GetComponent<FoodCollectorArea>();
-        m_MyAcademy = FindObjectOfType<FoodCollectorAcademy>();
+        m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
 
         SetResetParameters();
     }
@@ -255,7 +255,7 @@ public class FoodCollectorAgent : Agent
             AddReward(1f);
             if (contribute)
             {
-                m_MyAcademy.totalScore += 1;
+                m_FoodCollecterSettings.totalScore += 1;
             }
         }
         if (collision.gameObject.CompareTag("badFood"))
@@ -266,23 +266,19 @@ public class FoodCollectorAgent : Agent
             AddReward(-1f);
             if (contribute)
             {
-                m_MyAcademy.totalScore -= 1;
+                m_FoodCollecterSettings.totalScore -= 1;
             }
         }
     }
 
-    public override void AgentOnDone()
-    {
-    }
-
     public void SetLaserLengths()
     {
-        m_LaserLength = m_MyAcademy.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
+        m_LaserLength = Academy.Instance.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
     {
-        float agentScale = m_MyAcademy.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
+        float agentScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

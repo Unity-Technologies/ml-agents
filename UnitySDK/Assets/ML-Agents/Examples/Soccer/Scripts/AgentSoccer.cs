@@ -29,7 +29,7 @@ public class AgentSoccer : Agent
 
     [HideInInspector]
     public Rigidbody agentRb;
-    SoccerAcademy m_Academy;
+    SoccerSettings m_SoccerSettings;
     Renderer m_AgentRenderer;
 
     public void ChooseRandomTeam()
@@ -49,7 +49,7 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Purple;
-        m_AgentRenderer.material = m_Academy.purpleMaterial;
+        m_AgentRenderer.material = m_SoccerSettings.purpleMaterial;
         tag = "purpleAgent";
     }
 
@@ -57,7 +57,7 @@ public class AgentSoccer : Agent
     {
         agentRole = role;
         team = Team.Blue;
-        m_AgentRenderer.material = m_Academy.blueMaterial;
+        m_AgentRenderer.material = m_SoccerSettings.blueMaterial;
         tag = "blueAgent";
     }
 
@@ -65,7 +65,7 @@ public class AgentSoccer : Agent
     {
         base.InitializeAgent();
         m_AgentRenderer = GetComponentInChildren<Renderer>();
-        m_Academy = FindObjectOfType<SoccerAcademy>();
+        m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
 
@@ -135,7 +135,7 @@ public class AgentSoccer : Agent
             }
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_Academy.agentRunSpeed,
+        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }
 
@@ -170,7 +170,7 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
-        if (m_Academy.randomizePlayersTeamForTraining)
+        if (m_SoccerSettings.randomizePlayersTeamForTraining)
         {
             ChooseRandomTeam();
         }

@@ -51,14 +51,6 @@ namespace MLAgents
                 agentInfoProto.ActionMask.AddRange(ai.actionMasks);
             }
 
-            if (ai.observations != null)
-            {
-                foreach (var obs in ai.observations)
-                {
-                    agentInfoProto.Observations.Add(obs.ToProto());
-                }
-            }
-
             return agentInfoProto;
         }
 
@@ -196,6 +188,50 @@ namespace MLAgents
 
             obsProto.Shape.AddRange(obs.Shape);
             return obsProto;
+        }
+
+        /// <summary>
+        /// Generate an ObservationProto for the sensor using the provided WriteAdapter.
+        /// This is equivalent to producing an Observation and calling Observation.ToProto(),
+        /// but avoid some intermediate memory allocations.
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="writeAdapter"></param>
+        /// <returns></returns>
+        public static ObservationProto GetObservationProto(this ISensor sensor, WriteAdapter writeAdapter)
+        {
+            var shape = sensor.GetObservationShape();
+            ObservationProto observationProto = null;
+            if (sensor.GetCompressionType() == SensorCompressionType.None)
+            {
+                var numFloats = sensor.ObservationSize();
+                var floatDataProto = new ObservationProto.Types.FloatData();
+                // Resize the float array
+                // TODO upgrade protobuf versions so that we can set the Capacity directly - see https://github.com/protocolbuffers/protobuf/pull/6530
+                for (var i = 0; i < numFloats; i++)
+                {
+                    floatDataProto.Data.Add(0.0f);
+                }
+
+                writeAdapter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
+                sensor.Write(writeAdapter);
+
+                observationProto = new ObservationProto
+                {
+                    FloatData = floatDataProto,
+                    CompressionType = (CompressionTypeProto)SensorCompressionType.None,
+                };
+            }
+            else
+            {
+                observationProto = new ObservationProto
+                {
+                    CompressedData = ByteString.CopyFrom(sensor.GetCompressedObservation()),
+                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                };
+            }
+            observationProto.Shape.AddRange(shape);
+            return observationProto;
         }
     }
 }

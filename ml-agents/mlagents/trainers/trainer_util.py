@@ -1,3 +1,4 @@
+import os
 import yaml
 from typing import Any, Dict, TextIO
 import logging
@@ -102,14 +103,14 @@ def initialize_trainer(
 
     min_lesson_length = 1
     if meta_curriculum:
-        if brain_name in meta_curriculum.brains_to_curriculums:
-            min_lesson_length = meta_curriculum.brains_to_curriculums[
+        if brain_name in meta_curriculum.brains_to_curricula:
+            min_lesson_length = meta_curriculum.brains_to_curricula[
                 brain_name
             ].min_lesson_length
         else:
             logger.warning(
                 f"Metacurriculum enabled, but no curriculum for brain {brain_name}. "
-                f"Brains with curricula: {meta_curriculum.brains_to_curriculums.keys()}. "
+                f"Brains with curricula: {meta_curriculum.brains_to_curricula.keys()}. "
             )
 
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
@@ -158,7 +159,8 @@ def load_config(config_path: str) -> Dict[str, Any]:
         with open(config_path) as data_file:
             return _load_config(data_file)
     except IOError:
-        raise TrainerConfigError(f"Config file could not be found at {config_path}.")
+        abs_path = os.path.abspath(config_path)
+        raise TrainerConfigError(f"Config file could not be found at {abs_path}.")
     except UnicodeDecodeError:
         raise TrainerConfigError(
             f"There was an error decoding Config file from {config_path}. "

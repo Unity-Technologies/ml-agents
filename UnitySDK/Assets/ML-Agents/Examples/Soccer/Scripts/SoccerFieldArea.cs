@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MLAgents;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,7 +32,8 @@ public class SoccerFieldArea : MonoBehaviour
     public bool canResetBall;
     Material m_GroundMaterial;
     Renderer m_GroundRenderer;
-    SoccerAcademy m_Academy;
+
+    SoccerSettings m_SoccerSettings;
 
     public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
@@ -42,7 +44,7 @@ public class SoccerFieldArea : MonoBehaviour
 
     void Awake()
     {
-        m_Academy = FindObjectOfType<SoccerAcademy>();
+        m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         m_GroundRenderer = centerPitch.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
         canResetBall = true;
@@ -81,24 +83,24 @@ public class SoccerFieldArea : MonoBehaviour
         {
             if (ps.agentScript.team == scoredTeam)
             {
-                RewardOrPunishPlayer(ps, m_Academy.strikerReward, m_Academy.goalieReward);
+                RewardOrPunishPlayer(ps, m_SoccerSettings.strikerReward, m_SoccerSettings.goalieReward);
             }
             else
             {
-                RewardOrPunishPlayer(ps, m_Academy.strikerPunish, m_Academy.goaliePunish);
+                RewardOrPunishPlayer(ps, m_SoccerSettings.strikerPunish, m_SoccerSettings.goaliePunish);
             }
-            if (m_Academy.randomizePlayersTeamForTraining)
+            if (m_SoccerSettings.randomizePlayersTeamForTraining)
             {
                 ps.agentScript.ChooseRandomTeam();
             }
 
             if (scoredTeam == AgentSoccer.Team.Purple)
             {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.purpleMaterial, 1));
+                StartCoroutine(GoalScoredSwapGroundMaterial(m_SoccerSettings.purpleMaterial, 1));
             }
             else
             {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_Academy.blueMaterial, 1));
+                StartCoroutine(GoalScoredSwapGroundMaterial(m_SoccerSettings.blueMaterial, 1));
             }
             if (goalTextUI)
             {
@@ -157,7 +159,7 @@ public class SoccerFieldArea : MonoBehaviour
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = m_Academy.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
+        var ballScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
         ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

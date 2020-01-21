@@ -69,7 +69,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(
-                manager.env_workers[i].previous_step.current_all_brain_info, i
+                manager.env_workers[i].previous_step.current_all_step_result, i
             )
         assert res == list(map(lambda ew: ew.previous_step, manager.env_workers))
 
@@ -100,11 +100,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
                 manager.step_queue.get_nowait.assert_called()
                 # Check that the "last steps" are set to the value returned for each step
                 self.assertEqual(
-                    manager.env_workers[i].previous_step.current_all_brain_info, i
-                )
-                self.assertEqual(
-                    manager.env_workers[i].previous_step.previous_all_brain_info,
-                    last_steps[i].current_all_brain_info,
+                    manager.env_workers[i].previous_step.current_all_step_result, i
                 )
         assert res == [
             manager.env_workers[0].previous_step,
