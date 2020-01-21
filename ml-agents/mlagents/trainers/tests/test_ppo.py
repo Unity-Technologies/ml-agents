@@ -329,6 +329,7 @@ def test_trainer_increment_step(dummy_config):
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
     policy_mock = mock.Mock(spec=PPOPolicy)
+    policy_mock.get_current_step.return_value = 0
     step_count = (
         5
     )  # 10 hacked because this function is no longer called through trainer
