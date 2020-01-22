@@ -154,7 +154,6 @@ VisualPyramids:
             gamma: 0.995
 
 Tennis:
-    trainer: ppo
     normalize: true
     max_steps: 5e8
     self_play:

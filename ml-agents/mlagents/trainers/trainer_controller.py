@@ -23,8 +23,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
+from mlagents.trainers.agent_processor import AgentManager
 
 
 class TrainerController(object):
@@ -180,9 +179,6 @@ class TrainerController(object):
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
         trainer.add_policy(name_behavior_id, policy)
-        env_manager.set_policy(name_behavior_id, policy)
-
-        self.brain_name_to_identifier[brain_name].add(name_behavior_id)
 
         agent_manager = AgentManager(
             policy,

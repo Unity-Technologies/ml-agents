@@ -146,9 +146,13 @@ VisualPyramids:
     time_horizon: 1000
 
 Tennis:
-    buffer_size: 500000
     normalize: true
-    max_steps: 4e6
+    max_steps: 5e8
+    self_play:
+        window: 20
+        play_against_current_self_ratio: 0.0
+        save_steps: 50000
+        swap_steps: 50000
 
 CrawlerStatic:
     normalize: true
