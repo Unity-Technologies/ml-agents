@@ -5,6 +5,7 @@ import time
 import abc
 
 from mlagents.tf_utils import tf
+from mlagents import tf_utils
 
 from collections import deque
 
@@ -80,7 +81,7 @@ class Trainer(abc.ABC):
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            with tf.Session() as sess:
+            with tf.Session(config=tf_utils.generate_session_config()) as sess:
                 s_op = tf.summary.text(
                     key,
                     tf.convert_to_tensor(

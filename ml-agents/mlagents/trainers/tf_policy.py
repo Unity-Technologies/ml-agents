@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 from mlagents.tf_utils import tf
+from mlagents import tf_utils
 
 from mlagents_envs.exception import UnityException
 from mlagents.trainers.policy import Policy
@@ -70,14 +71,9 @@ class TFPolicy(Policy):
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        # For multi-GPU training, set allow_soft_placement to True to allow
-        # placing the operation into an alternative device automatically
-        # to prevent from exceptions if the device doesn't suppport the operation
-        # or the device does not exist
-        config.allow_soft_placement = True
-        self.sess = tf.Session(config=config, graph=self.graph)
+        self.sess = tf.Session(
+            config=tf_utils.generate_session_config(), graph=self.graph
+        )
         self.saver = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
