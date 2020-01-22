@@ -205,10 +205,7 @@ class TrainerController(object):
         global_step = 0
         last_brain_behavior_ids: Set[str] = set()
         try:
-            # Create the initial set of trainers and managers
-            initial_brain_behaviors = set(env_manager.external_brains.keys())
-            self._create_trainers_and_managers(env_manager, initial_brain_behaviors)
-            last_brain_behavior_ids = initial_brain_behaviors
+            # Initial reset
             self._reset_env(env_manager)
             while self._not_done_training():
                 external_brain_behavior_ids = set(env_manager.external_brains.keys())
