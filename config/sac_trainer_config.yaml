@@ -147,7 +147,7 @@ VisualPyramids:
 
 Tennis:
     normalize: true
-    max_steps: 5e8
+    max_steps: 10e8
     self_play:
         window: 20
         play_against_current_self_ratio: 0.0
