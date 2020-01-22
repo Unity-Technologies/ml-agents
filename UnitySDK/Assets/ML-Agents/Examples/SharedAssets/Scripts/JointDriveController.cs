@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using MLAgents;
 
-namespace MLAgents
+namespace MLAgentsExamples
 {
     /// <summary>
     /// Used to store relevant information for acting and learning for each body part in agent.

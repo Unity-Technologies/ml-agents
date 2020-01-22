@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
 using System.IO;
-using System.Runtime.Remoting;
+using MLAgents;
 
-namespace MLAgents
+namespace MLAgentsExamples
 {
     /// <summary>
     /// Utility class to allow the NNModel file for an agent to be overriden during inference.
     /// This is useful to validate the file after training is done.
     /// The behavior name to override and file path are specified on the commandline, e.g.
     /// player.exe --mlagents-override-model behavior1 /path/to/model1.nn --mlagents-override-model behavior2 /path/to/model2.nn
+    /// Note this will only work with example scenes that have 1:1 Agent:Behaviors. More complicated scenes like WallJump
+    /// probably won't override correctly.
     /// </summary>
     public class ModelOverrider : MonoBehaviour
     {
@@ -21,16 +23,6 @@ namespace MLAgents
 
         // Cached loaded NNModels, with the behavior name as the key.
         Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
-
-        void OnEnable()
-        {
-            GetAssetPathFromCommandLine();
-            if (m_BehaviorNameOverrides.Count > 0)
-            {
-                OverrideModel();
-            }
-
-        }
 
         /// <summary>
         /// Get the asset path to use from the commandline arguments.
@@ -50,6 +42,15 @@ namespace MLAgents
                     var value = args[i + 2].Trim();
                     m_BehaviorNameOverrides[key] = value;
                 }
+            }
+        }
+
+        void OnEnable()
+        {
+            GetAssetPathFromCommandLine();
+            if (m_BehaviorNameOverrides.Count > 0)
+            {
+                OverrideModel();
             }
         }
 
