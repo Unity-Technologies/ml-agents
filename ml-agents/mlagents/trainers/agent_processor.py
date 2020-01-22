@@ -8,7 +8,7 @@ from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.env_manager import get_global_agent_id
+from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 
 T = TypeVar("T")
 
@@ -175,6 +175,15 @@ class AgentProcessor:
         :param trajectory_queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)
+
+    def end_episode(self) -> None:
+        """
+        Ends the episode, terminating the current trajectory and stopping stats collection for that
+        episode. Used for forceful reset (e.g. in curriculum or generalization training.)
+        """
+        self.experience_buffers.clear()
+        self.episode_rewards.clear()
+        self.episode_steps.clear()
 
 
 class AgentManagerQueue(Generic[T]):

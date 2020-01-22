@@ -15,36 +15,13 @@ namespace MLAgents
             var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            var actionsPerDecision = serializedAgent.FindProperty(
-                "agentParameters.numberOfActionsBetweenDecisions");
             var maxSteps = serializedAgent.FindProperty(
                 "agentParameters.maxStep");
-            var isResetOnDone = serializedAgent.FindProperty(
-                "agentParameters.resetOnDone");
-            var isOdd = serializedAgent.FindProperty(
-                "agentParameters.onDemandDecision");
-
-
 
             EditorGUILayout.PropertyField(
                 maxSteps,
                 new GUIContent(
                     "Max Step", "The per-agent maximum number of steps."));
-            EditorGUILayout.PropertyField(
-                isOdd,
-                new GUIContent(
-                    "On Demand Decisions",
-                    "If checked, you must manually request decisions."));
-            if (!isOdd.boolValue)
-            {
-                EditorGUILayout.PropertyField(
-                    actionsPerDecision,
-                    new GUIContent(
-                        "Decision Interval",
-                        "The agent will automatically request a decision every X" +
-                        " steps and perform an action at every step."));
-                actionsPerDecision.intValue = Mathf.Max(1, actionsPerDecision.intValue);
-            }
 
             serializedAgent.ApplyModifiedProperties();
 

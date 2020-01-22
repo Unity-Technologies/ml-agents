@@ -77,17 +77,6 @@ namespace MLAgents
         /// </remarks>
         public int maxStep;
 
-        /// <summary>
-        /// Whether to enable On Demand Decisions or make a decision at
-        /// every step.
-        /// </summary>
-        public bool onDemandDecision;
-
-        /// <summary>
-        /// Number of actions between decisions (used when On Demand Decisions
-        /// is turned off).
-        /// </summary>
-        public int numberOfActionsBetweenDecisions;
     }
 
 
@@ -193,10 +182,6 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
-        /// Flag to signify that an agent has been reset but the fact that it is
-        /// done has not been communicated (required for On Demand Decisions).
-        bool m_HasAlreadyReset;
-
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         int m_Id;
@@ -239,7 +224,6 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            Academy.Instance.AgentSetStatus += SetStatus;
             Academy.Instance.AgentResetIfDone += ResetIfDone;
             Academy.Instance.AgentSendState += SendInfo;
             Academy.Instance.DecideAction += DecideAction;
@@ -260,7 +244,6 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
-                Academy.Instance.AgentSetStatus -= SetStatus;
                 Academy.Instance.AgentResetIfDone -= ResetIfDone;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
@@ -757,7 +740,6 @@ namespace MLAgents
         /// </summary>
         void ForceReset()
         {
-            m_HasAlreadyReset = false;
             _AgentReset();
         }
 
@@ -813,39 +795,13 @@ namespace MLAgents
             return rawAction * range + middle;
         }
 
-        /// <summary>
-        /// Sets the status of the agent. Will request decisions or actions according
-        /// to the Academy's stepcount.
-        /// </summary>
-        /// <param name="academyStepCounter">Number of current steps in episode</param>
-        void SetStatus(int academyStepCounter)
-        {
-            MakeRequests(academyStepCounter);
-        }
 
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            // If an agent is done, then it will also
-            // request for a decision and an action
             if (IsDone())
             {
-                if (agentParameters.onDemandDecision)
-                {
-                    if (!m_HasAlreadyReset)
-                    {
-                        // If event based, the agent can reset as soon
-                        // as it is done
-                        _AgentReset();
-                        m_HasAlreadyReset = true;
-                    }
-                }
-                else if (m_RequestDecision)
-                {
-                    // If not event based, the agent must wait to request a
-                    // decision before resetting to keep multiple agents in sync.
-                    _AgentReset();
-                }
+                _AgentReset();
             }
         }
 
@@ -854,15 +810,14 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            // If the Agent is done, it has just reset and thus requires a new decision
+            if (m_RequestDecision || IsDone())
             {
                 SendInfoToBrain();
                 ResetReward();
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
-
-                m_HasAlreadyReset = false;
             }
         }
 
@@ -883,25 +838,6 @@ namespace MLAgents
             }
 
             m_StepCount += 1;
-        }
-
-        /// <summary>
-        /// Is called after every step, contains the logic to decide if the agent
-        /// will request a decision at the next step.
-        /// </summary>
-        void MakeRequests(int academyStepCounter)
-        {
-            agentParameters.numberOfActionsBetweenDecisions =
-                Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
-            if (!agentParameters.onDemandDecision)
-            {
-                RequestAction();
-                if (academyStepCounter %
-                    agentParameters.numberOfActionsBetweenDecisions == 0)
-                {
-                    RequestDecision();
-                }
-            }
         }
 
         void DecideAction()

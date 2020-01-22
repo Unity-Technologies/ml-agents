@@ -266,11 +266,10 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 2;
+            decisionRequester.Awake();
             // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
 
             agentEnableMethod?.Invoke(agent1, new object[] { });
@@ -374,11 +373,8 @@ namespace MLAgents.Tests
 
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 2;
-            // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 2;
 
             agentEnableMethod?.Invoke(agent2, new object[] { });
 
@@ -436,7 +432,7 @@ namespace MLAgents.Tests
                     // Request an action without decision regularly
                     agent2.RequestAction();
                 }
-                if (agent1.IsDone() && (((acaStepsSinceReset) % agent1.agentParameters.numberOfActionsBetweenDecisions == 0)))
+                if (agent1.IsDone())
                 {
                     numberAgent1Reset += 1;
                 }
@@ -479,12 +475,11 @@ namespace MLAgents.Tests
                 "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
-            // We use event based so the agent will now try to send anything to the brain
-            agent1.agentParameters.onDemandDecision = false;
-            agent1.agentParameters.numberOfActionsBetweenDecisions = 3;
-            // agent1 will take an action at every step and request a decision every 2 steps
-            agent2.agentParameters.onDemandDecision = true;
-            // agent2 will request decisions only when RequestDecision is called
+
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 2;
+            decisionRequester.Awake();
+
             agent1.agentParameters.maxStep = 20;
 
             agentEnableMethod?.Invoke(agent2, new object[] { });

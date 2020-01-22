@@ -10,6 +10,7 @@ namespace MLAgents
     /// Demonstration Recorder Component.
     /// </summary>
     [RequireComponent(typeof(Agent))]
+    [AddComponentMenu("ML Agents/Demonstration Recorder", (int) MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
         public bool record;
