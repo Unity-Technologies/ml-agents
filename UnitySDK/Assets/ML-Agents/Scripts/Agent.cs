@@ -54,30 +54,8 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
-        public float value;
     }
 
-    /// <summary>
-    /// Struct that contains all the Agent-specific parameters provided in the
-    /// Editor. This excludes the Brain linked to the Agent since it can be
-    /// modified programmatically.
-    /// </summary>
-    [Serializable]
-    public class AgentParameters
-    {
-        /// <summary>
-        /// The maximum number of steps the agent takes before being done.
-        /// </summary>
-        /// <remarks>
-        /// If set to 0, the agent can only be set to done programmatically (or
-        /// when the Academy is done).
-        /// If set to any positive integer, the agent will be set to done after
-        /// that many steps. Note that setting the max step to a value greater
-        /// than the academy max step value renders it useless.
-        /// </remarks>
-        public int maxStep;
-
-    }
 
 
     /// <summary>
@@ -136,17 +114,19 @@ namespace MLAgents
         BehaviorParameters m_PolicyFactory;
 
         /// <summary>
-        /// Agent parameters specified within the Editor via AgentEditor.
+        /// The maximum number of steps the agent takes before being done.
         /// </summary>
-        [HideInInspector] public AgentParameters agentParameters;
+        /// <remarks>
+        /// If set to 0, the agent can only be set to done programmatically (or
+        /// when the Academy is done).
+        /// If set to any positive integer, the agent will be set to done after
+        /// that many steps. Note that setting the max step to a value greater
+        /// than the academy max step value renders it useless.
+        /// </remarks>
+        [HideInInspector] public int maxStep;
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
-        public AgentInfo Info
-        {
-            get { return m_Info; }
-            set { m_Info = value; }
-        }
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
@@ -285,7 +265,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current epside).
+        /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
         /// Current episode number.
@@ -293,18 +273,6 @@ namespace MLAgents
         public int GetStepCount()
         {
             return m_StepCount;
-        }
-
-        /// <summary>
-        /// Resets the step reward and possibly the episode reward for the agent.
-        /// </summary>
-        public void ResetReward()
-        {
-            m_Reward = 0f;
-            if (m_Done)
-            {
-                m_CumulativeReward = 0f;
-            }
         }
 
         /// <summary>
@@ -341,15 +309,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Retrieves the step reward for the Agent.
-        /// </summary>
-        /// <returns>The step reward.</returns>
-        public float GetReward()
-        {
-            return m_Reward;
-        }
-
-        /// <summary>
         /// Retrieves the episode reward for the Agent.
         /// </summary>
         /// <returns>The episode reward.</returns>
@@ -383,33 +342,15 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
-        /// <summary>
-        /// Indicates if the agent has reached his maximum number of steps.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if max step reached was reached, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsMaxStepReached()
-        {
-            return m_MaxStepReached;
-        }
-
-        /// <summary>
-        /// Indicates if the agent is done
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if the agent is done, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsDone()
-        {
-            return m_Done;
-        }
-
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
         void ResetData()
         {
+            m_Reward = 0f;
+            m_CumulativeReward = 0f;
+            m_Done = false;
+
             var param = m_PolicyFactory.brainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
@@ -769,19 +710,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Updates the value of the agent.
-        /// </summary>
-        public void UpdateValueAction(float value)
-        {
-            m_Action.value = value;
-        }
-
-        protected float GetValueEstimate()
-        {
-            return m_Action.value;
-        }
-
-        /// <summary>
         /// Scales continuous action from [-1, 1] to arbitrary range.
         /// </summary>
         /// <param name="rawAction"></param>
@@ -799,7 +727,7 @@ namespace MLAgents
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            if (IsDone())
+            if (m_Done)
             {
                 _AgentReset();
             }
@@ -811,10 +739,10 @@ namespace MLAgents
         void SendInfo()
         {
             // If the Agent is done, it has just reset and thus requires a new decision
-            if (m_RequestDecision || IsDone())
+            if (m_RequestDecision || m_Done)
             {
                 SendInfoToBrain();
-                ResetReward();
+                m_Reward = 0f;
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
@@ -830,8 +758,7 @@ namespace MLAgents
                 AgentAction(m_Action.vectorActions);
             }
 
-            if ((m_StepCount >= agentParameters.maxStep)
-                && (agentParameters.maxStep > 0))
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
             {
                 m_MaxStepReached = true;
                 Done();

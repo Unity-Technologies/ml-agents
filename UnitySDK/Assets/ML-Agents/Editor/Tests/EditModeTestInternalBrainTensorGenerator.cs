@@ -20,7 +20,7 @@ namespace MLAgents.Tests
             }
         }
 
-        static List<Agent> GetFakeAgents()
+        static List<TestAgent> GetFakeAgents()
         {
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
@@ -34,7 +34,7 @@ namespace MLAgents.Tests
             bpB.brainParameters.numStackedVectorObservations = 1;
             var agentB = goB.AddComponent<TestAgent>();
 
-            var agents = new List<Agent> { agentA, agentB };
+            var agents = new List<TestAgent> { agentA, agentB };
             foreach (var agent in agents)
             {
                 var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
@@ -56,8 +56,9 @@ namespace MLAgents.Tests
                 actionMasks = new[] { true, false, false, false, false },
             };
 
-            agentA.Info = infoA;
-            agentB.Info = infoB;
+
+            agentA._Info = infoA;
+            agentB._Info = infoB;
             return agents;
         }
 
@@ -115,8 +116,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0.Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1.Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
@@ -143,8 +144,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0.Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1.Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
@@ -172,8 +173,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0.Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1.Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
             };
 
             generator.Generate(inputTensor, batchSize, inputs);
