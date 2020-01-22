@@ -158,16 +158,9 @@ class PPOModel(LearningModel):
 
         self.create_value_heads(self.stream_names, hidden_value)
 
-        self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
-        )
-
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum(
             (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
-        self.old_log_probs = tf.reduce_sum(
-            (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
     def create_dc_actor_critic(
@@ -323,82 +316,3 @@ class PPOModel(LearningModel):
             keepdims=True,
         )
 
-    def create_losses(
-        self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
-    ):
-        """
-        Creates training-specific Tensorflow ops for PPO models.
-        :param probs: Current policy probabilities
-        :param old_probs: Past policy probabilities
-        :param value_heads: Value estimate tensors from each value stream
-        :param beta: Entropy regularization strength
-        :param entropy: Current policy entropy
-        :param epsilon: Value for policy-divergence threshold
-        :param lr: Learning rate
-        :param max_step: Total number of training steps.
-        """
-        self.returns_holders = {}
-        self.old_values = {}
-        for name in value_heads.keys():
-            returns_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_returns".format(name)
-            )
-            old_value = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
-            )
-            self.returns_holders[name] = returns_holder
-            self.old_values[name] = old_value
-        self.advantage = tf.placeholder(
-            shape=[None], dtype=tf.float32, name="advantages"
-        )
-        advantage = tf.expand_dims(self.advantage, -1)
-
-        decay_epsilon = tf.train.polynomial_decay(
-            epsilon, self.global_step, max_step, 0.1, power=1.0
-        )
-        decay_beta = tf.train.polynomial_decay(
-            beta, self.global_step, max_step, 1e-5, power=1.0
-        )
-
-        value_losses = []
-        for name, head in value_heads.items():
-            clipped_value_estimate = self.old_values[name] + tf.clip_by_value(
-                tf.reduce_sum(head, axis=1) - self.old_values[name],
-                -decay_epsilon,
-                decay_epsilon,
-            )
-            v_opt_a = tf.squared_difference(
-                self.returns_holders[name], tf.reduce_sum(head, axis=1)
-            )
-            v_opt_b = tf.squared_difference(
-                self.returns_holders[name], clipped_value_estimate
-            )
-            value_loss = tf.reduce_mean(
-                tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.mask, 2)[1]
-            )
-            value_losses.append(value_loss)
-        self.value_loss = tf.reduce_mean(value_losses)
-
-        r_theta = tf.exp(probs - old_probs)
-        p_opt_a = r_theta * advantage
-        p_opt_b = (
-            tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon)
-            * advantage
-        )
-        self.policy_loss = -tf.reduce_mean(
-            tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1]
-        )
-        # For cleaner stats reporting
-        self.abs_policy_loss = tf.abs(self.policy_loss)
-
-        self.loss = (
-            self.policy_loss
-            + 0.5 * self.value_loss
-            - decay_beta
-            * tf.reduce_mean(tf.dynamic_partition(entropy, self.mask, 2)[1])
-        )
-
-    def create_ppo_optimizer(self):
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-        self.grads = self.optimizer.compute_gradients(self.loss)
-        self.update_batch = self.optimizer.minimize(self.loss)

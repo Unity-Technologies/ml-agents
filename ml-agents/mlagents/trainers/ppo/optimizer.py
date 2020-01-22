@@ -69,7 +69,7 @@ class PPOOptimizer(LearningModel):
         self.visual_in = self.policy.visual_in
 
         self.create_losses(
-            self.log_probs,
+            self.policy.log_probs,
             self.old_log_probs,
             self.value_heads,
             self.entropy,
@@ -87,7 +87,7 @@ class PPOOptimizer(LearningModel):
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = LearningModel.create_observation_streams(
+        hidden_stream = LearningModel.create_observation_streams(
             self.policy.visual_in,
             self.policy.processed_vector_in,
             1,
@@ -101,75 +101,22 @@ class PPOOptimizer(LearningModel):
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
             _half_point = int(self.m_size / 2)
-            hidden_policy, memory_policy_out = self.create_recurrent_encoder(
-                hidden_streams[0],
-                self.memory_in[:, :_half_point],
-                self.sequence_length,
-                name="lstm_policy",
-            )
 
             hidden_value, memory_value_out = self.create_recurrent_encoder(
-                hidden_streams[1],
+                hidden_stream,
                 self.memory_in[:, _half_point:],
                 self.sequence_length,
                 name="lstm_value",
             )
-            self.memory_out = tf.concat(
-                [memory_policy_out, memory_value_out], axis=1, name="recurrent_out"
-            )
+            self.memory_out = memory_value_out
         else:
-            hidden_policy = hidden_streams[0]
-            hidden_value = hidden_streams[1]
-
-        mu = tf.layers.dense(
-            hidden_policy,
-            self.act_size[0],
-            activation=None,
-            kernel_initializer=LearningModel.scaled_init(0.01),
-            reuse=tf.AUTO_REUSE,
-        )
-
-        self.log_sigma_sq = tf.get_variable(
-            "log_sigma_squared",
-            [self.act_size[0]],
-            dtype=tf.float32,
-            initializer=tf.zeros_initializer(),
-        )
-
-        sigma_sq = tf.exp(self.log_sigma_sq)
-
-        self.epsilon = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
-        )
-        # Clip and scale output to ensure actions are always within [-1, 1] range.
-        self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
-        output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
-        self.output = tf.identity(output_post, name="action")
-        self.selected_actions = tf.stop_gradient(output_post)
-
-        # Compute probability of model output.
-        all_probs = (
-            -0.5 * tf.square(tf.stop_gradient(self.output_pre) - mu) / sigma_sq
-            - 0.5 * tf.log(2.0 * np.pi)
-            - 0.5 * self.log_sigma_sq
-        )
-
-        self.all_log_probs = tf.identity(all_probs, name="action_probs")
-
-        self.entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + self.log_sigma_sq
-        )
+            hidden_value = hidden_stream
 
         self.create_value_heads(self.stream_names, hidden_value)
-
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="old_probabilities"
+            shape=[None, self.policy.act_size[0]], dtype=tf.float32, name="old_probabilities"
         )
 
-        # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = tf.reduce_sum(
-            (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
         self.old_log_probs = tf.reduce_sum(
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
