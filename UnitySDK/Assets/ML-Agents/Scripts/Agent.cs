@@ -292,6 +292,11 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
+            if (m_PolicyFactory == null)
+            {
+                // TODO better way to do this lazily
+                m_PolicyFactory = GetComponent<BehaviorParameters>();
+            }
             m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
