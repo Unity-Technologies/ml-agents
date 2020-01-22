@@ -38,14 +38,16 @@ importing the ML-Agents assets into it:
 
 1. Launch the Unity Editor and create a new project named "RollerBall".
 2. Make sure that the Scripting Runtime Version for the project is set to use
-    **.NET 4.x Equivalent** (This is an experimental option in Unity 2017,
+    **.NET 4.x Equivalent** (This s an experimental option in Unity 2017,
     but is the default as of 2018.3.)
 3. In a file system window, navigate to the folder containing your cloned
     ML-Agents repository.
-4. Drag the `ML-Agents` folder from `UnitySDK/Assets` to the Unity
-    Editor Project window. If you see console errors about Barracuda, make sure
-    you've installed Barracuda from the Unity Package Manager. More information
-    can be found in the [installation instructions](Installation.md) under
+4. Open the `manifest.json` file in the `Packages` directory of your project.
+    Add the following line to your project's package dependencies:
+    ```
+        "com.unity.ml-agents" : "file:<path_to_local_ml-agents_repo>/com.unity.ml-agents"
+    ```
+    More information can be found in the [installation instructions](Installation.md) under
     **Package Installation**.
 
 Your Unity **Project** window should contain the following assets:

@@ -46,7 +46,7 @@ Whenever you change the fields of a message, you must follow the steps below to 
 2. Un-comment line 7 in `make.sh` (for Windows, use `make_for_win.bat`), and set to correct Grpc.Tools sub-directory.
 3. Run the protobuf generation script from the terminal by navigating to `$MLAGENTS_ROOT\protobuf-definitions` and entering `make.sh` (for Windows, use `make_for_win.bat`)
 4. Note any errors generated that may result from setting the wrong directory in step 2.
-5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/UnitySDK/Assets/ML-Agents/Scripts/CommunicatorObjects` folder, check to see if you need to add the following to the beginning of the file:
+5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects` folder, check to see if you need to add the following to the beginning of the file:
 
 ```csharp
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX

@@ -34,13 +34,13 @@ git clone --branch latest_release https://github.com/Unity-Technologies/ml-agent
 The `--branch latest_release` option will switch to the tag of the latest stable release.
 Omitting that will get the `master` branch which is potentially unstable.
 
-The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
-It also contains many [example environments](Learning-Environment-Examples.md)
+The `com.unity.ml-agents` subdirectory contains the core code to add to your projects.
+The `Project` subdirectory contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
 ### Package Installation
 
-If you intend to copy the `UnitySDK` folder in to your project, ensure that
+If you intend to copy the `com.unity.ml-agents` folder in to your project, ensure that
 you have the [Barracuda preview package](https://docs.unity3d.com/Packages/com.unity.barracuda@0.3/manual/index.html) installed.
 
 To install the Barracuda package in later versions of Unity, navigate to the Package

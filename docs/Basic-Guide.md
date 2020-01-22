@@ -15,7 +15,7 @@ Unity settings.
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `UnitySDK` folder
+3. Using the file dialog that opens, locate the `Project` folder
    within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
@@ -179,7 +179,7 @@ the steps described
 [above](#running-a-pre-trained-model).
 
 1. Move your model file into
-   `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+   `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBall** prefab Agent object.
 4. Drag the `<behavior_name>.nn` file from the Project window of
