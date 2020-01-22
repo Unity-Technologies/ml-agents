@@ -1,0 +1,960 @@
+// If you are using IntelliJ Rider, you can simply turn on the SCSS compiler, otherwise here is how to convert scss to uss
+//		# Install Sass
+//				gem install sass
+//
+//		# Convert
+//				sass --sourcemap=none --style=expanded --scss --no-cache Main_Dark.scss Main_Dark.uss
+//				sass --sourcemap=none --style=expanded --scss --no-cache Main_Light.scss Main_Light.uss
+//
+//		# Watch
+//				sass --watch --sourcemap=none --style=expanded --scss --no-cache Main_Light.scss:Main_Light.uss Main_Dark.scss:Main_Dark.uss
+//
+//	Sass to Uss Notes
+//		- Sass converts rgb(0,0,0) to css 'black'. Uss doesn't support named colors. The workaround is to set the color in sass as #000000
+//
+// Uss Notes
+//		Runtime\UIElements\Managed\StyleSheets\StyleSheetCache.cs:50 to see which properties are available (until there is a doc)
+
+//--------------------------------------------------------------------------------------------------
+// Helper Mixins
+//--------------------------------------------------------------------------------------------------
+
+@mixin border($top, $right, $bottom, $left) {
+	@if $top != 'auto' {border-top-width: $top;}
+	@if $left != 'auto' {border-left-width: $right;}
+	@if $bottom != 'auto' {border-bottom-width: $bottom;}
+	@if $right != 'auto' {border-right-width: $left;}
+}
+
+@mixin border-box($width: 1) {
+	@include border($width, $width, $width, $width);
+}
+
+@mixin padding($top, $right, $bottom, $left) {
+	@if $top != 'auto' {padding-top: $top;}
+	@if $left != 'auto' {padding-left: $left;}
+	@if $bottom != 'auto' {padding-bottom: $bottom;}
+	@if $right != 'auto' {padding-right: $right;}
+}
+
+@mixin padding-box($size) {
+	@include padding($size, $size, $size, $size);
+}
+
+@mixin margin($top, $right, $bottom, $left) {
+	@if $top != 'auto' {margin-top: $top;}
+	@if $left != 'auto' {margin-left: $left;}
+	@if $bottom != 'auto' {margin-bottom: $bottom;}
+	@if $right != 'auto' {margin-right: $right;}
+}
+
+@mixin margin-box($size) {
+	@include margin($size, $size, $size, $size);
+}
+
+@mixin slice($top, $right, $bottom, $left) {
+	@if $top != 'auto' {-unity-slice-top: $top;}
+	@if $left != 'auto' {-unity-slice-left: $left;}
+	@if $bottom != 'auto' {-unity-slice-bottom: $bottom;}
+	@if $right != 'auto' {-unity-slice-right: $right;}
+}
+
+@mixin slice-box($size) {
+	@include slice($size, $size, $size, $size);
+}
+
+@mixin position($top, $right, $bottom, $left) {
+	@if $top != 'auto' {top: $top;}
+	@if $left != 'auto' {left: $left;}
+	@if $bottom != 'auto' {bottom: $bottom;}
+	@if $right != 'auto' {right: $right;}
+}
+
+@mixin text-clip() {
+	overflow: hidden;
+}
+
+@mixin selected-element() {
+	background-color: $unity-list-selected-background;
+	color: $unity-text-color-highlight;
+}
+
+@mixin active-tab() {
+	background-color: $unity-background-dark-contrast;
+	color: $unity-text-color-highlight;
+}
+
+@mixin inactive-tab() {
+	background-color: $unity-background-light-contrast;
+	color: $unity-text-color;
+}
+
+@mixin button($top, $right, $bottom, $left) {
+	flex: 0 0 auto;
+
+	@include padding($top, $right, $bottom, $left);
+	@include slice(4, 6, 4, 6);
+
+	&.display-none {
+		position: absolute;
+		border-radius: 0;
+		width: 0;
+		height: 0;
+		min-height: 0;
+		max-height: 0;
+		min-width: 0;
+		max-width: 0;
+		border-top-width: 0;
+		border-left-width: 0;
+		border-bottom-width: 0;
+		border-right-width: 0;
+		min-width: 0;
+		@include border-box(0);
+		@include padding-box(0);
+		@include margin-box(0);
+		@include slice-box(0);
+		visibility: hidden;
+	}
+
+	&:hover {
+		color: $unity-text-color;
+	}
+}
+
+@mixin button-box($size) {
+	@include button($size, $size, $size, $size);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Font
+//--------------------------------------------------------------------------------------------------
+
+@mixin font-small() {
+	font-size: 9;
+}
+
+@mixin font-normal() {
+	font-size: 12;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Styles
+//--------------------------------------------------------------------------------------------------
+
+#container {
+	-unity-position: absolute;
+	@include position(0, 0, 0, 0);
+}
+
+.display-none {
+	position: absolute;
+	overflow: hidden;
+	border-radius: 0;
+	width: 0;
+	height: 0;
+	min-height: 0;
+	max-height: 0;
+	min-width: 0;
+	max-width: 0;
+	border-top-width: 0;
+	border-left-width: 0;
+	border-bottom-width: 0;
+	border-right-width: 0;
+	@include border-box(0);
+	@include padding-box(0);
+	@include margin-box(0);
+}
+
+.row {
+	flex: 1 0 0;
+	flex-direction: row;
+}
+
+.column {
+	flex: 1 0 0;
+	flex-direction: column;
+}
+
+.tag {
+	@include border-box(1);
+	@include padding(1, 3, 1, 3);
+	@include font-small();
+	border-radius: 5;
+	-unity-text-align: middle-center;
+
+	border-color: #000000;
+	color: #000000;
+}
+
+$spinner-large-size: 32;
+$spinner-large-half-size: 16;
+$spinner-normal-size: 14;
+$spinner-normal-half-size: 7;
+$toolbar-height: 18;
+
+#toolbarContainer {
+	flex: 0 0 auto;
+	flex-direction: row;
+	align-items: flex-start;
+	height: $toolbar-height;
+
+	#toolbarView {
+		flex: 1 0 0;
+		flex-direction: row;
+		align-items: flex-start;
+		background-image: $toolbar-background;
+		margin-top: -1;
+		@include slice(1, 1, 1, 1);
+
+		.toolbarButton {
+			flex: 1 0 0;
+			font-size: 9;
+			-unity-text-align: middle-center;
+			background-image: $toolbar-button-background;
+			@include button-box(0);
+			@include margin(0, -1, 0, 0);
+			@include padding(0, 5, 0, 5);
+			height: 19;
+
+			&.space {
+				margin-left: 7;
+			}
+
+			&.active {
+				background-image: $toolbar-button-active-background;
+			}
+
+			&.pulldown {
+
+				&:active {
+					background-image: $toolbar-button-background;
+				}
+			}
+		}
+
+		#toolbarLeft {
+			flex: 0 0 auto;
+			flex-direction: row;
+			align-items: flex-start;
+		}
+
+		#toolbarRight {
+			flex: 1 0 0;
+			flex-direction: row;
+			justify-content: flex-end;
+
+			#toolbarSearch {
+				flex: 1 0 0;
+				height: $toolbar-height;
+				max-width: 500;
+				flex-direction: row;
+				@include margin(0, 5, 0, 0);
+			}
+		}
+	}
+}
+
+#searchContainer {
+	flex: 1 0 0;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	height: 14;
+	@include margin(0, 0, 0, 0);
+
+	#searchTextField {
+		flex: 1 0 0;
+		font-size: 9;
+		background-image: $toolbar-search-textfield-background;
+		@include margin(2, 5, 1, 5);
+		@include padding(2, 17, 1, 17);
+		@include slice(1, 0, 1, 14);
+		height: 14;
+
+		&:focus {
+			background-image: $toolbar-search-textfield-focus-background;
+		}
+
+		&.placeholder {
+			color: $unity-background-dark-contrast;
+		}
+	}
+
+	#searchCancelButton {
+		width: 14;
+		height: 15;
+		background-image: $toolbar-search-cancel-off-background;
+		@include button-box(0);
+		@include slice(1, 14, 1, 0);
+		@include margin(3, 0, 2, -10);
+		@include padding-box(0);
+		@include border-box(0);
+
+		&.on {
+			background-image: $toolbar-search-cancel-background;
+		}
+
+		&:active {
+			background-image: $toolbar-search-cancel-active-background;
+		}
+	}
+}
+
+#detailListView {
+	flex: 1 0 0;
+	flex-direction: row;
+
+	.link {
+		color: $link-text-color;
+		background: rgba(0, 0, 0, 0);
+		background-image: none;
+		@include margin-box(0);
+		@include padding-box(0);
+		cursor: link;
+	}
+
+	.emptyArea {
+		flex: 1 0 0;
+		@extend .column;
+
+		.title {
+			-unity-text-align: middle-center;
+			font-size: 14;
+		}
+
+		.loading {
+			-unity-position: relative;
+			@include position($spinner-normal-half-size, auto, auto, $spinner-normal-half-size);
+
+			@include border-box(0);
+			@include padding-box(0);
+			@include margin-box(0);
+			@include slice-box(0);
+
+			width: $spinner-normal-size;
+			height: $spinner-normal-size;
+			max-width: $spinner-normal-size;
+			max-height: $spinner-normal-size;
+		}
+	}
+
+	#headerTitle {
+		flex: 1 0 0;
+		font-size: 12;
+		-unity-font-style: bold;
+		color: $unity-text-color;
+	}
+
+	#headerCaret {
+		flex: 0 0 auto;
+		font-size: 12;
+		-unity-font-style: bold;
+		color: $unity-text-color;
+		min-width: 16;
+	}
+
+	#spinnerContainer {
+		-unity-position: absolute;
+		@include position(3, 0, auto, 2);
+		width: 14;
+
+		flex: 0.1 0 0;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.loading {
+		-unity-position: relative;
+		@include position($spinner-normal-half-size, auto, auto, $spinner-normal-half-size);
+
+		@include border-box(0);
+		@include padding-box(0);
+		@include margin-box(0);
+		@include slice-box(0);
+
+		width: $spinner-normal-size;
+		height: $spinner-normal-size;
+		max-width: $spinner-normal-size;
+		max-height: $spinner-normal-size;
+	}
+
+	.combo {
+		@extend .row;
+		@include margin-box(3);
+		@include padding-box(3);
+
+		.popup {
+			@include padding(0, 0, 0, 8);
+			@include margin-box(0);
+			border-top-width-left-radius: 0;
+			border-bottom-width-left-radius: 0;
+		}
+
+		.button {
+			flex: 1 0 0; // Make buttons take all the parent's free space
+
+			@include font-normal();
+			@include border-box(0);
+			@include margin-box(0);
+			@include padding(2, 6, 3, 6);
+			@include slice(4, $background-button-slice-middle, 4, $background-button-slice-middle);
+
+			-unity-text-align: middle-center;
+			border-left-width: 0;
+			border-top-width: 0;
+			border-right-width: 0;
+			border-bottom-width: 0;
+			background-image: $background-mid-button;
+
+			border-top-width-right-radius: 0;
+			border-bottom-width-right-radius: 0;
+			border-top-width-left-radius: 0;
+			border-bottom-width-left-radius: 0;
+
+			&.selected {
+				background-image: $background-mid-button-selected;
+				color: $unity-text-color-highlight;
+			}
+
+			&.first {
+				@include slice(4, $background-button-slice-right, 4, 6);
+				background-image: $background-left-button;
+
+				&.selected {
+					background-image: $background-left-button-selected;
+				}
+			}
+
+			&.last {
+				@include slice(4, 6, 4, $background-button-slice-left);
+				background-image: $background-right-button;
+
+				&.selected {
+					background-image: $background-right-button-selected;
+				}
+			}
+
+
+			&.small {
+				flex: 0.5 0 0;
+				@include padding(0, 0, 0, 0);
+			}
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------------
+	// Package List
+	//--------------------------------------------------------------------------------------------------
+	#packageListGroup {
+		width: 270;
+
+		#listContainerOuter {
+			@extend .column;
+		}
+
+		#groupContainerOuter {
+
+			#headerContainer {
+				flex: 1 0 0;
+				flex-direction: row;
+				align-items: center;
+				border-color: rgba(0,0,0, 0.5);
+
+				#headerTitle {
+					height: 0;
+					@include margin-box(0);
+					@include padding-box(0);
+					@include border-box(0);
+				}
+			}
+
+			#groupContainer {
+				@include margin(0, 0, 0, 0);
+			}
+		}
+
+		#packageList, #listContainer, #listGroups {
+			@extend .column;
+		}
+
+		#scrollView {
+			@extend .column;
+
+			#VerticalScroller {
+				bottom: 0;
+			}
+
+			#HorizontalScroller {
+				height: 0;
+			}
+
+			#ContentViewport {
+				bottom: 0;
+
+				#ContentView {
+					right: 0;
+					left: 0;
+				}
+			}
+		}
+
+		#noResult {
+			#noResultText {
+				-unity-word-wrap: true;
+			}
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------------
+	// Package Item
+	//--------------------------------------------------------------------------------------------------
+	.package {
+		flex: 1 0 0;
+		flex-direction: row;
+		align-items: center;
+		@include margin(0, 0, 0, 0);
+		border-color: rgba(0,0,0, 0.5);
+		border-bottom-width: 1;
+
+		&.selected {
+			@include selected-element();
+
+			#packageName, #packageVersion {
+				color: $unity-text-color-highlight;
+			}
+		}
+
+		.status {
+			flex: 0 0 14;
+			width: 14;
+			height: 14;
+			@include margin(auto, 0, auto, 2);
+
+			&.installed {
+				background-image: $installed-package-background;
+				&.no-icon {
+	 				background-image: none;
+				}
+			}
+
+			&.outdated {
+ 				background-image: $background-status-outdated;
+				&.no-icon {
+	 				background-image: none;
+				}
+			}
+
+			&.inprogress {
+ 				background-image: none;
+			}
+
+			&.error {
+ 				background-image: $background-status-error;
+			}
+		}
+
+		.name {
+			flex: 1 0 0;
+			@include font-normal();
+			@include margin(auto, 5, auto, 0);
+			@include text-clip();
+		}
+
+		.version {
+			flex: 0 0 auto;
+			@include margin(auto, 5, auto, 0);
+			@include font-small;
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------------
+	// Package Details
+	//--------------------------------------------------------------------------------------------------
+	#detailsGroup {
+		flex: 1 0 0;
+		border-left-width: 1px;
+		border-color: rgba(0,0,0, 0.5);
+
+		#detailsContainer {
+			flex: 1 0 0;
+			flex-direction: column;
+			-unity-position: relative;
+		}
+	}
+
+	#detailView {
+		flex: 1 0 0;
+
+		#VerticalScroller {
+			bottom: 0;
+		}
+
+		#ContentViewport {
+
+			#ContentView {
+				-unity-position: absolute;
+				@include position(0, 0, auto, 0);
+			}
+		}
+
+		.detail {
+			flex: 1 0 0;
+			flex-direction: column;
+			@include padding-box(5);
+
+			.header {
+				flex: 1 0 0;
+				flex-direction: row;
+				align-items: flex-start;
+
+				margin-bottom: 8;
+
+				#titleContainer {
+					flex: 0.9 0 0;
+
+					#detailTitle {
+						font-size: 18;
+						-unity-font-style: bold;
+						-unity-word-wrap: true;
+						@include margin(0, 0, 0, 4);
+					}
+				}
+
+				$controls-height: 19;
+				#detailsControls {
+					flex: 1 0 0;
+					height: $controls-height;
+					flex-direction: row;
+					align-items: center;
+					flex-wrap: wrap;
+					@include margin(3, 0, 0, 0);
+				}
+
+				#updateCombo {
+					flex: 1 0 0;
+					height: $controls-height;
+					align-items: center;
+					@include margin(0, 0, 0, 0);
+					@include padding(0, 0, 0, 0);
+
+					#update {
+						flex: 0 0 auto;
+					}
+
+					#updateDropdownContainer {
+						min-width: 65;
+						max-width: 150;
+						height: $controls-height;
+						flex: 0 0 auto;
+
+						.popup {
+							@include font-normal();
+							height: $controls-height;
+
+							&:focus {
+								background-image: $popup-background;
+							}
+
+							&:hover {
+								.textElement {
+									color: $unity-text-color;
+								}
+							}
+
+							.textElement {
+								margin-top: 2;
+							}
+						}
+					}
+
+					.action {
+						flex: 0 0 auto;
+						@include margin-box(0);
+						@include font-normal();
+						@include padding(2, 4, 3, 4);
+						right: -3;
+						&:hover {
+							color: $unity-text-color;
+						}
+					}
+				}
+
+				#updateContainer {
+					height: $controls-height;
+					flex: 1 0 0;
+					align-items: flex-end;
+
+					@include padding-box(0);
+				}
+
+
+
+				.button {
+					height: $controls-height;
+					@include font-normal();
+					@include button(3,3,4,3);
+				}
+			}
+
+			#detailVersion {
+				font-size: 16;
+				max-height: 30;
+			}
+
+			#detailName {
+				flex: 1 0 0;
+				max-height: 20;
+				-unity-font-style: italic;
+			}
+
+			#detailPackageStatus {
+				flex: 1 0 0;
+				-unity-font-style: bold;
+				-unity-word-wrap: true;
+			}
+
+			#detailTag {
+				width: 60;
+				@include font-normal();
+				border-radius: 5;
+				border-color: rgb(180, 180, 180);
+				@include border-box(2);
+				-unity-text-align: middle-center;
+			}
+
+			#detailDesc, #detailModuleReference {
+				flex: 1 0 0;
+				@include font-normal();
+				-unity-word-wrap: true;
+
+				&.empty {
+					-unity-font-style: italic;
+				}
+			}
+
+			#detailAuthor {
+				flex: 1 0 0;
+				@include font-normal();
+				-unity-word-wrap: true;
+			}
+
+			#detailCategory {
+				flex: 1 0 0;
+				@include font-normal();
+				-unity-word-wrap: true;
+
+				@include margin(auto, auto, 5, auto);
+			}
+
+			#changeLogContainer, #viewLicensesContainer {
+				flex: 0 0 auto;
+				flex-direction: row;
+			}
+
+			#detailActions, .detailActions {
+				flex: 0 0 auto;
+				flex-direction: row;
+				margin-left: 2;
+
+				@extend .row;
+
+				.detailAction {
+					@include margin(auto, 0, auto, 0);
+					@include padding(auto, 2, auto, 2);
+					border-left-width: 2;
+					border-right-width: 2;
+				}
+
+				.detailActionSeparator {
+					@include margin(auto, 0, auto, 0);
+					@include padding(auto, 0, auto, 0);
+					border-left-width: 0;
+					border-right-width: 0;
+				}
+
+				#thirdPartyNoticeLabel {
+					@include margin(4, 0, 4, 0);
+					@include padding-box(0);
+					-unity-word-wrap: true;
+				}
+
+				#viewThirdParty {
+					border-right-width: 0;
+				}
+			}
+
+			.versionContainer {
+				@extend .row;
+				align-items: center;
+				justify-content: flex-start;
+
+				#detailVersion {
+					flex: 0 0 auto;
+				}
+			}
+
+			.tag {
+				border-color: $package-tag-color;
+				color: $package-tag-color;
+
+				&.verified {
+					border-color: $package-tag-recommended-color;
+					color: $package-tag-recommended-color;
+				}
+			}
+
+			.tagLines {
+			}
+
+			.tagLine {
+				flex: 0 0 auto;
+				flex-direction: row;
+			}
+
+			.tagContainer {
+			}
+		}
+	}
+
+	#detailError {
+		-unity-position: absolute;
+		@include position(5, 5, auto, 5);
+		min-height: 200;
+		-unity-word-wrap: true;
+
+		&.display-none {
+			@include position(0, 0, 0, 0);
+			width: 0;
+			height: 0;
+			min-height: 0;
+			max-height: 0;
+			@include border-box(0);
+			@include padding-box(0);
+			@include margin-box(0);
+		}
+	}
+
+	#packageStatusBar {
+		-unity-position: relative;
+
+		flex: 0 0 auto;
+		@include margin(2, 0, 0, 0);
+
+		border-color: rgba(0, 0, 0, 0.5);
+		@include border(1, 0, 0, 0);
+	}
+
+	#statusBarContainer {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		#loadingContainer{
+			
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+
+			margin-left: 2;
+
+			#loadingIcon {
+				background-image: $background-status-error;
+				width: 16;
+				height: 16;
+				margin-left: -12;
+				margin-right: 0;
+			}
+	
+			#loadingText {
+				padding-left: 2;
+				-unity-font-style: italic;
+	
+				&.icon {
+					margin-left: 0;
+				}
+			}
+		}
+
+		#moreAddOptionsButton {
+			font-size: 16;
+			background-image: none;
+			@include margin(0, 0, -2, 0);
+			@include padding(3, 6, 6, 6);
+			border-color: rgba(0, 0, 0, 0.5);
+			@include border(0, 1, 0, 0);
+		}
+	}
+
+	#packageAddFromUrlField {
+		-unity-position: absolute;
+		@include position(-35, 0, 0, 0);
+	}
+
+	#addFromUrlFieldContainer {
+		border-color: rgba(0, 0, 0, 0.5);
+		@include border(1, 0, 1, 0);
+
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+
+		height: 35;
+		background-color: $unity-background;
+
+		#urlTextField {
+			flex: 1 0 0;
+			height: 20;
+			-unity-text-align: middle-left;
+		}
+
+		#addFromUrlButton {
+			flex: 0 0 auto;
+			height: 20;
+		}
+	}
+}
+
+.alert {
+	background-color: rgba(200,0,0,0.8);
+	border-color: #FF0000;
+	flex-direction: row;
+
+	@include border-box(1);
+	@include padding(5, 10, 5, 10);
+
+	#alertMessage {
+		flex: 1 0 0;
+		color: $unity-text-color-highlight;
+		-unity-word-wrap: true;
+		@include text-clip();
+	}
+
+	#close {
+		flex: 0 0 auto;
+		max-height: 30;
+		@include position(auto, auto, auto, 5);
+		@include button(3,3,4,3);
+	}
+}
+
+.spinner {
+	flex: 0 0 auto;
+	@include position(-$spinner-normal-half-size, auto, auto, -$spinner-normal-half-size);
+
+	min-width: $spinner-normal-size;
+	min-height: $spinner-normal-size;
+	max-width: $spinner-normal-size;
+	max-height: $spinner-normal-size;
+	background-image: $background-spinner-normal;
+}
+
+.largeSpinner {
+	flex: 0 0 auto;
+	@include position(-$spinner-large-half-size, auto, auto, -$spinner-large-half-size);
+
+	min-width: $spinner-large-size;
+	min-height: $spinner-large-size;
+	max-width: $spinner-large-size;
+	max-height: $spinner-large-size;
+	background-image: $background-spinner-large;
+}

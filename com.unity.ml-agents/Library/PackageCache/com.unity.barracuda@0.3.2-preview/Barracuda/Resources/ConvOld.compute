@@ -1,0 +1,418 @@
+//#pragma kernel Conv2D_Kmod16_Nmod8_KNY
+//#pragma kernel Conv2D_Cache_KCmod32_KNyx
+//#pragma kernel Conv2D_Cache_KCmod32_KNyxDiv2
+// NOTE: DISABLED 64 version because as it is slower than 32 version on AMD GPU
+//#pragma kernel Conv2D_Cache_KCmod64_KNyx
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(K)
+TENSOR_DECL(B)
+TENSOR_DECL(WBK)
+TENSOR_DECL_RW(O)
+
+uint4 _Pad;
+uint4 _Stride;
+
+NUMTHREADS((16,8,1), (16,8,1), (16,4,1))
+void Conv2D_Kmod16_Nmod8_KNY(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(K.channels, O.batch, O.height);
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    uint k = dispatchThreadID.x;
+    uint n = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+
+    for (uint x = 0; x < O.width; ++x)
+    {
+        float v = B.Get(k);
+        for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+        {
+            for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+            {
+                uint oy = y * _Stride.y + dy;
+                uint ox = x * _Stride.x + dx;
+                // @TODO: investigate
+                // WARNING: had to move both y check into the loop (as opposed to checking y in parent loop) - due to potential bug in Metal compiler
+                if (oy < _Pad.y) continue;
+                if (oy - _Pad.w >= X.height) continue;
+                if (ox < _Pad.x) continue;
+                if (ox - _Pad.z >= X.width) continue;
+
+                for (uint c = 0; c < X.channels; ++c)
+                {
+                    v += X.Get(n, oy-_Pad.y, ox-_Pad.x, c) * K.Get(dy, dx, c, k);
+                }
+            }
+        }
+        O.Set(n, y, x, k, v);
+    }
+}
+
+#undef CTILE
+#define CTILE NUMTHREAD(16, 8, 8)
+groupshared float Conv_Xcache[4][CTILE][CTILE];
+groupshared float Conv_Kcache[4][CTILE][CTILE];
+[numthreads(CTILE, CTILE, 1)]
+void Conv2D_Cache_KCmod32_KNyx(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    DISPATCH_ARGS(K.kernelCount / 2, O.batch * O.height * O.width / 2, 1);
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    #define X_ Conv_Xcache
+    #define K_ Conv_Kcache
+
+    uint gx = groupThreadID.x;
+    uint gy = groupThreadID.y;
+
+    uint k = CTILE * groupID.x + groupThreadID.x;
+    uint nyx = CTILE * groupID.y + groupThreadID.y;
+
+    uint width = O.width;
+    uint height = O.height;
+
+    uint x = nyx % width;
+    uint ny = nyx / width;
+    uint y = ny % height;
+    uint n = ny / height;
+    
+    float b0 = B.Get(k*2+0);
+    float b1 = B.Get(k*2+1);
+    float4 v = float4(b0, b1,
+                      b0, b1);
+
+    for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+    {
+        for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+        {
+            bool mask = true;
+            uint oy = y * _Stride.y + dy;
+            uint ox = x * _Stride.x + dx;
+            // @TODO: investigate
+            // WARNING: had to move both y check into the loop (as opposed to checking y in parent loop) - due to potential bug in Metal compiler
+            if (oy < _Pad.y) mask = false;
+            if (oy - _Pad.w >= X.height) mask = false;
+            if (ox < _Pad.x) mask = false;
+            if (ox - _Pad.z >= X.width) mask = false;
+
+            for (uint m = 0; m < X.channels/(CTILE*2); ++m)
+            {
+                float x0 = 0;
+                float x1 = 0;
+                float x2 = 0;
+                float x3 = 0;
+                
+                if (mask)
+                {
+                    x0 = X.Get(n*2+0, oy-_Pad.y, ox-_Pad.x, (m*CTILE + gx)*2+0);
+                    x1 = X.Get(n*2+0, oy-_Pad.y, ox-_Pad.x, (m*CTILE + gx)*2+1);
+                    x2 = X.Get(n*2+1, oy-_Pad.y, ox-_Pad.x, (m*CTILE + gx)*2+0);
+                    x3 = X.Get(n*2+1, oy-_Pad.y, ox-_Pad.x, (m*CTILE + gx)*2+1);
+                }
+
+                float k0 = K.Get(dy, dx, (m*CTILE + gy)*2+0, k*2+0);
+                float k1 = K.Get(dy, dx, (m*CTILE + gy)*2+0, k*2+1);
+                float k2 = K.Get(dy, dx, (m*CTILE + gy)*2+1, k*2+0);
+                float k3 = K.Get(dy, dx, (m*CTILE + gy)*2+1, k*2+1);
+
+                //X_[gy][gx] = float4(x0, x1,
+                //                    x2, x3);
+                //K_[gy][gx] = float4(k0, k1,
+                //                    k2, k3);
+                X_[0][gy][gx] = x0;
+                X_[1][gy][gx] = x1;
+                X_[2][gy][gx] = x2;
+                X_[3][gy][gx] = x3;
+
+                K_[0][gy][gx] = k0;
+                K_[1][gy][gx] = k1;
+                K_[2][gy][gx] = k2;
+                K_[3][gy][gx] = k3;
+
+                GroupMemoryBarrierWithGroupSync();
+
+                [unroll]
+                for (uint i = 0; i < CTILE; ++i)
+                {
+                    float4 x = //X_[gy][i];
+                        float4(    X_[0][gy][i],
+                                X_[1][gy][i],
+                                X_[2][gy][i],
+                                X_[3][gy][i]);
+                    float4 k = //K_[i][gx];
+                        float4(    K_[0][i][gx],
+                                K_[1][i][gx],
+                                K_[2][i][gx],
+                                K_[3][i][gx]);
+                    
+                    v.x = mad(k.x, x.x, v.x);
+                    v.x = mad(k.z, x.y, v.x);
+                    
+                    v.y = mad(k.y, x.x, v.y);
+                    v.y = mad(k.w, x.y, v.y);
+                    
+                    v.z = mad(k.x, x.z, v.z);
+                    v.z = mad(k.z, x.w, v.z);
+                    
+                    v.w = mad(k.y, x.z, v.w);
+                    v.w = mad(k.w, x.w, v.w);
+
+                    //v.x += k.x*x.x + k.z*x.y;
+                    //v.y += k.y*x.x + k.w*x.y;
+                    //v.z += k.x*x.z + k.z*x.w;
+                    //v.w += k.y*x.z + k.w*x.w;
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+            }
+        }
+    }
+
+    O.Set(n*2+0, y, x, k*2+0, v.x);
+    O.Set(n*2+0, y, x, k*2+1, v.y);
+    O.Set(n*2+1, y, x, k*2+0, v.z);
+    O.Set(n*2+1, y, x, k*2+1, v.w);
+    
+    #undef X_
+    #undef K_
+}
+
+#undef CTILE
+//#define CTILE NUMTHREAD(16, 8, 8)
+#define CTILE 16
+groupshared float Conv_Xcache2[4][CTILE][CTILE];
+groupshared float Conv_Kcache2[4][CTILE][CTILE];
+[numthreads(CTILE, CTILE, 1)]
+void Conv2D_Cache_KCmod32_KNyxDiv2(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    DISPATCH_ARGS(K.kernelCount / 2, O.batch * O.height * O.width / 2, 1);
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    #define X_ Conv_Xcache2
+    #define K_ Conv_Kcache2
+
+    uint gx = groupThreadID.x;
+    uint gy = groupThreadID.y;
+
+    uint k = CTILE * groupID.x + groupThreadID.x;
+    uint nyx = CTILE * groupID.y + groupThreadID.y;
+
+    uint width = O.width / 2;
+    uint height = O.height;
+
+    uint x = nyx % width;
+    uint ny = nyx / width;
+    uint y = ny % height;
+    uint n = ny / height;
+    
+    float b0 = B.Get(k*2+0);
+    float b1 = B.Get(k*2+1);
+    float4 v = float4(b0, b1,
+                      b0, b1);
+
+    bool mask = n < O.batch;
+
+    for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+    {
+        for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+        {
+            // @TODO: investigate
+            // WARNING: had to move both y check into the loop (as opposed to checking y in parent loop) - due to potential bug in Metal compiler
+            bool maskY = mask;
+            uint oy = y * _Stride.y + dy;
+            if (oy < _Pad.y) maskY = false;
+            if (oy - _Pad.w >= X.height) maskY = false;
+
+            bool maskL = maskY;
+            uint oxL = (x*2+0) * _Stride.x + dx;
+            if (oxL < _Pad.x) maskL = false;
+            if (oxL - _Pad.z >= X.width) maskL = false;
+
+            bool maskR = maskY;
+            uint oxR = (x*2+1) * _Stride.x + dx;
+            if (oxR < _Pad.x) maskR = false;
+            if (oxR - _Pad.z >= X.width) maskR = false;
+
+            for (uint m = 0; m < X.channels/(CTILE*2); ++m)
+            {
+                if (maskL)
+                {
+                    X_[0][gy][gx] = X.Get(n, oy-_Pad.y, oxL-_Pad.x, (m*CTILE + gx)*2+0);
+                    X_[1][gy][gx] = X.Get(n, oy-_Pad.y, oxL-_Pad.x, (m*CTILE + gx)*2+1);
+                }
+                else
+                {
+                    X_[0][gy][gx] = X_[1][gy][gx] = 0;
+                }
+
+                if (maskR)
+                {
+                    X_[2][gy][gx] = X.Get(n, oy-_Pad.y, oxR-_Pad.x, (m*CTILE + gx)*2+0);
+                    X_[3][gy][gx] = X.Get(n, oy-_Pad.y, oxR-_Pad.x, (m*CTILE + gx)*2+1);
+                }
+                else
+                {
+                    X_[2][gy][gx] = X_[3][gy][gx] = 0;
+                }
+
+
+                K_[0][gy][gx] = K.Get(dy, dx, (m*CTILE + gy)*2+0, k*2+0);
+                K_[1][gy][gx] = K.Get(dy, dx, (m*CTILE + gy)*2+0, k*2+1);
+                K_[2][gy][gx] = K.Get(dy, dx, (m*CTILE + gy)*2+1, k*2+0);
+                K_[3][gy][gx] = K.Get(dy, dx, (m*CTILE + gy)*2+1, k*2+1);
+
+                GroupMemoryBarrierWithGroupSync();
+
+                [unroll]
+                for (uint i = 0; i < CTILE; ++i)
+                {
+                    float4 x =
+                        float4(    X_[0][gy][i],
+                                X_[1][gy][i],
+                                X_[2][gy][i],
+                                X_[3][gy][i]);
+                    float4 k =
+                        float4(    K_[0][i][gx],
+                                K_[1][i][gx],
+                                K_[2][i][gx],
+                                K_[3][i][gx]);
+                    
+                    v.x = mad(k.x, x.x, v.x);
+                    v.x = mad(k.z, x.y, v.x);
+                    
+                    v.y = mad(k.y, x.x, v.y);
+                    v.y = mad(k.w, x.y, v.y);
+                    
+                    v.z = mad(k.x, x.z, v.z);
+                    v.z = mad(k.z, x.w, v.z);
+                    
+                    v.w = mad(k.y, x.z, v.w);
+                    v.w = mad(k.w, x.w, v.w);
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+            }
+        }
+    }
+
+    O.Set(n, y, x*2+0, k*2+0, v.x);
+    O.Set(n, y, x*2+0, k*2+1, v.y);
+    if (mask && x*2+1 < O.width)
+    {
+        O.Set(n, y, x*2+1, k*2+0, v.z);
+        O.Set(n, y, x*2+1, k*2+1, v.w);
+    }
+
+    #undef X_
+    #undef K_
+}
+
+
+#undef CTILE
+//#define CTILE NUMTHREAD(16, 8, 8)
+#define CTILE 16
+#define RTILE 4
+groupshared float Conv_XcacheR[RTILE*RTILE][CTILE*CTILE];
+groupshared float Conv_KcacheR[RTILE*RTILE][CTILE*CTILE];
+[numthreads(CTILE, CTILE, 1)]
+void Conv2D_Cache_KCmod64_KNyx(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+    DISPATCH_ARGS(K.kernelCount / 4, O.batch * O.height * O.width / 4, 1);
+    TENSOR_SHARED2_ARGS4(X, K, B, WBK, O);
+
+    #define X_ Conv_XcacheR
+    #define K_ Conv_KcacheR
+
+    uint gx = groupThreadID.x;
+    uint gy = groupThreadID.y;
+
+    uint k = CTILE * groupID.x + groupThreadID.x;
+    uint nyx = CTILE * groupID.y + groupThreadID.y;
+
+    uint x = nyx % O.width;
+    uint ny = nyx / O.width;
+    uint y = ny % O.height;
+    uint n = ny / O.height;
+
+    float v[RTILE][RTILE];
+    for (uint xxxx = 0; xxxx < RTILE; ++xxxx)
+    {
+        float b = B.Get(k*RTILE+xxxx);
+        for (uint yyyy = 0; yyyy < RTILE; ++yyyy)
+            v[yyyy][xxxx] = b;
+    }
+
+    for (uint dy = 0; dy < K.GetKernelHeight(); ++dy)
+    {
+        for (uint dx = 0; dx < K.GetKernelWidth(); ++dx)
+        {
+            bool mask = true;
+            uint oy = y * _Stride.y + dy;
+            uint ox = x * _Stride.x + dx;
+            // @TODO: investigate
+            // WARNING: had to move both y check into the loop (as opposed to checking y in parent loop) - due to potential bug in Metal compiler
+            if (oy < _Pad.y) mask = false;
+            if (oy - _Pad.w >= X.height) mask = false;
+            if (ox < _Pad.x) mask = false;
+            if (ox - _Pad.z >= X.width) mask = false;
+
+            for (uint m = 0; m < X.channels/(CTILE*RTILE); ++m)
+            {                
+                for (uint yy = 0; yy < RTILE; ++yy)
+                    for (uint xx = 0; xx < RTILE; ++xx)
+                    {
+                        if (mask)
+                            X_[yy*RTILE+xx][gy*CTILE+gx] = X.Get(n*RTILE+yy, oy - _Pad.y, ox - _Pad.x, (m*CTILE + gx)*RTILE+xx);
+                        else
+                            X_[yy*RTILE+xx][gy*CTILE+gx] = 0;
+                        K_[yy*RTILE+xx][gy*CTILE+gx] = K.Get(dy, dx, (m*CTILE + gy)*RTILE+yy, k*RTILE+xx);
+                    }
+
+                GroupMemoryBarrierWithGroupSync();
+
+                for (uint ii = 0; ii < CTILE; ++ii)
+                {
+                    float x[RTILE][RTILE];
+                    float k[RTILE][RTILE];
+
+                    [unroll]
+                    for (uint yy = 0; yy < RTILE; ++yy)
+                    {
+                        [unroll]
+                        for (uint xx = 0; xx < RTILE; ++xx)
+                        {
+                            x[yy][xx] = X_[yy*RTILE+xx][gy*CTILE+ii];
+                            k[yy][xx] = K_[yy*RTILE+xx][ii*CTILE+gx];
+                        }
+                    }
+
+
+                    [unroll]
+                    for (uint yyy = 0; yyy < RTILE; ++yyy)
+                    {
+                        [unroll]
+                        for (uint xxx = 0; xxx < RTILE; ++xxx)
+                        {
+                            [unroll]
+                            for (uint i = 0; i < RTILE; ++i)
+                            {
+                                v[yyy][xxx] = mad(x[yyy][i], k[i][xxx], v[yyy][xxx]);
+                            }
+                        }
+                    }
+                }
+
+                GroupMemoryBarrierWithGroupSync();
+            }
+        }
+    }
+
+    for (uint yy = 0; yy < RTILE; ++yy)
+        for (uint xx = 0; xx < RTILE; ++xx)
+            O.Set(n*RTILE+yy, y, x, k*RTILE+xx, v[yy][xx]);
+    
+    #undef X_
+    #undef K_
+}

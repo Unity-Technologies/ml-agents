@@ -1,0 +1,17 @@
+{
+    "category": "AssetStore/Unity", 
+    "description": "Unity Ads is a video ad network for iOS and Android that allows you to quickly and effectively monetize your games.", 
+    "gitHead": "0d2114387a99011be685886f8ea902242e323e70", 
+    "keywords": [
+        "ads", 
+        "unity"
+    ], 
+    "name": "com.unity.ads", 
+    "repoPackagePath": "build/install/com.unity.ads", 
+    "repository": {
+        "type": "git", 
+        "url": "ssh://git@github.com/Unity-Technologies/com.unity.ads.git"
+    }, 
+    "unity": "2017.4", 
+    "version": "2.0.8"
+}

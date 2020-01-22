@@ -1,0 +1,12 @@
+image: node:6.10.0
+
+stages:
+  - push_to_packman_staging
+
+push_to_packman_staging:
+  stage: push_to_packman_staging
+  only:
+    - tags
+  script:
+    - curl -u $USER_NAME:$API_KEY https://staging-packages.unity.com/auth > .npmrc
+    - npm publish

@@ -1,0 +1,13 @@
+{
+  "name": "com.unity.purchasing",
+  "displayName": "In App Purchasing",
+  "version": "2.0.3",
+  "unity": "2018.1",
+  "description": "Unity IAP supports the iOS, Mac, tvOS, Google Play, Facebook Gameroom, Windows, Amazon, Samsung Galaxy, Tizen, Cloud Moolah MOO, Xiaomi Mi Game Pay App Stores.\n\nWith Unity IAP, setting up in-app purchases for your game across multiple app stores has never been easier.\n\nUse one common API to access all stores for free. With just a few lines of code, you can fully understand and optimize your in-game economy.\n\nUnity IAP automatically couples with Unity Analytics enabling you to monitor and act on trends in your revenue and purchase data across multiple platforms.\n\nIncludes client-side receipt validation for Apple, Google Play, and Xiaomi Mi Game Pay.",
+  "keywords": [
+    "purchasing",
+    "iap",
+    "unity"
+  ],
+  "license" : "Unity Companion Package License v1.0"
+}

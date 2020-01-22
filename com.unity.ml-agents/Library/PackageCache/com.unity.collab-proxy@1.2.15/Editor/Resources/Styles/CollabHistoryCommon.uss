@@ -1,0 +1,259 @@
+.unity-button {
+    min-height:unset;
+    -unity-text-align:middle-center;
+    margin-left:4px;
+    margin-top:3px;
+    margin-right:4px;
+    margin-bottom:3px;
+    border-left-width:6px;
+    border-top-width:4px;
+    border-right-width:6px;
+    border-bottom-width:4px;
+    padding-left:6 px;
+    padding-top:2 px;
+    padding-right:6 px;
+    padding-bottom:3 px;
+}
+
+.unity-label {
+  overflow: hidden;
+    margin-left:4px;
+    margin-top:2px;
+    margin-right:4px;
+    margin-bottom:2px;
+    padding-left:2 px;
+    padding-top:1 px;
+    min-height: unset;
+}
+
+#HistoryContainer {
+  flex: 1 0 0;
+}
+
+#HistoryItem {
+  flex: 1 0 0;
+  flex-direction: row;
+}
+
+#HistoryDetail {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  padding-top: 4px;
+  flex: 1 0 0;
+}
+
+#Author {
+  -unity-font-style: bold;
+  font-size: 12px;
+}
+
+#HistoryDetail > Button {
+  align-self: flex-end;
+}
+
+CollabHistoryRevisionLine {
+  width: 40px;
+}
+
+#RevisionLine {
+  flex: 1 0 0;
+  margin-left: 35px;
+  width: 1.5px;
+}
+
+#RevisionLine.topLine {
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+#RevisionLine.absentDateLine {
+  background-color: #797676;
+}
+
+.absentRevision #RevisionLine {
+  background-color: #797676;
+}
+
+.currentRevision #RevisionLine.topLine {
+  background-color: #797676;
+}
+
+#RevisionIndex {
+  position: absolute;
+  min-width: 23px;
+  -unity-text-align: middle-right;
+  top: 15.8px;
+  font-size: 9px;
+}
+
+#RevisionIndicator {
+  position: absolute;
+  background-color: #000;
+  border-radius: 3px;
+  width: 8px;
+  height: 8px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-right-width: 2px;
+  border-top-width: 2px;
+  top: 20px;
+  left: 32px;
+}
+
+.revisionLineHeader {
+  width: 200px;
+  height: 20px;
+}
+
+.revisionLineHeader > .unity-label {
+  position: absolute;
+  margin-left: 47px;
+  margin-top: 3px;
+}
+
+#PagerItems {
+  flex-direction: column;
+}
+
+PagerElement > .unity-label {
+  margin-top: 8px;
+}
+
+.absentRevision #RevisionIndicator {
+  border-color: #797676;
+}
+
+.absentRevision #RevisionIndex {
+  color: #797676;
+}
+
+.currentRevision #HistoryDetail {
+  border-top-width: 2px;
+}
+
+#HistoryItem #RevisionDescription {
+  white-space: normal;
+}
+
+#HistoryItem #ToggleDescription {
+  align-self: flex-start;
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 2;
+}
+
+#HistoryItem #ActionButton {
+  position: absolute;
+  right: 0;
+}
+
+#HistoryItem #BuildIcon {
+  width: 16px;
+  height: 13px;
+}
+
+#HistoryItemActionsTray {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: center;
+  height: 38px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+CollabHistoryDropDown {
+  border-top-width: 1px;
+}
+
+CollabHistoryDropDown > .unity-label {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+CollabHistoryDropDownItem {
+  flex-direction: row;
+  border-top-width: 1px;
+  overflow: hidden;
+}
+
+#FileIcon {
+  align-self: center;
+  width: 26px;
+  height: 26px;
+}
+
+#FileName {
+  -unity-font-style: bold;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+#FileIcon {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+#ErrorBar {
+    height: 24px;
+    background-color: #ff0000;
+    color: #000;
+    font-size: 12px;
+}
+
+#ErrorBar > #CloseButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px;
+    height: 24;
+    color: #000;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+#StatusView {
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    align-items: center;
+    flex: 1 0 0;
+}
+
+#StatusView > #StatusIcon {
+    width: 115px;
+    height: 150px;
+}
+
+#StatusView > #StatusMessage {
+    font-size: 22px;
+    width: 230px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+#StatusView > #StatusButton {
+    font-size: 12px;
+    margin-top: 20px;
+    background-image: none;
+    width: 108px;
+    height: 29px;
+}
+
+BuildStatusButton.unity-button {
+    flex-direction: row;
+    align-self: flex-end;
+    align-items: center;
+    margin-right: 10px;
+    padding-left:unset;
+    padding-top:unset;
+    padding-right:unset;
+    padding-bottom:unset;
+}
+
+BuildStatusButton.unity-button .unity-label {
+    padding-left: 2px;
+}
+

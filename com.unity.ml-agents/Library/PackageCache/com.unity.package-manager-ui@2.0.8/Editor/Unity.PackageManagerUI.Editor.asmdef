@@ -1,0 +1,9 @@
+{
+    "name": "Unity.PackageManagerUI.Editor",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

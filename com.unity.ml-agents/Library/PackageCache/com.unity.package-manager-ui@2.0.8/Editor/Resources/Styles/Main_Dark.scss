@@ -1,0 +1,74 @@
+/***************************************************************************************************
+
+														*** Auto-Generated - Do not modify .uss File ***
+
+																		Only Modify Main.scss
+
+***************************************************************************************************/
+
+//--------------------------------------------------------------------------------------------------
+// Pure theme colors
+//--------------------------------------------------------------------------------------------------
+
+$unity-text-color: #b4b4b4;
+$unity-list-hover-background: #484848;
+$unity-list-selected-background: #3e5f96;
+$unity-background: #383838;
+
+//--------------------------------------------------------------------------------------------------
+// Custom colors
+//--------------------------------------------------------------------------------------------------
+
+$unity-background-light-contrast: #3c3c3c;			// For dark contrast, use: #404040 and #232323
+$unity-background-dark-contrast: #707070;			//	$
+$unity-text-color-highlight: #f4f4f4;
+
+$unity-installed-color-highlight: rgba(255,255,254,0.4);
+$not-installed-package-background-color: #424242;
+
+$package-tag-color: #ffa44e;
+$package-tag-recommended-color: #e4e4e4;
+
+$caret-text-color: #646464;
+
+$link-text-color: #4F80F8;
+
+//--------------------------------------------------------------------------------------------------
+// Custom backgrounds
+//--------------------------------------------------------------------------------------------------
+$installed-package-background: resource("Builtin Skins/DarkSkin/Images/MenuItemOn.png");
+
+$background-left-button: resource("Builtin Skins/DarkSkin/Images/btn left.png");
+$background-left-button-selected: resource("Builtin Skins/DarkSkin/Images/btn left on.png");;
+$background-mid-button: resource("Builtin Skins/DarkSkin/Images/btn mid.png");
+$background-mid-button-selected: resource("Builtin Skins/DarkSkin/Images/btn mid on.png");
+$background-right-button: resource("Builtin Skins/DarkSkin/Images/btn right.png");
+$background-right-button-selected: resource("Builtin Skins/DarkSkin/Images/btn right on.png");
+
+$background-button-slice-right: 0;
+$background-button-slice-left: 0;
+$background-button-slice-middle: 1;
+
+$background-status-outdated: resource("Images/Dark/download");
+$background-status-error: resource("Images/Dark/error");
+
+$background-spinner-normal: resource("Images/Dark/loading");
+$background-spinner-large: resource("Images/Dark/loading");
+
+$popup-background: resource("Builtin Skins/DarkSkin/Images/mini popup.png");
+
+$toolbar-background: resource("Builtin Skins/DarkSkin/Images/Toolbar.png");
+$toolbar-button-background: resource("Builtin Skins/DarkSkin/Images/toolbar button.png");
+$toolbar-button-active-background: resource("Builtin Skins/DarkSkin/Images/toolbar button act.png");
+$toolbar-button-pulldown-background: resource("Builtin Skins/DarkSkin/Images/toolbar pulldown.png");
+$toolbar-button-popup-background: resource("Builtin Skins/DarkSkin/Images/toolbar popup.png");
+$toolbar-search-textfield-background: resource("Builtin Skins/DarkSkin/Images/toolbarsearch.png");
+$toolbar-search-textfield-focus-background: resource("Builtin Skins/DarkSkin/Images/toolbarsearch focused.png");
+$toolbar-search-cancel-background: resource("Builtin Skins/DarkSkin/Images/toolbarsearchCancelButton.png");
+$toolbar-search-cancel-active-background: resource("Builtin Skins/DarkSkin/Images/toolbarsearchCancelButtonActive.png");
+$toolbar-search-cancel-off-background: resource("Builtin Skins/DarkSkin/Images/toolbarsearchCancelButtonOff.png");
+
+//--------------------------------------------------------------------------------------------------
+// Common stylesheet
+//--------------------------------------------------------------------------------------------------
+@import "common";

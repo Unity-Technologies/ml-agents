@@ -1,0 +1,86 @@
+#HistoryContainer {
+  background-color: #a2a2a2;
+}
+
+.obtainedRevision #HistoryDetail {
+  background-color: #c2c2c2;
+}
+
+.absentRevision #HistoryDetail {
+  background-color: #dedede;
+}
+
+#StatusView {
+  background-color: #a2a2a3;
+}
+
+#StatusView > #StatusMessage {
+  color: #000;
+}
+
+BuildStatusButton.unity-button {
+  color: #111;
+  background-image: resource("Builtin Skins/LightSkin/Images/btn.png");
+}
+
+BuildStatusButton.unity-button:hover {
+  color: #000;
+}
+
+BuildStatusButton.unity-button:hover:active {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn act.png");
+}
+
+BuildStatusButton.unity-button:checked {
+  color: #F0F0F0;
+  background-image: resource("Builtin Skins/LightSkin/Images/btn on.png");
+}
+
+BuildStatusButton.unity-button:hover:checked {
+  color: #000;
+}
+
+BuildStatusButton.unity-button:hover:active:checked {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn onact.png");
+}
+
+BuildStatusButton.unity-button:focus:checked {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn on focus.png");
+}
+
+CollabHistoryDropDown {
+  border-color: #a2a2a2;
+}
+
+CollabHistoryDropDownItem {
+  border-color: #a2a2a2;
+}
+
+#RevisionLine.obtainedDateLine {
+  background-color: #018d98;
+}
+
+.obtainedRevision #RevisionLine {
+  background-color: #018d98;
+}
+
+#RevisionIndex {
+  color: #018d98;
+}
+
+#RevisionIndicator {
+  border-color: #018d98;
+}
+
+.currentRevision #RevisionIndicator {
+  background-color: #018d98;
+}
+
+.currentRevision #HistoryDetail {
+  border-color: #018d98;
+}
+
+#StatusView > #StatusButton {
+    background-color: #018d98;
+    border-color: #018d98;
+}

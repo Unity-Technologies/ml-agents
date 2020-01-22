@@ -1,0 +1,12 @@
+{
+    "name": "Unity.Analytics.StandardEvents.EditorTests",
+    "references": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

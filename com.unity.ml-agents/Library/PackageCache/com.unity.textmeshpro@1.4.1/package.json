@@ -1,0 +1,20 @@
+{
+  "name": "com.unity.textmeshpro",
+  "displayName": "TextMesh Pro",
+  "version": "1.4.1",
+  "unity": "2018.3",
+  "description": "TextMesh Pro is the ultimate text solution for Unity. It's the perfect replacement for Unity's UI Text and the legacy Text Mesh.\n\nPowerful and easy to use, TextMesh Pro uses Advanced Text Rendering techniques along with a set of custom shaders; delivering substantial visual quality improvements while giving users incredible flexibility when it comes to text styling and texturing.\n\nTextMesh Pro provides Improved Control over text formatting and layout with features like character, word, line and paragraph spacing, kerning, justified text, Links, over 30 Rich Text Tags available, support for Multi Font & Sprites, Custom Styles and more.\n\nGreat performance. Since the geometry created by TextMesh Pro uses two triangles per character just like Unity's text components, this improved visual quality and flexibility comes at no additional performance cost.",
+  "keywords": [
+    "TextMeshPro",
+    "TextMesh Pro",
+    "Text",
+    "SDF"
+  ],
+  "category": "Text Rendering",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.cds.internal.unity3d.com/upm-packages/text/com.unity.textmeshpro.git",
+    "revision": "42654af0"
+  }
+}

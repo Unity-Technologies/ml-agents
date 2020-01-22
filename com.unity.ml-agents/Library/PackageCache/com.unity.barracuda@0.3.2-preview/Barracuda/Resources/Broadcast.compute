@@ -1,0 +1,358 @@
+#pragma kernel BroadcastAdd
+#pragma kernel BroadcastSub
+#pragma kernel BroadcastMul
+#pragma kernel BroadcastDiv
+#pragma kernel BroadcastPow
+#pragma kernel BroadcastMin
+#pragma kernel BroadcastMax
+#pragma kernel BroadcastGreater
+#pragma kernel BroadcastGreaterEqual
+#pragma kernel BroadcastLess
+#pragma kernel BroadcastLessEqual
+#pragma kernel BroadcastEqual
+#pragma kernel BroadcastLogicalOr
+#pragma kernel BroadcastLogicalAnd
+#pragma kernel BroadcastLogicalXor
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(B)
+TENSOR_DECL_RW(O)
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastAdd(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v =
+            X.BroadcastGet(n, y, x, c) +
+            B.BroadcastGet(n, y, x, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastSub(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v =
+            X.BroadcastGet(n, y, x, c) -
+            B.BroadcastGet(n, y, x, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastMul(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < O.batch; ++n)
+    {
+        float v =
+            X.BroadcastGet(n, y, x, c) *
+            B.BroadcastGet(n, y, x, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastDiv(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v =
+            X.BroadcastGet(n, y, x, c) /
+            B.BroadcastGet(n, y, x, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+float signed_pow(float f, float e)
+{
+    // handle negative f
+    float v = pow(abs(f), e);
+    float s = (e % 2 == 1) ?
+        sign(f):    // exponent is odd  => sign(f) * pow(abs(f), e)
+        1;            // exponent is even => pow(abs(f), e)
+    return v * s;
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastPow(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v = signed_pow(
+            X.BroadcastGet(n, y, x, c),
+            B.BroadcastGet(n, y, x, c));
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastMin(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v = min(
+            X.BroadcastGet(n, y, x, c),
+            B.BroadcastGet(n, y, x, c));
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastMax(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;    uint x = dispatchThreadID.y;    uint y = dispatchThreadID.z;
+    if (c >= O.channels) return;    if (x >= O.width) return;       if (y >= O.height) return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float v = max(
+            X.BroadcastGet(n, y, x, c),
+            B.BroadcastGet(n, y, x, c));
+        O.Set(n, y, x, c, v);
+    }
+}
+
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastGreater(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = X.BroadcastGet(n, y, x, c);
+        float b = B.BroadcastGet(n, y, x, c);
+        float v = (a > b) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastGreaterEqual(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = X.BroadcastGet(n, y, x, c);
+        float b = B.BroadcastGet(n, y, x, c);
+        float v = (a >= b) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastLess(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = X.BroadcastGet(n, y, x, c);
+        float b = B.BroadcastGet(n, y, x, c);
+        float v = (a < b) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastLessEqual(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = X.BroadcastGet(n, y, x, c);
+        float b = B.BroadcastGet(n, y, x, c);
+        float v = (a <= b) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastEqual(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = X.BroadcastGet(n, y, x, c);
+        float b = B.BroadcastGet(n, y, x, c);
+        float v = (a == b) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastLogicalOr(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = (X.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float b = (B.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float v = ((a + b) >= 1.0f) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastLogicalAnd(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = (X.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float b = (B.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float v = ((a + b) > 1.5f) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4,8,8), (4,8,4), (4,4,4))
+void BroadcastLogicalXor(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS3(X, B, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+    if (c >= O.channels)
+        return;
+    if (x >= O.width)
+        return;
+    if (y >= O.height)
+        return;
+
+    for (uint n = 0; n < X.batch; ++n)
+    {
+        float a = (X.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float b = (B.BroadcastGet(n, y, x, c) == 0.0f) ? 0.0f : 1.0f;
+        float v = ((a + b) == 1.0f) ? 1.0f : 0.0f;
+        O.Set(n, y, x, c, v);
+    }
+}

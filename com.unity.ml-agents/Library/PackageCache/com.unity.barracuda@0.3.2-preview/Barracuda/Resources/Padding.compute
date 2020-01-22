@@ -1,0 +1,156 @@
+#pragma kernel Border2D
+#pragma kernel Pad2DEdge
+#pragma kernel Pad2DReflect
+#pragma kernel Pad2DSymmetric
+
+#include "Tensor.cginc"
+
+TENSOR_DECL(X)
+TENSOR_DECL(B)
+TENSOR_DECL_RW(O)
+
+uint4 _Pool;
+uint4 _Stride;
+uint4 _Pad;
+float _Beta;
+
+NUMTHREADS((4, 8, 8), (4, 8, 4), (4, 4, 4))
+void Border2D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS2(X, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+
+    if (c >= O.channels) return;
+    if (x >= O.width) return;
+    if (y >= O.height) return;
+
+    // NOTE: negative "pad" variable crop X tensor
+    int croppedWidth = _Pool.x;
+    int croppedHeight = _Pool.y;
+    int readX = x - _Pad.x;
+    int readY = y - _Pad.y;
+    bool paddedTexel = (readX < 0 || readX >= croppedWidth || readY < 0 || readY >= croppedHeight);
+
+    for (uint n = 0; n < O.batch; ++n)
+    {
+        float v = X.Get(n, readY, readX, c);
+        v = (paddedTexel) ? _Beta : v;
+        O.Set(n, y, x, c, v);
+    }
+}
+
+void ClampHWToTensorShape(uint4 Xshape, inout int height, inout int width)
+{
+    width = max(width, 0);
+    height = max(height, 0);
+    width = min(width, (int)Xshape.z - 1);
+    height = min(height, (int)Xshape.y - 1);
+}
+
+NUMTHREADS((4, 8, 8), (4, 8, 4), (4, 4, 4))
+void Pad2DEdge(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS2(X, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+
+    if (c >= O.channels) return;
+    if (x >= O.width) return;
+    if (y >= O.height) return;
+
+    int readX = x - _Pad.x;
+    int readY = y - _Pad.y;
+    uint4 Xshape = _Stride;
+
+    //clamp read indices to source
+    ClampHWToTensorShape(Xshape, readY, readX);
+
+    for (uint n = 0; n < O.batch; ++n)
+    {
+        float v = X.Get(n, readY, readX, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4, 8, 8), (4, 8, 4), (4, 4, 4))
+void Pad2DReflect(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS2(X, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+
+    if (c >= O.channels) return;
+    if (x >= O.width) return;
+    if (y >= O.height) return;
+
+    int readX = x - _Pad.x;
+    int readY = y - _Pad.y;
+    uint4 Xshape = _Stride;
+
+    int lastXIndex = Xshape.z - 1;
+    int lastYIndex = Xshape.y - 1;
+
+    //x reflect indexing
+    readX = (readX < 0) ? -readX : readX;
+    readX = (readX > lastXIndex) ? lastXIndex - (readX - lastXIndex) : readX;
+    //y reflect indexing
+    readY = (readY < 0) ? -readY : readY;
+    readY = (readY > lastYIndex) ? lastYIndex - (readY - lastYIndex) : readY;
+
+    //clamp read indices to source
+    ClampHWToTensorShape(Xshape, readY, readX);
+
+    for (uint n = 0; n < O.batch; ++n)
+    {
+        float v = X.Get(n, readY, readX, c);
+        O.Set(n, y, x, c, v);
+    }
+}
+
+NUMTHREADS((4, 8, 8), (4, 8, 4), (4, 4, 4))
+void Pad2DSymmetric(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    DISPATCH_ARGS(O.channels, O.width, O.height);
+    TENSOR_ARGS2(X, O);
+
+    uint c = dispatchThreadID.x;
+    uint x = dispatchThreadID.y;
+    uint y = dispatchThreadID.z;
+
+    if (c >= O.channels) return;
+    if (x >= O.width) return;
+    if (y >= O.height) return;
+
+    int readX = x - _Pad.x;
+    int readY = y - _Pad.y;
+    uint4 Xshape = _Stride;
+
+    int lastXIndex = Xshape.z - 1;
+    int lastYIndex = Xshape.y - 1;
+
+    //x reflect indexing
+    readX = (readX < 0) ? -readX - 1: readX;
+    readX = (readX > lastXIndex) ? lastXIndex - (readX - lastXIndex) + 1: readX;
+    //y reflect indexing
+    readY = (readY < 0) ? -readY - 1: readY;
+    readY = (readY > lastYIndex) ? lastYIndex - (readY - lastYIndex) + 1: readY;
+
+    //clamp read indices to source
+    ClampHWToTensorShape(Xshape, readY, readX);
+
+    for (uint n = 0; n < O.batch; ++n)
+    {
+        float v = X.Get(n, readY, readX, c);
+        O.Set(n, y, x, c, v);
+    }
+}

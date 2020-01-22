@@ -1,0 +1,7 @@
+framework module UnityAds {
+  umbrella header "UnityAds.h"
+  header "UnityAdsExtended.h"
+
+  export *
+  module * { export * }
+}

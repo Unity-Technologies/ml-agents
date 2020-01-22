@@ -1,0 +1,71 @@
+Base path: /Applications/Unity/Hub/Editor/2018.4.14f1/Unity.app/Contents
+Cmd: initializeCompiler
+Cmd: compileComputeKernel
+  error: 1 plat 14 at Generic.compute(379): signed/unsigned mismatch, unsigned assumed
+  error: 1 plat 14 at Generic.compute(392): signed/unsigned mismatch, unsigned assumed
+  error: 1 plat 14 at Generic.compute(408): signed/unsigned mismatch, unsigned assumed
+  api=14 insize=15451 outsize=3229 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2789 outsize=2821 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=3245 outsize=3617 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=13645 outsize=26281 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=9919 outsize=2849 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=9919 outsize=2989 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2809 outsize=4141 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2989 outsize=4437 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=10845 outsize=19361 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 14 at BarracudaReferenceImpl.compute(12): 'kernal' : unknown pragma ignored
+  error: 1 plat 14 at BarracudaReferenceImpl.compute(1255): array reference cannot be used as an l-value; not natively addressable, forcing loop to unroll
+  error: 1 plat 14 at BarracudaReferenceImpl.compute(1261): 'ix': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used
+  error: 1 plat 14 at BarracudaReferenceImpl.compute(1265): array reference cannot be used as an l-value; not natively addressable, forcing loop to unroll
+  api=14 insize=44328 outsize=10277 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=3545 outsize=3937 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=5025 outsize=7093 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=3793 outsize=4641 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=3201 outsize=3377 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=4053 outsize=2593 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2957 outsize=3861 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=2433 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=1949 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=2129 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=3185 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=2541 ok=1
+Cmd: compileComputeKernel
+  api=14 insize=28299 outsize=2549 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2093 outsize=1817 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2385 outsize=2253 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2201 outsize=1989 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2841 outsize=3285 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2705 outsize=2969 ok=1
+Cmd: translateComputeKernel
+  api=14 insize=2637 outsize=3025 ok=1
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+
+Quitting shader compiler process

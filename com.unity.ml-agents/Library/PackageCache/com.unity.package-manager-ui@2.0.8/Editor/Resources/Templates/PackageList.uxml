@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML 
+        xmlns:engine="UnityEngine.Experimental.UIElements" 
+        xmlns:upm="UnityEditor.PackageManager.UI"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="UnityEngine.Experimental.UIElements UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+                            UnityEditor.PackageManager.UI UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
+    <engine:VisualElement name="listContainerOuter">
+        <engine:VisualElement name="listContainer">
+            <!-- Specifying the vertical page size a workaround for https://fogbugz.unity3d.com/f/cases/1029430/ -->
+            <engine:ScrollView name="scrollView" vertical-page-size="10"/>
+            <engine:VisualElement name="emptyArea" class="list emptyArea">
+                <engine:Label class="title" text="There are no packages."/>
+            </engine:VisualElement>
+            <engine:VisualElement name="noResult" class="list emptyArea">
+                <engine:Label name="noResultText" class="title"/>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

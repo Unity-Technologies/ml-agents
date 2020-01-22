@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML 
+        xmlns:engine="UnityEngine.Experimental.UIElements"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="UnityEngine.Experimental.UIElements UIElementsSchema/UnityEngine.Experimental.UIElements.xsd">
+    <engine:VisualElement name="alertContainer" class="alert">
+        <engine:Label name="alertMessage"/>
+        <engine:Button name="close" text="Close" class="button"/>
+    </engine:VisualElement>
+</engine:UXML>

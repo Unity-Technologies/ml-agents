@@ -1,0 +1,38 @@
+fileFormatVersion: 2
+guid: 220224b43fc464c28bc0e8de8f54a432
+PluginImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
+  isOverridable: 0
+  platformData:
+  - first:
+      '': Any
+    second:
+      enabled: 0
+      settings:
+        Exclude N3DS: 1
+        Exclude PS4: 1
+        Exclude PSP2: 1
+        Exclude Switch: 1
+        Exclude WiiU: 1
+        Exclude XboxOne: 1  
+  - first:
+      Any: 
+    second:
+      enabled: 1
+      settings: {}
+  - first:
+      Editor: Editor
+    second:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
+        DefaultValueInitialized: true
+        OS: AnyOS
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+

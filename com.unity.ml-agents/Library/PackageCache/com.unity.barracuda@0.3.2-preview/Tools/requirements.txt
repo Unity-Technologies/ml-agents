@@ -1,0 +1,6 @@
+numpy>=1.11.0
+tensorflow==1.7.1
+onnx==1.0.1
+h5py==2.8.0
+Keras==2.1.6
+

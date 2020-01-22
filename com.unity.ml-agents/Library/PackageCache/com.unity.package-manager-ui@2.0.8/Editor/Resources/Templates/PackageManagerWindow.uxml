@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML 
+        xmlns:engine="UnityEngine.Experimental.UIElements" 
+        xmlns:upm="UnityEditor.PackageManager.UI"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="UnityEngine.Experimental.UIElements UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+                            UnityEditor.PackageManager.UI UIElementsSchema/UnityEditor.PackageManager.UI.xsd">
+    <engine:VisualElement name="container">
+        <upm:PackageManagerToolbar name="toolbarContainer"/>
+        <engine:VisualElement name="detailListView">
+            <engine:VisualElement name="packageListGroup">
+                <upm:PackageList name="packageList" />
+                <upm:PackageStatusBar name="packageStatusBar" />
+            </engine:VisualElement>
+            <upm:PackageDetails name="detailsGroup" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

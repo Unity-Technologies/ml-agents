@@ -1,0 +1,1038 @@
+/***************************************************************************************************
+
+														*** Auto-Generated - Do not modify .uss File ***
+
+																		Only Modify Main.scss
+
+***************************************************************************************************/
+#container {
+  -unity-position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.display-none {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  min-width: 0;
+  max-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+.row, #detailListView .combo, #detailListView #detailView .detail #detailActions, #detailListView #detailView .detail .detailActions, #detailListView #detailView .detail .versionContainer {
+  flex: 1 0 0;
+  flex-direction: row;
+}
+
+.column, #detailListView .emptyArea, #detailListView #packageListGroup #listContainerOuter, #detailListView #packageListGroup #packageList, #detailListView #packageListGroup #listContainer, #detailListView #packageListGroup #listGroups, #detailListView #packageListGroup #scrollView {
+  flex: 1 0 0;
+  flex-direction: column;
+}
+
+.tag {
+  border-top-width: 1;
+  border-left-width: 1;
+  border-bottom-width: 1;
+  border-right-width: 1;
+  padding-top: 1;
+  padding-left: 3;
+  padding-bottom: 1;
+  padding-right: 3;
+  font-size: 9;
+  border-radius: 5;
+  -unity-text-align: middle-center;
+  border-color: #000000;
+  color: #000000;
+}
+
+#toolbarContainer {
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 18;
+}
+#toolbarContainer #toolbarView {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: flex-start;
+  background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
+  margin-top: -1;
+  -unity-slice-top: 1;
+  -unity-slice-left: 1;
+  -unity-slice-bottom: 1;
+  -unity-slice-right: 1;
+}
+#toolbarContainer #toolbarView .toolbarButton {
+  flex: 1 0 0;
+  font-size: 9;
+  -unity-text-align: middle-center;
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbar button.png");
+  flex: 0 0 auto;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: -1;
+  padding-top: 0;
+  padding-left: 5;
+  padding-bottom: 0;
+  padding-right: 5;
+  height: 19;
+}
+#toolbarContainer #toolbarView .toolbarButton.display-none {
+  position: absolute;
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  min-width: 0;
+  max-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  min-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  visibility: hidden;
+}
+#toolbarContainer #toolbarView .toolbarButton:hover {
+  color: #000000;
+}
+#toolbarContainer #toolbarView .toolbarButton.space {
+  margin-left: 7;
+}
+#toolbarContainer #toolbarView .toolbarButton.active {
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbar button act.png");
+}
+#toolbarContainer #toolbarView .toolbarButton.pulldown:active {
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbar button.png");
+}
+#toolbarContainer #toolbarView #toolbarLeft {
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: flex-start;
+}
+#toolbarContainer #toolbarView #toolbarRight {
+  flex: 1 0 0;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+#toolbarContainer #toolbarView #toolbarRight #toolbarSearch {
+  flex: 1 0 0;
+  height: 18;
+  max-width: 500;
+  flex-direction: row;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 5;
+}
+
+#searchContainer {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  height: 14;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+#searchContainer #searchTextField {
+  flex: 1 0 0;
+  font-size: 9;
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
+  margin-top: 2;
+  margin-left: 5;
+  margin-bottom: 1;
+  margin-right: 5;
+  padding-top: 2;
+  padding-left: 17;
+  padding-bottom: 1;
+  padding-right: 17;
+  -unity-slice-top: 1;
+  -unity-slice-left: 14;
+  -unity-slice-bottom: 1;
+  -unity-slice-right: 0;
+  height: 14;
+}
+#searchContainer #searchTextField:focus {
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch focused.png");
+}
+#searchContainer #searchTextField.placeholder {
+  color: #6C6C6C;
+}
+#searchContainer #searchCancelButton {
+  width: 14;
+  height: 15;
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
+  flex: 0 0 auto;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+  -unity-slice-top: 1;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 1;
+  -unity-slice-right: 14;
+  margin-top: 3;
+  margin-left: -10;
+  margin-bottom: 2;
+  margin-right: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+}
+#searchContainer #searchCancelButton.display-none {
+  position: absolute;
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  min-width: 0;
+  max-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  min-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  visibility: hidden;
+}
+#searchContainer #searchCancelButton:hover {
+  color: #000000;
+}
+#searchContainer #searchCancelButton.on {
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButton.png");
+}
+#searchContainer #searchCancelButton:active {
+  background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonActive.png");
+}
+
+#detailListView {
+  flex: 1 0 0;
+  flex-direction: row;
+}
+#detailListView .link {
+  color: #0808FC;
+  background: rgba(0, 0, 0, 0);
+  background-image: none;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  cursor: link;
+}
+#detailListView .emptyArea {
+  flex: 1 0 0;
+}
+#detailListView .emptyArea .title {
+  -unity-text-align: middle-center;
+  font-size: 14;
+}
+#detailListView .emptyArea .loading {
+  -unity-position: relative;
+  top: 7;
+  left: 7;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  width: 14;
+  height: 14;
+  max-width: 14;
+  max-height: 14;
+}
+#detailListView #headerTitle {
+  flex: 1 0 0;
+  font-size: 12;
+  -unity-font-style: bold;
+  color: #000000;
+}
+#detailListView #headerCaret {
+  flex: 0 0 auto;
+  font-size: 12;
+  -unity-font-style: bold;
+  color: #000000;
+  min-width: 16;
+}
+#detailListView #spinnerContainer {
+  -unity-position: absolute;
+  top: 3;
+  left: 2;
+  right: 0;
+  width: 14;
+  flex: 0.1 0 0;
+  flex-direction: column;
+  align-items: center;
+}
+#detailListView .loading {
+  -unity-position: relative;
+  top: 7;
+  left: 7;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  width: 14;
+  height: 14;
+  max-width: 14;
+  max-height: 14;
+}
+#detailListView .combo {
+  margin-top: 3;
+  margin-left: 3;
+  margin-bottom: 3;
+  margin-right: 3;
+  padding-top: 3;
+  padding-left: 3;
+  padding-bottom: 3;
+  padding-right: 3;
+}
+#detailListView .combo .popup {
+  padding-top: 0;
+  padding-left: 8;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  border-top-width-left-radius: 0;
+  border-bottom-width-left-radius: 0;
+}
+#detailListView .combo .button {
+  flex: 1 0 0;
+  font-size: 12;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-top: 2;
+  padding-left: 6;
+  padding-bottom: 3;
+  padding-right: 6;
+  -unity-slice-top: 4;
+  -unity-slice-left: 1;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 1;
+  -unity-text-align: middle-center;
+  border-left-width: 0;
+  border-top-width: 0;
+  border-right-width: 0;
+  border-bottom-width: 0;
+  background-image: resource("Builtin Skins/LightSkin/Images/btn mid.png");
+  border-top-width-right-radius: 0;
+  border-bottom-width-right-radius: 0;
+  border-top-width-left-radius: 0;
+  border-bottom-width-left-radius: 0;
+}
+#detailListView .combo .button.selected {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn mid on.png");
+  color: #f4f4f4;
+}
+#detailListView .combo .button.first {
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+  background-image: resource("Builtin Skins/LightSkin/Images/btn left.png");
+}
+#detailListView .combo .button.first.selected {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn left on.png");
+}
+#detailListView .combo .button.last {
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+  background-image: resource("Builtin Skins/LightSkin/Images/btn right.png");
+}
+#detailListView .combo .button.last.selected {
+  background-image: resource("Builtin Skins/LightSkin/Images/btn right on.png");
+}
+#detailListView .combo .button.small {
+  flex: 0.5 0 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+}
+#detailListView #packageListGroup {
+  width: 270;
+}
+#detailListView #packageListGroup #groupContainerOuter #headerContainer {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: center;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+#detailListView #packageListGroup #groupContainerOuter #headerContainer #headerTitle {
+  height: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+}
+#detailListView #packageListGroup #groupContainerOuter #groupContainer {
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+#detailListView #packageListGroup #scrollView #VerticalScroller {
+  bottom: 0;
+}
+#detailListView #packageListGroup #scrollView #HorizontalScroller {
+  height: 0;
+}
+#detailListView #packageListGroup #scrollView #ContentViewport {
+  bottom: 0;
+}
+#detailListView #packageListGroup #scrollView #ContentViewport #ContentView {
+  right: 0;
+  left: 0;
+}
+#detailListView #packageListGroup #noResult #noResultText {
+  -unity-word-wrap: true;
+}
+#detailListView .package {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  border-color: rgba(0, 0, 0, 0.5);
+  border-bottom-width: 1;
+}
+#detailListView .package.selected {
+  background-color: #3e7de7;
+  color: #f4f4f4;
+}
+#detailListView .package.selected #packageName, #detailListView .package.selected #packageVersion {
+  color: #f4f4f4;
+}
+#detailListView .package .status {
+  flex: 0 0 14;
+  width: 14;
+  height: 14;
+  margin-left: 2;
+  margin-right: 0;
+}
+#detailListView .package .status.installed {
+  background-image: resource("Builtin Skins/LightSkin/Images/MenuItemOn.png");
+}
+#detailListView .package .status.installed.no-icon {
+  background-image: none;
+}
+#detailListView .package .status.outdated {
+  background-image: resource("Images/Light/download");
+}
+#detailListView .package .status.outdated.no-icon {
+  background-image: none;
+}
+#detailListView .package .status.inprogress {
+  background-image: none;
+}
+#detailListView .package .status.error {
+  background-image: resource("Images/Dark/error");
+}
+#detailListView .package .name {
+  flex: 1 0 0;
+  font-size: 12;
+  margin-left: 0;
+  margin-right: 5;
+  overflow: hidden;
+}
+#detailListView .package .version {
+  flex: 0 0 auto;
+  margin-left: 0;
+  margin-right: 5;
+  font-size: 9;
+}
+#detailListView #detailsGroup {
+  flex: 1 0 0;
+  border-left-width: 1px;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+#detailListView #detailsGroup #detailsContainer {
+  flex: 1 0 0;
+  flex-direction: column;
+  -unity-position: relative;
+}
+#detailListView #detailView {
+  flex: 1 0 0;
+}
+#detailListView #detailView #VerticalScroller {
+  bottom: 0;
+}
+#detailListView #detailView #ContentViewport #ContentView {
+  -unity-position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+#detailListView #detailView .detail {
+  flex: 1 0 0;
+  flex-direction: column;
+  padding-top: 5;
+  padding-left: 5;
+  padding-bottom: 5;
+  padding-right: 5;
+}
+#detailListView #detailView .detail .header {
+  flex: 1 0 0;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 8;
+}
+#detailListView #detailView .detail .header #titleContainer {
+  flex: 0.9 0 0;
+}
+#detailListView #detailView .detail .header #titleContainer #detailTitle {
+  font-size: 18;
+  -unity-font-style: bold;
+  -unity-word-wrap: true;
+  margin-top: 0;
+  margin-left: 4;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+#detailListView #detailView .detail .header #detailsControls {
+  flex: 1 0 0;
+  height: 19;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 3;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+#detailListView #detailView .detail .header #updateCombo {
+  flex: 1 0 0;
+  height: 19;
+  align-items: center;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+}
+#detailListView #detailView .detail .header #updateCombo #update {
+  flex: 0 0 auto;
+}
+#detailListView #detailView .detail .header #updateCombo #updateDropdownContainer {
+  min-width: 65;
+  max-width: 150;
+  height: 19;
+  flex: 0 0 auto;
+}
+#detailListView #detailView .detail .header #updateCombo #updateDropdownContainer .popup {
+  font-size: 12;
+  height: 19;
+}
+#detailListView #detailView .detail .header #updateCombo #updateDropdownContainer .popup:focus {
+  background-image: resource("Builtin Skins/LightSkin/Images/mini popup.png");
+}
+#detailListView #detailView .detail .header #updateCombo #updateDropdownContainer .popup:hover .textElement {
+  color: #000000;
+}
+#detailListView #detailView .detail .header #updateCombo #updateDropdownContainer .popup .textElement {
+  margin-top: 2;
+}
+#detailListView #detailView .detail .header #updateCombo .action {
+  flex: 0 0 auto;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  font-size: 12;
+  padding-top: 2;
+  padding-left: 4;
+  padding-bottom: 3;
+  padding-right: 4;
+  right: -3;
+}
+#detailListView #detailView .detail .header #updateCombo .action:hover {
+  color: #000000;
+}
+#detailListView #detailView .detail .header #updateContainer {
+  height: 19;
+  flex: 1 0 0;
+  align-items: flex-end;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+}
+#detailListView #detailView .detail .header .button {
+  height: 19;
+  font-size: 12;
+  flex: 0 0 auto;
+  padding-top: 3;
+  padding-left: 3;
+  padding-bottom: 4;
+  padding-right: 3;
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+}
+#detailListView #detailView .detail .header .button.display-none {
+  position: absolute;
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  min-width: 0;
+  max-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  min-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  visibility: hidden;
+}
+#detailListView #detailView .detail .header .button:hover {
+  color: #000000;
+}
+#detailListView #detailView .detail #detailVersion {
+  font-size: 16;
+  max-height: 30;
+}
+#detailListView #detailView .detail #detailName {
+  flex: 1 0 0;
+  max-height: 20;
+  -unity-font-style: italic;
+}
+#detailListView #detailView .detail #detailPackageStatus {
+  flex: 1 0 0;
+  -unity-font-style: bold;
+  -unity-word-wrap: true;
+}
+#detailListView #detailView .detail #detailTag {
+  width: 60;
+  font-size: 12;
+  border-radius: 5;
+  border-color: #b4b4b4;
+  border-top-width: 2;
+  border-left-width: 2;
+  border-bottom-width: 2;
+  border-right-width: 2;
+  -unity-text-align: middle-center;
+}
+#detailListView #detailView .detail #detailDesc, #detailListView #detailView .detail #detailModuleReference {
+  flex: 1 0 0;
+  font-size: 12;
+  -unity-word-wrap: true;
+}
+#detailListView #detailView .detail #detailDesc.empty, #detailListView #detailView .detail #detailModuleReference.empty {
+  -unity-font-style: italic;
+}
+#detailListView #detailView .detail #detailAuthor {
+  flex: 1 0 0;
+  font-size: 12;
+  -unity-word-wrap: true;
+}
+#detailListView #detailView .detail #detailCategory {
+  flex: 1 0 0;
+  font-size: 12;
+  -unity-word-wrap: true;
+  margin-bottom: 5;
+}
+#detailListView #detailView .detail #changeLogContainer, #detailListView #detailView .detail #viewLicensesContainer {
+  flex: 0 0 auto;
+  flex-direction: row;
+}
+#detailListView #detailView .detail #detailActions, #detailListView #detailView .detail .detailActions {
+  flex: 0 0 auto;
+  flex-direction: row;
+  margin-left: 2;
+}
+#detailListView #detailView .detail #detailActions .detailAction, #detailListView #detailView .detail .detailActions .detailAction {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 2;
+  padding-right: 2;
+  border-left-width: 2;
+  border-right-width: 2;
+}
+#detailListView #detailView .detail #detailActions .detailActionSeparator, #detailListView #detailView .detail .detailActions .detailActionSeparator {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border-left-width: 0;
+  border-right-width: 0;
+}
+#detailListView #detailView .detail #detailActions #thirdPartyNoticeLabel, #detailListView #detailView .detail .detailActions #thirdPartyNoticeLabel {
+  margin-top: 4;
+  margin-left: 0;
+  margin-bottom: 4;
+  margin-right: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  -unity-word-wrap: true;
+}
+#detailListView #detailView .detail #detailActions #viewThirdParty, #detailListView #detailView .detail .detailActions #viewThirdParty {
+  border-right-width: 0;
+}
+#detailListView #detailView .detail .versionContainer {
+  align-items: center;
+  justify-content: flex-start;
+}
+#detailListView #detailView .detail .versionContainer #detailVersion {
+  flex: 0 0 auto;
+}
+#detailListView #detailView .detail .tag {
+  border-color: #d25a00;
+  color: #d25a00;
+}
+#detailListView #detailView .detail .tag.verified {
+  border-color: #000;
+  color: #000;
+}
+#detailListView #detailView .detail .tagLine {
+  flex: 0 0 auto;
+  flex-direction: row;
+}
+#detailListView #detailError {
+  -unity-position: absolute;
+  top: 5;
+  left: 5;
+  right: 5;
+  min-height: 200;
+  -unity-word-wrap: true;
+}
+#detailListView #detailError.display-none {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+}
+#detailListView #packageStatusBar {
+  -unity-position: relative;
+  flex: 0 0 auto;
+  margin-top: 2;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  border-color: rgba(0, 0, 0, 0.5);
+  border-top-width: 1;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+}
+#detailListView #statusBarContainer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+#detailListView #statusBarContainer #loadingContainer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 2;
+}
+#detailListView #statusBarContainer #loadingContainer #loadingIcon {
+  background-image: resource("Images/Dark/error");
+  width: 16;
+  height: 16;
+  margin-left: -12;
+  margin-right: 0;
+}
+#detailListView #statusBarContainer #loadingContainer #loadingText {
+  padding-left: 2;
+  -unity-font-style: italic;
+}
+#detailListView #statusBarContainer #loadingContainer #loadingText.icon {
+  margin-left: 0;
+}
+#detailListView #statusBarContainer #moreAddOptionsButton {
+  font-size: 16;
+  background-image: none;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: -2;
+  margin-right: 0;
+  padding-top: 3;
+  padding-left: 6;
+  padding-bottom: 6;
+  padding-right: 6;
+  border-color: rgba(0, 0, 0, 0.5);
+  border-top-width: 0;
+  border-left-width: 1;
+  border-bottom-width: 0;
+  border-right-width: 0;
+}
+#detailListView #packageAddFromUrlField {
+  -unity-position: absolute;
+  top: -35;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+#detailListView #addFromUrlFieldContainer {
+  border-color: rgba(0, 0, 0, 0.5);
+  border-top-width: 1;
+  border-left-width: 0;
+  border-bottom-width: 1;
+  border-right-width: 0;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 35;
+  background-color: #c2c2c2;
+}
+#detailListView #addFromUrlFieldContainer #urlTextField {
+  flex: 1 0 0;
+  height: 20;
+  -unity-text-align: middle-left;
+}
+#detailListView #addFromUrlFieldContainer #addFromUrlButton {
+  flex: 0 0 auto;
+  height: 20;
+}
+
+.alert {
+  background-color: rgba(200, 0, 0, 0.8);
+  border-color: #FF0000;
+  flex-direction: row;
+  border-top-width: 1;
+  border-left-width: 1;
+  border-bottom-width: 1;
+  border-right-width: 1;
+  padding-top: 5;
+  padding-left: 10;
+  padding-bottom: 5;
+  padding-right: 10;
+}
+.alert #alertMessage {
+  flex: 1 0 0;
+  color: #f4f4f4;
+  -unity-word-wrap: true;
+  overflow: hidden;
+}
+.alert #close {
+  flex: 0 0 auto;
+  max-height: 30;
+  left: 5;
+  flex: 0 0 auto;
+  padding-top: 3;
+  padding-left: 3;
+  padding-bottom: 4;
+  padding-right: 3;
+  -unity-slice-top: 4;
+  -unity-slice-left: 6;
+  -unity-slice-bottom: 4;
+  -unity-slice-right: 6;
+}
+.alert #close.display-none {
+  position: absolute;
+  border-radius: 0;
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: 0;
+  min-width: 0;
+  max-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  min-width: 0;
+  border-top-width: 0;
+  border-left-width: 0;
+  border-bottom-width: 0;
+  border-right-width: 0;
+  padding-top: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  margin-top: 0;
+  margin-left: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  -unity-slice-top: 0;
+  -unity-slice-left: 0;
+  -unity-slice-bottom: 0;
+  -unity-slice-right: 0;
+  visibility: hidden;
+}
+.alert #close:hover {
+  color: #000000;
+}
+
+.spinner {
+  flex: 0 0 auto;
+  top: -7;
+  left: -7;
+  min-width: 14;
+  min-height: 14;
+  max-width: 14;
+  max-height: 14;
+  background-image: resource("Images/Light/loading");
+}
+
+.largeSpinner {
+  flex: 0 0 auto;
+  top: -16;
+  left: -16;
+  min-width: 32;
+  min-height: 32;
+  max-width: 32;
+  max-height: 32;
+  background-image: resource("Images/Light/loading");
+}

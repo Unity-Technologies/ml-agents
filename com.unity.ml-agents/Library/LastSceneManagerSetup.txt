@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/ML-Agents/Examples/Tennis/Scenes/Tennis.unity
+  isLoaded: 1
+  isActive: 1

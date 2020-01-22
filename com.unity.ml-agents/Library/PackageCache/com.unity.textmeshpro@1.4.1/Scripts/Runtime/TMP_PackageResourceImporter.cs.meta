@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: cf1fe50a641faac4691bf49eb32ce333
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_PersistentViewDataDictionary: {instanceID: 0}
+  - LightSkin: {fileID: 11400000, guid: 0c156a7b2f4d450da1716b1625b5441d, type: 2}
+  - DarkSkin: {fileID: 11400000, guid: 9d345c3252c147c89e8b61a249a46a9d, type: 2}
+  - TMPEssentials: {fileID: 102900000, guid: ce4ff17ca867d2b48b5c8a4181611901, type: 3}
+  - TMPExamples: {fileID: 102900000, guid: bc00e25696e4132499f56528d3fed2e3, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
