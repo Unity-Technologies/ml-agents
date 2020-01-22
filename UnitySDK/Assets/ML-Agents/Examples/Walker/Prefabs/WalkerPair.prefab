@@ -3828,7 +3828,7 @@ MonoBehaviour:
     vectorActionSize: 27000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 4e86a19e012da43bfa5ab97ae8089b98, type: 3}
+  m_Model: {fileID: 11400000, guid: b35339ef598b444be935f46ccf143440, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Walker
@@ -3848,8 +3848,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentParameters:
     maxStep: 5000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4085853164035250}
   hips: {fileID: 4333477265252406}
   chest: {fileID: 4027052323869384}
@@ -3896,7 +3894,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 0
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1907539933197724
 GameObject:
   m_ObjectHideFlags: 0

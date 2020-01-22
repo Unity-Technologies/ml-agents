@@ -1781,8 +1781,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentParameters:
     maxStep: 5000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
   target: {fileID: 4490950947783742}
   ground: {fileID: 4684408634944056}
   detectTargets: 1
@@ -1837,7 +1835,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 0
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1520563409393552
 GameObject:
   m_ObjectHideFlags: 0
