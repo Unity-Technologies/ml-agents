@@ -120,7 +120,7 @@ jobs:
           name: Check Code Style using pre-commit
           command: |
             . venv/bin/activate
-            pre-commit run --show-diff-on-failure --all-files
+            pre-commit run --all-files
 
   markdown_link_check:
     parameters:

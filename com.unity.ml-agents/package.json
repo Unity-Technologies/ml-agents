@@ -1,0 +1,10 @@
+{
+	"name": "com.unity.ml-agents",
+	"displayName":"ML-Agents",
+	"version": "0.13.0-preview",
+	"unity": "2018.4",
+	"description": "Add interactivity to your game with ML-Agents trained using Deep Reinforcement Learning. \n\nFor best results, use this text to summarize: \n\u25AA What the package does \n\u25AA How it can benefit the user \n\nNote: Special formatting characters are supported, including line breaks ('\\n') and bullets ('\\u25AA').",
+	"dependencies": {
+		"com.unity.barracuda": "0.3.2-preview"
+	}
+}

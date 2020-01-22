@@ -1,13 +1,23 @@
-/UnitySDK/[Ll]ibrary/
-/UnitySDK/Logs/
-/UnitySDK/[Tt]emp/
-/UnitySDK/[Oo]bj/
-/UnitySDK/[Bb]uild/
-/UnitySDK/[Bb]uilds/
-/UnitySDK/Assets/AssetStoreTools*
-/UnitySDK/Assets/Plugins*
-/UnitySDK/Assets/Demonstrations*
-/UnitySDK/csharp_timers.json
+/com.unity.ml-agents/[Ll]ibrary/
+/com.unity.ml-agents/Logs/
+/com.unity.ml-agents/[Tt]emp/
+/com.unity.ml-agents/[Oo]bj/
+/com.unity.ml-agents/[Bb]uild/
+/com.unity.ml-agents/[Bb]uilds/
+/com.unity.ml-agents/Assets/AssetStoreTools*
+/com.unity.ml-agents/Assets/Plugins*
+/com.unity.ml-agents/Assets/Demonstrations*
+/com.unity.ml-agents/csharp_timers.json
+/Project/[Ll]ibrary/
+/Project/Logs/
+/Project/[Tt]emp/
+/Project/[Oo]bj/
+/Project/[Bb]uild/
+/Project/[Bb]uilds/
+/Project/Assets/AssetStoreTools*
+/Project/Assets/Plugins*
+/Project/Assets/Demonstrations*
+/Project/csharp_timers.json
 
 # Tensorflow Model Info
 /models
