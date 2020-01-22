@@ -445,6 +445,29 @@ def test_process_trajectory(dummy_config):
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
+def test_add_get_policy(dummy_config):
+    brain_params = make_brain_parameters(
+        discrete_action=False, visual_inputs=0, vec_obs_size=6
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    policy = mock.Mock(spec=PPOPolicy)
+    policy.get_current_step.return_value = 2000
+
+    trainer.add_policy(brain_params.brain_name, policy)
+    assert trainer.get_policy(brain_params.brain_name) == policy
+
+    # Make sure the summary steps were loaded properly
+    assert trainer.get_step == 2000
+    assert trainer.next_summary_step > 2000
+
+    # Test incorrect class of policy
+    policy = mock.Mock()
+    with pytest.raises(RuntimeError):
+        trainer.add_policy(brain_params, policy)
+
+
 def test_normalization(dummy_config):
     brain_params = BrainParameters(
         brain_name="test_brain",
