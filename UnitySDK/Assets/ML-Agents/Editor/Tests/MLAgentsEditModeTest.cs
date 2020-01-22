@@ -183,11 +183,8 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
 
-            var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-
-            agentEnableMethod?.Invoke(agent2, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { });
+            agent2.LazyInitialize();
+            agent1.LazyInitialize();
 
             Assert.AreEqual(false, agent1.IsDone());
             Assert.AreEqual(false, agent2.IsDone());
@@ -261,9 +258,6 @@ namespace MLAgents.Tests
 
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             // We use event based so the agent will now try to send anything to the brain
@@ -273,7 +267,7 @@ namespace MLAgents.Tests
             agent2.agentParameters.onDemandDecision = true;
             // agent2 will request decisions only when RequestDecision is called
 
-            agentEnableMethod?.Invoke(agent1, new object[] { });
+            agent1.LazyInitialize();
 
             var numberAgent1Reset = 0;
             var numberAgent2Initialization = 0;
@@ -298,7 +292,7 @@ namespace MLAgents.Tests
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent2, new object[] { });
+                    agent2.LazyInitialize();
                     numberAgent2Initialization += 1;
                 }
 
@@ -369,9 +363,6 @@ namespace MLAgents.Tests
 
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             // We use event based so the agent will now try to send anything to the brain
@@ -380,7 +371,7 @@ namespace MLAgents.Tests
             // agent1 will take an action at every step and request a decision every 2 steps
             agent2.agentParameters.onDemandDecision = true;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { });
+            agent2.LazyInitialize();
 
             var numberAgent1Reset = 0;
             var numberAgent2Reset = 0;
@@ -407,7 +398,7 @@ namespace MLAgents.Tests
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent1, new object[] { });
+                    agent1.LazyInitialize();
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
@@ -475,8 +466,6 @@ namespace MLAgents.Tests
             var agent2 = agentGo2.GetComponent<TestAgent>();
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
             agent1.agentParameters = new AgentParameters();
             agent2.agentParameters = new AgentParameters();
             // We use event based so the agent will now try to send anything to the brain
@@ -487,9 +476,8 @@ namespace MLAgents.Tests
             // agent2 will request decisions only when RequestDecision is called
             agent1.agentParameters.maxStep = 20;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { });
-
+            agent2.LazyInitialize();
+            agent1.LazyInitialize();
 
             var j = 0;
             for (var i = 0; i < 500; i++)
