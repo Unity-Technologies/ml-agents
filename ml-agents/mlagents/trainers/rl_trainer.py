@@ -58,7 +58,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 rewards[agent_id] = 0
             else:
                 self.stats_reporter.add_stat(
-                    policy.reward_signals[name].stat_name, rewards.get(agent_id, 0)
+                    policy.optimizer.reward_signals[name].stat_name, rewards.get(agent_id, 0)
                 )
                 rewards[agent_id] = 0
 

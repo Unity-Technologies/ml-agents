@@ -1,18 +1,26 @@
 import logging
-from typing import Optional
+from typing import Optional, Dict, List, Any
 
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.optimizer import TFOptimizer
+from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.components.reward_signals.reward_signal_factory import (
+    create_reward_signal,
+)
 
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOOptimizer(LearningModel):
+class PPOOptimizer(TFOptimizer):
     def __init__(
         self,
         brain,
+        sess,
         policy,
+        reward_signal_configs,
         lr=1e-4,
         lr_schedule=LearningRateSchedule.LINEAR,
         h_size=128,
@@ -24,7 +32,6 @@ class PPOOptimizer(LearningModel):
         num_layers=2,
         m_size=None,
         seed=0,
-        stream_names=None,
         vis_encode_type=EncoderType.SIMPLE,
     ):
         """
@@ -45,34 +52,29 @@ class PPOOptimizer(LearningModel):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
         :return: a sub-class of PPOAgent tailored to the environment.
         """
-        LearningModel.__init__(
-            self, m_size, normalize, use_recurrent, brain, seed, stream_names
-        )
+
+        self.stream_names = self.reward_signals.keys()
+        super().__init__(self, sess, self.policy)
 
         self.optimizer: Optional[tf.train.AdamOptimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
 
-        self.policy = policy
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
             self.create_cc_critic(h_size, num_layers, vis_encode_type)
-            self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
 
         self.learning_rate = self.create_learning_rate(
             lr_schedule, lr, self.global_step, max_step
         )
-        self.vector_in = self.policy.vector_in
-        self.visual_in = self.policy.visual_in
-
         self.create_losses(
             self.policy.log_probs,
             self.old_log_probs,
             self.value_heads,
-            self.entropy,
+            self.policy.entropy,
             beta,
             epsilon,
             lr,
@@ -94,9 +96,10 @@ class PPOOptimizer(LearningModel):
             h_size,
             num_layers,
             vis_encode_type,
-        )
+            stream_scopes=["optimizer"],
+        )[0]
 
-        if self.use_recurrent:
+        if self.policy.use_recurrent:
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
@@ -105,7 +108,7 @@ class PPOOptimizer(LearningModel):
             hidden_value, memory_value_out = self.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in[:, _half_point:],
-                self.sequence_length,
+                self.policy.sequence_length,
                 name="lstm_value",
             )
             self.memory_out = memory_value_out
@@ -114,7 +117,9 @@ class PPOOptimizer(LearningModel):
 
         self.create_value_heads(self.stream_names, hidden_value)
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.policy.act_size[0]], dtype=tf.float32, name="old_probabilities"
+            shape=[None, self.policy.act_size[0]],
+            dtype=tf.float32,
+            name="old_probabilities",
         )
 
         self.old_log_probs = tf.reduce_sum(
@@ -353,3 +358,76 @@ class PPOOptimizer(LearningModel):
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
         self.grads = self.optimizer.compute_gradients(self.loss)
         self.update_batch = self.optimizer.minimize(self.loss)
+
+    def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.policy.batch_size: batch.num_experiences,
+            self.policy.sequence_length: 1,  # We want to feed data in batch-wise, not time-wise.
+        }
+
+        if self.policy.vec_obs_size > 0:
+            feed_dict[self.policy.vector_in] = batch["vector_obs"]
+        if self.policy.vis_obs_size > 0:
+            for i in range(len(self.policy.visual_in)):
+                _obs = batch["visual_obs%d" % i]
+                feed_dict[self.policy.visual_in[i]] = _obs
+        if self.policy.use_recurrent:
+            feed_dict[self.policy.memory_in] = batch["memory"]
+        if self.policy.prev_action is not None:
+            feed_dict[self.policy.prev_action] = batch["prev_action"]
+        value_estimates = self.sess.run(self.value_heads, feed_dict)
+        value_estimates = {k: np.squeeze(v, axis=1) for k, v in value_estimates.items()}
+
+        return value_estimates
+
+    def get_value_estimates(
+        self, next_obs: List[np.ndarray], agent_id: str, done: bool
+    ) -> Dict[str, float]:
+        """
+        Generates value estimates for bootstrapping.
+        :param experience: AgentExperience to be used for bootstrapping.
+        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
+        :return: The value estimate dictionary with key being the name of the reward signal and the value the
+        corresponding value estimate.
+        """
+
+        feed_dict: Dict[tf.Tensor, Any] = {
+            self.policy.batch_size: 1,
+            self.policy.sequence_length: 1,
+        }
+        vec_vis_obs = SplitObservations.from_observations(next_obs)
+        for i in range(len(vec_vis_obs.visual_observations)):
+            feed_dict[self.policy.visual_in[i]] = [vec_vis_obs.visual_observations[i]]
+
+        if self.policy.vec_obs_size > 0:
+            feed_dict[self.policy.vector_in] = [vec_vis_obs.vector_observations]
+        if self.policy.use_recurrent:
+            feed_dict[self.policy.memory_in] = self.retrieve_memories([agent_id])
+        if self.policy.prev_action is not None:
+            feed_dict[self.policy.prev_action] = self.retrieve_previous_action(
+                [agent_id]
+            )
+        value_estimates = self.sess.run(self.value_heads, feed_dict)
+
+        value_estimates = {k: float(v) for k, v in value_estimates.items()}
+
+        # If we're done, reassign all of the value estimates that need terminal states.
+        if done:
+            for k in value_estimates:
+                if self.reward_signals[k].use_terminal_states:
+                    value_estimates[k] = 0.0
+
+        return value_estimates
+
+    def create_reward_signals(self, reward_signal_configs):
+        """
+        Create reward signals
+        :param reward_signal_configs: Reward signal config.
+        """
+        self.reward_signals = {}
+        # Create reward signals
+        for reward_signal, config in reward_signal_configs.items():
+            self.reward_signals[reward_signal] = create_reward_signal(
+                self, self.policy, reward_signal, config
+            )
+            self.update_dict.update(self.reward_signals[reward_signal].update_dict)

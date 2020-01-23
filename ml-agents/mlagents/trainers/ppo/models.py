@@ -55,27 +55,12 @@ class PPOModel(LearningModel):
         if num_layers < 1:
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
-            self.create_cc_actor_critic(h_size, num_layers, vis_encode_type)
-            self.entropy = tf.ones_like(tf.reshape(self.value, [-1])) * self.entropy
+            self.create_cc_actor(h_size, num_layers, vis_encode_type)
+            self.entropy = tf.ones_like(tf.reshape(self.entropy, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
 
-        self.learning_rate = self.create_learning_rate(
-            lr_schedule, lr, self.global_step, max_step
-        )
-
-        self.create_losses(
-            self.log_probs,
-            self.old_log_probs,
-            self.value_heads,
-            self.entropy,
-            beta,
-            epsilon,
-            lr,
-            max_step,
-        )
-
-    def create_cc_actor_critic(
+    def create_cc_actor(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -83,14 +68,15 @@ class PPOModel(LearningModel):
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = LearningModel.create_observation_streams(
+        hidden_stream = LearningModel.create_observation_streams(
             self.visual_in,
             self.processed_vector_in,
-            2,
+            1,
             h_size,
             num_layers,
             vis_encode_type,
-        )
+            stream_scopes=["policy"],
+        )[0]
 
         if self.use_recurrent:
             self.memory_in = tf.placeholder(
@@ -98,24 +84,15 @@ class PPOModel(LearningModel):
             )
             _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = self.create_recurrent_encoder(
-                hidden_streams[0],
+                hidden_stream,
                 self.memory_in[:, :_half_point],
                 self.sequence_length,
                 name="lstm_policy",
             )
 
-            hidden_value, memory_value_out = self.create_recurrent_encoder(
-                hidden_streams[1],
-                self.memory_in[:, _half_point:],
-                self.sequence_length,
-                name="lstm_value",
-            )
-            self.memory_out = tf.concat(
-                [memory_policy_out, memory_value_out], axis=1, name="recurrent_out"
-            )
+            self.memory_out = memory_policy_out
         else:
-            hidden_policy = hidden_streams[0]
-            hidden_value = hidden_streams[1]
+            hidden_policy = hidden_stream
 
         mu = tf.layers.dense(
             hidden_policy,
@@ -155,8 +132,6 @@ class PPOModel(LearningModel):
         self.entropy = 0.5 * tf.reduce_mean(
             tf.log(2 * np.pi * np.e) + self.log_sigma_sq
         )
-
-        self.create_value_heads(self.stream_names, hidden_value)
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum(

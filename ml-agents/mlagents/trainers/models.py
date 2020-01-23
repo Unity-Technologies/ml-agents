@@ -60,6 +60,7 @@ class LearningModel:
         self.output: Optional[tf.Tensor] = None
         self.selected_actions: Optional[tf.Tensor] = None
         self.action_holder: Optional[tf.Tensor] = None
+        self.prev_action: Optional[tf.Tensor] = None
 
         self.global_step, self.increment_step, self.steps_to_increment = (
             self.create_global_steps()

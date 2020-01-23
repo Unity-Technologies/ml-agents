@@ -90,16 +90,16 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
-        value_estimates = self.policy.get_batched_value_estimates(
+        value_estimates = self.policy.optimizer.get_batched_value_estimates(
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
             self.stats_reporter.add_stat(
-                self.policy.reward_signals[name].value_name, np.mean(v)
+                self.policy.optimizer.reward_signals[name].value_name, np.mean(v)
             )
 
-        value_next = self.policy.get_value_estimates(
+        value_next = self.policy.optimizer.get_value_estimates(
             trajectory.next_obs,
             agent_id,
             trajectory.done_reached and not trajectory.max_step_reached,
@@ -109,7 +109,7 @@ class PPOTrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
-        for name, reward_signal in self.policy.reward_signals.items():
+        for name, reward_signal in self.policy.optimizer.reward_signals.items():
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
@@ -120,7 +120,7 @@ class PPOTrainer(RLTrainer):
         # Compute GAE and returns
         tmp_advantages = []
         tmp_returns = []
-        for name in self.policy.reward_signals:
+        for name in self.policy.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[
@@ -133,7 +133,7 @@ class PPOTrainer(RLTrainer):
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
                 value_next=bootstrap_value,
-                gamma=self.policy.reward_signals[name].gamma,
+                gamma=self.policy.optimizer.reward_signals[name].gamma,
                 lambd=self.trainer_parameters["lambd"],
             )
             local_return = local_advantage + local_value_estimates
@@ -240,7 +240,7 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
 
-        for _reward_signal in policy.reward_signals.keys():
+        for _reward_signal in policy.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         return policy

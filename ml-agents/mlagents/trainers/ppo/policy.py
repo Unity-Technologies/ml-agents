@@ -9,10 +9,8 @@ from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.components.reward_signals.reward_signal_factory import (
-    create_reward_signal,
-)
 from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
@@ -48,7 +46,6 @@ class PPOPolicy(TFPolicy):
         self.create_model(
             brain, trainer_params, reward_signal_configs, is_training, load, seed
         )
-        self.create_reward_signals(reward_signal_configs)
 
         with self.graph.as_default():
             self.bc_module: Optional[BCModule] = None
@@ -99,43 +96,52 @@ class PPOPolicy(TFPolicy):
                     trainer_params.get("vis_encode_type", "simple")
                 ),
             )
-            self.model.create_ppo_optimizer()
+            self.optimizer = PPOOptimizer(
+                brain=brain,
+                policy=self.model,
+                sess=self.sess,
+                reward_signal_configs=reward_signal_configs,
+                lr=float(trainer_params["learning_rate"]),
+                lr_schedule=LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "linear")
+                ),
+                h_size=int(trainer_params["hidden_units"]),
+                epsilon=float(trainer_params["epsilon"]),
+                beta=float(trainer_params["beta"]),
+                max_step=float(trainer_params["max_steps"]),
+                normalize=False,
+                use_recurrent=trainer_params["use_recurrent"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=self.m_size,
+                seed=seed,
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
+            )
+            self.optimizer.create_ppo_optimizer()
 
         self.inference_dict.update(
             {
                 "action": self.model.output,
                 "log_probs": self.model.all_log_probs,
                 "entropy": self.model.entropy,
-                "learning_rate": self.model.learning_rate,
+                "learning_rate": self.optimizer.learning_rate,
             }
         )
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.model.output_pre
         if self.use_recurrent:
-            self.inference_dict["memory_out"] = self.model.memory_out
+            self.inference_dict["policy_memory_out"] = self.model.memory_out
+            self.inference_dict["optimizer_memory_out"] = self.optimizer.memory_out
 
-        self.total_policy_loss = self.model.abs_policy_loss
+        self.total_policy_loss = self.optimizer.abs_policy_loss
         self.update_dict.update(
             {
-                "value_loss": self.model.value_loss,
+                "value_loss": self.optimizer.value_loss,
                 "policy_loss": self.total_policy_loss,
-                "update_batch": self.model.update_batch,
+                "update_batch": self.optimizer.update_batch,
             }
         )
-
-    def create_reward_signals(self, reward_signal_configs):
-        """
-        Create reward signals
-        :param reward_signal_configs: Reward signal config.
-        """
-        self.reward_signals = {}
-        with self.graph.as_default():
-            # Create reward signals
-            for reward_signal, config in reward_signal_configs.items():
-                self.reward_signals[reward_signal] = create_reward_signal(
-                    self, self.model, reward_signal, config
-                )
-                self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
     @timed
     def evaluate(
@@ -175,7 +181,7 @@ class PPOPolicy(TFPolicy):
         :param num_sequences: Number of sequences to process.
         :return: Results of update.
         """
-        feed_dict = self.construct_feed_dict(self.model, mini_batch, num_sequences)
+        feed_dict = self.construct_feed_dict(self.model, self.optimizer, mini_batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats = {}
         # Collect feed dicts for all reward signals.
@@ -190,7 +196,7 @@ class PPOPolicy(TFPolicy):
             update_stats[stat_name] = update_vals[update_name]
         return update_stats
 
-    def construct_feed_dict(self, model, mini_batch, num_sequences):
+    def construct_feed_dict(self, model, optimizer, mini_batch, num_sequences):
         feed_dict = {
             model.batch_size: num_sequences,
             model.sequence_length: self.sequence_length,
