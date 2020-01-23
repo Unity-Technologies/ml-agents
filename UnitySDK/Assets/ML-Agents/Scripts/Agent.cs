@@ -342,6 +342,28 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
+        /// <summary>
+        /// Indicates if the agent has reached his maximum number of steps.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c>, if max step reached was reached, <c>false</c> otherwise.
+        /// </returns>
+        public bool IsMaxStepReached()
+        {
+            return m_MaxStepReached;
+        }
+
+        /// <summary>
+        /// Indicates if the agent is done
+        /// </summary>
+        /// <returns>
+        /// <c>true</c>, if the agent is done, <c>false</c> otherwise.
+        /// </returns>
+        public bool IsDone()
+        {
+            return m_Done;
+        }
+
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
