@@ -54,7 +54,7 @@ class GhostTrainer(Trainer):
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
 
         self.policies: Dict[str, TFPolicy] = {}
-        self.policy_snapshots: List[Any] = [None] * self.window
+        self.policy_snapshots: List[Any] = []
         self.snapshot_counter: int = 0
         self.learning_behavior_name: str = None
         self.current_policy_snapshot = None
@@ -183,8 +183,9 @@ class GhostTrainer(Trainer):
 
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            for i in range(self.window):
-                self.policy_snapshots[i] = weights
+            # for i in range(self.window):
+            #    self.policy_snapshots[i] = weights
+            self.policy_snapshots.append(weights)
             self.trainer.add_policy(name_behavior_id, policy)
             self.learning_behavior_name = name_behavior_id
 
@@ -193,7 +194,10 @@ class GhostTrainer(Trainer):
 
     def save_snapshot(self, policy: TFPolicy) -> None:
         weights = policy.get_weights()
-        self.policy_snapshots[self.snapshot_counter] = weights
+        try:
+            self.policy_snapshots[self.snapshot_counter] = weights
+        except IndexError:
+            self.policy_snapshots.append(weights)
         self.policy_elos[self.snapshot_counter] = self.current_elo
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
