@@ -1,0 +1,54 @@
+test_editors:
+  - version: 2018.4
+  - version: 2019.3
+  - version: trunk
+test_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  - name: mac
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: b1.small
+  - name: linux
+    type: Unity::VM::linux
+    image: package-ci/ubuntu:stable
+    flavor: b1.small
+---
+
+{% for editor in test_editors %}
+  {% for platform in test_platforms %}
+test_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/package-pack.yml#pack
+  {% endfor %}
+  {% endfor %}
+
+test_trigger:
+  name: Tests Trigger
+  triggers:
+    branches:
+      only:
+        - "/.*/"
+      except:
+        - master
+  dependencies:
+    - .yamato/com.unity-ml-agents-pack.yml#pack
+    {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+    - .yamato/com.unity.ml-agents-test.yml#test_{{platform.name}}_{{editor.version}}
+    {% endfor %}
+    {% endfor %}
