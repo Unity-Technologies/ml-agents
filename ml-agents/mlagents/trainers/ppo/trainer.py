@@ -201,7 +201,7 @@ class PPOTrainer(RLTrainer):
             buffer = self.update_buffer
             max_num_batch = buffer_length // batch_size
             for l in range(0, max_num_batch * batch_size, batch_size):
-                update_stats = self.policy.update(
+                update_stats = self.policy.optimizer.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
                 for stat_name, value in update_stats.items():

@@ -79,6 +79,7 @@ class TFPolicy(Policy):
         config.allow_soft_placement = True
         self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
+        self.optimizer = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
