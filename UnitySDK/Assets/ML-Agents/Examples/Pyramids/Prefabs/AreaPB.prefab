@@ -635,10 +635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8db44472779248d3be46895c4d562d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 5000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 5000
   area: {fileID: 1464170487903594}
   areaSwitch: {fileID: 1432086782037750}
   useVectorObs: 1
@@ -681,6 +678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1148882946833254
 GameObject:
   m_ObjectHideFlags: 0
