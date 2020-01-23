@@ -1,15 +1,14 @@
 import logging
-from typing import Optional, Dict, List, Any
+from typing import Optional, Any, Dict
 
 import numpy as np
 from mlagents.tf_utils import tf
+from mlagents_envs.timers import timed
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
-from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.optimizer import TFOptimizer
-from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.components.reward_signals.reward_signal_factory import (
-    create_reward_signal,
-)
+from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.ppo.models import PPOModel
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -52,13 +51,18 @@ class PPOOptimizer(TFOptimizer):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
         :return: a sub-class of PPOAgent tailored to the environment.
         """
+        super().__init__(sess, policy, reward_signal_configs)
 
         self.stream_names = self.reward_signals.keys()
-        super().__init__(self, sess, self.policy)
 
         self.optimizer: Optional[tf.train.AdamOptimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
+
+        self.stats_name_to_update_name = {
+            "Losses/Value Loss": "value_loss",
+            "Losses/Policy Loss": "policy_loss",
+        }
 
         if num_layers < 1:
             num_layers = 1
@@ -67,8 +71,8 @@ class PPOOptimizer(TFOptimizer):
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
 
-        self.learning_rate = self.create_learning_rate(
-            lr_schedule, lr, self.global_step, max_step
+        self.learning_rate = LearningModel.create_learning_rate(
+            lr_schedule, lr, self.policy.global_step, max_step
         )
         self.create_losses(
             self.policy.log_probs,
@@ -101,11 +105,11 @@ class PPOOptimizer(TFOptimizer):
 
         if self.policy.use_recurrent:
             self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                shape=[None, self.policy.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            _half_point = int(self.m_size / 2)
+            _half_point = int(self.policy.m_size / 2)
 
-            hidden_value, memory_value_out = self.create_recurrent_encoder(
+            hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in[:, _half_point:],
                 self.policy.sequence_length,
@@ -134,38 +138,45 @@ class PPOOptimizer(TFOptimizer):
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = self.create_observation_streams(
-            2, h_size, num_layers, vis_encode_type
+        hidden_streams = LearningModel.create_observation_streams(
+            self.policy.visual_in,
+            self.policy.processed_vector_in,
+            2,
+            h_size,
+            num_layers,
+            vis_encode_type,
         )
 
-        if self.use_recurrent:
+        if self.policy.use_recurrent:
             self.prev_action = tf.placeholder(
-                shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
+                shape=[None, len(self.policy.act_size)],
+                dtype=tf.int32,
+                name="prev_action",
             )
             prev_action_oh = tf.concat(
                 [
-                    tf.one_hot(self.prev_action[:, i], self.act_size[i])
-                    for i in range(len(self.act_size))
+                    tf.one_hot(self.prev_action[:, i], self.policy.act_size[i])
+                    for i in range(len(self.policy.act_size))
                 ],
                 axis=1,
             )
             hidden_policy = tf.concat([hidden_streams[0], prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                shape=[None, self.policy.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            _half_point = int(self.m_size / 2)
-            hidden_policy, memory_policy_out = self.create_recurrent_encoder(
+            _half_point = int(self.policy.m_size / 2)
+            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
                 hidden_policy,
                 self.memory_in[:, :_half_point],
-                self.sequence_length,
+                self.policy.sequence_length,
                 name="lstm_policy",
             )
 
-            hidden_value, memory_value_out = self.create_recurrent_encoder(
+            hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
                 hidden_streams[1],
                 self.memory_in[:, _half_point:],
-                self.sequence_length,
+                self.policy.sequence_length,
                 name="lstm_value",
             )
             self.memory_out = tf.concat(
@@ -176,7 +187,7 @@ class PPOOptimizer(TFOptimizer):
             hidden_value = hidden_streams[1]
 
         policy_branches = []
-        for size in self.act_size:
+        for size in self.policy.act_size:
             policy_branches.append(
                 tf.layers.dense(
                     hidden_policy,
@@ -190,10 +201,12 @@ class PPOOptimizer(TFOptimizer):
         self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(
-            shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="action_masks",
         )
-        output, _, normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.act_size
+        output, _, normalized_logits = LearningModel.create_discrete_action_masking_layer(
+            self.all_log_probs, self.action_masks, self.policy.act_size
         )
 
         self.output = tf.identity(output)
@@ -206,21 +219,23 @@ class PPOOptimizer(TFOptimizer):
         )
         self.action_oh = tf.concat(
             [
-                tf.one_hot(self.action_holder[:, i], self.act_size[i])
-                for i in range(len(self.act_size))
+                tf.one_hot(self.action_holder[:, i], self.policy.act_size[i])
+                for i in range(len(self.policy.act_size))
             ],
             axis=1,
         )
         self.selected_actions = tf.stop_gradient(self.action_oh)
 
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, sum(self.act_size)], dtype=tf.float32, name="old_probabilities"
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
         )
-        _, _, old_normalized_logits = self.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.action_masks, self.act_size
+        _, _, old_normalized_logits = LearningModel.create_discrete_action_masking_layer(
+            self.all_old_log_probs, self.action_masks, self.policy.act_size
         )
 
-        action_idx = [0] + list(np.cumsum(self.act_size))
+        action_idx = [0] + list(np.cumsum(self.policy.act_size))
 
         self.entropy = tf.reduce_sum(
             (
@@ -234,7 +249,7 @@ class PPOOptimizer(TFOptimizer):
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                         )
-                        for i in range(len(self.act_size))
+                        for i in range(len(self.policy.act_size))
                     ],
                     axis=1,
                 )
@@ -252,7 +267,7 @@ class PPOOptimizer(TFOptimizer):
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                         )
-                        for i in range(len(self.act_size))
+                        for i in range(len(self.policy.act_size))
                     ],
                     axis=1,
                 )
@@ -270,7 +285,7 @@ class PPOOptimizer(TFOptimizer):
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                         )
-                        for i in range(len(self.act_size))
+                        for i in range(len(self.policy.act_size))
                     ],
                     axis=1,
                 )
@@ -310,10 +325,10 @@ class PPOOptimizer(TFOptimizer):
         advantage = tf.expand_dims(self.advantage, -1)
 
         decay_epsilon = tf.train.polynomial_decay(
-            epsilon, self.global_step, max_step, 0.1, power=1.0
+            epsilon, self.policy.global_step, max_step, 0.1, power=1.0
         )
         decay_beta = tf.train.polynomial_decay(
-            beta, self.global_step, max_step, 1e-5, power=1.0
+            beta, self.policy.global_step, max_step, 1e-5, power=1.0
         )
 
         value_losses = []
@@ -330,7 +345,9 @@ class PPOOptimizer(TFOptimizer):
                 self.returns_holders[name], clipped_value_estimate
             )
             value_loss = tf.reduce_mean(
-                tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.mask, 2)[1]
+                tf.dynamic_partition(tf.maximum(v_opt_a, v_opt_b), self.policy.mask, 2)[
+                    1
+                ]
             )
             value_losses.append(value_loss)
         self.value_loss = tf.reduce_mean(value_losses)
@@ -342,7 +359,7 @@ class PPOOptimizer(TFOptimizer):
             * advantage
         )
         self.policy_loss = -tf.reduce_mean(
-            tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.mask, 2)[1]
+            tf.dynamic_partition(tf.minimum(p_opt_a, p_opt_b), self.policy.mask, 2)[1]
         )
         # For cleaner stats reporting
         self.abs_policy_loss = tf.abs(self.policy_loss)
@@ -351,7 +368,7 @@ class PPOOptimizer(TFOptimizer):
             self.policy_loss
             + 0.5 * self.value_loss
             - decay_beta
-            * tf.reduce_mean(tf.dynamic_partition(entropy, self.mask, 2)[1])
+            * tf.reduce_mean(tf.dynamic_partition(entropy, self.policy.mask, 2)[1])
         )
 
     def create_ppo_optimizer(self):
@@ -359,75 +376,76 @@ class PPOOptimizer(TFOptimizer):
         self.grads = self.optimizer.compute_gradients(self.loss)
         self.update_batch = self.optimizer.minimize(self.loss)
 
-    def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
-        feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size: batch.num_experiences,
-            self.policy.sequence_length: 1,  # We want to feed data in batch-wise, not time-wise.
-        }
-
-        if self.policy.vec_obs_size > 0:
-            feed_dict[self.policy.vector_in] = batch["vector_obs"]
-        if self.policy.vis_obs_size > 0:
-            for i in range(len(self.policy.visual_in)):
-                _obs = batch["visual_obs%d" % i]
-                feed_dict[self.policy.visual_in[i]] = _obs
-        if self.policy.use_recurrent:
-            feed_dict[self.policy.memory_in] = batch["memory"]
-        if self.policy.prev_action is not None:
-            feed_dict[self.policy.prev_action] = batch["prev_action"]
-        value_estimates = self.sess.run(self.value_heads, feed_dict)
-        value_estimates = {k: np.squeeze(v, axis=1) for k, v in value_estimates.items()}
-
-        return value_estimates
-
-    def get_value_estimates(
-        self, next_obs: List[np.ndarray], agent_id: str, done: bool
-    ) -> Dict[str, float]:
+    @timed
+    def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         """
-        Generates value estimates for bootstrapping.
-        :param experience: AgentExperience to be used for bootstrapping.
-        :param done: Whether or not this is the last element of the episode, in which case the value estimate will be 0.
-        :return: The value estimate dictionary with key being the name of the reward signal and the value the
-        corresponding value estimate.
+        Performs update on model.
+        :param mini_batch: Batch of experiences.
+        :param num_sequences: Number of sequences to process.
+        :return: Results of update.
         """
-
-        feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size: 1,
-            self.policy.sequence_length: 1,
-        }
-        vec_vis_obs = SplitObservations.from_observations(next_obs)
-        for i in range(len(vec_vis_obs.visual_observations)):
-            feed_dict[self.policy.visual_in[i]] = [vec_vis_obs.visual_observations[i]]
-
-        if self.policy.vec_obs_size > 0:
-            feed_dict[self.policy.vector_in] = [vec_vis_obs.vector_observations]
-        if self.policy.use_recurrent:
-            feed_dict[self.policy.memory_in] = self.retrieve_memories([agent_id])
-        if self.policy.prev_action is not None:
-            feed_dict[self.policy.prev_action] = self.retrieve_previous_action(
-                [agent_id]
+        feed_dict = self.construct_feed_dict(self.policy, batch, num_sequences)
+        stats_needed = self.stats_name_to_update_name
+        update_stats = {}
+        # Collect feed dicts for all reward signals.
+        for _, reward_signal in self.reward_signals.items():
+            feed_dict.update(
+                reward_signal.prepare_update(self.policy, batch, num_sequences)
             )
-        value_estimates = self.sess.run(self.value_heads, feed_dict)
+            stats_needed.update(reward_signal.stats_name_to_update_name)
 
-        value_estimates = {k: float(v) for k, v in value_estimates.items()}
+        update_vals = self._execute_model(feed_dict, self.update_dict)
+        for stat_name, update_name in stats_needed.items():
+            update_stats[stat_name] = update_vals[update_name]
+        return update_stats
 
-        # If we're done, reassign all of the value estimates that need terminal states.
-        if done:
-            for k in value_estimates:
-                if self.reward_signals[k].use_terminal_states:
-                    value_estimates[k] = 0.0
+    def construct_feed_dict(
+        self, model: PPOModel, mini_batch: AgentBuffer, num_sequences: int
+    ) -> Dict[tf.Tensor, Any]:
+        feed_dict = {
+            model.batch_size: num_sequences,
+            model.sequence_length: model.sequence_length,
+            model.mask_input: mini_batch["masks"],
+            self.advantage: mini_batch["advantages"],
+            self.all_old_log_probs: mini_batch["action_probs"],
+        }
+        for name in self.reward_signals:
+            feed_dict[self.returns_holders[name]] = mini_batch[
+                "{}_returns".format(name)
+            ]
+            feed_dict[self.old_values[name]] = mini_batch[
+                "{}_value_estimates".format(name)
+            ]
 
-        return value_estimates
+        if "actions_pre" in mini_batch:
+            feed_dict[model.output_pre] = mini_batch["actions_pre"]
+        else:
+            feed_dict[model.action_holder] = mini_batch["actions"]
+            if "prev_action" in mini_batch:
+                feed_dict[model.prev_action] = mini_batch["prev_action"]
+            feed_dict[model.action_masks] = mini_batch["action_mask"]
+        if "vector_obs" in mini_batch:
+            feed_dict[model.vector_in] = mini_batch["vector_obs"]
+        if model.vis_obs_size > 0:
+            for i, _ in enumerate(model.visual_in):
+                feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
+        if "memory" in mini_batch:
+            mem_in = [
+                mini_batch["memory"][i]
+                for i in range(
+                    0, len(mini_batch["memory"]), self.policy.sequence_length
+                )
+            ]
+            feed_dict[model.memory_in] = mem_in
+        return feed_dict
 
-    def create_reward_signals(self, reward_signal_configs):
+    def _execute_model(self, feed_dict, out_dict):
         """
-        Create reward signals
-        :param reward_signal_configs: Reward signal config.
+        Executes model.
+        :param feed_dict: Input dictionary mapping nodes to input data.
+        :param out_dict: Output dictionary mapping names to nodes.
+        :return: Dictionary mapping names to input data.
         """
-        self.reward_signals = {}
-        # Create reward signals
-        for reward_signal, config in reward_signal_configs.items():
-            self.reward_signals[reward_signal] = create_reward_signal(
-                self, self.policy, reward_signal, config
-            )
-            self.update_dict.update(self.reward_signals[reward_signal].update_dict)
+        network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
+        run_out = dict(zip(list(out_dict.keys()), network_out))
+        return run_out

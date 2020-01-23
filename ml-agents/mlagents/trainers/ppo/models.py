@@ -147,7 +147,12 @@ class PPOModel(LearningModel):
         :param num_layers: Number of hidden linear layers.
         """
         hidden_streams = self.create_observation_streams(
-            2, h_size, num_layers, vis_encode_type
+            self.visual_in,
+            self.processed_vector_in,
+            2,
+            h_size,
+            num_layers,
+            vis_encode_type,
         )
 
         if self.use_recurrent:
@@ -290,4 +295,3 @@ class PPOModel(LearningModel):
             axis=1,
             keepdims=True,
         )
-

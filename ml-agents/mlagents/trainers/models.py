@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -70,9 +70,11 @@ class LearningModel:
         )
         self.vector_in = LearningModel.create_vector_input(self.vec_obs_size)
         if self.normalize:
-            self.update_normalization, self.normalization_steps, self.running_mean, self.running_variance = LearningModel.create_normalizer(
-                self.vector_in
-            )
+            normalization_tensors = LearningModel.create_normalizer(self.vector_in)
+            self.update_normalization = normalization_tensors[0]
+            self.normalization_steps = normalization_tensors[1]
+            self.running_mean = normalization_tensors[2]
+            self.running_variance = normalization_tensors[3]
             self.processed_vector_in = self.normalize_vector_obs(self.vector_in)
         else:
             self.processed_vector_in = self.vector_in
@@ -191,7 +193,9 @@ class LearningModel:
         return visual_in
 
     @staticmethod
-    def create_vector_input(vec_obs_size: int, name="vector_observation"):
+    def create_vector_input(
+        vec_obs_size: int, name: str = "vector_observation"
+    ) -> tf.Tensor:
         """
         Creates ops for vector observation input.
         :param name: Name of the placeholder op.
@@ -217,7 +221,9 @@ class LearningModel:
         return normalized_state
 
     @staticmethod
-    def create_normalizer(vector_obs: tf.Tensor):
+    def create_normalizer(
+        vector_obs: tf.Tensor
+    ) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor, tf.Tensor]:
         vec_obs_size = vector_obs.shape[1]
         steps = tf.get_variable(
             "normalization_steps",
@@ -251,7 +257,7 @@ class LearningModel:
         steps: tf.Tensor,
         running_mean: tf.Tensor,
         running_variance: tf.Tensor,
-    ):
+    ) -> tf.Operation:
         # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
         # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
         steps_increment = tf.shape(vector_input)[0]
