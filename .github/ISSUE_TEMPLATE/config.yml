@@ -1,1 +1,5 @@
 blank_issues_enabled: false
+contact_links:
+  - name: ML-Agents Unity Forum
+    url: https://forum.unity.com/forums/ml-agents.453/
+    about: Please ask Installation / Setup and Discussion / General Questions in the Unity Forum.
