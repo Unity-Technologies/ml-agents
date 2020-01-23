@@ -56,7 +56,6 @@ class PPOModel(LearningModel):
             num_layers = 1
         if brain.vector_action_space_type == "continuous":
             self.create_cc_actor(h_size, num_layers, vis_encode_type)
-            self.entropy = tf.ones_like(tf.reshape(self.entropy, [-1])) * self.entropy
         else:
             self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
 
@@ -129,9 +128,11 @@ class PPOModel(LearningModel):
 
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
-        self.entropy = 0.5 * tf.reduce_mean(
+        single_dim_entropy = 0.5 * tf.reduce_mean(
             tf.log(2 * np.pi * np.e) + self.log_sigma_sq
         )
+        # Make entropy the right shape
+        self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum(

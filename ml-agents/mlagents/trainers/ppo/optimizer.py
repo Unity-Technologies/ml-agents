@@ -457,7 +457,6 @@ class PPOOptimizer(TFOptimizer):
         :param out_dict: Output dictionary mapping names to nodes.
         :return: Dictionary mapping names to input data.
         """
-        print(feed_dict)
         network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
