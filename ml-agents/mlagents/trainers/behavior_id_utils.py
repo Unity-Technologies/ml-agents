@@ -9,7 +9,8 @@ class BehaviorIdentifiers(NamedTuple):
     @staticmethod
     def from_name_behavior_id(name_behavior_id: str) -> "BehaviorIdentifiers":
         """
-        Parses a name_behavior_id into a BehaviorIdentifiers NamedTuple.
+        Parses a name_behavior_id of the form name?team=0&param1=i&...
+        into a BehaviorIdentifiers NamedTuple.
         This allows you to access the brain name and distinguishing identifiers
         without parsing more than once.
         :param name_behavior_id: String of behavior params in HTTP format.
