@@ -347,10 +347,6 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            m_Reward = 0f;
-            m_CumulativeReward = 0f;
-            m_Done = false;
-
             var param = m_PolicyFactory.brainParameters;
             m_ActionMasker = new ActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
@@ -743,6 +739,10 @@ namespace MLAgents
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
+                if (m_Done)
+                {
+                    m_CumulativeReward = 0f;
+                }
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;

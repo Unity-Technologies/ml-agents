@@ -16,7 +16,7 @@ namespace MLAgents
             serializedAgent.Update();
 
             var maxSteps = serializedAgent.FindProperty(
-                "agentParameters.maxStep");
+                "maxStep");
 
             EditorGUILayout.PropertyField(
                 maxSteps,
