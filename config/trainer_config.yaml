@@ -155,10 +155,12 @@ VisualPyramids:
 
 Tennis:
     normalize: true
-    max_steps: 10e8
+    max_steps: 5e8
+    learning_rate_schedule: constant
+    hidden_units: 256
     self_play:
-        window: 20
-        play_against_current_self_ratio: 0.0
+        window: 10
+        play_against_current_self_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
 

@@ -81,9 +81,9 @@ class GhostTrainer(Trainer):
         """
         opponents = np.array(self.policy_elos)
         LOGGER.info(
-            " Learning brain {} ELO: {}\n"
-            "Mean Opponent ELO: {}"
-            " Std Opponent ELO: {}".format(
+            " Learning brain {} ELO: {:0.3f}\n"
+            "Mean Opponent ELO: {:0.3f}"
+            " Std Opponent ELO: {:0.3f}".format(
                 self.learning_behavior_name,
                 self.current_elo,
                 opponents.mean(),
@@ -93,31 +93,26 @@ class GhostTrainer(Trainer):
         self.stats_reporter.add_stat("ELO", self.current_elo)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
-        if (
-            trajectory.done_reached
-            and not trajectory.max_step_reached
-            and self.current_opponent > -1
-        ):
+        if trajectory.done_reached and not trajectory.max_step_reached:
             # Assumption is that final reward is 1/.5/0 for win/draw/loss
             final_reward = trajectory.steps[-1].reward
-
-            if final_reward == 1:
+            result = 0.5
+            if final_reward > 0:
                 result = 1.0
-            elif final_reward == 0:
-                result = 0.5
-            elif final_reward == -1:
+            elif final_reward < 0:
                 result = 0.0
-            else:
-                LOGGER.warning(
-                    "The final reward in a trajectory marked as done did not"
-                    "correspond to an outcome recognized for ELO calculation"
-                )
 
+            opponent_rating = (
+                self.policy_elos[self.current_opponent]
+                if self.current_opponent > -1
+                else self.current_elo
+            )
             change = compute_elo_rating_changes(
-                self.current_elo, self.policy_elos[self.current_opponent], result
+                self.current_elo, opponent_rating, result
             )
             self.current_elo += change
-            self.policy_elos[self.current_opponent] -= change
+            if self.current_opponent > -1:
+                self.policy_elos[self.current_opponent] -= change
 
     def _is_ready_update(self) -> bool:
         return False

@@ -116,6 +116,7 @@ public class HitWall : MonoBehaviour
             }
             else
             {
+                m_AgentA.AddReward(0.005f);
                 lastAgentHit = 0;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
@@ -129,6 +130,7 @@ public class HitWall : MonoBehaviour
             }
             else
             {
+                m_AgentB.AddReward(0.005f);
                 lastAgentHit = 1;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
