@@ -1,0 +1,10 @@
+{
+    "name": "Unity.ML-Agents.Editor",
+    "references": [
+        "Unity.ML-Agents"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

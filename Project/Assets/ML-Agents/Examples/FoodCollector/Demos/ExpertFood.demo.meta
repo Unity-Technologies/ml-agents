@@ -3,7 +3,6 @@ guid: 95285c32be79a4c77a5ac225e671e4b5
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: Assets/ML-Agents/Examples/FoodCollector/Demos/ExpertFood.demo
-    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 

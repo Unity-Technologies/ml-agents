@@ -3,7 +3,6 @@ guid: 414224ce8b3e247ad936b17f574b10ab
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: Assets/ML-Agents/Examples/Basic/Demos/ExpertBasic.demo
-    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 

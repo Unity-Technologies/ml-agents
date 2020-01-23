@@ -1,5 +1,5 @@
 {
-    "name": "Unity.ML-Agents.EditorTests",
+    "name": "Unity.ML-Agents.Editor.Tests",
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents"

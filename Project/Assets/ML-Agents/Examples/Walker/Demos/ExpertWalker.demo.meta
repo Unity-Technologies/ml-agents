@@ -3,7 +3,6 @@ guid: d75254c9e8cb8402d98eede161c74a60
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: Assets/ML-Agents/Examples/Walker/Demos/ExpertWalker.demo
-    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 

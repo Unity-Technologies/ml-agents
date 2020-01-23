@@ -3,7 +3,6 @@ guid: 6942431e411b146be9a597663eca89af
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: Assets/ML-Agents/Examples/3DBall/Demos/Expert3DBallHard.demo
-    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 

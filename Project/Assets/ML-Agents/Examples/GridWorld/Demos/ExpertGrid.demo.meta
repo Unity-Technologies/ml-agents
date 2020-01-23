@@ -3,7 +3,6 @@ guid: 3938e0ee1f99e473db8e45d334dfa329
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: Assets/ML-Agents/Examples/GridWorld/Demos/ExpertGrid.demo
-    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 
