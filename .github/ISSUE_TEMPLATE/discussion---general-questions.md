@@ -7,10 +7,10 @@ assignees: ''
 
 ---
 
-For discussions, please post in [ML-Agents Unity Forum](https://forum.unity.com/forums/ml-agents.453/) instead of 
+For discussions, please post in [ML-Agents Unity Forum](https://forum.unity.com/forums/ml-agents.453/) instead of
 creating a Github issue. Unity forums are the predominant community for Unity users and experts. By leveraging Unity
 forums for general discussions and project help, we can keep Github issues for bugs, performance issues, and feature
-requests for ML-Agents.  
+requests for ML-Agents.
 
 
 **Note**: The ML-Agents team has limited resources for education and community discussion.  We'll participate as we are
