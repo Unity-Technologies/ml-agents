@@ -7,6 +7,6 @@ assignees: ''
 
 ---
 
-For discussions, please post in [ML-Agents Unity Forum](https://forum.unity.com/forums/ml-agents.453/) instead of 
-creating a Github issue. Include steps to reproduce, error logs, and any other relevant information about your versions
-and platform.
+For installation and initial setup questions, please post in [ML-Agents Unity Forum](https://forum.unity.com/forums/ml-agents.453/)
+instead of creating a Github issue. Include steps to reproduce, error logs, and any other relevant information about 
+your versions and platform.
