@@ -1,7 +1,7 @@
 {
-    "name": "Unity.[SubGroup].[YourPackageName].Tests",
+    "name": "Unity.ML-Agents.Tests",
     "references": [
-        "Unity.[SubGroup].[YourPackageName]"
+        "Unity.ML-Agents"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

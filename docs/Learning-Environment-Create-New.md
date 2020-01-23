@@ -38,7 +38,7 @@ importing the ML-Agents assets into it:
 
 1. Launch the Unity Editor and create a new project named "RollerBall".
 2. Make sure that the Scripting Runtime Version for the project is set to use
-    **.NET 4.x Equivalent** (This s an experimental option in Unity 2017,
+    **.NET 4.x Equivalent** (This is an experimental option in Unity 2017,
     but is the default as of 2018.3.)
 3. In a file system window, navigate to the folder containing your cloned
     ML-Agents repository.
