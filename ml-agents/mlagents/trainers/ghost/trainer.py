@@ -39,8 +39,8 @@ class GhostTrainer(Trainer):
         self.trainer = trainer
 
         self.internal_policy_queues: List[AgentManagerQueue[Policy]] = []
-        self.learning_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
         self.internal_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
+        self.learning_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
         # assign ghost's stats collection to wrapped trainer's
         self.stats_reporter = self.trainer.stats_reporter
@@ -171,10 +171,9 @@ class GhostTrainer(Trainer):
 
         # First policy encountered
         if not self.learning_behavior_name:
-
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            self.policy_snapshots.append(weights)
+            self.save_snapshot(policy)
             self.trainer.add_policy(name_behavior_id, policy)
             self.learning_behavior_name = name_behavior_id
 
@@ -210,7 +209,6 @@ class GhostTrainer(Trainer):
                 )
             )
             policy = self.get_policy(name_behavior_id)
-
             policy.load_weights(snapshot)
             q.put(policy)
 

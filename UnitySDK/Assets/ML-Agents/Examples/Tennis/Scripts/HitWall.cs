@@ -4,6 +4,7 @@ public class HitWall : MonoBehaviour
 {
     public GameObject areaObject;
     public int lastAgentHit;
+    public bool net;
 
     public enum FloorHit
         {
@@ -33,6 +34,7 @@ public class HitWall : MonoBehaviour
         m_AgentB.Done();
         m_Area.MatchReset();
         lastFloorHit = FloorHit.Service;
+        net = false;
     }
     
     void AgentAWins()
@@ -52,6 +54,22 @@ public class HitWall : MonoBehaviour
         Reset();
 
     }
+
+    void OnTriggerEnter(Collider obj)
+    {
+        if (obj.gameObject.name == "over")
+        {
+            if (lastAgentHit == 0)
+            {
+                m_AgentA.AddReward(0.01f);
+            }
+            else if (lastAgentHit == 1)
+            {
+                m_AgentB.AddReward(0.01f);
+            }
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("iWall"))
@@ -92,6 +110,11 @@ public class HitWall : MonoBehaviour
                 else
                 {
                     lastFloorHit = FloorHit.FloorAHit;
+                    //successful serve
+                    if (!net)
+                    {
+                        net = true;
+                    }
                 }
             }
             else if (collision.gameObject.name == "floorB")
@@ -104,6 +127,22 @@ public class HitWall : MonoBehaviour
                 else
                 {
                     lastFloorHit = FloorHit.FloorBHit;
+                    //successful serve
+                    if (!net)
+                    {
+                        net = true;
+                    }
+                }
+            }
+            else if (collision.gameObject.name == "net" && !net)
+            {
+                if (lastAgentHit == 0)
+                {
+                    AgentBWins();
+                }
+                else if (lastAgentHit == 1)
+                {
+                    AgentAWins();
                 }
             }
         }
@@ -116,7 +155,13 @@ public class HitWall : MonoBehaviour
             }
             else
             {
-                m_AgentA.AddReward(0.005f);
+                //agent can return serve in the air
+                if (lastFloorHit != FloorHit.Service && !net)
+                {
+                    net = true;
+                }
+
+                m_AgentA.AddReward(0.01f);
                 lastAgentHit = 0;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
@@ -130,7 +175,12 @@ public class HitWall : MonoBehaviour
             }
             else
             {
-                m_AgentB.AddReward(0.005f);
+                if (lastFloorHit != FloorHit.Service && !net)
+                {
+                    net = true;
+                }
+
+                m_AgentB.AddReward(0.01f);
                 lastAgentHit = 1;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }

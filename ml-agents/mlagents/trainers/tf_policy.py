@@ -117,15 +117,15 @@ class TFPolicy(Policy):
 
     def get_weights(self):
         with self.graph.as_default():
-            trainable_vars = tf.trainable_variables()
-            values = [v.eval(session=self.sess) for v in trainable_vars]
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
             return values
 
     def init_load_weights(self):
         with self.graph.as_default():
-            trainable_vars = tf.trainable_variables()
-            values = [v.eval(session=self.sess) for v in trainable_vars]
-            for var, value in zip(trainable_vars, values):
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
+            for var, value in zip(_vars, values):
                 assign_ph = tf.placeholder(var.dtype, shape=value.shape)
                 self.assign_phs.append(assign_ph)
                 self.assign_ops.append(tf.assign(var, assign_ph))
