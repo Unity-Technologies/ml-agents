@@ -10,13 +10,14 @@ def main():
 
     build_returncode = run_standalone_build(base_path)
     if build_returncode != 0:
-        print("Standalong build FAILED!")
+        print("Standalone build FAILED!")
         sys.exit(build_returncode)
 
     init_venv()
 
     # TODO pass exe name to build
-    mla_learn_cmd = "mlagents-learn config/trainer_config.yaml --train --env=testPlayer --no-graphics --env-args -logFile -"  # noqa
+    # TODO make sure we fail if the exe isn't found - see MLA-559
+    mla_learn_cmd = "mlagents-learn config/trainer_config.yaml --train --env=UnitySDK/testPlayer --no-graphics --env-args -logFile -"  # noqa
     res = subprocess.run(
         f"source venv/bin/activate; {mla_learn_cmd}", shell=True, capture_output=True
     )
