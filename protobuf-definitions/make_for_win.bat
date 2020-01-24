@@ -22,7 +22,7 @@ mkdir %DST_DIR_P%\%PYTHON_PACKAGE%
 rem generate proto objects in python and C#
 
 for %%i in (%SRC_DIR%\*.proto) do (
-    %COMPILER%\protoc --proto_path=proto --csharp_out=%DST_DIR_C% %%i
+    %COMPILER%\protoc --proto_path=proto --csharp_opt=internal_access --csharp_out=%DST_DIR_C% %%i
     %COMPILER%\protoc --proto_path=proto --python_out=%DST_DIR_P% %%i
 )
 
