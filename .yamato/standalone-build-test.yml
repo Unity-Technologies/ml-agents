@@ -12,6 +12,7 @@ test_mac_standalone_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.standalone_build_tests
   triggers:
     pull_requests:

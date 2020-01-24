@@ -12,6 +12,7 @@ test_mac_editmode_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
+    - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.editmode_tests
   triggers:
     pull_requests:
