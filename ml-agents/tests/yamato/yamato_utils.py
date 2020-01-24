@@ -23,6 +23,11 @@ def get_base_path():
 
 
 def run_standalone_build(base_path: str) -> int:
+    """
+    Run BuildStandalonePlayerOSX test to produce a player at UnitySDK/testPlayer
+    :param base_path:
+    :return:
+    """
     unity_exe = get_unity_executable_path()
     print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
 
