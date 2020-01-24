@@ -7,7 +7,7 @@ from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models import EncoderType, LearningRateSchedule
+from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import LearningModel
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.tf_policy import TFPolicy
@@ -94,22 +94,7 @@ class PPOPolicy(TFPolicy):
                 policy=self,
                 sess=self.sess,
                 reward_signal_configs=reward_signal_configs,
-                lr=float(trainer_params["learning_rate"]),
-                lr_schedule=LearningRateSchedule(
-                    trainer_params.get("learning_rate_schedule", "linear")
-                ),
-                h_size=int(trainer_params["hidden_units"]),
-                epsilon=float(trainer_params["epsilon"]),
-                beta=float(trainer_params["beta"]),
-                max_step=float(trainer_params["max_steps"]),
-                normalize=False,
-                use_recurrent=trainer_params["use_recurrent"],
-                num_layers=int(trainer_params["num_layers"]),
-                m_size=self.m_size,
-                seed=seed,
-                vis_encode_type=EncoderType(
-                    trainer_params.get("vis_encode_type", "simple")
-                ),
+                trainer_params=trainer_params,
             )
             self.optimizer.create_ppo_optimizer()
 

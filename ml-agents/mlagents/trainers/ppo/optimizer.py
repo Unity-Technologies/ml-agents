@@ -13,25 +13,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOOptimizer(TFOptimizer):
-    def __init__(
-        self,
-        brain,
-        sess,
-        policy,
-        reward_signal_configs,
-        lr=1e-4,
-        lr_schedule=LearningRateSchedule.LINEAR,
-        h_size=128,
-        epsilon=0.2,
-        beta=1e-3,
-        max_step=5e6,
-        normalize=False,
-        use_recurrent=False,
-        num_layers=2,
-        m_size=None,
-        seed=0,
-        vis_encode_type=EncoderType.SIMPLE,
-    ):
+    def __init__(self, brain, sess, policy, reward_signal_configs, trainer_params):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -51,6 +33,17 @@ class PPOOptimizer(TFOptimizer):
         :return: a sub-class of PPOAgent tailored to the environment.
         """
         super().__init__(sess, policy, reward_signal_configs)
+
+        lr = float(trainer_params["learning_rate"])
+        lr_schedule = LearningRateSchedule(
+            trainer_params.get("learning_rate_schedule", "linear")
+        )
+        h_size = int(trainer_params["hidden_units"])
+        epsilon = float(trainer_params["epsilon"])
+        beta = float(trainer_params["beta"])
+        max_step = float(trainer_params["max_steps"])
+        num_layers = int(trainer_params["num_layers"])
+        vis_encode_type = EncoderType(trainer_params.get("vis_encode_type", "simple"))
 
         self.stream_names = self.reward_signals.keys()
 

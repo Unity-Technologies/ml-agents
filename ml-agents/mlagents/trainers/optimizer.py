@@ -4,7 +4,7 @@ import numpy as np
 
 from mlagents.tf_utils.tf import tf
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.ppo.models import PPOModel
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.models import LearningModel
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
@@ -35,7 +35,7 @@ class Optimizer(abc.ABC):
 
 class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
     def __init__(
-        self, sess: tf.Session, policy: PPOModel, reward_signal_configs: Dict[str, Any]
+        self, sess: tf.Session, policy: TFPolicy, reward_signal_configs: Dict[str, Any]
     ):
         super().__init__(policy, reward_signal_configs)
         self.sess = sess
