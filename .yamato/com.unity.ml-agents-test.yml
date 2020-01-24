@@ -36,6 +36,13 @@ test_{{ platform.name }}_{{ editor.version }}:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   {% endfor %}
   {% endfor %}
+  triggers:
+    pull_requests:
+      - targets:
+          only:
+            - "master"
+            - "/release-.*/"
+            - "/hotfix-.*/"
 
 test_trigger:
   name: com.unity.ml-agents Trigger
