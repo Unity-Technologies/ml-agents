@@ -50,7 +50,7 @@ def init_venv():
         "--upgrade pip",
         "--upgrade setuptools",
         # TODO build these and publish to internal pypi
-        "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl"
+        "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
         "-e ./ml-agents-envs",
         "-e ./ml-agents",
     ]
