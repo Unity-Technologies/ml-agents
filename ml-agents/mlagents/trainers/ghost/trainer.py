@@ -64,7 +64,9 @@ class GhostTrainer(Trainer):
         # Chosen because it is the initial ELO in Chess
         self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
         self.current_elo: float = self.initial_elo
-        self.policy_elos: List[float] = [self.initial_elo] * self.window
+        self.policy_elos: List[float] = [self.initial_elo] * (
+            self.window + 1
+        )  # for learning policy
         self.current_opponent: int = 0
 
     @property
@@ -102,17 +104,11 @@ class GhostTrainer(Trainer):
             elif final_reward < 0:
                 result = 0.0
 
-            opponent_rating = (
-                self.policy_elos[self.current_opponent]
-                if self.current_opponent > -1
-                else self.current_elo
-            )
             change = compute_elo_rating_changes(
-                self.current_elo, opponent_rating, result
+                self.current_elo, self.policy_elos[self.current_opponent], result
             )
             self.current_elo += change
-            if self.current_opponent > -1:
-                self.policy_elos[self.current_opponent] -= change
+            self.policy_elos[self.current_opponent] -= change
 
     def _is_ready_update(self) -> bool:
         return False
@@ -178,8 +174,6 @@ class GhostTrainer(Trainer):
 
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            # for i in range(self.window):
-            #    self.policy_snapshots[i] = weights
             self.policy_snapshots.append(weights)
             self.trainer.add_policy(name_behavior_id, policy)
             self.learning_behavior_name = name_behavior_id
@@ -208,6 +202,7 @@ class GhostTrainer(Trainer):
             else:
                 snapshot = self.current_policy_snapshot
                 x = "current"
+                self.policy_elos[-1] = self.current_elo
             self.current_opponent = -1 if x == "current" else x
             LOGGER.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
