@@ -436,9 +436,6 @@ namespace MLAgents.Tests
 
                 acaStepsSinceReset += 1;
                 agent2StepSinceReset += 1;
-                //Agent 1 is only initialized at step 2
-                if (i < 2)
-                { }
                 aca.EnvironmentStep();
             }
         }
