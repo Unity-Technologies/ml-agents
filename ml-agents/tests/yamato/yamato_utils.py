@@ -61,5 +61,5 @@ def init_venv():
     ]
     for cmd in pip_commands:
         subprocess.check_call(
-            f"source venv/bin/activate; python -m pip install {cmd}", shell=True
+            f"source venv/bin/activate; python -m pip install -q {cmd}", shell=True
         )
