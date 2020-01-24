@@ -176,10 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676fca959b8ee45539773905ca71afa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 2000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 2000
   noWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
   smallWallBrain: {fileID: 11400000, guid: fb2ce36eb40b6480e94ea0b5d7573e47, type: 3}
   bigWallBrain: {fileID: 11400000, guid: 0468bf44b1efd4992b6bf22cadb50d89, type: 3}
@@ -269,6 +266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1264699583886832
 GameObject:
   m_ObjectHideFlags: 0

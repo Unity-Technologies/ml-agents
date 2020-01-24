@@ -178,7 +178,7 @@ public class CrawlerAgent : Agent
         {
             foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
             {
-                if (bodyPart.targetContact && !IsDone() && bodyPart.targetContact.touchingTarget)
+                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
                 {
                     TouchedTarget();
                 }

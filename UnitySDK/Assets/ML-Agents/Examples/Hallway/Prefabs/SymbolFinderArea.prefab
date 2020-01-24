@@ -1175,10 +1175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b446afae240924105b36d07e8d17a608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 3000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 6
+  maxStep: 3000
   ground: {fileID: 1510027348950282}
   area: {fileID: 1745841960385024}
   symbolOGoal: {fileID: 1410733827718496}
@@ -1232,6 +1229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 6
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1510027348950282
 GameObject:
   m_ObjectHideFlags: 0
