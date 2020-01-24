@@ -12,7 +12,7 @@ test_platforms:
     image: package-ci/mac:stable
     flavor: b1.small
   - name: linux
-    type: Unity::VM::linux
+    type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.small
 ---
@@ -43,20 +43,3 @@ test_{{ platform.name }}_{{ editor.version }}:
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"
-
-test_trigger:
-  name: com.unity.ml-agents Trigger
-  triggers:
-    pull_requests:
-      - targets:
-          only:
-            - "master"
-            - "/release-.*/"
-            - "/hotfix-.*/"
-  dependencies:
-    - .yamato/com.unity-ml-agents-pack.yml#pack
-    {% for editor in test_editors %}
-    {% for platform in test_platforms %}
-    - .yamato/com.unity.ml-agents-test.yml#test_{{platform.name}}_{{editor.version}}
-    {% endfor %}
-    {% endfor %}
