@@ -10,7 +10,7 @@ from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.policy import PPOPolicy
 from mlagents.trainers.models import EncoderType, LearningModel
-from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents_envs.environment import UnityEnvironment

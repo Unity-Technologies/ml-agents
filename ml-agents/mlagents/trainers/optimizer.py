@@ -46,8 +46,8 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
 
     def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size: batch.num_experiences,
-            self.policy.sequence_length: 1,  # We want to feed data in batch-wise, not time-wise.
+            self.policy.batch_size_ph: batch.num_experiences,
+            self.policy.sequence_length_ph: 1,  # We want to feed data in batch-wise, not time-wise.
         }
 
         if self.policy.vec_obs_size > 0:
@@ -77,8 +77,8 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
         """
 
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size: 1,
-            self.policy.sequence_length: 1,
+            self.policy.batch_size_ph: 1,
+            self.policy.sequence_length_ph: 1,
         }
         vec_vis_obs = SplitObservations.from_observations(next_obs)
         for i in range(len(vec_vis_obs.visual_observations)):

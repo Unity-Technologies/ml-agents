@@ -4,7 +4,7 @@ import numpy as np
 from mlagents.trainers.tf_policy import TFPolicy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.exception import UnityTrainerException
 
 
 class BCModule:

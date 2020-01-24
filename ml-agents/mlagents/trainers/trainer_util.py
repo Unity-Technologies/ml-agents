@@ -5,7 +5,8 @@ import logging
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 

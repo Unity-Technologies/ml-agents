@@ -7,7 +7,6 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 from mlagents.trainers.optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.ppo.models import PPOModel
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -297,7 +296,7 @@ class PPOOptimizer(TFOptimizer):
         :param num_sequences: Number of sequences to process.
         :return: Results of update.
         """
-        feed_dict = self.construct_feed_dict(self.policy, batch, num_sequences)
+        feed_dict = self.construct_feed_dict(batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats = {}
         # Collect feed dicts for all reward signals.
@@ -313,14 +312,14 @@ class PPOOptimizer(TFOptimizer):
         return update_stats
 
     def construct_feed_dict(
-        self, model: PPOModel, mini_batch: AgentBuffer, num_sequences: int
+        self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
 
         feed_dict = {
-            model.batch_size: num_sequences,
-            model.sequence_length: len(mini_batch["advantages"])
+            self.policy.batch_size_ph: num_sequences,
+            self.policy.sequence_length_ph: len(mini_batch["advantages"])
             / num_sequences,  # TODO: Fix LSTM
-            model.mask_input: mini_batch["masks"],
+            self.policy.mask_input: mini_batch["masks"],
             self.advantage: mini_batch["advantages"],
             self.all_old_log_probs: mini_batch["action_probs"],
         }
@@ -333,25 +332,25 @@ class PPOOptimizer(TFOptimizer):
             ]
 
         if "actions_pre" in mini_batch:
-            feed_dict[model.output_pre] = mini_batch["actions_pre"]
+            feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[model.action_holder] = mini_batch["actions"]
-            if model.use_recurrent:
-                feed_dict[model.prev_action] = mini_batch["prev_action"]
-            feed_dict[model.action_masks] = mini_batch["action_mask"]
+            feed_dict[self.policy.action_holder] = mini_batch["actions"]
+            if self.policy.use_recurrent:
+                feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
+            feed_dict[self.policy.action_masks] = mini_batch["action_mask"]
         if "vector_obs" in mini_batch:
-            feed_dict[model.vector_in] = mini_batch["vector_obs"]
-        if model.vis_obs_size > 0:
-            for i, _ in enumerate(model.visual_in):
-                feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
-        if model.use_recurrent:
+            feed_dict[self.policy.vector_in] = mini_batch["vector_obs"]
+        if self.policy.vis_obs_size > 0:
+            for i, _ in enumerate(self.policy.visual_in):
+                feed_dict[self.policy.visual_in[i]] = mini_batch["visual_obs%d" % i]
+        if self.policy.use_recurrent:
             mem_in = [
                 mini_batch["memory"][i]
                 for i in range(
                     0, len(mini_batch["memory"]), self.policy.sequence_length
                 )
             ]
-            feed_dict[model.memory_in] = mem_in
+            feed_dict[self.policy.memory_in] = mem_in
         return feed_dict
 
     def _execute_model(self, feed_dict, out_dict):

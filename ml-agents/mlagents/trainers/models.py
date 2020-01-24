@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import CameraResolution
 
 logger = logging.getLogger("mlagents.trainers")
@@ -75,7 +75,12 @@ class LearningModel:
             self.normalization_steps = normalization_tensors[1]
             self.running_mean = normalization_tensors[2]
             self.running_variance = normalization_tensors[3]
-            self.processed_vector_in = self.normalize_vector_obs(self.vector_in)
+            self.processed_vector_in = LearningModel.normalize_vector_obs(
+                self.vector_in,
+                self.running_mean,
+                self.running_variance,
+                self.normalization_steps,
+            )
         else:
             self.processed_vector_in = self.vector_in
             self.update_normalization = None
@@ -207,12 +212,17 @@ class LearningModel:
         )
         return vector_in
 
-    def normalize_vector_obs(self, vector_obs):
+    @staticmethod
+    def normalize_vector_obs(
+        vector_obs: tf.Tensor,
+        running_mean: tf.Tensor,
+        running_variance: tf.Tensor,
+        normalization_steps: tf.Tensor,
+    ) -> tf.Tensor:
         normalized_state = tf.clip_by_value(
-            (vector_obs - self.running_mean)
+            (vector_obs - running_mean)
             / tf.sqrt(
-                self.running_variance
-                / (tf.cast(self.normalization_steps, tf.float32) + 1)
+                running_variance / (tf.cast(normalization_steps, tf.float32) + 1)
             ),
             -5,
             5,

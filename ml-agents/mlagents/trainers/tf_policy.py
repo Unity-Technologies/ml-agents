@@ -13,6 +13,7 @@ from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.env_manager import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
+from mlagents.trainers.models import LearningModel
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -50,13 +51,18 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
         """
-        self.m_size = None
-        self.model = None
+        self._version_number_ = 2
+        self.m_size = 0
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
         self.seed = seed
         self.brain = brain
+
+        self.act_size = brain.vector_action_space_size
+        self.vec_obs_size = brain.vector_observation_space_size
+        self.vis_obs_size = brain.number_visual_observations
+
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.reward_signals: Dict[str, "RewardSignal"] = {}
@@ -76,6 +82,7 @@ class TFPolicy(Policy):
         # to prevent from exceptions if the device doesn't suppport the operation
         # or the device does not exist
         config.allow_soft_placement = True
+        tf.set_random_seed(seed)
         self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         self.optimizer = None
@@ -94,6 +101,7 @@ class TFPolicy(Policy):
                         brain.brain_name, self.m_size
                     )
                 )
+        self._initialize_tensorflow_references()
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -189,9 +197,9 @@ class TFPolicy(Policy):
     def fill_eval_dict(self, feed_dict, batched_step_result):
         vec_vis_obs = SplitObservations.from_observations(batched_step_result.obs)
         for i, _ in enumerate(vec_vis_obs.visual_observations):
-            feed_dict[self.model.visual_in[i]] = vec_vis_obs.visual_observations[i]
+            feed_dict[self.visual_in[i]] = vec_vis_obs.visual_observations[i]
         if self.use_vec_obs:
-            feed_dict[self.model.vector_in] = vec_vis_obs.vector_observations
+            feed_dict[self.vector_in] = vec_vis_obs.vector_observations
         if not self.use_continuous_act:
             mask = np.ones(
                 (
@@ -202,7 +210,7 @@ class TFPolicy(Policy):
             )
             if batched_step_result.action_mask is not None:
                 mask = 1 - np.concatenate(batched_step_result.action_mask, axis=1)
-            feed_dict[self.model.action_masks] = mask
+            feed_dict[self.action_masks] = mask
         return feed_dict
 
     def make_empty_memory(self, num_agents):
@@ -266,7 +274,7 @@ class TFPolicy(Policy):
         Gets current model step.
         :return: current model step.
         """
-        step = self.sess.run(self.model.global_step)
+        step = self.sess.run(self.global_step)
         return step
 
     def increment_step(self, n_steps):
@@ -274,10 +282,10 @@ class TFPolicy(Policy):
         Increments model step.
         """
         out_dict = {
-            "global_step": self.model.global_step,
-            "increment_step": self.model.increment_step,
+            "global_step": self.global_step,
+            "increment_step": self.increment_step_op,
         }
-        feed_dict = {self.model.steps_to_increment: n_steps}
+        feed_dict = {self.steps_to_increment: n_steps}
         return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
 
     def get_inference_vars(self):
@@ -341,22 +349,92 @@ class TFPolicy(Policy):
         """
         if self.use_vec_obs and self.normalize:
             self.sess.run(
-                self.model.update_normalization,
-                feed_dict={self.model.vector_in: vector_obs},
+                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
             )
 
     @property
-    def vis_obs_size(self):
-        return self.model.vis_obs_size
-
-    @property
-    def vec_obs_size(self):
-        return self.model.vec_obs_size
-
-    @property
     def use_vis_obs(self):
-        return self.model.vis_obs_size > 0
+        return self.vis_obs_size > 0
 
     @property
     def use_vec_obs(self):
-        return self.model.vec_obs_size > 0
+        return self.vec_obs_size > 0
+
+    def _initialize_tensorflow_references(self):
+        with self.graph.as_default():
+            self.value_heads: Dict[str, tf.Tensor] = {}
+            self.normalization_steps: Optional[tf.Variable] = None
+            self.running_mean: Optional[tf.Variable] = None
+            self.running_variance: Optional[tf.Variable] = None
+            self.update_normalization_op: Optional[tf.Operation] = None
+            self.value: Optional[tf.Tensor] = None
+            self.all_log_probs: Optional[tf.Tensor] = None
+            self.output: Optional[tf.Tensor] = None
+            self.selected_actions: Optional[tf.Tensor] = None
+            self.action_holder: Optional[tf.Tensor] = None
+            self.action_masks: Optional[tf.Tensor] = None
+            self.prev_action: Optional[tf.Tensor] = None
+
+            self.global_step, self.increment_step_op, self.steps_to_increment = (
+                LearningModel.create_global_steps()
+            )
+            self.visual_in = LearningModel.create_visual_input_placeholders(
+                self.brain.camera_resolutions
+            )
+            self.vector_in = LearningModel.create_vector_input(self.vec_obs_size)
+            if self.normalize:
+                normalization_tensors = LearningModel.create_normalizer(self.vector_in)
+                self.update_normalization_op = normalization_tensors[0]
+                self.normalization_steps = normalization_tensors[1]
+                self.running_mean = normalization_tensors[2]
+                self.running_variance = normalization_tensors[3]
+                self.processed_vector_in = LearningModel.normalize_vector_obs(
+                    self.vector_in,
+                    self.running_mean,
+                    self.running_variance,
+                    self.normalization_steps,
+                )
+            else:
+                self.processed_vector_in = self.vector_in
+                self.update_normalization_op = None
+
+            self.batch_size_ph = tf.placeholder(
+                shape=None, dtype=tf.int32, name="batch_size"
+            )
+            self.sequence_length_ph = tf.placeholder(
+                shape=None, dtype=tf.int32, name="sequence_length"
+            )
+            self.mask_input = tf.placeholder(
+                shape=[None], dtype=tf.float32, name="masks"
+            )
+            self.mask = tf.cast(self.mask_input, tf.int32)
+
+            tf.Variable(
+                int(self.brain.vector_action_space_type == "continuous"),
+                name="is_continuous_control",
+                trainable=False,
+                dtype=tf.int32,
+            )
+            tf.Variable(
+                self._version_number_,
+                name="version_number",
+                trainable=False,
+                dtype=tf.int32,
+            )
+            tf.Variable(
+                self.m_size, name="memory_size", trainable=False, dtype=tf.int32
+            )
+            if self.brain.vector_action_space_type == "continuous":
+                tf.Variable(
+                    self.act_size[0],
+                    name="action_output_shape",
+                    trainable=False,
+                    dtype=tf.int32,
+                )
+            else:
+                tf.Variable(
+                    sum(self.act_size),
+                    name="action_output_shape",
+                    trainable=False,
+                    dtype=tf.int32,
+                )

@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Type
 
-from mlagents.trainers.trainer import UnityTrainerException
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,

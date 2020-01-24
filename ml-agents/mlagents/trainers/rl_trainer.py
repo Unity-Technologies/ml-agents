@@ -5,7 +5,8 @@ from collections import defaultdict
 
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -58,7 +59,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 rewards[agent_id] = 0
             else:
                 self.stats_reporter.add_stat(
-                    policy.optimizer.reward_signals[name].stat_name, rewards.get(agent_id, 0)
+                    policy.optimizer.reward_signals[name].stat_name,
+                    rewards.get(agent_id, 0),
                 )
                 rewards[agent_id] = 0
 
