@@ -22,7 +22,7 @@ def get_base_path():
     return os.getcwd()
 
 
-def run_standalone_build(base_path: str) -> int:
+def run_standalone_build(base_path: str, verbose: bool = False) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player at UnitySDK/testPlayer
     :param base_path:
@@ -35,12 +35,12 @@ def run_standalone_build(base_path: str) -> int:
         unity_exe,
         "-projectPath",
         f"{base_path}/UnitySDK",
-        "-logfile",
-        "-",
         "-batchmode",
         "-executeMethod",
         "MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
+    if verbose:
+        test_args += ["-logfile", "-"]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case

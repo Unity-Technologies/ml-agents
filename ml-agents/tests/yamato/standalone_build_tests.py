@@ -7,7 +7,7 @@ def main():
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
-    returncode = run_standalone_build(base_path)
+    returncode = run_standalone_build(base_path, verbose=True)
 
     if returncode == 0:
         print("Test run SUCCEEDED!")
