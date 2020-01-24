@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/space_type.proto</summary>
-  public static partial class SpaceTypeReflection {
+  internal static partial class SpaceTypeReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/space_type.proto</summary>
@@ -36,7 +36,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Enums
-  public enum SpaceTypeProto {
+  internal enum SpaceTypeProto {
     [pbr::OriginalName("discrete")] Discrete = 0,
     [pbr::OriginalName("continuous")] Continuous = 1,
   }

@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/brain_parameters.proto</summary>
-  public static partial class BrainParametersReflection {
+  internal static partial class BrainParametersReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/brain_parameters.proto</summary>
@@ -43,7 +43,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class BrainParametersProto : pb::IMessage<BrainParametersProto> {
+  internal sealed partial class BrainParametersProto : pb::IMessage<BrainParametersProto> {
     private static readonly pb::MessageParser<BrainParametersProto> _parser = new pb::MessageParser<BrainParametersProto>(() => new BrainParametersProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

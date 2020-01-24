@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/observation.proto</summary>
-  public static partial class ObservationReflection {
+  internal static partial class ObservationReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/observation.proto</summary>
@@ -44,7 +44,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Enums
-  public enum CompressionTypeProto {
+  internal enum CompressionTypeProto {
     [pbr::OriginalName("NONE")] None = 0,
     [pbr::OriginalName("PNG")] Png = 1,
   }
@@ -52,7 +52,7 @@ namespace MLAgents.CommunicatorObjects {
   #endregion
 
   #region Messages
-  public sealed partial class ObservationProto : pb::IMessage<ObservationProto> {
+  internal sealed partial class ObservationProto : pb::IMessage<ObservationProto> {
     private static readonly pb::MessageParser<ObservationProto> _parser = new pb::MessageParser<ObservationProto>(() => new ObservationProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -299,7 +299,7 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Container for nested types declared in the ObservationProto message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static partial class Types {
-      public sealed partial class FloatData : pb::IMessage<FloatData> {
+      internal sealed partial class FloatData : pb::IMessage<FloatData> {
         private static readonly pb::MessageParser<FloatData> _parser = new pb::MessageParser<FloatData>(() => new FloatData());
         private pb::UnknownFieldSet _unknownFields;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

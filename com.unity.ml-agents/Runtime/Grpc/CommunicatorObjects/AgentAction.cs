@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/agent_action.proto</summary>
-  public static partial class AgentActionReflection {
+  internal static partial class AgentActionReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/agent_action.proto</summary>
@@ -39,7 +39,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class AgentActionProto : pb::IMessage<AgentActionProto> {
+  internal sealed partial class AgentActionProto : pb::IMessage<AgentActionProto> {
     private static readonly pb::MessageParser<AgentActionProto> _parser = new pb::MessageParser<AgentActionProto>(() => new AgentActionProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

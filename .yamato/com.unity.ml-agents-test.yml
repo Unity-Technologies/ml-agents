@@ -20,7 +20,7 @@ test_platforms:
 {% for editor in test_editors %}
   {% for platform in test_platforms %}
 test_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ editor.version }} on {{ platform.name }}
+  name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -38,13 +38,14 @@ test_{{ platform.name }}_{{ editor.version }}:
   {% endfor %}
 
 test_trigger:
-  name: Tests Trigger
+  name: com.unity.ml-agents Trigger
   triggers:
-    branches:
-      only:
-        - "/.*/"
-      except:
-        - master
+    pull_requests:
+      - targets:
+          only:
+            - "master"
+            - "/release-.*/"
+            - "/hotfix-.*/"
   dependencies:
     - .yamato/com.unity-ml-agents-pack.yml#pack
     {% for editor in test_editors %}

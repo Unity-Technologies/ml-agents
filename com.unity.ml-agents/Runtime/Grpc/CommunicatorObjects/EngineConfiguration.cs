@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/engine_configuration.proto</summary>
-  public static partial class EngineConfigurationReflection {
+  internal static partial class EngineConfigurationReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/engine_configuration.proto</summary>
@@ -41,7 +41,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class EngineConfigurationProto : pb::IMessage<EngineConfigurationProto> {
+  internal sealed partial class EngineConfigurationProto : pb::IMessage<EngineConfigurationProto> {
     private static readonly pb::MessageParser<EngineConfigurationProto> _parser = new pb::MessageParser<EngineConfigurationProto>(() => new EngineConfigurationProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

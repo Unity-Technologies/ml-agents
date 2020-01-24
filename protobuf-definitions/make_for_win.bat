@@ -30,7 +30,7 @@ rem grpc
 
 set GRPC=unity_to_external.proto
 
-%COMPILER%\protoc --proto_path=proto --csharp_out %DST_DIR_C% --grpc_out %DST_DIR_C% %SRC_DIR%\%GRPC% --plugin=protoc-gen-grpc=%COMPILER%\grpc_csharp_plugin.exe
+%COMPILER%\protoc --proto_path=proto --csharp_out %DST_DIR_C% --grpc_out %DST_DIR_C% %SRC_DIR%\%GRPC% --plugin=protoc-gen-grpc=%COMPILER%\grpc_csharp_plugin.exe --csharp_opt=internal_access
 python -m grpc_tools.protoc --proto_path=proto --python_out=%DST_DIR_P% --grpc_python_out=%DST_DIR_P% %SRC_DIR%\%GRPC%
 
 rem Generate the init file for the python module

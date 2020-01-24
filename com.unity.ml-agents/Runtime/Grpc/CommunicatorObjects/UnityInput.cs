@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_input.proto</summary>
-  public static partial class UnityInputReflection {
+  internal static partial class UnityInputReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/unity_input.proto</summary>
@@ -44,7 +44,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class UnityInputProto : pb::IMessage<UnityInputProto> {
+  internal sealed partial class UnityInputProto : pb::IMessage<UnityInputProto> {
     private static readonly pb::MessageParser<UnityInputProto> _parser = new pb::MessageParser<UnityInputProto>(() => new UnityInputProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

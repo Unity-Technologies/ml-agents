@@ -9,7 +9,7 @@
 using grpc = global::Grpc.Core;
 
 namespace MLAgents.CommunicatorObjects {
-  public static partial class UnityToExternalProto
+  internal static partial class UnityToExternalProto
   {
     static readonly string __ServiceName = "communicator_objects.UnityToExternalProto";
 

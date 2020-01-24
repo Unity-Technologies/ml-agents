@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/command.proto</summary>
-  public static partial class CommandReflection {
+  internal static partial class CommandReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/command.proto</summary>
@@ -36,7 +36,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Enums
-  public enum CommandProto {
+  internal enum CommandProto {
     [pbr::OriginalName("STEP")] Step = 0,
     [pbr::OriginalName("RESET")] Reset = 1,
     [pbr::OriginalName("QUIT")] Quit = 2,

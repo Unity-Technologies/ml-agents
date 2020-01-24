@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_rl_output.proto</summary>
-  public static partial class UnityRlOutputReflection {
+  internal static partial class UnityRlOutputReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/unity_rl_output.proto</summary>
@@ -46,7 +46,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class UnityRLOutputProto : pb::IMessage<UnityRLOutputProto> {
+  internal sealed partial class UnityRLOutputProto : pb::IMessage<UnityRLOutputProto> {
     private static readonly pb::MessageParser<UnityRLOutputProto> _parser = new pb::MessageParser<UnityRLOutputProto>(() => new UnityRLOutputProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -197,7 +197,7 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Container for nested types declared in the UnityRLOutputProto message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static partial class Types {
-      public sealed partial class ListAgentInfoProto : pb::IMessage<ListAgentInfoProto> {
+      internal sealed partial class ListAgentInfoProto : pb::IMessage<ListAgentInfoProto> {
         private static readonly pb::MessageParser<ListAgentInfoProto> _parser = new pb::MessageParser<ListAgentInfoProto>(() => new ListAgentInfoProto());
         private pb::UnknownFieldSet _unknownFields;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

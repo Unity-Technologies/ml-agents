@@ -6,6 +6,9 @@ using Google.Protobuf.Collections;
 using MLAgents.CommunicatorObjects;
 using MLAgents.Sensor;
 using UnityEngine;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 
 namespace MLAgents
 {
@@ -16,7 +19,7 @@ namespace MLAgents
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfoActionPairProto.</returns>
-        public static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai)
+        internal static AgentInfoActionPairProto ToInfoActionPairProto(this AgentInfo ai)
         {
             var agentInfoProto = ai.ToAgentInfoProto();
 
@@ -36,7 +39,7 @@ namespace MLAgents
         /// Converts a AgentInfo to a protobuf generated AgentInfoProto
         /// </summary>
         /// <returns>The protobuf version of the AgentInfo.</returns>
-        public static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
+        internal static AgentInfoProto ToAgentInfoProto(this AgentInfo ai)
         {
             var agentInfoProto = new AgentInfoProto
             {
@@ -61,7 +64,7 @@ namespace MLAgents
         /// <param name="bp">The instance of BrainParameter to extend.</param>
         /// <param name="name">The name of the brain.</param>
         /// <param name="isTraining">Whether or not the Brain is training.</param>
-        public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
+        internal static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
             var brainParametersProto = new BrainParametersProto
             {
@@ -78,7 +81,7 @@ namespace MLAgents
         /// <summary>
         /// Convert metadata object to proto object.
         /// </summary>
-        public static DemonstrationMetaProto ToProto(this DemonstrationMetaData dm)
+        internal static DemonstrationMetaProto ToProto(this DemonstrationMetaData dm)
         {
             var demoProto = new DemonstrationMetaProto
             {
@@ -94,7 +97,7 @@ namespace MLAgents
         /// <summary>
         /// Initialize metadata values based on proto object.
         /// </summary>
-        public static DemonstrationMetaData ToDemonstrationMetaData(this DemonstrationMetaProto demoProto)
+        internal static DemonstrationMetaData ToDemonstrationMetaData(this DemonstrationMetaProto demoProto)
         {
             var dm = new DemonstrationMetaData
             {
@@ -115,7 +118,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="bpp">An instance of a brain parameters protobuf object.</param>
         /// <returns>A BrainParameters struct.</returns>
-        public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
+        internal static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
         {
             var bp = new BrainParameters
             {
@@ -127,7 +130,7 @@ namespace MLAgents
         }
 
 
-        public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
+        internal static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
         {
             return new UnityRLInitParameters
             {
@@ -135,7 +138,7 @@ namespace MLAgents
             };
         }
 
-        public static AgentAction ToAgentAction(this AgentActionProto aap)
+        internal static AgentAction ToAgentAction(this AgentActionProto aap)
         {
             return new AgentAction
             {
@@ -143,7 +146,7 @@ namespace MLAgents
             };
         }
 
-        public static List<AgentAction> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
+        internal static List<AgentAction> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
         {
             var agentActions = new List<AgentAction>(proto.Value.Count);
             foreach (var ap in proto.Value)
@@ -153,7 +156,7 @@ namespace MLAgents
             return agentActions;
         }
 
-        public static ObservationProto ToProto(this Observation obs)
+        internal static ObservationProto ToProto(this Observation obs)
         {
             ObservationProto obsProto = null;
 
@@ -197,7 +200,7 @@ namespace MLAgents
         /// <param name="sensor"></param>
         /// <param name="writeAdapter"></param>
         /// <returns></returns>
-        public static ObservationProto GetObservationProto(this ISensor sensor, WriteAdapter writeAdapter)
+        internal static ObservationProto GetObservationProto(this ISensor sensor, WriteAdapter writeAdapter)
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;

@@ -12,7 +12,7 @@ using scg = global::System.Collections.Generic;
 namespace MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/custom_reset_parameters.proto</summary>
-  public static partial class CustomResetParametersReflection {
+  internal static partial class CustomResetParametersReflection {
 
     #region Descriptor
     /// <summary>File descriptor for mlagents_envs/communicator_objects/custom_reset_parameters.proto</summary>
@@ -38,7 +38,7 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
-  public sealed partial class CustomResetParametersProto : pb::IMessage<CustomResetParametersProto> {
+  internal sealed partial class CustomResetParametersProto : pb::IMessage<CustomResetParametersProto> {
     private static readonly pb::MessageParser<CustomResetParametersProto> _parser = new pb::MessageParser<CustomResetParametersProto>(() => new CustomResetParametersProto());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
