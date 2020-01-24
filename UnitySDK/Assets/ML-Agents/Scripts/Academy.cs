@@ -49,7 +49,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Academy.md")]
     public class Academy : IDisposable
     {
-        const string k_ApiVersion = "API-13";
+        const string k_ApiVersion = "API-14-dev0";
         const int k_EditorTrainingPort = 5004;
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy

@@ -54,41 +54,8 @@ namespace MLAgents
     public struct AgentAction
     {
         public float[] vectorActions;
-        public float value;
     }
 
-    /// <summary>
-    /// Struct that contains all the Agent-specific parameters provided in the
-    /// Editor. This excludes the Brain linked to the Agent since it can be
-    /// modified programmatically.
-    /// </summary>
-    [Serializable]
-    public class AgentParameters
-    {
-        /// <summary>
-        /// The maximum number of steps the agent takes before being done.
-        /// </summary>
-        /// <remarks>
-        /// If set to 0, the agent can only be set to done programmatically (or
-        /// when the Academy is done).
-        /// If set to any positive integer, the agent will be set to done after
-        /// that many steps. Note that setting the max step to a value greater
-        /// than the academy max step value renders it useless.
-        /// </remarks>
-        public int maxStep;
-
-        /// <summary>
-        /// Whether to enable On Demand Decisions or make a decision at
-        /// every step.
-        /// </summary>
-        public bool onDemandDecision;
-
-        /// <summary>
-        /// Number of actions between decisions (used when On Demand Decisions
-        /// is turned off).
-        /// </summary>
-        public int numberOfActionsBetweenDecisions;
-    }
 
 
     /// <summary>
@@ -147,17 +114,19 @@ namespace MLAgents
         BehaviorParameters m_PolicyFactory;
 
         /// <summary>
-        /// Agent parameters specified within the Editor via AgentEditor.
+        /// The maximum number of steps the agent takes before being done.
         /// </summary>
-        [HideInInspector] public AgentParameters agentParameters;
+        /// <remarks>
+        /// If set to 0, the agent can only be set to done programmatically (or
+        /// when the Academy is done).
+        /// If set to any positive integer, the agent will be set to done after
+        /// that many steps. Note that setting the max step to a value greater
+        /// than the academy max step value renders it useless.
+        /// </remarks>
+        [HideInInspector] public int maxStep;
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
-        public AgentInfo Info
-        {
-            get { return m_Info; }
-            set { m_Info = value; }
-        }
 
         /// Current Agent action (message sent from Brain).
         AgentAction m_Action;
@@ -192,10 +161,6 @@ namespace MLAgents
         /// with the step counter in the Academy, since agents reset based on
         /// their own experience.
         int m_StepCount;
-
-        /// Flag to signify that an agent has been reset but the fact that it is
-        /// done has not been communicated (required for On Demand Decisions).
-        bool m_HasAlreadyReset;
 
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
@@ -239,7 +204,6 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            Academy.Instance.AgentSetStatus += SetStatus;
             Academy.Instance.AgentResetIfDone += ResetIfDone;
             Academy.Instance.AgentSendState += SendInfo;
             Academy.Instance.DecideAction += DecideAction;
@@ -260,7 +224,6 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
-                Academy.Instance.AgentSetStatus -= SetStatus;
                 Academy.Instance.AgentResetIfDone -= ResetIfDone;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
@@ -302,7 +265,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current epside).
+        /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
         /// Current episode number.
@@ -310,18 +273,6 @@ namespace MLAgents
         public int GetStepCount()
         {
             return m_StepCount;
-        }
-
-        /// <summary>
-        /// Resets the step reward and possibly the episode reward for the agent.
-        /// </summary>
-        public void ResetReward()
-        {
-            m_Reward = 0f;
-            if (m_Done)
-            {
-                m_CumulativeReward = 0f;
-            }
         }
 
         /// <summary>
@@ -355,15 +306,6 @@ namespace MLAgents
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
-        }
-
-        /// <summary>
-        /// Retrieves the step reward for the Agent.
-        /// </summary>
-        /// <returns>The step reward.</returns>
-        public float GetReward()
-        {
-            return m_Reward;
         }
 
         /// <summary>
@@ -757,7 +699,6 @@ namespace MLAgents
         /// </summary>
         void ForceReset()
         {
-            m_HasAlreadyReset = false;
             _AgentReset();
         }
 
@@ -787,19 +728,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Updates the value of the agent.
-        /// </summary>
-        public void UpdateValueAction(float value)
-        {
-            m_Action.value = value;
-        }
-
-        protected float GetValueEstimate()
-        {
-            return m_Action.value;
-        }
-
-        /// <summary>
         /// Scales continuous action from [-1, 1] to arbitrary range.
         /// </summary>
         /// <param name="rawAction"></param>
@@ -813,39 +741,13 @@ namespace MLAgents
             return rawAction * range + middle;
         }
 
-        /// <summary>
-        /// Sets the status of the agent. Will request decisions or actions according
-        /// to the Academy's stepcount.
-        /// </summary>
-        /// <param name="academyStepCounter">Number of current steps in episode</param>
-        void SetStatus(int academyStepCounter)
-        {
-            MakeRequests(academyStepCounter);
-        }
 
         /// Signals the agent that it must reset if its done flag is set to true.
         void ResetIfDone()
         {
-            // If an agent is done, then it will also
-            // request for a decision and an action
-            if (IsDone())
+            if (m_Done)
             {
-                if (agentParameters.onDemandDecision)
-                {
-                    if (!m_HasAlreadyReset)
-                    {
-                        // If event based, the agent can reset as soon
-                        // as it is done
-                        _AgentReset();
-                        m_HasAlreadyReset = true;
-                    }
-                }
-                else if (m_RequestDecision)
-                {
-                    // If not event based, the agent must wait to request a
-                    // decision before resetting to keep multiple agents in sync.
-                    _AgentReset();
-                }
+                _AgentReset();
             }
         }
 
@@ -854,15 +756,18 @@ namespace MLAgents
         /// </summary>
         void SendInfo()
         {
-            if (m_RequestDecision)
+            // If the Agent is done, it has just reset and thus requires a new decision
+            if (m_RequestDecision || m_Done)
             {
                 SendInfoToBrain();
-                ResetReward();
+                m_Reward = 0f;
+                if (m_Done)
+                {
+                    m_CumulativeReward = 0f;
+                }
                 m_Done = false;
                 m_MaxStepReached = false;
                 m_RequestDecision = false;
-
-                m_HasAlreadyReset = false;
             }
         }
 
@@ -875,33 +780,13 @@ namespace MLAgents
                 AgentAction(m_Action.vectorActions);
             }
 
-            if ((m_StepCount >= agentParameters.maxStep)
-                && (agentParameters.maxStep > 0))
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
             {
                 m_MaxStepReached = true;
                 Done();
             }
 
             m_StepCount += 1;
-        }
-
-        /// <summary>
-        /// Is called after every step, contains the logic to decide if the agent
-        /// will request a decision at the next step.
-        /// </summary>
-        void MakeRequests(int academyStepCounter)
-        {
-            agentParameters.numberOfActionsBetweenDecisions =
-                Mathf.Max(agentParameters.numberOfActionsBetweenDecisions, 1);
-            if (!agentParameters.onDemandDecision)
-            {
-                RequestAction();
-                if (academyStepCounter %
-                    agentParameters.numberOfActionsBetweenDecisions == 0)
-                {
-                    RequestDecision();
-                }
-            }
         }
 
         void DecideAction()

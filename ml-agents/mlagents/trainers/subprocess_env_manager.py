@@ -210,7 +210,7 @@ class SubprocessEnvManager(EnvManager):
                 env_worker.send("step", env_action_info)
                 env_worker.waiting = True
 
-    def step(self) -> List[EnvironmentStep]:
+    def _step(self) -> List[EnvironmentStep]:
         # Queue steps for any workers which aren't in the "waiting" state.
         self._queue_steps()
 
@@ -236,7 +236,7 @@ class SubprocessEnvManager(EnvManager):
         step_infos = self._postprocess_steps(worker_steps)
         return step_infos
 
-    def reset(self, config: Optional[Dict] = None) -> List[EnvironmentStep]:
+    def _reset_env(self, config: Optional[Dict] = None) -> List[EnvironmentStep]:
         while any(ew.waiting for ew in self.env_workers):
             if not self.step_queue.empty():
                 step = self.step_queue.get_nowait()

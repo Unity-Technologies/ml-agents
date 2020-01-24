@@ -139,8 +139,7 @@ namespace MLAgents
         {
             return new AgentAction
             {
-                vectorActions = aap.VectorActions.ToArray(),
-                value = aap.Value,
+                vectorActions = aap.VectorActions.ToArray()
             };
         }
 
