@@ -741,11 +741,14 @@ namespace MLAgents
             if ((m_StepCount >= maxStep) && (maxStep > 0))
             {
                 NotifyAgentDone(true);
+                _AgentReset();
                 m_Reward = 0f;
                 m_CumulativeReward = 0f;
             }
-
-            m_StepCount += 1;
+            else
+            {
+                m_StepCount += 1;
+            }
         }
 
         void DecideAction()
