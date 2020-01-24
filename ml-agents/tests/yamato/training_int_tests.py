@@ -2,7 +2,12 @@ import os
 import sys
 import subprocess
 
-from .yamato_utils import get_base_path, run_standalone_build, init_venv
+from .yamato_utils import (
+    get_base_path,
+    run_standalone_build,
+    init_venv,
+    override_config_file,
+)
 
 
 def main():
@@ -22,9 +27,12 @@ def main():
 
     init_venv()
 
+    # Copy the default training config but override the max_steps parameter
+    override_config_file("config/trainer_config.yaml", "override.yaml", max_steps=100)
+
     # TODO pass scene name and exe destination to build
     # TODO make sure we fail if the exe isn't found - see MLA-559
-    mla_learn_cmd = "mlagents-learn ml-agents/tests/yamato/fast_train_config.yaml --train --env=UnitySDK/testPlayer --no-graphics --env-args -logFile -"  # noqa
+    mla_learn_cmd = "mlagents-learn override.yaml --train --env=UnitySDK/testPlayer --no-graphics --env-args -logFile -"  # noqa
     res = subprocess.run(f"source venv/bin/activate; {mla_learn_cmd}", shell=True)
 
     if res.returncode == 0 and os.path.exists(nn_file_expected):

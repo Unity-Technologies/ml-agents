@@ -1,5 +1,6 @@
 import os
 import subprocess
+import yaml
 
 
 def get_unity_executable_path():
@@ -63,3 +64,19 @@ def init_venv():
         subprocess.check_call(
             f"source venv/bin/activate; python -m pip install -q {cmd}", shell=True
         )
+
+
+def override_config_file(src_path, dest_path, **kwargs):
+    """
+    Override settings in a trainer config file. For example,
+        override_config_file(src_path, dest_path, max_steps=42)
+    will copy the config file at src_path to dest_path, but override the max_steps field to 42 for all brains.
+    """
+    with open(src_path) as f:
+        configs = yaml.safe_load(f)
+
+    for config in configs.values():
+        config.update(**kwargs)
+
+    with open(dest_path, "w") as f:
+        yaml.dump(configs, f)
