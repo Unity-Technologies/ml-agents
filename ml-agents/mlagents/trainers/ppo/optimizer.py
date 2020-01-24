@@ -69,7 +69,7 @@ class PPOOptimizer(TFOptimizer):
         if brain.vector_action_space_type == "continuous":
             self.create_cc_critic(h_size, num_layers, vis_encode_type)
         else:
-            self.create_dc_actor_critic(h_size, num_layers, vis_encode_type)
+            self.create_dc_critic(h_size, num_layers, vis_encode_type)
 
         self.learning_rate = LearningModel.create_learning_rate(
             lr_schedule, lr, self.policy.global_step, max_step
@@ -139,7 +139,7 @@ class PPOOptimizer(TFOptimizer):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_actor_critic(
+    def create_dc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -147,93 +147,33 @@ class PPOOptimizer(TFOptimizer):
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         """
-        hidden_streams = LearningModel.create_observation_streams(
+        hidden_stream = LearningModel.create_observation_streams(
             self.policy.visual_in,
             self.policy.processed_vector_in,
-            2,
+            1,
             h_size,
             num_layers,
             vis_encode_type,
-        )
+            stream_scopes=["optimizer"],
+        )[0]
 
         if self.policy.use_recurrent:
-            self.prev_action = tf.placeholder(
-                shape=[None, len(self.policy.act_size)],
-                dtype=tf.int32,
-                name="prev_action",
-            )
-            prev_action_oh = tf.concat(
-                [
-                    tf.one_hot(self.prev_action[:, i], self.policy.act_size[i])
-                    for i in range(len(self.policy.act_size))
-                ],
-                axis=1,
-            )
-            hidden_policy = tf.concat([hidden_streams[0], prev_action_oh], axis=1)
-
             self.memory_in = tf.placeholder(
                 shape=[None, self.policy.m_size], dtype=tf.float32, name="recurrent_in"
             )
             _half_point = int(self.policy.m_size / 2)
-            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
-                hidden_policy,
-                self.memory_in[:, :_half_point],
-                self.policy.sequence_length,
-                name="lstm_policy",
-            )
 
             hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
-                hidden_streams[1],
+                hidden_stream,
                 self.memory_in[:, _half_point:],
                 self.policy.sequence_length,
                 name="lstm_value",
             )
-            self.memory_out = tf.concat(
-                [memory_policy_out, memory_value_out], axis=1, name="recurrent_out"
-            )
+            self.memory_out = memory_value_out
         else:
-            hidden_policy = hidden_streams[0]
-            hidden_value = hidden_streams[1]
-
-        policy_branches = []
-        for size in self.policy.act_size:
-            policy_branches.append(
-                tf.layers.dense(
-                    hidden_policy,
-                    size,
-                    activation=None,
-                    use_bias=False,
-                    kernel_initializer=LearningModel.scaled_init(0.01),
-                )
-            )
-
-        self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
-
-        self.action_masks = tf.placeholder(
-            shape=[None, sum(self.policy.act_size)],
-            dtype=tf.float32,
-            name="action_masks",
-        )
-        output, _, normalized_logits = LearningModel.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.policy.act_size
-        )
-
-        self.output = tf.identity(output)
-        self.normalized_logits = tf.identity(normalized_logits, name="action")
+            hidden_value = hidden_stream
 
         self.create_value_heads(self.stream_names, hidden_value)
-
-        self.action_holder = tf.placeholder(
-            shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
-        )
-        self.action_oh = tf.concat(
-            [
-                tf.one_hot(self.action_holder[:, i], self.policy.act_size[i])
-                for i in range(len(self.policy.act_size))
-            ],
-            axis=1,
-        )
-        self.selected_actions = tf.stop_gradient(self.action_oh)
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.policy.act_size)],
@@ -241,55 +181,19 @@ class PPOOptimizer(TFOptimizer):
             name="old_probabilities",
         )
         _, _, old_normalized_logits = LearningModel.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.action_masks, self.policy.act_size
+            self.all_old_log_probs, self.policy.action_masks, self.policy.act_size
         )
 
         action_idx = [0] + list(np.cumsum(self.policy.act_size))
 
-        self.entropy = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=tf.nn.softmax(
-                                self.all_log_probs[:, action_idx[i] : action_idx[i + 1]]
-                            ),
-                            logits=self.all_log_probs[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.policy.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-        )
-
-        self.log_probs = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
-                            logits=normalized_logits[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.policy.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-            keepdims=True,
-        )
         self.old_log_probs = tf.reduce_sum(
             (
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
+                            labels=self.policy.action_oh[
+                                :, action_idx[i] : action_idx[i + 1]
+                            ],
                             logits=old_normalized_logits[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
@@ -432,7 +336,7 @@ class PPOOptimizer(TFOptimizer):
             feed_dict[model.output_pre] = mini_batch["actions_pre"]
         else:
             feed_dict[model.action_holder] = mini_batch["actions"]
-            if "prev_action" in mini_batch:
+            if model.use_recurrent:
                 feed_dict[model.prev_action] = mini_batch["prev_action"]
             feed_dict[model.action_masks] = mini_batch["action_mask"]
         if "vector_obs" in mini_batch:
@@ -440,7 +344,7 @@ class PPOOptimizer(TFOptimizer):
         if model.vis_obs_size > 0:
             for i, _ in enumerate(model.visual_in):
                 feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
-        if "memory" in mini_batch:
+        if model.use_recurrent:
             mem_in = [
                 mini_batch["memory"][i]
                 for i in range(
