@@ -18,6 +18,13 @@ The versions can be found in
 * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
 * Agents will always request a decision after being marked as `Done()` and will no longer wait for the next call to `RequestDecision()`.
 * The `Decision Period` and `On Demand decision` checkbox have been removed from the Agent. On demand decision is now the default (calling `RequestDecision` on the Agent manually.)
+* The `agentParameters` field of the Agent has been removed.
+* `maxStep` is now a public field on the Agent.
+* The `Info` field of the Agent has been made private.
+* The `GetReward()` method on the Agent has been removed. It was being confused with `GetCumulativeReward()`.
+* The `GetValueEstimate()` method on the Agent has been removed.
+* The `UpdateValueAction()` method on the Agent has been removed.
+* The `AgentAction` struct no longer contains a `value` field.
 
 ### Steps to Migrate
 * If you have a class that inherits from Academy:
