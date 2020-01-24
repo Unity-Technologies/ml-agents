@@ -5,9 +5,9 @@ from distutils.version import LooseVersion
 
 
 # LooseVersion handles things "1.2.3a" or "4.5.6-rc7" fairly sensibly.
-_is_tensorflow2 = LooseVersion(tf.__version__) >= LooseVersion("2.0.0")
+_use_tf_compat_v1 = LooseVersion(tf.__version__) >= LooseVersion("1.15.1")
 
-if _is_tensorflow2:
+if _use_tf_compat_v1:
     import tensorflow.compat.v1 as tf
 
     tf.disable_v2_behavior()
