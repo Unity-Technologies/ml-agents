@@ -119,11 +119,6 @@ namespace MLAgents
         // in addition to aligning on the step count of the global episode.
         public event System.Action<int> AgentSetStatus;
 
-        // Signals to all the agents at each environment step so they can reset
-        // if their flag has been set to done (assuming the agent has requested a
-        // decision).
-        public event System.Action AgentResetIfDone;
-
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
         public event System.Action AgentSendState;
@@ -314,7 +309,6 @@ namespace MLAgents
             DecideAction = () => { };
             DestroyAction = () => { };
             AgentSetStatus = i => { };
-            AgentResetIfDone = () => { };
             AgentSendState = () => { };
             AgentAct = () => { };
             AgentForceReset = () => { };
@@ -392,10 +386,6 @@ namespace MLAgents
 
             AgentSetStatus?.Invoke(m_StepCount);
 
-            using (TimerStack.Instance.Scoped("AgentResetIfDone"))
-            {
-                AgentResetIfDone?.Invoke();
-            }
 
             using (TimerStack.Instance.Scoped("AgentSendState"))
             {
