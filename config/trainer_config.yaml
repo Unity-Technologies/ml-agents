@@ -155,7 +155,7 @@ VisualPyramids:
 
 Tennis:
     normalize: true
-    max_steps: 5e8
+    max_steps: 2e8
     learning_rate_schedule: constant
     hidden_units: 256
     self_play:
