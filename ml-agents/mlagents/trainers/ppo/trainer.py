@@ -12,6 +12,7 @@ from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_device
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 
 logger = logging.getLogger("mlagents.trainers")
@@ -90,16 +91,16 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
-        value_estimates = self.policy.optimizer.get_batched_value_estimates(
+        value_estimates = self.optimizer.get_batched_value_estimates(
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
             self.stats_reporter.add_stat(
-                self.policy.optimizer.reward_signals[name].value_name, np.mean(v)
+                self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
 
-        value_next = self.policy.optimizer.get_value_estimates(
+        value_next = self.optimizer.get_value_estimates(
             trajectory.next_obs,
             agent_id,
             trajectory.done_reached and not trajectory.max_step_reached,
@@ -109,7 +110,7 @@ class PPOTrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
-        for name, reward_signal in self.policy.optimizer.reward_signals.items():
+        for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
@@ -120,7 +121,7 @@ class PPOTrainer(RLTrainer):
         # Compute GAE and returns
         tmp_advantages = []
         tmp_returns = []
-        for name in self.policy.optimizer.reward_signals:
+        for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[
@@ -133,7 +134,7 @@ class PPOTrainer(RLTrainer):
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
                 value_next=bootstrap_value,
-                gamma=self.policy.optimizer.reward_signals[name].gamma,
+                gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.trainer_parameters["lambd"],
             )
             local_return = local_advantage + local_value_estimates
@@ -157,9 +158,7 @@ class PPOTrainer(RLTrainer):
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
-            self._update_end_episode_stats(
-                agent_id, self.get_policy(trajectory.behavior_id)
-            )
+            self._update_end_episode_stats(agent_id, self.optimizer)
 
     def _is_ready_update(self):
         """
@@ -201,7 +200,7 @@ class PPOTrainer(RLTrainer):
             buffer = self.update_buffer
             max_num_batch = buffer_length // batch_size
             for l in range(0, max_num_batch * batch_size, batch_size):
-                update_stats = self.policy.optimizer.update(
+                update_stats = self.optimizer.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
                 for stat_name, value in update_stats.items():
@@ -240,9 +239,6 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
 
-        for _reward_signal in policy.optimizer.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
-
         return policy
 
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
@@ -259,6 +255,10 @@ class PPOTrainer(RLTrainer):
         if not isinstance(policy, PPOPolicy):
             raise RuntimeError("Non-PPOPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
+        self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
+        self.policy.initialize_or_load()
+        for _reward_signal in self.optimizer.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

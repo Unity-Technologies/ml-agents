@@ -37,7 +37,7 @@ class BCModule:
         """
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
-        self.model = BCModel(policy.model, self.current_lr, steps)
+        self.model = BCModel(policy, self.current_lr, steps)
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
 
         self.batch_size = batch_size if batch_size else default_batch_size
@@ -120,36 +120,32 @@ class BCModule:
         Helper function for update_batch.
         """
         feed_dict = {
-            self.policy.model.batch_size: n_sequences,
-            self.policy.model.sequence_length: self.policy.sequence_length,
+            self.policy.batch_size_ph: n_sequences,
+            self.policy.sequence_length: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
-        if self.policy.model.brain.vector_action_space_type == "continuous":
-            feed_dict[self.policy.model.epsilon] = np.random.normal(
-                size=(1, self.policy.model.act_size[0])
+        if self.policy.brain.vector_action_space_type == "continuous":
+            feed_dict[self.policy.epsilon] = np.random.normal(
+                size=(1, self.policy.act_size[0])
             )
         else:
-            feed_dict[self.policy.model.action_masks] = np.ones(
+            feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
-                    sum(self.policy.model.brain.vector_action_space_size),
+                    sum(self.policy.brain.vector_action_space_size),
                 ),
                 dtype=np.float32,
             )
-        if self.policy.model.brain.vector_observation_space_size > 0:
-            feed_dict[self.policy.model.vector_in] = mini_batch_demo["vector_obs"]
-        for i, _ in enumerate(self.policy.model.visual_in):
-            feed_dict[self.policy.model.visual_in[i]] = mini_batch_demo[
-                "visual_obs%d" % i
-            ]
+        if self.policy.brain.vector_observation_space_size > 0:
+            feed_dict[self.policy.vector_in] = mini_batch_demo["vector_obs"]
+        for i, _ in enumerate(self.policy.visual_in):
+            feed_dict[self.policy.visual_in[i]] = mini_batch_demo["visual_obs%d" % i]
         if self.use_recurrent:
-            feed_dict[self.policy.model.memory_in] = np.zeros(
+            feed_dict[self.policy.memory_in] = np.zeros(
                 [self.n_sequences, self.policy.m_size], dtype=np.float32
             )
-            if not self.policy.model.brain.vector_action_space_type == "continuous":
-                feed_dict[self.policy.model.prev_action] = mini_batch_demo[
-                    "prev_action"
-                ]
+            if not self.policy.brain.vector_action_space_type == "continuous":
+                feed_dict[self.policy.prev_action] = mini_batch_demo["prev_action"]
         network_out = self.policy.sess.run(
             list(self.out_dict.values()), feed_dict=feed_dict
         )

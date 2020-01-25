@@ -5,7 +5,7 @@ import numpy as np
 from mlagents.tf_utils.tf import tf
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
@@ -19,7 +19,7 @@ class Optimizer(abc.ABC):
     """
 
     @abc.abstractmethod
-    def __init__(self, policy: LearningModel, optimizer_parameters: Dict[str, Any]):
+    def __init__(self, policy: Policy):
         """
         Create loss functions and auxillary networks.
         """
@@ -34,15 +34,13 @@ class Optimizer(abc.ABC):
 
 
 class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
-    def __init__(
-        self, sess: tf.Session, policy: TFPolicy, reward_signal_configs: Dict[str, Any]
-    ):
-        super().__init__(policy, reward_signal_configs)
-        self.sess = sess
+    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+        super().__init__(policy)
+        self.sess = policy.sess
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.value_heads: Dict[str, tf.Tensor] = {}
-        self.create_reward_signals(reward_signal_configs)
+        self.create_reward_signals(trainer_params["reward_signals"])
 
     def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
         feed_dict: Dict[tf.Tensor, Any] = {

@@ -13,7 +13,7 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOOptimizer(TFOptimizer):
-    def __init__(self, brain, sess, policy, reward_signal_configs, trainer_params):
+    def __init__(self, policy, trainer_params):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -32,59 +32,68 @@ class PPOOptimizer(TFOptimizer):
         :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
         :return: a sub-class of PPOAgent tailored to the environment.
         """
-        super().__init__(sess, policy, reward_signal_configs)
+        with policy.graph.as_default():
+            with tf.variable_scope("optimizer/"):
+                super().__init__(policy, trainer_params)
 
-        lr = float(trainer_params["learning_rate"])
-        lr_schedule = LearningRateSchedule(
-            trainer_params.get("learning_rate_schedule", "linear")
-        )
-        h_size = int(trainer_params["hidden_units"])
-        epsilon = float(trainer_params["epsilon"])
-        beta = float(trainer_params["beta"])
-        max_step = float(trainer_params["max_steps"])
-        num_layers = int(trainer_params["num_layers"])
-        vis_encode_type = EncoderType(trainer_params.get("vis_encode_type", "simple"))
+                lr = float(trainer_params["learning_rate"])
+                lr_schedule = LearningRateSchedule(
+                    trainer_params.get("learning_rate_schedule", "linear")
+                )
+                h_size = int(trainer_params["hidden_units"])
+                epsilon = float(trainer_params["epsilon"])
+                beta = float(trainer_params["beta"])
+                max_step = float(trainer_params["max_steps"])
+                num_layers = int(trainer_params["num_layers"])
+                vis_encode_type = EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                )
 
-        self.stream_names = self.reward_signals.keys()
+                self.stream_names = self.reward_signals.keys()
 
-        self.optimizer: Optional[tf.train.AdamOptimizer] = None
-        self.grads = None
-        self.update_batch: Optional[tf.Operation] = None
+                self.optimizer: Optional[tf.train.AdamOptimizer] = None
+                self.grads = None
+                self.update_batch: Optional[tf.Operation] = None
 
-        self.stats_name_to_update_name = {
-            "Losses/Value Loss": "value_loss",
-            "Losses/Policy Loss": "policy_loss",
-        }
+                self.stats_name_to_update_name = {
+                    "Losses/Value Loss": "value_loss",
+                    "Losses/Policy Loss": "policy_loss",
+                }
 
-        if num_layers < 1:
-            num_layers = 1
-        if brain.vector_action_space_type == "continuous":
-            self.create_cc_critic(h_size, num_layers, vis_encode_type)
-        else:
-            self.create_dc_critic(h_size, num_layers, vis_encode_type)
+                if num_layers < 1:
+                    num_layers = 1
+                if policy.use_continuous_act:
+                    self.create_cc_critic(h_size, num_layers, vis_encode_type)
+                else:
+                    self.create_dc_critic(h_size, num_layers, vis_encode_type)
 
-        self.learning_rate = LearningModel.create_learning_rate(
-            lr_schedule, lr, self.policy.global_step, max_step
-        )
-        self.create_losses(
-            self.policy.log_probs,
-            self.old_log_probs,
-            self.value_heads,
-            self.policy.entropy,
-            beta,
-            epsilon,
-            lr,
-            max_step,
-        )
-        self.create_ppo_optimizer()
+                self.learning_rate = LearningModel.create_learning_rate(
+                    lr_schedule, lr, self.policy.global_step, max_step
+                )
+                self.create_losses(
+                    self.policy.log_probs,
+                    self.old_log_probs,
+                    self.value_heads,
+                    self.policy.entropy,
+                    beta,
+                    epsilon,
+                    lr,
+                    max_step,
+                )
+                self.create_ppo_optimizer()
 
-        self.update_dict.update(
-            {
-                "value_loss": self.value_loss,
-                "policy_loss": self.abs_policy_loss,
-                "update_batch": self.update_batch,
-            }
-        )
+            self.update_dict.update(
+                {
+                    "value_loss": self.value_loss,
+                    "policy_loss": self.abs_policy_loss,
+                    "update_batch": self.update_batch,
+                }
+            )
+
+            # Add some stuff to inference dict from optimizer
+            self.policy.inference_dict["learning_rate"] = self.learning_rate
+            if self.policy.use_recurrent:
+                self.policy.inference_dict["optimizer_memory_out"]: self.memory_out
 
     def create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
@@ -101,7 +110,6 @@ class PPOOptimizer(TFOptimizer):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["optimizer"],
         )[0]
 
         if self.policy.use_recurrent:
@@ -146,7 +154,6 @@ class PPOOptimizer(TFOptimizer):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["optimizer"],
         )[0]
 
         if self.policy.use_recurrent:

@@ -477,9 +477,9 @@ def test_normalization(dummy_config):
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.policy.sess.run(
         [
-            trainer.policy.model.normalization_steps,
-            trainer.policy.model.running_mean,
-            trainer.policy.model.running_variance,
+            trainer.policy.normalization_steps,
+            trainer.policy.running_mean,
+            trainer.policy.running_variance,
         ]
     )
 
@@ -503,9 +503,9 @@ def test_normalization(dummy_config):
     # Check that the running mean and variance is correct
     steps, mean, variance = trainer.policy.sess.run(
         [
-            trainer.policy.model.normalization_steps,
-            trainer.policy.model.running_mean,
-            trainer.policy.model.running_variance,
+            trainer.policy.normalization_steps,
+            trainer.policy.running_mean,
+            trainer.policy.running_variance,
         ]
     )
 

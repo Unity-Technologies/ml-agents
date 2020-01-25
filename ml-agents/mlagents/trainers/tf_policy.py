@@ -369,11 +369,14 @@ class TFPolicy(Policy):
             self.update_normalization_op: Optional[tf.Operation] = None
             self.value: Optional[tf.Tensor] = None
             self.all_log_probs: Optional[tf.Tensor] = None
+            self.action_oh: tf.Tensor = None
+            self.output_pre: Optional[tf.Tensor] = None
             self.output: Optional[tf.Tensor] = None
             self.selected_actions: Optional[tf.Tensor] = None
             self.action_holder: Optional[tf.Tensor] = None
             self.action_masks: Optional[tf.Tensor] = None
             self.prev_action: Optional[tf.Tensor] = None
+            self.memory_in: Optional[tf.Tensor] = None
 
             self.global_step, self.increment_step_op, self.steps_to_increment = (
                 LearningModel.create_global_steps()
@@ -406,6 +409,10 @@ class TFPolicy(Policy):
             )
             self.mask_input = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="masks"
+            )
+            # Only needed for PPO, but needed for BC module
+            self.epsilon = tf.placeholder(
+                shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
             )
             self.mask = tf.cast(self.mask_input, tf.int32)
 

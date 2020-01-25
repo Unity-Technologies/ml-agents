@@ -9,7 +9,6 @@ from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import LearningModel
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.components.bc.module import BCModule
 
@@ -33,84 +32,58 @@ class PPOPolicy(TFPolicy):
         :param is_training: Whether the model should be trained.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         """
-        super().__init__(seed, brain, trainer_params)
+        with tf.variable_scope("policy"):
+            super().__init__(seed, brain, trainer_params)
 
-        reward_signal_configs = trainer_params["reward_signals"]
-        self.inference_dict: Dict[str, tf.Tensor] = {}
-        self.update_dict: Dict[str, tf.Tensor] = {}
-        self.stats_name_to_update_name = {
-            "Losses/Value Loss": "value_loss",
-            "Losses/Policy Loss": "policy_loss",
-        }
-
-        self.optimizer: Optional[tf.train.AdamOptimizer] = None
-        self.grads = None
-        self.update_batch: Optional[tf.Operation] = None
-        num_layers = trainer_params["num_layers"]
-        h_size = trainer_params["hidden_units"]
-        if num_layers < 1:
-            num_layers = 1
-        vis_encode_type = EncoderType(trainer_params.get("vis_encode_type", "simple"))
-
-        with self.graph.as_default():
-            if brain.vector_action_space_type == "continuous":
-                self.create_cc_actor(h_size, num_layers, vis_encode_type)
-            else:
-                self.create_dc_actor(h_size, num_layers, vis_encode_type)
-            self.bc_module: Optional[BCModule] = None
-            # Create pretrainer if needed
-            if "behavioral_cloning" in trainer_params:
-                BCModule.check_config(trainer_params["behavioral_cloning"])
-                self.bc_module = BCModule(
-                    self,
-                    policy_learning_rate=trainer_params["learning_rate"],
-                    default_batch_size=trainer_params["batch_size"],
-                    default_num_epoch=3,
-                    **trainer_params["behavioral_cloning"],
-                )
-
-        self.create_optimizer(
-            brain, trainer_params, reward_signal_configs, is_training, load, seed
-        )
-
-        if load:
-            self._load_graph()
-        else:
-            self._initialize_graph()
-
-    def create_optimizer(
-        self, brain, trainer_params, reward_signal_configs, is_training, load, seed
-    ):
-        """
-        Create PPO model
-        :param brain: Assigned Brain object.
-        :param trainer_params: Defined training parameters.
-        :param reward_signal_configs: Reward signal config
-        :param seed: Random seed.
-        """
-        with self.graph.as_default():
-            self.optimizer = PPOOptimizer(
-                brain=brain,
-                policy=self,
-                sess=self.sess,
-                reward_signal_configs=reward_signal_configs,
-                trainer_params=trainer_params,
-            )
-            self.optimizer.create_ppo_optimizer()
-
-        self.inference_dict.update(
-            {
-                "action": self.output,
-                "log_probs": self.all_log_probs,
-                "entropy": self.entropy,
-                "learning_rate": self.optimizer.learning_rate,
+            self.stats_name_to_update_name = {
+                "Losses/Value Loss": "value_loss",
+                "Losses/Policy Loss": "policy_loss",
             }
-        )
+
+            self.optimizer: Optional[tf.train.AdamOptimizer] = None
+            self.grads = None
+            self.update_batch: Optional[tf.Operation] = None
+            num_layers = trainer_params["num_layers"]
+            h_size = trainer_params["hidden_units"]
+            if num_layers < 1:
+                num_layers = 1
+            vis_encode_type = EncoderType(
+                trainer_params.get("vis_encode_type", "simple")
+            )
+
+            with self.graph.as_default():
+                if self.use_continuous_act:
+                    self.create_cc_actor(h_size, num_layers, vis_encode_type)
+                else:
+                    self.create_dc_actor(h_size, num_layers, vis_encode_type)
+                self.bc_module: Optional[BCModule] = None
+                # Create pretrainer if needed
+                if "behavioral_cloning" in trainer_params:
+                    BCModule.check_config(trainer_params["behavioral_cloning"])
+                    self.bc_module = BCModule(
+                        self,
+                        policy_learning_rate=trainer_params["learning_rate"],
+                        default_batch_size=trainer_params["batch_size"],
+                        default_num_epoch=3,
+                        **trainer_params["behavioral_cloning"],
+                    )
+
+        self.inference_dict: Dict[str, tf.Tensor] = {
+            "action": self.output,
+            "log_probs": self.all_log_probs,
+            "entropy": self.entropy,
+        }
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.output_pre
         if self.use_recurrent:
             self.inference_dict["policy_memory_out"] = self.memory_out
-            self.inference_dict["optimizer_memory_out"] = self.optimizer.memory_out
+        self.load = load
+
+    def initialize_or_load(self):
+        if self.load:
+            self._load_graph()
+        else:
+            self._initialize_graph()
 
     @timed
     def evaluate(

@@ -1,14 +1,11 @@
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class BCModel(object):
     def __init__(
-        self,
-        policy_model: LearningModel,
-        learning_rate: float = 3e-4,
-        anneal_steps: int = 0,
+        self, policy_model: TFPolicy, learning_rate: float = 3e-4, anneal_steps: int = 0
     ):
         """
         Tensorflow operations to perform Behavioral Cloning on a Policy model

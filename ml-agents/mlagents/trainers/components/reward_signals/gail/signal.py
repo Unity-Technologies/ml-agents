@@ -43,7 +43,7 @@ class GAILRewardSignal(RewardSignal):
         self.use_terminal_states = False
 
         self.model = GAILModel(
-            policy.model, 128, learning_rate, encoding_size, use_actions, use_vail
+            policy, 128, learning_rate, encoding_size, use_actions, use_vail
         )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
@@ -68,23 +68,23 @@ class GAILRewardSignal(RewardSignal):
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.model.batch_size: len(mini_batch["actions"]),
-            self.policy.model.sequence_length: self.policy.sequence_length,
+            self.policy.batch_size_ph: len(mini_batch["actions"]),
+            self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [0]
 
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
-        if self.policy.model.vis_obs_size > 0:
-            for i in range(len(self.policy.model.visual_in)):
+            feed_dict[self.policy.vector_in] = mini_batch["vector_obs"]
+        if self.policy.vis_obs_size > 0:
+            for i in range(len(self.policy.visual_in)):
                 _obs = mini_batch["visual_obs%d" % i]
-                feed_dict[self.policy.model.visual_in[i]] = _obs
+                feed_dict[self.policy.visual_in[i]] = _obs
 
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
+            feed_dict[self.policy.selected_actions] = mini_batch["actions"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+            feed_dict[self.policy.action_holder] = mini_batch["actions"]
         feed_dict[self.model.done_policy_holder] = np.array(
             mini_batch["done"]
         ).flatten()
