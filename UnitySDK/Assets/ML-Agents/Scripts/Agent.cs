@@ -155,8 +155,9 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
-        /// Unique identifier each agent receives at initialization. It is used
+        /// Episode identifier each agent receives. It is used
         /// to separate between different agents in the environment.
+        /// This Id will be changed every time the Agent resets.
         int m_EpisodeId;
 
         /// Keeps track of the actions that are masked at each step.
@@ -232,7 +233,12 @@ namespace MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is disabled
             m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
+            // The Agent is done, so we give it a new episode Id
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
+            m_Reward = 0f;
+            m_CumulativeReward = 0f;
+            m_RequestAction = false;
+            m_RequestDecision = false;
         }
 
         /// <summary>
@@ -317,10 +323,7 @@ namespace MLAgents
         {
             NotifyAgentDone();
             _AgentReset();
-            m_RequestAction = false;
-            m_RequestDecision = false;
-            m_Reward = 0f;
-            m_CumulativeReward = 0f;
+
         }
 
         /// <summary>
@@ -739,10 +742,7 @@ namespace MLAgents
             {
                 NotifyAgentDone(true);
                 _AgentReset();
-                m_RequestAction = false;
-                m_RequestDecision = false;
-                m_Reward = 0f;
-                m_CumulativeReward = 0f;
+
             }
             else
             {
