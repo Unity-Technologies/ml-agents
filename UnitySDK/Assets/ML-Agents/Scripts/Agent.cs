@@ -44,7 +44,7 @@ namespace MLAgents
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
         /// </summary>
-        public int id;
+        public int episodeId;
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ namespace MLAgents
 
         /// Unique identifier each agent receives at initialization. It is used
         /// to separate between different agents in the environment.
-        int m_Id;
+        int m_EpisodeId;
 
         /// Keeps track of the actions that are masked at each step.
         ActionMasker m_ActionMasker;
@@ -183,7 +183,7 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_Id = gameObject.GetInstanceID();
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             OnEnableHelper();
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
@@ -232,6 +232,7 @@ namespace MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is disabled
             m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
         }
 
         /// <summary>
@@ -316,6 +317,8 @@ namespace MLAgents
         {
             NotifyAgentDone();
             _AgentReset();
+            m_RequestAction = false;
+            m_RequestDecision = false;
             m_Reward = 0f;
             m_CumulativeReward = 0f;
         }
@@ -464,7 +467,7 @@ namespace MLAgents
             m_Info.reward = m_Reward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
-            m_Info.id = m_Id;
+            m_Info.episodeId = m_EpisodeId;
 
             m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
 
@@ -732,22 +735,23 @@ namespace MLAgents
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if ((m_RequestAction) && (m_Brain != null))
-            {
-                m_RequestAction = false;
-                AgentAction(m_Action.vectorActions);
-            }
-
-            if ((m_StepCount >= maxStep) && (maxStep > 0))
+            if ((m_StepCount >= maxStep - 1) && (maxStep > 0))
             {
                 NotifyAgentDone(true);
                 _AgentReset();
+                m_RequestAction = false;
+                m_RequestDecision = false;
                 m_Reward = 0f;
                 m_CumulativeReward = 0f;
             }
             else
             {
                 m_StepCount += 1;
+            }
+            if ((m_RequestAction) && (m_Brain != null))
+            {
+                m_RequestAction = false;
+                AgentAction(m_Action.vectorActions);
             }
         }
 
