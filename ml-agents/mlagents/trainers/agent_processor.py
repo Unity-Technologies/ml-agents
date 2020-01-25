@@ -144,7 +144,7 @@ class AgentProcessor:
                     )
                     for traj_queue in self.trajectory_queues:
                         traj_queue.put(trajectory)
-                    self.experience_buffers[global_id] = []
+                    del self.experience_buffers[global_id]
                     if curr_agent_step.done:
                         self.stats_reporter.add_stat(
                             "Environment/Cumulative Reward",
