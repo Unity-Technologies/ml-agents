@@ -18,13 +18,7 @@ RewardSignalResult = namedtuple(
 
 
 class RewardSignal(abc.ABC):
-    def __init__(
-        self,
-        policy: TFPolicy,
-        policy_model: LearningModel,
-        strength: float,
-        gamma: float,
-    ):
+    def __init__(self, policy: TFPolicy, strength: float, gamma: float):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
@@ -43,7 +37,6 @@ class RewardSignal(abc.ABC):
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.gamma = gamma
         self.policy = policy
-        self.policy_model = policy_model
         self.strength = strength
         self.stats_name_to_update_name: Dict[str, str] = {}
 

@@ -111,7 +111,7 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
         # Create reward signals
         for reward_signal, config in reward_signal_configs.items():
             self.reward_signals[reward_signal] = create_reward_signal(
-                self, self.policy, reward_signal, config
+                self.policy, reward_signal, config
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
