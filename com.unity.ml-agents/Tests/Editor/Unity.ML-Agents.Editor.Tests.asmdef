@@ -3,9 +3,7 @@
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Barracuda",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "Barracuda"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
