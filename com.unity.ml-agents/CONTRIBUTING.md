@@ -7,7 +7,7 @@ of guidelines to ensure that your extensions can be easily integrated.
 
 ## Communication
 
-First, please read through our [code of conduct](CODE_OF_CONDUCT.md), as we
+First, please read through our [code of conduct](https://github.com/Unity-Technologies/ml-agents/blob/master/CODE_OF_CONDUCT.md), as we
 expect all our contributors to follow it.
 
 Second, before starting on a project that you intend to contribute to the
