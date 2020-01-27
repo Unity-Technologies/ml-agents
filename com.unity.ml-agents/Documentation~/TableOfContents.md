@@ -1,4 +1,3 @@
-* [UPM Package Starter Kit](index.md)
-	* [Guide for features packages](tools-package-guide.md)
-	* [Guide for sample packages](sample-package-guide.md)
-	* [Guide for test packages](test-package-guide.md)
+* [ML-Agents README](https://github.com/Unity-Technologies/ml-agents/blob/master/README.md)
+	* [Contributing](CONTRIBUTING.md)
+	* [Code of Conduct](https://github.com/Unity-Technologies/ml-agents/blob/master/CODE_OF_CONDUCT.md)
