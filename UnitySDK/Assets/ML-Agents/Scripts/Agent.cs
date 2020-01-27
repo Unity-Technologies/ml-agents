@@ -41,7 +41,7 @@ namespace MLAgents
         public bool maxStepReached;
 
         /// <summary>
-        /// Unique identifier each agent receives at initialization. It is used
+        /// Episode identifier each agent receives at every reset. It is used
         /// to separate between different agents in the environment.
         /// </summary>
         public int episodeId;
