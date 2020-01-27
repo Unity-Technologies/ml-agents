@@ -13,7 +13,7 @@ test_platforms:
   - name: linux
     type: Unity::VM
     image: package-ci/ubuntu:stable
-    flavor: b1.small
+    flavor: b1.medium
 ---
 
 {% for editor in test_editors %}
