@@ -89,7 +89,7 @@ class CuriosityRewardSignal(RewardSignal):
         :return: Feed_dict needed for update.
         """
         feed_dict = {
-            policy.batch_size: num_sequences,
+            policy.batch_size_ph: num_sequences,
             policy.sequence_length: self.policy.sequence_length,
             policy.mask_input: mini_batch["masks"],
         }
