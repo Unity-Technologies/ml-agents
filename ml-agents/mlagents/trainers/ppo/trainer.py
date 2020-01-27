@@ -7,8 +7,8 @@ from collections import defaultdict
 
 import numpy as np
 
-from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
+from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuNNPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
@@ -71,7 +71,7 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.multi_gpu = multi_gpu
         self.seed = seed
-        self.policy: PPOPolicy = None  # type: ignore
+        self.policy: NNPolicy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -223,7 +223,7 @@ class PPOTrainer(RLTrainer):
         """
 
         if self.multi_gpu and len(get_devices()) > 1:
-            policy: PPOPolicy = MultiGpuPPOPolicy(
+            policy: NNPolicy = MultiGpuNNPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -231,7 +231,7 @@ class PPOTrainer(RLTrainer):
                 self.load,
             )
         else:
-            policy = PPOPolicy(
+            policy = NNPolicy(
                 self.seed,
                 brain_parameters,
                 self.trainer_parameters,
@@ -252,8 +252,8 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, PPOPolicy):
-            raise RuntimeError("Non-PPOPolicy passed to PPOTrainer.add_policy()")
+        if not isinstance(policy, NNPolicy):
+            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
         self.policy.initialize_or_load()

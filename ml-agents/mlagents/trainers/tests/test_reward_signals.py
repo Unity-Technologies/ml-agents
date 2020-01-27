@@ -2,7 +2,7 @@ import pytest
 import yaml
 import os
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.sac.policy import SACPolicy
 
 
@@ -112,7 +112,7 @@ def create_policy_mock(
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
     if trainer_config["trainer"] == "ppo":
-        policy = PPOPolicy(0, mock_brain, trainer_parameters, False, False)
+        policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
     else:
         policy = SACPolicy(0, mock_brain, trainer_parameters, False, False)
     return policy

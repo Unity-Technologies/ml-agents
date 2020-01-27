@@ -4,7 +4,7 @@ import pytest
 from mlagents.tf_utils import tf
 import yaml
 
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy
+from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuNNPolicy
 from mlagents.trainers.tests.mock_brain import create_mock_brainparams
 
 
@@ -54,7 +54,7 @@ def test_create_model(mock_get_devices, dummy_config):
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
 
-    policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
+    policy = MultiGpuNNPolicy(0, brain, trainer_parameters, False, False)
     assert len(policy.towers) == len(mock_get_devices.return_value)
 
 
@@ -73,7 +73,7 @@ def test_average_gradients(mock_get_devices, dummy_config):
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
     with tf.Session() as sess:
-        policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
+        policy = MultiGpuNNPolicy(0, brain, trainer_parameters, False, False)
         var = tf.Variable(0)
         tower_grads = [
             [(tf.constant(0.1), var)],
@@ -90,7 +90,7 @@ def test_average_gradients(mock_get_devices, dummy_config):
 
 
 @mock.patch("mlagents.trainers.tf_policy.TFPolicy._execute_model")
-@mock.patch("mlagents.trainers.ppo.policy.PPOPolicy.construct_feed_dict")
+@mock.patch("mlagents.trainers.common.nn_policy.NNPolicy.construct_feed_dict")
 @mock.patch("mlagents.trainers.ppo.multi_gpu_policy.get_devices")
 def test_update(
     mock_get_devices, mock_construct_feed_dict, mock_execute_model, dummy_config
@@ -108,7 +108,7 @@ def test_update(
     trainer_parameters["model_path"] = ""
     trainer_parameters["keep_checkpoints"] = 3
     brain = create_mock_brainparams()
-    policy = MultiGpuPPOPolicy(0, brain, trainer_parameters, False, False)
+    policy = MultiGpuNNPolicy(0, brain, trainer_parameters, False, False)
     mock_mini_batch = mock.Mock()
     mock_mini_batch.items.return_value = [("action", [1, 2]), ("value", [3, 4])]
     run_out = policy.update(mock_mini_batch, 1)

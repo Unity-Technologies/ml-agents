@@ -6,7 +6,7 @@ from mlagents.tf_utils import tf
 from tensorflow.python.client import device_lib
 from mlagents.trainers.brain import BrainParameters
 from mlagents_envs.timers import timed
-from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
@@ -18,7 +18,7 @@ TOWER_SCOPE_NAME = "tower"
 logger = logging.getLogger("mlagents.trainers")
 
 
-class MultiGpuPPOPolicy(PPOPolicy):
+class MultiGpuNNPolicy(NNPolicy):
     def __init__(
         self,
         seed: int,
@@ -27,9 +27,9 @@ class MultiGpuPPOPolicy(PPOPolicy):
         is_training: bool,
         load: bool,
     ):
-        self.towers: List[PPOPolicy] = []
+        self.towers: List[NNPolicy] = []
         self.devices: List[str] = []
-        self.model: Optional[PPOPolicy] = None
+        self.model: Optional[NNPolicy] = None
         self.total_policy_loss: Optional[tf.Tensor] = None
         self.reward_signal_towers: List[Dict[str, RewardSignal]] = []
         self.reward_signals: Dict[str, RewardSignal] = {}
@@ -53,7 +53,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
                 for device in self.devices:
                     with tf.device(device):
                         self.towers.append(
-                            PPOPolicy(
+                            NNPolicy(
                                 seed=seed,
                                 brain=brain,
                                 trainer_params=trainer_params,
@@ -116,7 +116,7 @@ class MultiGpuPPOPolicy(PPOPolicy):
                         reward_tower = {}
                         for reward_signal, config in reward_signal_configs.items():
                             reward_tower[reward_signal] = create_reward_signal(
-                                self, self.towers[device_id], reward_signal, config
+                                self.towers[device_id], reward_signal, config
                             )
                             for k, v in reward_tower[reward_signal].update_dict.items():
                                 self.update_dict[k + "_" + str(device_id)] = v

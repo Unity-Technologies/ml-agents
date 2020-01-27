@@ -8,7 +8,7 @@ import yaml
 
 from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
-from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.models import EncoderType, LearningModel
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
@@ -81,7 +81,7 @@ def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
     model_path = brain_name
     trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
-    policy = PPOPolicy(0, brain_params, trainer_parameters, False, False)
+    policy = NNPolicy(0, brain_params, trainer_parameters, False, False)
     run_out = policy.evaluate(batched_step, list(batched_step.agent_id))
     assert run_out["action"].shape == (3, 2)
     env.close()
@@ -102,7 +102,7 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    policy = PPOPolicy(0, brain_params, dummy_config, False, False)
+    policy = NNPolicy(0, brain_params, dummy_config, False, False)
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -328,7 +328,7 @@ def test_trainer_increment_step(dummy_config):
     trainer = PPOTrainer(
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
     )
-    policy_mock = mock.Mock(spec=PPOPolicy)
+    policy_mock = mock.Mock(spec=NNPolicy)
     step_count = (
         5
     )  # 10 hacked because this function is no longer called through trainer

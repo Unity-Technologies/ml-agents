@@ -8,7 +8,6 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.models import LearningModel
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -22,7 +21,7 @@ class RewardSignal(abc.ABC):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
-        :param policy: The Policy object (e.g. PPOPolicy) that this Reward Signal will apply to.
+        :param policy: The Policy object (e.g. NNPolicy) that this Reward Signal will apply to.
         :param strength: The strength of the reward. The reward's raw value will be multiplied by this value.
         :param gamma: The time discounting factor used for this reward.
         :return: A RewardSignal object.
@@ -55,10 +54,7 @@ class RewardSignal(abc.ABC):
         )
 
     def prepare_update(
-        self,
-        policy_model: LearningModel,
-        mini_batch: Dict[str, np.ndarray],
-        num_sequences: int,
+        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), get the feed_dict

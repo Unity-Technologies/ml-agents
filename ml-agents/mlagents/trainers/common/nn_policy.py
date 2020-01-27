@@ -15,7 +15,7 @@ from mlagents.trainers.components.bc.module import BCModule
 logger = logging.getLogger("mlagents.trainers")
 
 
-class PPOPolicy(TFPolicy):
+class NNPolicy(TFPolicy):
     def __init__(
         self,
         seed: int,
@@ -99,18 +99,12 @@ class PPOPolicy(TFPolicy):
             self.batch_size_ph: batched_step_result.n_agents(),
             self.sequence_length_ph: 1,
         }
-        epsilon = None
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.prev_action] = self.retrieve_previous_action(
                     global_agent_ids
                 )
             feed_dict[self.memory_in] = self.retrieve_memories(global_agent_ids)
-        if self.use_continuous_act:
-            epsilon = np.random.normal(
-                size=(batched_step_result.n_agents(), self.act_size[0])
-            )
-            feed_dict[self.epsilon] = epsilon
         feed_dict = self.fill_eval_dict(feed_dict, batched_step_result)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
@@ -166,9 +160,7 @@ class PPOPolicy(TFPolicy):
 
         sigma_sq = tf.exp(self.log_sigma_sq)
 
-        self.epsilon = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
-        )
+        self.epsilon = tf.random_normal(tf.shape(mu))
         # Clip and scale output to ensure actions are always within [-1, 1] range.
         self.output_pre = mu + tf.sqrt(sigma_sq) * self.epsilon
         output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3

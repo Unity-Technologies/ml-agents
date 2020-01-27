@@ -5,7 +5,7 @@ import numpy as np
 import yaml
 import os
 
-from mlagents.trainers.ppo.policy import PPOPolicy
+from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.sac.policy import SACPolicy
 
 
@@ -85,7 +85,7 @@ def create_policy_with_bc_mock(mock_brain, trainer_config, use_rnn, demo_file):
     )
 
     policy = (
-        PPOPolicy(0, mock_brain, trainer_config, False, False)
+        NNPolicy(0, mock_brain, trainer_config, False, False)
         if trainer_config["trainer"] == "ppo"
         else SACPolicy(0, mock_brain, trainer_config, False, False)
     )

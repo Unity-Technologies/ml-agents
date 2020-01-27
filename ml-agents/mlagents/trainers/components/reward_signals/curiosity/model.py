@@ -2,12 +2,13 @@ from typing import List, Tuple
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.models import LearningModel
+from mlagents.trainers.tf_policy import TFPolicy
 
 
 class CuriosityModel(object):
     def __init__(
         self,
-        policy_model: LearningModel,
+        policy_model: TFPolicy,
         encoding_size: int = 128,
         learning_rate: float = 3e-4,
     ):
