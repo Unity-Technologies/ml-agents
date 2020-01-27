@@ -3,7 +3,7 @@
 # GRPC-TOOLS required. Install with `nuget install Grpc.Tools`.
 # Then un-comment and replace [DIRECTORY] with location of files.
 # For example, on macOS, you might have something like:
-COMPILER=Grpc.Tools.1.14.1/tools/macosx_x64
+# COMPILER=Grpc.Tools.1.14.1/tools/macosx_x64
 # COMPILER=[DIRECTORY]
 
 SRC_DIR=proto/mlagents_envs/communicator_objects
