@@ -130,9 +130,7 @@ class PPOOptimizer(TFOptimizer):
 
         self.create_value_heads(self.stream_names, hidden_value)
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, self.policy.act_size[0]],
-            dtype=tf.float32,
-            name="old_probabilities",
+            shape=[None, 1], dtype=tf.float32, name="old_probabilities"
         )
 
         self.old_log_probs = tf.reduce_sum(
