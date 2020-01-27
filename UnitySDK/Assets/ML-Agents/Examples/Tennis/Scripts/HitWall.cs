@@ -55,20 +55,20 @@ public class HitWall : MonoBehaviour
 
     }
 
-    void OnTriggerEnter(Collider obj)
-    {
-        if (obj.gameObject.name == "over")
-        {
-            if (lastAgentHit == 0)
-            {
-                m_AgentA.AddReward(0.01f);
-            }
-            else if (lastAgentHit == 1)
-            {
-                m_AgentB.AddReward(0.01f);
-            }
-        }
-    }
+    //void OnTriggerEnter(Collider obj)
+    //{
+    //    if (obj.gameObject.name == "over")
+    //    {
+    //        if (lastAgentHit == 0)
+    //        {
+    //            m_AgentA.AddReward(0.01f);
+    //        }
+    //        else if (lastAgentHit == 1)
+    //        {
+    //            m_AgentB.AddReward(0.01f);
+    //        }
+    //    }
+    //}
 
     void OnCollisionEnter(Collision collision)
     {
@@ -161,7 +161,7 @@ public class HitWall : MonoBehaviour
                     net = true;
                 }
 
-                m_AgentA.AddReward(0.01f);
+                //m_AgentA.AddReward(0.01f);
                 lastAgentHit = 0;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
@@ -180,7 +180,7 @@ public class HitWall : MonoBehaviour
                     net = true;
                 }
 
-                m_AgentB.AddReward(0.01f);
+                //m_AgentB.AddReward(0.01f);
                 lastAgentHit = 1;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
