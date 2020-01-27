@@ -54,7 +54,7 @@ ML-Agents toolkit은 유니티의 풍부한 환경에서 인공지능 에이전�
 ## 커뮤니티 그리고 피드백
 
 ML-Agents toolkit은 오픈소스 프로젝트이며 컨트리뷰션을 환영합니다. 만약 컨트리뷰션을 원하시는 경우
-[컨트리뷰션 가이드라인](CONTRIBUTING.md)과 [행동 규칙](CODE_OF_CONDUCT.md)을 검토해주십시오.
+[컨트리뷰션 가이드라인](com/unity.ml-agents/CONTRIBUTING.md)과 [행동 규칙](CODE_OF_CONDUCT.md)을 검토해주십시오.
 
 만약 ML-Agents toolkit을 사용하며 문제가 생긴다면, 가능한 많은 세부 사항을 포함하여 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues)을 해주십시오.
 

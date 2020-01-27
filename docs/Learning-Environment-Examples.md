@@ -15,7 +15,7 @@ pre-trained model files, and are designed to serve as challenges for
 researchers.
 
 If you would like to contribute environments, please see our
-[contribution guidelines](../CONTRIBUTING.md) page.
+[contribution guidelines](../com.unity.ml-agents/CONTRIBUTING.md) page.
 
 ## Basic
 
