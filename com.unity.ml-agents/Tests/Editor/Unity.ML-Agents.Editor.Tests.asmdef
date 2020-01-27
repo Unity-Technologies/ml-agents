@@ -2,7 +2,8 @@
     "name": "Unity.ML-Agents.Editor.Tests",
     "references": [
         "Unity.ML-Agents.Editor",
-        "Unity.ML-Agents"
+        "Unity.ML-Agents",
+        "Barracuda"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

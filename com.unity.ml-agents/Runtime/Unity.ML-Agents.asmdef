@@ -1,6 +1,8 @@
 {
     "name": "Unity.ML-Agents",
-    "references": [],
+    "references": [
+        "Barracuda"
+    ],
     "includePlatforms": [],
     "excludePlatforms": []
 }
