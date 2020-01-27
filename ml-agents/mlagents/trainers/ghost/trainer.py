@@ -2,7 +2,7 @@
 # ## ML-Agent Learning (Ghost Trainer)
 
 # import logging
-from typing import Dict, List, Any, cast
+from typing import Deque, Dict, List, Any, cast
 
 import numpy as np
 import logging
@@ -48,7 +48,7 @@ class GhostTrainer(Trainer):
         self_play_parameters = trainer_parameters["self_play"]
         self.window = self_play_parameters.get("window", 10)
         self.play_against_current_self_ratio = self_play_parameters.get(
-            "play_against_current_self_ratio", 0
+            "play_against_current_self_ratio", 0.5
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
@@ -76,6 +76,16 @@ class GhostTrainer(Trainer):
         :return: the step count of the trainer
         """
         return self.trainer.get_step
+
+    @property
+    def reward_buffer(self) -> Deque[float]:
+        """
+         Returns the reward buffer. The reward buffer contains the cumulative
+         rewards of the most recent episodes completed by agents using this
+         trainer.
+         :return: the reward buffer.
+         """
+        return self.trainer.reward_buffer
 
     def _write_summary(self, step: int) -> None:
         """
@@ -118,7 +128,7 @@ class GhostTrainer(Trainer):
 
     def advance(self) -> None:
         """
-        Steps the trainer, taking in trajectories and updates if ready.
+        Steps the trainer, passing trajectories to wrapped trainer and calling trainer advance
         """
         for traj_queue, internal_traj_queue in zip(
             self.trajectory_queues, self.internal_trajectory_queues
@@ -145,11 +155,11 @@ class GhostTrainer(Trainer):
                 pass
 
         if self.get_step - self.last_save > self.steps_between_save:
-            self.save_snapshot(self.trainer.policy)
+            self._save_snapshot(self.trainer.policy)
             self.last_save = self.get_step
 
         if self.get_step - self.last_swap > self.steps_between_swap:
-            self.swap_snapshots()
+            self._swap_snapshots()
             self.last_swap = self.get_step
 
     def end_episode(self):
@@ -173,14 +183,14 @@ class GhostTrainer(Trainer):
         if not self.learning_behavior_name:
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            self.save_snapshot(policy)
+            self._save_snapshot(policy)
             self.trainer.add_policy(name_behavior_id, policy)
             self.learning_behavior_name = name_behavior_id
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         return self.policies[name_behavior_id]
 
-    def save_snapshot(self, policy: TFPolicy) -> None:
+    def _save_snapshot(self, policy: TFPolicy) -> None:
         weights = policy.get_weights()
         try:
             self.policy_snapshots[self.snapshot_counter] = weights
@@ -189,7 +199,7 @@ class GhostTrainer(Trainer):
         self.policy_elos[self.snapshot_counter] = self.current_elo
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
-    def swap_snapshots(self) -> None:
+    def _swap_snapshots(self) -> None:
         for q in self.policy_queues:
             name_behavior_id = q.behavior_id
             # here is the place for a sampling protocol
@@ -232,6 +242,11 @@ class GhostTrainer(Trainer):
     def subscribe_trajectory_queue(
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
+        """
+        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
+        :param queue: Trajectory queue to publish to.
+        """
+
         if trajectory_queue.behavior_id == self.learning_behavior_name:
             super().subscribe_trajectory_queue(trajectory_queue)
 
