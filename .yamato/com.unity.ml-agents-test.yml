@@ -33,8 +33,6 @@ test_{{ platform.name }}_{{ editor.version }}:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
-  {% endfor %}
-  {% endfor %}
   triggers:
     pull_requests:
       - targets:
@@ -42,3 +40,5 @@ test_{{ platform.name }}_{{ editor.version }}:
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"
+  {% endfor %}
+  {% endfor %}
