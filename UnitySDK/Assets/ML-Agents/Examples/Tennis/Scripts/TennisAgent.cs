@@ -64,13 +64,12 @@ public class TennisAgent : Agent
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
-        //if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
-        //{
-        //    m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
-        //}
+        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        {
+            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
+        }
 
-        //m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
-        m_AgentRb.velocity = new Vector3(moveX * 30f, moveY * 30f, 0f);
+        m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
 
         m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
 
