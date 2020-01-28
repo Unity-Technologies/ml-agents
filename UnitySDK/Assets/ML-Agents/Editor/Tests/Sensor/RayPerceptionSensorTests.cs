@@ -204,14 +204,5 @@ namespace MLAgents.Tests
                 }
             }
         }
-
-        [Test]
-        public void TestConstants()
-        {
-            // We use Physics.DefaultRaycastLayers as the default value for
-            // RayPerceptionSensorComponentBase.rayLayerMask. Since this is used for both 3d and 2d raycasting,
-            // we should ensure that the values are the same.
-            Assert.AreEqual(Physics.DefaultRaycastLayers, Physics2D.DefaultRaycastLayers);
-        }
     }
 }
