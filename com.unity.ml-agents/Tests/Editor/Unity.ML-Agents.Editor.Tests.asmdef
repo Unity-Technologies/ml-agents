@@ -1,0 +1,26 @@
+{
+    "name": "Unity.ML-Agents.Editor.Tests",
+    "references": [
+        "Unity.ML-Agents.Editor",
+        "Unity.ML-Agents",
+        "Barracuda"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Abstractions.dll",
+        "System.IO.Abstractions.TestingHelpers.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ]
+}

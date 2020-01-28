@@ -96,7 +96,7 @@ behavior has the following parameters:
 
 Once our curriculum is defined, we have to use the reset parameters we defined
 and modify the environment from the Agent's `AgentReset()` function. See
-[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/UnitySDK/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example.
 
 
