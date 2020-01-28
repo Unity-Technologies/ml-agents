@@ -63,7 +63,7 @@ class Trainer(abc.ABC):
         self.step: int = 0
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
-        self.next_update_step = self.summary_freq
+        self.next_summary_step = self.summary_freq
 
     def _check_param_keys(self):
         for k in self.param_keys:
@@ -171,12 +171,16 @@ class Trainer(abc.ABC):
         :param n_steps: number of steps to increment the step count by
         """
         self.step += n_steps
-        self.next_update_step = self.step + (
-            self.summary_freq - self.step % self.summary_freq
-        )
+        self.next_summary_step = self._get_next_summary_step()
         p = self.get_policy(name_behavior_id)
         if p:
             p.increment_step(n_steps)
+
+    def _get_next_summary_step(self) -> int:
+        """
+        Get the next step count that should result in a summary write.
+        """
+        return self.step + (self.summary_freq - self.step % self.summary_freq)
 
     def save_model(self, name_behavior_id: str) -> None:
         """
@@ -238,8 +242,8 @@ class Trainer(abc.ABC):
         write the summary. This logic ensures summaries are written on the update step and not in between.
         :param step_after_process: the step count after processing the next trajectory.
         """
-        if step_after_process >= self.next_update_step and self.get_step != 0:
-            self._write_summary(self.next_update_step)
+        if step_after_process >= self.next_summary_step and self.get_step != 0:
+            self._write_summary(self.next_summary_step)
 
     @abc.abstractmethod
     def end_episode(self):

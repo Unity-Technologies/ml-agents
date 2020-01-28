@@ -379,10 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 3000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 3000
   team: 0
   agentRole: 0
   area: {fileID: 114559182131992928}
@@ -467,6 +464,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1100217258374548
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,10 +929,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 3000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 3000
   team: 1
   agentRole: 1
   area: {fileID: 114559182131992928}
@@ -1019,6 +1014,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1131626411948014
 GameObject:
   m_ObjectHideFlags: 0
@@ -1122,10 +1118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 3000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 3000
   team: 1
   agentRole: 0
   area: {fileID: 114559182131992928}
@@ -1210,6 +1203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1141134673700168
 GameObject:
   m_ObjectHideFlags: 0
@@ -3788,10 +3782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 3000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 3000
   team: 0
   agentRole: 1
   area: {fileID: 114559182131992928}
@@ -3876,6 +3867,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1931023723143276
 GameObject:
   m_ObjectHideFlags: 0

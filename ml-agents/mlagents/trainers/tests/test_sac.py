@@ -1,4 +1,5 @@
 import pytest
+from unittest import mock
 import yaml
 
 import numpy as np
@@ -343,6 +344,29 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     policy = trainer2.create_policy(mock_brain)
     trainer2.add_policy(mock_brain.brain_name, policy)
     assert trainer2.update_buffer.num_experiences == buffer_len
+
+
+def test_add_get_policy(dummy_config):
+    brain_params = make_brain_parameters(
+        discrete_action=False, visual_inputs=0, vec_obs_size=6
+    )
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
+    policy = mock.Mock(spec=SACPolicy)
+    policy.get_current_step.return_value = 2000
+
+    trainer.add_policy(brain_params.brain_name, policy)
+    assert trainer.get_policy(brain_params.brain_name) == policy
+
+    # Make sure the summary steps were loaded properly
+    assert trainer.get_step == 2000
+    assert trainer.next_summary_step > 2000
+
+    # Test incorrect class of policy
+    policy = mock.Mock()
+    with pytest.raises(RuntimeError):
+        trainer.add_policy(brain_params, policy)
 
 
 def test_process_trajectory(dummy_config):

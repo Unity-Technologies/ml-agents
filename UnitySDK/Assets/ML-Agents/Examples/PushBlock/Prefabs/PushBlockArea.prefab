@@ -452,10 +452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 5000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 5000
   ground: {fileID: 1500989011945850}
   area: {fileID: 1125452240183160}
   areaBounds:
@@ -552,6 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1500989011945850
 GameObject:
   m_ObjectHideFlags: 0

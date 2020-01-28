@@ -30,7 +30,7 @@ public class HallwayAgent : Agent
     {
         if (useVectorObs)
         {
-            AddVectorObs(GetStepCount() / (float)agentParameters.maxStep);
+            AddVectorObs(GetStepCount() / (float)maxStep);
         }
     }
 
@@ -68,7 +68,7 @@ public class HallwayAgent : Agent
 
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-1f / agentParameters.maxStep);
+        AddReward(-1f / maxStep);
         MoveAgent(vectorAction);
     }
 

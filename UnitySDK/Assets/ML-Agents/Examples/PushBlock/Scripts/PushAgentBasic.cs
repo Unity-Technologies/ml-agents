@@ -167,7 +167,7 @@ public class PushAgentBasic : Agent
         MoveAgent(vectorAction);
 
         // Penalty given each step to encourage agent to finish task quickly.
-        AddReward(-1f / agentParameters.maxStep);
+        AddReward(-1f / maxStep);
     }
 
     public override float[] Heuristic()

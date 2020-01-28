@@ -605,10 +605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf26e11cf4ed42eaa3ffb7b91bb4676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 5000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  maxStep: 5000
   ball: {fileID: 1142513601053358}
 --- !u!114 &8193279139064749781
 MonoBehaviour:
@@ -624,6 +621,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1978072206102878
 GameObject:
   m_ObjectHideFlags: 0

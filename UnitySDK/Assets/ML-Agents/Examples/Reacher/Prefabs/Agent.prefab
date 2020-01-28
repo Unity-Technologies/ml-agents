@@ -464,10 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 220b156e3b142406c8b76d4db981d044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 4000
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+  maxStep: 4000
   pendulumA: {fileID: 1644872085946016}
   pendulumB: {fileID: 1053261483945176}
   hand: {fileID: 1654288206095398}
@@ -486,6 +483,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 4
   RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1644872085946016
 GameObject:
   m_ObjectHideFlags: 0
