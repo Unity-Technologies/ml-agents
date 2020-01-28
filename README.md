@@ -73,7 +73,7 @@ In addition to our own documentation, here are some additional, relevant article
 
 The ML-Agents toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
-[contribution guidelines](CONTRIBUTING.md) and
+[contribution guidelines](com.unity.ml-agents/CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
 If you run into any problems using the ML-Agents toolkit,

@@ -69,6 +69,7 @@ class AgentProcessor:
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
 
+        terminated_agents: List[str] = []
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
             get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
@@ -154,8 +155,7 @@ class AgentProcessor:
                             "Environment/Episode Length",
                             self.episode_steps.get(global_id, 0),
                         )
-                        del self.episode_steps[global_id]
-                        del self.episode_rewards[global_id]
+                        terminated_agents += [global_id]
                 elif not curr_agent_step.done:
                     self.episode_steps[global_id] += 1
 
@@ -165,6 +165,21 @@ class AgentProcessor:
             self.policy.save_previous_action(
                 previous_action.agent_ids, take_action_outputs["action"]
             )
+
+        for terminated_id in terminated_agents:
+            self._clean_agent_data(terminated_id)
+
+    def _clean_agent_data(self, global_id: str) -> None:
+        """
+        Removes the data for an Agent.
+        """
+        del self.experience_buffers[global_id]
+        del self.last_take_action_outputs[global_id]
+        del self.episode_steps[global_id]
+        del self.episode_rewards[global_id]
+        del self.last_step_result[global_id]
+        self.policy.remove_previous_action([global_id])
+        self.policy.remove_memories([global_id])
 
     def publish_trajectory_queue(
         self, trajectory_queue: "AgentManagerQueue[Trajectory]"

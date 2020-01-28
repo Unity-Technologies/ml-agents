@@ -61,7 +61,7 @@ def main():
         "-logfile",
         "-",
         "-projectPath",
-        f"{base_path}/UnitySDK",
+        f"{base_path}/Project",
         "-testResults",
         f"{base_path}/results.xml",
         "-testPlatform",

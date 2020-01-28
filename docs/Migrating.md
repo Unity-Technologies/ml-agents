@@ -25,6 +25,7 @@ The versions can be found in
 * The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
 * The `GetValueEstimate()` method on the Agent has been removed.
 * The `UpdateValueAction()` method on the Agent has been removed.
+* Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
 
 ### Steps to Migrate
 * If you were not using `On Demand Decision` for your Agent, you **must** add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.

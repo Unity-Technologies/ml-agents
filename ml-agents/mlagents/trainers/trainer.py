@@ -324,7 +324,7 @@ class Trainer(abc.ABC):
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
         """
-        Adds a trajectory queue to the list of queues for the trainer injest Trajectories from.
+        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
         :param queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)

@@ -22,6 +22,7 @@ from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 
 
@@ -163,11 +164,10 @@ class TrainerController(object):
     def _create_trainer_and_manager(
         self, env_manager: EnvManager, name_behavior_id: str
     ) -> None:
-        try:
-            brain_name, _ = name_behavior_id.split("?")
-        except ValueError:
-            brain_name = name_behavior_id
 
+        brain_name = BehaviorIdentifiers.from_name_behavior_id(
+            name_behavior_id
+        ).brain_name
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
@@ -220,8 +220,8 @@ class TrainerController(object):
                     global_step += 1
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
-                        # Save Tensorflow model
                         self._save_model()
+
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
