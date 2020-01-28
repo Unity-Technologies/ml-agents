@@ -23,6 +23,10 @@ namespace MLAgents.Tests
 
     public class RayPerception3DTests
     {
+        // Use built-in tags
+        const string k_CubeTag = "Player";
+        const string k_SphereTag = "Respawn";
+
         void SetupScene()
         {
             /* Creates game objects in the world for testing.
@@ -39,11 +43,11 @@ namespace MLAgents.Tests
              */
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = new Vector3(0, 0, 10);
-            cube.tag = "wall";
+            cube.tag = k_CubeTag;
 
             var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere1.transform.position = new Vector3(-5, 0, 5);
-            sphere1.tag = "ball";
+            sphere1.tag = k_SphereTag;
 
             var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere2.transform.position = new Vector3(5, 0, 5);
@@ -51,7 +55,7 @@ namespace MLAgents.Tests
 
             var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere3.transform.position = new Vector3(0, 0, -10);
-            sphere3.tag = "ball";
+            sphere3.tag = k_SphereTag;
         }
 
         [Test]
@@ -65,8 +69,8 @@ namespace MLAgents.Tests
             perception.maxRayDegrees = 45;
             perception.rayLength = 20;
             perception.detectableTags = new List<string>();
-            perception.detectableTags.Add("wall");
-            perception.detectableTags.Add("ball");
+            perception.detectableTags.Add(k_CubeTag);
+            perception.detectableTags.Add(k_SphereTag);
 
             var radii = new [] { 0f, .5f };
             foreach (var castRadius in radii)
@@ -85,13 +89,13 @@ namespace MLAgents.Tests
                 Assert.AreEqual(numWritten, expectedObs);
 
                 // Expected hits:
-                // ray 0 should hit the "wall" tag at roughly halfway
-                // ray 1 should hit but no tag
-                // ray 2 should hit the "ball" tag
+                // ray 0 should hit the cube at roughly halfway
+                // ray 1 should hit a sphere but no tag
+                // ray 2 should hit a sphere with the k_SphereTag tag
                 // The hit fraction should be the same for rays 1 and
                 //
-                Assert.AreEqual(1.0f, outputBuffer[0]); // hit wall tag
-                Assert.AreEqual(0.0f, outputBuffer[1]); // missed ball tag
+                Assert.AreEqual(1.0f, outputBuffer[0]); // hit cube
+                Assert.AreEqual(0.0f, outputBuffer[1]); // missed sphere
                 Assert.AreEqual(0.0f, outputBuffer[2]); // missed unknown tag
 
                 // Hit is at z=9.0 in world space, ray length is 20
@@ -102,15 +106,15 @@ namespace MLAgents.Tests
                 // Spheres are at 5,0,5 and 5,0,-5, so 5*sqrt(2) units from origin
                 // Minus 1.0 for the sphere radius to get the length of the hit.
                 var expectedHitLengthWorldSpace = 5.0f * Mathf.Sqrt(2.0f) - 0.5f - castRadius;
-                Assert.AreEqual(0.0f, outputBuffer[4]); // missed wall tag
-                Assert.AreEqual(0.0f, outputBuffer[5]); // missed ball tag
+                Assert.AreEqual(0.0f, outputBuffer[4]); // missed cube
+                Assert.AreEqual(0.0f, outputBuffer[5]); // missed sphere
                 Assert.AreEqual(0.0f, outputBuffer[6]); // hit unknown tag -> all 0
                 Assert.That(
                     outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
                 );
 
-                Assert.AreEqual(0.0f, outputBuffer[8]); // missed wall tag
-                Assert.AreEqual(1.0f, outputBuffer[9]); // hit ball tag
+                Assert.AreEqual(0.0f, outputBuffer[8]); // missed cube
+                Assert.AreEqual(1.0f, outputBuffer[9]); // hit sphere
                 Assert.AreEqual(0.0f, outputBuffer[10]); // missed unknown tag
                 Assert.That(
                     outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
@@ -128,8 +132,8 @@ namespace MLAgents.Tests
             perception.maxRayDegrees = 45;
             perception.rayLength = 20;
             perception.detectableTags = new List<string>();
-            perception.detectableTags.Add("wall");
-            perception.detectableTags.Add("ball");
+            perception.detectableTags.Add(k_CubeTag);
+            perception.detectableTags.Add(k_SphereTag);
 
             var sensor = perception.CreateSensor();
             var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
@@ -151,12 +155,12 @@ namespace MLAgents.Tests
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = new Vector3(0, 0, 10);
-            cube.tag = "wall";
+            cube.tag = k_CubeTag;
             cube.name = "cubeFar";
 
             var cubeFiltered = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cubeFiltered.transform.position = new Vector3(0, 0, 5);
-            cubeFiltered.tag = "wall";
+            cubeFiltered.tag = k_CubeTag;
             cubeFiltered.name = "cubeNear";
             cubeFiltered.layer = 7;
 
