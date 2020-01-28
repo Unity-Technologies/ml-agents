@@ -142,6 +142,65 @@ namespace MLAgents.Tests
         }
 
         [Test]
+        public void TestRayFilter()
+        {
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.position = new Vector3(0, 0, 10);
+            cube.tag = "wall";
+            cube.name = "cubeFar";
+
+            var cubeFiltered = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cubeFiltered.transform.position = new Vector3(0, 0, 5);
+            cubeFiltered.tag = "wall";
+            cubeFiltered.name = "cubeNear";
+            cubeFiltered.layer = 7;
+
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+            perception.raysPerDirection = 0;
+            perception.rayLength = 20;
+            perception.detectableTags = new List<string>();
+
+            var filterCubeLayers = new[] { false, true };
+            foreach (var filterCubeLayer in filterCubeLayers)
+            {
+                // Set the layer mask to either the default, or one that ignores the close cube's layer
+                var layerMask = Physics.DefaultRaycastLayers;
+                if (filterCubeLayer)
+                {
+                    layerMask &= ~(1 << cubeFiltered.layer);
+                }
+                perception.rayLayerMask = layerMask;
+
+                var sensor = perception.CreateSensor();
+                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                var outputBuffer = new float[expectedObs];
+
+                WriteAdapter writer = new WriteAdapter();
+                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+
+                var numWritten = sensor.Write(writer);
+                Assert.AreEqual(numWritten, expectedObs);
+
+                if (filterCubeLayer)
+                {
+                    // Hit the far cube because close was filtered.
+                    Assert.That(outputBuffer[outputBuffer.Length - 1],
+                        Is.EqualTo((9.5f - perception.sphereCastRadius) / perception.rayLength).Within(.0005f)
+                    );
+                }
+                else
+                {
+                    // Hit the close cube because not filtered.
+                    Assert.That(outputBuffer[outputBuffer.Length - 1],
+                        Is.EqualTo((4.5f - perception.sphereCastRadius) / perception.rayLength).Within(.0005f)
+                    );
+                }
+            }
+        }
+
+        [Test]
         public void TestConstants()
         {
             Assert.AreEqual(Physics.DefaultRaycastLayers, Physics2D.DefaultRaycastLayers);
