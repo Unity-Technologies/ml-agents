@@ -1,7 +1,5 @@
-import json
 import os
 import subprocess
-from typing import Any, Dict
 import yaml
 
 
@@ -82,34 +80,3 @@ def override_config_file(src_path, dest_path, **kwargs):
 
     with open(dest_path, "w") as f:
         yaml.dump(configs, f)
-
-
-def get_rewards_stats(run_id: str, brain_name: str) -> Dict[str, Any]:
-    """
-    Sample timer json:
-    {
-      "name": "root",
-      "gauges": [
-        {
-          "name": "3DBall.mean_reward",
-          "value": 900.0,
-          "min": 1.0,
-          "max": 100.0,
-          "count": 2
-        }
-      ],
-      ...
-    }
-    :param run_id:
-    :param brain_name:
-    :return:
-    """
-    timer_path = os.path.join("summaries", f"{run_id}_timers.json")
-    expected_gauge_name = f"{brain_name}.mean_reward"
-    with open(timer_path) as f:
-        timers = json.load(f)
-    gauges = timers.get("gauges", [])
-    for g in gauges:
-        if g.get("name") == expected_gauge_name:
-            return g
-    raise RuntimeError(f"No stats for run_id={run_id} brain_name={brain_name}")
