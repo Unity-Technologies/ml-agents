@@ -66,8 +66,67 @@ namespace MLAgents.Tests
             perception.detectableTags.Add("wall");
             perception.detectableTags.Add("ball");
 
-            var sensor = perception.CreateSensor();
+            var radii = new [] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.sphereCastRadius = castRadius;
+                var sensor = perception.CreateSensor();
 
+                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                var outputBuffer = new float[expectedObs];
+
+                WriteAdapter writer = new WriteAdapter();
+                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+
+                var numWritten = sensor.Write(writer);
+                Assert.AreEqual(numWritten, expectedObs);
+
+                // Expected hits:
+                // ray 0 should hit the "wall" tag at roughly halfway
+                // ray 1 should hit but no tag
+                // ray 2 should hit the "ball" tag
+                // The hit fraction should be the same for rays 1 and
+                //
+                //Debug.Log($"{outputBuffer[0]} {outputBuffer[1]} {outputBuffer[2]} {outputBuffer[3]}");
+                Assert.AreEqual(1.0f, outputBuffer[0]); // hit wall tag
+                Assert.AreEqual(0.0f, outputBuffer[1]); // missed ball tag
+                Assert.AreEqual(0.0f, outputBuffer[2]); // missed unknown tag
+
+                // Hit is at z=9.0 in world space, ray length is 20
+                Assert.That(outputBuffer[3], Is.EqualTo((9.5f - castRadius) / perception.rayLength).Within(.0005f));
+
+                // Spheres are at 5,0,5 and 5,0,-5, so 5*sqrt(2) units from origin
+                // Minus 1.0 for the sphere radius to get the length of the hit.
+                //Debug.Log($"{outputBuffer[4]} {outputBuffer[5]} {outputBuffer[6]} {outputBuffer[7]}");
+                var expectedHitLengthWorldSpace = 5.0f * Mathf.Sqrt(2.0f) - 0.5f - castRadius;
+                Assert.AreEqual(0.0f, outputBuffer[4]); // missed wall tag
+                Assert.AreEqual(0.0f, outputBuffer[5]); // missed ball tag
+                Assert.AreEqual(0.0f, outputBuffer[6]); // hit unknown tag -> all 0
+                Assert.That(outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f));
+
+                //Debug.Log($"{outputBuffer[8]} {outputBuffer[9]} {outputBuffer[10]} {outputBuffer[11]}");
+                Assert.AreEqual(0.0f, outputBuffer[8]); // missed wall tag
+                Assert.AreEqual(1.0f, outputBuffer[9]); // hit ball tag
+                Assert.AreEqual(0.0f, outputBuffer[10]); // missed unknown tag
+                Assert.That(outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f));
+            }
+        }
+
+        [Test]
+        public void TestRaycastMiss()
+        {
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.raysPerDirection = 0;
+            perception.maxRayDegrees = 45;
+            perception.rayLength = 20;
+            perception.detectableTags = new List<string>();
+            perception.detectableTags.Add("wall");
+            perception.detectableTags.Add("ball");
+
+            var sensor = perception.CreateSensor();
             var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
             Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
             var outputBuffer = new float[expectedObs];
@@ -78,40 +137,14 @@ namespace MLAgents.Tests
             var numWritten = sensor.Write(writer);
             Assert.AreEqual(numWritten, expectedObs);
 
-            // Expected hits:
-            // ray 0 should hit the "wall" tag at roughly halfway
-            // ray 1 should hit the "ball" tag
-            // ray 2 should hit but no tag
-            // The hit fraction should be the same for rays 1 and
-            //
-            //Debug.Log($"{outputBuffer[0]} {outputBuffer[1]} {outputBuffer[2]} {outputBuffer[3]}");
-            Assert.AreEqual(1.0f, outputBuffer[0]); // hit wall tag
-            Assert.AreEqual(0.0f, outputBuffer[1]); // missed ball tag
-            Assert.AreEqual(0.0f, outputBuffer[2]); // missed unknown tag
-            // Hit is at z=9.0 in world space, ray length is 20
-            Assert.That( outputBuffer[3], Is.EqualTo( 9.0f / perception.rayLength ).Within( .0005f ));
-
-            // Spheres are at 5,0,5 and 5,0,-5, so 5*sqrt(2) units from origin
-            // Minus 1.0 for the sphere radius to get the length of the hit.
-            //Debug.Log($"{outputBuffer[4]} {outputBuffer[5]} {outputBuffer[6]} {outputBuffer[7]}");
-            var expectedHitLengthWorldSpace = 5.0f * Mathf.Sqrt(2.0f) - 1.0f;
-            Assert.AreEqual(0.0f, outputBuffer[4]); // missed wall tag
-            Assert.AreEqual(0.0f, outputBuffer[5]); // missed ball tag
-            Assert.AreEqual(0.0f, outputBuffer[6]); // hit unknown tag -> all 0
-            Assert.That( outputBuffer[7], Is.EqualTo( expectedHitLengthWorldSpace / perception.rayLength ).Within( .0005f ));
-
-            //Debug.Log($"{outputBuffer[8]} {outputBuffer[9]} {outputBuffer[10]} {outputBuffer[11]}");
-            Assert.AreEqual(0.0f, outputBuffer[8]); // missed wall tag
-            Assert.AreEqual(1.0f, outputBuffer[9]); // hit ball tag
-            Assert.AreEqual(0.0f, outputBuffer[10]); // missed unknown tag
-            Assert.That( outputBuffer[11], Is.EqualTo( expectedHitLengthWorldSpace / perception.rayLength ).Within( .0005f ));
-
-
-
-
-
-
+            // Everything missed
+            Assert.AreEqual(new float[] { 0, 0, 1, 1 }, outputBuffer);
         }
 
+        [Test]
+        public void TestConstants()
+        {
+            Assert.AreEqual(Physics.DefaultRaycastLayers, Physics2D.DefaultRaycastLayers);
+        }
     }
 }
