@@ -91,7 +91,7 @@ class GhostTrainer(Trainer):
         """
         Saves training statistics to Tensorboard.
         """
-        opponents = np.array(self.policy_elos)
+        opponents = np.array(self.policy_elos, dtype=np.float32)
         LOGGER.info(
             " Learning brain {} ELO: {:0.3f}\n"
             "Mean Opponent ELO: {:0.3f}"
