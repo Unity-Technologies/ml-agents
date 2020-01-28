@@ -275,7 +275,7 @@ namespace MLAgents
             {
                 m_ActionCallbacks[brainKey] = new List<IdCallbackPair>();
             }
-            m_ActionCallbacks[brainKey].Add(new IdCallbackPair { AgentId = info.id, Callback = action });
+            m_ActionCallbacks[brainKey].Add(new IdCallbackPair { AgentId = info.episodeId, Callback = action });
         }
 
         /// <summary>

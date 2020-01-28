@@ -41,10 +41,10 @@ namespace MLAgents
         public bool maxStepReached;
 
         /// <summary>
-        /// Unique identifier each agent receives at initialization. It is used
+        /// Episode identifier each agent receives at every reset. It is used
         /// to separate between different agents in the environment.
         /// </summary>
-        public int id;
+        public int episodeId;
     }
 
     /// <summary>
@@ -148,13 +148,6 @@ namespace MLAgents
         /// Whether or not the agent requests a decision.
         bool m_RequestDecision;
 
-        /// Whether or not the agent has completed the episode. This may be due
-        /// to either reaching a success or fail state, or reaching the maximum
-        /// number of steps (i.e. timing out).
-        bool m_Done;
-
-        /// Whether or not the agent reached the maximum number of steps.
-        bool m_MaxStepReached;
 
         /// Keeps track of the number of steps taken by the agent in this episode.
         /// Note that this value is different for each agent, and may not overlap
@@ -162,9 +155,10 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
-        /// Unique identifier each agent receives at initialization. It is used
+        /// Episode identifier each agent receives. It is used
         /// to separate between different agents in the environment.
-        int m_Id;
+        /// This Id will be changed every time the Agent resets.
+        int m_EpisodeId;
 
         /// Keeps track of the actions that are masked at each step.
         ActionMasker m_ActionMasker;
@@ -190,7 +184,7 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_Id = gameObject.GetInstanceID();
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             OnEnableHelper();
 
             m_Recorder = GetComponent<DemonstrationRecorder>();
@@ -204,7 +198,6 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
-            Academy.Instance.AgentResetIfDone += ResetIfDone;
             Academy.Instance.AgentSendState += SendInfo;
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
@@ -224,7 +217,6 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
-                Academy.Instance.AgentResetIfDone -= ResetIfDone;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
@@ -234,12 +226,20 @@ namespace MLAgents
             m_Brain?.Dispose();
         }
 
-        void NotifyAgentDone()
+        void NotifyAgentDone(bool maxStepReached = false)
         {
+            m_Info.reward = m_Reward;
             m_Info.done = true;
+            m_Info.maxStepReached = maxStepReached;
             // Request the last decision with no callbacks
-            // We request a decision so Python knows the Agent is disabled
+            // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
+            // The Agent is done, so we give it a new episode Id
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
+            m_Reward = 0f;
+            m_CumulativeReward = 0f;
+            m_RequestAction = false;
+            m_RequestDecision = false;
         }
 
         /// <summary>
@@ -322,7 +322,9 @@ namespace MLAgents
         /// </summary>
         public void Done()
         {
-            m_Done = true;
+            NotifyAgentDone();
+            _AgentReset();
+
         }
 
         /// <summary>
@@ -340,28 +342,6 @@ namespace MLAgents
         public void RequestAction()
         {
             m_RequestAction = true;
-        }
-
-        /// <summary>
-        /// Indicates if the agent has reached his maximum number of steps.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if max step reached was reached, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsMaxStepReached()
-        {
-            return m_MaxStepReached;
-        }
-
-        /// <summary>
-        /// Indicates if the agent is done
-        /// </summary>
-        /// <returns>
-        /// <c>true</c>, if the agent is done, <c>false</c> otherwise.
-        /// </returns>
-        public bool IsDone()
-        {
-            return m_Done;
         }
 
         /// Helper function that resets all the data structures associated with
@@ -489,9 +469,9 @@ namespace MLAgents
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
             m_Info.reward = m_Reward;
-            m_Info.done = m_Done;
-            m_Info.maxStepReached = m_MaxStepReached;
-            m_Info.id = m_Id;
+            m_Info.done = false;
+            m_Info.maxStepReached = false;
+            m_Info.episodeId = m_EpisodeId;
 
             m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
 
@@ -742,31 +722,16 @@ namespace MLAgents
         }
 
 
-        /// Signals the agent that it must reset if its done flag is set to true.
-        void ResetIfDone()
-        {
-            if (m_Done)
-            {
-                _AgentReset();
-            }
-        }
-
         /// <summary>
         /// Signals the agent that it must sent its decision to the brain.
         /// </summary>
         void SendInfo()
         {
             // If the Agent is done, it has just reset and thus requires a new decision
-            if (m_RequestDecision || m_Done)
+            if (m_RequestDecision)
             {
                 SendInfoToBrain();
                 m_Reward = 0f;
-                if (m_Done)
-                {
-                    m_CumulativeReward = 0f;
-                }
-                m_Done = false;
-                m_MaxStepReached = false;
                 m_RequestDecision = false;
             }
         }
@@ -774,19 +739,21 @@ namespace MLAgents
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
+            if ((m_StepCount >= maxStep - 1) && (maxStep > 0))
+            {
+                NotifyAgentDone(true);
+                _AgentReset();
+
+            }
+            else
+            {
+                m_StepCount += 1;
+            }
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
                 AgentAction(m_Action.vectorActions);
             }
-
-            if ((m_StepCount >= maxStep) && (maxStep > 0))
-            {
-                m_MaxStepReached = true;
-                Done();
-            }
-
-            m_StepCount += 1;
         }
 
         void DecideAction()

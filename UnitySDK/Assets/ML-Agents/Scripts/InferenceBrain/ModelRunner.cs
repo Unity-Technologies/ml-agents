@@ -130,7 +130,7 @@ namespace MLAgents.InferenceBrain
                 sensors = sensors
             });
 
-            m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.id });
+            m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.episodeId });
         }
         public void DecideBatch()
         {

@@ -165,9 +165,9 @@ namespace MLAgents.InferenceBrain
 
                 if (info.done)
                 {
-                    m_Memories.Remove(info.id);
+                    m_Memories.Remove(info.episodeId);
                 }
-                if (!m_Memories.TryGetValue(info.id, out memory))
+                if (!m_Memories.TryGetValue(info.episodeId, out memory))
                 {
                     for (var j = 0; j < memorySize; j++)
                     {
@@ -221,9 +221,9 @@ namespace MLAgents.InferenceBrain
                 List<float> memory;
                 if (info.done)
                 {
-                    m_Memories.Remove(info.id);
+                    m_Memories.Remove(info.episodeId);
                 }
-                if (!m_Memories.TryGetValue(info.id, out memory))
+                if (!m_Memories.TryGetValue(info.episodeId, out memory))
                 {
 
                     for (var j = 0; j < memorySize; j++)

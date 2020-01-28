@@ -3,14 +3,21 @@
 --- !u!159 &1
 EditorSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 4
+  serializedVersion: 7
   m_ExternalVersionControlSupport: Hidden Meta Files
   m_SerializationMode: 2
+  m_LineEndingsForNewScripts: 1
   m_DefaultBehaviorMode: 0
+  m_PrefabRegularEnvironment: {fileID: 0}
+  m_PrefabUIEnvironment: {fileID: 0}
   m_SpritePackerMode: 0
   m_SpritePackerPaddingPower: 1
-  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd
+  m_EtcTextureCompressorBehavior: 0
+  m_EtcTextureFastCompressor: 2
+  m_EtcTextureNormalCompressor: 2
+  m_EtcTextureBestCompressor: 5
+  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd;asmdef
   m_ProjectGenerationRootNamespace: 
-  m_UserGeneratedProjectSuffix: 
   m_CollabEditorSettings:
     inProgressEnabled: 1
+  m_EnableTextureStreamingInPlayMode: 1

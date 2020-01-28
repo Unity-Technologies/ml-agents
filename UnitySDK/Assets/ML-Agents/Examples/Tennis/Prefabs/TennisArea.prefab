@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 65276341973995358}
   - component: {fileID: 114176423636690854}
   - component: {fileID: 114915946461826994}
-  - component: {fileID: 8204458845367443590}
+  - component: {fileID: 2449890524009497851}
   m_Layer: 0
   m_Name: AgentA
   m_TagString: agent
@@ -108,8 +108,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1170495812642400}
   m_LocalRotation: {x: -0.30070576, y: -0.953717, z: -0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: -7, y: -6.5, z: -3.5}
-  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
+  m_LocalPosition: {x: -7, y: -6.5, z: -1.8}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_Children:
   - {fileID: 4370649305674928}
   - {fileID: 4715306824276108}
@@ -176,7 +176,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 120
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &65276341973995358
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -203,9 +203,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 8
+    vectorObservationSize: 9
     numStackedVectorObservations: 3
-    vectorActionSize: 02000000
+    vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
@@ -226,14 +226,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  maxStep: 0
   ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0
   myArea: {fileID: 1541947554534326}
   angle: 0
   scale: 0
---- !u!114 &8204458845367443590
+--- !u!114 &2449890524009497851
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -355,7 +355,7 @@ Transform:
   m_GameObject: {fileID: 1273406647218856}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.020000458, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4172342666475122}
   m_RootOrder: 0
@@ -433,7 +433,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 72
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &114864720926204124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +448,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   areaObject: {fileID: 1541947554534326}
   lastAgentHit: 0
+  net: 0
+  lastFloorHit: 0
 --- !u!1 &1299636753784036
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,7 +717,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1485570486708108}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.9507, y: -3.3, z: 0}
+  m_LocalPosition: {x: -5.9507, y: -3, z: 0}
   m_LocalScale: {x: 1.0831101, y: 1, z: 1.1727886}
   m_Children: []
   m_Father: {fileID: 4275308033819996}
@@ -1196,7 +1198,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730923431341952}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.07, y: -3.3, z: 0}
+  m_LocalPosition: {x: 6.07, y: -3, z: 0}
   m_LocalScale: {x: 1.0919912, y: 1, z: 1.1119019}
   m_Children: []
   m_Father: {fileID: 4275308033819996}
@@ -1230,7 +1232,7 @@ GameObject:
   - component: {fileID: 65280384434867516}
   - component: {fileID: 114399072728845634}
   - component: {fileID: 114800310164848628}
-  - component: {fileID: 5927246374172518715}
+  - component: {fileID: 6598495797138489682}
   m_Layer: 0
   m_Name: AgentB
   m_TagString: agent
@@ -1246,8 +1248,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1882383181950958}
   m_LocalRotation: {x: 0.30070576, y: -0.953717, z: 0.000000056308206, w: -0.00000017858686}
-  m_LocalPosition: {x: 7, y: -6.5, z: -3.5}
-  m_LocalScale: {x: 0.015, y: 0.015, z: 0.015}
+  m_LocalPosition: {x: 7, y: -6.5, z: -1.8}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_Children:
   - {fileID: 4116541575334976}
   - {fileID: 4937969699028734}
@@ -1314,7 +1316,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 120
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &65280384434867516
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1341,16 +1343,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 8
+    vectorObservationSize: 9
     numStackedVectorObservations: 3
-    vectorActionSize: 02000000
+    vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
-  m_TeamID: 0
+  m_TeamID: 1
   m_useChildSensors: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
@@ -1364,14 +1366,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  maxStep: 0
   ball: {fileID: 1273406647218856}
   invertX: 1
   score: 0
   myArea: {fileID: 1541947554534326}
   angle: 0
   scale: 0
---- !u!114 &5927246374172518715
+--- !u!114 &6598495797138489682
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

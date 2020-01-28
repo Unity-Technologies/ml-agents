@@ -52,6 +52,11 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
         """
+
+        # for ghost trainer save/load snapshots
+        self.assign_phs = []
+        self.assign_ops = []
+
         self.m_size = None
         self.model = None
         self.inference_dict = {}
@@ -109,6 +114,28 @@ class TFPolicy(Policy):
                     "--run-id".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+
+    def get_weights(self):
+        with self.graph.as_default():
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
+            return values
+
+    def init_load_weights(self):
+        with self.graph.as_default():
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
+            for var, value in zip(_vars, values):
+                assign_ph = tf.placeholder(var.dtype, shape=value.shape)
+                self.assign_phs.append(assign_ph)
+                self.assign_ops.append(tf.assign(var, assign_ph))
+
+    def load_weights(self, values):
+        with self.graph.as_default():
+            feed_dict = {}
+            for assign_ph, value in zip(self.assign_phs, values):
+                feed_dict[assign_ph] = value
+            self.sess.run(self.assign_ops, feed_dict=feed_dict)
 
     def evaluate(
         self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]

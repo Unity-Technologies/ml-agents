@@ -20,10 +20,6 @@ namespace MLAgents.Tests
             }
         }
 
-        public bool IsDone()
-        {
-            return (bool)typeof(Agent).GetField("m_Done", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
-        }
         public int initializeAgentCalls;
         public int collectObservationsCalls;
         public int agentActionCalls;
@@ -191,8 +187,6 @@ namespace MLAgents.Tests
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
-            Assert.AreEqual(false, agent1.IsDone());
-            Assert.AreEqual(false, agent2.IsDone());
             Assert.AreEqual(0, agent1.agentResetCalls);
             Assert.AreEqual(0, agent2.agentResetCalls);
             Assert.AreEqual(0, agent1.initializeAgentCalls);
@@ -206,8 +200,6 @@ namespace MLAgents.Tests
             agentEnableMethod?.Invoke(agent2, new object[] { });
             agentEnableMethod?.Invoke(agent1, new object[] { });
 
-            Assert.AreEqual(false, agent1.IsDone());
-            Assert.AreEqual(false, agent2.IsDone());
             // agent1 was not enabled when the academy started
             // The agents have been initialized
             Assert.AreEqual(0, agent1.agentResetCalls);
@@ -422,18 +414,14 @@ namespace MLAgents.Tests
                 if (i % 11 == 5)
                 {
                     agent1.Done();
+                    numberAgent1Reset += 1;
                 }
                 // Resetting agent 2 regularly
                 if (i % 13 == 3)
                 {
-                    if (!(agent2.IsDone()))
-                    {
-                        // If the agent was already reset before the request decision
-                        // We should not reset again
-                        agent2.Done();
-                        numberAgent2Reset += 1;
-                        agent2StepSinceReset = 0;
-                    }
+                    agent2.Done();
+                    numberAgent2Reset += 1;
+                    agent2StepSinceReset = 0;
                 }
                 // Request a decision for agent 2 regularly
                 if (i % 3 == 2)
@@ -445,16 +433,9 @@ namespace MLAgents.Tests
                     // Request an action without decision regularly
                     agent2.RequestAction();
                 }
-                if (agent1.IsDone())
-                {
-                    numberAgent1Reset += 1;
-                }
 
                 acaStepsSinceReset += 1;
                 agent2StepSinceReset += 1;
-                //Agent 1 is only initialized at step 2
-                if (i < 2)
-                { }
                 aca.EnvironmentStep();
             }
         }
@@ -500,19 +481,23 @@ namespace MLAgents.Tests
             var j = 0;
             for (var i = 0; i < 500; i++)
             {
-                agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(j * 0.1f + j * 10f - agent1.GetCumulativeReward()), 0.05f);
-                Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
-
-
-                aca.EnvironmentStep();
-                agent1.AddReward(10f);
-
-                if ((i % 21 == 0) && (i > 0))
+                if (i % 20 == 0)
                 {
                     j = 0;
                 }
-                j++;
+                else
+                {
+                    j++;
+                }
+                agent2.RequestAction();
+                Assert.LessOrEqual(Mathf.Abs(j * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
+
+                agent1.AddReward(10f);
+                aca.EnvironmentStep();
+
+
+
             }
         }
     }
