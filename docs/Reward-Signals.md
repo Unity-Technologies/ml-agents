@@ -35,7 +35,7 @@ reward_signals:
         strength: 0.01
         gamma: 0.99
         encoding_size: 128
-        demo_path: UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
 ```
 
 Each reward signal should define at least two parameters, `strength` and `gamma`, in addition

@@ -1,0 +1,12 @@
+{
+    "name": "Unity.ML-Agents.Tests",
+    "references": [
+        "Unity.ML-Agents",
+        "Barracuda"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
