@@ -60,7 +60,7 @@ namespace MLAgents.Tests
                 reward = 1f,
                 actionMasks = new[] { false, true },
                 done = true,
-                id = 5,
+                episodeId = 5,
                 maxStepReached = true,
                 storedVectorActions = new[] { 0f, 1f },
             };

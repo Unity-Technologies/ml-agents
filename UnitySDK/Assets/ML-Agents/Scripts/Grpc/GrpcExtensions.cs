@@ -43,7 +43,7 @@ namespace MLAgents
                 Reward = ai.reward,
                 MaxStepReached = ai.maxStepReached,
                 Done = ai.done,
-                Id = ai.id,
+                Id = ai.episodeId,
             };
 
             if (ai.actionMasks != null)
