@@ -1,8 +1,7 @@
 {
     "name": "Unity.ML-Agents.Editor",
     "references": [
-        "Unity.ML-Agents",
-        "Barracuda"
+        "Unity.ML-Agents"
     ],
     "includePlatforms": [
         "Editor"
