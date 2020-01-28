@@ -25,14 +25,17 @@ namespace MLAgents.Tests
     {
         void SetupScene()
         {
-            /*
+            /* Creates game objects in the world for testing.
+             *   C is a cube
+             *   S are spheres
+             *   @ is the agent (at the origin)
+             * Each space or line is 5 world units, +x is right, +z is up
+             *
              *      C
              *    S   S
              *      @
-             * ^
-             * |    S
-             * z
-             *   x->
+             *
+             *      S
              */
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = new Vector3(0, 0, 10);
@@ -48,8 +51,7 @@ namespace MLAgents.Tests
 
             var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere3.transform.position = new Vector3(0, 0, -10);
-            //Debug.Log($"sphere3.tag={sphere3.tag}");
-            //Debug.Log($"cube.id={cube.GetInstanceID()} s1.id={} s2");
+            sphere3.tag = "ball";
         }
 
         [Test]
@@ -88,28 +90,31 @@ namespace MLAgents.Tests
                 // ray 2 should hit the "ball" tag
                 // The hit fraction should be the same for rays 1 and
                 //
-                //Debug.Log($"{outputBuffer[0]} {outputBuffer[1]} {outputBuffer[2]} {outputBuffer[3]}");
                 Assert.AreEqual(1.0f, outputBuffer[0]); // hit wall tag
                 Assert.AreEqual(0.0f, outputBuffer[1]); // missed ball tag
                 Assert.AreEqual(0.0f, outputBuffer[2]); // missed unknown tag
 
                 // Hit is at z=9.0 in world space, ray length is 20
-                Assert.That(outputBuffer[3], Is.EqualTo((9.5f - castRadius) / perception.rayLength).Within(.0005f));
+                Assert.That(
+                    outputBuffer[3], Is.EqualTo((9.5f - castRadius) / perception.rayLength).Within(.0005f)
+                );
 
                 // Spheres are at 5,0,5 and 5,0,-5, so 5*sqrt(2) units from origin
                 // Minus 1.0 for the sphere radius to get the length of the hit.
-                //Debug.Log($"{outputBuffer[4]} {outputBuffer[5]} {outputBuffer[6]} {outputBuffer[7]}");
                 var expectedHitLengthWorldSpace = 5.0f * Mathf.Sqrt(2.0f) - 0.5f - castRadius;
                 Assert.AreEqual(0.0f, outputBuffer[4]); // missed wall tag
                 Assert.AreEqual(0.0f, outputBuffer[5]); // missed ball tag
                 Assert.AreEqual(0.0f, outputBuffer[6]); // hit unknown tag -> all 0
-                Assert.That(outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f));
+                Assert.That(
+                    outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
+                );
 
-                //Debug.Log($"{outputBuffer[8]} {outputBuffer[9]} {outputBuffer[10]} {outputBuffer[11]}");
                 Assert.AreEqual(0.0f, outputBuffer[8]); // missed wall tag
                 Assert.AreEqual(1.0f, outputBuffer[9]); // hit ball tag
                 Assert.AreEqual(0.0f, outputBuffer[10]); // missed unknown tag
-                Assert.That(outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f));
+                Assert.That(
+                    outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
+                );
             }
         }
 
@@ -203,6 +208,9 @@ namespace MLAgents.Tests
         [Test]
         public void TestConstants()
         {
+            // We use Physics.DefaultRaycastLayers as the default value for
+            // RayPerceptionSensorComponentBase.rayLayerMask. Since this is used for both 3d and 2d raycasting,
+            // we should ensure that the values are the same.
             Assert.AreEqual(Physics.DefaultRaycastLayers, Physics2D.DefaultRaycastLayers);
         }
     }
