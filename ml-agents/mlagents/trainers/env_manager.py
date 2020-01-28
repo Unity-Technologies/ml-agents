@@ -31,6 +31,7 @@ class EnvManager(ABC):
     def __init__(self):
         self.policies: Dict[AgentGroup, TFPolicy] = {}
         self.agent_managers: Dict[AgentGroup, AgentManager] = {}
+        self.first_step_infos: List[EnvironmentStep] = None
 
     def set_policy(self, brain_name: AgentGroup, policy: TFPolicy) -> None:
         self.policies[brain_name] = policy
@@ -51,7 +52,10 @@ class EnvManager(ABC):
     def reset(self, config: Dict = None) -> int:
         for manager in self.agent_managers.values():
             manager.end_episode()
-        return self._process_step_infos(self._reset_env(config))
+        # Save the first step infos, after the reset.
+        # They will be processed on the first advance().
+        self.first_step_infos = self._reset_env(config)
+        return len(self.first_step_infos)
 
     @property
     @abstractmethod
@@ -68,6 +72,12 @@ class EnvManager(ABC):
         pass
 
     def advance(self):
+        # If we had just reset, process the first EnvironmentSteps.
+        # Note that we do it here instead of in reset() so that on the very first reset(),
+        # we can create the needed AgentManagers before calling advance() and processing the EnvironmentSteps.
+        if self.first_step_infos is not None:
+            self._process_step_infos(self.first_step_infos)
+            self.first_step_infos = None
         # Get new policies if found
         for brain_name in self.external_brains:
             try:
