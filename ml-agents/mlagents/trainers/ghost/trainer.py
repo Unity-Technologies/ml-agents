@@ -141,7 +141,7 @@ class GhostTrainer(Trainer):
             except AgentManagerQueue.Empty:
                 pass
 
-        self.next_update_step = self.trainer.next_update_step
+        self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
         self._maybe_write_summary(self.get_step)
 
