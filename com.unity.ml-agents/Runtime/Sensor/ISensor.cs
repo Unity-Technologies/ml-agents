@@ -10,7 +10,8 @@ namespace MLAgents.Sensor
     /// Sensor interface for generating observations.
     /// For custom implementations, it is recommended to SensorBase instead.
     /// </summary>
-    public interface ISensor {
+    public interface ISensor
+    {
         /// <summary>
         /// Returns the size of the observations that will be generated.
         /// For example, a sensor that observes the velocity of a rigid body (in 3D) would return new {3}.

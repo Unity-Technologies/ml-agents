@@ -5,7 +5,6 @@ using System.Text;
 
 namespace MLAgents
 {
-
     public interface IFloatProperties
     {
         /// <summary>
@@ -40,7 +39,6 @@ namespace MLAgents
 
     public class FloatPropertiesChannel : SideChannel, IFloatProperties
     {
-
         private Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         private Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
 

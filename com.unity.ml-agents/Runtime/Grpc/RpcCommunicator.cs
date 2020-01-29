@@ -18,7 +18,6 @@ namespace MLAgents
     /// Responsible for communication with External using gRPC.
     public class RpcCommunicator : ICommunicator
     {
-
         public struct IdCallbackPair
         {
             public int AgentId;
@@ -123,7 +122,6 @@ namespace MLAgents
         /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
         public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
         {
-
             if (m_BehaviorNames.Contains(brainKey))
             {
                 return;
@@ -141,7 +139,6 @@ namespace MLAgents
         {
             ProcessSideChannelData(m_SideChannels, rlInput.SideChannel.ToArray());
             SendCommandEvent(rlInput.Command);
-
         }
 
         UnityInputProto Initialize(UnityOutputProto unityOutput,
@@ -205,23 +202,23 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        QuitCommandReceived?.Invoke();
-                        return;
-                    }
+                {
+                    QuitCommandReceived?.Invoke();
+                    return;
+                }
                 case CommandProto.Reset:
+                {
+                    foreach (var brainName in m_ActionCallbacks.Keys)
                     {
-                        foreach (var brainName in m_ActionCallbacks.Keys)
-                        {
-                            m_ActionCallbacks[brainName].Clear();
-                        }
-                        ResetCommandReceived?.Invoke();
-                        return;
+                        m_ActionCallbacks[brainName].Clear();
                     }
+                    ResetCommandReceived?.Invoke();
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 
@@ -464,8 +461,8 @@ namespace MLAgents
             if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
             {
                 throw new UnityAgentsException(string.Format(
-                "A side channel with type index {} is already registered. You cannot register multiple " +
-                "side channels of the same type."));
+                    "A side channel with type index {} is already registered. You cannot register multiple " +
+                    "side channels of the same type."));
             }
             m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
         }

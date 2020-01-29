@@ -24,13 +24,11 @@ namespace MLAgents
         {
             return GetHeightDrawVectorObservation() +
                 GetHeightDrawVectorAction(property);
-
         }
 
         /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-
             var indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             position.height = k_LineHeight;

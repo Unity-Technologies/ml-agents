@@ -129,7 +129,6 @@ namespace MLAgents.InferenceBrain
                 agentIndex++;
             }
         }
-
     }
 
     /// <summary>
@@ -205,7 +204,6 @@ namespace MLAgents.InferenceBrain
             m_MemoryIndex = memoryIndex;
             m_Allocator = allocator;
             m_Memories = memories;
-
         }
 
         public void Generate(TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos)
@@ -225,7 +223,6 @@ namespace MLAgents.InferenceBrain
                 }
                 if (!m_Memories.TryGetValue(info.episodeId, out memory))
                 {
-
                     for (var j = 0; j < memorySize; j++)
                     {
                         tensorProxy.data[agentIndex, j] = 0;
@@ -377,7 +374,6 @@ namespace MLAgents.InferenceBrain
                 {
                     m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
                     sensor.Write(m_WriteAdapter);
-
                 }
                 agentIndex++;
             }

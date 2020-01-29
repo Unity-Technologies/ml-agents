@@ -132,6 +132,7 @@ namespace MLAgents.InferenceBrain
 
             m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.episodeId });
         }
+
         public void DecideBatch()
         {
             var currentBatchSize = m_Infos.Count;

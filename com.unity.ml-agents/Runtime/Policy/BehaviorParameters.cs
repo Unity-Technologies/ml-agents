@@ -5,15 +5,13 @@ using UnityEngine;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
     ///
-    [AddComponentMenu("ML Agents/Behavior Parameters", (int) MenuGroup.Default)]
+    [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
     public class BehaviorParameters : MonoBehaviour
     {
-
         [Serializable]
         private enum BehaviorType
         {
@@ -56,9 +54,7 @@ namespace MLAgents
 
         public string behaviorName
         {
-
             get { return m_BehaviorName + "?team=" + m_TeamID;}
-
         }
 
         public IPolicy GeneratePolicy(Func<float[]> heuristic)

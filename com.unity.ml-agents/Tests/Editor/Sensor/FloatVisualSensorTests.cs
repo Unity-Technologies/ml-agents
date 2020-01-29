@@ -61,7 +61,7 @@ namespace MLAgents.Tests
             }
         }
 
-        public void Update() { }
+        public void Update() {}
 
         public SensorCompressionType GetCompressionType()
         {

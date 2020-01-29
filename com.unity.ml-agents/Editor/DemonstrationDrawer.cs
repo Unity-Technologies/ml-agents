@@ -59,7 +59,6 @@ public class DemonstrationEditor : Editor
         return actionLabel.ToString();
     }
 
-
     /// <summary>
     /// Renders Inspector UI for Brain Parameters of Demonstration.
     /// </summary>

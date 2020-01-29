@@ -1,14 +1,17 @@
 {
     "name": "Unity.ML-Agents",
-    "references": [
-    ],
+    "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Abstractions.dll",
+        "Google.Protobuf.dll",
+        "Barracuda.dll",
+        "Grpc.Core.dll"
+    ],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

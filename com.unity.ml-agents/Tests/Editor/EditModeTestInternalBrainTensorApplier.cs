@@ -46,8 +46,8 @@ namespace MLAgents.Tests
             var action1 = new AgentAction();
             var callbacks = new List<AgentIdActionPair>()
             {
-                new AgentIdActionPair{agentId = 0, action = (a) => action0 = a},
-                new AgentIdActionPair{agentId = 1, action = (a) => action1 = a}
+                new AgentIdActionPair {agentId = 0, action = (a) => action0 = a},
+                new AgentIdActionPair {agentId = 1, action = (a) => action1 = a}
             };
 
             applier.Apply(inputTensor, callbacks);
@@ -80,8 +80,8 @@ namespace MLAgents.Tests
             var action1 = new AgentAction();
             var callbacks = new List<AgentIdActionPair>()
             {
-                new AgentIdActionPair{agentId = 0, action = (a) => action0 = a},
-                new AgentIdActionPair{agentId = 1, action = (a) => action1 = a}
+                new AgentIdActionPair {agentId = 0, action = (a) => action0 = a},
+                new AgentIdActionPair {agentId = 1, action = (a) => action1 = a}
             };
 
             applier.Apply(inputTensor, callbacks);

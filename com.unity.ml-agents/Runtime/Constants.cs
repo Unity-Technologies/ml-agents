@@ -5,7 +5,7 @@ namespace MLAgents
     /// </summary>
     public enum MenuGroup
     {
-        Default=0,
-        Sensors=50
+        Default = 0,
+        Sensors = 50
     }
 }
