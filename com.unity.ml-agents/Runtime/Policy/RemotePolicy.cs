@@ -22,9 +22,9 @@ namespace MLAgents
         /// <inheritdoc />
         public RemotePolicy(
             BrainParameters brainParameters,
-            string fullyQualifiedFullyQualifiedBehaviorName)
+            string fullyQualifiedBehaviorName)
         {
-            m_FullyQualifiedBehaviorName = fullyQualifiedFullyQualifiedBehaviorName;
+            m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
             m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
         }
