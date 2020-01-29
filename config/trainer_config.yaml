@@ -131,8 +131,8 @@ Tennis:
     normalize: true
     max_steps: 5.0e7
     learning_rate_schedule: constant
-    batch_size: 2048
-    buffer_size: 20480
+    batch_size: 1024
+    buffer_size: 10240
     hidden_units: 256
     time_horizon: 1000
     self_play:
