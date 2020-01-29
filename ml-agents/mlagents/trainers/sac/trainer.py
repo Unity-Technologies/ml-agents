@@ -12,7 +12,8 @@ import numpy as np
 
 from mlagents_envs.timers import timed
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.sac.policy import SACPolicy
+from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
@@ -77,7 +78,8 @@ class SACTrainer(RLTrainer):
         self._check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: SACPolicy = None  # type: ignore
+        self.policy: NNPolicy = None  # type: ignore
+        self.optimizer: SACOptimizer = None  # type: ignore
 
         self.step = 0
         self.train_interval = (
@@ -162,12 +164,12 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
         # Get all value estimates for reporting purposes
-        value_estimates = self.policy.get_batched_value_estimates(
+        value_estimates = self.optimizer.get_batched_value_estimates(
             agent_buffer_trajectory
         )
         for name, v in value_estimates.items():
             self.stats_reporter.add_stat(
-                self.policy.reward_signals[name].value_name, np.mean(v)
+                self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
@@ -188,9 +190,7 @@ class SACTrainer(RLTrainer):
         )
 
         if trajectory.done_reached:
-            self._update_end_episode_stats(
-                agent_id, self.get_policy(trajectory.behavior_id)
-            )
+            self._update_end_episode_stats(agent_id, self.optimizer)
 
     def _is_ready_update(self) -> bool:
         """
@@ -213,12 +213,13 @@ class SACTrainer(RLTrainer):
             self.update_reward_signals()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
-        policy = SACPolicy(
+        policy = NNPolicy(
             self.seed,
             brain_parameters,
             self.trainer_parameters,
             self.is_training,
             self.load,
+            tanh_squash=True,
         )
         for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
@@ -267,12 +268,12 @@ class SACTrainer(RLTrainer):
                     sequence_length=self.policy.sequence_length,
                 )
                 # Get rewards for each reward
-                for name, signal in self.policy.reward_signals.items():
+                for name, signal in self.optimizer.reward_signals.items():
                     sampled_minibatch[
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
 
-                update_stats = self.policy.update(sampled_minibatch, n_sequences)
+                update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 
@@ -311,7 +312,7 @@ class SACTrainer(RLTrainer):
         for _ in range(num_updates):
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
-            for name, signal in self.policy.reward_signals.items():
+            for name, signal in self.optimizer.reward_signals.items():
                 logger.debug("Updating {} at step {}".format(name, self.step))
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
@@ -319,7 +320,7 @@ class SACTrainer(RLTrainer):
                         self.trainer_parameters["batch_size"],
                         sequence_length=self.policy.sequence_length,
                     )
-            update_stats = self.policy.update_reward_signals(
+            update_stats = self.optimizer.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )
             for stat_name, value in update_stats.items():
@@ -338,9 +339,13 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, SACPolicy):
+        if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
+        self.optimizer = SACOptimizer(self.policy, self.trainer_parameters)
+        self.policy.initialize_or_load()
+        for _reward_signal in self.optimizer.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

@@ -44,7 +44,7 @@ class TFPolicy(Policy):
         "action_output_shape",
     ]
 
-    def __init__(self, seed, brain, trainer_parameters):
+    def __init__(self, seed, brain, trainer_parameters, load=False):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
@@ -102,6 +102,7 @@ class TFPolicy(Policy):
                     )
                 )
         self._initialize_tensorflow_references()
+        self.load = load
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -121,6 +122,12 @@ class TFPolicy(Policy):
                     "--run-id".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+
+    def initialize_or_load(self):
+        if self.load:
+            self._load_graph()
+        else:
+            self._initialize_graph()
 
     def evaluate(
         self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
@@ -369,6 +376,7 @@ class TFPolicy(Policy):
             self.update_normalization_op: Optional[tf.Operation] = None
             self.value: Optional[tf.Tensor] = None
             self.all_log_probs: Optional[tf.Tensor] = None
+            self.entropy: Optional[tf.Tensor] = None
             self.action_oh: tf.Tensor = None
             self.output_pre: Optional[tf.Tensor] = None
             self.output: Optional[tf.Tensor] = None

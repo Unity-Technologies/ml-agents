@@ -128,3 +128,14 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
             value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
+
+    def _execute_model(self, feed_dict, out_dict):
+        """
+        Executes model.
+        :param feed_dict: Input dictionary mapping nodes to input data.
+        :param out_dict: Output dictionary mapping names to nodes.
+        :return: Dictionary mapping names to input data.
+        """
+        network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
+        run_out = dict(zip(list(out_dict.keys()), network_out))
+        return run_out

@@ -28,6 +28,7 @@ class NNPolicy(TFPolicy):
         is_training: bool,
         load: bool,
         tanh_squash: bool = False,
+        resample: bool = False,
     ):
         """
         Policy for Proximal Policy Optimization Networks.
@@ -38,7 +39,7 @@ class NNPolicy(TFPolicy):
         :param load: Whether a pre-trained model will be loaded or a new one created.
         """
         with tf.variable_scope("policy"):
-            super().__init__(seed, brain, trainer_params)
+            super().__init__(seed, brain, trainer_params, load)
 
             self.stats_name_to_update_name = {
                 "Losses/Value Loss": "value_loss",
@@ -59,7 +60,7 @@ class NNPolicy(TFPolicy):
             with self.graph.as_default():
                 if self.use_continuous_act:
                     self.create_cc_actor(
-                        h_size, num_layers, vis_encode_type, tanh_squash
+                        h_size, num_layers, vis_encode_type, tanh_squash, resample
                     )
                 else:
                     self.create_dc_actor(h_size, num_layers, vis_encode_type)
@@ -84,13 +85,6 @@ class NNPolicy(TFPolicy):
             self.inference_dict["pre_action"] = self.output_pre
         if self.use_recurrent:
             self.inference_dict["policy_memory_out"] = self.memory_out
-        self.load = load
-
-    def initialize_or_load(self):
-        if self.load:
-            self._load_graph()
-        else:
-            self._initialize_graph()
 
     @timed
     def evaluate(
@@ -122,6 +116,7 @@ class NNPolicy(TFPolicy):
         num_layers: int,
         vis_encode_type: EncoderType,
         tanh_squash: bool = False,
+        resample: bool = False,
     ) -> None:
         """
         Creates Continuous control actor-critic model.
@@ -176,12 +171,16 @@ class NNPolicy(TFPolicy):
         sigma = tf.exp(self.log_sigma)
 
         self.epsilon = tf.random_normal(tf.shape(mu))
-        # Clip and scale output to ensure actions are always within [-1, 1] range.
-        policy_ = mu + sigma * self.epsilon
+
+        sampled_policy = mu + sigma * self.epsilon
+
+        # Stop gradient if we're not doing the resampling trick
+        if not resample:
+            sampled_policy = tf.stop_gradient(sampled_policy)
 
         # Compute probability of model output.
         _gauss_pre = -0.5 * (
-            ((tf.stop_gradient(policy_) - mu) / (sigma + EPSILON)) ** 2
+            ((sampled_policy - mu) / (sigma + EPSILON)) ** 2
             + 2 * self.log_sigma
             + np.log(2 * np.pi)
         )
@@ -189,7 +188,7 @@ class NNPolicy(TFPolicy):
         all_probs = tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
 
         if tanh_squash:
-            self.output_pre = tf.tanh(policy_)
+            self.output_pre = tf.tanh(sampled_policy)
 
             # Squash correction
             all_probs -= tf.reduce_sum(
@@ -197,7 +196,8 @@ class NNPolicy(TFPolicy):
             )
             self.output = tf.identity(self.output_pre, name="action")
         else:
-            self.output_pre = policy_
+            self.output_pre = sampled_policy
+            # Clip and scale output to ensure actions are always within [-1, 1] range.
             output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
             self.output = tf.identity(output_post, name="action")
 
@@ -214,6 +214,10 @@ class NNPolicy(TFPolicy):
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = tf.reduce_sum(
             (tf.identity(self.all_log_probs)), axis=1, keepdims=True
+        )
+
+        self.action_holder = tf.placeholder(
+            shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
         )
 
     def create_dc_actor(

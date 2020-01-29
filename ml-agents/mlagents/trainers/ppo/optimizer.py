@@ -350,14 +350,3 @@ class PPOOptimizer(TFOptimizer):
             ]
             feed_dict[self.policy.memory_in] = mem_in
         return feed_dict
-
-    def _execute_model(self, feed_dict, out_dict):
-        """
-        Executes model.
-        :param feed_dict: Input dictionary mapping nodes to input data.
-        :param out_dict: Output dictionary mapping names to nodes.
-        :return: Dictionary mapping names to input data.
-        """
-        network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
-        run_out = dict(zip(list(out_dict.keys()), network_out))
-        return run_out
