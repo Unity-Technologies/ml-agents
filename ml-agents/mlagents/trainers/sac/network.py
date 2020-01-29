@@ -72,10 +72,10 @@ class SACNetwork:
         self.critic_vars = None
         self.policy_vars = None
 
-        self.q1_heads: Optional[Dict[str, tf.Tensor]] = None
-        self.q2_heads: Optional[Dict[str, tf.Tensor]] = None
-        self.q1_pheads: Optional[Dict[str, tf.Tensor]] = None
-        self.q2_pheads: Optional[Dict[str, tf.Tensor]] = None
+        self.q1_heads: Dict[str, tf.Tensor] = None
+        self.q2_heads: Dict[str, tf.Tensor] = None
+        self.q1_pheads: Dict[str, tf.Tensor] = None
+        self.q2_pheads: Dict[str, tf.Tensor] = None
 
         self.policy = policy
 
