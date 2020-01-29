@@ -119,17 +119,17 @@ public class HitWall : MonoBehaviour
                     }
                 }
             }
-            else if (collision.gameObject.name == "net" && !net)
-            {
-                if (lastAgentHit == 0)
-                {
-                    AgentBWins();
-                }
-                else if (lastAgentHit == 1)
-                {
-                    AgentAWins();
-                }
-            }
+            //else if (collision.gameObject.name == "net" && !net)
+            //{
+            //    if (lastAgentHit == 0)
+            //    {
+            //        AgentBWins();
+            //    }
+            //    else if (lastAgentHit == 1)
+            //    {
+            //        AgentAWins();
+            //    }
+            //}
         }
         else if (collision.gameObject.name == "AgentA")
         {
