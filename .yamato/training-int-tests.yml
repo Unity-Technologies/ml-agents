@@ -7,7 +7,7 @@ test_mac_training_int_{{ editor.version }}:
   name: Test Mac Fast Training {{ editor.version }}
   agent:
     type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:v0.1.3-build-tensorflow-489268
+    image: ml-agents/ml-agents-bokken-mac:v0.1.4-492264
     flavor: b1.small
   variables:
     UNITY_VERSION: {{ editor.version }}
