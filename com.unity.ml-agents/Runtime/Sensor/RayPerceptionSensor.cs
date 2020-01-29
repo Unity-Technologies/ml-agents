@@ -100,7 +100,7 @@ namespace MLAgents.Sensor
             {
                 PerceiveStatic(
                     m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                    m_CastRadius, m_Transform, m_CastType, m_Observations, false, m_LayerMask,
+                    m_CastRadius, m_Transform, m_CastType, m_Observations, m_LayerMask,
                     m_DebugDisplayInfo
                 );
                 adapter.AddRange(m_Observations);
@@ -144,10 +144,6 @@ namespace MLAgents.Sensor
         /// 3. The 'length+1' element of the sublist will contain the normalised distance to the object hit, or 1 if
         ///    nothing was hit.
         ///
-        /// The legacyHitFractionBehavior changes the behavior to be backwards compatible but has some
-        /// counter-intuitive behavior:
-        ///  * if the cast hits a object that's not in the detectableObjects list, all results are 0
-        ///  * if the cast doesn't hit, the hit fraction field is 0
         /// </summary>
         /// <param name="rayLength"></param>
         /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
@@ -160,14 +156,12 @@ namespace MLAgents.Sensor
         /// <param name="transform">Transform of the GameObject</param>
         /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
         /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
-        /// <param name="legacyHitFractionBehavior">Whether to use the legacy behavior for hit fractions.</param>
         /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
         ///
         public static void PerceiveStatic(float rayLength,
             IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
             float startOffset, float endOffset, float castRadius,
             Transform transform, CastType castType, float[] perceptionBuffer,
-            bool legacyHitFractionBehavior = false,
             int layerMask = Physics.DefaultRaycastLayers,
             DebugDisplayInfo debugInfo = null)
         {
@@ -212,10 +206,6 @@ namespace MLAgents.Sensor
                 //     sublist[numObjects-1] <- did hit detectableObjects[numObjects-1]
                 //     sublist[numObjects  ] <- 1 if missed else 0
                 //     sublist[numObjects+1] <- hit fraction (or 1 if no hit)
-                // The legacyHitFractionBehavior changes the behavior to be backwards compatible but has some
-                // counter-intuitive behavior:
-                //  * if the cast hits a object that's not in the detectableObjects list, all results are 0
-                //  * if the cast doesn't hit, the hit fraction field is 0
 
                 bool castHit;
                 float hitFraction;
@@ -285,7 +275,7 @@ namespace MLAgents.Sensor
                         }
                     }
 
-                    if (!hitTaggedObject && !legacyHitFractionBehavior)
+                    if (!hitTaggedObject)
                     {
                         // Something was hit but not on the list. Still set the hit fraction.
                         perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
@@ -294,11 +284,8 @@ namespace MLAgents.Sensor
                 else
                 {
                     perceptionBuffer[bufferOffset + detectableObjects.Count] = 1f;
-                    if (!legacyHitFractionBehavior)
-                    {
-                        // Nothing was hit, so there's full clearance in front of the agent.
-                        perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = 1.0f;
-                    }
+                    // Nothing was hit, so there's full clearance in front of the agent.
+                    perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = 1.0f;
                 }
 
                 bufferOffset += detectableObjects.Count + 2;
