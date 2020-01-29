@@ -177,7 +177,6 @@ class SACOptimizer(TFOptimizer):
             self.policy_network.value, name="value_estimate_unused"
         )
         self.value_heads = self.policy_network.value_heads
-        self.all_log_probs = self.policy.all_log_probs
         self.dones_holder = tf.placeholder(
             shape=[None], dtype=tf.float32, name="dones_holder"
         )
@@ -218,6 +217,8 @@ class SACOptimizer(TFOptimizer):
                 DISCRETE_TARGET_ENTROPY_SCALE * np.log(i).astype(np.float32)
                 for i in self.act_size
             ]
+            discrete_action_probs = tf.exp(self.policy.all_log_probs)
+            per_action_entropy = discrete_action_probs * self.policy.all_log_probs
         else:
             self.target_entropy = (
                 -1
@@ -231,7 +232,7 @@ class SACOptimizer(TFOptimizer):
         for name in stream_names:
             if discrete:
                 _branched_mpq1 = self.apply_as_branches(
-                    self.policy_network.q1_pheads[name] * self.policy.action_probs
+                    self.policy_network.q1_pheads[name] * discrete_action_probs
                 )
                 branched_mpq1 = tf.stack(
                     [
@@ -242,7 +243,7 @@ class SACOptimizer(TFOptimizer):
                 _q1_p_mean = tf.reduce_mean(branched_mpq1, axis=0)
 
                 _branched_mpq2 = self.apply_as_branches(
-                    self.policy_network.q2_pheads[name] * self.policy.action_probs
+                    self.policy_network.q2_pheads[name] * discrete_action_probs
                 )
                 branched_mpq2 = tf.stack(
                     [
@@ -342,11 +343,11 @@ class SACOptimizer(TFOptimizer):
         self.ent_coef = tf.exp(self.log_ent_coef)
         if discrete:
             # We also have to do a different entropy and target_entropy per branch.
-            branched_log_probs = self.apply_as_branches(self.policy.all_log_probs)
+            branched_per_action_ent = self.apply_as_branches(per_action_entropy)
             branched_ent_sums = tf.stack(
                 [
                     tf.reduce_sum(_lp, axis=1, keep_dims=True) + _te
-                    for _lp, _te in zip(branched_log_probs, self.target_entropy)
+                    for _lp, _te in zip(branched_per_action_ent, self.target_entropy)
                 ],
                 axis=1,
             )
@@ -363,14 +364,14 @@ class SACOptimizer(TFOptimizer):
             # so that larger branches don't get more weight.
             # The equivalent KL divergence from Eq 10 of Haarnoja et al. is also pi*log(pi) - Q
             branched_q_term = self.apply_as_branches(
-                self.policy_network.action_probs * self.policy_network.q1_p
+                discrete_action_probs * self.policy_network.q1_p
             )
 
             branched_policy_loss = tf.stack(
                 [
                     tf.reduce_sum(self.ent_coef[i] * _lp - _qt, axis=1, keep_dims=True)
                     for i, (_lp, _qt) in enumerate(
-                        zip(branched_log_probs, branched_q_term)
+                        zip(branched_per_action_ent, branched_q_term)
                     )
                 ]
             )
@@ -382,7 +383,7 @@ class SACOptimizer(TFOptimizer):
             branched_ent_bonus = tf.stack(
                 [
                     tf.reduce_sum(self.ent_coef[i] * _lp, axis=1, keep_dims=True)
-                    for i, _lp in enumerate(branched_log_probs)
+                    for i, _lp in enumerate(branched_per_action_ent)
                 ]
             )
             value_losses = []
@@ -407,15 +408,14 @@ class SACOptimizer(TFOptimizer):
                 * tf.to_float(self.policy.mask)
                 * tf.stop_gradient(
                     tf.reduce_sum(
-                        self.policy.all_log_probs + self.target_entropy,
+                        branched_per_action_ent + self.target_entropy,
                         axis=1,
                         keep_dims=True,
                     )
                 )
             )
             batch_policy_loss = tf.reduce_mean(
-                self.ent_coef * self.policy.all_log_probs - self.policy_network.q1_p,
-                axis=1,
+                self.ent_coef * per_action_entropy - self.policy_network.q1_p, axis=1
             )
             self.policy_loss = tf.reduce_mean(
                 tf.to_float(self.policy.mask) * batch_policy_loss
@@ -425,7 +425,7 @@ class SACOptimizer(TFOptimizer):
             for name in stream_names:
                 v_backup = tf.stop_gradient(
                     self.min_policy_qs[name]
-                    - tf.reduce_sum(self.ent_coef * self.policy.all_log_probs, axis=1)
+                    - tf.reduce_sum(self.ent_coef * per_action_entropy, axis=1)
                 )
                 value_losses.append(
                     0.5

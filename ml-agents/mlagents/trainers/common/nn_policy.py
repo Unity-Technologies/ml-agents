@@ -166,13 +166,13 @@ class NNPolicy(TFPolicy):
             kernel_initializer=LearningModel.scaled_init(0.01),
         )
 
-        self.log_sigma = tf.clip_by_value(log_sigma, LOG_STD_MIN, LOG_STD_MAX)
+        log_sigma = tf.clip_by_value(log_sigma, LOG_STD_MIN, LOG_STD_MAX)
 
-        sigma = tf.exp(self.log_sigma)
+        sigma = tf.exp(log_sigma)
 
-        self.epsilon = tf.random_normal(tf.shape(mu))
+        epsilon = tf.random_normal(tf.shape(mu))
 
-        sampled_policy = mu + sigma * self.epsilon
+        sampled_policy = mu + sigma * epsilon
 
         # Stop gradient if we're not doing the resampling trick
         if not resample:
@@ -181,7 +181,7 @@ class NNPolicy(TFPolicy):
         # Compute probability of model output.
         _gauss_pre = -0.5 * (
             ((sampled_policy - mu) / (sigma + EPSILON)) ** 2
-            + 2 * self.log_sigma
+            + 2 * log_sigma
             + np.log(2 * np.pi)
         )
         all_probs = _gauss_pre
@@ -206,7 +206,7 @@ class NNPolicy(TFPolicy):
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
         single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + tf.square(self.log_sigma)
+            tf.log(2 * np.pi * np.e) + tf.square(log_sigma)
         )
         # Make entropy the right shape
         self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
@@ -278,17 +278,17 @@ class NNPolicy(TFPolicy):
                 )
             )
 
-        self.all_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
+        raw_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
-        output, _, normalized_logits = LearningModel.create_discrete_action_masking_layer(
-            self.all_log_probs, self.action_masks, self.act_size
+        output, self.action_probs, normalized_logits = LearningModel.create_discrete_action_masking_layer(
+            raw_log_probs, self.action_masks, self.act_size
         )
 
         self.output = tf.identity(output)
-        self.normalized_logits = tf.identity(normalized_logits, name="action")
+        self.all_log_probs = tf.identity(normalized_logits, name="action")
 
         self.action_holder = tf.placeholder(
             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
