@@ -273,20 +273,22 @@ namespace MLAgents.Sensor
 
                 if (castHit)
                 {
+                    bool hitTaggedObject = false;
                     for (var i = 0; i < detectableObjects.Count; i++)
                     {
                         if (hitObject.CompareTag(detectableObjects[i]))
                         {
                             perceptionBuffer[bufferOffset + i] = 1;
                             perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
+                            hitTaggedObject = true;
                             break;
                         }
+                    }
 
-                        if (!legacyHitFractionBehavior)
-                        {
-                            // Something was hit but not on the list. Still set the hit fraction.
-                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
-                        }
+                    if (!hitTaggedObject && !legacyHitFractionBehavior)
+                    {
+                        // Something was hit but not on the list. Still set the hit fraction.
+                        perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
                     }
                 }
                 else
