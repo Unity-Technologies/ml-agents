@@ -49,14 +49,14 @@ public class BasicAgent : Agent
 
         if (m_Position == m_SmallGoalPosition)
         {
-            Done();
             AddReward(0.1f);
+            Done();
         }
 
         if (m_Position == m_LargeGoalPosition)
         {
-            Done();
             AddReward(1f);
+            Done();
         }
     }
 
