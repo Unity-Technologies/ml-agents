@@ -22,7 +22,7 @@ class SimpleEnvManager(EnvManager):
         self.previous_step: EnvironmentStep = EnvironmentStep.empty(0)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}
 
-    def step(self) -> List[EnvironmentStep]:
+    def _step(self) -> List[EnvironmentStep]:
         all_action_info = self._take_step(self.previous_step)
         self.previous_all_action_info = all_action_info
 
@@ -35,7 +35,7 @@ class SimpleEnvManager(EnvManager):
         self.previous_step = step_info
         return [step_info]
 
-    def reset(
+    def _reset_env(
         self, config: Dict[AgentGroup, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:

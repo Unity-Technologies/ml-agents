@@ -15,7 +15,7 @@ Unity settings.
 
 1. Launch Unity
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `UnitySDK` folder
+3. Using the file dialog that opens, locate the `Project` folder
    within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
 5. For **each** of the platforms you target (**PC, Mac and Linux Standalone**,
@@ -41,12 +41,12 @@ inside Unity. In this section, we will use the pre-trained model for the
 
    ![Platform Prefab](images/platform_prefab.png)
 
-3. In the **Project** window, drag the **3DBallLearning** Model located in
-   `Assets/ML-Agents/Examples/3DBall/TFModels` into the `Model` property under `Ball 3D Agent (Script)` component in the **Inspector** window.
+3. In the **Project** window, drag the **3DBall** Model located in
+   `Assets/ML-Agents/Examples/3DBall/TFModels` into the `Model` property under `Behavior Parameters (Script)` component in the Agent GameObject **Inspector** window.
 
    ![3dball learning brain](images/3dball_learning_brain.png)
 
-4. You should notice that each `Agent` under each `3DBall` in the **Hierarchy** windows now contains **3DBallLearning** as `Model`. __Note__ : You can modify multiple game objects in a scene by selecting them all at
+4. You should notice that each `Agent` under each `3DBall` in the **Hierarchy** windows now contains **3DBall** as `Model` on the `Behavior Parameters`. __Note__ : You can modify multiple game objects in a scene by selecting them all at
    once using the search bar in the Scene Hierarchy.
 8. Select the **InferenceDevice** to use for this model (CPU or GPU) on the Agent.
    _Note: CPU is faster for the majority of ML-Agents toolkit generated models_
@@ -179,7 +179,7 @@ the steps described
 [above](#running-a-pre-trained-model).
 
 1. Move your model file into
-   `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+   `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the  **3DBall** prefab Agent object.
 4. Drag the `<behavior_name>.nn` file from the Project window of

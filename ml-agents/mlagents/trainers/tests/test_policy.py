@@ -22,7 +22,7 @@ def test_take_action_returns_empty_with_no_agents():
     dummy_groupspec = AgentGroupSpec([(1,)], "continuous", 1)
     no_agent_step = BatchedStepResult.empty(dummy_groupspec)
     result = policy.get_action(no_agent_step)
-    assert result == ActionInfo([], [], {}, [])
+    assert result == ActionInfo.empty()
 
 
 def test_take_action_returns_nones_on_missing_values():

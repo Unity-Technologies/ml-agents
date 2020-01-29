@@ -53,7 +53,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 
 ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力量。
 如果您想做出贡献，请务必查看我们的
-[贡献准则](/CONTRIBUTING.md)和
+[贡献准则](/com.unity.ml-agents/CONTRIBUTING.md)和
 [行为准则](/CODE_OF_CONDUCT.md)。
 
 您可以通过 Unity Connect 和 GitHub 与我们以及更广泛的社区进行交流：

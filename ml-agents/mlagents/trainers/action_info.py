@@ -10,3 +10,7 @@ class ActionInfo(NamedTuple):
     value: Any
     outputs: ActionInfoOutputs
     agent_ids: List[AgentId]
+
+    @staticmethod
+    def empty() -> "ActionInfo":
+        return ActionInfo([], [], {}, [])

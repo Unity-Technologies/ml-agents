@@ -14,7 +14,7 @@ def main():
     test_args = [
         unity_exe,
         "-projectPath",
-        f"{base_path}/UnitySDK",
+        f"{base_path}/Project",
         "-logfile",
         "-",
         "-batchmode",

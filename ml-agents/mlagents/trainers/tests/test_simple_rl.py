@@ -195,6 +195,33 @@ SAC_CONFIG = f"""
                 gamma: 0.99
     """
 
+GHOST_CONFIG = f"""
+    {BRAIN_NAME}:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 5.0e-3
+        max_steps: 2500
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+        self_play:
+            save_step: 1000
+    """
+
 
 def _check_environment_trains(
     env, config, meta_curriculum=None, success_threshold=0.99
@@ -251,3 +278,9 @@ def test_simple_ppo(use_discrete):
 def test_simple_sac(use_discrete):
     env = Simple1DEnvironment(use_discrete=use_discrete)
     _check_environment_trains(env, SAC_CONFIG)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_ghost(use_discrete):
+    env = Simple1DEnvironment(use_discrete=use_discrete)
+    _check_environment_trains(env, GHOST_CONFIG)
