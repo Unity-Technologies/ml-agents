@@ -158,6 +158,9 @@ namespace MLAgents
         /// This Id will be changed every time the Agent resets.
         int m_EpisodeId;
 
+        /// Whether or not the Agent has been initialized already
+        bool m_Initialized;
+
         /// Keeps track of the actions that are masked at each step.
         ActionMasker m_ActionMasker;
 
@@ -182,16 +185,25 @@ namespace MLAgents
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
-            OnEnableHelper();
-
-            m_Recorder = GetComponent<DemonstrationRecorder>();
+            LazyInitialize();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
-        void OnEnableHelper()
+        public void LazyInitialize()
         {
+            if (m_Initialized)
+            {
+                return;
+            }
+            m_Initialized = true;
+
+            // Grab the "static" properties for the Agent.
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
+            m_PolicyFactory = GetComponent<BehaviorParameters>();
+            m_Recorder = GetComponent<DemonstrationRecorder>();
+
+
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
@@ -200,11 +212,11 @@ namespace MLAgents
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
             Academy.Instance.AgentForceReset += _AgentReset;
-            m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
             InitializeSensors();
+
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -222,6 +234,7 @@ namespace MLAgents
             }
             NotifyAgentDone();
             m_Brain?.Dispose();
+            m_Initialized = false;
         }
 
         void NotifyAgentDone(bool maxStepReached = false)
