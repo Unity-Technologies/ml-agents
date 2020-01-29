@@ -107,7 +107,7 @@ Pyramids:
             gamma: 0.99
             encoding_size: 128
             use_actions: true
-            demo_path: UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+            demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
 
 VisualPyramids:
     time_horizon: 128
@@ -128,7 +128,7 @@ VisualPyramids:
             gamma: 0.99
             encoding_size: 128
             use_actions: true
-            demo_path: UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+            demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
 
 3DBall:
     normalize: true
@@ -146,9 +146,14 @@ VisualPyramids:
     time_horizon: 1000
 
 Tennis:
-    buffer_size: 500000
     normalize: true
-    max_steps: 4e6
+    max_steps: 2e7
+    hidden_units: 256
+    self_play:
+        window: 10
+        play_against_current_self_ratio: 0.5
+        save_steps: 50000
+        swap_steps: 50000
 
 CrawlerStatic:
     normalize: true

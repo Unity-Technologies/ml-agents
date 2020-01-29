@@ -30,7 +30,7 @@ def ppo_dummy_config():
         use_recurrent: false
         memory_size: 8
         behavioral_cloning:
-          demo_path: ./UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+          demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
           strength: 1.0
           steps: 10000000
         reward_signals:
@@ -64,7 +64,7 @@ def sac_dummy_config():
         use_recurrent: false
         vis_encode_type: simple
         behavioral_cloning:
-            demo_path: ./UnitySDK/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+            demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000
         reward_signals:

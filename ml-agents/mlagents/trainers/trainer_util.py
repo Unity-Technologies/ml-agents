@@ -9,6 +9,7 @@ from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.ghost.trainer import GhostTrainer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -148,9 +149,20 @@ def initialize_trainer(
             seed,
             run_id,
         )
+
     else:
         raise TrainerConfigError(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
+        )
+
+    if "self_play" in trainer_parameters:
+        trainer = GhostTrainer(
+            trainer,
+            brain_name,
+            min_lesson_length,
+            trainer_parameters,
+            train_model,
+            run_id,
         )
     return trainer
 

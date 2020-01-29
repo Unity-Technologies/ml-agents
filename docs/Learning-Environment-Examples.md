@@ -2,7 +2,7 @@
 
 The Unity ML-Agents toolkit contains an expanding set of example environments
 which demonstrate various features of the platform. Environments are located in
-`UnitySDK/Assets/ML-Agents/Examples` and summarized below. Additionally, our
+`Project/Assets/ML-Agents/Examples` and summarized below. Additionally, our
 [first ML Challenge](https://connect.unity.com/challenges/ml-agents-1) contains
 environments created by the community.
 
@@ -15,7 +15,7 @@ pre-trained model files, and are designed to serve as challenges for
 researchers.
 
 If you would like to contribute environments, please see our
-[contribution guidelines](../CONTRIBUTING.md) page.
+[contribution guidelines](../com.unity.ml-agents/CONTRIBUTING.md) page.
 
 ## Basic
 
@@ -26,6 +26,7 @@ If you would like to contribute environments, please see our
 * Goal: Move to the most reward state.
 * Agents: The environment contains one agent.
 * Agent Reward Function:
+  * -0.01 at each step
   * +0.1 for arriving at suboptimal state.
   * +1.0 for arriving at optimal state.
 * Behavior Parameters:
@@ -34,7 +35,7 @@ If you would like to contribute environments, please see our
     right).
   * Visual Observations: None
 * Float Properties: None
-* Benchmark Mean Reward: 0.94
+* Benchmark Mean Reward: 0.93
 
 ## [3DBall: 3D Balance Ball](https://youtu.be/dheeCO29-EI)
 

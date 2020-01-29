@@ -65,7 +65,7 @@ def test_agentprocessor(num_vis_obs):
     )
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_step, 0, ActionInfo([], [], {}, []))
+    processor.add_experiences(mock_step, 0, ActionInfo.empty())
     for _ in range(5):
         processor.add_experiences(mock_step, 0, fake_action_info)
 

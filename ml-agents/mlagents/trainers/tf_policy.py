@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 from mlagents.tf_utils import tf
+from mlagents import tf_utils
 
 from mlagents_envs.exception import UnityException
 from mlagents.trainers.policy import Policy
@@ -11,7 +12,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.env_manager import get_global_agent_id
+from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.models import LearningModel
 
@@ -53,6 +54,11 @@ class TFPolicy(Policy):
         """
         self._version_number_ = 2
         self.m_size = 0
+
+        # for ghost trainer save/load snapshots
+        self.assign_phs = []
+        self.assign_ops = []
+
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
@@ -75,15 +81,10 @@ class TFPolicy(Policy):
         self.model_path = trainer_parameters["model_path"]
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        # For multi-GPU training, set allow_soft_placement to True to allow
-        # placing the operation into an alternative device automatically
-        # to prevent from exceptions if the device doesn't suppport the operation
-        # or the device does not exist
-        config.allow_soft_placement = True
+        self.sess = tf.Session(
+            config=tf_utils.generate_session_config(), graph=self.graph
+        )
         tf.set_random_seed(seed)
-        self.sess = tf.Session(config=config, graph=self.graph)
         self.saver = None
         self.optimizer = None
         if self.use_recurrent:
@@ -129,6 +130,28 @@ class TFPolicy(Policy):
         else:
             self._initialize_graph()
 
+    def get_weights(self):
+        with self.graph.as_default():
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
+            return values
+
+    def init_load_weights(self):
+        with self.graph.as_default():
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            values = [v.eval(session=self.sess) for v in _vars]
+            for var, value in zip(_vars, values):
+                assign_ph = tf.placeholder(var.dtype, shape=value.shape)
+                self.assign_phs.append(assign_ph)
+                self.assign_ops.append(tf.assign(var, assign_ph))
+
+    def load_weights(self, values):
+        with self.graph.as_default():
+            feed_dict = {}
+            for assign_ph, value in zip(self.assign_phs, values):
+                feed_dict[assign_ph] = value
+            self.sess.run(self.assign_ops, feed_dict=feed_dict)
+
     def evaluate(
         self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
     ) -> Dict[str, Any]:
@@ -151,7 +174,7 @@ class TFPolicy(Policy):
         to be passed to add experiences
         """
         if batched_step_result.n_agents() == 0:
-            return ActionInfo([], [], {}, [])
+            return ActionInfo.empty()
 
         agents_done = [
             agent

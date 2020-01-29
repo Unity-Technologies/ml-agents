@@ -73,15 +73,17 @@ In addition to our own documentation, here are some additional, relevant article
 
 The ML-Agents toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
-[contribution guidelines](CONTRIBUTING.md) and
+[contribution guidelines](com.unity.ml-agents/CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
-If you run into any problems using the ML-Agents toolkit,
-[submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
-make sure to include as much detail as possible.
+For problems with the installation and setup of the the ML-Agents toolkit, or
+discussions about how to best setup or train your agents, please create a new
+thread on the [Unity ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/)
+and make sure to include as much detail as possible.
+If you run into any other problems using the ML-Agents toolkit, or have a specific
+feature requests, please [submit a GitHub issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
 Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
-
 
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
