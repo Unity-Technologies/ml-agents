@@ -124,11 +124,7 @@ class BCModule:
             self.policy.sequence_length: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
-        if self.policy.brain.vector_action_space_type == "continuous":
-            feed_dict[self.policy.epsilon] = np.random.normal(
-                size=(1, self.policy.act_size[0])
-            )
-        else:
+        if not self.policy.use_continuous_act:
             feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
