@@ -107,11 +107,8 @@ component later in the tutorial.
 
 To create the Agent:
 
-1. Select the RollerAgent GameObject to view it in the Inspector window.
-2. Click **Add Component**.
-3. Click **New Script** in the list of components (at the bottom).
-4. Name the script "RollerAgent".
-5. Click **Create and Add**.
+1. In the Unity menu, choose Assets > Create > C# Script.
+2. Name the script "RollerAgent".
 
 Then, edit the new `RollerAgent` script:
 
@@ -343,11 +340,13 @@ with our Agent code.
 
 1. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-2. Change **Decision Interval** from `1` to `10`.
-3. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+2. Click **Add Component**.
+3. Select Scripts > RollerAgent. Notice that in addition to adding the RollerAgent script, this also adds a required BehaviourParameters script to the agent.
+3. Change **Decision Interval** from `1` to `10`.
+4. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
-4. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
-5. Modify the Behavior Parameters of the Agent :
+5. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
+6. Modify the Behavior Parameters of the Agent :
   * `Behavior Name` to *RollerBallBrain*
   * `Vector Observation` `Space Size` = 8
   * `Vector Action` `Space Type` = **Continuous**
