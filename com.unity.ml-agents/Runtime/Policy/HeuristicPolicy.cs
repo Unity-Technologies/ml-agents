@@ -4,7 +4,6 @@ using System;
 
 namespace MLAgents
 {
-
     /// <summary>
     /// The Heuristic Policy uses a hards coded Heuristic method
     /// to take decisions each time the RequestDecision method is
@@ -39,7 +38,6 @@ namespace MLAgents
 
         public void Dispose()
         {
-
         }
     }
 }

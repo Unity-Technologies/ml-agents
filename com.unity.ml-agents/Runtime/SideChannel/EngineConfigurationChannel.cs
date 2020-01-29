@@ -6,7 +6,6 @@ namespace MLAgents
 {
     public class EngineConfigurationChannel : SideChannel
     {
-
         public override int ChannelType()
         {
             return (int)SideChannelType.EngineSettings;

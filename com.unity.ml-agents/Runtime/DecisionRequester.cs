@@ -31,6 +31,7 @@ namespace MLAgents
             m_Agent = gameObject.GetComponent<Agent>();
             Academy.Instance.AgentSetStatus += MakeRequests;
         }
+
         void OnDestroy()
         {
             if (Academy.IsInitialized)
@@ -38,6 +39,7 @@ namespace MLAgents
                 Academy.Instance.AgentSetStatus -= MakeRequests;
             }
         }
+
         void MakeRequests(int count)
         {
             if ((count + offset) % DecisionPeriod == 0)
@@ -49,6 +51,5 @@ namespace MLAgents
                 m_Agent?.RequestAction();
             }
         }
-
     }
 }

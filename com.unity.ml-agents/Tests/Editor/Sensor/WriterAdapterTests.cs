@@ -30,12 +30,12 @@ namespace MLAgents.Tests
 
             // AddRange
             writer.SetTarget(buffer, shape, 0);
-            writer.AddRange(new [] {4f, 5f});
+            writer.AddRange(new[] {4f, 5f});
             Assert.AreEqual(new[] { 4f, 5f, 2f }, buffer);
 
             // AddRange with offset
             writer.SetTarget(buffer, shape, 1);
-            writer.AddRange(new [] {6f, 7f});
+            writer.AddRange(new[] {6f, 7f});
             Assert.AreEqual(new[] { 4f, 6f, 7f }, buffer);
         }
 
@@ -70,7 +70,7 @@ namespace MLAgents.Tests
             };
 
             writer.SetTarget(t, 1, 1);
-            writer.AddRange(new [] {-1f, -2f});
+            writer.AddRange(new[] {-1f, -2f});
             Assert.AreEqual(0f, t.data[0, 0]);
             Assert.AreEqual(0f, t.data[0, 1]);
             Assert.AreEqual(0f, t.data[0, 2]);

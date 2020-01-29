@@ -68,8 +68,8 @@ namespace MLAgents.Sensor
         }
 
         public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
-            Transform transform, float startOffset, float endOffset, float castRadius, CastType castType,
-            int rayLayerMask)
+                                   Transform transform, float startOffset, float endOffset, float castRadius, CastType castType,
+                                   int rayLayerMask)
         {
             var numObservations = (detectableObjects.Count + 2) * angles.Length;
             m_Shape = new[] { numObservations };
@@ -184,7 +184,7 @@ namespace MLAgents.Sensor
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
             int bufferOffset = 0;
-            for (var rayIndex = 0; rayIndex<rayAngles.Count; rayIndex++)
+            for (var rayIndex = 0; rayIndex < rayAngles.Count; rayIndex++)
             {
                 var angle = rayAngles[rayIndex];
                 Vector3 startPositionLocal, endPositionLocal;
@@ -221,7 +221,7 @@ namespace MLAgents.Sensor
                 float hitFraction;
                 GameObject hitObject;
 
-                if(castType == CastType.Cast3D)
+                if (castType == CastType.Cast3D)
                 {
                     RaycastHit rayHit;
                     if (castRadius > 0f)
@@ -268,7 +268,7 @@ namespace MLAgents.Sensor
                 else if (Application.isEditor)
                 {
                     // Legacy drawing
-                    Debug.DrawRay(startPositionWorld,rayDirection, Color.black, 0.01f, true);
+                    Debug.DrawRay(startPositionWorld, rayDirection, Color.black, 0.01f, true);
                 }
 
                 if (castHit)

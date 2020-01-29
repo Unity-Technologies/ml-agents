@@ -7,7 +7,7 @@ namespace MLAgents
     /// <summary>
     /// IPolicy is connected to a single Agent. Each time the agent needs
     /// a decision, it will request a decision to the Policy. The decision
-    /// will not be taken immediately but will be taken before or when 
+    /// will not be taken immediately but will be taken before or when
     /// DecideAction is called.
     /// </summary>
     public interface IPolicy : IDisposable

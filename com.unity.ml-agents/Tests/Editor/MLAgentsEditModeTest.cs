@@ -7,7 +7,6 @@ namespace MLAgents.Tests
 {
     public class TestAgent : Agent
     {
-
         public AgentInfo _Info
         {
             get
@@ -57,7 +56,6 @@ namespace MLAgents.Tests
         {
             return new float[0];
         }
-
     }
 
     public class TestSensor : ISensor
@@ -95,7 +93,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() { }
+        public void Update() {}
     }
 
     [TestFixture]
@@ -197,8 +195,8 @@ namespace MLAgents.Tests
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
-            agentEnableMethod?.Invoke(agent2, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { });
+            agentEnableMethod?.Invoke(agent2, new object[] {});
+            agentEnableMethod?.Invoke(agent1, new object[] {});
 
             // agent1 was not enabled when the academy started
             // The agents have been initialized
@@ -279,7 +277,7 @@ namespace MLAgents.Tests
             // agent1 will take an action at every step and request a decision every 2 steps
             // agent2 will request decisions only when RequestDecision is called
 
-            agentEnableMethod?.Invoke(agent1, new object[] { });
+            agentEnableMethod?.Invoke(agent1, new object[] {});
 
             var numberAgent1Reset = 0;
             var numberAgent2Initialization = 0;
@@ -304,7 +302,7 @@ namespace MLAgents.Tests
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent2, new object[] { });
+                    agentEnableMethod?.Invoke(agent2, new object[] {});
                     numberAgent2Initialization += 1;
                 }
 
@@ -381,7 +379,7 @@ namespace MLAgents.Tests
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
             decisionRequester.DecisionPeriod = 2;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { });
+            agentEnableMethod?.Invoke(agent2, new object[] {});
 
             var numberAgent1Reset = 0;
             var numberAgent2Reset = 0;
@@ -408,7 +406,7 @@ namespace MLAgents.Tests
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent1, new object[] { });
+                    agentEnableMethod?.Invoke(agent1, new object[] {});
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
@@ -444,7 +442,6 @@ namespace MLAgents.Tests
     [TestFixture]
     public class EditModeTestMiscellaneous
     {
-
         [SetUp]
         public void SetUp()
         {
@@ -474,8 +471,8 @@ namespace MLAgents.Tests
 
             agent1.maxStep = 20;
 
-            agentEnableMethod?.Invoke(agent2, new object[] { });
-            agentEnableMethod?.Invoke(agent1, new object[] { });
+            agentEnableMethod?.Invoke(agent2, new object[] {});
+            agentEnableMethod?.Invoke(agent1, new object[] {});
 
 
             var j = 0;
@@ -495,9 +492,6 @@ namespace MLAgents.Tests
 
                 agent1.AddReward(10f);
                 aca.EnvironmentStep();
-
-
-
             }
         }
     }

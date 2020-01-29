@@ -20,7 +20,6 @@ namespace MLAgents
     /// </summary>
     public class BarracudaPolicy : IPolicy
     {
-
         protected ModelRunner m_ModelRunner;
 
         /// <summary>

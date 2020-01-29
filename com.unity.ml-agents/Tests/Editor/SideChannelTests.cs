@@ -8,11 +8,9 @@ namespace MLAgents.Tests
 {
     public class SideChannelTests
     {
-
         // This test side channel only deals in integers
         public class TestSideChannel : SideChannel
         {
-
             public List<int> m_MessagesReceived = new List<int>();
 
             public override int ChannelType() { return -1; }

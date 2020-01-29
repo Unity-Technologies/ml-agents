@@ -12,7 +12,7 @@ namespace MLAgents.Sensor
         SensorCompressionType m_CompressionType;
 
         public RenderTextureSensor(RenderTexture renderTexture, bool grayscale, string name,
-            SensorCompressionType compressionType)
+                                   SensorCompressionType compressionType)
         {
             m_RenderTexture = renderTexture;
             var width = renderTexture != null ? renderTexture.width : 0;
@@ -35,7 +35,7 @@ namespace MLAgents.Sensor
 
         public byte[] GetCompressedObservation()
         {
-            using(TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
+            using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
                 // TODO support more types here, e.g. JPG
@@ -56,7 +56,7 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void Update() { }
+        public void Update() {}
 
         public SensorCompressionType GetCompressionType()
         {

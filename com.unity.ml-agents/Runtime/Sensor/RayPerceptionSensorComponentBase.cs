@@ -82,8 +82,8 @@ namespace MLAgents.Sensor
             anglesOut[0] = 90f;
             for (var i = 0; i < raysPerDirection; i++)
             {
-                anglesOut[2 * i + 1] = 90 - (i+1) * delta;
-                anglesOut[2 * i + 2] = 90 + (i+1) * delta;
+                anglesOut[2 * i + 1] = 90 - (i + 1) * delta;
+                anglesOut[2 * i + 2] = 90 + (i + 1) * delta;
             }
             return anglesOut;
         }
@@ -132,7 +132,7 @@ namespace MLAgents.Sensor
                 var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
                 color.a = alpha;
                 Gizmos.color = color;
-                Gizmos.DrawRay(startPositionWorld,rayDirection);
+                Gizmos.DrawRay(startPositionWorld, rayDirection);
 
                 // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
                 if (rayInfo.castHit)
@@ -141,7 +141,6 @@ namespace MLAgents.Sensor
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
                 }
             }
-
         }
     }
 }
