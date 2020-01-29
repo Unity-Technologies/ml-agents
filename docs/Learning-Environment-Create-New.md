@@ -342,11 +342,11 @@ with our Agent code.
     window.
 2. Click **Add Component**.
 3. Select Scripts > RollerAgent. Notice that in addition to adding the RollerAgent script, this also adds a required BehaviourParameters script to the agent.
-3. Change **Decision Interval** from `1` to `10`.
-4. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+4. Change **Decision Interval** from `1` to `10`.
+5. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
-5. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
-6. Modify the Behavior Parameters of the Agent :
+6. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
+7. Modify the Behavior Parameters of the Agent :
   * `Behavior Name` to *RollerBallBrain*
   * `Vector Observation` `Space Size` = 8
   * `Vector Action` `Space Type` = **Continuous**
