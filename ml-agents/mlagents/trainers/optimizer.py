@@ -115,20 +115,6 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
-    def create_value_heads(self, stream_names, hidden_input):
-        """
-        Creates one value estimator head for each reward signal in stream_names.
-        Also creates the node corresponding to the mean of all the value heads in self.value.
-        self.value_head is a dictionary of stream name to node containing the value estimator head for that signal.
-        :param stream_names: The list of reward signal names
-        :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
-        of the hidden input.
-        """
-        for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
-            self.value_heads[name] = value
-        self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
-
     def _execute_model(self, feed_dict, out_dict):
         """
         Executes model.

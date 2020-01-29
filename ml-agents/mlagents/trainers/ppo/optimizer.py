@@ -128,7 +128,9 @@ class PPOOptimizer(TFOptimizer):
         else:
             hidden_value = hidden_stream
 
-        self.create_value_heads(self.stream_names, hidden_value)
+        self.value_heads, self.value = LearningModel.create_value_heads(
+            self.stream_names, hidden_value
+        )
         self.all_old_log_probs = tf.placeholder(
             shape=[None, 1], dtype=tf.float32, name="old_probabilities"
         )
@@ -170,7 +172,9 @@ class PPOOptimizer(TFOptimizer):
         else:
             hidden_value = hidden_stream
 
-        self.create_value_heads(self.stream_names, hidden_value)
+        self.value_heads, self.value = LearningModel.create_value_heads(
+            self.stream_names, hidden_value
+        )
 
         self.all_old_log_probs = tf.placeholder(
             shape=[None, sum(self.policy.act_size)],

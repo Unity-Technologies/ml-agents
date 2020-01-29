@@ -652,7 +652,8 @@ class LearningModel:
         recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
-    def create_value_heads(self, stream_names, hidden_input):
+    @staticmethod
+    def create_value_heads(stream_names, hidden_input):
         """
         Creates one value estimator head for each reward signal in stream_names.
         Also creates the node corresponding to the mean of all the value heads in self.value.
@@ -661,7 +662,9 @@ class LearningModel:
         :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
         of the hidden input.
         """
+        value_heads = {}
         for name in stream_names:
             value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
-            self.value_heads[name] = value
-        self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
+            value_heads[name] = value
+        value = tf.reduce_mean(list(value_heads.values()), 0)
+        return value_heads, value

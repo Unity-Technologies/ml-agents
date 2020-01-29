@@ -52,7 +52,7 @@ class SACOptimizer(TFOptimizer):
                 self.policy = policy
                 self.act_size = self.policy.act_size
                 h_size = int(trainer_params["hidden_units"])
-                max_step = int(trainer_params["max_steps"])
+                max_step = float(trainer_params["max_steps"])
                 num_layers = int(trainer_params["num_layers"])
                 vis_encode_type = EncoderType(
                     trainer_params.get("vis_encode_type", "simple")
@@ -104,7 +104,7 @@ class SACOptimizer(TFOptimizer):
                 )
                 self.create_inputs_and_outputs()
                 self.learning_rate = LearningModel.create_learning_rate(
-                    lr_schedule, lr, self.policy.global_step, max_step
+                    lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
                 self.create_losses(
                     self.policy_network.q1_heads,
