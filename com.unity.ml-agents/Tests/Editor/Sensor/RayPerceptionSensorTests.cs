@@ -56,6 +56,8 @@ namespace MLAgents.Tests
             var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere3.transform.position = new Vector3(0, 0, -10);
             sphere3.tag = k_SphereTag;
+
+            Physics.SyncTransforms();
         }
 
         [Test]
@@ -163,6 +165,8 @@ namespace MLAgents.Tests
             cubeFiltered.tag = k_CubeTag;
             cubeFiltered.name = "cubeNear";
             cubeFiltered.layer = 7;
+
+            Physics.SyncTransforms();
 
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
