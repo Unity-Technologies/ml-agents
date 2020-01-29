@@ -43,8 +43,8 @@ public class Ball3DAgent : Agent
             Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
         {
-            Done();
             SetReward(-1f);
+            Done();
         }
         else
         {
