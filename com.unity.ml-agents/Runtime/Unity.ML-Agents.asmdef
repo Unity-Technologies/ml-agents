@@ -1,15 +1,16 @@
 {
     "name": "Unity.ML-Agents",
-    "references": [],
+    "references": [
+        "Barracuda"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [
         "System.IO.Abstractions.dll",
         "Google.Protobuf.dll",
-        "Barracuda.dll",
         "Grpc.Core.dll"
     ],
     "autoReferenced": true,
