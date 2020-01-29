@@ -15,7 +15,6 @@ namespace MLAgents
 {
     public static class GrpcExtensions
     {
-
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
@@ -129,7 +128,6 @@ namespace MLAgents
             };
             return bp;
         }
-
 
         internal static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
         {

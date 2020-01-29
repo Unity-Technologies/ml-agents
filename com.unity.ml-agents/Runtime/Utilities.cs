@@ -6,7 +6,6 @@ namespace MLAgents
 {
     public static class Utilities
     {
-
         /// <summary>
         /// Puts a Texture2D into a WriteAdapter.
         /// </summary>

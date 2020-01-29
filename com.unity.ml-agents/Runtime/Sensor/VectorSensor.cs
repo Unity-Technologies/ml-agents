@@ -166,7 +166,6 @@ namespace MLAgents.Sensor
             AddFloatObs(observation ? 1f : 0f);
         }
 
-
         public void AddOneHotObservation(int observation, int range)
         {
             for (var i = 0; i < range; i++)

@@ -182,6 +182,7 @@ namespace MLAgents.InferenceBrain
         {
             m_Memories = memories;
         }
+
         public void Apply(TensorProxy tensorProxy, IEnumerable<AgentIdActionPair> actions)
         {
             var agentIndex = 0;
@@ -244,5 +245,4 @@ namespace MLAgents.InferenceBrain
             }
         }
     }
-
 }

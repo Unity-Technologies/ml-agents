@@ -111,6 +111,5 @@ namespace MLAgents.Sensor
         }
 
         // TODO support stacked compressed observations (byte stream)
-
     }
 }

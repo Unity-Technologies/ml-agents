@@ -39,7 +39,7 @@ namespace MLAgents.Tests
             {
                 var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                agentEnableMethod?.Invoke(agent, new object[] { });
+                agentEnableMethod?.Invoke(agent, new object[] {});
             }
             agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
             agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));
@@ -116,8 +116,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
@@ -144,8 +144,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
@@ -173,8 +173,8 @@ namespace MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair{agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair{agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
+                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
             };
 
             generator.Generate(inputTensor, batchSize, inputs);

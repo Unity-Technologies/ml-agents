@@ -13,7 +13,6 @@ namespace MLAgents
     /// </summary>
     public struct AgentInfo
     {
-
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
         /// </summary>
@@ -55,7 +54,6 @@ namespace MLAgents
     {
         public float[] vectorActions;
     }
-
 
 
     /// <summary>
@@ -233,7 +231,7 @@ namespace MLAgents
             m_Info.maxStepReached = maxStepReached;
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
-            m_Brain?.RequestDecision(m_Info, sensors, (a) => { });
+            m_Brain?.RequestDecision(m_Info, sensors, (a) => {});
             // The Agent is done, so we give it a new episode Id
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
@@ -324,7 +322,6 @@ namespace MLAgents
         {
             NotifyAgentDone();
             _AgentReset();
-
         }
 
         /// <summary>
@@ -382,7 +379,6 @@ namespace MLAgents
         {
         }
 
-
         /// <summary>
         /// When the Agent uses Heuristics, it will call this method every time it
         /// needs an action. This can be used for debugging or controlling the agent
@@ -393,9 +389,9 @@ namespace MLAgents
         public virtual float[] Heuristic()
         {
             throw new UnityAgentsException(string.Format(
-                    "The Heuristic method was not implemented for the Agent on the " +
-                    "{0} GameObject.",
-                    gameObject.name));
+                "The Heuristic method was not implemented for the Agent on the " +
+                "{0} GameObject.",
+                gameObject.name));
         }
 
         /// <summary>
@@ -479,7 +475,6 @@ namespace MLAgents
             {
                 m_Recorder.WriteExperience(m_Info, sensors);
             }
-
         }
 
         void UpdateSensors()
@@ -721,7 +716,6 @@ namespace MLAgents
             return rawAction * range + middle;
         }
 
-
         /// <summary>
         /// Signals the agent that it must sent its decision to the brain.
         /// </summary>
@@ -743,7 +737,6 @@ namespace MLAgents
             {
                 NotifyAgentDone(true);
                 _AgentReset();
-
             }
             else
             {

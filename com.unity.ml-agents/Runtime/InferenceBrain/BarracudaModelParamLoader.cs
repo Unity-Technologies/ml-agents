@@ -253,7 +253,7 @@ namespace MLAgents.InferenceBrain
             int memory,
             ModelActionType isContinuous,
             SensorComponent[] sensorComponents
-            )
+        )
         {
             var failedModelChecks = new List<string>();
             var tensorsNames = GetInputTensors(model).Select(x => x.name).ToList();

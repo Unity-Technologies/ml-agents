@@ -14,7 +14,7 @@ namespace MLAgents.Sensor
         SensorCompressionType m_CompressionType;
 
         public CameraSensor(Camera camera, int width, int height, bool grayscale, string name,
-            SensorCompressionType compression)
+                            SensorCompressionType compression)
         {
             m_Camera = camera;
             m_Width = width;
@@ -58,7 +58,7 @@ namespace MLAgents.Sensor
             }
         }
 
-        public void Update() { }
+        public void Update() {}
 
         public SensorCompressionType GetCompressionType()
         {

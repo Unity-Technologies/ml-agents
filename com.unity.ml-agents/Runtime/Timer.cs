@@ -226,9 +226,9 @@ namespace MLAgents
     {
         [DataMember]
         public float value;
-        [DataMember( Name = "min")]
+        [DataMember(Name = "min")]
         public float minValue;
-        [DataMember( Name = "max")]
+        [DataMember(Name = "max")]
         public float maxValue;
         [DataMember]
         public uint count;
