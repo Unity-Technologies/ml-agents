@@ -109,7 +109,6 @@ public class AgentSoccer : Agent
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
-            AddReward(1f / 3000f);
         }
     }
 
