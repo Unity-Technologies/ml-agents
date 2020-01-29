@@ -68,32 +68,6 @@ BigWallJump:
     num_layers: 2
     normalize: false
 
-Striker:
-    max_steps: 5.0e6
-    learning_rate: 1e-3
-    batch_size: 128
-    num_epoch: 3
-    buffer_size: 2000
-    beta: 1.0e-2
-    hidden_units: 256
-    summary_freq: 20000
-    time_horizon: 128
-    num_layers: 2
-    normalize: false
-
-Goalie:
-    max_steps: 5.0e6
-    learning_rate: 1e-3
-    batch_size: 320
-    num_epoch: 3
-    buffer_size: 2000
-    beta: 1.0e-2
-    hidden_units: 256
-    summary_freq: 20000
-    time_horizon: 128
-    num_layers: 2
-    normalize: false
-
 Pyramids:
     summary_freq: 30000
     time_horizon: 128
@@ -155,9 +129,27 @@ VisualPyramids:
 
 Tennis:
     normalize: true
-    max_steps: 2e7
+    max_steps: 5.0e7
     learning_rate_schedule: constant
+    batch_size: 2048
+    buffer_size: 20480
     hidden_units: 256
+    time_horizon: 1000
+    self_play:
+        window: 10
+        play_against_current_self_ratio: 0.5
+        save_steps: 50000
+        swap_steps: 50000
+
+Soccer:
+    normalize: false
+    max_steps: 5.0e7
+    learning_rate_schedule: constant
+    batch_size: 2048
+    buffer_size: 20480
+    hidden_units: 512
+    time_horizon: 1000
+    num_layers: 2
     self_play:
         window: 10
         play_against_current_self_ratio: 0.5

@@ -15,14 +15,9 @@ public class AgentSoccer : Agent
         Purple,
         Blue
     }
-    public enum AgentRole
-    {
-        Striker,
-        Goalie
-    }
 
+    [HideInInspector]
     public Team team;
-    public AgentRole agentRole;
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
@@ -31,39 +26,20 @@ public class AgentSoccer : Agent
     public Rigidbody agentRb;
     SoccerSettings m_SoccerSettings;
     Renderer m_AgentRenderer;
-
-    public void ChooseRandomTeam()
-    {
-        team = (Team)Random.Range(0, 2);
-        if (team == Team.Purple)
-        {
-            JoinPurpleTeam(agentRole);
-        }
-        else
-        {
-            JoinBlueTeam(agentRole);
-        }
-    }
-
-    public void JoinPurpleTeam(AgentRole role)
-    {
-        agentRole = role;
-        team = Team.Purple;
-        m_AgentRenderer.material = m_SoccerSettings.purpleMaterial;
-        tag = "purpleAgent";
-    }
-
-    public void JoinBlueTeam(AgentRole role)
-    {
-        agentRole = role;
-        team = Team.Blue;
-        m_AgentRenderer.material = m_SoccerSettings.blueMaterial;
-        tag = "blueAgent";
-    }
+    BehaviorParameters m_BP;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
+        m_BP = gameObject.GetComponent<BehaviorParameters>();
+        if (m_BP.m_TeamID == 0)
+        {
+            team = Team.Blue;
+        }
+        else
+        {
+            team = Team.Purple;
+        }
         m_AgentRenderer = GetComponentInChildren<Renderer>();
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -87,52 +63,28 @@ public class AgentSoccer : Agent
 
         var action = Mathf.FloorToInt(act[0]);
 
-        // Goalies and Strikers have slightly different action spaces.
-        if (agentRole == AgentRole.Goalie)
+        m_KickPower = 0f;
+        switch (action)
         {
-            m_KickPower = 0f;
-            switch (action)
-            {
-                case 1:
-                    dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
-                    break;
-                case 2:
-                    dirToGo = transform.forward * -1f;
-                    break;
-                case 4:
-                    dirToGo = transform.right * -1f;
-                    break;
-                case 3:
-                    dirToGo = transform.right * 1f;
-                    break;
-            }
-        }
-        else
-        {
-            m_KickPower = 0f;
-            switch (action)
-            {
-                case 1:
-                    dirToGo = transform.forward * 1f;
-                    m_KickPower = 1f;
-                    break;
-                case 2:
-                    dirToGo = transform.forward * -1f;
-                    break;
-                case 3:
-                    rotateDir = transform.up * 1f;
-                    break;
-                case 4:
-                    rotateDir = transform.up * -1f;
-                    break;
-                case 5:
-                    dirToGo = transform.right * -0.75f;
-                    break;
-                case 6:
-                    dirToGo = transform.right * 0.75f;
-                    break;
-            }
+            case 1:
+                dirToGo = transform.forward * 1f;
+                m_KickPower = 1f;
+                break;
+            case 2:
+                dirToGo = transform.forward * -1f;
+                break;
+            case 3:
+                rotateDir = transform.up * 1f;
+                break;
+            case 4:
+                rotateDir = transform.up * -1f;
+                break;
+            case 5:
+                dirToGo = transform.right * -0.75f;
+                break;
+            case 6:
+                dirToGo = transform.right * 0.75f;
+                break;
         }
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
@@ -142,15 +94,7 @@ public class AgentSoccer : Agent
     public override void AgentAction(float[] vectorAction)
     {
         // Existential penalty for strikers.
-        if (agentRole == AgentRole.Striker)
-        {
-            AddReward(-1f / 3000f);
-        }
-        // Existential bonus for goalies.
-        if (agentRole == AgentRole.Goalie)
-        {
-            AddReward(1f / 3000f);
-        }
+        AddReward(-1f / 3000f);
         MoveAgent(vectorAction);
     }
 
@@ -165,27 +109,21 @@ public class AgentSoccer : Agent
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+            AddReward(1f / 3000f);
         }
     }
 
     public override void AgentReset()
     {
-        if (m_SoccerSettings.randomizePlayersTeamForTraining)
-        {
-            ChooseRandomTeam();
-        }
-
         if (team == Team.Purple)
         {
-            JoinPurpleTeam(agentRole);
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
         }
         else
         {
-            JoinBlueTeam(agentRole);
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = area.GetRandomSpawnPos(agentRole, team);
+        transform.position = area.GetRandomSpawnPos(team);
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         SetResetParameters();

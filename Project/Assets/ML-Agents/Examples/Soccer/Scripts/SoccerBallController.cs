@@ -11,7 +11,7 @@ public class SoccerBallController : MonoBehaviour
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag(purpleGoalTag)) //ball touched red goal
+        if (col.gameObject.CompareTag(purpleGoalTag)) //ball touched purple goal
         {
             area.GoalTouched(AgentSoccer.Team.Blue);
         }

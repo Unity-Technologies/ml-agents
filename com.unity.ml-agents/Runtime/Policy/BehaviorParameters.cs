@@ -38,7 +38,7 @@ namespace MLAgents
         [SerializeField]
         string m_BehaviorName = "My Behavior";
         [HideInInspector] [SerializeField]
-        int m_TeamID = 0;
+        public int m_TeamID = 0;
         [HideInInspector]
         [SerializeField]
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
