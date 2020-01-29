@@ -32,7 +32,7 @@ def main():
 
     # TODO pass scene name and exe destination to build
     # TODO make sure we fail if the exe isn't found - see MLA-559
-    mla_learn_cmd = "mlagents-learn override.yaml --train --env=UnitySDK/testPlayer --no-graphics --env-args -logFile -"  # noqa
+    mla_learn_cmd = "mlagents-learn override.yaml --train --env=Project/testPlayer --no-graphics --env-args -logFile -"  # noqa
     res = subprocess.run(f"source venv/bin/activate; {mla_learn_cmd}", shell=True)
 
     if res.returncode != 0 or not os.path.exists(nn_file_expected):

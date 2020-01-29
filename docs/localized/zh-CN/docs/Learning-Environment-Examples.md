@@ -11,7 +11,7 @@ Unity ML-Agents 工具包中内置了一些搭建好的学习环境的示例，�
 页面。
 
 如果您想提交自己的环境，请参阅我们的
-[贡献指南](/CONTRIBUTING.md)页面。
+[贡献指南](/com.unity.ml-agents/CONTRIBUTING.md)页面。
 
 ## Basic
 

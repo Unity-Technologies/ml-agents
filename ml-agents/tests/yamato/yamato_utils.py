@@ -35,7 +35,7 @@ def run_standalone_build(base_path: str, verbose: bool = False) -> int:
     test_args = [
         unity_exe,
         "-projectPath",
-        f"{base_path}/UnitySDK",
+        f"{base_path}/Project",
         "-batchmode",
         "-executeMethod",
         "MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",

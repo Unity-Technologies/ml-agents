@@ -2,7 +2,7 @@ import os
 
 
 def main():
-    asset_path = "UnitySDK/Assets"
+    asset_path = "Project/Assets"
     meta_suffix = ".meta"
     python_suffix = ".py"
 
