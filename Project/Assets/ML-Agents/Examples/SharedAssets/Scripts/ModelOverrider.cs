@@ -31,7 +31,6 @@ namespace MLAgentsExamples
         void GetAssetPathFromCommandLine()
         {
             m_BehaviorNameOverrides.Clear();
-            m_BehaviorNameOverrides["3DBall"] = "/Users/chris.elion/code/ml-agents/models/ppo/3DBall.nn"; // TODO REMOVE ME
 
             var args = Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length-2; i++)
@@ -98,12 +97,10 @@ namespace MLAgentsExamples
             agent.LazyInitialize();
             var bp = agent.GetComponent<BehaviorParameters>();
 
-            var behaviorNameAndTeamId = bp.behaviorName;
-            var behaviorName = behaviorNameAndTeamId.Split('?')[0];
-            var nnModel = GetModelForBehaviorName(behaviorName);
-            Debug.Log($"Overriding behavior {behaviorName} for agent with model {nnModel?.name}");
+            var nnModel = GetModelForBehaviorName(bp.behaviorName);
+            Debug.Log($"Overriding behavior {bp.behaviorName} for agent with model {nnModel?.name}");
             // This might give a null model; that's better because we'll fall back to the Heuristic
-            agent.GiveModel($"Override_{behaviorName}", nnModel, InferenceDevice.CPU);
+            agent.GiveModel($"Override_{bp.behaviorName}", nnModel, InferenceDevice.CPU);
 
         }
     }
