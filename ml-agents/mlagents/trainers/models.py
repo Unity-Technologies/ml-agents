@@ -653,7 +653,9 @@ class LearningModel:
         return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)
 
     @staticmethod
-    def create_value_heads(stream_names, hidden_input):
+    def create_value_heads(
+        stream_names: List[str], hidden_input: tf.Tensor
+    ) -> Tuple[Dict[str, tf.Tensor], tf.Tensor]:
         """
         Creates one value estimator head for each reward signal in stream_names.
         Also creates the node corresponding to the mean of all the value heads in self.value.
