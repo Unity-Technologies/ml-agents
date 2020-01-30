@@ -14,7 +14,6 @@ The versions can be found in
 * Several changes were made to how agents are reset and marked as done:
   * Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
   * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
-  * Agents will always request a decision after being marked as `Done()` and will no longer wait for the next call to `RequestDecision()`.
 * The `Decision Period` and `On Demand decision` checkbox have been removed from the Agent. On demand decision is now the default (calling `RequestDecision` on the Agent manually.)
 * The Academy class was changed to a singleton, and its virtual methods were removed.
 * Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
