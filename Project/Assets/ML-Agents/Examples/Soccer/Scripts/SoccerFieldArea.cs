@@ -84,18 +84,16 @@ public class SoccerFieldArea : MonoBehaviour
             xOffset = xOffset * -1f;
         }
         var randomSpawnPos = ground.transform.position +
-            new Vector3(xOffset, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+            new Vector3(xOffset, 0f, 0f);
+        randomSpawnPos.y = ground.transform.position.y + .5f;
         return randomSpawnPos;
     }
 
     public Vector3 GetBallSpawnPosition()
     {
         var randomSpawnPos = ground.transform.position +
-            new Vector3(0f, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+            new Vector3(0f, 0f, 0f);
+        randomSpawnPos.y = ground.transform.position.y + .5f;
         return randomSpawnPos;
     }
 

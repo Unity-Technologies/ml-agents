@@ -64,7 +64,12 @@ public class AgentSoccer : Agent
         var action = Mathf.FloorToInt(act[0]);
 
         m_KickPower = 0f;
-        switch (action)
+
+        var forwardAxis = (int)act[0];
+        var rightAxis = (int)act[1];
+        var rotateAxis = (int)act[2];
+
+        switch (forwardAxis)
         {
             case 1:
                 dirToGo = transform.forward * 1f;
@@ -73,19 +78,28 @@ public class AgentSoccer : Agent
             case 2:
                 dirToGo = transform.forward * -1f;
                 break;
-            case 3:
-                rotateDir = transform.up * 1f;
-                break;
-            case 4:
-                rotateDir = transform.up * -1f;
-                break;
-            case 5:
-                dirToGo = transform.right * -0.75f;
-                break;
-            case 6:
+        }
+
+        switch (rightAxis)
+        {
+            case 1:
                 dirToGo = transform.right * 0.75f;
                 break;
+            case 2:
+                dirToGo = transform.right * -0.75f;
+                break;
         }
+
+        switch (rotateAxis)
+        {
+            case 1:
+                rotateDir = transform.up * -1f;
+                break;
+            case 2:
+                rotateDir = transform.up * 1f;
+                break;
+        }
+
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
         agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
             ForceMode.VelocityChange);
