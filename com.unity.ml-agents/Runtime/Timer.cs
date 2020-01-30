@@ -224,17 +224,22 @@ namespace MLAgents
     [DataContract]
     public class GaugeNode
     {
+        static float s_SmoothingFactor = .25f; // weight for exponential moving average.
+
         [DataMember]
         public float value;
         [DataMember(Name = "min")]
         public float minValue;
         [DataMember(Name = "max")]
         public float maxValue;
+        [DataMember(Name = "weightedAverage")]
+        public float weightedAverage;
         [DataMember]
         public uint count;
         public GaugeNode(float value)
         {
             this.value = value;
+            weightedAverage = value;
             minValue = value;
             maxValue = value;
             count = 1;
@@ -244,6 +249,8 @@ namespace MLAgents
         {
             minValue = Mathf.Min(minValue, newValue);
             maxValue = Mathf.Max(maxValue, newValue);
+            // update exponential moving average
+            weightedAverage = (s_SmoothingFactor * newValue) + ((1f - s_SmoothingFactor) * weightedAverage);
             value = newValue;
             ++count;
         }
