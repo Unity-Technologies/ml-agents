@@ -225,7 +225,7 @@ namespace MLAgents
     [DataContract]
     public class GaugeNode
     {
-        static float s_SmoothingFactor = .25f; // weight for exponential moving average.
+        const float k_SmoothingFactor = .25f; // weight for exponential moving average.
 
         [DataMember]
         public float value;
@@ -251,7 +251,7 @@ namespace MLAgents
             minValue = Mathf.Min(minValue, newValue);
             maxValue = Mathf.Max(maxValue, newValue);
             // update exponential moving average
-            weightedAverage = (s_SmoothingFactor * newValue) + ((1f - s_SmoothingFactor) * weightedAverage);
+            weightedAverage = (k_SmoothingFactor * newValue) + ((1f - k_SmoothingFactor) * weightedAverage);
             value = newValue;
             ++count;
         }
@@ -384,6 +384,7 @@ namespace MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             try
             {
                 if (filename == null)
@@ -404,6 +405,7 @@ namespace MLAgents
                 // It's possible we don't have write access to the directory.
                 Debug.LogWarning($"Unable to save timers to file {filename}");
             }
+#endif
         }
 
         /// <summary>
