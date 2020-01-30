@@ -18,11 +18,6 @@ namespace MLAgents
     /// Responsible for communication with External using gRPC.
     public class RpcCommunicator : ICommunicator
     {
-        public struct IdCallbackPair
-        {
-            public int AgentId;
-            public Action<AgentAction> Callback;
-        }
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
 
@@ -36,14 +31,14 @@ namespace MLAgents
         bool m_NeedCommunicateThisStep;
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
-        Dictionary<string, List<IdCallbackPair>> m_ActionCallbacks = new Dictionary<string, List<IdCallbackPair>>();
+        Dictionary<string, List<int>> m_ActionId = new Dictionary<string, List<int>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
-        Dictionary<string, Dictionary<int, AgentAction>> m_LastActionsReceived =
-            new Dictionary<string, Dictionary<int, AgentAction>>();
+        Dictionary<string, Dictionary<int, float[]>> m_LastActionsReceived =
+            new Dictionary<string, Dictionary<int, float[]>>();
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
@@ -202,23 +197,23 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
-                case CommandProto.Reset:
-                {
-                    foreach (var brainName in m_ActionCallbacks.Keys)
                     {
-                        m_ActionCallbacks[brainName].Clear();
+                        QuitCommandReceived?.Invoke();
+                        return;
                     }
-                    ResetCommandReceived?.Invoke();
-                    return;
-                }
+                case CommandProto.Reset:
+                    {
+                        foreach (var brainName in m_ActionId.Keys)
+                        {
+                            m_ActionId[brainName].Clear();
+                        }
+                        ResetCommandReceived?.Invoke();
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -242,7 +237,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors)
         {
 # if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(brainKey))
@@ -268,11 +263,20 @@ namespace MLAgents
             }
 
             m_NeedCommunicateThisStep = true;
-            if (!m_ActionCallbacks.ContainsKey(brainKey))
+            if (!m_ActionId.ContainsKey(brainKey))
             {
-                m_ActionCallbacks[brainKey] = new List<IdCallbackPair>();
+                m_ActionId[brainKey] = new List<int>();
             }
-            m_ActionCallbacks[brainKey].Add(new IdCallbackPair { AgentId = info.episodeId, Callback = action });
+            m_ActionId[brainKey].Add(info.episodeId);
+            if (!m_LastActionsReceived.ContainsKey(brainKey))
+            {
+                m_LastActionsReceived[brainKey] = new Dictionary<int, float[]>();
+            }
+            m_LastActionsReceived[brainKey][info.episodeId] = null;
+            if (info.done)
+            {
+                m_LastActionsReceived[brainKey].Remove(info.episodeId);
+            }
         }
 
         /// <summary>
@@ -311,10 +315,9 @@ namespace MLAgents
 
             UpdateEnvironmentWithInput(rlInput);
 
-            m_LastActionsReceived.Clear();
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_ActionCallbacks[brainName].Any())
+                if (!m_ActionId[brainName].Any())
                 {
                     continue;
                 }
@@ -325,26 +328,33 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_ActionCallbacks[brainName].Count;
-                var agentActionDict = new Dictionary<int, AgentAction>(numAgents);
-                m_LastActionsReceived[brainName] = agentActionDict;
+                var numAgents = m_ActionId[brainName].Count;
                 for (var i = 0; i < numAgents; i++)
                 {
                     var agentAction = agentActions[i];
-                    var agentId = m_ActionCallbacks[brainName][i].AgentId;
-                    agentActionDict[agentId] = agentAction;
-                    m_ActionCallbacks[brainName][i].Callback.Invoke(agentAction);
+                    var agentId = m_ActionId[brainName][i];
+                    if (m_LastActionsReceived[brainName].ContainsKey(agentId))
+                    {
+                        m_LastActionsReceived[brainName][agentId] = agentAction.vectorActions;
+                    }
                 }
             }
-            foreach (var brainName in m_ActionCallbacks.Keys)
+            foreach (var brainName in m_ActionId.Keys)
             {
-                m_ActionCallbacks[brainName].Clear();
+                m_ActionId[brainName].Clear();
             }
         }
 
-        public Dictionary<int, AgentAction> GetActions(string key)
+        public float[] GetActions(string key, int agentId)
         {
-            return m_LastActionsReceived[key];
+            if (m_LastActionsReceived.ContainsKey(key))
+            {
+                if (m_LastActionsReceived[key].ContainsKey(agentId))
+                {
+                    return m_LastActionsReceived[key][agentId];
+                }
+            }
+            return null;
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ namespace MLAgents
     public class RemotePolicy : IPolicy
     {
         string m_BehaviorName;
+        int m_AgentId;
         protected ICommunicator m_Communicator;
 
         /// <summary>
@@ -30,15 +31,18 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
+            m_AgentId = info.episodeId;
+            m_Communicator?.PutObservations(m_BehaviorName, info, sensors);
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
             m_Communicator?.DecideBatch();
+            return m_Communicator?.GetActions(m_BehaviorName, m_AgentId);
+
         }
 
         public void Dispose()

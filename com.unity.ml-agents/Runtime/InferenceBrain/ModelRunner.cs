@@ -11,16 +11,13 @@ namespace MLAgents.InferenceBrain
         public AgentInfo agentInfo;
         public List<ISensor> sensors;
     }
-    public struct AgentIdActionPair
-    {
-        public int agentId;
-        public Action<AgentAction> action;
-    }
 
     public class ModelRunner
     {
         List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
-        List<AgentIdActionPair> m_ActionFuncs = new List<AgentIdActionPair>();
+        Dictionary<int, float[]> m_LastActionsReceived = new Dictionary<int, float[]>();
+        List<int> m_ActionId = new List<int>();
+
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
@@ -119,7 +116,7 @@ namespace MLAgents.InferenceBrain
             return outputs;
         }
 
-        public void PutObservations(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void PutObservations(AgentInfo info, List<ISensor> sensors)
         {
 #if DEBUG
             m_SensorShapeValidator.ValidateSensors(sensors);
@@ -130,7 +127,15 @@ namespace MLAgents.InferenceBrain
                 sensors = sensors
             });
 
-            m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.episodeId });
+            m_ActionId.Add(info.episodeId);
+
+            m_LastActionsReceived[info.episodeId] = null;
+            if (info.done)
+            {
+                // If the agent is done, we remove the key from the last action dictionary since no action
+                // should be taken.
+                m_LastActionsReceived.Remove(info.episodeId);
+            }
         }
 
         public void DecideBatch()
@@ -171,19 +176,28 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_ActionFuncs);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_ActionId, m_LastActionsReceived);
             Profiler.EndSample();
 
             Profiler.EndSample();
 
             m_Infos.Clear();
 
-            m_ActionFuncs.Clear();
+            m_ActionId.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
         {
             return m_Model == other && m_InferenceDevice == otherInferenceDevice;
+        }
+
+        public float[] GetAction(int agentId)
+        {
+            if (m_LastActionsReceived.ContainsKey(agentId))
+            {
+                return m_LastActionsReceived[agentId];
+            }
+            return null;
         }
     }
 }

@@ -22,6 +22,8 @@ namespace MLAgents
     {
         protected ModelRunner m_ModelRunner;
 
+        private int m_AgentId;
+
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
@@ -38,15 +40,18 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_ModelRunner?.PutObservations(info, sensors, action);
+            m_AgentId = info.episodeId;
+            m_ModelRunner?.PutObservations(info, sensors);
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
             m_ModelRunner?.DecideBatch();
+            Debug.Log(m_ModelRunner?.GetAction(m_AgentId));
+            return m_ModelRunner?.GetAction(m_AgentId);
         }
 
         public void Dispose()
