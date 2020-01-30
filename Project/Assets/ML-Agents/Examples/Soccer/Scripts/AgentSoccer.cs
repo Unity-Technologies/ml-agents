@@ -112,12 +112,44 @@ public class AgentSoccer : Agent
         MoveAgent(vectorAction);
     }
 
+    public override float[] Heuristic()
+    {
+        var action = new float[3];
+        //forward
+        if (Input.GetKey(KeyCode.W))
+        {
+            action[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            action[0] = 2f;
+        }
+        //rotate
+        if (Input.GetKey(KeyCode.A))
+        {
+            action[2] = 1f;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            action[2] = 2f;
+        }
+        //right
+        if (Input.GetKey(KeyCode.E))
+        {
+            action[1] = 1f;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            action[1] = 2f;
+        }
+        return action;
+    }
     /// <summary>
     /// Used to provide a "kick" to the ball.
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 3000f * m_KickPower;
+        var force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
             var dir = c.contacts[0].point - transform.position;

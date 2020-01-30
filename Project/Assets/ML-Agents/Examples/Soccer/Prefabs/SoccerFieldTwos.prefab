@@ -239,7 +239,7 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0b19400e7d6744f09a30a858133f0a9d, type: 3}
+  m_Model: {fileID: 11400000, guid: 0c69a1fa014634d8e8f126f0d09a8072, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Soccer
@@ -280,6 +280,8 @@ MonoBehaviour:
   - blueGoal
   - wall
   - purpleAgent
+  - blueAgent
+  - blueAgent
   - blueAgent
   raysPerDirection: 6
   maxRayDegrees: 90
@@ -600,7 +602,7 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0b19400e7d6744f09a30a858133f0a9d, type: 3}
+  m_Model: {fileID: 11400000, guid: 0c69a1fa014634d8e8f126f0d09a8072, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Soccer
@@ -641,6 +643,8 @@ MonoBehaviour:
   - purpleGoal
   - wall
   - blueAgent
+  - purpleAgent
+  - purpleAgent
   - purpleAgent
   raysPerDirection: 6
   maxRayDegrees: 90
@@ -1754,8 +1758,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   area: {fileID: 0}
-  lastTouchedBy: {fileID: 0}
-  agentTag: agent
   purpleGoalTag: purpleGoal
   blueGoalTag: blueGoal
 --- !u!54 &54100138833592438
@@ -3405,7 +3407,7 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0b19400e7d6744f09a30a858133f0a9d, type: 3}
+  m_Model: {fileID: 11400000, guid: 0c69a1fa014634d8e8f126f0d09a8072, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Soccer
@@ -3446,6 +3448,8 @@ MonoBehaviour:
   - blueGoal
   - wall
   - purpleAgent
+  - blueAgent
+  - blueAgent
   - blueAgent
   raysPerDirection: 6
   maxRayDegrees: 90
@@ -3872,7 +3876,7 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 0b19400e7d6744f09a30a858133f0a9d, type: 3}
+  m_Model: {fileID: 11400000, guid: 0c69a1fa014634d8e8f126f0d09a8072, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Soccer
@@ -3913,6 +3917,8 @@ MonoBehaviour:
   - purpleGoal
   - wall
   - blueAgent
+  - purpleAgent
+  - purpleAgent
   - purpleAgent
   raysPerDirection: 6
   maxRayDegrees: 90
