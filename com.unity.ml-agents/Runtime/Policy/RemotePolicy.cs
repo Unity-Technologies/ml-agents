@@ -11,7 +11,7 @@ namespace MLAgents
     /// </summary>
     public class RemotePolicy : IPolicy
     {
-        string m_BehaviorName;
+        string m_FullyQualifiedBehaviorName;
         protected ICommunicator m_Communicator;
 
         /// <summary>
@@ -22,17 +22,17 @@ namespace MLAgents
         /// <inheritdoc />
         public RemotePolicy(
             BrainParameters brainParameters,
-            string behaviorName)
+            string fullyQualifiedBehaviorName)
         {
-            m_BehaviorName = behaviorName;
+            m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
+            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
         }
 
         /// <inheritdoc />
         public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
         {
-            m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
+            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors, action);
         }
 
         /// <inheritdoc />

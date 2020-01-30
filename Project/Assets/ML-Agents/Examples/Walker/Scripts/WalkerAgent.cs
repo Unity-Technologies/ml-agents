@@ -1,5 +1,6 @@
 using UnityEngine;
 using MLAgents;
+using MLAgentsExamples;
 
 public class WalkerAgent : Agent
 {
@@ -147,6 +148,7 @@ public class WalkerAgent : Agent
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
+        m_DirToTarget = target.position - m_JdController.bodyPartsDict[hips].rb.position;
         AddReward(
             +0.03f * Vector3.Dot(m_DirToTarget.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
             + 0.01f * Vector3.Dot(m_DirToTarget.normalized, hips.forward)

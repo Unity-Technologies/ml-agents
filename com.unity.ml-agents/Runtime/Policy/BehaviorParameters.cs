@@ -54,6 +54,14 @@ namespace MLAgents
 
         public string behaviorName
         {
+            get { return m_BehaviorName;}
+        }
+
+        /// <summary>
+        /// Returns the behavior name, concatenated with any other metadata (i.e. team id).
+        /// </summary>
+        public string fullyQualifiedBehaviorName
+        {
             get { return m_BehaviorName + "?team=" + m_TeamID;}
         }
 
@@ -68,7 +76,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, behaviorName);
+                        return new RemotePolicy(m_BrainParameters, fullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
