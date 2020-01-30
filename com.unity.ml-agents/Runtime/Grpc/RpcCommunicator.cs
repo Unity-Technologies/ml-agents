@@ -31,7 +31,7 @@ namespace MLAgents
         bool m_NeedCommunicateThisStep;
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
-        Dictionary<string, List<int>> m_ActionId = new Dictionary<string, List<int>>();
+        Dictionary<string, List<int>> m_AgentsRequestingDecisions = new Dictionary<string, List<int>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
@@ -203,9 +203,9 @@ namespace MLAgents
                 }
                 case CommandProto.Reset:
                 {
-                    foreach (var brainName in m_ActionId.Keys)
+                    foreach (var brainName in m_AgentsRequestingDecisions.Keys)
                     {
-                        m_ActionId[brainName].Clear();
+                        m_AgentsRequestingDecisions[brainName].Clear();
                     }
                     ResetCommandReceived?.Invoke();
                     return;
@@ -235,16 +235,16 @@ namespace MLAgents
         /// <summary>
         /// Sends the observations of one Agent.
         /// </summary>
-        /// <param name="brainKey">Batch Key.</param>
+        /// <param name="behaviorName">Batch Key.</param>
         /// <param name="agent">Agent info.</param>
-        public void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors)
+        public void PutObservations(string behaviorName, AgentInfo info, List<ISensor> sensors)
         {
 # if DEBUG
-            if (!m_SensorShapeValidators.ContainsKey(brainKey))
+            if (!m_SensorShapeValidators.ContainsKey(behaviorName))
             {
-                m_SensorShapeValidators[brainKey] = new SensorShapeValidator();
+                m_SensorShapeValidators[behaviorName] = new SensorShapeValidator();
             }
-            m_SensorShapeValidators[brainKey].ValidateSensors(sensors);
+            m_SensorShapeValidators[behaviorName].ValidateSensors(sensors);
 #endif
 
             using (TimerStack.Instance.Scoped("AgentInfo.ToProto"))
@@ -259,23 +259,23 @@ namespace MLAgents
                         agentInfoProto.Observations.Add(obsProto);
                     }
                 }
-                m_CurrentUnityRlOutput.AgentInfos[brainKey].Value.Add(agentInfoProto);
+                m_CurrentUnityRlOutput.AgentInfos[behaviorName].Value.Add(agentInfoProto);
             }
 
             m_NeedCommunicateThisStep = true;
-            if (!m_ActionId.ContainsKey(brainKey))
+            if (!m_AgentsRequestingDecisions.ContainsKey(behaviorName))
             {
-                m_ActionId[brainKey] = new List<int>();
+                m_AgentsRequestingDecisions[behaviorName] = new List<int>();
             }
-            m_ActionId[brainKey].Add(info.episodeId);
-            if (!m_LastActionsReceived.ContainsKey(brainKey))
+            m_AgentsRequestingDecisions[behaviorName].Add(info.episodeId);
+            if (!m_LastActionsReceived.ContainsKey(behaviorName))
             {
-                m_LastActionsReceived[brainKey] = new Dictionary<int, float[]>();
+                m_LastActionsReceived[behaviorName] = new Dictionary<int, float[]>();
             }
-            m_LastActionsReceived[brainKey][info.episodeId] = null;
+            m_LastActionsReceived[behaviorName][info.episodeId] = null;
             if (info.done)
             {
-                m_LastActionsReceived[brainKey].Remove(info.episodeId);
+                m_LastActionsReceived[behaviorName].Remove(info.episodeId);
             }
         }
 
@@ -317,7 +317,7 @@ namespace MLAgents
 
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_ActionId[brainName].Any())
+                if (!m_AgentsRequestingDecisions[brainName].Any())
                 {
                     continue;
                 }
@@ -328,30 +328,30 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_ActionId[brainName].Count;
+                var numAgents = m_AgentsRequestingDecisions[brainName].Count;
                 for (var i = 0; i < numAgents; i++)
                 {
                     var agentAction = agentActions[i];
-                    var agentId = m_ActionId[brainName][i];
+                    var agentId = m_AgentsRequestingDecisions[brainName][i];
                     if (m_LastActionsReceived[brainName].ContainsKey(agentId))
                     {
                         m_LastActionsReceived[brainName][agentId] = agentAction.vectorActions;
                     }
                 }
             }
-            foreach (var brainName in m_ActionId.Keys)
+            foreach (var brainName in m_AgentsRequestingDecisions.Keys)
             {
-                m_ActionId[brainName].Clear();
+                m_AgentsRequestingDecisions[brainName].Clear();
             }
         }
 
-        public float[] GetActions(string key, int agentId)
+        public float[] GetActions(string behaviorName, int agentId)
         {
-            if (m_LastActionsReceived.ContainsKey(key))
+            if (m_LastActionsReceived.ContainsKey(behaviorName))
             {
-                if (m_LastActionsReceived[key].ContainsKey(agentId))
+                if (m_LastActionsReceived[behaviorName].ContainsKey(agentId))
                 {
-                    return m_LastActionsReceived[key][agentId];
+                    return m_LastActionsReceived[behaviorName][agentId];
                 }
             }
             return null;
@@ -411,31 +411,31 @@ namespace MLAgents
             };
         }
 
-        void CacheBrainParameters(string brainKey, BrainParameters brainParameters)
+        void CacheBrainParameters(string behaviorName, BrainParameters brainParameters)
         {
-            if (m_SentBrainKeys.Contains(brainKey))
+            if (m_SentBrainKeys.Contains(behaviorName))
             {
                 return;
             }
 
             // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_UnsentBrainKeys[brainKey] = brainParameters;
+            m_UnsentBrainKeys[behaviorName] = brainParameters;
         }
 
         UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
         {
             UnityRLInitializationOutputProto output = null;
-            foreach (var brainKey in m_UnsentBrainKeys.Keys)
+            foreach (var behaviorName in m_UnsentBrainKeys.Keys)
             {
-                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(brainKey))
+                if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(behaviorName))
                 {
                     if (output == null)
                     {
                         output = new UnityRLInitializationOutputProto();
                     }
 
-                    var brainParameters = m_UnsentBrainKeys[brainKey];
-                    output.BrainParameters.Add(brainParameters.ToProto(brainKey, true));
+                    var brainParameters = m_UnsentBrainKeys[behaviorName];
+                    output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
                 }
             }
 
