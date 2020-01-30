@@ -220,7 +220,7 @@ class PPOPolicy(TFPolicy):
                 feed_dict[model.visual_in[i]] = mini_batch["visual_obs%d" % i]
         if self.use_recurrent:
             mem_in = [
-                mini_batch["memory"][i]
+                np.zeros((self.m_size))
                 for i in range(0, len(mini_batch["memory"]), self.sequence_length)
             ]
             feed_dict[model.memory_in] = mem_in
