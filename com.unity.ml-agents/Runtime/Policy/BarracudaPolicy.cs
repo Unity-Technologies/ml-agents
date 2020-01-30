@@ -50,7 +50,6 @@ namespace MLAgents
         public float[] DecideAction()
         {
             m_ModelRunner?.DecideBatch();
-            Debug.Log(m_ModelRunner?.GetAction(m_AgentId));
             return m_ModelRunner?.GetAction(m_AgentId);
         }
 
