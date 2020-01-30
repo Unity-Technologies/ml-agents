@@ -164,8 +164,8 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
         # Get all value estimates for reporting purposes
-        value_estimates = self.optimizer.get_batched_value_estimates(
-            agent_buffer_trajectory
+        value_estimates, _ = self.optimizer.get_trajectory_value_estimates(
+            agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
             self.stats_reporter.add_stat(

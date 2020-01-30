@@ -1,5 +1,5 @@
 import abc
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import numpy as np
 
 from mlagents.tf_utils.tf import tf
@@ -41,11 +41,16 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.value_heads: Dict[str, tf.Tensor] = {}
         self.create_reward_signals(trainer_params["reward_signals"])
+        self.memory_in: tf.Tensor = None
+        self.memory_out: tf.Tensor = None
+        self.m_size: int = 0
 
-    def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def get_trajectory_value_estimates(
+        self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.batch_size_ph: batch.num_experiences,
-            self.policy.sequence_length_ph: 1,  # We want to feed data in batch-wise, not time-wise.
+            self.policy.sequence_length_ph: batch.num_experiences,  # We want to feed data in batch-wise, not time-wise.
         }
 
         if self.policy.vec_obs_size > 0:
@@ -55,16 +60,38 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
                 _obs = batch["visual_obs%d" % i]
                 feed_dict[self.policy.visual_in[i]] = _obs
         if self.policy.use_recurrent:
-            feed_dict[self.policy.memory_in] = batch["memory"]
+            feed_dict[self.policy.memory_in] = [np.zeros((self.policy.m_size))]
+            feed_dict[self.memory_in] = [np.zeros((self.m_size))]
         if self.policy.prev_action is not None:
             feed_dict[self.policy.prev_action] = batch["prev_action"]
-        value_estimates = self.sess.run(self.value_heads, feed_dict)
+
+        if self.policy.use_recurrent:
+            value_estimates, policy_mem, value_mem = self.sess.run(
+                [self.value_heads, self.policy.memory_out, self.memory_out], feed_dict
+            )
+            prev_action = batch["actions"][-1]
+        else:
+            value_estimates = self.sess.run(self.value_heads, feed_dict)
+            prev_action = None
+            policy_mem = None
+            value_mem = None
         value_estimates = {k: np.squeeze(v, axis=1) for k, v in value_estimates.items()}
 
-        return value_estimates
+        # We do this in a separate step to feed the memory outs - a further optimization would
+        # be to append to the obs before running sess.run.
+        final_value_estimates = self.get_value_estimates(
+            next_obs, done, policy_mem, value_mem, prev_action
+        )
+
+        return value_estimates, final_value_estimates
 
     def get_value_estimates(
-        self, next_obs: List[np.ndarray], agent_id: str, done: bool
+        self,
+        next_obs: List[np.ndarray],
+        done: bool,
+        policy_memory: np.ndarray = None,
+        value_memory: np.ndarray = None,
+        prev_action: np.ndarray = None,
     ) -> Dict[str, float]:
         """
         Generates value estimates for bootstrapping.
@@ -84,12 +111,12 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
 
         if self.policy.vec_obs_size > 0:
             feed_dict[self.policy.vector_in] = [vec_vis_obs.vector_observations]
-        # if self.policy.use_recurrent:
-        #     feed_dict[self.policy.memory_in] = self.policy.retrieve_memories([agent_id])
-        # if self.policy.prev_action is not None:
-        #     feed_dict[self.policy.prev_action] = self.policy.retrieve_previous_action(
-        #         [agent_id]
-        #     )
+        if policy_memory is not None:
+            feed_dict[self.policy.memory_in] = policy_memory
+        if value_memory is not None:
+            feed_dict[self.memory_in] = value_memory
+        if prev_action is not None:
+            feed_dict[self.policy.prev_action] = [prev_action]
         value_estimates = self.sess.run(self.value_heads, feed_dict)
 
         value_estimates = {k: float(v) for k, v in value_estimates.items()}

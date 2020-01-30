@@ -91,20 +91,16 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
-        value_estimates = self.optimizer.get_batched_value_estimates(
-            agent_buffer_trajectory
+        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+            agent_buffer_trajectory,
+            trajectory.next_obs,
+            trajectory.done_reached and not trajectory.max_step_reached,
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
             self.stats_reporter.add_stat(
                 self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
-
-        value_next = self.optimizer.get_value_estimates(
-            trajectory.next_obs,
-            agent_id,
-            trajectory.done_reached and not trajectory.max_step_reached,
-        )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(

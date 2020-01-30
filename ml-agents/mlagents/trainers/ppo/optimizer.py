@@ -59,6 +59,11 @@ class PPOOptimizer(TFOptimizer):
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
                 }
+                if self.policy.use_recurrent:
+                    self.m_size = self.policy.m_size
+                    self.memory_in = tf.placeholder(
+                        shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                    )
 
                 if num_layers < 1:
                     num_layers = 1
@@ -92,8 +97,6 @@ class PPOOptimizer(TFOptimizer):
 
             # Add some stuff to inference dict from optimizer
             self.policy.inference_dict["learning_rate"] = self.learning_rate
-            if self.policy.use_recurrent:
-                self.policy.inference_dict["optimizer_memory_out"]: self.memory_out
 
     def create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
@@ -113,15 +116,10 @@ class PPOOptimizer(TFOptimizer):
         )[0]
 
         if self.policy.use_recurrent:
-            self.memory_in = tf.placeholder(
-                shape=[None, self.policy.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-            _half_point = int(self.policy.m_size / 2)
-
             hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
                 hidden_stream,
-                self.memory_in[:, _half_point:],
-                self.policy.sequence_length,
+                self.memory_in,
+                self.policy.sequence_length_ph,
                 name="lstm_value",
             )
             self.memory_out = memory_value_out
@@ -157,15 +155,10 @@ class PPOOptimizer(TFOptimizer):
         )[0]
 
         if self.policy.use_recurrent:
-            self.memory_in = tf.placeholder(
-                shape=[None, self.policy.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-            _half_point = int(self.policy.m_size / 2)
-
             hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
                 hidden_stream,
-                self.memory_in[:, _half_point:],
-                self.policy.sequence_length,
+                self.memory_in,
+                self.policy.sequence_length_ph,
                 name="lstm_value",
             )
             self.memory_out = memory_value_out
@@ -347,10 +340,11 @@ class PPOOptimizer(TFOptimizer):
                 feed_dict[self.policy.visual_in[i]] = mini_batch["visual_obs%d" % i]
         if self.policy.use_recurrent:
             mem_in = [
-                mini_batch["memory"][i]
+                np.zeros((self.policy.m_size))
                 for i in range(
-                    0, len(mini_batch["memory"]), self.policy.sequence_length
+                    0, mini_batch.num_experiences, self.policy.sequence_length
                 )
             ]
             feed_dict[self.policy.memory_in] = mem_in
+            feed_dict[self.memory_in] = mem_in
         return feed_dict

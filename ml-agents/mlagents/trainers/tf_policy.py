@@ -408,6 +408,7 @@ class TFPolicy(Policy):
             self.action_masks: Optional[tf.Tensor] = None
             self.prev_action: Optional[tf.Tensor] = None
             self.memory_in: Optional[tf.Tensor] = None
+            self.memory_out: Optional[tf.Tensor] = None
 
             self.global_step, self.increment_step_op, self.steps_to_increment = (
                 LearningModel.create_global_steps()

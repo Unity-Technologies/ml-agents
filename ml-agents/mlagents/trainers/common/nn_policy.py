@@ -137,10 +137,9 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
                 hidden_stream,
-                self.memory_in[:, :_half_point],
+                self.memory_in,
                 self.sequence_length_ph,
                 name="lstm_policy",
             )
@@ -254,10 +253,9 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            _half_point = int(self.m_size / 2)
             hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
                 hidden_policy,
-                self.memory_in[:, :_half_point],
+                self.memory_in,
                 self.sequence_length_ph,
                 name="lstm_policy",
             )
