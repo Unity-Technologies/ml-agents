@@ -81,7 +81,7 @@ public class TennisAgent : Agent
 
         m_TextComponent.text = score.ToString();
     }
-
+    
     public override float[] Heuristic()
     {
         var action = new float[2];
