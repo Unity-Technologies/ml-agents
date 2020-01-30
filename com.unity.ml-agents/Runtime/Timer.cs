@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using UnityEngine.SceneManagement;
 
 namespace MLAgents
 {
@@ -383,14 +384,26 @@ namespace MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
-            if (filename == null)
+            try
             {
-                var fullpath = Path.GetFullPath(".");
-                filename = $"{fullpath}/csharp_timers.json";
+                if (filename == null)
+                {
+                    var activeScene = SceneManager.GetActiveScene();
+                    var timerDir = Path.Combine(Application.dataPath, "ML-Agents", "Timers");
+                    Directory.CreateDirectory(timerDir);
+
+                    filename = Path.Combine(timerDir, $"{activeScene.name}_timers.json");
+                }
+
+                var fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+                SaveJsonTimers(fs);
+                fs.Close();
             }
-            var fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            SaveJsonTimers(fs);
-            fs.Close();
+            catch (IOException)
+            {
+                // It's possible we don't have write access to the directory.
+                Debug.LogWarning($"Unable to save timers to file {filename}");
+            }
         }
 
         /// <summary>
