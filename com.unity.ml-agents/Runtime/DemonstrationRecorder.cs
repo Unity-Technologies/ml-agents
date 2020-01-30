@@ -48,7 +48,7 @@ namespace MLAgents
             m_DemoStore.Initialize(
                 demonstrationName,
                 behaviorParams.brainParameters,
-                behaviorParams.behaviorName);
+                behaviorParams.fullyQualifiedBehaviorName);
             Monitor.Log("Recording Demonstration of Agent: ", m_RecordingAgent.name);
         }
 
