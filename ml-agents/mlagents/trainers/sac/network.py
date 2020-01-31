@@ -41,7 +41,7 @@ class SACNetwork:
         self.activ_fn = LearningModel.swish
 
         self.sequence_length_ph = tf.placeholder(
-            shape=None, dtype=tf.int32, name="sequence_length"
+            shape=None, dtype=tf.int32, name="sac_sequence_length"
         )
 
         self.policy_memory_in: Optional[tf.Tensor] = None
@@ -323,9 +323,7 @@ class SACTargetNetwork(SACNetwork):
 
             if self.policy.use_recurrent:
                 self.memory_in = tf.placeholder(
-                    shape=[None, self.policy.m_size],
-                    dtype=tf.float32,
-                    name="recurrent_in",
+                    shape=[None, m_size], dtype=tf.float32, name="target_recurrent_in"
                 )
                 self.value_memory_in = self.memory_in
             hidden_streams = LearningModel.create_observation_streams(
@@ -364,7 +362,7 @@ class SACTargetNetwork(SACNetwork):
 class SACPolicyNetwork(SACNetwork):
     """
     Instantiation for SAC policy network. Contains a dual Q estimator,
-    a value estimator, and the actual policy network.
+    a value estimator, and a reference to the actual policy network.
     """
 
     def __init__(
@@ -389,10 +387,12 @@ class SACPolicyNetwork(SACNetwork):
             vis_encode_type,
         )
         if self.policy.use_recurrent:
-            self.create_memory_ins(self.policy.m_size)
+            self.create_memory_ins(m_size)
 
         hidden_critic = self.create_observation_in(vis_encode_type)
         self.policy.output = self.policy.output
+        # Use the sequence length of the policy
+        self.sequence_length_ph = self.policy.sequence_length_ph
 
         if self.policy.use_continuous_act:
             self.create_cc_critic(hidden_critic, POLICY_SCOPE)
@@ -401,12 +401,7 @@ class SACPolicyNetwork(SACNetwork):
             self.create_dc_critic(hidden_critic, POLICY_SCOPE)
 
         if self.use_recurrent:
-            mem_outs = [
-                self.value_memory_out,
-                self.q1_memory_out,
-                self.q2_memory_out,
-                self.policy_memory_out,
-            ]
+            mem_outs = [self.value_memory_out, self.q1_memory_out, self.q2_memory_out]
             self.memory_out = tf.concat(mem_outs, axis=1)
 
     def create_memory_ins(self, m_size):
@@ -414,41 +409,21 @@ class SACPolicyNetwork(SACNetwork):
         Creates the memory input placeholders for LSTM.
         :param m_size: the total size of the memory.
         """
-        # Create the Policy input separate from the rest
-        # This is so in inference we only have to run the Policy network.
-        # Barracuda will grab the recurrent_in and recurrent_out named tensors.
-        self.inference_memory_in = tf.placeholder(
-            shape=[None, m_size // 4], dtype=tf.float32, name="recurrent_in"
-        )
-        # We assume m_size is divisible by 4
-        # Create the non-Policy inputs
-        # Use a default placeholder here so nothing has to be provided during
-        # Barracuda inference. Note that the default value is just the tiled input
-        # for the policy, which is thrown away.
-        three_fourths_m_size = m_size * 3 // 4
-        self.other_memory_in = tf.placeholder_with_default(
-            input=tf.tile(self.inference_memory_in, [1, 3]),
-            shape=[None, three_fourths_m_size],
-            name="other_recurrent_in",
-        )
-
-        # Concat and use this as the "placeholder"
-        # for training
-        self.memory_in = tf.concat(
-            [self.other_memory_in, self.inference_memory_in], axis=1
+        self.memory_in = tf.placeholder(
+            shape=[None, m_size * 3], dtype=tf.float32, name="value_recurrent_in"
         )
 
         # Re-break-up for each network
-        num_mems = 4
+        num_mems = 3
+        input_size = self.memory_in.get_shape().as_list()[1]
         mem_ins = []
         for i in range(num_mems):
-            _start = m_size // num_mems * i
-            _end = m_size // num_mems * (i + 1)
+            _start = input_size // num_mems * i
+            _end = input_size // num_mems * (i + 1)
             mem_ins.append(self.memory_in[:, _start:_end])
         self.value_memory_in = mem_ins[0]
         self.q1_memory_in = mem_ins[1]
         self.q2_memory_in = mem_ins[2]
-        self.policy_memory_in = mem_ins[3]
 
     def create_observation_in(self, vis_encode_type):
         """

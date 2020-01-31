@@ -152,3 +152,8 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
         network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
         run_out = dict(zip(list(out_dict.keys()), network_out))
         return run_out
+
+    def _make_zero_mem(self, m_size: int, length: int) -> List[np.ndarray]:
+        return [
+            np.zeros((m_size)) for i in range(0, length, self.policy.sequence_length)
+        ]

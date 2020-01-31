@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -348,8 +348,3 @@ class PPOOptimizer(TFOptimizer):
                 self.m_size, mini_batch.num_experiences
             )
         return feed_dict
-
-    def _make_zero_mem(self, m_size: int, length: int) -> List[np.ndarray]:
-        return [
-            np.zeros((m_size)) for i in range(0, length, self.policy.sequence_length)
-        ]
