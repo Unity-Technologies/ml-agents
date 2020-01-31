@@ -264,7 +264,7 @@ Both sensor components have several settings:
   always cast forward, and this many rays are cast to the left and right.
  * _Max Ray Degrees_ The angle (in degrees) for the outermost rays. 90 degrees
   corresponds to the left and right of the agent.
- * _ Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
+ * _Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
   to 0, rays will be used instead of spheres. Rays may be more efficient,
   especially in complex scenes.
  * _Ray Length_ The length of the casts
