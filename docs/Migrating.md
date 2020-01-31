@@ -115,7 +115,7 @@ You will then need to complete the fields on the new `Behavior Parameters` compo
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
 * The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
 * We have removed the `Done` call as well as the capacity to set `Max Steps` on the Academy. Therefore an AcademyReset will never be triggered from C# (only from Python). If you want to reset the simulation after a
-fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as BananaCollector).
+fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as FoodCollector).
 In our examples, groups of Agents can be reset through an "Area" that can reset groups of Agents.
 * The import for `mlagents.envs.UnityEnvironment` was removed. If you are using the Python API, change `from mlagents_envs import UnityEnvironment` to `from mlagents_envs.environment import UnityEnvironment`.
 
