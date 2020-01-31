@@ -137,7 +137,7 @@ Tennis:
     time_horizon: 1000
     self_play:
         window: 10
-        play_against_current_self_ratio: 0.0
+        play_against_current_self_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
 

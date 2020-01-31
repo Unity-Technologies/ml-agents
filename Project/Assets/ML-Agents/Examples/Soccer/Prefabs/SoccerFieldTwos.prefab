@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 114492261207303438}
   - component: {fileID: 114320493772006642}
   - component: {fileID: 9152743230243588598}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: PurpleStriker
   m_TagString: purpleAgent
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ GameObject:
   - component: {fileID: 114850431417842684}
   - component: {fileID: 114516244030127556}
   - component: {fileID: 404683423509059512}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: BlueStriker
   m_TagString: blueAgent
   m_Icon: {fileID: 0}
@@ -1666,7 +1666,7 @@ GameObject:
   - component: {fileID: 135993924486820224}
   - component: {fileID: 114273807544954564}
   - component: {fileID: 54100138833592438}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Soccer Ball
   m_TagString: ball
   m_Icon: {fileID: 0}
@@ -3338,7 +3338,7 @@ GameObject:
   - component: {fileID: 5320024511406682322}
   - component: {fileID: 1023485123796557062}
   - component: {fileID: 8734522883866558980}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: PurpleStriker (1)
   m_TagString: purpleAgent
   m_Icon: {fileID: 0}
@@ -3807,7 +3807,7 @@ GameObject:
   - component: {fileID: 5379409612883756837}
   - component: {fileID: 2562571719799803906}
   - component: {fileID: 1018414316889932458}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: BlueStriker (1)
   m_TagString: blueAgent
   m_Icon: {fileID: 0}
