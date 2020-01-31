@@ -2,9 +2,20 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using MLAgents.Sensor;
+using System.Collections.Generic;
 
 namespace MLAgents.Tests
 {
+
+    public class TestPolicy : IPolicy
+    {
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
+
+        public float[] DecideAction() { return new float[0]; }
+
+        public void Dispose() { }
+    }
+
     public class TestAgent : Agent
     {
         public AgentInfo _Info
@@ -17,6 +28,11 @@ namespace MLAgents.Tests
             {
                 typeof(Agent).GetField("m_Info", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, value);
             }
+        }
+
+        public void SetPolicy(IPolicy policy)
+        {
+            typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, policy);
         }
 
         public int initializeAgentCalls;
@@ -93,7 +109,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() {}
+        public void Update() { }
     }
 
     [TestFixture]
@@ -458,10 +474,12 @@ namespace MLAgents.Tests
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.Awake();
 
+
             agent1.maxStep = 20;
 
             agent2.LazyInitialize();
             agent1.LazyInitialize();
+            agent2.SetPolicy(new TestPolicy());
 
             var j = 0;
             for (var i = 0; i < 500; i++)
