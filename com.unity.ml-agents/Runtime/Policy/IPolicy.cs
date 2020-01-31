@@ -18,13 +18,13 @@ namespace MLAgents
         /// batching of requests.
         /// </summary>
         /// <param name="agent"></param>
-        void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action);
+        void RequestDecision(AgentInfo info, List<ISensor> sensors);
 
         /// <summary>
         /// Signals the Policy that if the Decision has not been taken yet,
         /// it must be taken now. The Brain is expected to update the actions
         /// of the Agents at this point the latest.
         /// </summary>
-        void DecideAction();
+        float[] DecideAction();
     }
 }

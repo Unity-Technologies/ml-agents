@@ -11,13 +11,11 @@ namespace MLAgents
     /// </summary>
     public class RemotePolicy : IPolicy
     {
-        string m_FullyQualifiedBehaviorName;
-        protected ICommunicator m_Communicator;
 
-        /// <summary>
-        /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
-        /// </summary>
-        List<int[]> m_SensorShapes;
+        int m_AgentId;
+        string m_FullyQualifiedBehaviorName;
+
+        protected ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(
@@ -30,15 +28,18 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors, action);
+            m_AgentId = info.episodeId;
+            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
             m_Communicator?.DecideBatch();
+            return m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+
         }
 
         public void Dispose()
