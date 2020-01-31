@@ -24,9 +24,6 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-import multiprocessing
-
-multiprocessing.set_start_method("spawn", True)
 
 
 def _create_parser():
