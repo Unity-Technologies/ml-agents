@@ -149,7 +149,7 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 2000f * m_KickPower;
+        var force = 500f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
             var dir = c.contacts[0].point - transform.position;
