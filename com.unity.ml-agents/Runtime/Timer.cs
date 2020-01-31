@@ -151,12 +151,16 @@ namespace MLAgents
         /// <summary>
         /// Stop timing a block of code, and increment internal counts.
         /// </summary>
-        public void End()
+        public void End(bool isRecording)
         {
-            var elapsed = DateTime.Now.Ticks - m_TickStart;
-            m_TotalTicks += elapsed;
-            m_TickStart = 0;
-            m_NumCalls++;
+            if (isRecording)
+            {
+                var elapsed = DateTime.Now.Ticks - m_TickStart;
+                m_TotalTicks += elapsed;
+                m_TickStart = 0;
+                m_NumCalls++;
+            }
+            // Note that samplers are always updated regardless of recording state, to ensure matching start and ends.
             m_Sampler?.End();
         }
 
@@ -286,6 +290,8 @@ namespace MLAgents
 
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
+        // Whether or not new timers and gauges can be added.
+        bool m_Recording = true;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -315,8 +321,19 @@ namespace MLAgents
             get { return m_RootNode; }
         }
 
+        public bool Recording
+        {
+            get { return m_Recording; }
+            set { m_Recording = value; }
+        }
+
         public void SetGauge(string name, float value)
         {
+            if (!Recording)
+            {
+                return;
+            }
+
             if (!float.IsNaN(value))
             {
                 GaugeNode gauge;
@@ -342,7 +359,7 @@ namespace MLAgents
         void Pop()
         {
             var node = m_Stack.Pop();
-            node.End();
+            node.End(Recording);
         }
 
         /// <summary>
