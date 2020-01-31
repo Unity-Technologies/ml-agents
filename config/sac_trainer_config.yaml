@@ -217,7 +217,7 @@ Hallway:
     memory_size: 128
     init_entcoef: 0.1
     max_steps: 1.0e7
-    summary_freq: 1000
+    summary_freq: 10000
     time_horizon: 64
     use_recurrent: true
 
@@ -229,6 +229,7 @@ VisualHallway:
     gamma: 0.99
     batch_size: 64
     max_steps: 1.0e7
+    summary_freq: 10000
     time_horizon: 64
     use_recurrent: true
 
