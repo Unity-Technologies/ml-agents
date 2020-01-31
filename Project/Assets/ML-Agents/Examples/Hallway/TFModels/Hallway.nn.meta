@@ -3,6 +3,7 @@ guid: 317f4f8da7e4846b3aae0969781824a2
 ScriptedImporter:
   fileIDToRecycleName:
     11400000: main obj
+    11400002: model data
   externalObjects: {}
   userData: 
   assetBundleName: 

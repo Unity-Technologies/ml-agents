@@ -82,7 +82,7 @@ namespace MLAgentsExamples
             }
 
             var asset = ScriptableObject.CreateInstance<NNModel>();
-            asset.Value = model;
+            asset.modelData.Value = model;
             asset.name = "Override - " + Path.GetFileName(assetPath);
             m_CachedModels[behaviorName] = asset;
             return asset;
