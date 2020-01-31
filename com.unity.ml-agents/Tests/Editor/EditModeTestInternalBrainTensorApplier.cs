@@ -42,24 +42,20 @@ namespace MLAgents.Tests
 
             var applier = new ContinuousActionOutputApplier();
 
-            var action0 = new AgentAction();
-            var action1 = new AgentAction();
-            var callbacks = new List<AgentIdActionPair>()
-            {
-                new AgentIdActionPair {agentId = 0, action = (a) => action0 = a},
-                new AgentIdActionPair {agentId = 1, action = (a) => action1 = a}
-            };
+            var agentIds = new List<int>() { 0, 1 };
+            // Dictionary from AgentId to Action
+            var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
 
-            applier.Apply(inputTensor, callbacks);
+            applier.Apply(inputTensor, agentIds, actionDict);
 
 
-            Assert.AreEqual(action0.vectorActions[0], 1);
-            Assert.AreEqual(action0.vectorActions[1], 2);
-            Assert.AreEqual(action0.vectorActions[2], 3);
+            Assert.AreEqual(actionDict[0][0], 1);
+            Assert.AreEqual(actionDict[0][1], 2);
+            Assert.AreEqual(actionDict[0][2], 3);
 
-            Assert.AreEqual(action1.vectorActions[0], 4);
-            Assert.AreEqual(action1.vectorActions[1], 5);
-            Assert.AreEqual(action1.vectorActions[2], 6);
+            Assert.AreEqual(actionDict[1][0], 4);
+            Assert.AreEqual(actionDict[1][1], 5);
+            Assert.AreEqual(actionDict[1][2], 6);
         }
 
         [Test]
@@ -76,21 +72,18 @@ namespace MLAgents.Tests
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
 
-            var action0 = new AgentAction();
-            var action1 = new AgentAction();
-            var callbacks = new List<AgentIdActionPair>()
-            {
-                new AgentIdActionPair {agentId = 0, action = (a) => action0 = a},
-                new AgentIdActionPair {agentId = 1, action = (a) => action1 = a}
-            };
+            var agentIds = new List<int>() { 0, 1 };
+            // Dictionary from AgentId to Action
+            var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
 
-            applier.Apply(inputTensor, callbacks);
 
-            Assert.AreEqual(action0.vectorActions[0], 1);
-            Assert.AreEqual(action0.vectorActions[1], 1);
+            applier.Apply(inputTensor, agentIds, actionDict);
 
-            Assert.AreEqual(action1.vectorActions[0], 1);
-            Assert.AreEqual(action1.vectorActions[1], 2);
+            Assert.AreEqual(actionDict[0][0], 1);
+            Assert.AreEqual(actionDict[0][1], 1);
+
+            Assert.AreEqual(actionDict[1][0], 1);
+            Assert.AreEqual(actionDict[1][1], 2);
             alloc.Dispose();
         }
     }

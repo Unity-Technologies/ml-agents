@@ -13,18 +13,26 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class ContinuousActionOutputApplier : TensorApplier.IApplier
     {
-        public void Apply(TensorProxy tensorProxy, IEnumerable<AgentIdActionPair> actions)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
         {
             var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
             var agentIndex = 0;
-            foreach (var idActionPair in actions)
+            foreach (int agentId in actionIds)
             {
-                var actionValue = new float[actionSize];
-                for (var j = 0; j < actionSize; j++)
+                if (lastActions.ContainsKey(agentId))
                 {
-                    actionValue[j] = tensorProxy.data[agentIndex, j];
+                    var actionValue = lastActions[agentId];
+                    if (actionValue == null)
+                    {
+                        actionValue = new float[actionSize];
+                        lastActions[agentId] = actionValue;
+                    }
+                    for (var j = 0; j < actionSize; j++)
+                    {
+                        actionValue[j] = tensorProxy.data[agentIndex, j];
+                    }
+
                 }
-                idActionPair.action.Invoke(new AgentAction { vectorActions = actionValue });
                 agentIndex++;
             }
         }
@@ -47,10 +55,10 @@ namespace MLAgents.InferenceBrain
             m_Allocator = allocator;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<AgentIdActionPair> actions)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
         {
             //var tensorDataProbabilities = tensorProxy.Data as float[,];
-            var idActionPairList = actions as List<AgentIdActionPair> ?? actions.ToList();
+            var idActionPairList = actionIds as List<int> ?? actionIds.ToList();
             var batchSize = idActionPairList.Count;
             var actionValues = new float[batchSize, m_ActionSize.Length];
             var startActionIndices = Utilities.CumSum(m_ActionSize);
@@ -92,14 +100,22 @@ namespace MLAgents.InferenceBrain
                 outputTensor.data.Dispose();
             }
             var agentIndex = 0;
-            foreach (var idActionPair in idActionPairList)
+            foreach (int agentId in actionIds)
             {
-                var actionVal = new float[m_ActionSize.Length];
-                for (var j = 0; j < m_ActionSize.Length; j++)
+                if (lastActions.ContainsKey(agentId))
                 {
-                    actionVal[j] = actionValues[agentIndex, j];
+                    var actionVal = lastActions[agentId];
+                    if (actionVal == null)
+                    {
+                        actionVal = new float[m_ActionSize.Length];
+                        lastActions[agentId] = actionVal;
+                    }
+                    for (var j = 0; j < m_ActionSize.Length; j++)
+                    {
+                        actionVal[j] = actionValues[agentIndex, j];
+                    }
+
                 }
-                idActionPair.action.Invoke(new AgentAction { vectorActions = actionVal });
                 agentIndex++;
             }
         }
@@ -183,21 +199,21 @@ namespace MLAgents.InferenceBrain
             m_Memories = memories;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<AgentIdActionPair> actions)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
-            foreach (var idActionPair in actions)
+            foreach (int agentId in actionIds)
             {
                 List<float> memory = null;
-                if (!m_Memories.TryGetValue(idActionPair.agentId, out memory)
+                if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize)
                 {
                     memory = new List<float>();
                     memory.AddRange(Enumerable.Repeat(0f, memorySize));
                 }
 
-                m_Memories[idActionPair.agentId] = memory;
+                m_Memories[agentId] = memory;
                 agentIndex++;
             }
         }
@@ -220,15 +236,15 @@ namespace MLAgents.InferenceBrain
             m_Memories = memories;
         }
 
-        public void Apply(TensorProxy tensorProxy, IEnumerable<AgentIdActionPair> actions)
+        public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
         {
             var agentIndex = 0;
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
 
-            foreach (var idActionPair in actions)
+            foreach (int agentId in actionIds)
             {
                 List<float> memory = null;
-                if (!m_Memories.TryGetValue(idActionPair.agentId, out memory)
+                if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize * m_MemoriesCount)
                 {
                     memory = new List<float>();
@@ -240,7 +256,7 @@ namespace MLAgents.InferenceBrain
                     memory[memorySize * m_MemoryIndex + j] = tensorProxy.data[agentIndex, j];
                 }
 
-                m_Memories[idActionPair.agentId] = memory;
+                m_Memories[agentId] = memory;
                 agentIndex++;
             }
         }

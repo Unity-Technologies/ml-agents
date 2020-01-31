@@ -12,7 +12,7 @@ namespace MLAgents
     public class HeuristicPolicy : IPolicy
     {
         Func<float[]> m_Heuristic;
-        Action<AgentAction> m_ActionFunc;
+        float[] m_LastDecision;
 
         /// <inheritdoc />
         public HeuristicPolicy(Func<float[]> heuristic)
@@ -21,19 +21,15 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_ActionFunc = action;
+            m_LastDecision = m_Heuristic.Invoke();
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
-            if (m_ActionFunc != null)
-            {
-                m_ActionFunc.Invoke(new AgentAction { vectorActions = m_Heuristic.Invoke() });
-                m_ActionFunc = null;
-            }
+            return m_LastDecision;
         }
 
         public void Dispose()
