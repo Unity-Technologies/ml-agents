@@ -4,6 +4,7 @@ public class HitWall : MonoBehaviour
 {
     public GameObject areaObject;
     public int lastAgentHit;
+    public bool net;
 
     public enum FloorHit
         {
@@ -33,6 +34,7 @@ public class HitWall : MonoBehaviour
         m_AgentB.Done();
         m_Area.MatchReset();
         lastFloorHit = FloorHit.Service;
+        net = false;
     }
     
     void AgentAWins()
@@ -94,6 +96,10 @@ public class HitWall : MonoBehaviour
                 {
                     lastFloorHit = FloorHit.FloorAHit;
                     //successful serve
+                    if (!net)
+                    {
+                        net = true;
+                    }
                 }
             }
             else if (collision.gameObject.name == "floorB")
@@ -107,6 +113,21 @@ public class HitWall : MonoBehaviour
                 {
                     lastFloorHit = FloorHit.FloorBHit;
                     //successful serve
+                    if (!net)
+                    {
+                        net = true;
+                    }
+                }
+            }
+            else if (collision.gameObject.name == "net" && !net)
+            {
+                if (lastAgentHit == 0)
+                {
+                    AgentBWins();
+                }
+                else if (lastAgentHit == 1)
+                {
+                    AgentAWins();
                 }
             }
         }
@@ -120,6 +141,11 @@ public class HitWall : MonoBehaviour
             else
             {
                 //agent can return serve in the air
+                if (lastFloorHit != FloorHit.Service && !net)
+                {
+                    net = true;
+                }
+
                 lastAgentHit = 0;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }
@@ -133,6 +159,11 @@ public class HitWall : MonoBehaviour
             }
             else
             {
+                if (lastFloorHit != FloorHit.Service && !net)
+                {
+                    net = true;
+                }
+
                 lastAgentHit = 1;
                 lastFloorHit = FloorHit.FloorHitUnset;
             }

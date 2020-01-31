@@ -68,9 +68,11 @@ public class TennisAgent : Agent
         {
             m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
         }
+
         m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
+
         m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
-        AddReward(-1f / 3000f);
+
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
         {
@@ -81,7 +83,7 @@ public class TennisAgent : Agent
 
         m_TextComponent.text = score.ToString();
     }
-    
+
     public override float[] Heuristic()
     {
         var action = new float[2];
