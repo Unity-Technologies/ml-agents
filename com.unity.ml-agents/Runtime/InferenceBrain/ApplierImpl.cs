@@ -19,14 +19,19 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (int agentId in actionIds)
             {
-                var actionValue = new float[actionSize];
-                for (var j = 0; j < actionSize; j++)
-                {
-                    actionValue[j] = tensorProxy.data[agentIndex, j];
-                }
                 if (lastActions.ContainsKey(agentId))
                 {
-                    lastActions[agentId] = actionValue;
+                    var actionValue = lastActions[agentId];
+                    if (actionValue == null)
+                    {
+                        actionValue = new float[actionSize];
+                        lastActions[agentId] = actionValue;
+                    }
+                    for (var j = 0; j < actionSize; j++)
+                    {
+                        actionValue[j] = tensorProxy.data[agentIndex, j];
+                    }
+
                 }
                 agentIndex++;
             }
@@ -97,14 +102,19 @@ namespace MLAgents.InferenceBrain
             var agentIndex = 0;
             foreach (int agentId in actionIds)
             {
-                var actionVal = new float[m_ActionSize.Length];
-                for (var j = 0; j < m_ActionSize.Length; j++)
-                {
-                    actionVal[j] = actionValues[agentIndex, j];
-                }
                 if (lastActions.ContainsKey(agentId))
                 {
-                    lastActions[agentId] = actionVal;
+                    var actionVal = lastActions[agentId];
+                    if (actionVal == null)
+                    {
+                        actionVal = new float[m_ActionSize.Length];
+                        lastActions[agentId] = actionVal;
+                    }
+                    for (var j = 0; j < m_ActionSize.Length; j++)
+                    {
+                        actionVal[j] = actionValues[agentIndex, j];
+                    }
+
                 }
                 agentIndex++;
             }

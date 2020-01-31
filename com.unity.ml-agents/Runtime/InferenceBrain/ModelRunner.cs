@@ -16,7 +16,7 @@ namespace MLAgents.InferenceBrain
     {
         List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
         Dictionary<int, float[]> m_LastActionsReceived = new Dictionary<int, float[]>();
-        List<int> m_ActionId = new List<int>();
+        List<int> m_OrderedAgentsRequestingDecisions = new List<int>();
 
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
@@ -127,9 +127,13 @@ namespace MLAgents.InferenceBrain
                 sensors = sensors
             });
 
-            m_ActionId.Add(info.episodeId);
+            // We add the episodeId to this list to maintain the order in which the decisions were requested
+            m_OrderedAgentsRequestingDecisions.Add(info.episodeId);
 
-            m_LastActionsReceived[info.episodeId] = null;
+            if (!m_LastActionsReceived.ContainsKey(info.episodeId))
+            {
+                m_LastActionsReceived[info.episodeId] = null;
+            }
             if (info.done)
             {
                 // If the agent is done, we remove the key from the last action dictionary since no action
@@ -176,14 +180,14 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_ActionId, m_LastActionsReceived);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_OrderedAgentsRequestingDecisions, m_LastActionsReceived);
             Profiler.EndSample();
 
             Profiler.EndSample();
 
             m_Infos.Clear();
 
-            m_ActionId.Clear();
+            m_OrderedAgentsRequestingDecisions.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)

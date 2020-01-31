@@ -24,14 +24,11 @@ namespace MLAgents
         /// If true, the communication is active.
         bool m_IsOpen;
 
-        /// The default number of agents in the scene
-        const int k_NumAgents = 32;
-
         List<string> m_BehaviorNames = new List<string>();
         bool m_NeedCommunicateThisStep;
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
-        Dictionary<string, List<int>> m_AgentsRequestingDecisions = new Dictionary<string, List<int>>();
+        Dictionary<string, List<int>> m_OrderedAgentsRequestingDecisions = new Dictionary<string, List<int>>();
 
         /// The current UnityRLOutput to be sent when all the brains queried the communicator
         UnityRLOutputProto m_CurrentUnityRlOutput =
@@ -203,9 +200,9 @@ namespace MLAgents
                 }
                 case CommandProto.Reset:
                 {
-                    foreach (var brainName in m_AgentsRequestingDecisions.Keys)
+                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        m_AgentsRequestingDecisions[brainName].Clear();
+                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
                     }
                     ResetCommandReceived?.Invoke();
                     return;
@@ -263,11 +260,11 @@ namespace MLAgents
             }
 
             m_NeedCommunicateThisStep = true;
-            if (!m_AgentsRequestingDecisions.ContainsKey(behaviorName))
+            if (!m_OrderedAgentsRequestingDecisions.ContainsKey(behaviorName))
             {
-                m_AgentsRequestingDecisions[behaviorName] = new List<int>();
+                m_OrderedAgentsRequestingDecisions[behaviorName] = new List<int>();
             }
-            m_AgentsRequestingDecisions[behaviorName].Add(info.episodeId);
+            m_OrderedAgentsRequestingDecisions[behaviorName].Add(info.episodeId);
             if (!m_LastActionsReceived.ContainsKey(behaviorName))
             {
                 m_LastActionsReceived[behaviorName] = new Dictionary<int, float[]>();
@@ -317,7 +314,7 @@ namespace MLAgents
 
             foreach (var brainName in rlInput.AgentActions.Keys)
             {
-                if (!m_AgentsRequestingDecisions[brainName].Any())
+                if (!m_OrderedAgentsRequestingDecisions[brainName].Any())
                 {
                     continue;
                 }
@@ -328,20 +325,20 @@ namespace MLAgents
                 }
 
                 var agentActions = rlInput.AgentActions[brainName].ToAgentActionList();
-                var numAgents = m_AgentsRequestingDecisions[brainName].Count;
+                var numAgents = m_OrderedAgentsRequestingDecisions[brainName].Count;
                 for (var i = 0; i < numAgents; i++)
                 {
                     var agentAction = agentActions[i];
-                    var agentId = m_AgentsRequestingDecisions[brainName][i];
+                    var agentId = m_OrderedAgentsRequestingDecisions[brainName][i];
                     if (m_LastActionsReceived[brainName].ContainsKey(agentId))
                     {
                         m_LastActionsReceived[brainName][agentId] = agentAction.vectorActions;
                     }
                 }
             }
-            foreach (var brainName in m_AgentsRequestingDecisions.Keys)
+            foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
             {
-                m_AgentsRequestingDecisions[brainName].Clear();
+                m_OrderedAgentsRequestingDecisions[brainName].Clear();
             }
         }
 
@@ -397,7 +394,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Wraps the UnityOuptut into a message with the appropriate status.
+        /// Wraps the UnityOutput into a message with the appropriate status.
         /// </summary>
         /// <returns>The UnityMessage corresponding.</returns>
         /// <param name="content">The UnityOutput to be wrapped.</param>
