@@ -84,7 +84,7 @@ class NNPolicy(TFPolicy):
         if self.use_continuous_act:
             self.inference_dict["pre_action"] = self.output_pre
         if self.use_recurrent:
-            self.inference_dict["policy_memory_out"] = self.memory_out
+            self.inference_dict["memory_out"] = self.memory_out
 
     @timed
     def evaluate(
@@ -144,7 +144,7 @@ class NNPolicy(TFPolicy):
                 name="lstm_policy",
             )
 
-            self.memory_out = memory_policy_out
+            self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
         else:
             hidden_policy = hidden_stream
 
@@ -260,7 +260,7 @@ class NNPolicy(TFPolicy):
                 name="lstm_policy",
             )
 
-            self.memory_out = memory_policy_out
+            self.memory_out = tf.identity(memory_policy_out, "recurrent_out")
         else:
             hidden_policy = hidden_stream
 
