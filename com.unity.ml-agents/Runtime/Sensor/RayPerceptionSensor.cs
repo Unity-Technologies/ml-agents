@@ -145,22 +145,22 @@ namespace MLAgents.Sensor
         ///    nothing was hit.
         ///
         /// </summary>
-        /// <param name="rayLength"></param>
+        /// <param name="unscaledRayLength"></param>
         /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
         ///     "forward" relative to the game object</param>
         /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
         /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
         /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
-        /// <param name="castRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
+        /// <param name="unscaledCastRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
         /// instead - this may be faster, especially for complex environments.</param>
         /// <param name="transform">Transform of the GameObject</param>
         /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
         /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
         /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
         ///
-        public static void PerceiveStatic(float rayLength,
+        public static void PerceiveStatic(float unscaledRayLength,
             IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
-            float startOffset, float endOffset, float castRadius,
+            float startOffset, float endOffset, float unscaledCastRadius,
             Transform transform, CastType castType, float[] perceptionBuffer,
             int layerMask = Physics.DefaultRaycastLayers,
             DebugDisplayInfo debugInfo = null)
@@ -185,20 +185,26 @@ namespace MLAgents.Sensor
                 if (castType == CastType.Cast3D)
                 {
                     startPositionLocal = new Vector3(0, startOffset, 0);
-                    endPositionLocal = PolarToCartesian3D(rayLength, angle);
+                    endPositionLocal = PolarToCartesian3D(unscaledRayLength, angle);
                     endPositionLocal.y += endOffset;
                 }
                 else
                 {
                     // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
                     startPositionLocal = new Vector2();
-                    endPositionLocal = PolarToCartesian2D(rayLength, angle);
+                    endPositionLocal = PolarToCartesian2D(unscaledRayLength, angle);
                 }
 
                 var startPositionWorld = transform.TransformPoint(startPositionLocal);
                 var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
                 var rayDirection = endPositionWorld - startPositionWorld;
+                // If there is non-unity scale, |rayDirection| will be different from rayLength.
+                // We want to use this transformed ray length for determining cast length, hit fraction etc.
+                // We also it to scale up or down the sphere or circle radii
+                var scaledRayLength = rayDirection.magnitude;
+                // Avoid 0/0 if unscaledRayLength is 0
+                var scaledCastRadius = unscaledRayLength > 0 ? unscaledCastRadius * scaledRayLength / unscaledRayLength : unscaledCastRadius;
 
                 // Do the cast and assign the hit information for each detectable object.
                 //     sublist[0           ] <- did hit detectableObjects[0]
@@ -214,31 +220,33 @@ namespace MLAgents.Sensor
                 if (castType == CastType.Cast3D)
                 {
                     RaycastHit rayHit;
-                    if (castRadius > 0f)
+                    if (scaledCastRadius > 0f)
                     {
-                        castHit = Physics.SphereCast(startPositionWorld, castRadius, rayDirection, out rayHit,
-                            rayLength, layerMask);
+                        castHit = Physics.SphereCast(startPositionWorld, scaledCastRadius, rayDirection, out rayHit,
+                            scaledRayLength, layerMask);
                     }
                     else
                     {
                         castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit,
-                            rayLength, layerMask);
+                            scaledRayLength, layerMask);
                     }
 
-                    hitFraction = castHit ? rayHit.distance / rayLength : 1.0f;
+                    // If scaledRayLength is 0, we still could have a hit with spherecasts.
+                    // To avoid 0/0, set the fraction to 0.
+                    hitFraction = castHit ? (scaledRayLength > 0 ? rayHit.distance / scaledRayLength : 0.0f) : 1.0f;
                     hitObject = castHit ? rayHit.collider.gameObject : null;
                 }
                 else
                 {
                     RaycastHit2D rayHit;
-                    if (castRadius > 0f)
+                    if (scaledCastRadius > 0f)
                     {
-                        rayHit = Physics2D.CircleCast(startPositionWorld, castRadius, rayDirection,
-                            rayLength, layerMask);
+                        rayHit = Physics2D.CircleCast(startPositionWorld, scaledCastRadius, rayDirection,
+                            scaledRayLength, layerMask);
                     }
                     else
                     {
-                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, rayLength, layerMask);
+                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, scaledRayLength, layerMask);
                     }
 
                     castHit = rayHit;
