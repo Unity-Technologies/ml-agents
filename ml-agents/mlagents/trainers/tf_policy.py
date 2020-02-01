@@ -370,8 +370,8 @@ class TFPolicy(Policy):
 
     def get_batched_value_estimates(self, batch: AgentBuffer) -> Dict[str, np.ndarray]:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.model.batch_size: batch.num_experiences,
-            self.model.sequence_length: 1,  # We want to feed data in batch-wise, not time-wise.
+            self.model.batch_size: 1,
+            self.model.sequence_length: batch.num_experiences,  # We want to feed data in batch-wise, not time-wise.
         }
 
         if self.use_vec_obs:
@@ -381,7 +381,7 @@ class TFPolicy(Policy):
                 _obs = batch["visual_obs%d" % i]
                 feed_dict[self.model.visual_in[i]] = _obs
         if self.use_recurrent:
-            feed_dict[self.model.memory_in] = batch["memory"]
+            feed_dict[self.model.memory_in] = [np.zeros((self.model.m_size))]
         if not self.use_continuous_act and self.use_recurrent:
             feed_dict[self.model.prev_action] = batch["prev_action"]
         value_estimates = self.sess.run(self.model.value_heads, feed_dict)
