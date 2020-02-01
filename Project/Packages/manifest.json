@@ -1,14 +1,23 @@
 {
   "dependencies": {
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ads": "2.0.8",
-    "com.unity.analytics": "3.2.2",
-    "com.unity.collab-proxy": "1.2.15",
+    "com.unity.analytics": "3.3.5",
+    "com.unity.collab-proxy": "1.2.16",
+    "com.unity.ide.rider": "1.1.4",
+    "com.unity.ide.vscode": "1.1.4",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
-    "com.unity.package-manager-ui": "2.0.8",
+    "com.unity.multiplayer-hlapi": "1.0.4",
     "com.unity.package-validation-suite": "0.7.15-preview",
-    "com.unity.purchasing": "2.0.3",
-    "com.unity.textmeshpro": "1.4.1",
+    "com.unity.purchasing": "2.0.6",
+    "com.unity.test-framework": "1.1.9",
+    "com.unity.textmeshpro": "2.0.1",
+    "com.unity.timeline": "1.2.10",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.xr.legacyinputhelpers": "1.3.8",
     "com.unity.modules.ai": "1.0.0",
+    "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
@@ -39,7 +48,7 @@
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
   },
-  "testables" : [
+  "testables": [
     "com.unity.ml-agents"
   ]
 }

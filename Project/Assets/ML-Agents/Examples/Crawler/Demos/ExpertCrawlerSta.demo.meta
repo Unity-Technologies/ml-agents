@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 4975695b6ea23446a94c9be3b5d21731
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (MLAgents.Demonstration)'
   assetBundleName: 
   assetBundleVariant: 
