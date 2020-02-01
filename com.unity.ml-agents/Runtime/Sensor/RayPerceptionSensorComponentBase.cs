@@ -130,14 +130,14 @@ namespace MLAgents.Sensor
                 // hit fraction ^2 will shift "far" hits closer to the hit color
                 var lerpT = rayInfo.hitFraction * rayInfo.hitFraction;
                 var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
-                color.a = alpha;
+                color.a *= alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld, rayDirection);
 
                 // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
                 if (rayInfo.castHit)
                 {
-                    var hitRadius = Mathf.Max(sphereCastRadius, .05f);
+                    var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
                 }
             }

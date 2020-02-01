@@ -40,6 +40,7 @@ namespace MLAgents.Sensor
                 public Vector3 worldEnd;
                 public bool castHit;
                 public float hitFraction;
+                public float castRadius;
             }
 
             public void Reset()
@@ -231,7 +232,7 @@ namespace MLAgents.Sensor
                             scaledRayLength, layerMask);
                     }
 
-                    // If scaledRayLength is 0, we still could have a hit with spherecasts.
+                    // If scaledRayLength is 0, we still could have a hit with sphere casts (maybe?).
                     // To avoid 0/0, set the fraction to 0.
                     hitFraction = castHit ? (scaledRayLength > 0 ? rayHit.distance / scaledRayLength : 0.0f) : 1.0f;
                     hitObject = castHit ? rayHit.collider.gameObject : null;
@@ -262,6 +263,7 @@ namespace MLAgents.Sensor
                     debugInfo.rayInfos[rayIndex].worldEnd = endPositionWorld;
                     debugInfo.rayInfos[rayIndex].castHit = castHit;
                     debugInfo.rayInfos[rayIndex].hitFraction = hitFraction;
+                    debugInfo.rayInfos[rayIndex].castRadius = scaledCastRadius;
                 }
                 else if (Application.isEditor)
                 {
