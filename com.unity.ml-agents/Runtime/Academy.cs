@@ -306,13 +306,13 @@ namespace MLAgents
 
         void ResetActions()
         {
-            DecideAction = () => { };
-            DestroyAction = () => { };
-            AgentSetStatus = i => { };
-            AgentSendState = () => { };
-            AgentAct = () => { };
-            AgentForceReset = () => { };
-            OnEnvironmentReset = () => { };
+            DecideAction = () => {};
+            DestroyAction = () => {};
+            AgentSetStatus = i => {};
+            AgentSendState = () => {};
+            AgentAct = () => {};
+            AgentForceReset = () => {};
+            OnEnvironmentReset = () => {};
         }
 
         static void OnQuitCommandReceived()

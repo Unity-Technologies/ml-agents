@@ -194,23 +194,23 @@ namespace MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        QuitCommandReceived?.Invoke();
-                        return;
-                    }
+                {
+                    QuitCommandReceived?.Invoke();
+                    return;
+                }
                 case CommandProto.Reset:
+                {
+                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
-                        {
-                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
-                        }
-                        ResetCommandReceived?.Invoke();
-                        return;
+                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
                     }
+                    ResetCommandReceived?.Invoke();
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 
