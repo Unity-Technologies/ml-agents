@@ -28,7 +28,7 @@ The versions can be found in
   * The `GetValueEstimate()` method on the Agent has been removed.
   * The `UpdateValueAction()` method on the Agent has been removed.
 * The deprecated `RayPerception3D` and `RayPerception3D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
-* RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes. 
+* RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
 * If your Agent implemented `AgentOnDone` and did not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
