@@ -28,6 +28,7 @@ The versions can be found in
   * The `GetValueEstimate()` method on the Agent has been removed.
   * The `UpdateValueAction()` method on the Agent has been removed.
 * The deprecated `RayPerception3D` and `RayPerception3D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes. 
 
 ### Steps to Migrate
 * If your Agent implemented `AgentOnDone` and did not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
@@ -44,6 +45,7 @@ The versions can be found in
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
+* If you have a model trained which uses RayPerceptionSensor and has non-1.0 scale in the Agent's transform, it must be retrained.
 
 
 ## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
