@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -30,8 +30,6 @@ class LearningRateSchedule(Enum):
 
 
 class LearningModel:
-    _version_number_ = 2
-
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
@@ -39,92 +37,6 @@ class LearningModel:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
-
-    def __init__(
-        self, m_size, normalize, use_recurrent, brain, seed, stream_names=None
-    ):
-        tf.set_random_seed(seed)
-        self.brain = brain
-        self.normalize = normalize
-        self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = brain.vector_observation_space_size
-        self.vis_obs_size = brain.number_visual_observations
-
-        self.value_heads: Dict[str, tf.Tensor] = {}
-        self.normalization_steps: Optional[tf.Variable] = None
-        self.running_mean: Optional[tf.Variable] = None
-        self.running_variance: Optional[tf.Variable] = None
-        self.update_normalization: Optional[tf.Operation] = None
-        self.value: Optional[tf.Tensor] = None
-        self.all_log_probs: Optional[tf.Tensor] = None
-        self.output: Optional[tf.Tensor] = None
-        self.selected_actions: Optional[tf.Tensor] = None
-        self.action_holder: Optional[tf.Tensor] = None
-        self.prev_action: Optional[tf.Tensor] = None
-
-        self.global_step, self.increment_step, self.steps_to_increment = (
-            self.create_global_steps()
-        )
-        self.visual_in = LearningModel.create_visual_input_placeholders(
-            brain.camera_resolutions
-        )
-        self.vector_in = LearningModel.create_vector_input(self.vec_obs_size)
-        if self.normalize:
-            normalization_tensors = LearningModel.create_normalizer(self.vector_in)
-            self.update_normalization = normalization_tensors[0]
-            self.normalization_steps = normalization_tensors[1]
-            self.running_mean = normalization_tensors[2]
-            self.running_variance = normalization_tensors[3]
-            self.processed_vector_in = LearningModel.normalize_vector_obs(
-                self.vector_in,
-                self.running_mean,
-                self.running_variance,
-                self.normalization_steps,
-            )
-        else:
-            self.processed_vector_in = self.vector_in
-            self.update_normalization = None
-
-        self.batch_size = tf.placeholder(shape=None, dtype=tf.int32, name="batch_size")
-        self.sequence_length = tf.placeholder(
-            shape=None, dtype=tf.int32, name="sequence_length"
-        )
-        self.mask_input = tf.placeholder(shape=[None], dtype=tf.float32, name="masks")
-        self.mask = tf.cast(self.mask_input, tf.int32)
-        self.stream_names = stream_names or []
-        self.use_recurrent = use_recurrent
-        if self.use_recurrent:
-            self.m_size = m_size
-        else:
-            self.m_size = 0
-
-        tf.Variable(
-            int(brain.vector_action_space_type == "continuous"),
-            name="is_continuous_control",
-            trainable=False,
-            dtype=tf.int32,
-        )
-        tf.Variable(
-            self._version_number_,
-            name="version_number",
-            trainable=False,
-            dtype=tf.int32,
-        )
-        tf.Variable(self.m_size, name="memory_size", trainable=False, dtype=tf.int32)
-        if brain.vector_action_space_type == "continuous":
-            tf.Variable(
-                self.act_size[0],
-                name="action_output_shape",
-                trainable=False,
-                dtype=tf.int32,
-            )
-        else:
-            tf.Variable(
-                sum(self.act_size),
-                name="action_output_shape",
-                trainable=False,
-                dtype=tf.int32,
-            )
 
     @staticmethod
     def create_global_steps():
