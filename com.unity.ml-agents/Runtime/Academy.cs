@@ -377,7 +377,7 @@ namespace MLAgents
         /// Performs a single environment update to the Academy, and Agent
         /// objects within the environment.
         /// </summary>
-        internal void EnvironmentStep()
+        public void EnvironmentStep()
         {
             if (!m_FirstAcademyReset)
             {

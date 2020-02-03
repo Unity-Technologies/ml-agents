@@ -716,15 +716,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Updates the vector action.
-        /// </summary>
-        /// <param name="vectorActions">Vector actions.</param>
-        internal void UpdateVectorAction(float[] vectorActions)
-        {
-            m_Action.vectorActions = vectorActions;
-        }
-
-        /// <summary>
         /// Scales continuous action from [-1, 1] to arbitrary range.
         /// </summary>
         /// <param name="rawAction"></param>
