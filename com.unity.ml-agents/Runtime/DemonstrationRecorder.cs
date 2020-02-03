@@ -11,7 +11,7 @@ namespace MLAgents
     /// </summary>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
-    public class DemonstrationRecorder : MonoBehaviour
+    internal class DemonstrationRecorder : MonoBehaviour
     {
         public bool record;
         public string demonstrationName;
@@ -39,7 +39,7 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        internal void InitializeDemoStore(IFileSystem fileSystem = null)
+        public void InitializeDemoStore(IFileSystem fileSystem = null)
         {
             m_RecordingAgent = GetComponent<Agent>();
             m_DemoStore = new DemonstrationStore(fileSystem);
@@ -56,7 +56,7 @@ namespace MLAgents
         /// Removes all characters except alphanumerics from demonstration name.
         /// Shorten name if it is longer than the maxNameLength.
         /// </summary>
-        internal static string SanitizeName(string demoName, int maxNameLength)
+        public static string SanitizeName(string demoName, int maxNameLength)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
@@ -71,7 +71,7 @@ namespace MLAgents
         /// <summary>
         /// Forwards AgentInfo to Demonstration Store.
         /// </summary>
-        internal void WriteExperience(AgentInfo info, List<ISensor> sensors)
+        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
             m_DemoStore.Record(info, sensors);
         }
