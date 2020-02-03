@@ -281,8 +281,6 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  - blueAgent
-  - blueAgent
   raysPerDirection: 6
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -643,8 +641,6 @@ MonoBehaviour:
   - purpleGoal
   - wall
   - blueAgent
-  - purpleAgent
-  - purpleAgent
   - purpleAgent
   raysPerDirection: 6
   maxRayDegrees: 90
@@ -1769,7 +1765,7 @@ Rigidbody:
   m_GameObject: {fileID: 1682753582128710}
   serializedVersion: 2
   m_Mass: 3
-  m_Drag: 0.5
+  m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -3449,8 +3445,6 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  - blueAgent
-  - blueAgent
   raysPerDirection: 6
   maxRayDegrees: 90
   sphereCastRadius: 0.5
@@ -3917,8 +3911,6 @@ MonoBehaviour:
   - purpleGoal
   - wall
   - blueAgent
-  - purpleAgent
-  - purpleAgent
   - purpleAgent
   raysPerDirection: 6
   maxRayDegrees: 90
