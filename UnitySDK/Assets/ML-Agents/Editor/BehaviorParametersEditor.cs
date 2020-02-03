@@ -72,7 +72,7 @@ namespace MLAgents
             var brainParameters = behaviorParameters.brainParameters;
             if (model != null)
             {
-                barracudaModel = ModelLoader.Load(model.Value);
+                barracudaModel = ModelLoader.Load(model);
             }
             if (brainParameters != null)
             {

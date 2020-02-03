@@ -53,11 +53,11 @@ namespace MLAgents.InferenceBrain
 
                 D.logEnabled = m_Verbose;
 
-                barracudaModel = ModelLoader.Load(model.Value);
+                barracudaModel = ModelLoader.Load(model);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
-                    ? BarracudaWorkerFactory.Type.ComputePrecompiled
-                    : BarracudaWorkerFactory.Type.CSharp;
-                m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
+                    ? WorkerFactory.Type.ComputePrecompiled
+                    : WorkerFactory.Type.CSharp;
+                m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace MLAgents.InferenceBrain
             var outputs = new List<TensorProxy>();
             foreach (var n in names)
             {
-                var output = m_Engine.Peek(n);
+                var output = m_Engine.PeekOutput(n);
                 outputs.Add(TensorUtils.TensorProxyFromBarracuda(output, n));
             }
 
