@@ -11,6 +11,8 @@ from mlagents.trainers.buffer import AgentBuffer
 
 logger = logging.getLogger("mlagents.trainers")
 
+BURN_IN_RATIO = 0.1
+
 
 class PPOOptimizer(TFOptimizer):
     def __init__(self, policy, trainer_params):
@@ -311,12 +313,15 @@ class PPOOptimizer(TFOptimizer):
     def construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
-
+        # Do a burn-in for memories
+        num_burn_in = int(BURN_IN_RATIO * self.policy.sequence_length)
+        burn_in_mask = np.ones((self.policy.sequence_length), dtype=np.float32)
+        burn_in_mask[range(0, num_burn_in)] = 0
+        burn_in_mask = np.tile(burn_in_mask, num_sequences)
         feed_dict = {
             self.policy.batch_size_ph: num_sequences,
-            self.policy.sequence_length_ph: len(mini_batch["advantages"])
-            / num_sequences,  # TODO: Fix LSTM
-            self.policy.mask_input: mini_batch["masks"],
+            self.policy.sequence_length_ph: self.policy.sequence_length,
+            self.policy.mask_input: mini_batch["masks"] * burn_in_mask,
             self.advantage: mini_batch["advantages"],
             self.all_old_log_probs: mini_batch["action_probs"],
         }
