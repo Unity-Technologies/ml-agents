@@ -31,12 +31,16 @@ class NNPolicy(TFPolicy):
         resample: bool = False,
     ):
         """
-        Policy for Proximal Policy Optimization Networks.
+        Policy that uses a multilayer perceptron to map the observations to actions. Could
+        also use a CNN to encode visual input prior to the MLP. Supports discrete and
+        continuous action spaces, as well as recurrent networks.
         :param seed: Random seed.
-        :param brain: Assigned Brain object.
+        :param brain: Assigned BrainParameters object.
         :param trainer_params: Defined training parameters.
         :param is_training: Whether the model should be trained.
         :param load: Whether a pre-trained model will be loaded or a new one created.
+        :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
+        :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
         with tf.variable_scope("policy"):
             super().__init__(seed, brain, trainer_params, load)
@@ -122,6 +126,9 @@ class NNPolicy(TFPolicy):
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        :param tanh_squash: Whether to use a tanh function, or a clipped output.
+        :param resample: Whether we are using the resampling trick to update the policy.
         """
         hidden_stream = LearningModel.create_observation_streams(
             self.visual_in,
@@ -226,6 +233,7 @@ class NNPolicy(TFPolicy):
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
         """
         hidden_stream = LearningModel.create_observation_streams(
             self.visual_in,

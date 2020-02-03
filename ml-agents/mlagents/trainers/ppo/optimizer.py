@@ -5,6 +5,7 @@ import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
+from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 
@@ -15,24 +16,12 @@ BURN_IN_RATIO = 0.1
 
 
 class PPOOptimizer(TFOptimizer):
-    def __init__(self, policy, trainer_params):
+    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
         """
-        Takes a Unity environment and model-specific hyper-parameters and returns the
-        appropriate PPO agent model for the environment.
-        :param brain: brain parameters used to generate specific network graph.
-        :param lr: Learning rate.
-        :param lr_schedule: Learning rate decay schedule.
-        :param h_size: Size of hidden layers
-        :param epsilon: Value for policy-divergence threshold.
-        :param beta: Strength of entropy regularization.
-        :param max_step: Total number of training steps.
-        :param normalize: Whether to normalize vector observation input.
-        :param use_recurrent: Whether to use an LSTM layer in the network.
-        :param num_layers Number of hidden layers between encoded input and policy & value layers
-        :param m_size: Size of brain memory.
-        :param seed: Seed to use for initialization of model.
-        :param stream_names: List of names of value streams. Usually, a list of the Reward Signals being used.
-        :return: a sub-class of PPOAgent tailored to the environment.
+        Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
+        The PPO optimizer has a value estimator and a loss function.
+        :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
+        :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):
@@ -77,7 +66,7 @@ class PPOOptimizer(TFOptimizer):
                     self.create_dc_critic(h_size, num_layers, vis_encode_type)
 
                 self.learning_rate = LearningModel.create_learning_rate(
-                    lr_schedule, lr, self.policy.global_step, max_step
+                    lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
                 self.create_losses(
                     self.policy.log_probs,
@@ -109,6 +98,7 @@ class PPOOptimizer(TFOptimizer):
         Creates Continuous control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: The type of visual encoder to use.
         """
         hidden_stream = LearningModel.create_observation_streams(
             self.policy.visual_in,
@@ -148,6 +138,7 @@ class PPOOptimizer(TFOptimizer):
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: The type of visual encoder to use.
         """
         hidden_stream = LearningModel.create_observation_streams(
             self.policy.visual_in,
