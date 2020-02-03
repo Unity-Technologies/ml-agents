@@ -288,9 +288,8 @@ class SACTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
-        bc_module = self.policy.bc_module
-        if bc_module:
-            update_stats = bc_module.update()
+        if self.optimizer.bc_module:
+            update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self.stats_reporter.add_stat(stat, val)
 

@@ -10,7 +10,6 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import LearningModel
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.components.bc.module import BCModule
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -68,17 +67,6 @@ class NNPolicy(TFPolicy):
                     )
                 else:
                     self.create_dc_actor(h_size, num_layers, vis_encode_type)
-                self.bc_module: Optional[BCModule] = None
-                # Create pretrainer if needed
-                if "behavioral_cloning" in trainer_params:
-                    BCModule.check_config(trainer_params["behavioral_cloning"])
-                    self.bc_module = BCModule(
-                        self,
-                        policy_learning_rate=trainer_params["learning_rate"],
-                        default_batch_size=trainer_params["batch_size"],
-                        default_num_epoch=3,
-                        **trainer_params["behavioral_cloning"],
-                    )
 
         self.inference_dict: Dict[str, tf.Tensor] = {
             "action": self.output,
@@ -182,11 +170,13 @@ class NNPolicy(TFPolicy):
 
         # Stop gradient if we're not doing the resampling trick
         if not resample:
-            sampled_policy = tf.stop_gradient(sampled_policy)
+            sampled_policy_probs = tf.stop_gradient(sampled_policy)
+        else:
+            sampled_policy_probs = sampled_policy
 
         # Compute probability of model output.
         _gauss_pre = -0.5 * (
-            ((sampled_policy - mu) / (sigma + EPSILON)) ** 2
+            ((sampled_policy_probs - mu) / (sigma + EPSILON)) ** 2
             + 2 * log_sigma
             + np.log(2 * np.pi)
         )

@@ -121,7 +121,7 @@ class BCModule:
         """
         feed_dict = {
             self.policy.batch_size_ph: n_sequences,
-            self.policy.sequence_length: self.policy.sequence_length,
+            self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
         if not self.policy.use_continuous_act:
@@ -140,7 +140,7 @@ class BCModule:
             feed_dict[self.policy.memory_in] = np.zeros(
                 [self.n_sequences, self.policy.m_size], dtype=np.float32
             )
-            if not self.policy.brain.vector_action_space_type == "continuous":
+            if not self.policy.use_continuous_act:
                 feed_dict[self.policy.prev_action] = mini_batch_demo["prev_action"]
         network_out = self.policy.sess.run(
             list(self.out_dict.values()), feed_dict=feed_dict

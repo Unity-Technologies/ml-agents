@@ -1,5 +1,5 @@
 import abc
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 import numpy as np
 
 from mlagents.tf_utils.tf import tf
@@ -10,6 +10,7 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.components.bc.module import BCModule
 
 
 class Optimizer(abc.ABC):
@@ -48,6 +49,17 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
         self.memory_in: tf.Tensor = None
         self.memory_out: tf.Tensor = None
         self.m_size: int = 0
+        self.bc_module: Optional[BCModule] = None
+        # Create pretrainer if needed
+        if "behavioral_cloning" in trainer_params:
+            BCModule.check_config(trainer_params["behavioral_cloning"])
+            self.bc_module = BCModule(
+                self.policy,
+                policy_learning_rate=trainer_params["learning_rate"],
+                default_batch_size=trainer_params["batch_size"],
+                default_num_epoch=3,
+                **trainer_params["behavioral_cloning"],
+            )
 
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
