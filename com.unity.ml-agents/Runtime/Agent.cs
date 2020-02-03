@@ -11,7 +11,7 @@ namespace MLAgents
     /// Struct that contains all the information for an Agent, including its
     /// observations, actions and current status, that is sent to the Brain.
     /// </summary>
-    public struct AgentInfo
+    internal struct AgentInfo
     {
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -50,7 +50,7 @@ namespace MLAgents
     /// Struct that contains the action information sent from the Brain to the
     /// Agent.
     /// </summary>
-    public struct AgentAction
+    internal struct AgentAction
     {
         public float[] vectorActions;
     }
@@ -174,12 +174,12 @@ namespace MLAgents
         /// Currently generated from attached SensorComponents, and a legacy VectorSensor
         /// </summary>
         [FormerlySerializedAs("m_Sensors")]
-        public List<ISensor> sensors;
+        internal List<ISensor> sensors;
 
         /// <summary>
         /// VectorSensor which is written to by AddVectorObs
         /// </summary>
-        public VectorSensor collectObservationsSensor;
+        internal VectorSensor collectObservationsSensor;
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -420,7 +420,7 @@ namespace MLAgents
         /// Set up the list of ISensors on the Agent. By default, this will select any
         /// SensorBase's attached to the Agent.
         /// </summary>
-        public void InitializeSensors()
+        internal void InitializeSensors()
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
@@ -710,7 +710,7 @@ namespace MLAgents
             AgentReset();
         }
 
-        public void UpdateAgentAction(AgentAction action)
+        internal void UpdateAgentAction(AgentAction action)
         {
             m_Action = action;
         }
@@ -719,7 +719,7 @@ namespace MLAgents
         /// Updates the vector action.
         /// </summary>
         /// <param name="vectorActions">Vector actions.</param>
-        public void UpdateVectorAction(float[] vectorActions)
+        internal void UpdateVectorAction(float[] vectorActions)
         {
             m_Action.vectorActions = vectorActions;
         }

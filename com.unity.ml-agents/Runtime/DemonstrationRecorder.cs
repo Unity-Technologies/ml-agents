@@ -39,7 +39,7 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        public void InitializeDemoStore(IFileSystem fileSystem = null)
+        internal void InitializeDemoStore(IFileSystem fileSystem = null)
         {
             m_RecordingAgent = GetComponent<Agent>();
             m_DemoStore = new DemonstrationStore(fileSystem);
@@ -56,7 +56,7 @@ namespace MLAgents
         /// Removes all characters except alphanumerics from demonstration name.
         /// Shorten name if it is longer than the maxNameLength.
         /// </summary>
-        public static string SanitizeName(string demoName, int maxNameLength)
+        internal static string SanitizeName(string demoName, int maxNameLength)
         {
             var rgx = new Regex("[^a-zA-Z0-9 -]");
             demoName = rgx.Replace(demoName, "");
@@ -71,7 +71,7 @@ namespace MLAgents
         /// <summary>
         /// Forwards AgentInfo to Demonstration Store.
         /// </summary>
-        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
+        internal void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
             m_DemoStore.Record(info, sensors);
         }

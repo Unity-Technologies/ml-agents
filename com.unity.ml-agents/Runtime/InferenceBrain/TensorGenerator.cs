@@ -16,7 +16,7 @@ namespace MLAgents.InferenceBrain
     /// When the TensorProxy is an Output of the model, only the shape of the Tensor will be
     /// modified using the current batch size. The data will be pre-filled with zeros.
     /// </summary>
-    public class TensorGenerator
+    internal class TensorGenerator
     {
         public interface IGenerator
         {
