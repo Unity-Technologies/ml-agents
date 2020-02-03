@@ -15,7 +15,7 @@ namespace MLAgents
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
 
-        protected ICommunicator m_Communicator;
+        internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(

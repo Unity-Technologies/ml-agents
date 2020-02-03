@@ -174,7 +174,7 @@ namespace MLAgents
         /// Currently generated from attached SensorComponents, and a legacy VectorSensor
         /// </summary>
         [FormerlySerializedAs("m_Sensors")]
-        public List<ISensor> sensors;
+        internal List<ISensor> sensors;
 
         /// <summary>
         /// VectorSensor which is written to by AddVectorObs
@@ -420,7 +420,7 @@ namespace MLAgents
         /// Set up the list of ISensors on the Agent. By default, this will select any
         /// SensorBase's attached to the Agent.
         /// </summary>
-        public void InitializeSensors()
+        void InitializeSensors()
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
@@ -710,7 +710,7 @@ namespace MLAgents
             AgentReset();
         }
 
-        public void UpdateAgentAction(AgentAction action)
+        internal void UpdateAgentAction(AgentAction action)
         {
             m_Action = action;
         }
@@ -719,7 +719,7 @@ namespace MLAgents
         /// Updates the vector action.
         /// </summary>
         /// <param name="vectorActions">Vector actions.</param>
-        public void UpdateVectorAction(float[] vectorActions)
+        internal void UpdateVectorAction(float[] vectorActions)
         {
             m_Action.vectorActions = vectorActions;
         }
