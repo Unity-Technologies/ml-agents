@@ -515,7 +515,7 @@ class LearningModel:
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
-            if vector_in is not None:
+            if vector_in.get_shape()[-1] > 0:  # Don't encode 0-shape inputs
                 hidden_state = LearningModel.create_vector_observation_encoder(
                     vector_observation_input,
                     h_size,
