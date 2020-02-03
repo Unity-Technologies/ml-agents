@@ -1,5 +1,6 @@
+import copy
 import logging
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import numpy as np
 from onnx import TensorProto, AttributeProto, NodeProto
@@ -393,9 +394,12 @@ class TFPolicy(Policy):
         # TODO set this if --debug is set
         # logging.basicConfig(level=logging.get_verbosity_level(1))
 
-        inputs = TFPolicy._get_input_node_names(frozen_graph_def)
+        inputs, vis_inputs = TFPolicy._get_input_node_names(frozen_graph_def)
         outputs = TFPolicy._get_output_node_names(frozen_graph_def)
         logger.info(f"onnx export - inputs:{inputs} outputs:{outputs}")
+
+        frozen_graph_def = self._fixup_conv_transposes(vis_inputs, frozen_graph_def)
+
         frozen_graph_def = tf_optimize(
             inputs, outputs, frozen_graph_def, fold_constant=True
         )
@@ -443,21 +447,23 @@ class TFPolicy(Policy):
         )
 
     @staticmethod
-    def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
+    def _get_input_node_names(frozen_graph_def: Any) -> Tuple[List[str], List[str]]:
         node_names = TFPolicy._get_frozen_graph_node_names(frozen_graph_def)
         input_names = node_names & TFPolicy.POSSIBLE_INPUT_NODES
 
         # Check visual inputs sequentially, and exit as soon as we don't find one
         vis_index = 0
+        vis_obs_names = set()
         while True:
             vis_node_name = f"{TFPolicy.VISUAL_OBSERVATION_PREFIX}{vis_index}"
             if vis_node_name in node_names:
                 input_names.add(vis_node_name)
+                vis_obs_names.add(vis_node_name)
             else:
                 break
             vis_index += 1
         # Append the port
-        return [f"{n}:0" for n in input_names]
+        return [f"{n}:0" for n in input_names], [f"{n}:0" for n in vis_obs_names]
 
     @staticmethod
     def _get_output_node_names(frozen_graph_def: Any) -> List[str]:
@@ -472,6 +478,41 @@ class TFPolicy(Policy):
         for node in frozen_graph_def.node:
             names.add(node.name)
         return names
+
+    @staticmethod
+    def _fixup_conv_transposes(vis_input_names: List[str], frozen_graph: tf.GraphDef) -> tf.GraphDef:
+        # create new model and replace all data_format
+        new_graph = tf.GraphDef()
+        for n in frozen_graph.node:
+            nn = new_graph.node.add()
+            nn.CopyFrom(n)
+
+        # remove :0 from the import names
+        vis_input_names = set(n.rsplit(":")[0] for n in vis_input_names)
+
+        previous_op = ""
+        for node in new_graph.node:
+            if node.name in vis_input_names:
+                node_dim = copy.deepcopy(node.attr['shape'])
+                dim = len(node_dim.shape.dim)
+                if dim > 0:
+                    node.attr['shape'].shape.dim[0].size = node_dim.shape.dim[0].size if dim > 0 else -1
+                if dim > 1:
+                    node.attr['shape'].shape.dim[1].size = node_dim.shape.dim[3].size if dim > 3 else -1
+                if dim > 2:
+                    node.attr['shape'].shape.dim[2].size = node_dim.shape.dim[1].size if dim > 1 else -1
+                if dim > 3:
+                    node.attr['shape'].shape.dim[3].size = node_dim.shape.dim[2].size if dim > 2 else -1
+
+            # ONNX, bias is merged into Conv2D, so need to change it's layout
+            if node.op == 'Conv2D' or (node.op == 'BiasAdd' and previous_op == 'Conv2D'):
+                node.attr['data_format'].s = str.encode("NCHW")
+
+            if node.op == 'Conv1D' or (node.op == 'BiasAdd' and previous_op == 'Conv1D'):
+                node.attr['data_format'].s = str.encode("NCHW")
+
+            previous_op = node.op
+        return new_graph
 
     def _process_graph(self):
         """
