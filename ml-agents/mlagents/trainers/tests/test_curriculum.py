@@ -21,6 +21,7 @@ dummy_curriculum_json_str = """
     }
     """
 
+dummy_curriculum_config = json.loads(dummy_curriculum_json_str)
 
 bad_curriculum_json_str = """
     {
@@ -38,9 +39,7 @@ bad_curriculum_json_str = """
     """
 
 
-@pytest.fixture
-def location():
-    return "TestBrain.json"
+dummy_curriculum_config_path = "TestBrain.json"
 
 
 @pytest.fixture
@@ -48,26 +47,24 @@ def default_reset_parameters():
     return {"param1": 1, "param2": 1, "param3": 1}
 
 
-@patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
-def test_init_curriculum_happy_path(mock_file, location, default_reset_parameters):
-    curriculum = Curriculum(location)
+def test_init_curriculum_happy_path():
+    curriculum = Curriculum("TestBrain", dummy_curriculum_config)
 
-    assert curriculum._brain_name == "TestBrain"
+    assert curriculum.brain_name == "TestBrain"
     assert curriculum.lesson_num == 0
     assert curriculum.measure == "reward"
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=bad_curriculum_json_str)
-def test_init_curriculum_bad_curriculum_raises_error(
-    mock_file, location, default_reset_parameters
-):
+def test_load_bad_curriculum_file_raises_error(mock_file):
     with pytest.raises(CurriculumConfigError):
-        Curriculum(location)
+        Curriculum(
+            "TestBrain", Curriculum.load_curriculum_file(dummy_curriculum_config_path)
+        )
 
 
-@patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
-def test_increment_lesson(mock_file, location, default_reset_parameters):
-    curriculum = Curriculum(location)
+def test_increment_lesson():
+    curriculum = Curriculum("TestBrain", dummy_curriculum_config)
     assert curriculum.lesson_num == 0
 
     curriculum.lesson_num = 1
@@ -86,9 +83,8 @@ def test_increment_lesson(mock_file, location, default_reset_parameters):
     assert curriculum.lesson_num == 3
 
 
-@patch("builtins.open", new_callable=mock_open, read_data=dummy_curriculum_json_str)
-def test_get_config(mock_file):
-    curriculum = Curriculum("TestBrain.json")
+def test_get_parameters():
+    curriculum = Curriculum("TestBrain", dummy_curriculum_config)
     assert curriculum.get_config() == {"param1": 0.7, "param2": 100, "param3": 0.2}
 
     curriculum.lesson_num = 2
@@ -97,8 +93,6 @@ def test_get_config(mock_file):
 
 
 # Test json loading and error handling. These examples don't need to valid config files.
-
-
 def test_curriculum_load_good():
     expected = {"x": 1}
     value = json.dumps(expected)

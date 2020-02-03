@@ -13,6 +13,10 @@ class StatsSummary(NamedTuple):
     std: float
     num: int
 
+    @staticmethod
+    def empty() -> "StatsSummary":
+        return StatsSummary(0.0, 0.0, 0)
+
 
 class StatsWriter(abc.ABC):
     """
@@ -139,18 +143,25 @@ class StatsReporter:
     def add_stat(self, key: str, value: float) -> None:
         """
         Add a float value stat to the StatsReporter.
-        :param category: The highest categorization of the statistic, e.g. behavior name.
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
         StatsReporter.stats_dict[self.category][key].append(value)
+
+    def set_stat(self, key: str, value: float) -> None:
+        """
+        Sets a stat value to a float. This is for values that we don't want to average, and just
+        want the latest.
+        :param key: The type of statistic, e.g. Environment/Reward.
+        :param value: the value of the statistic.
+        """
+        StatsReporter.stats_dict[self.category][key] = [value]
 
     def write_stats(self, step: int) -> None:
         """
         Write out all stored statistics that fall under the category specified.
         The currently stored values will be averaged, written out as a single value,
         and the buffer cleared.
-        :param category: The category which to write out the stats.
         :param step: Training step which to write these stats as.
         """
         values: Dict[str, StatsSummary] = {}
@@ -165,7 +176,6 @@ class StatsReporter:
     def write_text(self, text: str, step: int) -> None:
         """
         Write out some text.
-        :param category: The highest categorization of the statistic, e.g. behavior name.
         :param text: The text to write out.
         :param step: Training step which to write these stats as.
         """
@@ -175,12 +185,13 @@ class StatsReporter:
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
         Get the mean, std, and count of a particular statistic, since last write.
-        :param category: The highest categorization of the statistic, e.g. behavior name.
         :param key: The type of statistic, e.g. Environment/Reward.
         :returns: A StatsSummary NamedTuple containing (mean, std, count).
         """
-        return StatsSummary(
-            mean=np.mean(StatsReporter.stats_dict[self.category][key]),
-            std=np.std(StatsReporter.stats_dict[self.category][key]),
-            num=len(StatsReporter.stats_dict[self.category][key]),
-        )
+        if len(StatsReporter.stats_dict[self.category][key]) > 0:
+            return StatsSummary(
+                mean=np.mean(StatsReporter.stats_dict[self.category][key]),
+                std=np.std(StatsReporter.stats_dict[self.category][key]),
+                num=len(StatsReporter.stats_dict[self.category][key]),
+            )
+        return StatsSummary.empty()

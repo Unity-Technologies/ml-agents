@@ -74,10 +74,10 @@ class SACTrainer(RLTrainer):
             "vis_encode_type",
         ]
 
-        self.check_param_keys()
+        self._check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: TFPolicy = None
+        self.policy: SACPolicy = None  # type: ignore
 
         self.step = 0
         self.train_interval = (
@@ -133,10 +133,11 @@ class SACTrainer(RLTrainer):
             )
         )
 
-    def process_trajectory(self, trajectory: Trajectory) -> None:
+    def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the replay buffer.
         """
+        super()._process_trajectory(trajectory)
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
@@ -191,7 +192,7 @@ class SACTrainer(RLTrainer):
                 agent_id, self.get_policy(trajectory.behavior_id)
             )
 
-    def is_ready_update(self) -> bool:
+    def _is_ready_update(self) -> bool:
         """
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
@@ -202,7 +203,7 @@ class SACTrainer(RLTrainer):
         )
 
     @timed
-    def update_policy(self) -> None:
+    def _update_policy(self) -> None:
         """
         If train_interval is met, update the SAC policy given the current reward signals.
         If reward_signal_train_interval is met, update the reward signals from the buffer.
@@ -337,7 +338,12 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
+        if not isinstance(policy, SACPolicy):
+            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
+        # Needed to resume loads properly
+        self.step = policy.get_current_step()
+        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

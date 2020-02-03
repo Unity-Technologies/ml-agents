@@ -32,7 +32,7 @@ Pyramids:
     max_steps: 5.0e5
     num_epoch: 3
     behavioral_cloning:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
     reward_signals:
@@ -47,7 +47,7 @@ Pyramids:
             strength: 0.01
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertPyramid.demo
+            demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
 
 CrawlerStatic:
     normalize: true
@@ -60,7 +60,7 @@ CrawlerStatic:
     num_layers: 3
     hidden_units: 512
     behavioral_cloning:
-        demo_path: ./demos/ExpertCrawlerSta.demo
+        demo_path: Project/Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
         strength: 0.5
         steps: 5000
     reward_signals:
@@ -68,7 +68,7 @@ CrawlerStatic:
             strength: 1.0
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertCrawlerSta.demo
+            demo_path: Project/Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
 
 PushBlock:
     max_steps: 5.0e4
@@ -84,7 +84,7 @@ PushBlock:
             strength: 1.0
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertPush.demo
+            demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPush.demo
 
 Hallway:
     use_recurrent: true
@@ -107,4 +107,24 @@ Hallway:
             strength: 0.1
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/ExpertHallway.demo
+            demo_path: Project/Assets/ML-Agents/Examples/Hallway/Demos/ExpertHallway.demo
+
+FoodCollector:
+    batch_size: 64
+    summary_freq: 1000
+    max_steps: 5.0e4
+    use_recurrent: false
+    hidden_units: 128
+    learning_rate: 3.0e-4
+    num_layers: 2
+    sequence_length: 32
+    reward_signals:
+        gail:
+            strength: 0.1
+            gamma: 0.99
+            encoding_size: 128
+            demo_path: Project/Assets/ML-Agents/Examples/FoodCollector/Demos/ExpertFood.demo
+    behavioral_cloning:
+        demo_path: Project/Assets/ML-Agents/Examples/FoodCollector/Demos/ExpertFood.demo
+        strength: 1.0
+        steps: 0

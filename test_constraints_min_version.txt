@@ -4,3 +4,4 @@ numpy==1.13.3
 Pillow==4.2.1
 protobuf==3.6
 tensorflow==1.7
+h5py==2.9.0

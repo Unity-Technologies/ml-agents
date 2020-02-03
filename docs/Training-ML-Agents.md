@@ -2,7 +2,7 @@
 
 The ML-Agents toolkit conducts training using an external Python training
 process. During training, this external process communicates with the Academy
-object in the Unity scene to generate a block of agent experiences. These
+to generate a block of agent experiences. These
 experiences become the training set for a neural network used to optimize the
 agent's policy (which is essentially a mathematical function mapping
 observations to actions). In reinforcement learning, the neural network
@@ -114,10 +114,6 @@ environment, you can set the following command line options when invoking
   the oldest checkpoint is deleted when saving a new checkpoint. Defaults to 5.
 * `--lesson=<n>`: Specify which lesson to start with when performing curriculum
   training. Defaults to 0.
-* `--num-runs=<n>`: Sets the number of concurrent training sessions to perform.
-  Default is set to 1. Set to higher values when benchmarking performance and
-  multiple training sessions is desired. Training sessions are independent, and
-  do not improve learning performance.
 * `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to
   collect experiences from when training. Defaults to 1.
 * `--run-id=<path>`: Specifies an identifier for each training run. This

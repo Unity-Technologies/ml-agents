@@ -18,7 +18,7 @@ environment:
 
 1. Launch Unity.
 2. On the Projects dialog, choose the **Open** option at the top of the window.
-3. Using the file dialog that opens, locate the `UnitySDK` folder within the
+3. Using the file dialog that opens, locate the `Project` folder within the
    ML-Agents project and click **Open**.
 4. In the **Project** window, navigate to the folder
    `Assets/ML-Agents/Examples/3DBall/Scenes/`.
@@ -180,7 +180,7 @@ parameter you set in trainer_config.yaml.) You can now embed this trained model
 into your Agent by following the steps below:
 
 1. Move your model file into
-   `UnitySDK/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+   `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 2. Open the Unity Editor, and select the **3DBall** scene as described above.
 3. Select the **3DBall** prefab from the Project window and select **Agent**.
 5. Drag the `<behavior_name>.nn` file from the Project window of

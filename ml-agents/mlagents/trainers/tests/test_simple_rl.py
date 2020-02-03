@@ -92,13 +92,24 @@ class Simple1DEnvironment(BaseEnv):
         m_reward = np.array([reward], dtype=np.float32)
         m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([0], dtype=np.int32)
+        action_mask = self._generate_mask()
 
         if done:
             self._reset_agent()
 
         self.step_result = BatchedStepResult(
-            m_vector_obs, m_reward, m_done, m_done, m_agent_id, None
+            m_vector_obs, m_reward, m_done, m_done, m_agent_id, action_mask
         )
+
+    def _generate_mask(self):
+        if self.discrete:
+            # LL-Python API will return an empty dim if there is only 1 agent.
+            ndmask = np.array(2 * [False], dtype=np.bool)
+            ndmask = np.expand_dims(ndmask, axis=0)
+            action_mask = [ndmask]
+        else:
+            action_mask = None
+        return action_mask
 
     def _reset_agent(self):
         self.position = 0.0
@@ -112,9 +123,10 @@ class Simple1DEnvironment(BaseEnv):
         m_reward = np.array([0], dtype=np.float32)
         m_done = np.array([False], dtype=np.bool)
         m_agent_id = np.array([0], dtype=np.int32)
+        action_mask = self._generate_mask()
 
         self.step_result = BatchedStepResult(
-            m_vector_obs, m_reward, m_done, m_done, m_agent_id, None
+            m_vector_obs, m_reward, m_done, m_done, m_agent_id, action_mask
         )
 
     @property
@@ -183,6 +195,33 @@ SAC_CONFIG = f"""
                 gamma: 0.99
     """
 
+GHOST_CONFIG = f"""
+    {BRAIN_NAME}:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 5.0e-3
+        max_steps: 2500
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+        self_play:
+            save_step: 1000
+    """
+
 
 def _check_environment_trains(
     env, config, meta_curriculum=None, success_threshold=0.99
@@ -224,7 +263,7 @@ def _check_environment_trains(
         # Begin training
         tc.start_learning(env_manager)
         print(tc._get_measure_vals())
-        for brain_name, mean_reward in tc._get_measure_vals().items():
+        for mean_reward in tc._get_measure_vals().values():
             assert not math.isnan(mean_reward)
             assert mean_reward > success_threshold
 
@@ -239,3 +278,9 @@ def test_simple_ppo(use_discrete):
 def test_simple_sac(use_discrete):
     env = Simple1DEnvironment(use_discrete=use_discrete)
     _check_environment_trains(env, SAC_CONFIG)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_ghost(use_discrete):
+    env = Simple1DEnvironment(use_discrete=use_discrete)
+    _check_environment_trains(env, GHOST_CONFIG)

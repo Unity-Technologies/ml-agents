@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.learn import parse_command_line
@@ -35,12 +35,12 @@ def test_run_training(
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
-            learn.run_training(0, 0, basic_options(), MagicMock())
+            learn.run_training(0, basic_options())
             mock_init.assert_called_once_with(
                 trainer_factory_mock.return_value,
-                "./models/ppo-0",
+                "./models/ppo",
                 "./summaries",
-                "ppo-0",
+                "ppo",
                 50000,
                 None,
                 False,
@@ -69,13 +69,14 @@ def test_docker_target_path(
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
-            learn.run_training(0, 0, options_with_docker_target, MagicMock())
+            learn.run_training(0, options_with_docker_target)
             mock_init.assert_called_once()
-            assert mock_init.call_args[0][1] == "/dockertarget/models/ppo-0"
+            assert mock_init.call_args[0][1] == "/dockertarget/models/ppo"
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
 
 
-def test_commandline_args():
+@patch("builtins.open", new_callable=mock_open, read_data="{}")
+def test_commandline_args(mock_file):
 
     # No args raises
     with pytest.raises(SystemExit):
@@ -83,10 +84,10 @@ def test_commandline_args():
 
     # Test with defaults
     opt = parse_command_line(["mytrainerpath"])
-    assert opt.trainer_config_path == "mytrainerpath"
+    assert opt.trainer_config == {}
     assert opt.env_path is None
-    assert opt.curriculum_folder is None
-    assert opt.sampler_file_path is None
+    assert opt.curriculum_config is None
+    assert opt.sampler_config is None
     assert opt.keep_checkpoints == 5
     assert opt.lesson == 0
     assert opt.load_model is False
@@ -111,7 +112,6 @@ def test_commandline_args():
         "--lesson=3",
         "--load",
         "--run-id=myawesomerun",
-        "--num-runs=3",
         "--save-freq=123456",
         "--seed=7890",
         "--train",
@@ -124,10 +124,10 @@ def test_commandline_args():
     ]
 
     opt = parse_command_line(full_args)
-    assert opt.trainer_config_path == "mytrainerpath"
+    assert opt.trainer_config == {}
     assert opt.env_path == "./myenvfile"
-    assert opt.curriculum_folder == "./mycurriculum"
-    assert opt.sampler_file_path == "./mysample"
+    assert opt.curriculum_config == {}
+    assert opt.sampler_config == {}
     assert opt.keep_checkpoints == 42
     assert opt.lesson == 3
     assert opt.load_model is True
@@ -143,7 +143,8 @@ def test_commandline_args():
     assert opt.multi_gpu is True
 
 
-def test_env_args():
+@patch("builtins.open", new_callable=mock_open, read_data="{}")
+def test_env_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",

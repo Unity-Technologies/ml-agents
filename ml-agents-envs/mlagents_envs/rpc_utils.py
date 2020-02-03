@@ -1,11 +1,16 @@
 from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents_envs.communicator_objects.observation_pb2 import (
+    ObservationProto,
+    NONE as COMPRESSION_NONE,
+)
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import logging
 import numpy as np
 import io
-from typing import cast, List, Tuple, Union, Collection
+from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
 
 logger = logging.getLogger("mlagents_envs")
@@ -49,11 +54,42 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
         image = Image.open(io.BytesIO(image_bytearray))
         # Normally Image loads lazily, this forces it to do loading in the timer scope.
         image.load()
-    s = np.array(image) / 255.0
+    s = np.array(image, dtype=np.float32) / 255.0
     if gray_scale:
         s = np.mean(s, axis=2)
         s = np.reshape(s, [s.shape[0], s.shape[1], 1])
     return s
+
+
+@timed
+def observation_to_np_array(
+    obs: ObservationProto, expected_shape: Optional[Iterable[int]] = None
+) -> np.ndarray:
+    """
+    Converts observation proto into numpy array of the appropriate size.
+    :param obs: observation proto to be converted
+    :param expected_shape: optional shape information, used for sanity checks.
+    :return: processed numpy array of observation from environment
+    """
+    if expected_shape is not None:
+        if list(obs.shape) != list(expected_shape):
+            raise UnityObservationException(
+                f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
+            )
+    gray_scale = obs.shape[2] == 1
+    if obs.compression_type == COMPRESSION_NONE:
+        img = np.array(obs.float_data.data, dtype=np.float32)
+        img = np.reshape(img, obs.shape)
+        return img
+    else:
+        img = process_pixels(obs.compressed_data, gray_scale)
+        # Compare decompressed image size to observation shape and make sure they match
+        if list(obs.shape) != list(img.shape):
+            raise UnityObservationException(
+                f"Decompressed observation did not have the expected shape - "
+                f"decompressed had {img.shape} but expected {obs.shape}"
+            )
+        return img
 
 
 @timed
@@ -67,9 +103,8 @@ def _process_visual_observation(
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
 
-    gray_scale = shape[2] == 1
     batched_visual = [
-        process_pixels(agent_obs.observations[obs_index].compressed_data, gray_scale)
+        observation_to_np_array(agent_obs.observations[obs_index], shape)
         for agent_obs in agent_info_list
     ]
     return np.array(batched_visual, dtype=np.float32)
@@ -123,13 +158,13 @@ def batched_step_result_from_proto(
         is_visual = len(obs_shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_shape)
-            obs_list += [
+            obs_list.append(
                 _process_visual_observation(obs_index, obs_shape, agent_info_list)
-            ]
+            )
         else:
-            obs_list += [
+            obs_list.append(
                 _process_vector_observation(obs_index, obs_shape, agent_info_list)
-            ]
+            )
     rewards = np.array(
         [agent_info.reward for agent_info in agent_info_list], dtype=np.float32
     )

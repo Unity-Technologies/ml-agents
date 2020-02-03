@@ -1,0 +1,10 @@
+{
+	"name": "com.unity.ml-agents",
+	"displayName":"ML Agents",
+	"version": "0.13.0-preview",
+	"unity": "2018.4",
+	"description": "Add interactivity to your game with ML-Agents trained using Deep Reinforcement Learning.",
+	"dependencies": {
+		"com.unity.barracuda": "0.5.0-preview"
+	}
+}

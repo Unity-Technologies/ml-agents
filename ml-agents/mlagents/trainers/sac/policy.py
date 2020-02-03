@@ -1,10 +1,11 @@
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Mapping, List
 import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents_envs.timers import timed
-from mlagents.trainers.brain import BrainInfo, BrainParameters
+from mlagents_envs.base_env import BatchedStepResult
+from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType, LearningRateSchedule
 from mlagents.trainers.sac.models import SACModel
 from mlagents.trainers.tf_policy import TFPolicy
@@ -161,24 +162,26 @@ class SACPolicy(TFPolicy):
                         self, self.model, reward_signal, config
                     )
 
-    def evaluate(self, brain_info: BrainInfo) -> Dict[str, np.ndarray]:
+    def evaluate(
+        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+    ) -> Dict[str, np.ndarray]:
         """
         Evaluates policy for the agent experiences provided.
-        :param brain_info: BrainInfo object containing inputs.
+        :param batched_step_result: BatchedStepResult object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
-            self.model.batch_size: len(brain_info.vector_observations),
+            self.model.batch_size: batched_step_result.n_agents(),
             self.model.sequence_length: 1,
         }
         if self.use_recurrent:
             if not self.use_continuous_act:
                 feed_dict[self.model.prev_action] = self.retrieve_previous_action(
-                    brain_info.agents
+                    global_agent_ids
                 )
-            feed_dict[self.model.memory_in] = self.retrieve_memories(brain_info.agents)
+            feed_dict[self.model.memory_in] = self.retrieve_memories(global_agent_ids)
 
-        feed_dict = self.fill_eval_dict(feed_dict, brain_info)
+        feed_dict = self.fill_eval_dict(feed_dict, batched_step_result)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
@@ -206,7 +209,7 @@ class SACPolicy(TFPolicy):
         return update_stats
 
     def update_reward_signals(
-        self, reward_signal_minibatches: Dict[str, Dict], num_sequences: int
+        self, reward_signal_minibatches: Mapping[str, Dict], num_sequences: int
     ) -> Dict[str, float]:
         """
         Only update the reward signals.
@@ -236,7 +239,7 @@ class SACPolicy(TFPolicy):
         feed_dict: Dict[tf.Tensor, Any],
         update_dict: Dict[str, tf.Tensor],
         stats_needed: Dict[str, str],
-        reward_signal_minibatches: Dict[str, Dict],
+        reward_signal_minibatches: Mapping[str, Dict],
         num_sequences: int,
     ) -> None:
         """

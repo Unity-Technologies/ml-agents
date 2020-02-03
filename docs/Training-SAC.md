@@ -249,7 +249,7 @@ To use BC, add a `behavioral_cloning` section to the trainer_config. For instanc
 
 ```
     behavioral_cloning:
-        demo_path: ./demos/ExpertPyramid.demo
+        demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
         strength: 0.5
         steps: 10000
 ```

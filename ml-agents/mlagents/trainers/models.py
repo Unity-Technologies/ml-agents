@@ -150,7 +150,7 @@ class LearningModel:
     ) -> tf.Tensor:
         """
         Creates image input op.
-        :param camera_parameters: Parameters for visual observation from BrainInfo.
+        :param camera_parameters: Parameters for visual observation.
         :param name: Desired name of input op.
         :return: input op.
         """

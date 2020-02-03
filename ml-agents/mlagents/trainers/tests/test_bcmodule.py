@@ -1,4 +1,3 @@
-import unittest.mock as mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 
@@ -31,7 +30,7 @@ def ppo_dummy_config():
         use_recurrent: false
         memory_size: 8
         behavioral_cloning:
-          demo_path: ./demos/ExpertPyramid.demo
+          demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
           strength: 1.0
           steps: 10000000
         reward_signals:
@@ -65,7 +64,7 @@ def sac_dummy_config():
         use_recurrent: false
         vis_encode_type: simple
         behavioral_cloning:
-            demo_path: ./demos/ExpertPyramid.demo
+            demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
             strength: 1.0
             steps: 10000000
         reward_signals:
@@ -76,15 +75,9 @@ def sac_dummy_config():
     )
 
 
-def create_policy_with_bc_mock(
-    mock_env, mock_brain, trainer_config, use_rnn, demo_file
-):
-    mock_braininfo = mb.create_mock_braininfo(num_agents=12, num_vector_observations=8)
-    mb.setup_mock_unityenvironment(mock_env, mock_brain, mock_braininfo)
-    env = mock_env()
-
-    model_path = env.external_brain_names[0]
-    trainer_config["model_path"] = model_path
+def create_policy_with_bc_mock(mock_brain, trainer_config, use_rnn, demo_file):
+    # model_path = env.external_brain_names[0]
+    trainer_config["model_path"] = "testpath"
     trainer_config["keep_checkpoints"] = 3
     trainer_config["use_recurrent"] = use_rnn
     trainer_config["behavioral_cloning"]["demo_path"] = (
@@ -96,59 +89,45 @@ def create_policy_with_bc_mock(
         if trainer_config["trainer"] == "ppo"
         else SACPolicy(0, mock_brain, trainer_config, False, False)
     )
-    return env, policy
+    return policy
 
 
 # Test default values
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_defaults(mock_env):
+def test_bcmodule_defaults():
     # See if default values match
     mock_brain = mb.create_mock_3dball_brain()
     trainer_config = ppo_dummy_config()
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, False, "test.demo"
-    )
+    policy = create_policy_with_bc_mock(mock_brain, trainer_config, False, "test.demo")
     assert policy.bc_module.num_epoch == 3
     assert policy.bc_module.batch_size == trainer_config["batch_size"]
-    env.close()
     # Assign strange values and see if it overrides properly
     trainer_config["behavioral_cloning"]["num_epoch"] = 100
     trainer_config["behavioral_cloning"]["batch_size"] = 10000
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, False, "test.demo"
-    )
+    policy = create_policy_with_bc_mock(mock_brain, trainer_config, False, "test.demo")
     assert policy.bc_module.num_epoch == 100
     assert policy.bc_module.batch_size == 10000
-    env.close()
 
 
 # Test with continuous control env and vector actions
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_update(mock_env, trainer_config):
+def test_bcmodule_update(trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, False, "test.demo"
-    )
+    policy = create_policy_with_bc_mock(mock_brain, trainer_config, False, "test.demo")
     stats = policy.bc_module.update()
     for _, item in stats.items():
         assert isinstance(item, np.float32)
-    env.close()
 
 
 # Test with constant pretraining learning rate
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_constant_lr_update(mock_env, trainer_config):
+def test_bcmodule_constant_lr_update(trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
     trainer_config["behavioral_cloning"]["steps"] = 0
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, False, "test.demo"
-    )
+    policy = create_policy_with_bc_mock(mock_brain, trainer_config, False, "test.demo")
     stats = policy.bc_module.update()
     for _, item in stats.items():
         assert isinstance(item, np.float32)
@@ -162,48 +141,40 @@ def test_bcmodule_constant_lr_update(mock_env, trainer_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_rnn_update(mock_env, trainer_config):
+def test_bcmodule_rnn_update(trainer_config):
     mock_brain = mb.create_mock_3dball_brain()
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, True, "test.demo"
-    )
+    policy = create_policy_with_bc_mock(mock_brain, trainer_config, True, "test.demo")
     stats = policy.bc_module.update()
     for _, item in stats.items():
         assert isinstance(item, np.float32)
-    env.close()
 
 
 # Test with discrete control and visual observations
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_dc_visual_update(mock_env, trainer_config):
+def test_bcmodule_dc_visual_update(trainer_config):
     mock_brain = mb.create_mock_banana_brain()
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, False, "testdcvis.demo"
+    policy = create_policy_with_bc_mock(
+        mock_brain, trainer_config, False, "testdcvis.demo"
     )
     stats = policy.bc_module.update()
     for _, item in stats.items():
         assert isinstance(item, np.float32)
-    env.close()
 
 
 # Test with discrete control, visual observations and RNN
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment")
-def test_bcmodule_rnn_dc_update(mock_env, trainer_config):
+def test_bcmodule_rnn_dc_update(trainer_config):
     mock_brain = mb.create_mock_banana_brain()
-    env, policy = create_policy_with_bc_mock(
-        mock_env, mock_brain, trainer_config, True, "testdcvis.demo"
+    policy = create_policy_with_bc_mock(
+        mock_brain, trainer_config, True, "testdcvis.demo"
     )
     stats = policy.bc_module.update()
     for _, item in stats.items():
         assert isinstance(item, np.float32)
-    env.close()
 
 
 if __name__ == "__main__":

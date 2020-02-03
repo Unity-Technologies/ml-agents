@@ -669,7 +669,7 @@ class SACModel(LearningModel):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
-        :param brain: BrainInfo used to generate specific network graph.
+        :param brain: Brain parameters used to generate specific network graph.
         :param lr: Learning rate.
         :param lr_schedule: Learning rate decay schedule.
         :param h_size: Size of hidden layers
@@ -830,7 +830,7 @@ class SACModel(LearningModel):
         self.rewards_holders = {}
         self.min_policy_qs = {}
 
-        for i, name in enumerate(stream_names):
+        for name in stream_names:
             if discrete:
                 _branched_mpq1 = self.apply_as_branches(
                     self.policy_network.q1_pheads[name]
@@ -863,9 +863,6 @@ class SACModel(LearningModel):
                     self.policy_network.q2_pheads[name],
                 )
 
-            rewards_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
-            )
             rewards_holder = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
             )

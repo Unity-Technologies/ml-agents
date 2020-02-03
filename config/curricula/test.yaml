@@ -1,0 +1,9 @@
+TestBrain:
+  measure: reward
+  thresholds: [10, 20, 50]
+  min_lesson_length: 100
+  signal_smoothing: true
+  parameters:
+    param1: [0.7, 0.5, 0.3, 0.1]
+    param2: [100, 50, 20, 15]
+    param3: [0.2, 0.3, 0.7, 0.9]

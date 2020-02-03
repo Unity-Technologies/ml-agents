@@ -62,7 +62,7 @@ jobs:
             . venv/bin/activate
             mkdir test-reports
             pip freeze > test-reports/pip_versions.txt
-            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+            pytest -n 2 --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
           name: Verify there are no hidden/missing metafiles.
@@ -200,7 +200,7 @@ jobs:
             chmod +x Grpc.Tools.1.14.1/tools/linux_x64/protoc
             chmod +x Grpc.Tools.1.14.1/tools/linux_x64/grpc_csharp_plugin
             COMPILER=Grpc.Tools.1.14.1/tools/linux_x64 ./make.sh
-            CS_PROTO_PATH=UnitySDK/Assets/ML-Agents/Scripts/Grpc/CommunicatorObjects
+            CS_PROTO_PATH=com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects
             git diff --exit-code --quiet -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" \
               || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
               echo "Apply the patch with the command: git apply proto.patch"; \

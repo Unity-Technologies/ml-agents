@@ -131,8 +131,8 @@ Omitting that will get the `master` branch which is potentially unstable.
 If you don't want to use Git, you can always directly download all the files
 [here](https://github.com/Unity-Technologies/ml-agents/archive/latest_release.zip).
 
-The `UnitySDK` subdirectory contains the Unity Assets to add to your projects.
-It also contains many [example environments](Learning-Environment-Examples.md)
+The `com.unity.ml-agents` subdirectory contains the core code to add to your projects.
+The `Project` subdirectory contains many [example environments](Learning-Environment-Examples.md)
 to help you get started.
 
 The `ml-agents` subdirectory contains a Python package which provides deep reinforcement

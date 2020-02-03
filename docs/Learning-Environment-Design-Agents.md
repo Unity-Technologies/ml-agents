@@ -264,7 +264,7 @@ Both sensor components have several settings:
   always cast forward, and this many rays are cast to the left and right.
  * _Max Ray Degrees_ The angle (in degrees) for the outermost rays. 90 degrees
   corresponds to the left and right of the agent.
- * _ Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
+ * _Sphere Cast Radius_ The size of the sphere used for sphere casting. If set
   to 0, rays will be used instead of spheres. Rays may be more efficient,
   especially in complex scenes.
  * _Ray Length_ The length of the casts
@@ -606,18 +606,7 @@ can learn more [here](Feature-Monitor.md).
 
 ## Destroying an Agent
 
-Before destroying an Agent GameObject, you must mark it as done (and wait for
-the next step in the simulation) so that the Policy knows that this Agent is no
-longer active. Thus, the best place to destroy an Agent is in the
-`Agent.AgentOnDone()` function:
-
-```csharp
-public override void AgentOnDone()
-{
-    Destroy(gameObject);
-}
-```
-
-Note that in order for `AgentOnDone()` to be called, the Agent's `ResetOnDone`
-property must be false. You can set `ResetOnDone` on the Agent's Inspector or in
-code.
+You can destroy an Agent GameObject during the simulation. Make sure that there is
+always at least one Agent training at all times by either spawning a new Agent
+every time one is destroyed or by re-spawning new Agents when the whole environment
+resets.
