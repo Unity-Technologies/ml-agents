@@ -45,7 +45,6 @@ namespace MLAgents.Tests
             {
                 vectorObservationSize = 3,
                 numStackedVectorObservations = 2,
-                vectorActionDescriptions = new[] { "TestActionA", "TestActionB" },
                 vectorActionSize = new[] { 2, 2 },
                 vectorActionSpaceType = SpaceType.Discrete
             };
@@ -87,7 +86,6 @@ namespace MLAgents.Tests
             var bpA = agentGo1.AddComponent<BehaviorParameters>();
             bpA.brainParameters.vectorObservationSize = 3;
             bpA.brainParameters.numStackedVectorObservations = 1;
-            bpA.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
             bpA.brainParameters.vectorActionSize = new[] { 2, 2 };
             bpA.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
 

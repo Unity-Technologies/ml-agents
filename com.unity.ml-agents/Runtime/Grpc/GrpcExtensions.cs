@@ -74,7 +74,6 @@ namespace MLAgents
                 BrainName = name,
                 IsTraining = isTraining
             };
-            brainParametersProto.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
             return brainParametersProto;
         }
 
@@ -123,7 +122,6 @@ namespace MLAgents
             var bp = new BrainParameters
             {
                 vectorActionSize = bpp.VectorActionSize.ToArray(),
-                vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
                 vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
             };
             return bp;

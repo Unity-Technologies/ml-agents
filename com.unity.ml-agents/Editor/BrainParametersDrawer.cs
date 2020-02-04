@@ -15,7 +15,6 @@ namespace MLAgents
         const int k_VecObsNumLine = 3;
         const string k_ActionSizePropName = "vectorActionSize";
         const string k_ActionTypePropName = "vectorActionSpaceType";
-        const string k_ActionDescriptionPropName = "vectorActionDescriptions";
         const string k_VecObsPropName = "vectorObservationSize";
         const string k_NumVecObsPropName = "numStackedVectorObservations";
 

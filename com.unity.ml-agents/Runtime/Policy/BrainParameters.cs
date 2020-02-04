@@ -32,9 +32,6 @@ namespace MLAgents
         /// </summary>
         public int[] vectorActionSize = new[] {1};
 
-        /// <summary></summary>The list of strings describing what the actions correpond to */
-        public string[] vectorActionDescriptions;
-
         /// <summary>Defines if the action is discrete or continuous</summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
@@ -49,7 +46,6 @@ namespace MLAgents
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,
                 vectorActionSize = (int[])vectorActionSize.Clone(),
-                vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = vectorActionSpaceType
             };
         }
