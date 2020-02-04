@@ -50,7 +50,7 @@ namespace MLAgents
     /// Struct that contains the action information sent from the Brain to the
     /// Agent.
     /// </summary>
-    public struct AgentAction
+    internal struct AgentAction
     {
         public float[] vectorActions;
     }
@@ -179,7 +179,7 @@ namespace MLAgents
         /// <summary>
         /// VectorSensor which is written to by AddVectorObs
         /// </summary>
-        public VectorSensor collectObservationsSensor;
+        internal VectorSensor collectObservationsSensor;
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
@@ -420,7 +420,7 @@ namespace MLAgents
         /// Set up the list of ISensors on the Agent. By default, this will select any
         /// SensorBase's attached to the Agent.
         /// </summary>
-        void InitializeSensors()
+        internal void InitializeSensors()
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
@@ -713,15 +713,6 @@ namespace MLAgents
         internal void UpdateAgentAction(AgentAction action)
         {
             m_Action = action;
-        }
-
-        /// <summary>
-        /// Updates the vector action.
-        /// </summary>
-        /// <param name="vectorActions">Vector actions.</param>
-        internal void UpdateVectorAction(float[] vectorActions)
-        {
-            m_Action.vectorActions = vectorActions;
         }
 
         /// <summary>

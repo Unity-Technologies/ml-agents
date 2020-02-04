@@ -12,7 +12,7 @@ namespace MLAgents.InferenceBrain
     /// This action takes as input the tensor and the Dictionary of Agent to AgentInfo for
     /// the current batch.
     /// </summary>
-    public class TensorApplier
+    internal class TensorApplier
     {
         /// <summary>
         /// A tensor Applier's Execute method takes a tensor and a Dictionary of Agent to AgentInfo.

@@ -9,7 +9,7 @@ namespace MLAgents
     /// The Remote Policy only works when training.
     /// When training your Agents, the RemotePolicy will be controlled by Python.
     /// </summary>
-    public class RemotePolicy : IPolicy
+    internal class RemotePolicy : IPolicy
     {
 
         int m_AgentId;

@@ -10,7 +10,7 @@ namespace MLAgents
     /// will not be taken immediately but will be taken before or when
     /// DecideAction is called.
     /// </summary>
-    public interface IPolicy : IDisposable
+    internal interface IPolicy : IDisposable
     {
         /// <summary>
         /// Signals the Brain that the Agent needs a Decision. The Policy

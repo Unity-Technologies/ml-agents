@@ -25,7 +25,7 @@ namespace MLAgents
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
     /// </summary>
-    public class AcademyFixedUpdateStepper : MonoBehaviour
+    internal class AcademyFixedUpdateStepper : MonoBehaviour
     {
         void FixedUpdate()
         {
@@ -46,7 +46,7 @@ namespace MLAgents
     /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-        "docs/Learning-Environment-Design-Academy.md")]
+        "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
         const string k_ApiVersion = "API-14-dev0";
@@ -154,7 +154,7 @@ namespace MLAgents
         /// Initialize the Academy if it hasn't already been initialized.
         /// This method is always safe to call; it will have no effect if the Academy is already initialized.
         /// </summary>
-        public void LazyInitialization()
+        internal void LazyInitialization()
         {
             if (!m_Initialized)
             {
