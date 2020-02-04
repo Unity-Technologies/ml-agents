@@ -9,7 +9,7 @@ namespace MLAgents
     /// to take decisions each time the RequestDecision method is
     /// called.
     /// </summary>
-    public class HeuristicPolicy : IPolicy
+    internal class HeuristicPolicy : IPolicy
     {
         Func<float[]> m_Heuristic;
         float[] m_LastDecision;

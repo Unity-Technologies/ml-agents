@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace MLAgents.Tests
 {
 
-    public class TestPolicy : IPolicy
+    internal class TestPolicy : IPolicy
     {
         public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
 
@@ -18,7 +18,7 @@ namespace MLAgents.Tests
 
     public class TestAgent : Agent
     {
-        public AgentInfo _Info
+        internal AgentInfo _Info
         {
             get
             {
@@ -30,7 +30,7 @@ namespace MLAgents.Tests
             }
         }
 
-        public void SetPolicy(IPolicy policy)
+        internal void SetPolicy(IPolicy policy)
         {
             typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, policy);
         }

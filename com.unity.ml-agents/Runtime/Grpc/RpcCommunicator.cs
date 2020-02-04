@@ -16,7 +16,7 @@ using MLAgents.Sensor;
 namespace MLAgents
 {
     /// Responsible for communication with External using gRPC.
-    public class RpcCommunicator : ICommunicator
+    internal class RpcCommunicator : ICommunicator
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;

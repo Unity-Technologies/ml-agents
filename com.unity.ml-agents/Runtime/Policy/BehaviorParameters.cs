@@ -35,7 +35,8 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         string m_BehaviorName = "My Behavior";
-        [HideInInspector] [SerializeField]
+        [HideInInspector]
+        [SerializeField]
         public int m_TeamID = 0;
         [HideInInspector]
         [SerializeField]
@@ -54,7 +55,7 @@ namespace MLAgents
 
         public string behaviorName
         {
-            get { return m_BehaviorName;}
+            get { return m_BehaviorName; }
         }
 
         /// <summary>
@@ -62,10 +63,10 @@ namespace MLAgents
         /// </summary>
         public string fullyQualifiedBehaviorName
         {
-            get { return m_BehaviorName + "?team=" + m_TeamID;}
+            get { return m_BehaviorName + "?team=" + m_TeamID; }
         }
 
-        public IPolicy GeneratePolicy(Func<float[]> heuristic)
+        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {

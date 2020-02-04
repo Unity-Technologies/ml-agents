@@ -11,7 +11,7 @@ namespace MLAgents.InferenceBrain
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
     /// and BrainParameters are incompatible.
     /// </summary>
-    public class BarracudaModelParamLoader
+    internal class BarracudaModelParamLoader
     {
         enum ModelActionType
         {
