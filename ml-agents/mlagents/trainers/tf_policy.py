@@ -398,7 +398,7 @@ class TFPolicy(Policy):
         outputs = TFPolicy._get_output_node_names(frozen_graph_def)
         logger.info(f"onnx export - inputs:{inputs} outputs:{outputs}")
 
-        frozen_graph_def = self._fixup_conv_transposes(vis_inputs, frozen_graph_def)
+        #frozen_graph_def = self._fixup_conv_transposes(vis_inputs, frozen_graph_def)
 
         frozen_graph_def = tf_optimize(
             inputs, outputs, frozen_graph_def, fold_constant=True
@@ -420,31 +420,21 @@ class TFPolicy(Policy):
         # Hack the constant values back in
         constant_nodes = []
         for k, v in constant_values.items():
+            print(f"Adding constant node: {k} = {v}")
             constant_node = self._make_onnx_node_for_constant(k, v)
             constant_nodes.append(constant_node)
-        model_proto.graph.node.extend(constant_nodes)
+        model_proto.graph.initializer.extend(constant_nodes)
         return model_proto
 
     @staticmethod
-    def _make_onnx_node_for_constant(name: str, value: int) -> NodeProto:
-        dtype_attribute = AttributeProto(
-            name="dtype", i=int(TensorProto.INT32), type=AttributeProto.INT
-        )
+    def _make_onnx_node_for_constant(name: str, value: int) -> Any:
         tensor_value = TensorProto(
             data_type=TensorProto.INT32,
             name=name,
             int32_data=[value],
             dims=[1, 1, 1, 1],
         )
-        value_attribute = AttributeProto(
-            name="value", t=tensor_value, type=AttributeProto.TENSOR
-        )
-        return NodeProto(
-            output=f"{name}:0",
-            name=name,
-            op_type="Constant",
-            attribute=[dtype_attribute, value_attribute],
-        )
+        return tensor_value
 
     @staticmethod
     def _get_input_node_names(frozen_graph_def: Any) -> Tuple[List[str], List[str]]:
@@ -493,6 +483,7 @@ class TFPolicy(Policy):
         previous_op = ""
         for node in new_graph.node:
             if node.name in vis_input_names:
+                print(f"permuting dimensions for {node.name}")
                 node_dim = copy.deepcopy(node.attr['shape'])
                 dim = len(node_dim.shape.dim)
                 if dim > 0:
@@ -506,9 +497,11 @@ class TFPolicy(Policy):
 
             # ONNX, bias is merged into Conv2D, so need to change it's layout
             if node.op == 'Conv2D' or (node.op == 'BiasAdd' and previous_op == 'Conv2D'):
+                print(f"setting {node.name} to NCHW")
                 node.attr['data_format'].s = str.encode("NCHW")
 
             if node.op == 'Conv1D' or (node.op == 'BiasAdd' and previous_op == 'Conv1D'):
+                print(f"setting {node.name} to NCHW")
                 node.attr['data_format'].s = str.encode("NCHW")
 
             previous_op = node.op
