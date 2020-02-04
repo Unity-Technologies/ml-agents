@@ -9,7 +9,7 @@ namespace MLAgents
     /// <summary>
     /// Responsible for writing demonstration data to file.
     /// </summary>
-    internal class DemonstrationStore
+    public class DemonstrationStore
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
         readonly IFileSystem m_FileSystem;
