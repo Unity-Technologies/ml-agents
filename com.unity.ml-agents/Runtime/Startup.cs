@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace MLAgents
 {
-    public class Startup : MonoBehaviour
+    internal class Startup : MonoBehaviour
     {
         const string k_SceneVariableName = "SCENE_NAME";
 

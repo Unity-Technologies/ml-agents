@@ -37,7 +37,7 @@ namespace MLAgents.InferenceBrain
         public Tensor data;
     }
 
-    public static class TensorUtils
+    internal static class TensorUtils
     {
         public static void ResizeTensor(TensorProxy tensor, int batch, ITensorAllocator allocator)
         {
@@ -72,10 +72,10 @@ namespace MLAgents.InferenceBrain
         {
             if (src.height == 1 && src.width == 1)
             {
-                return new long[] {src.batch, src.channels};
+                return new long[] { src.batch, src.channels };
             }
 
-            return new long[] {src.batch, src.height, src.width, src.channels};
+            return new long[] { src.batch, src.height, src.width, src.channels };
         }
 
         public static TensorProxy TensorProxyFromBarracuda(Tensor src, string nameOverride = null)

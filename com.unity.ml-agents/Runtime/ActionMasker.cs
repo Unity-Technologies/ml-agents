@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MLAgents
 {
-    public class ActionMasker
+    internal class ActionMasker
     {
         /// When using discrete control, is the starting indices of the actions
         /// when all the branches are concatenated with each other.

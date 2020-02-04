@@ -18,7 +18,7 @@ namespace MLAgents
     /// every step. It uses a ModelRunner that is shared accross all
     /// Barracuda Policies that use the same model and inference devices.
     /// </summary>
-    public class BarracudaPolicy : IPolicy
+    internal class BarracudaPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
 

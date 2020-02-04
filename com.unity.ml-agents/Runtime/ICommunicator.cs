@@ -89,7 +89,7 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator : IDisposable
+    internal interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.

@@ -25,7 +25,7 @@ namespace MLAgents
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
     /// </summary>
-    public class AcademyFixedUpdateStepper : MonoBehaviour
+    internal class AcademyFixedUpdateStepper : MonoBehaviour
     {
         void FixedUpdate()
         {
@@ -92,7 +92,7 @@ namespace MLAgents
         int m_TotalStepCount;
 
         /// Pointer to the communicator currently in use by the Academy.
-        public ICommunicator Communicator;
+        internal ICommunicator Communicator;
 
         bool m_Initialized;
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
@@ -108,27 +108,27 @@ namespace MLAgents
 
         // Signals to all the Agents at each environment step so they can use
         // their Policy to decide on their next action.
-        public event System.Action DecideAction;
+        internal event System.Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
-        public event System.Action DestroyAction;
+        internal event System.Action DestroyAction;
 
         // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
-        public event System.Action<int> AgentSetStatus;
+        internal event System.Action<int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
-        public event System.Action AgentSendState;
+        internal event System.Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
         // they have requested a decision.
-        public event System.Action AgentAct;
+        internal event System.Action AgentAct;
 
         // Signals to all the agents each time the Academy force resets.
-        public event System.Action AgentForceReset;
+        internal event System.Action AgentForceReset;
 
         // Signals that the Academy has been reset by the training process
         public event System.Action OnEnvironmentReset;
@@ -154,7 +154,7 @@ namespace MLAgents
         /// Initialize the Academy if it hasn't already been initialized.
         /// This method is always safe to call; it will have no effect if the Academy is already initialized.
         /// </summary>
-        public void LazyInitialization()
+        internal void LazyInitialization()
         {
             if (!m_Initialized)
             {
@@ -426,7 +426,7 @@ namespace MLAgents
         /// <param name="inferenceDevice"> The inference device (CPU or GPU)
         /// the ModelRunner will use </param>
         /// <returns> The ModelRunner compatible with the input settings</returns>
-        public ModelRunner GetOrCreateModelRunner(
+        internal ModelRunner GetOrCreateModelRunner(
             NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
