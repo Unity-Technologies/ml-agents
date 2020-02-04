@@ -689,6 +689,14 @@ namespace MLAgents
         {
         }
 
+		/// <summary>
+        /// Returns the last action that was decided on by the Agent (returns null if no decision has been made)
+        /// </summary>
+		public float[] GetLastAction()
+        {
+        	return m_Action.vectorActions;
+        }
+
         /// <summary>
         /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
         /// This way, even if the agent was already in the process of reseting, it will be reset again
