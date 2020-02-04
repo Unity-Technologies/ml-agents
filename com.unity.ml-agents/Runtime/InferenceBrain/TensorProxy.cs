@@ -13,7 +13,7 @@ namespace MLAgents.InferenceBrain
     /// allowing the user to specify everything but the data in a graphical way.
     /// </summary>
     [Serializable]
-    internal class TensorProxy
+    public class TensorProxy
     {
         public enum TensorType
         {

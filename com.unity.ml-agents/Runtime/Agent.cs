@@ -11,7 +11,7 @@ namespace MLAgents
     /// Struct that contains all the information for an Agent, including its
     /// observations, actions and current status, that is sent to the Brain.
     /// </summary>
-    internal struct AgentInfo
+    public struct AgentInfo
     {
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
