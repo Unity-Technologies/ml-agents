@@ -212,5 +212,89 @@ namespace MLAgents.Tests
                 }
             }
         }
+
+        [Test]
+        public void TestRaycastsScaled()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+            obj.transform.localScale = new Vector3(2, 2,2 );
+
+            perception.raysPerDirection = 0;
+            perception.maxRayDegrees = 45;
+            perception.rayLength = 20;
+            perception.detectableTags = new List<string>();
+            perception.detectableTags.Add(k_CubeTag);
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.sphereCastRadius = castRadius;
+                var sensor = perception.CreateSensor();
+
+                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                var outputBuffer = new float[expectedObs];
+
+                WriteAdapter writer = new WriteAdapter();
+                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+
+                var numWritten = sensor.Write(writer);
+                Assert.AreEqual(numWritten, expectedObs);
+
+                // Expected hits:
+                // ray 0 should hit the cube at roughly 1/4 way
+                //
+                Assert.AreEqual(1.0f, outputBuffer[0]); // hit cube
+                Assert.AreEqual(0.0f, outputBuffer[1]); // missed unknown tag
+
+                // Hit is at z=9.0 in world space, ray length was 20
+                // But scale increases the cast size and the ray length
+                var scaledRayLength = 2 * perception.rayLength;
+                var scaledCastRadius = 2 * castRadius;
+                Assert.That(
+                    outputBuffer[2], Is.EqualTo((9.5f - scaledCastRadius) / scaledRayLength).Within(.0005f)
+                );
+            }
+        }
+
+        [Test]
+        public void TestRayZeroLength()
+        {
+            // Place the cube touching the origin
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.position = new Vector3(0, 0, .5f);
+            cube.tag = k_CubeTag;
+
+            Physics.SyncTransforms();
+
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+            perception.raysPerDirection = 0;
+            perception.rayLength = 0.0f;
+            perception.sphereCastRadius = .5f;
+            perception.detectableTags = new List<string>();
+            perception.detectableTags.Add(k_CubeTag);
+
+            {
+                // Set the layer mask to either the default, or one that ignores the close cube's layer
+
+                var sensor = perception.CreateSensor();
+                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
+                var outputBuffer = new float[expectedObs];
+
+                WriteAdapter writer = new WriteAdapter();
+                writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
+
+                var numWritten = sensor.Write(writer);
+                Assert.AreEqual(numWritten, expectedObs);
+
+                // hit fraction is arbitrary but should be finite in [0,1]
+                Assert.GreaterOrEqual(outputBuffer[2], 0.0f);
+                Assert.LessOrEqual(outputBuffer[2], 1.0f);
+            }
+        }
     }
 }
