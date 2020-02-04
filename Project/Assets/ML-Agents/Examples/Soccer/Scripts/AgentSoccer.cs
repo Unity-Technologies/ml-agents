@@ -83,10 +83,10 @@ public class AgentSoccer : Agent
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * 0.75f;
+                dirToGo = transform.right * 0.3f;
                 break;
             case 2:
-                dirToGo = transform.right * -0.75f;
+                dirToGo = transform.right * -0.3f;
                 break;
         }
 
@@ -149,7 +149,7 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 1500f * m_KickPower;
+        var force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
             var dir = c.contacts[0].point - transform.position;
