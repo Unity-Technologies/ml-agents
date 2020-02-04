@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 namespace MLAgents
 {
     [DataContract]
-    public class TimerNode
+    internal class TimerNode
     {
         static string s_Separator = ".";
         static double s_TicksToSeconds = 1e-7; // 100 ns per tick
@@ -227,7 +227,7 @@ namespace MLAgents
     /// Tracks the most recent value of a metric. This is analogous to gauges in statsd.
     /// </summary>
     [DataContract]
-    public class GaugeNode
+    internal class GaugeNode
     {
         const float k_SmoothingFactor = .25f; // weight for exponential moving average.
 
@@ -316,7 +316,7 @@ namespace MLAgents
             get { return k_Instance; }
         }
 
-        public TimerNode RootNode
+        internal TimerNode RootNode
         {
             get { return m_RootNode; }
         }
@@ -389,7 +389,7 @@ namespace MLAgents
         /// Potentially slow so call sparingly.
         /// </summary>
         /// <returns></returns>
-        public string DebugGetTimerString()
+        internal string DebugGetTimerString()
         {
             return m_RootNode.DebugGetTimerString();
         }
