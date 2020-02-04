@@ -78,6 +78,10 @@ class NNPolicy(TFPolicy):
         if self.use_recurrent:
             self.inference_dict["memory_out"] = self.memory_out
 
+        # We do an initialize to make the Policy usable out of the box. If an optimizer is needed,
+        # it will re-load the full graph
+        self._initialize_graph()
+
     @timed
     def evaluate(
         self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]

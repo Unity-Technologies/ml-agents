@@ -252,7 +252,6 @@ class PPOTrainer(RLTrainer):
             raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
-        self.policy.initialize_or_load()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
