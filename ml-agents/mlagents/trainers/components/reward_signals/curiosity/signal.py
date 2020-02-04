@@ -90,7 +90,7 @@ class CuriosityRewardSignal(RewardSignal):
         """
         feed_dict = {
             policy.batch_size_ph: num_sequences,
-            policy.sequence_length: self.policy.sequence_length,
+            policy.sequence_length_ph: self.policy.sequence_length,
             policy.mask_input: mini_batch["masks"],
         }
         if self.policy.use_continuous_act:

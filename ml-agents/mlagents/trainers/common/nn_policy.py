@@ -41,7 +41,7 @@ class NNPolicy(TFPolicy):
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
-        with tf.variable_scope("policy"):
+        with tf.variable_scope("policy/"):
             super().__init__(seed, brain, trainer_params, load)
 
             self.stats_name_to_update_name = {
@@ -129,7 +129,7 @@ class NNPolicy(TFPolicy):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["policy"],
+            stream_scopes=["policy/"],
         )[0]
 
         if self.use_recurrent:
@@ -236,7 +236,7 @@ class NNPolicy(TFPolicy):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["policy"],
+            stream_scopes=["policy/"],
         )[0]
 
         if self.use_recurrent:

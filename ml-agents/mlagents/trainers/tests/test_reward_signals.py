@@ -3,7 +3,8 @@ import yaml
 import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.common.nn_policy import NNPolicy
-from mlagents.trainers.sac.policy import SACPolicy
+from mlagents.trainers.sac.optimizer import SACOptimizer
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 
 
 def ppo_dummy_config():
@@ -94,7 +95,7 @@ BATCH_SIZE = 12
 NUM_AGENTS = 12
 
 
-def create_policy_mock(
+def create_optimizer_mock(
     trainer_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
     mock_brain = mb.setup_mock_brain(
@@ -111,28 +112,29 @@ def create_policy_mock(
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
-    if trainer_config["trainer"] == "ppo":
-        policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
+    policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
+    if trainer_parameters["trainer"] == "sac":
+        optimizer = SACOptimizer(policy, trainer_parameters)
     else:
-        policy = SACPolicy(0, mock_brain, trainer_parameters, False, False)
-    return policy
+        optimizer = PPOOptimizer(policy, trainer_parameters)
+    return optimizer
 
 
-def reward_signal_eval(policy, reward_signal_name):
-    buffer = mb.simulate_rollout(BATCH_SIZE, policy.brain)
+def reward_signal_eval(optimizer, reward_signal_name):
+    buffer = mb.simulate_rollout(BATCH_SIZE, optimizer.policy.brain)
     # Test evaluate
-    rsig_result = policy.reward_signals[reward_signal_name].evaluate_batch(buffer)
+    rsig_result = optimizer.reward_signals[reward_signal_name].evaluate_batch(buffer)
     assert rsig_result.scaled_reward.shape == (BATCH_SIZE,)
     assert rsig_result.unscaled_reward.shape == (BATCH_SIZE,)
 
 
-def reward_signal_update(policy, reward_signal_name):
-    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
-    feed_dict = policy.reward_signals[reward_signal_name].prepare_update(
-        policy, buffer.make_mini_batch(0, 10), 2
+def reward_signal_update(optimizer, reward_signal_name):
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
+    feed_dict = optimizer.reward_signals[reward_signal_name].prepare_update(
+        optimizer.policy, buffer.make_mini_batch(0, 10), 2
     )
-    out = policy._execute_model(
-        feed_dict, policy.reward_signals[reward_signal_name].update_dict
+    out = optimizer.policy._execute_model(
+        feed_dict, optimizer.reward_signals[reward_signal_name].update_dict
     )
     assert type(out) is dict
 
@@ -141,9 +143,11 @@ def reward_signal_update(policy, reward_signal_name):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_cc(trainer_config, gail_dummy_config):
-    policy = create_policy_mock(trainer_config, gail_dummy_config, False, False, False)
-    reward_signal_eval(policy, "gail")
-    reward_signal_update(policy, "gail")
+    optimizer = create_optimizer_mock(
+        trainer_config, gail_dummy_config, False, False, False
+    )
+    reward_signal_eval(optimizer, "gail")
+    reward_signal_update(optimizer, "gail")
 
 
 @pytest.mark.parametrize(
@@ -153,16 +157,20 @@ def test_gail_dc_visual(trainer_config, gail_dummy_config):
     gail_dummy_config["gail"]["demo_path"] = (
         os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
     )
-    policy = create_policy_mock(trainer_config, gail_dummy_config, False, True, True)
-    reward_signal_eval(policy, "gail")
-    reward_signal_update(policy, "gail")
+    optimizer = create_optimizer_mock(
+        trainer_config, gail_dummy_config, False, True, True
+    )
+    reward_signal_eval(optimizer, "gail")
+    reward_signal_update(optimizer, "gail")
 
 
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_rnn(trainer_config, gail_dummy_config):
-    policy = create_policy_mock(trainer_config, gail_dummy_config, True, False, False)
+    policy = create_optimizer_mock(
+        trainer_config, gail_dummy_config, True, False, False
+    )
     reward_signal_eval(policy, "gail")
     reward_signal_update(policy, "gail")
 
@@ -171,7 +179,7 @@ def test_gail_rnn(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_curiosity_cc(trainer_config, curiosity_dummy_config):
-    policy = create_policy_mock(
+    policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, False, False
     )
     reward_signal_eval(policy, "curiosity")
@@ -182,7 +190,7 @@ def test_curiosity_cc(trainer_config, curiosity_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_curiosity_dc(trainer_config, curiosity_dummy_config):
-    policy = create_policy_mock(
+    policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, True, False
     )
     reward_signal_eval(policy, "curiosity")
@@ -193,7 +201,7 @@ def test_curiosity_dc(trainer_config, curiosity_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_curiosity_visual(trainer_config, curiosity_dummy_config):
-    policy = create_policy_mock(
+    policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, False, True
     )
     reward_signal_eval(policy, "curiosity")
@@ -204,7 +212,7 @@ def test_curiosity_visual(trainer_config, curiosity_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
-    policy = create_policy_mock(
+    policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, True, False, False
     )
     reward_signal_eval(policy, "curiosity")
@@ -215,7 +223,7 @@ def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_extrinsic(trainer_config, curiosity_dummy_config):
-    policy = create_policy_mock(
+    policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, False, False
     )
     reward_signal_eval(policy, "extrinsic")

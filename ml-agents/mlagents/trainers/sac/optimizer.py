@@ -405,14 +405,15 @@ class SACOptimizer(TFOptimizer):
                 * tf.to_float(self.policy.mask)
                 * tf.stop_gradient(
                     tf.reduce_sum(
-                        branched_per_action_ent + self.target_entropy,
+                        self.policy.all_log_probs + self.target_entropy,
                         axis=1,
                         keep_dims=True,
                     )
                 )
             )
             batch_policy_loss = tf.reduce_mean(
-                self.ent_coef * per_action_entropy - self.policy_network.q1_p, axis=1
+                self.ent_coef * self.policy.all_log_probs - self.policy_network.q1_p,
+                axis=1,
             )
             self.policy_loss = tf.reduce_mean(
                 tf.to_float(self.policy.mask) * batch_policy_loss
@@ -422,7 +423,7 @@ class SACOptimizer(TFOptimizer):
             for name in stream_names:
                 v_backup = tf.stop_gradient(
                     self.min_policy_qs[name]
-                    - tf.reduce_sum(self.ent_coef * per_action_entropy, axis=1)
+                    - tf.reduce_sum(self.ent_coef * self.policy.all_log_probs, axis=1)
                 )
                 value_losses.append(
                     0.5
@@ -456,9 +457,15 @@ class SACOptimizer(TFOptimizer):
         Creates the Adam optimizers and update ops for SAC, including
         the policy, value, and entropy updates, as well as the target network update.
         """
-        policy_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-        entropy_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
-        value_optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        policy_optimizer = tf.train.AdamOptimizer(
+            learning_rate=self.learning_rate, name="sac_policy_opt"
+        )
+        entropy_optimizer = tf.train.AdamOptimizer(
+            learning_rate=self.learning_rate, name="sac_entropy_opt"
+        )
+        value_optimizer = tf.train.AdamOptimizer(
+            learning_rate=self.learning_rate, name="sac_value_opt"
+        )
 
         self.target_update_op = [
             tf.assign(target, (1 - self.tau) * target + self.tau * source)
