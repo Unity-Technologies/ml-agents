@@ -46,7 +46,7 @@ namespace MLAgents
     /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-        "docs/Learning-Environment-Design-Academy.md")]
+        "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
         const string k_ApiVersion = "API-14-dev0";
