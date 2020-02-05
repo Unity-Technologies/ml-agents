@@ -72,6 +72,7 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
+            // TODO remove, all writing goes through the IExperienceWriter
             m_DemoStore.Record(info, sensors);
         }
 
@@ -93,6 +94,11 @@ namespace MLAgents
             {
                 Close();
             }
+        }
+
+        public IExperienceWriter GetExperienceWriter()
+        {
+            return m_DemoStore;
         }
     }
 }

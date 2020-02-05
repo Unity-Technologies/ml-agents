@@ -493,9 +493,10 @@ namespace MLAgents
 
             m_Brain.RequestDecision(m_Info, sensors);
 
+            // TODO simplify, only check if m_Recorder.GetExperienceWriter() exists
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
-                m_Recorder.WriteExperience(m_Info, sensors);
+                WriteExperience(m_Recorder.GetExperienceWriter());
             }
         }
 
@@ -505,6 +506,16 @@ namespace MLAgents
             {
                 sensors[i].Update();
             }
+        }
+
+        public void WriteExperience(IExperienceWriter writer)
+        {
+            ExperienceInfo expInfo = new ExperienceInfo
+            {
+                agentInfo = m_Info,
+                sensors = sensors
+            };
+            writer.Record(expInfo);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace MLAgents
     /// <summary>
     /// Responsible for writing demonstration data to file.
     /// </summary>
-    public class DemonstrationStore
+    public class DemonstrationStore : IExperienceWriter
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
         readonly IFileSystem m_FileSystem;
@@ -23,6 +23,7 @@ namespace MLAgents
 
         public DemonstrationStore(IFileSystem fileSystem)
         {
+            // TODO move all file logic to component, only take a Stream here
             if (fileSystem != null)
             {
                 m_FileSystem = fileSystem;
@@ -110,6 +111,11 @@ namespace MLAgents
             }
 
             agentProto.WriteDelimitedTo(m_Writer);
+        }
+
+        public void Record(ExperienceInfo expInfo)
+        {
+            Record(expInfo.agentInfo, expInfo.sensors);
         }
 
         /// <summary>
