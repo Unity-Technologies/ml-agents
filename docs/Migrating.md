@@ -28,7 +28,7 @@ The versions can be found in
   * The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
   * The `GetValueEstimate()` method on the Agent has been removed.
   * The `UpdateValueAction()` method on the Agent has been removed.
-* The deprecated `RayPerception3D` and `RayPerception3D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* The deprecated `RayPerception3D` and `RayPerception2D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
 * RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
