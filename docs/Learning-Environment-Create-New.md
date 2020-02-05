@@ -343,11 +343,12 @@ with our Agent code.
 
 1. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-2. Change **Decision Interval** from `1` to `10`.
-3. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+2. Add the Decision Requester Parameters script with the Add Component button from the RollerAgent Inspector.
+3. Change **Decision Period** from `1` to `20`.
+4. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
-4. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
-5. Modify the Behavior Parameters of the Agent :
+5. Add the Behavior Parameters script with the Add Component button from the RollerAgent Inspector.
+6. Modify the Behavior Parameters of the Agent :
   * `Behavior Name` to *RollerBallBrain*
   * `Vector Observation` `Space Size` = 8
   * `Vector Action` `Space Type` = **Continuous**
