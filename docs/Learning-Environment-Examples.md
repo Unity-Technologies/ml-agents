@@ -101,36 +101,32 @@ If you would like to contribute environments, please see our
 
 ![Tennis](images/tennis.png)
 
-* Set-up: Two-player game where agents control rackets to bounce ball over a
+* Set-up: Two-player game where agents control rackets to hit a ball over the
   net.
-* Goal: The agents must bounce ball between one another while not dropping or
-  sending ball out of bounds.
+* Goal: The agents must hit the ball so that the opponent cannot hit a valid
+return.
 * Agents: The environment contains two agent with same Behavior Parameters.
  After training you can check the `Use Heuristic` checkbox on one of the Agents
  to play against your trained model.
 * Agent Reward Function (independent):
-  * +0.1 To agent when hitting ball over net.
-  * -0.1 To agent who let ball hit their ground, or hit ball out of bounds.
+  * +1.0 To the agent that wins the point. An agent wins a point by preventing
+   the opponent from hitting a valid return.
+  * -1.0 To the agent who loses the point.
 * Behavior Parameters:
-  * Vector Observation space: 8 variables corresponding to position and velocity
-    of ball and racket.
-  * Vector Action space: (Continuous) Size of 2, corresponding to movement
-    toward net or away from net, and jumping.
+  * Vector Observation space: 9 variables corresponding to position, velocity
+    and orientation of ball and racket.
+  * Vector Action space: (Continuous) Size of 3, corresponding to movement
+    toward net or away from net, jumping and rotation.
   * Visual Observations: None
 * Float Properties: Three
-    * angle: Angle of the racket from the vertical (Y) axis.
-      * Default: 55
-      * Recommended Minimum: 35
-      * Recommended Maximum: 65
     * gravity: Magnitude of gravity
       * Default: 9.81
       * Recommended Minimum: 6
       * Recommended Maximum: 20
     * scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
-      * Default: 1
+      * Default: .5
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
-* Benchmark Mean Reward: 2.5
 
 ## [Push Block](https://youtu.be/jKdw216ZgoE)
 
@@ -351,27 +347,21 @@ If you would like to contribute environments, please see our
 
 * Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game.
 * Goal:
-  * Striker: Get the ball into the opponent's goal.
-  * Goalie: Prevent the ball from entering its own goal.
-* Agents: The environment contains four agents, with two different sets of
-  Behavior Parameters : Striker and Goalie.
-* Agent Reward Function (dependent):
-  * Striker:
-    * +1 When ball enters opponent's goal.
-    * -0.1 When ball enters own team's goal.
-    * -0.001 Existential penalty.
+  * Get the ball into the opponent's goal while preventing
+  the ball from entering own goal.
   * Goalie:
+* Agents: The environment contains four agents, with the same
+  Behavior Parameters : Soccer.
+* Agent Reward Function (dependent):
+    * +1 When ball enters opponent's goal.
     * -1 When ball enters team's goal.
-    * +0.1 When ball enters opponents goal.
-    * +0.001 Existential bonus.
+    * -0.001 Existential penalty.
 * Behavior Parameters:
-  * Vector Observation space: 112 corresponding to local 14 ray casts, each
-    detecting 7 possible object types, along with the object's distance.
-    Perception is in 180 degree view from front of agent.
-  * Vector Action space: (Discrete) One Branch
-    * Striker: 6 actions corresponding to forward, backward, sideways movement,
+  * Vector Observation space: 336 corresponding to 11 ray-casts forward distributed over 120 degrees (264)
+    and 3 ray-casts backward distributed over 90 degrees each detecting 6 possible object types, along with the object's distance.
+    The forward ray-casts contribute 264 state dimensions and backward 72 state dimensions.
+  * Vector Action space: (Discrete) Three branched actions corresponding to forward, backward, sideways movement,
       as well as rotation.
-    * Goalie: 4 actions corresponding to forward, backward, sideways movement.
   * Visual Observations: None
 * Float Properties: Two
   * ball_scale: Specifies the scale of the ball in the 3 dimensions (equal across the three dimensions)
@@ -382,8 +372,6 @@ If you would like to contribute environments, please see our
     * Default: 9.81
     * Recommended minimum: 6
     * Recommended maximum: 20
-* Benchmark Mean Reward (Striker & Goalie): 0 (the means will be inverse
-  of each other and criss crosses during training) __Note that our trainer is currently unable to consistently train this environment__
 
 ## Walker
 

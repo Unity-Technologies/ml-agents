@@ -27,6 +27,7 @@ public class AgentSoccer : Agent
     SoccerSettings m_SoccerSettings;
     Renderer m_AgentRenderer;
     BehaviorParameters m_BP;
+    Vector3 m_Transform;
 
     public override void InitializeAgent()
     {
@@ -54,6 +55,7 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         m_PlayerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = m_PlayerIndex;
+        m_Transform = transform.position;
     }
 
     public void MoveAgent(float[] act)
@@ -168,7 +170,7 @@ public class AgentSoccer : Agent
         {
             transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
-        transform.position = area.GetRandomSpawnPos(team);
+        transform.position = m_Transform;
         agentRb.velocity = Vector3.zero;
         agentRb.angularVelocity = Vector3.zero;
         SetResetParameters();

@@ -76,19 +76,6 @@ public class SoccerFieldArea : MonoBehaviour
         }
     }
 
-    public Vector3 GetRandomSpawnPos(AgentSoccer.Team team)
-    {
-        var xOffset = 7f;
-        if (team == AgentSoccer.Team.Blue)
-        {
-            xOffset = xOffset * -1f;
-        }
-        var randomSpawnPos = ground.transform.position +
-            new Vector3(xOffset, 0f, 0f);
-        randomSpawnPos.y = ground.transform.position.y + .5f;
-        return randomSpawnPos;
-    }
-
     public Vector3 GetBallSpawnPosition()
     {
         var randomSpawnPos = ground.transform.position +
