@@ -692,7 +692,7 @@ namespace MLAgents
         /// <summary>
         /// Returns the last action that was decided on by the Agent (returns null if no decision has been made)
         /// </summary>
-        public float[] GetLastAction()
+        public float[] GetAction()
         {
         	return m_Action.vectorActions;
         }
