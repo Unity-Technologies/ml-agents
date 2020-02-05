@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using MLAgents;
 
@@ -12,8 +13,8 @@ public class AgentSoccer : Agent
     // * opposing player
     public enum Team
     {
-        Purple,
-        Blue
+        Blue = 0,
+        Purple = 1
     }
 
     [HideInInspector]
@@ -33,7 +34,7 @@ public class AgentSoccer : Agent
     {
         base.InitializeAgent();
         m_BP = gameObject.GetComponent<BehaviorParameters>();
-        if (m_BP.m_TeamID == 0)
+        if (m_BP.m_TeamID == (int)Team.Blue)
         {
             team = Team.Blue;
             m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
