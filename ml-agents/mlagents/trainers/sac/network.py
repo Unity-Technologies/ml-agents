@@ -441,7 +441,7 @@ class SACPolicyNetwork(SACNetwork):
                 self.h_size,
                 0,
                 vis_encode_type=vis_encode_type,
-                stream_scopes=["policy/", "critic/value/"],
+                stream_scopes=["critic/value/"],
             )
         hidden_critic = hidden_streams[0]
         return hidden_critic
