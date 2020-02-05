@@ -8,6 +8,8 @@ import numpy as np
 def basic_mock_brain():
     mock_brain = MagicMock()
     mock_brain.vector_action_space_type = "continuous"
+    mock_brain.vector_observation_space_size = 1
+    mock_brain.vector_action_space_size = [1]
     return mock_brain
 
 
