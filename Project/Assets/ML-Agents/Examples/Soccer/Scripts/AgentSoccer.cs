@@ -36,10 +36,12 @@ public class AgentSoccer : Agent
         if (m_BP.m_TeamID == 0)
         {
             team = Team.Blue;
+            m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
         }
         else
         {
             team = Team.Purple;
+            m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
         }
         m_AgentRenderer = GetComponentInChildren<Renderer>();
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
@@ -55,7 +57,6 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         m_PlayerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = m_PlayerIndex;
-        m_Transform = transform.position;
     }
 
     public void MoveAgent(float[] act)
