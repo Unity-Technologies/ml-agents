@@ -10,7 +10,7 @@ namespace MLAgents
     /// <summary>
     /// Demonstration Recorder Component.
     /// </summary>
-    //[RequireComponent(typeof(BehaviorParameters))]
+    [RequireComponent(typeof(BehaviorParameters))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
@@ -55,15 +55,12 @@ namespace MLAgents
                 return;
             }
 
-            if (fileSystem != null)
+            m_FileSystem = fileSystem ?? new FileSystem();
+            var behaviorParams = GetComponent<BehaviorParameters>();
+            if (string.IsNullOrEmpty(demonstrationName))
             {
-                m_FileSystem = fileSystem;
+                demonstrationName = behaviorParams.behaviorName;
             }
-            else
-            {
-                m_FileSystem = new FileSystem();
-            }
-
             if (string.IsNullOrEmpty(demoDirectory))
             {
                 demoDirectory = Path.Combine(Application.dataPath, "Demonstrations");
@@ -74,13 +71,12 @@ namespace MLAgents
             var stream = CreateDemonstrationFile(demonstrationName);
             m_DemoStore = new DemonstrationStore(stream);
 
-            var recordingAgent = GetComponent<Agent>();
-            var behaviorParams = GetComponent<BehaviorParameters>();
             m_DemoStore.Initialize(
                 demonstrationName,
                 behaviorParams.brainParameters,
                 behaviorParams.fullyQualifiedBehaviorName
             );
+            var recordingAgent = GetComponent<Agent>();
             Monitor.Log("Recording Demonstration of Agent: ", recordingAgent?.name);
         }
 
