@@ -49,7 +49,8 @@ on the `+` button.
        alt="Linux Build Support"
        width="500" border="10" />
 </p>
-**NOTE:** In Unity 2018.4 it's on the bottom left and in Unity 2019.3 it's on the top left.
+
+**NOTE:** In Unity 2018.4 it's on the bottom right of the packages list, and in Unity 2019.3 it's on the top left of the packages list.
 
 Select `Add package from disk...` and navigate into the
 `com.unity.ml-agents` folder and select the `package.json` folder.
