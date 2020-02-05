@@ -494,7 +494,7 @@ namespace MLAgents
             m_Brain.RequestDecision(m_Info, sensors);
 
             // TODO simplify, only check if m_Recorder.GetExperienceWriter() exists
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            if (m_Recorder != null && m_Recorder.record)
             {
                 WriteExperience(m_Recorder.GetExperienceWriter());
             }

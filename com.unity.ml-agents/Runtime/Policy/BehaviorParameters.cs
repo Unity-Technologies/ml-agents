@@ -56,6 +56,7 @@ namespace MLAgents
         public string behaviorName
         {
             get { return m_BehaviorName; }
+            set { m_BehaviorName = value; }
         }
 
         /// <summary>

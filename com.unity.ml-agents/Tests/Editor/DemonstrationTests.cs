@@ -37,20 +37,23 @@ namespace MLAgents.Tests
         public void TestStoreInitalize()
         {
             var fileSystem = new MockFileSystem();
-            var demoStore = new DemonstrationStore(fileSystem);
+
+            var gameobj = new GameObject("gameObj");
+
+            var bp = gameobj.AddComponent<BehaviorParameters>();
+            bp.brainParameters.vectorObservationSize = 3;
+            bp.brainParameters.numStackedVectorObservations = 2;
+            bp.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            bp.brainParameters.vectorActionSize = new[] { 2, 2 };
+            bp.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bp.behaviorName = "TestBrain";
 
             Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirecory));
 
-            var brainParameters = new BrainParameters
-            {
-                vectorObservationSize = 3,
-                numStackedVectorObservations = 2,
-                vectorActionDescriptions = new[] { "TestActionA", "TestActionB" },
-                vectorActionSize = new[] { 2, 2 },
-                vectorActionSpaceType = SpaceType.Discrete
-            };
-
-            demoStore.Initialize(k_DemoName, brainParameters, "TestBrain");
+            var demoRec = gameobj.AddComponent<DemonstrationRecorder>();
+            demoRec.record = true;
+            demoRec.demonstrationName = k_DemoName;
+            demoRec.InitializeDemoStore(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirecory));
             Assert.IsTrue(fileSystem.FileExists(k_DemoDirecory + k_DemoName + k_ExtensionType));
@@ -65,8 +68,13 @@ namespace MLAgents.Tests
                 storedVectorActions = new[] { 0f, 1f },
             };
 
-            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
-            demoStore.Close();
+            var expInfo = new ExperienceInfo
+            {
+                agentInfo = agentInfo,
+                sensors = new System.Collections.Generic.List<ISensor>()
+            };
+            demoRec.GetExperienceWriter().Record(expInfo);
+            demoRec.Close();
         }
 
         public class ObservationAgent : TestAgent
