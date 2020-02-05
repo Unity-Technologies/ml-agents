@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
+import abc
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
@@ -104,6 +105,10 @@ class TFPolicy(Policy):
                 )
         self._initialize_tensorflow_references()
         self.load = load
+
+    @abc.abstractmethod
+    def create_tf_graph(self):
+        pass
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -391,26 +396,27 @@ class TFPolicy(Policy):
         return self.vec_obs_size > 0
 
     def _initialize_tensorflow_references(self):
-        with self.graph.as_default():
-            self.value_heads: Dict[str, tf.Tensor] = {}
-            self.normalization_steps: Optional[tf.Variable] = None
-            self.running_mean: Optional[tf.Variable] = None
-            self.running_variance: Optional[tf.Variable] = None
-            self.update_normalization_op: Optional[tf.Operation] = None
-            self.value: Optional[tf.Tensor] = None
-            self.all_log_probs: tf.Tensor = None
-            self.log_probs: Optional[tf.Tensor] = None
-            self.entropy: Optional[tf.Tensor] = None
-            self.action_oh: tf.Tensor = None
-            self.output_pre: Optional[tf.Tensor] = None
-            self.output: Optional[tf.Tensor] = None
-            self.selected_actions: Optional[tf.Tensor] = None
-            self.action_holder: Optional[tf.Tensor] = None
-            self.action_masks: Optional[tf.Tensor] = None
-            self.prev_action: Optional[tf.Tensor] = None
-            self.memory_in: Optional[tf.Tensor] = None
-            self.memory_out: Optional[tf.Tensor] = None
+        self.value_heads: Dict[str, tf.Tensor] = {}
+        self.normalization_steps: Optional[tf.Variable] = None
+        self.running_mean: Optional[tf.Variable] = None
+        self.running_variance: Optional[tf.Variable] = None
+        self.update_normalization_op: Optional[tf.Operation] = None
+        self.value: Optional[tf.Tensor] = None
+        self.all_log_probs: tf.Tensor = None
+        self.log_probs: Optional[tf.Tensor] = None
+        self.entropy: Optional[tf.Tensor] = None
+        self.action_oh: tf.Tensor = None
+        self.output_pre: Optional[tf.Tensor] = None
+        self.output: Optional[tf.Tensor] = None
+        self.selected_actions: Optional[tf.Tensor] = None
+        self.action_holder: Optional[tf.Tensor] = None
+        self.action_masks: Optional[tf.Tensor] = None
+        self.prev_action: Optional[tf.Tensor] = None
+        self.memory_in: Optional[tf.Tensor] = None
+        self.memory_out: Optional[tf.Tensor] = None
 
+    def create_input_placeholders(self):
+        with self.graph.as_default():
             self.global_step, self.increment_step_op, self.steps_to_increment = (
                 LearningModel.create_global_steps()
             )
