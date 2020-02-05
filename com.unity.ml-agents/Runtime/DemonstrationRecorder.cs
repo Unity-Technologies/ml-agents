@@ -16,7 +16,6 @@ namespace MLAgents
         public bool record;
         public string demonstrationName;
         Agent m_RecordingAgent;
-        string m_FilePath;
         DemonstrationStore m_DemoStore;
         public const int MaxNameLength = 16;
 

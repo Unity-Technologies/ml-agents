@@ -16,7 +16,6 @@ namespace MLAgents
         const string k_DemoDirectory = "Assets/Demonstrations/";
         const string k_ExtensionType = ".demo";
 
-        string m_FilePath;
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
         float m_CumulativeReward;
@@ -64,16 +63,16 @@ namespace MLAgents
         {
             // Creates demonstration file.
             var literalName = demonstrationName;
-            m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
+            var filePath = k_DemoDirectory + literalName + k_ExtensionType;
             var uniqueNameCounter = 0;
-            while (m_FileSystem.File.Exists(m_FilePath))
+            while (m_FileSystem.File.Exists(filePath))
             {
                 literalName = demonstrationName + "_" + uniqueNameCounter;
-                m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
+                filePath = k_DemoDirectory + literalName + k_ExtensionType;
                 uniqueNameCounter++;
             }
 
-            m_Writer = m_FileSystem.File.Create(m_FilePath);
+            m_Writer = m_FileSystem.File.Create(filePath);
             m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
             var metaProto = m_MetaData.ToProto();
             metaProto.WriteDelimitedTo(m_Writer);
