@@ -485,9 +485,7 @@ class SACOptimizer(TFOptimizer):
         LOGGER.debug("q_vars")
         self.print_all_vars(self.policy_network.q_vars)
         LOGGER.debug("policy_vars")
-        policy_vars = tf.get_collection(
-            tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
-        )
+        policy_vars = self.policy.get_trainable_variables()
         self.print_all_vars(policy_vars)
 
         self.target_init_op = [

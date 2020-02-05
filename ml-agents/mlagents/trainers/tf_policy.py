@@ -107,7 +107,18 @@ class TFPolicy(Policy):
         self.load = load
 
     @abc.abstractmethod
+    def get_trainable_variables(self) -> List[tf.Variable]:
+        """
+        Returns a List of the trainable variables in this policy. if create_tf_graph hasn't been called,
+        returns empty list.
+        """
+        pass
+
+    @abc.abstractmethod
     def create_tf_graph(self):
+        """
+        Builds the tensorflow graph needed for this policy.
+        """
         pass
 
     def _initialize_graph(self):
