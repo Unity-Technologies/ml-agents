@@ -11,6 +11,7 @@ namespace MLAgents
     /// A component that when attached to an Agent will automatically request decisions from it
     /// at regular intervals.
     /// </summary>
+    [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
     public class DecisionRequester : MonoBehaviour
     {
         [Range(1, 20)]
