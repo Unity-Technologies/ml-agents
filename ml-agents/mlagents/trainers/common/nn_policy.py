@@ -294,16 +294,17 @@ class NNPolicy(TFPolicy):
             hidden_policy = hidden_stream
 
         policy_branches = []
-        for size in self.act_size:
-            policy_branches.append(
-                tf.layers.dense(
-                    hidden_policy,
-                    size,
-                    activation=None,
-                    use_bias=False,
-                    kernel_initializer=LearningModel.scaled_init(0.01),
+        with tf.variable_scope("policy"):
+            for size in self.act_size:
+                policy_branches.append(
+                    tf.layers.dense(
+                        hidden_policy,
+                        size,
+                        activation=None,
+                        use_bias=False,
+                        kernel_initializer=LearningModel.scaled_init(0.01),
+                    )
                 )
-            )
 
         raw_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
 
