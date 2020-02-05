@@ -39,7 +39,7 @@ namespace MLAgents
 
         void Update()
         {
-            if (record && m_DemoStore == null)
+            if (record)
             {
                 InitializeDemoStore();
             }

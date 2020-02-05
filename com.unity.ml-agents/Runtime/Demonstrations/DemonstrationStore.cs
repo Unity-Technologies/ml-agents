@@ -7,7 +7,7 @@ using MLAgents.Sensor;
 namespace MLAgents
 {
     /// <summary>
-    /// Responsible for writing demonstration data to file.
+    /// Responsible for writing demonstration data to stream (usually a file stream).
     /// </summary>
     public class DemonstrationStore : IExperienceWriter
     {
@@ -18,13 +18,18 @@ namespace MLAgents
         float m_CumulativeReward;
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
+        /// <summary>
+        /// Create a DemonstrationStore that will write to the specified stream.
+        /// The stream must support writes and seeking.
+        /// </summary>
+        /// <param name="stream"></param>
         public DemonstrationStore(Stream stream)
         {
             m_Writer = stream;
         }
 
         /// <summary>
-        /// Initializes the Demonstration Store, and writes initial data.
+        /// Writes the initial data to the stream.
         /// </summary>
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
@@ -106,7 +111,5 @@ namespace MLAgents
         {
             m_MetaData.numberEpisodes += 1;
         }
-
-
     }
 }

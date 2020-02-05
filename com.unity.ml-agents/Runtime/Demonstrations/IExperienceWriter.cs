@@ -11,7 +11,9 @@ namespace MLAgents
 
     public interface IExperienceWriter
     {
-        // TODO Start() and Stop()
+        void Initialize(string demonstrationName, BrainParameters brainParameters, string brainName);
         void Record(ExperienceInfo expInfo);
+        // TODO implement IDisposable and rename to Dispose?
+        void Close();
     }
 }
