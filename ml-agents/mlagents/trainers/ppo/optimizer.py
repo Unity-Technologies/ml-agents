@@ -23,6 +23,9 @@ class PPOOptimizer(TFOptimizer):
         :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """
+        # Create the graph here to give more granular control of the TF graph to the Optimizer.
+        policy.create_tf_graph()
+
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):
                 super().__init__(policy, trainer_params)
@@ -275,7 +278,7 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def create_ppo_optimizer(self):
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate)
+        self.optimizer = self.create_tf_optimizer(self.learning_rate)
         self.grads = self.optimizer.compute_gradients(self.loss)
         self.update_batch = self.optimizer.minimize(self.loss)
 

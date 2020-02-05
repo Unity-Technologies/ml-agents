@@ -28,6 +28,7 @@ class NNPolicy(TFPolicy):
         load: bool,
         tanh_squash: bool = False,
         resample: bool = False,
+        create_tf_graph: bool = True,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -41,32 +42,48 @@ class NNPolicy(TFPolicy):
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
+        super().__init__(seed, brain, trainer_params, load)
+
+        self.stats_name_to_update_name = {
+            "Losses/Value Loss": "value_loss",
+            "Losses/Policy Loss": "policy_loss",
+        }
+
+        self.optimizer: Optional[tf.train.AdamOptimizer] = None
+        self.grads = None
+        self.update_batch: Optional[tf.Operation] = None
+        num_layers = trainer_params["num_layers"]
+        self.h_size = trainer_params["hidden_units"]
+        if num_layers < 1:
+            num_layers = 1
+        self.num_layers = num_layers
+        self.vis_encode_type = EncoderType(
+            trainer_params.get("vis_encode_type", "simple")
+        )
+        self.tanh_squash = tanh_squash
+        self.resample = resample
+        if create_tf_graph:
+            self.create_tf_graph()
+
+    def create_tf_graph(self):
+        """
+        Builds the tensorflow graph needed for this policy.
+        """
         with tf.variable_scope("policy/"):
-            super().__init__(seed, brain, trainer_params, load)
-
-            self.stats_name_to_update_name = {
-                "Losses/Value Loss": "value_loss",
-                "Losses/Policy Loss": "policy_loss",
-            }
-
-            self.optimizer: Optional[tf.train.AdamOptimizer] = None
-            self.grads = None
-            self.update_batch: Optional[tf.Operation] = None
-            num_layers = trainer_params["num_layers"]
-            h_size = trainer_params["hidden_units"]
-            if num_layers < 1:
-                num_layers = 1
-            vis_encode_type = EncoderType(
-                trainer_params.get("vis_encode_type", "simple")
-            )
-
+            self.create_input_placeholders()
             with self.graph.as_default():
                 if self.use_continuous_act:
                     self.create_cc_actor(
-                        h_size, num_layers, vis_encode_type, tanh_squash, resample
+                        self.h_size,
+                        self.num_layers,
+                        self.vis_encode_type,
+                        self.tanh_squash,
+                        self.resample,
                     )
                 else:
-                    self.create_dc_actor(h_size, num_layers, vis_encode_type)
+                    self.create_dc_actor(
+                        self.h_size, self.num_layers, self.vis_encode_type
+                    )
 
         self.inference_dict: Dict[str, tf.Tensor] = {
             "action": self.output,

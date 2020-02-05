@@ -158,6 +158,9 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
+    def create_tf_optimizer(self, learning_rate, name="Adam"):
+        return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
+
     def _execute_model(self, feed_dict, out_dict):
         """
         Executes model.

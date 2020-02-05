@@ -42,6 +42,9 @@ class SACOptimizer(TFOptimizer):
         :param tau: Strength of soft-Q update.
         :param m_size: Size of brain memory.
         """
+        # Create the graph here to give more granular control of the TF graph to the Optimizer.
+        policy.create_tf_graph()
+
         with policy.graph.as_default():
             with tf.variable_scope(""):
                 super().__init__(policy, trainer_params)
@@ -457,13 +460,13 @@ class SACOptimizer(TFOptimizer):
         Creates the Adam optimizers and update ops for SAC, including
         the policy, value, and entropy updates, as well as the target network update.
         """
-        policy_optimizer = tf.train.AdamOptimizer(
+        policy_optimizer = self.create_tf_optimizer(
             learning_rate=self.learning_rate, name="sac_policy_opt"
         )
-        entropy_optimizer = tf.train.AdamOptimizer(
+        entropy_optimizer = self.create_tf_optimizer(
             learning_rate=self.learning_rate, name="sac_entropy_opt"
         )
-        value_optimizer = tf.train.AdamOptimizer(
+        value_optimizer = self.create_tf_optimizer(
             learning_rate=self.learning_rate, name="sac_value_opt"
         )
 

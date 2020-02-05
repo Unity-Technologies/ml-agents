@@ -221,6 +221,7 @@ class SACTrainer(RLTrainer):
             self.load,
             tanh_squash=True,
             resample=True,
+            create_tf_graph=False,
         )
         for _reward_signal in policy.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)

@@ -233,6 +233,7 @@ class PPOTrainer(RLTrainer):
                 self.trainer_parameters,
                 self.is_training,
                 self.load,
+                create_tf_graph=False,  # We will create the TF graph in the Optimizer
             )
 
         return policy
