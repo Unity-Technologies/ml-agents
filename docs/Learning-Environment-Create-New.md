@@ -68,7 +68,7 @@ agent to seek, and a Sphere to represent the Agent itself.
 3. Select the Floor Plane to view its properties in the Inspector window.
 4. Set Transform to Position = (0, 0, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Plane's Mesh Renderer, expand the Materials property and change the
-    default-material to *LightGridFloorSquare* (or any suitable material of your choice).
+    default-material to *GridMatFloor* (or any suitable material of your choice).
 
 (To set a new material, click the small circle icon next to the current material
 name. This opens the **Object Picker** dialog so that you can choose a
@@ -83,7 +83,7 @@ different material from the list of all materials currently in the project.)
 3. Select the Target Cube to view its properties in the Inspector window.
 4. Set Transform to Position = (3, 0.5, 3), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Cube's Mesh Renderer, expand the Materials property and change the
-    default-material to *Block*.
+    default-material to *AgentBlue*.
 
 ![The Target Cube in the Inspector window](images/mlagents-NewTutBlock.png)
 
@@ -94,7 +94,7 @@ different material from the list of all materials currently in the project.)
 3. Select the RollerAgent Sphere to view its properties in the Inspector window.
 4. Set Transform to Position = (0, 0.5, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 5. On the Sphere's Mesh Renderer, expand the Materials property and change the
-    default-material to *CheckerSquare*.
+    default-material to *Checkers_Ball*.
 6. Click **Add Component**.
 7. Add the Physics/Rigidbody component to the Sphere.
 

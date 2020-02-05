@@ -11,6 +11,7 @@ The versions can be found in
 ## Migrating from 0.13 to latest
 
 ### Important changes
+* The `UnitySDK` folder has been split into a unity package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Intallation Guide](Installation.md) to get up and running with this new repo structure.
 * Several changes were made to how agents are reset and marked as done:
   * Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
   * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
@@ -31,6 +32,7 @@ The versions can be found in
 * RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
+* Follow the instructions on how to install the `com.unity.ml-agents` package into your project in the [Installation Guide](Installation.md).
 * If your Agent implemented `AgentOnDone` and did not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
 * If you give your Agent a reward or penalty at the end of an episode (e.g. for reaching a goal or falling off of a platform), make sure you call `AddReward()` or `SetReward()` *before* calling `Done()`. Previously, the order didn't matter.
 * If you were not using `On Demand Decision` for your Agent, you **must** add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.
