@@ -398,7 +398,7 @@ class TFPolicy(Policy):
         outputs = TFPolicy._get_output_node_names(frozen_graph_def)
         logger.info(f"onnx export - inputs:{inputs} outputs:{outputs}")
 
-        #frozen_graph_def = self._fixup_conv_transposes(vis_inputs, frozen_graph_def)
+        frozen_graph_def = self._fixup_conv_transposes(vis_inputs, frozen_graph_def)
 
         frozen_graph_def = tf_optimize(
             inputs, outputs, frozen_graph_def, fold_constant=True
@@ -410,6 +410,7 @@ class TFPolicy(Policy):
             g = process_tf_graph(
                 tf_graph,
                 input_names=inputs,
+                #inputs_as_nchw=vis_inputs,
                 output_names=outputs,
                 opset=TFPolicy.ONNX_OPSET,
             )
@@ -486,14 +487,19 @@ class TFPolicy(Policy):
                 print(f"permuting dimensions for {node.name}")
                 node_dim = copy.deepcopy(node.attr['shape'])
                 dim = len(node_dim.shape.dim)
-                if dim > 0:
+                if dim == 4:
                     node.attr['shape'].shape.dim[0].size = node_dim.shape.dim[0].size if dim > 0 else -1
-                if dim > 1:
                     node.attr['shape'].shape.dim[1].size = node_dim.shape.dim[3].size if dim > 3 else -1
-                if dim > 2:
                     node.attr['shape'].shape.dim[2].size = node_dim.shape.dim[1].size if dim > 1 else -1
-                if dim > 3:
                     node.attr['shape'].shape.dim[3].size = node_dim.shape.dim[2].size if dim > 2 else -1
+
+            if node.op == 'Conv2D':
+                node.attr['data_format'].s = str.encode("NCHW")
+                strides = copy.deepcopy(node.attr['strides'])
+                node.attr['strides'].list.i[0] = strides.list.i[0]
+                node.attr['strides'].list.i[1] = strides.list.i[3]
+                node.attr['strides'].list.i[2] = strides.list.i[1]
+                node.attr['strides'].list.i[3] = strides.list.i[2]
 
             # ONNX, bias is merged into Conv2D, so need to change it's layout
             if node.op == 'Conv2D' or (node.op == 'BiasAdd' and previous_op == 'Conv2D'):
