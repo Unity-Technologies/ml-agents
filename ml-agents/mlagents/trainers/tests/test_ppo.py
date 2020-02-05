@@ -6,19 +6,15 @@ from mlagents.tf_utils import tf
 
 import yaml
 
-from mlagents.trainers.ppo.models import PPOModel
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.models import EncoderType, LearningModel
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.mock_communicator import MockCommunicator
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
 
 @pytest.fixture
@@ -60,31 +56,6 @@ VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 32
 NUM_AGENTS = 12
-
-
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_policy_evaluate(mock_communicator, mock_launcher, dummy_config):
-    tf.reset_default_graph()
-    mock_communicator.return_value = MockCommunicator(
-        discrete_action=False, visual_inputs=0
-    )
-    env = UnityEnvironment(" ")
-    env.reset()
-    brain_name = env.get_agent_groups()[0]
-    batched_step = env.get_step_result(brain_name)
-    brain_params = group_spec_to_brain_parameters(
-        brain_name, env.get_agent_group_spec(brain_name)
-    )
-
-    trainer_parameters = dummy_config
-    model_path = brain_name
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    policy = NNPolicy(0, brain_params, trainer_parameters, False, False)
-    run_out = policy.evaluate(batched_step, list(batched_step.agent_id))
-    assert run_out["action"].shape == (3, 2)
-    env.close()
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
@@ -132,177 +103,6 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     batched_values = policy.get_batched_value_estimates(agentbuffer)
     for values in batched_values.values():
         assert len(values) == 15
-
-
-def test_ppo_model_cc_vector():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            model = PPOModel(
-                make_brain_parameters(discrete_action=False, visual_inputs=0)
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-            ]
-            feed_dict = {
-                model.batch_size: 2,
-                model.sequence_length: 1,
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.epsilon: np.array([[0, 1], [2, 3]]),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
-
-
-def test_ppo_model_cc_visual():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            model = PPOModel(
-                make_brain_parameters(discrete_action=False, visual_inputs=2)
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-            ]
-            feed_dict = {
-                model.batch_size: 2,
-                model.sequence_length: 1,
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
-                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
-                model.epsilon: np.array([[0, 1], [2, 3]], dtype=np.float32),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
-
-
-def test_ppo_model_dc_visual():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            model = PPOModel(
-                make_brain_parameters(discrete_action=True, visual_inputs=2)
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.all_log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-            ]
-            feed_dict = {
-                model.batch_size: 2,
-                model.sequence_length: 1,
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.visual_in[0]: np.ones([2, 40, 30, 3], dtype=np.float32),
-                model.visual_in[1]: np.ones([2, 40, 30, 3], dtype=np.float32),
-                model.action_masks: np.ones([2, 2], dtype=np.float32),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
-
-
-def test_ppo_model_dc_vector():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            model = PPOModel(
-                make_brain_parameters(discrete_action=True, visual_inputs=0)
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.all_log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-            ]
-            feed_dict = {
-                model.batch_size: 2,
-                model.sequence_length: 1,
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([2, 2], dtype=np.float32),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
-
-
-def test_ppo_model_dc_vector_rnn():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            memory_size = 128
-            model = PPOModel(
-                make_brain_parameters(discrete_action=True, visual_inputs=0),
-                use_recurrent=True,
-                m_size=memory_size,
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.all_log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-                model.memory_out,
-            ]
-            feed_dict = {
-                model.batch_size: 1,
-                model.sequence_length: 2,
-                model.prev_action: [[0], [0]],
-                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.action_masks: np.ones([1, 2], dtype=np.float32),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
-
-
-def test_ppo_model_cc_vector_rnn():
-    tf.reset_default_graph()
-    with tf.Session() as sess:
-        with tf.variable_scope("FakeGraphScope"):
-            memory_size = 128
-            model = PPOModel(
-                make_brain_parameters(discrete_action=False, visual_inputs=0),
-                use_recurrent=True,
-                m_size=memory_size,
-            )
-            init = tf.global_variables_initializer()
-            sess.run(init)
-
-            run_list = [
-                model.output,
-                model.all_log_probs,
-                model.value,
-                model.entropy,
-                model.learning_rate,
-                model.memory_out,
-            ]
-            feed_dict = {
-                model.batch_size: 1,
-                model.sequence_length: 2,
-                model.memory_in: np.zeros((1, memory_size), dtype=np.float32),
-                model.vector_in: np.array([[1, 2, 3, 1, 2, 3], [3, 4, 5, 3, 4, 5]]),
-                model.epsilon: np.array([[0, 1]]),
-            }
-            sess.run(run_list, feed_dict=feed_dict)
 
 
 def test_rl_functions():
