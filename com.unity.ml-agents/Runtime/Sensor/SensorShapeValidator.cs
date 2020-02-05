@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    public class SensorShapeValidator
+    internal class SensorShapeValidator
     {
         private List<int[]> m_SensorShapes;
 
