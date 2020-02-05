@@ -69,9 +69,9 @@ class NNPolicy(TFPolicy):
         """
         Builds the tensorflow graph needed for this policy.
         """
-        with tf.variable_scope("policy/"):
-            self.create_input_placeholders()
-            with self.graph.as_default():
+        with self.graph.as_default():
+            with tf.variable_scope("policy"):
+                self.create_input_placeholders()
                 if self.use_continuous_act:
                     self.create_cc_actor(
                         self.h_size,
@@ -146,7 +146,6 @@ class NNPolicy(TFPolicy):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["policy/"],
         )[0]
 
         if self.use_recurrent:
@@ -168,6 +167,7 @@ class NNPolicy(TFPolicy):
             hidden_policy,
             self.act_size[0],
             activation=None,
+            name="mu",
             kernel_initializer=LearningModel.scaled_init(0.01),
             reuse=tf.AUTO_REUSE,
         )
@@ -253,7 +253,6 @@ class NNPolicy(TFPolicy):
             h_size,
             num_layers,
             vis_encode_type,
-            stream_scopes=["policy/"],
         )[0]
 
         if self.use_recurrent:
