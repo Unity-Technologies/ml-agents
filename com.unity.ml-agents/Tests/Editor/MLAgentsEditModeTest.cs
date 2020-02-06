@@ -263,11 +263,11 @@ namespace MLAgents.Tests
         public void TestAcademyAutostep()
         {
             var aca = Academy.Instance;
-            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
-            aca.DisableAutomaticStepping(true);
-            Assert.IsFalse(aca.IsAutomaticSteppingEnabled);
-            aca.EnableAutomaticStepping();
-            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
+            Assert.IsTrue(aca.AutomaticSteppingEnabled);
+            aca.AutomaticSteppingEnabled = false;
+            Assert.IsFalse(aca.AutomaticSteppingEnabled);
+            aca.AutomaticSteppingEnabled = true;
+            Assert.IsTrue(aca.AutomaticSteppingEnabled);
         }
 
         [Test]

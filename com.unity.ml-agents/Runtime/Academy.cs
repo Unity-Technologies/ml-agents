@@ -184,7 +184,7 @@ namespace MLAgents
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
-        void DisableAutomaticStepping(bool destroyImmediate = false)
+        public void DisableAutomaticStepping(bool destroyImmediate = false)
         {
             if (m_FixedUpdateStepper == null)
             {
