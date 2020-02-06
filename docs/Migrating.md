@@ -7,8 +7,15 @@ The versions can be found in
 
 # Migrating
 
+## Migrating from 0.14 to latest
 
-## Migrating from 0.13 to latest
+### Important changes
+* The `Monitor` class has been removed. (It was prone to errors during testing)
+
+### Steps to Migrate
+
+
+## Migrating from 0.13 to 0.14
 
 ### Important changes
 * The `UnitySDK` folder has been split into a Unity Package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Installation Guide](Installation.md) to get up and running with this new repo structure.
