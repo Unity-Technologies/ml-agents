@@ -183,5 +183,6 @@ class TFOptimizer(Optimizer, abc.ABC):  # pylint: disable=W0223
 
     def _make_zero_mem(self, m_size: int, length: int) -> List[np.ndarray]:
         return [
-            np.zeros((m_size)) for i in range(0, length, self.policy.sequence_length)
+            np.zeros((m_size), dtype=np.float32)
+            for i in range(0, length, self.policy.sequence_length)
         ]
