@@ -82,7 +82,7 @@ environment, then this parameter will be ignored.  Within each `Reset Parameter`
 
     * `sampler-type-sub-arguments` - Specify the sub-arguments depending on the `sampler-type`.
     In the example above, this would correspond to the `intervals`
-    under the `sampler-type` `"multirange_uniform"` for the `Reset Parameter` called gravity`.
+    under the `sampler-type` `"multirange_uniform"` for the `Reset Parameter` called `gravity`.
     The key name should match the name of the corresponding argument in the sampler definition.
     (See below)
 
