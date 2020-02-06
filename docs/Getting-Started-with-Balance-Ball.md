@@ -105,7 +105,7 @@ This means that the feature
 vector containing the Agent's observations contains eight elements: the `x` and
 `z` components of the agent cube's rotation and the `x`, `y`, and `z` components
 of the ball's relative position and velocity. (The observation values are
-defined in the Agent's `CollectObservations(VectorSensor sensor)` function.)
+defined in the Agent's `CollectObservations(VectorSensor sensor)` method.)
 
 #### Behavior Parameters : Vector Action Space
 
