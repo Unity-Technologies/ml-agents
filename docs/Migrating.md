@@ -10,7 +10,7 @@ The versions can be found in
 ## Migrating from 0.14 to latest
 
 ### Important changes
-* The `Monitor` class has been removed. (It was prone to errors during testing)
+* The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
 
 ### Steps to Migrate
 
