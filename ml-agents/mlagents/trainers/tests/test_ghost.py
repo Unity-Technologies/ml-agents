@@ -75,8 +75,10 @@ def test_load_and_set(dummy_config, use_discrete):
     )
     trainer.seed = 1
     policy = trainer.create_policy(mock_brain)
+    policy.create_tf_graph()
     trainer.seed = 20  # otherwise graphs are the same
     to_load_policy = trainer.create_policy(mock_brain)
+    to_load_policy.create_tf_graph()
     to_load_policy.init_load_weights()
 
     weights = policy.get_weights()

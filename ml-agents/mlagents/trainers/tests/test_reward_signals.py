@@ -112,7 +112,9 @@ def create_optimizer_mock(
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn
-    policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
+    policy = NNPolicy(
+        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+    )
     if trainer_parameters["trainer"] == "sac":
         optimizer = SACOptimizer(policy, trainer_parameters)
     else:

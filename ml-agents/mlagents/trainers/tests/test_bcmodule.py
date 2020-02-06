@@ -61,6 +61,7 @@ def create_bc_module(mock_brain, trainer_config, use_rnn, demo_file, tanhresampl
             default_num_epoch=3,
             **trainer_config["behavioral_cloning"],
         )
+    policy.initialize_or_load()  # Normally the optimizer calls this after the BCModule is created
     return bc_module
 
 

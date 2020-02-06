@@ -7,6 +7,7 @@ from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -36,7 +37,7 @@ def dummy_config():
         summary_freq: 1000
         use_recurrent: false
         normalize: true
-        memory_size: 8
+        memory_size: 10
         curiosity_strength: 0.0
         curiosity_enc_size: 1
         summary_path: test
@@ -52,8 +53,50 @@ def dummy_config():
 VECTOR_ACTION_SPACE = [2]
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
-BUFFER_INIT_SAMPLES = 32
+BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
+
+
+def create_ppo_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
+    mock_brain = mb.setup_mock_brain(
+        use_discrete,
+        use_visual,
+        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+        discrete_action_space=DISCRETE_ACTION_SPACE,
+    )
+
+    trainer_parameters = dummy_config
+    model_path = "testmodel"
+    trainer_parameters["model_path"] = model_path
+    trainer_parameters["keep_checkpoints"] = 3
+    trainer_parameters["use_recurrent"] = use_rnn
+    policy = NNPolicy(
+        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+    )
+    optimizer = PPOOptimizer(policy, trainer_parameters)
+    return optimizer
+
+
+@pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
+@pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
+@pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
+def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
+    # Test evaluate
+    tf.reset_default_graph()
+    optimizer = create_ppo_optimizer_mock(
+        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
+    )
+    # Test update
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
+    # Mock out reward signal eval
+    update_buffer["advantages"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // dummy_config["sequence_length"],
+    )
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
@@ -71,7 +114,10 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    policy = NNPolicy(0, brain_params, dummy_config, False, False)
+    policy = NNPolicy(
+        0, brain_params, dummy_config, False, False, create_tf_graph=False
+    )
+    optimizer = PPOOptimizer(policy, dummy_config)
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -80,27 +126,28 @@ def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config)
         num_vis_obs=0,
         action_space=[2],
     )
-    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=False)
+    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+        trajectory.to_agentbuffer(), trajectory.next_obs, done=False
+    )
     for key, val in run_out.items():
         assert type(key) is str
-        assert type(val) is float
+        assert len(val) == 15
 
-    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
-    for key, val in run_out.items():
+    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+        trajectory.to_agentbuffer(), trajectory.next_obs, done=True
+    )
+    for key, val in final_value_out.items():
         assert type(key) is str
         assert val == 0.0
 
     # Check if we ignore terminal states properly
-    policy.reward_signals["extrinsic"].use_terminal_states = False
-    run_out = policy.get_value_estimates(trajectory.next_obs, "test_agent", done=True)
-    for key, val in run_out.items():
+    optimizer.reward_signals["extrinsic"].use_terminal_states = False
+    run_out, final_value_out = optimizer.get_trajectory_value_estimates(
+        trajectory.to_agentbuffer(), trajectory.next_obs, done=False
+    )
+    for key, val in final_value_out.items():
         assert type(key) is str
         assert val != 0.0
-
-    agentbuffer = trajectory.to_agentbuffer()
-    batched_values = policy.get_batched_value_estimates(agentbuffer)
-    for values in batched_values.values():
-        assert len(values) == 15
 
 
 def test_rl_functions():
@@ -112,8 +159,13 @@ def test_rl_functions():
     )
 
 
-def test_trainer_increment_step(dummy_config):
+@mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
+def test_trainer_increment_step(ppo_optimizer, dummy_config):
     trainer_params = dummy_config
+    mock_optimizer = mock.Mock()
+    mock_optimizer.reward_signals = {}
+    ppo_optimizer.return_value = mock_optimizer
+
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
@@ -243,10 +295,15 @@ def test_process_trajectory(dummy_config):
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
-def test_add_get_policy(dummy_config):
+@mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
+def test_add_get_policy(ppo_optimizer, dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
+    mock_optimizer = mock.Mock()
+    mock_optimizer.reward_signals = {}
+    ppo_optimizer.return_value = mock_optimizer
+
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
