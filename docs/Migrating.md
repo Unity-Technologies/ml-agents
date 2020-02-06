@@ -8,8 +8,12 @@ The versions can be found in
 # Migrating
 
 ## Migrating from 0.14 to latest
+
 ### Important changes
+* The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
+
 ### Steps to Migrate
+
 
 ## Migrating from 0.13 to 0.14
 
