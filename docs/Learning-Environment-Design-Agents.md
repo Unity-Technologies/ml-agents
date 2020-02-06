@@ -79,7 +79,7 @@ uses visual observations (unless it also uses vector observations).
 For agents using a continuous state space, you create a feature vector to
 represent the agent's observation at each step of the simulation. The Policy
 class calls the `CollectObservations(VectorSensor sensor)` method of each Agent. Your
-implementation of this function must call `sensor.AddObservation` to add vector
+implementation of this function must call `VectorSensor.AddObservation` to add vector
 observations.
 
 The observation must include all the information an agents needs to accomplish
@@ -129,7 +129,7 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-The `sensor.AddObservation` method provides a number of overloads for adding common types
+The `VectorSensor.AddObservation` method provides a number of overloads for adding common types
 of data to your observation vector. You can add Integers and booleans directly to
 the observation vector, as well as some common Unity data types such as `Vector2`,
 `Vector3`, and `Quaternion`.
@@ -153,7 +153,7 @@ public override void CollectObservations(VectorSensor sensor)
 }
 ```
 
-`sensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp

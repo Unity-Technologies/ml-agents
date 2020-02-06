@@ -508,30 +508,31 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Collects the (vector, visual) observations of the agent.
+        /// Collects the vector observations of the agent.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
         /// <remarks>
-        /// Simply, an agents observation is any environment information that helps
-        /// the Agent acheive its goal. For example, for a fighting Agent, its
+        /// An agents observation is any environment information that helps
+        /// the Agent achieve its goal. For example, for a fighting Agent, its
         /// observation could include distances to friends or enemies, or the
         /// current level of ammunition at its disposal.
         /// Recall that an Agent may attach vector or visual observations.
-        /// Vector observations are added by calling the provided helper methods:
-        ///     - <see cref="AddVectorObs(int)"/>
-        ///     - <see cref="AddVectorObs(float)"/>
-        ///     - <see cref="AddVectorObs(Vector3)"/>
-        ///     - <see cref="AddVectorObs(Vector2)"/>
+        /// Vector observations are added by calling the provided helper methods
+        /// on the VectorSensor input:
+        ///     - <see cref="AddObservation(int)"/>
+        ///     - <see cref="AddObservation(float)"/>
+        ///     - <see cref="AddObservation(Vector3)"/>
+        ///     - <see cref="AddObservation(Vector2)"/>
         ///     - <see>
         ///         <cref>AddVectorObs(float[])</cref>
         ///       </see>
         ///     - <see>
         ///         <cref>AddVectorObs(List{float})</cref>
         ///      </see>
-        ///     - <see cref="AddVectorObs(Quaternion)"/>
-        ///     - <see cref="AddVectorObs(bool)"/>
-        ///     - <see cref="AddVectorObs(int, int)"/>
+        ///     - <see cref="AddObservation(Quaternion)"/>
+        ///     - <see cref="AddObservation(bool)"/>
+        ///     - <see cref="AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation

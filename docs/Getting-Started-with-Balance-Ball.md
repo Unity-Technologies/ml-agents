@@ -78,7 +78,7 @@ The Ball3DAgent subclass defines the following methods:
   collecting the Agent's observations of the environment. Since the Behavior
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
-  `sensor.AddObservation()` such that vector size adds up to 8.
+  `VectorSensor.AddObservation()` such that vector size adds up to 8.
 * agent.AgentAction() — Called every simulation step. Receives the action chosen
   by the Agent. The vector action spaces result in a
   small change in the agent cube's rotation at each step. The `AgentAction()` function
