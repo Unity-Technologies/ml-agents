@@ -17,6 +17,7 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
+from mlagents.serialization import export_policy_model, SerializationSettings
 from mlagents_envs.timers import hierarchical_timer
 
 LOGGER = logging.getLogger("mlagents.trainers")
@@ -192,7 +193,9 @@ class Trainer(abc.ABC):
         """
         Exports the model
         """
-        self.get_policy(name_behavior_id).export_model()
+        policy = self.get_policy(name_behavior_id)
+        settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+        export_policy_model(settings, policy)
 
     def _write_summary(self, step: int) -> None:
         """
