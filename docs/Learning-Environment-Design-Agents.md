@@ -164,7 +164,7 @@ public override void CollectObservations(VectorSensor sensor)
 {
     // The first argument is the selection index; the second is the
     // number of possibilities
-    sensor.AddObservation((int)currentItem, NUM_ITEM_TYPES);
+    sensor.AddOneHotObservation((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
