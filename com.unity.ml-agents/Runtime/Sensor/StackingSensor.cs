@@ -7,7 +7,7 @@ namespace MLAgents.Sensor
     ///   |  t = now - 3  |  t = now -3  |  t = now - 2  |  t = now  |
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// </summary>
-    public class StackingSensor : ISensor
+    internal class StackingSensor : ISensor
     {
         /// <summary>
         /// The wrapped sensor.

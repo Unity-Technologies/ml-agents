@@ -14,7 +14,7 @@ namespace MLAgents
 
         readonly BrainParameters m_BrainParameters;
 
-        public ActionMasker(BrainParameters brainParameters)
+        internal ActionMasker(BrainParameters brainParameters)
         {
             m_BrainParameters = brainParameters;
         }

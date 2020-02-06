@@ -616,6 +616,14 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Returns the last action that was decided on by the Agent (returns null if no decision has been made)
+        /// </summary>
+        public float[] GetAction()
+        {
+        	return m_Action.vectorActions;
+        }
+
+        /// <summary>
         /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
         /// This way, even if the agent was already in the process of reseting, it will be reset again
         /// and will not send a Done flag at the next step.
@@ -634,11 +642,6 @@ namespace MLAgents
             ResetData();
             m_StepCount = 0;
             AgentReset();
-        }
-
-        internal void UpdateAgentAction(AgentAction action)
-        {
-            m_Action = action;
         }
 
         /// <summary>
