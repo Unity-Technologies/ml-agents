@@ -13,7 +13,7 @@ The versions can be found in
 * The `CollectObservations()` virtual method now needs as input a `VectorSensor` sensor as argument.
 
 ### Steps to Migrate
-* Replace your implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
+* Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
 
 ## Migrating from 0.13 to 0.14
 
