@@ -1,8 +1,8 @@
 import copy
 import logging
-from typing import Any, List, Set, Tuple, NamedTuple
+from typing import Any, List, Set, Tuple, NamedTuple, Iterable
 
-from onnx import TensorProto, AttributeProto, NodeProto
+import onnx
 
 from tf2onnx.tfonnx import process_tf_graph, tf_optimize
 from tf2onnx import optimizer
@@ -33,14 +33,10 @@ POSSIBLE_OUTPUT_NODES = frozenset(
 )
 
 MODEL_CONSTANTS = frozenset(
-    [
-        "action_output_shape",
-        "is_continuous_control",
-        "memory_size",
-        "version_number",
-    ]
+    ["action_output_shape", "is_continuous_control", "memory_size", "version_number"]
 )
 VISUAL_OBSERVATION_PREFIX = "visual_observation_"
+
 
 class SerializationSettings(NamedTuple):
     model_path: str
@@ -50,7 +46,7 @@ class SerializationSettings(NamedTuple):
     onnx_opset: int = 8
 
 
-def export_policy_model(settings: SerializationSettings, policy: TFPolicy):
+def export_policy_model(settings: SerializationSettings, policy: TFPolicy) -> None:
     """
     Exports latest saved model to .nn format for Unity embedding.
     """
@@ -59,18 +55,23 @@ def export_policy_model(settings: SerializationSettings, policy: TFPolicy):
     frozen_graph_def_path = settings.model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:
         f.write(frozen_graph_def.SerializeToString())
-    tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
-    logger.info(f"Exported {settings.model_path}.nn file")
+
+    if settings.convert_to_barracuda:
+        tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
+        logger.info(f"Exported {settings.model_path}.nn file")
 
     # Save to onnx too
-    onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
-    onnx_output_path = settings.model_path + "_onnx.onnx"
-    with open(onnx_output_path, "wb") as f:
-        f.write(onnx_graph.SerializeToString())
-    logger.info(f"Converting to {onnx_output_path}")
+    if settings.convert_to_onnx:
+        onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
+        onnx_output_path = settings.model_path + "_onnx.onnx"
+        with open(onnx_output_path, "wb") as f:
+            f.write(onnx_graph.SerializeToString())
+        logger.info(f"Converting to {onnx_output_path}")
 
 
-def _make_frozen_graph(settings: SerializationSettings, policy: TFPolicy):
+def _make_frozen_graph(
+    settings: SerializationSettings, policy: TFPolicy
+) -> tf.GraphDef:
     with policy.graph.as_default():
         target_nodes = ",".join(_process_graph(settings, policy))
         graph_def = policy.graph.as_graph_def()
@@ -80,7 +81,9 @@ def _make_frozen_graph(settings: SerializationSettings, policy: TFPolicy):
     return output_graph_def
 
 
-def convert_frozen_to_onnx(settings: SerializationSettings, frozen_graph_def: tf.GraphDef):
+def convert_frozen_to_onnx(
+    settings: SerializationSettings, frozen_graph_def: tf.GraphDef
+) -> onnx.ModelProto:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
     # Some constants in the graph need to be read by the inference system.
@@ -112,7 +115,7 @@ def convert_frozen_to_onnx(settings: SerializationSettings, frozen_graph_def: tf
         g = process_tf_graph(
             tf_graph,
             input_names=inputs,
-            #inputs_as_nchw=vis_inputs,
+            # inputs_as_nchw=vis_inputs,
             output_names=outputs,
             opset=settings.onnx_opset,
         )
@@ -131,8 +134,8 @@ def convert_frozen_to_onnx(settings: SerializationSettings, frozen_graph_def: tf
 
 
 def _make_onnx_node_for_constant(name: str, value: int) -> Any:
-    tensor_value = TensorProto(
-        data_type=TensorProto.INT32,
+    tensor_value = onnx.TensorProto(
+        data_type=onnx.TensorProto.INT32,
         name=name,
         int32_data=[value],
         dims=[1, 1, 1, 1],
@@ -173,7 +176,9 @@ def _get_frozen_graph_node_names(frozen_graph_def: Any) -> Set[str]:
     return names
 
 
-def _fixup_conv_transposes(vis_input_names: List[str], frozen_graph: tf.GraphDef) -> tf.GraphDef:
+def _fixup_conv_transposes(
+    vis_input_names: Iterable[str], frozen_graph: tf.GraphDef
+) -> tf.GraphDef:
     # create new model and replace all data_format
     new_graph = tf.GraphDef()
     for n in frozen_graph.node:
@@ -181,52 +186,56 @@ def _fixup_conv_transposes(vis_input_names: List[str], frozen_graph: tf.GraphDef
         nn.CopyFrom(n)
 
     # remove :0 from the import names
-    vis_input_names = set(n.rsplit(":")[0] for n in vis_input_names)
+    vis_input_names = {n.rsplit(":")[0] for n in vis_input_names}
 
     previous_op = ""
     for node in new_graph.node:
         if node.name in vis_input_names:
             print(f"permuting dimensions for {node.name}")
-            node_dim = copy.deepcopy(node.attr['shape'])
+            node_dim = copy.deepcopy(node.attr["shape"])
             dim = len(node_dim.shape.dim)
             if dim == 4:
-                node.attr['shape'].shape.dim[0].size = node_dim.shape.dim[0].size if dim > 0 else -1
-                node.attr['shape'].shape.dim[1].size = node_dim.shape.dim[3].size if dim > 3 else -1
-                node.attr['shape'].shape.dim[2].size = node_dim.shape.dim[1].size if dim > 1 else -1
-                node.attr['shape'].shape.dim[3].size = node_dim.shape.dim[2].size if dim > 2 else -1
+                node.attr["shape"].shape.dim[0].size = (
+                    node_dim.shape.dim[0].size if dim > 0 else -1
+                )
+                node.attr["shape"].shape.dim[1].size = (
+                    node_dim.shape.dim[3].size if dim > 3 else -1
+                )
+                node.attr["shape"].shape.dim[2].size = (
+                    node_dim.shape.dim[1].size if dim > 1 else -1
+                )
+                node.attr["shape"].shape.dim[3].size = (
+                    node_dim.shape.dim[2].size if dim > 2 else -1
+                )
 
-        if node.op == 'Conv2D':
-            node.attr['data_format'].s = str.encode("NCHW")
-            strides = copy.deepcopy(node.attr['strides'])
-            node.attr['strides'].list.i[0] = strides.list.i[0]
-            node.attr['strides'].list.i[1] = strides.list.i[3]
-            node.attr['strides'].list.i[2] = strides.list.i[1]
-            node.attr['strides'].list.i[3] = strides.list.i[2]
+        if node.op == "Conv2D":
+            node.attr["data_format"].s = str.encode("NCHW")
+            strides = copy.deepcopy(node.attr["strides"])
+            node.attr["strides"].list.i[0] = strides.list.i[0]
+            node.attr["strides"].list.i[1] = strides.list.i[3]
+            node.attr["strides"].list.i[2] = strides.list.i[1]
+            node.attr["strides"].list.i[3] = strides.list.i[2]
 
         # ONNX, bias is merged into Conv2D, so need to change it's layout
-        if node.op == 'Conv2D' or (node.op == 'BiasAdd' and previous_op == 'Conv2D'):
+        if node.op == "Conv2D" or (node.op == "BiasAdd" and previous_op == "Conv2D"):
             print(f"setting {node.name} to NCHW")
-            node.attr['data_format'].s = str.encode("NCHW")
+            node.attr["data_format"].s = str.encode("NCHW")
 
-        if node.op == 'Conv1D' or (node.op == 'BiasAdd' and previous_op == 'Conv1D'):
+        if node.op == "Conv1D" or (node.op == "BiasAdd" and previous_op == "Conv1D"):
             print(f"setting {node.name} to NCHW")
-            node.attr['data_format'].s = str.encode("NCHW")
+            node.attr["data_format"].s = str.encode("NCHW")
 
         previous_op = node.op
     return new_graph
 
 
-def _process_graph(settings: SerializationSettings, policy: TFPolicy):
+def _process_graph(settings: SerializationSettings, policy: TFPolicy) -> List[str]:
     """
     Gets the list of the output nodes present in the graph for inference
     :return: list of node names
     """
     all_nodes = [x.name for x in policy.graph.as_graph_def().node]
-    nodes = [
-        x
-        for x in all_nodes
-        if x in POSSIBLE_OUTPUT_NODES | MODEL_CONSTANTS
-    ]
+    nodes = [x for x in all_nodes if x in POSSIBLE_OUTPUT_NODES | MODEL_CONSTANTS]
     logger.info("List of nodes to export for brain :" + settings.brain_name)
     for n in nodes:
         logger.info("\t" + n)

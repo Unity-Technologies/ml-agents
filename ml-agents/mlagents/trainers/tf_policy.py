@@ -1,13 +1,7 @@
-import copy
 import logging
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
-from onnx import TensorProto, AttributeProto, NodeProto
-
-from tf2onnx.tfonnx import process_tf_graph, tf_optimize
-from tf2onnx import optimizer
-
 
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
@@ -15,9 +9,6 @@ from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
-from tensorflow.python.platform import gfile
-from tensorflow.python.framework import graph_util
-from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
