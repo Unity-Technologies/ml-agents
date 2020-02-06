@@ -32,7 +32,6 @@ public class FoodCollectorAgent : Agent
     {
         base.InitializeAgent();
         m_AgentRb = GetComponent<Rigidbody>();
-        Monitor.verticalOffset = 1f;
         m_MyArea = area.GetComponent<FoodCollectorArea>();
         m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
 
