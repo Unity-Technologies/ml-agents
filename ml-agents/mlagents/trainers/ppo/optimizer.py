@@ -12,7 +12,7 @@ from mlagents.trainers.buffer import AgentBuffer
 
 logger = logging.getLogger("mlagents.trainers")
 
-BURN_IN_RATIO = 0.1
+BURN_IN_RATIO = 0.0
 
 
 class PPOOptimizer(TFOptimizer):
