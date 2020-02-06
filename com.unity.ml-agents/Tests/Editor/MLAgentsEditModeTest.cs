@@ -51,10 +51,10 @@ namespace MLAgents.Tests
             sensors.Add(sensor1);
         }
 
-        public override void CollectObservations()
+        public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
-            AddVectorObs(0f);
+            sensor.AddObservation(0f);
         }
 
         public override void AgentAction(float[] vectorAction)

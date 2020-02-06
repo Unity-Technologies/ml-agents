@@ -39,15 +39,15 @@ public class FoodCollectorAgent : Agent
         SetResetParameters();
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         if (useVectorObs)
         {
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
-            AddVectorObs(localVelocity.x);
-            AddVectorObs(localVelocity.z);
-            AddVectorObs(System.Convert.ToInt32(m_Frozen));
-            AddVectorObs(System.Convert.ToInt32(m_Shoot));
+            sensor.AddObservation(localVelocity.x);
+            sensor.AddObservation(localVelocity.z);
+            sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
+            sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
         }
     }
 

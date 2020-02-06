@@ -31,7 +31,7 @@ public class GridAgent : Agent
     {
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         // There are no numeric observations to collect as this environment uses visual
         // observations.

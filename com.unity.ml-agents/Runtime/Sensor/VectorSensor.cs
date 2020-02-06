@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using MLAgents.Sensor;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     public class VectorSensor : ISensor
     {
