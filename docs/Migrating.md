@@ -42,7 +42,7 @@ The versions can be found in
   * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
     * Move the InitializeAcademy code to MonoBehaviour.OnAwake
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
-    * Move the OnDestroy code to MonoBehaviour.OnDestroy or add it to the to Academy.DestroyAction action.
+    * Move the OnDestroy code to MonoBehaviour.OnDestroy.
     * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
