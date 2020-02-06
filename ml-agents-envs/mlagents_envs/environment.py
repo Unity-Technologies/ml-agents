@@ -51,7 +51,7 @@ logger = logging.getLogger("mlagents_envs")
 class UnityEnvironment(BaseEnv):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    API_VERSION = "API-14-dev0"
+    API_VERSION = "API-15-dev0"
 
     def __init__(
         self,
@@ -76,7 +76,6 @@ class UnityEnvironment(BaseEnv):
         :bool docker_training: Informs this class whether the process is being run within a container.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
-        :bool train_mode: Whether to run in training mode, speeding up the simulation, by default.
         :list args: Addition Unity command line arguments
         :list side_channels: Additional side channel for no-rl communication with Unity
         """

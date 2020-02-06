@@ -50,7 +50,7 @@ namespace MLAgents
     /// Struct that contains the action information sent from the Brain to the
     /// Agent.
     /// </summary>
-    public struct AgentAction
+    internal struct AgentAction
     {
         public float[] vectorActions;
     }
@@ -158,6 +158,9 @@ namespace MLAgents
         /// This Id will be changed every time the Agent resets.
         int m_EpisodeId;
 
+        /// Whether or not the Agent has been initialized already
+        bool m_Initialized;
+
         /// Keeps track of the actions that are masked at each step.
         ActionMasker m_ActionMasker;
 
@@ -171,27 +174,36 @@ namespace MLAgents
         /// Currently generated from attached SensorComponents, and a legacy VectorSensor
         /// </summary>
         [FormerlySerializedAs("m_Sensors")]
-        public List<ISensor> sensors;
+        internal List<ISensor> sensors;
 
         /// <summary>
         /// VectorSensor which is written to by AddVectorObs
         /// </summary>
-        public VectorSensor collectObservationsSensor;
+        internal VectorSensor collectObservationsSensor;
 
         /// MonoBehaviour function that is called when the attached GameObject
         /// becomes enabled or active.
         void OnEnable()
         {
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
-            OnEnableHelper();
-
-            m_Recorder = GetComponent<DemonstrationRecorder>();
+            LazyInitialize();
         }
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
-        void OnEnableHelper()
+        public void LazyInitialize()
         {
+            if (m_Initialized)
+            {
+                return;
+            }
+            m_Initialized = true;
+
+            // Grab the "static" properties for the Agent.
+            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
+            m_PolicyFactory = GetComponent<BehaviorParameters>();
+            m_Recorder = GetComponent<DemonstrationRecorder>();
+
+
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
@@ -200,11 +212,11 @@ namespace MLAgents
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
             Academy.Instance.AgentForceReset += _AgentReset;
-            m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             InitializeAgent();
             InitializeSensors();
+
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -222,6 +234,7 @@ namespace MLAgents
             }
             NotifyAgentDone();
             m_Brain?.Dispose();
+            m_Initialized = false;
         }
 
         void NotifyAgentDone(bool maxStepReached = false)
@@ -231,7 +244,10 @@ namespace MLAgents
             m_Info.maxStepReached = maxStepReached;
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
-            m_Brain?.RequestDecision(m_Info, sensors, (a) => {});
+            m_Brain?.RequestDecision(m_Info, sensors);
+
+            UpdateRewardStats();
+
             // The Agent is done, so we give it a new episode Id
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
@@ -313,6 +329,12 @@ namespace MLAgents
         public float GetCumulativeReward()
         {
             return m_CumulativeReward;
+        }
+
+        void UpdateRewardStats()
+        {
+            var gaugeName = $"{m_PolicyFactory.behaviorName}.CumulativeReward";
+            TimerStack.Instance.SetGauge(gaugeName, GetCumulativeReward());
         }
 
         /// <summary>
@@ -398,7 +420,7 @@ namespace MLAgents
         /// Set up the list of ISensors on the Agent. By default, this will select any
         /// SensorBase's attached to the Agent.
         /// </summary>
-        public void InitializeSensors()
+        internal void InitializeSensors()
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
@@ -469,7 +491,7 @@ namespace MLAgents
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
 
-            m_Brain.RequestDecision(m_Info, sensors, UpdateAgentAction);
+            m_Brain.RequestDecision(m_Info, sensors);
 
             if (m_Recorder != null && m_Recorder.record && Application.isEditor)
             {
@@ -668,6 +690,14 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Returns the last action that was decided on by the Agent (returns null if no decision has been made)
+        /// </summary>
+        public float[] GetAction()
+        {
+        	return m_Action.vectorActions;
+        }
+
+        /// <summary>
         /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
         /// This way, even if the agent was already in the process of reseting, it will be reset again
         /// and will not send a Done flag at the next step.
@@ -686,20 +716,6 @@ namespace MLAgents
             ResetData();
             m_StepCount = 0;
             AgentReset();
-        }
-
-        public void UpdateAgentAction(AgentAction action)
-        {
-            m_Action = action;
-        }
-
-        /// <summary>
-        /// Updates the vector action.
-        /// </summary>
-        /// <param name="vectorActions">Vector actions.</param>
-        public void UpdateVectorAction(float[] vectorActions)
-        {
-            m_Action.vectorActions = vectorActions;
         }
 
         /// <summary>
@@ -745,13 +761,16 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                AgentAction(m_Action.vectorActions);
+                if (m_Action.vectorActions != null)
+                {
+                    AgentAction(m_Action.vectorActions);
+                }
             }
         }
 
         void DecideAction()
         {
-            m_Brain?.DecideAction();
+            m_Action.vectorActions = m_Brain?.DecideAction();
         }
     }
 }

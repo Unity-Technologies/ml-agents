@@ -9,36 +9,37 @@ namespace MLAgents
     /// The Remote Policy only works when training.
     /// When training your Agents, the RemotePolicy will be controlled by Python.
     /// </summary>
-    public class RemotePolicy : IPolicy
+    internal class RemotePolicy : IPolicy
     {
-        string m_BehaviorName;
-        protected ICommunicator m_Communicator;
 
-        /// <summary>
-        /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
-        /// </summary>
-        List<int[]> m_SensorShapes;
+        int m_AgentId;
+        string m_FullyQualifiedBehaviorName;
+
+        internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(
             BrainParameters brainParameters,
-            string behaviorName)
+            string fullyQualifiedBehaviorName)
         {
-            m_BehaviorName = behaviorName;
+            m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_BehaviorName, brainParameters);
+            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_Communicator?.PutObservations(m_BehaviorName, info, sensors, action);
+            m_AgentId = info.episodeId;
+            m_Communicator?.PutObservations(m_FullyQualifiedBehaviorName, info, sensors);
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
             m_Communicator?.DecideBatch();
+            return m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+
         }
 
         public void Dispose()

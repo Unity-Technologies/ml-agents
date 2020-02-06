@@ -35,8 +35,9 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         string m_BehaviorName = "My Behavior";
-        [HideInInspector][SerializeField]
-        int m_TeamID = 0;
+        [HideInInspector]
+        [SerializeField]
+        public int m_TeamID = 0;
         [HideInInspector]
         [SerializeField]
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
@@ -54,10 +55,18 @@ namespace MLAgents
 
         public string behaviorName
         {
-            get { return m_BehaviorName + "?team=" + m_TeamID;}
+            get { return m_BehaviorName; }
         }
 
-        public IPolicy GeneratePolicy(Func<float[]> heuristic)
+        /// <summary>
+        /// Returns the behavior name, concatenated with any other metadata (i.e. team id).
+        /// </summary>
+        public string fullyQualifiedBehaviorName
+        {
+            get { return m_BehaviorName + "?team=" + m_TeamID; }
+        }
+
+        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {
@@ -68,7 +77,7 @@ namespace MLAgents
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, behaviorName);
+                        return new RemotePolicy(m_BrainParameters, fullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {

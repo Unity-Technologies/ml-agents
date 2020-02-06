@@ -34,7 +34,7 @@ FoodCollector:
 
 Bouncer:
     normalize: true
-    max_steps: 2.0e7
+    max_steps: 2.0e6
     num_layers: 2
     hidden_units: 64
     summary_freq: 20000

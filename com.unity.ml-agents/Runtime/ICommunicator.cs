@@ -6,7 +6,7 @@ using MLAgents.Sensor;
 
 namespace MLAgents
 {
-    public struct CommunicatorInitParameters
+    internal struct CommunicatorInitParameters
     {
         /// <summary>
         /// Port to listen for connections on.
@@ -21,14 +21,14 @@ namespace MLAgents
         /// </summary>
         public string version;
     }
-    public struct UnityRLInitParameters
+    internal struct UnityRLInitParameters
     {
         /// <summary>
         /// An RNG seed sent from the python process to Unity.
         /// </summary>
         public int seed;
     }
-    public struct UnityRLInputParameters
+    internal struct UnityRLInputParameters
     {
         /// <summary>
         /// Boolean sent back from python to indicate whether or not training is happening.
@@ -39,19 +39,19 @@ namespace MLAgents
     /// <summary>
     /// Delegate for handling quite events sent back from the communicator.
     /// </summary>
-    public delegate void QuitCommandHandler();
+    internal delegate void QuitCommandHandler();
 
     /// <summary>
     /// Delegate for handling reset parameter updates sent from the communicator.
     /// </summary>
     /// <param name="resetParams"></param>
-    public delegate void ResetCommandHandler();
+    internal delegate void ResetCommandHandler();
 
     /// <summary>
     /// Delegate to handle UnityRLInputParameters updates from the communicator.
     /// </summary>
     /// <param name="inputParams"></param>
-    public delegate void RLInputReceivedHandler(UnityRLInputParameters inputParams);
+    internal delegate void RLInputReceivedHandler(UnityRLInputParameters inputParams);
 
     /**
     This is the interface of the Communicators.
@@ -89,7 +89,7 @@ namespace MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    public interface ICommunicator : IDisposable
+    internal interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.
@@ -123,7 +123,7 @@ namespace MLAgents
         /// <param name="info">Agent info.</param>
         /// <param name="sensors">The list of ISensors of the Agent.</param>
         /// <param name="action">The action that will be called once the next AgentAction is ready.</param>
-        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors, Action<AgentAction> action);
+        void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors);
 
         /// <summary>
         /// Signals the ICommunicator that the Agents are now ready to receive their action
@@ -135,9 +135,10 @@ namespace MLAgents
         /// <summary>
         /// Gets the AgentActions based on the batching key.
         /// </summary>
-        /// <param name="key">A key to identify which actions to get</param>
+        /// <param name="key">A key to identify which behavior actions to get</param>
+        /// <param name="agentId">A key to identify which Agent actions to get</param>
         /// <returns></returns>
-        Dictionary<int, AgentAction> GetActions(string key);
+        float[] GetActions(string key, int agentId);
 
         /// <summary>
         /// Registers a side channel to the communicator. The side channel will exchange

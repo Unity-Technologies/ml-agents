@@ -37,9 +37,7 @@ namespace MLAgents.Tests
             var agents = new List<TestAgent> { agentA, agentB };
             foreach (var agent in agents)
             {
-                var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                agentEnableMethod?.Invoke(agent, new object[] {});
+                agent.LazyInitialize();
             }
             agentA.collectObservationsSensor.AddObservation(new Vector3(1, 2, 3));
             agentB.collectObservationsSensor.AddObservation(new Vector3(4, 5, 6));

@@ -35,13 +35,6 @@ public class SoccerFieldArea : MonoBehaviour
 
     SoccerSettings m_SoccerSettings;
 
-    public IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
-    {
-        m_GroundRenderer.material = mat;
-        yield return new WaitForSeconds(time);
-        m_GroundRenderer.material = m_GroundMaterial;
-    }
-
     void Awake()
     {
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
@@ -62,46 +55,20 @@ public class SoccerFieldArea : MonoBehaviour
         if (goalTextUI) goalTextUI.SetActive(false);
     }
 
-    public void AllPlayersDone(float reward)
-    {
-        foreach (var ps in playerStates)
-        {
-            if (ps.agentScript.gameObject.activeInHierarchy)
-            {
-                if (reward != 0)
-                {
-                    ps.agentScript.AddReward(reward);
-                }
-                ps.agentScript.Done();
-            }
-        }
-    }
-
     public void GoalTouched(AgentSoccer.Team scoredTeam)
     {
         foreach (var ps in playerStates)
         {
             if (ps.agentScript.team == scoredTeam)
             {
-                RewardOrPunishPlayer(ps, m_SoccerSettings.strikerReward, m_SoccerSettings.goalieReward);
+                ps.agentScript.AddReward(1);
             }
             else
             {
-                RewardOrPunishPlayer(ps, m_SoccerSettings.strikerPunish, m_SoccerSettings.goaliePunish);
+                ps.agentScript.AddReward(-1);
             }
-            if (m_SoccerSettings.randomizePlayersTeamForTraining)
-            {
-                ps.agentScript.ChooseRandomTeam();
-            }
+            ps.agentScript.Done();  //all agents need to be reset
 
-            if (scoredTeam == AgentSoccer.Team.Purple)
-            {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_SoccerSettings.purpleMaterial, 1));
-            }
-            else
-            {
-                StartCoroutine(GoalScoredSwapGroundMaterial(m_SoccerSettings.blueMaterial, 1));
-            }
             if (goalTextUI)
             {
                 StartCoroutine(ShowGoalUI());
@@ -109,47 +76,11 @@ public class SoccerFieldArea : MonoBehaviour
         }
     }
 
-    public void RewardOrPunishPlayer(PlayerState ps, float striker, float goalie)
-    {
-        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.Striker)
-        {
-            ps.agentScript.AddReward(striker);
-        }
-        if (ps.agentScript.agentRole == AgentSoccer.AgentRole.Goalie)
-        {
-            ps.agentScript.AddReward(goalie);
-        }
-        ps.agentScript.Done();  //all agents need to be reset
-    }
-
-    public Vector3 GetRandomSpawnPos(AgentSoccer.AgentRole role, AgentSoccer.Team team)
-    {
-        var xOffset = 0f;
-        if (role == AgentSoccer.AgentRole.Goalie)
-        {
-            xOffset = 13f;
-        }
-        if (role == AgentSoccer.AgentRole.Striker)
-        {
-            xOffset = 7f;
-        }
-        if (team == AgentSoccer.Team.Blue)
-        {
-            xOffset = xOffset * -1f;
-        }
-        var randomSpawnPos = ground.transform.position +
-            new Vector3(xOffset, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
-        return randomSpawnPos;
-    }
-
     public Vector3 GetBallSpawnPosition()
     {
         var randomSpawnPos = ground.transform.position +
-            new Vector3(0f, 0f, 0f)
-            + (Random.insideUnitSphere * 2);
-        randomSpawnPos.y = ground.transform.position.y + 2;
+            new Vector3(0f, 0f, 0f);
+        randomSpawnPos.y = ground.transform.position.y + .5f;
         return randomSpawnPos;
     }
 

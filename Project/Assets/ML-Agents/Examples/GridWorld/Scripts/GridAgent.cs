@@ -110,13 +110,13 @@ public class GridAgent : Agent
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
-                Done();
                 SetReward(1f);
-            }
-            if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
-            {
                 Done();
+            }
+            else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
+            {
                 SetReward(-1f);
+                Done();
             }
         }
     }

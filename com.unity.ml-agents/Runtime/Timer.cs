@@ -6,11 +6,12 @@ using System.IO;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using UnityEngine.SceneManagement;
 
 namespace MLAgents
 {
     [DataContract]
-    public class TimerNode
+    internal class TimerNode
     {
         static string s_Separator = ".";
         static double s_TicksToSeconds = 1e-7; // 100 ns per tick
@@ -150,12 +151,16 @@ namespace MLAgents
         /// <summary>
         /// Stop timing a block of code, and increment internal counts.
         /// </summary>
-        public void End()
+        public void End(bool isRecording)
         {
-            var elapsed = DateTime.Now.Ticks - m_TickStart;
-            m_TotalTicks += elapsed;
-            m_TickStart = 0;
-            m_NumCalls++;
+            if (isRecording)
+            {
+                var elapsed = DateTime.Now.Ticks - m_TickStart;
+                m_TotalTicks += elapsed;
+                m_TickStart = 0;
+                m_NumCalls++;
+            }
+            // Note that samplers are always updated regardless of recording state, to ensure matching start and ends.
             m_Sampler?.End();
         }
 
@@ -222,19 +227,24 @@ namespace MLAgents
     /// Tracks the most recent value of a metric. This is analogous to gauges in statsd.
     /// </summary>
     [DataContract]
-    public class GaugeNode
+    internal class GaugeNode
     {
+        const float k_SmoothingFactor = .25f; // weight for exponential moving average.
+
         [DataMember]
         public float value;
         [DataMember(Name = "min")]
         public float minValue;
         [DataMember(Name = "max")]
         public float maxValue;
+        [DataMember(Name = "weightedAverage")]
+        public float weightedAverage;
         [DataMember]
         public uint count;
         public GaugeNode(float value)
         {
             this.value = value;
+            weightedAverage = value;
             minValue = value;
             maxValue = value;
             count = 1;
@@ -244,6 +254,8 @@ namespace MLAgents
         {
             minValue = Mathf.Min(minValue, newValue);
             maxValue = Mathf.Max(maxValue, newValue);
+            // update exponential moving average
+            weightedAverage = (k_SmoothingFactor * newValue) + ((1f - k_SmoothingFactor) * weightedAverage);
             value = newValue;
             ++count;
         }
@@ -278,6 +290,8 @@ namespace MLAgents
 
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
+        // Whether or not new timers and gauges can be added.
+        bool m_Recording = true;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -302,13 +316,24 @@ namespace MLAgents
             get { return k_Instance; }
         }
 
-        public TimerNode RootNode
+        internal TimerNode RootNode
         {
             get { return m_RootNode; }
         }
 
+        public bool Recording
+        {
+            get { return m_Recording; }
+            set { m_Recording = value; }
+        }
+
         public void SetGauge(string name, float value)
         {
+            if (!Recording)
+            {
+                return;
+            }
+
             if (!float.IsNaN(value))
             {
                 GaugeNode gauge;
@@ -334,7 +359,7 @@ namespace MLAgents
         void Pop()
         {
             var node = m_Stack.Pop();
-            node.End();
+            node.End(Recording);
         }
 
         /// <summary>
@@ -364,7 +389,7 @@ namespace MLAgents
         /// Potentially slow so call sparingly.
         /// </summary>
         /// <returns></returns>
-        public string DebugGetTimerString()
+        internal string DebugGetTimerString()
         {
             return m_RootNode.DebugGetTimerString();
         }
@@ -376,14 +401,28 @@ namespace MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
-            if (filename == null)
+# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+            try
             {
-                var fullpath = Path.GetFullPath(".");
-                filename = $"{fullpath}/csharp_timers.json";
+                if (filename == null)
+                {
+                    var activeScene = SceneManager.GetActiveScene();
+                    var timerDir = Path.Combine(Application.dataPath, "ML-Agents", "Timers");
+                    Directory.CreateDirectory(timerDir);
+
+                    filename = Path.Combine(timerDir, $"{activeScene.name}_timers.json");
+                }
+
+                var fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+                SaveJsonTimers(fs);
+                fs.Close();
             }
-            var fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            SaveJsonTimers(fs);
-            fs.Close();
+            catch (IOException)
+            {
+                // It's possible we don't have write access to the directory.
+                Debug.LogWarning($"Unable to save timers to file {filename}");
+            }
+#endif
         }
 
         /// <summary>

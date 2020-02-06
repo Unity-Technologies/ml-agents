@@ -714,6 +714,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 3DBall (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1321468028730240, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4679453577574622, guid: cfa81c019162c4e3caf6e2999c6fdf48, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9

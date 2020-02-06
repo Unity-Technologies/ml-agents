@@ -2,12 +2,23 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using MLAgents.Sensor;
+using System.Collections.Generic;
 
 namespace MLAgents.Tests
 {
+
+    internal class TestPolicy : IPolicy
+    {
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
+
+        public float[] DecideAction() { return new float[0]; }
+
+        public void Dispose() { }
+    }
+
     public class TestAgent : Agent
     {
-        public AgentInfo _Info
+        internal AgentInfo _Info
         {
             get
             {
@@ -17,6 +28,11 @@ namespace MLAgents.Tests
             {
                 typeof(Agent).GetField("m_Info", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, value);
             }
+        }
+
+        internal void SetPolicy(IPolicy policy)
+        {
+            typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, policy);
         }
 
         public int initializeAgentCalls;
@@ -93,7 +109,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() {}
+        public void Update() { }
     }
 
     [TestFixture]
@@ -192,11 +208,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, agent1.agentActionCalls);
             Assert.AreEqual(0, agent2.agentActionCalls);
 
-            var agentEnableMethod = typeof(Agent).GetMethod("OnEnableHelper",
-                BindingFlags.Instance | BindingFlags.NonPublic);
 
-            agentEnableMethod?.Invoke(agent2, new object[] {});
-            agentEnableMethod?.Invoke(agent1, new object[] {});
+            agent2.LazyInitialize();
+            agent1.LazyInitialize();
 
             // agent1 was not enabled when the academy started
             // The agents have been initialized
@@ -268,16 +282,13 @@ namespace MLAgents.Tests
 
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.Awake();
             // agent1 will take an action at every step and request a decision every 2 steps
             // agent2 will request decisions only when RequestDecision is called
 
-            agentEnableMethod?.Invoke(agent1, new object[] {});
+            agent1.LazyInitialize();
 
             var numberAgent1Reset = 0;
             var numberAgent2Initialization = 0;
@@ -302,7 +313,7 @@ namespace MLAgents.Tests
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent2, new object[] {});
+                    agent2.LazyInitialize();
                     numberAgent2Initialization += 1;
                 }
 
@@ -373,13 +384,10 @@ namespace MLAgents.Tests
 
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
             decisionRequester.DecisionPeriod = 2;
 
-            agentEnableMethod?.Invoke(agent2, new object[] {});
+            agent2.LazyInitialize();
 
             var numberAgent1Reset = 0;
             var numberAgent2Reset = 0;
@@ -406,7 +414,7 @@ namespace MLAgents.Tests
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
-                    agentEnableMethod?.Invoke(agent1, new object[] {});
+                    agent1.LazyInitialize();
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
@@ -462,18 +470,16 @@ namespace MLAgents.Tests
             var agent2 = agentGo2.GetComponent<TestAgent>();
             var aca = Academy.Instance;
 
-            var agentEnableMethod = typeof(Agent).GetMethod(
-                "OnEnableHelper", BindingFlags.Instance | BindingFlags.NonPublic);
-
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.Awake();
 
+
             agent1.maxStep = 20;
 
-            agentEnableMethod?.Invoke(agent2, new object[] {});
-            agentEnableMethod?.Invoke(agent1, new object[] {});
-
+            agent2.LazyInitialize();
+            agent1.LazyInitialize();
+            agent2.SetPolicy(new TestPolicy());
 
             var j = 0;
             for (var i = 0; i < 500; i++)

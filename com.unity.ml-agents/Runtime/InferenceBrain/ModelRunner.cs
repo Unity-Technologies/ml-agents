@@ -6,21 +6,18 @@ using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
-    public struct AgentInfoSensorsPair
+    internal struct AgentInfoSensorsPair
     {
         public AgentInfo agentInfo;
         public List<ISensor> sensors;
     }
-    public struct AgentIdActionPair
-    {
-        public int agentId;
-        public Action<AgentAction> action;
-    }
 
-    public class ModelRunner
+    internal class ModelRunner
     {
         List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
-        List<AgentIdActionPair> m_ActionFuncs = new List<AgentIdActionPair>();
+        Dictionary<int, float[]> m_LastActionsReceived = new Dictionary<int, float[]>();
+        List<int> m_OrderedAgentsRequestingDecisions = new List<int>();
+
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
@@ -69,11 +66,11 @@ namespace MLAgents.InferenceBrain
 
                 D.logEnabled = m_Verbose;
 
-                barracudaModel = ModelLoader.Load(model.Value);
+                barracudaModel = ModelLoader.Load(model);
                 var executionDevice = inferenceDevice == InferenceDevice.GPU
-                    ? BarracudaWorkerFactory.Type.ComputePrecompiled
-                    : BarracudaWorkerFactory.Type.CSharp;
-                m_Engine = BarracudaWorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
+                    ? WorkerFactory.Type.ComputePrecompiled
+                    : WorkerFactory.Type.CSharp;
+                m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
             }
             else
             {
@@ -112,14 +109,14 @@ namespace MLAgents.InferenceBrain
             var outputs = new List<TensorProxy>();
             foreach (var n in names)
             {
-                var output = m_Engine.Peek(n);
+                var output = m_Engine.PeekOutput(n);
                 outputs.Add(TensorUtils.TensorProxyFromBarracuda(output, n));
             }
 
             return outputs;
         }
 
-        public void PutObservations(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void PutObservations(AgentInfo info, List<ISensor> sensors)
         {
 #if DEBUG
             m_SensorShapeValidator.ValidateSensors(sensors);
@@ -130,7 +127,19 @@ namespace MLAgents.InferenceBrain
                 sensors = sensors
             });
 
-            m_ActionFuncs.Add(new AgentIdActionPair { action = action, agentId = info.episodeId });
+            // We add the episodeId to this list to maintain the order in which the decisions were requested
+            m_OrderedAgentsRequestingDecisions.Add(info.episodeId);
+
+            if (!m_LastActionsReceived.ContainsKey(info.episodeId))
+            {
+                m_LastActionsReceived[info.episodeId] = null;
+            }
+            if (info.done)
+            {
+                // If the agent is done, we remove the key from the last action dictionary since no action
+                // should be taken.
+                m_LastActionsReceived.Remove(info.episodeId);
+            }
         }
 
         public void DecideBatch()
@@ -171,19 +180,28 @@ namespace MLAgents.InferenceBrain
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.ApplyTensors");
             // Update the outputs
-            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_ActionFuncs);
+            m_TensorApplier.ApplyTensors(m_InferenceOutputs, m_OrderedAgentsRequestingDecisions, m_LastActionsReceived);
             Profiler.EndSample();
 
             Profiler.EndSample();
 
             m_Infos.Clear();
 
-            m_ActionFuncs.Clear();
+            m_OrderedAgentsRequestingDecisions.Clear();
         }
 
         public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
         {
             return m_Model == other && m_InferenceDevice == otherInferenceDevice;
+        }
+
+        public float[] GetAction(int agentId)
+        {
+            if (m_LastActionsReceived.ContainsKey(agentId))
+            {
+                return m_LastActionsReceived[agentId];
+            }
+            return null;
         }
     }
 }

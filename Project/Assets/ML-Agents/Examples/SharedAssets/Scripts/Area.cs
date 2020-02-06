@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgentsExamples
 {
     public class Area : MonoBehaviour
     {

@@ -7,27 +7,37 @@ The versions can be found in
 
 # Migrating
 
+## Migrating from 0.14 to latest
+### Important changes
+### Steps to Migrate
 
-## Migrating from 0.13 to latest
+## Migrating from 0.13 to 0.14
 
 ### Important changes
+* The `UnitySDK` folder has been split into a Unity Package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Installation Guide](Installation.md) to get up and running with this new repo structure.
+* Several changes were made to how agents are reset and marked as done:
+  * Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
+  * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
 * The `Decision Period` and `On Demand decision` checkbox have been removed from the Agent. On demand decision is now the default (calling `RequestDecision` on the Agent manually.)
 * The Academy class was changed to a singleton, and its virtual methods were removed.
 * Trainer steps are now counted per-Agent, not per-environment as in previous versions. For instance, if you have 10 Agents in the scene, 20 environment steps now corresponds to 200 steps as printed in the terminal and in Tensorboard.
 * Curriculum config files are now YAML formatted and all curricula for a training run are combined into a single file.
-* The `--num-runs` command-line option has been removed.
-* The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
-* Agents will always request a decision after being marked as `Done()` and will no longer wait for the next call to `RequestDecision()`.
-* The `agentParameters` field of the Agent has been removed. (Contained only `maxStep` information)
-* `maxStep` is now a public field on the Agent. (Was moved from `agentParameters`)
-* The `Info` field of the Agent has been made private. (Was only used internally and not meant to be modified outside of the Agent)
-* The `GetReward()` method on the Agent has been removed. (It was being confused with `GetCumulativeReward()`)
-* The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
-* The `GetValueEstimate()` method on the Agent has been removed.
-* The `UpdateValueAction()` method on the Agent has been removed.
-* Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
+* The `--num-runs` command-line option has been removed from `mlagents-learn`.
+* Several fields on the Agent were removed or made private in order to simplify the interface.
+  * The `agentParameters` field of the Agent has been removed. (Contained only `maxStep` information)
+  * `maxStep` is now a public field on the Agent. (Was moved from `agentParameters`)
+  * The `Info` field of the Agent has been made private. (Was only used internally and not meant to be modified outside of the Agent)
+  * The `GetReward()` method on the Agent has been removed. (It was being confused with `GetCumulativeReward()`)
+  * The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
+  * The `GetValueEstimate()` method on the Agent has been removed.
+  * The `UpdateValueAction()` method on the Agent has been removed.
+* The deprecated `RayPerception3D` and `RayPerception2D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
+* Follow the instructions on how to install the `com.unity.ml-agents` package into your project in the [Installation Guide](Installation.md).
+* If your Agent implemented `AgentOnDone` and did not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
+* If you give your Agent a reward or penalty at the end of an episode (e.g. for reaching a goal or falling off of a platform), make sure you call `AddReward()` or `SetReward()` *before* calling `Done()`. Previously, the order didn't matter.
 * If you were not using `On Demand Decision` for your Agent, you **must** add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.
 * If you have a class that inherits from Academy:
   * If the class didn't override any of the virtual methods and didn't store any additional data, you can just remove the old script from the scene.
@@ -35,12 +45,12 @@ The versions can be found in
   * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
     * Move the InitializeAcademy code to MonoBehaviour.OnAwake
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
-    * Move the OnDestroy code to MonoBehaviour.OnDestroy or add it to the to Academy.DestroyAction action.
+    * Move the OnDestroy code to MonoBehaviour.OnDestroy.
     * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
-* If your Agent implements `AgentOnDone` and your Agent does not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
+* If you have a model trained which uses RayPerceptionSensor and has non-1.0 scale in the Agent's transform, it must be retrained.
 
 
 ## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
@@ -112,7 +122,7 @@ You will then need to complete the fields on the new `Behavior Parameters` compo
 * `UnitySDK/Assets/ML-Agents/Scripts/Communicator.cs` and its class `Communicator` have been renamed to `UnitySDK/Assets/ML-Agents/Scripts/ICommunicator.cs` and `ICommunicator` respectively.
 * The `SpaceType` Enums `discrete`, and `continuous` have been renamed to `Discrete` and `Continuous`.
 * We have removed the `Done` call as well as the capacity to set `Max Steps` on the Academy. Therefore an AcademyReset will never be triggered from C# (only from Python). If you want to reset the simulation after a
-fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as BananaCollector).
+fixed number of steps, or when an event in the simulation occurs, we recommend looking at our multi-agent example environments (such as FoodCollector).
 In our examples, groups of Agents can be reset through an "Area" that can reset groups of Agents.
 * The import for `mlagents.envs.UnityEnvironment` was removed. If you are using the Python API, change `from mlagents_envs import UnityEnvironment` to `from mlagents_envs.environment import UnityEnvironment`.
 

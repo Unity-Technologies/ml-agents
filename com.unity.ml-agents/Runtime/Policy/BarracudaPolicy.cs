@@ -18,9 +18,11 @@ namespace MLAgents
     /// every step. It uses a ModelRunner that is shared accross all
     /// Barracuda Policies that use the same model and inference devices.
     /// </summary>
-    public class BarracudaPolicy : IPolicy
+    internal class BarracudaPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
+
+        private int m_AgentId;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
@@ -38,15 +40,17 @@ namespace MLAgents
         }
 
         /// <inheritdoc />
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors, Action<AgentAction> action)
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
-            m_ModelRunner?.PutObservations(info, sensors, action);
+            m_AgentId = info.episodeId;
+            m_ModelRunner?.PutObservations(info, sensors);
         }
 
         /// <inheritdoc />
-        public void DecideAction()
+        public float[] DecideAction()
         {
             m_ModelRunner?.DecideBatch();
+            return m_ModelRunner?.GetAction(m_AgentId);
         }
 
         public void Dispose()

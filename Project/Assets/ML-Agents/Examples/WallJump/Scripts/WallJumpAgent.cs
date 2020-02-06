@@ -228,8 +228,8 @@ public class WallJumpAgent : Agent
         if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))
             || (!Physics.Raycast(m_ShortBlockRb.position, Vector3.down, 20)))
         {
-            Done();
             SetReward(-1f);
+            Done();
             ResetBlock(m_ShortBlockRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_WallJumpSettings.failMaterial, .5f));

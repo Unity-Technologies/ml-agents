@@ -1,5 +1,5 @@
 using UnityEngine;
-using MLAgents;
+using MLAgentsExamples;
 
 public class PyramidArea : Area
 {
