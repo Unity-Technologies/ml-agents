@@ -74,11 +74,11 @@ The Ball3DAgent subclass defines the following methods:
   agent cube and ball. The function randomizes the reset values so that the
   training generalizes to more than a specific starting position and agent cube
   attitude.
-* agent.CollectObservations() — Called every simulation step. Responsible for
+* agent.CollectObservations(VectorSensor sensor) — Called every simulation step. Responsible for
   collecting the Agent's observations of the environment. Since the Behavior
   Parameters of the Agent are set with vector observation
-  space with a state size of 8, the `CollectObservations()` must call
-  `AddVectorObs` such that vector size adds up to 8.
+  space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
+  `sensor.AddObservation()` such that vector size adds up to 8.
 * agent.AgentAction() — Called every simulation step. Receives the action chosen
   by the Agent. The vector action spaces result in a
   small change in the agent cube's rotation at each step. The `AgentAction()` function
@@ -105,7 +105,7 @@ This means that the feature
 vector containing the Agent's observations contains eight elements: the `x` and
 `z` components of the agent cube's rotation and the `x`, `y`, and `z` components
 of the ball's relative position and velocity. (The observation values are
-defined in the Agent's `CollectObservations()` function.)
+defined in the Agent's `CollectObservations(VectorSensor sensor)` function.)
 
 #### Behavior Parameters : Vector Action Space
 
