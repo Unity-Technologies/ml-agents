@@ -104,10 +104,7 @@ class GAILRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self,
-        policy: TFPolicy,
-        mini_batch: Dict[str, np.ndarray],
-        num_sequences: int,
+        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
