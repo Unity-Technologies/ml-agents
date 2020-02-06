@@ -176,6 +176,7 @@ class GhostTrainer(Trainer):
 
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         self.policies[name_behavior_id] = policy
+        policy.create_tf_graph()
 
         # First policy encountered
         if not self.learning_behavior_name:
@@ -185,8 +186,6 @@ class GhostTrainer(Trainer):
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
             self.learning_behavior_name = name_behavior_id
         else:
-            # Normally Optimizer initializes policy. Do it here instead.
-            policy.create_tf_graph()
             # for saving/swapping snapshots
             policy.init_load_weights()
 
