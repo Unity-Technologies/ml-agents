@@ -92,6 +92,9 @@ class NNPolicy(TFPolicy):
             self.trainable_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
             )
+            self.trainable_variables += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
+            )  # LSTMs need to be root scope for Barracuda export
 
         self.inference_dict: Dict[str, tf.Tensor] = {
             "action": self.output,
@@ -165,7 +168,7 @@ class NNPolicy(TFPolicy):
                 hidden_stream,
                 self.memory_in,
                 self.sequence_length_ph,
-                name="policy/lstm",
+                name="lstm_policy",
             )
 
             self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
@@ -286,7 +289,7 @@ class NNPolicy(TFPolicy):
                 hidden_policy,
                 self.memory_in,
                 self.sequence_length_ph,
-                name="policy/lstm",
+                name="lstm_policy",
             )
 
             self.memory_out = tf.identity(memory_policy_out, "recurrent_out")
