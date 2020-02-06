@@ -264,7 +264,12 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
             Assert.IsTrue(aca.AutomaticSteppingEnabled);
-            aca.AutomaticSteppingEnabled = false;
+
+            // Note that calling
+            //   aca.AutomaticSteppingEnabled = false;
+            // will cause unit tests to fail, so we have to use the destroyImmediate mode
+            aca.DisableAutomaticStepping(true);
+
             Assert.IsFalse(aca.AutomaticSteppingEnabled);
             aca.AutomaticSteppingEnabled = true;
             Assert.IsTrue(aca.AutomaticSteppingEnabled);
