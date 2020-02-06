@@ -718,11 +718,6 @@ namespace MLAgents
             AgentReset();
         }
 
-        internal void UpdateAgentAction(AgentAction action)
-        {
-            m_Action = action;
-        }
-
         /// <summary>
         /// Scales continuous action from [-1, 1] to arbitrary range.
         /// </summary>
