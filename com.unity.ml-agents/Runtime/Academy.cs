@@ -147,14 +147,14 @@ namespace MLAgents
         {
             Application.quitting += Dispose;
 
-            LazyInitialization();
+            LazyInitialize();
         }
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
         /// This method is always safe to call; it will have no effect if the Academy is already initialized.
         /// </summary>
-        internal void LazyInitialization()
+        internal void LazyInitialize()
         {
             if (!m_Initialized)
             {
@@ -167,7 +167,7 @@ namespace MLAgents
         /// Enable stepping of the Academy during the FixedUpdate phase.  This is done by creating a temporary
         /// GameObject with a MonoBehavior that calls Academy.EnvironmentStep().
         /// </summary>
-        public void EnableAutomaticStepping()
+        void EnableAutomaticStepping()
         {
             if (m_FixedUpdateStepper != null)
             {
@@ -184,7 +184,7 @@ namespace MLAgents
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
-        public void DisableAutomaticStepping(bool destroyImmediate = false)
+        void DisableAutomaticStepping(bool destroyImmediate = false)
         {
             if (m_FixedUpdateStepper == null)
             {
@@ -205,11 +205,21 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns whether or not the Academy is automatically stepped during the FixedUpdate phase.
+        /// Determines whether or not the Academy is automatically stepped during the FixedUpdate phase.
         /// </summary>
-        public bool IsAutomaticSteppingEnabled
+        public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
+            set {
+                if (value)
+                {
+                    EnableAutomaticStepping();
+                }
+                else
+                {
+                    DisableAutomaticStepping();
+                }
+            }
         }
 
         // Used to read Python-provided environment parameters
@@ -334,9 +344,9 @@ namespace MLAgents
         /// <returns>
         /// Current episode number.
         /// </returns>
-        public int GetEpisodeCount()
+        public int EpisodeCount
         {
-            return m_EpisodeCount;
+            get { return m_EpisodeCount; }
         }
 
         /// <summary>
@@ -345,9 +355,9 @@ namespace MLAgents
         /// <returns>
         /// Current step count.
         /// </returns>
-        public int GetStepCount()
+        public int StepCount
         {
-            return m_StepCount;
+            get { return m_StepCount; }
         }
 
         /// <summary>
@@ -356,9 +366,9 @@ namespace MLAgents
         /// <returns>
         /// Total step count.
         /// </returns>
-        public int GetTotalStepCount()
+        public int TotalStepCount
         {
-            return m_TotalStepCount;
+            get { return m_TotalStepCount; }
         }
 
         /// <summary>

@@ -129,9 +129,9 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
             Assert.AreNotEqual(null, aca);
-            Assert.AreEqual(0, aca.GetEpisodeCount());
-            Assert.AreEqual(0, aca.GetStepCount());
-            Assert.AreEqual(0, aca.GetTotalStepCount());
+            Assert.AreEqual(0, aca.EpisodeCount);
+            Assert.AreEqual(0, aca.StepCount);
+            Assert.AreEqual(0, aca.TotalStepCount);
         }
 
         [Test]
@@ -165,12 +165,12 @@ namespace MLAgents.Tests
             Assert.AreEqual(true, Academy.IsInitialized);
 
             // Check that init is idempotent
-            aca.LazyInitialization();
-            aca.LazyInitialization();
+            aca.LazyInitialize();
+            aca.LazyInitialize();
 
-            Assert.AreEqual(0, aca.GetEpisodeCount());
-            Assert.AreEqual(0, aca.GetStepCount());
-            Assert.AreEqual(0, aca.GetTotalStepCount());
+            Assert.AreEqual(0, aca.EpisodeCount);
+            Assert.AreEqual(0, aca.StepCount);
+            Assert.AreEqual(0, aca.TotalStepCount);
             Assert.AreNotEqual(null, aca.FloatProperties);
 
             // Check that Dispose is idempotent
@@ -247,8 +247,8 @@ namespace MLAgents.Tests
             var numberReset = 0;
             for (var i = 0; i < 10; i++)
             {
-                Assert.AreEqual(numberReset, aca.GetEpisodeCount());
-                Assert.AreEqual(i, aca.GetStepCount());
+                Assert.AreEqual(numberReset, aca.EpisodeCount);
+                Assert.AreEqual(i, aca.StepCount);
 
                 // The reset happens at the beginning of the first step
                 if (i == 0)
@@ -358,9 +358,9 @@ namespace MLAgents.Tests
             var stepsSinceReset = 0;
             for (var i = 0; i < 50; i++)
             {
-                Assert.AreEqual(stepsSinceReset, aca.GetStepCount());
-                Assert.AreEqual(numberReset, aca.GetEpisodeCount());
-                Assert.AreEqual(i, aca.GetTotalStepCount());
+                Assert.AreEqual(stepsSinceReset, aca.StepCount);
+                Assert.AreEqual(numberReset, aca.EpisodeCount);
+                Assert.AreEqual(i, aca.TotalStepCount);
                 // Academy resets at the first step
                 if (i == 0)
                 {
@@ -396,10 +396,10 @@ namespace MLAgents.Tests
             var agent2StepSinceReset = 0;
             for (var i = 0; i < 5000; i++)
             {
-                Assert.AreEqual(acaStepsSinceReset, aca.GetStepCount());
-                Assert.AreEqual(numberAcaReset, aca.GetEpisodeCount());
+                Assert.AreEqual(acaStepsSinceReset, aca.StepCount);
+                Assert.AreEqual(numberAcaReset, aca.EpisodeCount);
 
-                Assert.AreEqual(i, aca.GetTotalStepCount());
+                Assert.AreEqual(i, aca.TotalStepCount);
 
                 Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
