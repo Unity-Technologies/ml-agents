@@ -11,7 +11,7 @@ The versions can be found in
 ## Migrating from 0.13 to latest
 
 ### Important changes
-* The `UnitySDK` folder has been split into a Unity Package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Intallation Guide](Installation.md) to get up and running with this new repo structure.
+* The `UnitySDK` folder has been split into a Unity Package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Installation Guide](Installation.md) to get up and running with this new repo structure.
 * Several changes were made to how agents are reset and marked as done:
   * Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
   * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
@@ -28,7 +28,7 @@ The versions can be found in
   * The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
   * The `GetValueEstimate()` method on the Agent has been removed.
   * The `UpdateValueAction()` method on the Agent has been removed.
-* The deprecated `RayPerception3D` and `RayPerception3D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* The deprecated `RayPerception3D` and `RayPerception2D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
 * RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
