@@ -622,14 +622,15 @@ class SACOptimizer(TFOptimizer):
                 _obs = batch["next_visual_obs%d" % i]
                 feed_dict[self.next_visual_in[i]] = _obs
         if self.policy.use_recurrent:
-            feed_dict[policy.memory_in] = self._make_zero_mem(
-                self.policy.m_size, batch.num_experiences
-            )
+            feed_dict[policy.memory_in] = [
+                batch["memory"][i]
+                for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+            ]
             feed_dict[self.policy_network.memory_in] = self._make_zero_mem(
                 self.m_size, batch.num_experiences
             )
             feed_dict[self.target_network.memory_in] = self._make_zero_mem(
-                self.policy.m_size, batch.num_experiences
+                self.m_size // 3, batch.num_experiences
             )
         feed_dict[self.dones_holder] = batch["done"]
         return feed_dict
