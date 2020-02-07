@@ -173,7 +173,6 @@ namespace MLAgents
         /// List of sensors used to generate observations.
         /// Currently generated from attached SensorComponents, and a legacy VectorSensor
         /// </summary>
-        [FormerlySerializedAs("m_Sensors")]
         internal List<ISensor> sensors;
 
         /// <summary>

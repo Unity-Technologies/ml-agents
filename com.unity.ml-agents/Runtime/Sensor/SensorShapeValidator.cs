@@ -5,7 +5,7 @@ namespace MLAgents.Sensor
 {
     internal class SensorShapeValidator
     {
-        private List<int[]> m_SensorShapes;
+        List<int[]> m_SensorShapes;
 
         /// <summary>
         /// Check that the List Sensors are the same shape as the previous ones.

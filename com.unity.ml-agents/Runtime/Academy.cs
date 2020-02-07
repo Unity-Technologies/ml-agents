@@ -53,14 +53,14 @@ namespace MLAgents
         const int k_EditorTrainingPort = 5004;
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
-        static Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
+        static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
 
         public static bool IsInitialized
         {
-            get { return lazy.IsValueCreated; }
+            get { return s_Lazy.IsValueCreated; }
         }
 
-        public static Academy Instance { get { return lazy.Value; } }
+        public static Academy Instance { get { return s_Lazy.Value; } }
 
         public IFloatProperties FloatProperties;
 
@@ -108,30 +108,30 @@ namespace MLAgents
 
         // Signals to all the Agents at each environment step so they can use
         // their Policy to decide on their next action.
-        internal event System.Action DecideAction;
+        internal event Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
-        internal event System.Action DestroyAction;
+        internal event Action DestroyAction;
 
         // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
-        internal event System.Action<int> AgentSetStatus;
+        internal event Action<int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
-        internal event System.Action AgentSendState;
+        internal event Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
         // they have requested a decision.
-        internal event System.Action AgentAct;
+        internal event Action AgentAct;
 
         // Signals to all the agents each time the Academy force resets.
-        internal event System.Action AgentForceReset;
+        internal event Action AgentForceReset;
 
         // Signals that the Academy has been reset by the training process
-        public event System.Action OnEnvironmentReset;
+        public event Action OnEnvironmentReset;
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
         GameObject m_StepperObject;
@@ -273,13 +273,13 @@ namespace MLAgents
                 //environment must use Inference.
                 try
                 {
-                    var unityRLInitParameters = Communicator.Initialize(
+                    var unityRlInitParameters = Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
                             version = k_ApiVersion,
                             name = "AcademySingleton",
                         });
-                    UnityEngine.Random.InitState(unityRLInitParameters.seed);
+                    UnityEngine.Random.InitState(unityRlInitParameters.seed);
                 }
                 catch
                 {
@@ -471,7 +471,7 @@ namespace MLAgents
             m_Initialized = false;
 
             // Reset the Lazy instance
-            lazy = new Lazy<Academy>(() => new Academy());
+            s_Lazy = new Lazy<Academy>(() => new Academy());
         }
     }
 }

@@ -3,8 +3,8 @@ namespace MLAgents
 {
     public class RawBytesChannel : SideChannel
     {
-        private List<byte[]> m_MessagesReceived = new List<byte[]>();
-        private int m_ChannelId;
+        List<byte[]> m_MessagesReceived = new List<byte[]>();
+        int m_ChannelId;
 
         /// <summary>
         /// RawBytesChannel provides a way to exchange raw byte arrays between Unity and Python.

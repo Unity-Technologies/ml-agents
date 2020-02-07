@@ -122,7 +122,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensors"> Enumerable of tensors that will be modified.</param>
         /// <param name="currentBatchSize"> The number of agents present in the current batch
         /// </param>
-        /// <param name="agents"> List of Agents that contains the
+        /// <param name="infos"> List of AgentsInfos and Sensors that contains the
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
