@@ -299,7 +299,7 @@ be the same on C# and Python). There can only be one side channel of a certain t
 To send a byte array from Python to C#, call the `super().queue_message_to_send(bytes_data)` method inside the
 side channel. The `bytes_data` argument must be a `bytes` object.
 
-To register a side channel on the Python side, call pass the side channel as argument when creating the
+To register a side channel on the Python side, pass the side channel as argument when creating the
 `UnityEnvironment` object. One of the arguments of the constructor (`side_channels`) is a list of side channels.
 
 ##### Example implementation
