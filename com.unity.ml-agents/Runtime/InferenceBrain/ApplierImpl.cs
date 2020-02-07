@@ -205,7 +205,7 @@ namespace MLAgents.InferenceBrain
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
             foreach (int agentId in actionIds)
             {
-                List<float> memory = null;
+                List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize)
                 {
@@ -243,7 +243,7 @@ namespace MLAgents.InferenceBrain
 
             foreach (int agentId in actionIds)
             {
-                List<float> memory = null;
+                List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize * m_MemoriesCount)
                 {

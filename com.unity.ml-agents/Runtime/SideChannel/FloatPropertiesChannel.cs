@@ -39,8 +39,8 @@ namespace MLAgents
 
     public class FloatPropertiesChannel : SideChannel, IFloatProperties
     {
-        private Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
-        private Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
+        Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
+        Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
 
         public override int ChannelType()
         {
@@ -89,7 +89,7 @@ namespace MLAgents
             return new List<string>(m_FloatProperties.Keys);
         }
 
-        private static KeyValuePair<string, float> DeserializeMessage(byte[] data)
+        static KeyValuePair<string, float> DeserializeMessage(byte[] data)
         {
             using (var memStream = new MemoryStream(data))
             {
@@ -103,7 +103,7 @@ namespace MLAgents
             }
         }
 
-        private static byte[] SerializeMessage(string key, float value)
+        static byte[] SerializeMessage(string key, float value)
         {
             using (var memStream = new MemoryStream())
             {
