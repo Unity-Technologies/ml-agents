@@ -193,7 +193,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Deregisters SideChannel to the Academy if the side channel was not registered, 
+        /// Deregisters SideChannel to the Academy. If the side channel was not registered, 
         /// nothing will happen.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be deregistered.</param>
