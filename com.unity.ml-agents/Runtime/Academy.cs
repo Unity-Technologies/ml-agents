@@ -184,7 +184,7 @@ namespace MLAgents
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
-        public void DisableAutomaticStepping(bool destroyImmediate = false)
+        void DisableAutomaticStepping()
         {
             if (m_FixedUpdateStepper == null)
             {
@@ -192,7 +192,7 @@ namespace MLAgents
             }
 
             m_FixedUpdateStepper = null;
-            if (destroyImmediate)
+            if (Application.isEditor)
             {
                 UnityEngine.Object.DestroyImmediate(m_StepperObject);
             }
@@ -454,7 +454,7 @@ namespace MLAgents
         /// </summary>
         public void Dispose()
         {
-            DisableAutomaticStepping(true);
+            DisableAutomaticStepping();
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
