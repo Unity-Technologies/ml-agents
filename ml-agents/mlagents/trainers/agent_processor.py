@@ -1,8 +1,8 @@
 import sys
-from typing import List, Dict, Deque, TypeVar, Generic
+from typing import List, Dict, Deque, TypeVar, Generic, Tuple
 from collections import defaultdict, Counter, deque
 
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import BatchedStepResult, StepResult
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
@@ -36,7 +36,7 @@ class AgentProcessor:
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
-        self.last_step_result: Dict[str, BatchedStepResult] = {}
+        self.last_step_result: Dict[str, Tuple[StepResult, int]] = {}
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
