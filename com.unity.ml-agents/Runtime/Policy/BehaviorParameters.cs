@@ -1,6 +1,7 @@
 using Barracuda;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -37,10 +38,11 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         public int m_TeamID;
+        [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
-        bool m_useChildSensors = true;
+        bool m_UseChildSensors = true;
 
         public BrainParameters brainParameters
         {
@@ -49,7 +51,7 @@ namespace MLAgents
 
         public bool useChildSensors
         {
-            get { return m_useChildSensors; }
+            get { return m_UseChildSensors; }
         }
 
         public string behaviorName
