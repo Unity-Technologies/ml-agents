@@ -162,7 +162,7 @@ class AgentProcessor:
                     if not self.last_step_result[_gid][0].done:
                         if "action" in take_action_outputs:
                             self.policy.save_previous_action(
-                                [global_id], take_action_outputs["action"]
+                                [_gid], take_action_outputs["action"]
                             )
                     else:
                         # If it was done, delete it
