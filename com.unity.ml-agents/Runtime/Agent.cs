@@ -523,12 +523,6 @@ namespace MLAgents
         ///     - <see cref="AddObservation(float)"/>
         ///     - <see cref="AddObservation(Vector3)"/>
         ///     - <see cref="AddObservation(Vector2)"/>
-        ///     - <see>
-        ///         <cref>AddVectorObs(float[])</cref>
-        ///       </see>
-        ///     - <see>
-        ///         <cref>AddVectorObs(List{float})</cref>
-        ///      </see>
         ///     - <see cref="AddObservation(Quaternion)"/>
         ///     - <see cref="AddObservation(bool)"/>
         ///     - <see cref="AddOneHotObservation(int, int)"/>
@@ -560,12 +554,6 @@ namespace MLAgents
         ///     - <see cref="AddObservation(float)"/>
         ///     - <see cref="AddObservation(Vector3)"/>
         ///     - <see cref="AddObservation(Vector2)"/>
-        ///     - <see>
-        ///         <cref>AddVectorObs(float[])</cref>
-        ///       </see>
-        ///     - <see>
-        ///         <cref>AddVectorObs(List{float})</cref>
-        ///      </see>
         ///     - <see cref="AddObservation(Quaternion)"/>
         ///     - <see cref="AddObservation(bool)"/>
         ///     - <see cref="AddOneHotObservation(int, int)"/>
@@ -579,6 +567,9 @@ namespace MLAgents
         /// action by masking it. You can call the following method on the ActionMasker
         /// input :
         ///     - <see cref="SetActionMask(int branch, IEnumerable<int> actionIndices)"/>
+        ///     - <see cref="SetActionMask(int branch, int actionIndex)"/>
+        ///     - <see cref="SetActionMask(IEnumerable<int> actionIndices)"/>
+        ///     - <see cref="SetActionMask(int branch, int actionIndex)"/>
         /// The branch input is the index of the action, actionIndices are the indices of the
         /// invalid options for that action.
         /// </remarks>

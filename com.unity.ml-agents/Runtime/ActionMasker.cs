@@ -26,7 +26,7 @@ namespace MLAgents
         /// to the action the agent will be unable to perform.
         /// </summary>
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
-        protected void SetActionMask(IEnumerable<int> actionIndices)
+        public void SetActionMask(IEnumerable<int> actionIndices)
         {
             SetActionMask(0, actionIndices);
         }
@@ -39,7 +39,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndex">The index of the masked action</param>
-        protected void SetActionMask(int branch, int actionIndex)
+        public void SetActionMask(int branch, int actionIndex)
         {
             SetActionMask(branch, new[] { actionIndex });
         }
@@ -104,7 +104,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>A mask for the agent. A boolean array of length equal to the total number of
         /// actions.</returns>
-        public bool[] GetMask()
+        internal bool[] GetMask()
         {
             if (m_CurrentMask != null)
             {
@@ -140,7 +140,7 @@ namespace MLAgents
         /// <summary>
         /// Resets the current mask for an agent
         /// </summary>
-        public void ResetMask()
+        internal void ResetMask()
         {
             if (m_CurrentMask != null)
             {
