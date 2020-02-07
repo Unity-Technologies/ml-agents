@@ -185,10 +185,21 @@ namespace MLAgents
         /// Registers SideChannel to the Academy to send and receive data with Python.
         /// If IsCommunicatorOn is false, the SideChannel will not be registered.
         /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel channel)
         {
             LazyInitialization();
             Communicator?.RegisterSideChannel(channel);
+        }
+
+        /// <summary>
+        /// Deregisters SideChannel to the Academy if the side channel was not registered, 
+        /// nothing will happen.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be deregistered.</param>
+        public void DeregisterSideChannel(SideChannel channel)
+        {
+            Communicator?.DeregisterSideChannel(channel);
         }
 
         /// <summary>

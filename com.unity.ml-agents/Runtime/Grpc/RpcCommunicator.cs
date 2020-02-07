@@ -474,6 +474,18 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Deregisters a side channel from the communicator.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be deregistered.</param>
+        public void DeregisterSideChannel(SideChannel sideChannel)
+        {
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            {
+                m_SideChannels.Remove(sideChannel.ChannelType());
+            }
+        }
+
+        /// <summary>
         /// Grabs the messages that the registered side channels will send to Python at the current step
         /// into a singe byte array.
         /// </summary>

@@ -145,5 +145,11 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
         void RegisterSideChannel(SideChannel sideChannel);
+
+        /// <summary>
+        /// Deregisters a side channel from the communicator.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be deregistered.</param>
+        void DeregisterSideChannel(SideChannel sideChannel);
     }
 }
