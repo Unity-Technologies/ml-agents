@@ -21,9 +21,9 @@ namespace MLAgents
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
+        /// able to perform the actions passed as argument at the next decision. 
+        /// The actionIndices correspond to the actions the agent will be unable to perform
+        /// on the branch 0.
         /// </summary>
         /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
         public void SetActionMask(IEnumerable<int> actionIndices)
@@ -33,9 +33,9 @@ namespace MLAgents
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
+        /// able to perform the action passed as argument at the next decision for the specified
+        /// action branch. The actionIndex correspond to the action the agent will be unable
+        /// to perform.
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndex">The index of the masked action</param>
@@ -46,9 +46,8 @@ namespace MLAgents
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
+        /// able to perform the action passed as argument at the next decision. The actionIndex
+        /// correspond to the action the agent will be unable to perform on the branch 0.
         /// </summary>
         /// <param name="actionIndex">The index of the masked action on branch 0</param>
         public void SetActionMask(int actionIndex)
@@ -58,9 +57,9 @@ namespace MLAgents
 
         /// <summary>
         /// Modifies an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
+        /// able to perform the actions passed as argument at the next decision for the specified
+        /// action branch. The actionIndices correspond to the action options the agent will
+        /// be unable to perform.
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndices">The indices of the masked actions</param>
