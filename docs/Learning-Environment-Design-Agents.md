@@ -553,7 +553,7 @@ receive.
   * `Inference Device` - Whether to use CPU or GPU to run the model during inference
   * `Behavior Type` - Determines whether the Agent will do training, inference, or use its
   Heuristic() method:
-    * `Default` - the Agent will train if they connect to a python trainer, otherwise they will performance inference.
+    * `Default` - the Agent will train if they connect to a python trainer, otherwise they will perform inference.
     * `Heuristic Only` - the Agent will always use the `Heuristic()` method.
     * `Inference Only` - the Agent will always perform inference.
   * `Team ID` - Used to define the team for [self-play](Training-Self-Play.md)
