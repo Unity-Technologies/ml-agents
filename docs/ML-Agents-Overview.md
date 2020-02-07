@@ -324,15 +324,6 @@ Beyond the flexible training scenarios available, the ML-Agents toolkit includes
 additional features which improve the flexibility and interpretability of the
 training process.
 
-- **On Demand Decision Making** - With the ML-Agents toolkit it is possible to
-  have agents request decisions only when needed as opposed to requesting
-  decisions at every step of the environment. This enables training of turn
-  based games, games where agents must react to events or games where agents can
-  take actions of variable duration. Switching between decision taking at every
-  step and on-demand-decision is one button click away. You can learn more about
-  the on-demand-decision feature
-  [here](Learning-Environment-Design-Agents.md#on-demand-decision-making).
-
 - **Memory-enhanced Agents** - In some scenarios, agents must learn to remember
   the past in order to take the best decision. When an agent only has partial
   observability of the environment, keeping track of past observations can help

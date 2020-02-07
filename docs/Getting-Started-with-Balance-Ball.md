@@ -61,9 +61,6 @@ behavior:
   the next section.
 * **Max Step** — Defines how many simulation steps can occur before the Agent
   decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
-* **Reset On Done** — Defines whether an Agent starts over when it is finished.
-  3D Balance Ball sets this true so that the Agent restarts after reaching the
-  **Max Step** count or after dropping the ball.
 
 Perhaps the more interesting aspect of an agents is the Agent subclass
 implementation. When you create an Agent, you must extend the base Agent class.
