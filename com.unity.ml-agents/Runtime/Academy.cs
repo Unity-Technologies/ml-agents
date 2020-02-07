@@ -182,6 +182,16 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Registers SideChannel to the Academy to send and receive data with Python.
+        /// If IsCommunicatorOn is false, the SideChannel will not be registered.
+        /// </summary>
+        public void RegisterSideChannel(SideChannel channel)
+        {
+            LazyInitialization();
+            Communicator?.RegisterSideChannel(channel);
+        }
+
+        /// <summary>
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
