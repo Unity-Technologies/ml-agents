@@ -532,6 +532,9 @@ called independently of the `Max Step` property.
 
 * `Behavior Parameters` - The parameters dictating what Policy the Agent will
 receive.
+  * `Behavior Name` - The identifier for the behavior. Agents with the same behavior name
+  will learn the same policy. If you're using [curriculum learning](Training-Curriculum-Learning.md),
+   this is used as the top-level key in the config.
   * `Vector Observation`
     * `Space Size` - Length of vector observation for the Agent.
     * `Stacked Vectors` - The number of previous vector observations that will
@@ -548,8 +551,13 @@ receive.
   * `Model` - The neural network model used for inference (obtained after
   training)
   * `Inference Device` - Whether to use CPU or GPU to run the model during inference
-  * `Use Heuristic` - If checked, the Agent will use its 'Heuristic()' method for
-  decisions.
+  * `Behavior Type` - Determines whether the Agent will do training, inference, or use its
+  Heuristic() method:
+    * `Default` - the Agent will train if they connect to a python trainer, otherwise they will performance inference.
+    * `Heuristic Only` - the Agent will always use the `Heuristic()` method.
+    * `Inference Only` - the Agent will always perform inference.
+  * `Team ID` - Used to define the team for [self-play](Training-Self-Play.md)
+  * `Use Child Sensors` - Whether to use all Sensor components attached to child GameObjects of this Agent.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset.
 
