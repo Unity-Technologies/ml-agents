@@ -43,7 +43,7 @@ class SACOptimizer(TFOptimizer):
         :param m_size: Size of brain memory.
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        self._create_policy_tf_graph_if_needed(policy)
+        policy.create_tf_graph()
 
         with policy.graph.as_default():
             with tf.variable_scope(""):

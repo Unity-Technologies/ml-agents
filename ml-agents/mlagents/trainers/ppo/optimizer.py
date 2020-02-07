@@ -24,7 +24,7 @@ class PPOOptimizer(TFOptimizer):
         :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        self._create_policy_tf_graph_if_needed(policy)
+        policy.create_tf_graph()
 
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):

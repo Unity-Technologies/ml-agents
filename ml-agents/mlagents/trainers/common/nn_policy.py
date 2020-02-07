@@ -78,6 +78,12 @@ class NNPolicy(TFPolicy):
         Builds the tensorflow graph needed for this policy.
         """
         with self.graph.as_default():
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            if len(_vars) > 0:
+                # We assume the first thing created in the graph is the Policy. If
+                # already populated, don't create more tensors.
+                return
+
             self.create_input_placeholders()
             if self.use_continuous_act:
                 self.create_cc_actor(
