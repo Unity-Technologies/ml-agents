@@ -48,7 +48,7 @@ PushBlock:
     num_layers: 2
 
 SmallWallJump:
-    max_steps: 3e7
+    max_steps: 5e6
     hidden_units: 256
     summary_freq: 20000
     time_horizon: 128
@@ -57,7 +57,7 @@ SmallWallJump:
     normalize: false
 
 BigWallJump:
-    max_steps: 3e7
+    max_steps: 2e7
     hidden_units: 256
     summary_freq: 20000
     time_horizon: 128
