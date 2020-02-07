@@ -308,7 +308,7 @@ class PPOOptimizer(TFOptimizer):
     def construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
-        # Do a burn-in for memories
+        # Do an optional burn-in for memories
         num_burn_in = int(BURN_IN_RATIO * self.policy.sequence_length)
         burn_in_mask = np.ones((self.policy.sequence_length), dtype=np.float32)
         burn_in_mask[range(0, num_burn_in)] = 0
