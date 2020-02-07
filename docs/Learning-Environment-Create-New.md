@@ -343,7 +343,7 @@ with our Agent code.
 
 1. Select the **RollerAgent** GameObject to show its properties in the Inspector
     window.
-2. Add the Decision Requester Parameters script with the Add Component button from the RollerAgent Inspector.
+2. Add the Decision Requester script with the Add Component button from the RollerAgent Inspector.
 3. Change **Decision Period** from `1` to `20`.
 4. Drag the Target GameObject from the Hierarchy window to the RollerAgent
     Target field.
@@ -499,5 +499,4 @@ Keep in mind:
 
 * If you are using multiple training areas, make sure all the Agents have the same `Behavior Name`
 and `Behavior Parameters`
-
 
