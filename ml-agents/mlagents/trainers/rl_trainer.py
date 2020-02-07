@@ -3,7 +3,7 @@ import logging
 from typing import Dict
 from collections import defaultdict
 
-from mlagents.trainers.optimizer import TFOptimizer
+from mlagents.trainers.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException

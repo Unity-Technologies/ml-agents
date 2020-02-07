@@ -6,7 +6,7 @@ from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.optimizer import TFOptimizer
+from mlagents.trainers.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 
 
