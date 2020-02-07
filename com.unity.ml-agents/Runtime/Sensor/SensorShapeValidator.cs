@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     internal class SensorShapeValidator
     {

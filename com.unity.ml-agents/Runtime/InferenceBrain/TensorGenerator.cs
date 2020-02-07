@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Barracuda;
-using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {

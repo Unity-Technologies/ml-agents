@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {

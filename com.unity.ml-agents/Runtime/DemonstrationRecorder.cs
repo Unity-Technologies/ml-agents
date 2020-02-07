@@ -2,7 +2,6 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
