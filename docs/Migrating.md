@@ -10,9 +10,14 @@ The versions can be found in
 ## Migrating from 0.14 to latest
 
 ### Important changes
+* The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
+* The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
+
 
 ### Steps to Migrate
+* Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
+
 
 
 ## Migrating from 0.13 to 0.14

@@ -1,7 +1,6 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
-using MLAgents.Sensor;
 using System.Collections.Generic;
 
 namespace MLAgents.Tests
@@ -51,10 +50,10 @@ namespace MLAgents.Tests
             sensors.Add(sensor1);
         }
 
-        public override void CollectObservations()
+        public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
-            AddVectorObs(0f);
+            sensor.AddObservation(0f);
         }
 
         public override void AgentAction(float[] vectorAction)

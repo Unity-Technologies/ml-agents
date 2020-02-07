@@ -132,12 +132,12 @@ public class WallJumpAgent : Agent
         }
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         var agentPos = m_AgentRb.position - ground.transform.position;
 
-        AddVectorObs(agentPos / 20f);
-        AddVectorObs(DoGroundCheck(true) ? 1 : 0);
+        sensor.AddObservation(agentPos / 20f);
+        sensor.AddObservation(DoGroundCheck(true) ? 1 : 0);
     }
 
     /// <summary>

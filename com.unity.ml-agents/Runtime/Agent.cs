@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
-using MLAgents.Sensor;
 using UnityEngine.Serialization;
 
 namespace MLAgents
@@ -482,7 +481,7 @@ namespace MLAgents
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
-                CollectObservations();
+                CollectObservations(collectObservationsSensor);
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
@@ -508,30 +507,31 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Collects the (vector, visual) observations of the agent.
+        /// Collects the vector observations of the agent.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
         /// <remarks>
-        /// Simply, an agents observation is any environment information that helps
-        /// the Agent acheive its goal. For example, for a fighting Agent, its
+        /// An agents observation is any environment information that helps
+        /// the Agent achieve its goal. For example, for a fighting Agent, its
         /// observation could include distances to friends or enemies, or the
         /// current level of ammunition at its disposal.
         /// Recall that an Agent may attach vector or visual observations.
-        /// Vector observations are added by calling the provided helper methods:
-        ///     - <see cref="AddVectorObs(int)"/>
-        ///     - <see cref="AddVectorObs(float)"/>
-        ///     - <see cref="AddVectorObs(Vector3)"/>
-        ///     - <see cref="AddVectorObs(Vector2)"/>
+        /// Vector observations are added by calling the provided helper methods
+        /// on the VectorSensor input:
+        ///     - <see cref="AddObservation(int)"/>
+        ///     - <see cref="AddObservation(float)"/>
+        ///     - <see cref="AddObservation(Vector3)"/>
+        ///     - <see cref="AddObservation(Vector2)"/>
         ///     - <see>
         ///         <cref>AddVectorObs(float[])</cref>
         ///       </see>
         ///     - <see>
         ///         <cref>AddVectorObs(List{float})</cref>
         ///      </see>
-        ///     - <see cref="AddVectorObs(Quaternion)"/>
-        ///     - <see cref="AddVectorObs(bool)"/>
-        ///     - <see cref="AddVectorObs(int, int)"/>
+        ///     - <see cref="AddObservation(Quaternion)"/>
+        ///     - <see cref="AddObservation(bool)"/>
+        ///     - <see cref="AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation
@@ -539,7 +539,7 @@ namespace MLAgents
         /// Visual observations are implicitly added from the cameras attached to
         /// the Agent.
         /// </remarks>
-        public virtual void CollectObservations()
+        public virtual void CollectObservations(VectorSensor sensor)
         {
         }
 
@@ -591,81 +591,6 @@ namespace MLAgents
         protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
         {
             m_ActionMasker.SetActionMask(branch, actionIndices);
-        }
-
-        /// <summary>
-        /// Adds a float observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by 1.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(float observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds an integer observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by 1.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(int observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds an Vector3 observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by 3.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(Vector3 observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds an Vector2 observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by 2.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(Vector2 observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds a collection of float observations to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by size of the collection.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(IEnumerable<float> observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds a quaternion observation to the vector observations of the agent.
-        /// Increases the size of the agents vector observation by 4.
-        /// </summary>
-        /// <param name="observation">Observation.</param>
-        protected void AddVectorObs(Quaternion observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        /// <summary>
-        /// Adds a boolean observation to the vector observation of the agent.
-        /// Increases the size of the agent's vector observation by 1.
-        /// </summary>
-        /// <param name="observation"></param>
-        protected void AddVectorObs(bool observation)
-        {
-            collectObservationsSensor.AddObservation(observation);
-        }
-
-        protected void AddVectorObs(int observation, int range)
-        {
-            collectObservationsSensor.AddOneHotObservation(observation, range);
         }
 
         /// <summary>

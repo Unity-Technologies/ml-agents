@@ -35,6 +35,7 @@ should make its decisions every step of the simulation. On the other hand, an
 agent that only needs to make decisions when certain game or simulation events
 occur, should call `Agent.RequestDecision()` manually.
 
+
 ## Observations
 
 To make decisions, an agent must observe its environment in order to infer the
@@ -45,18 +46,18 @@ state of the world. A state observation can take the following forms:
 * **Visual Observations** — one or more camera images and/or render textures.
 
 When you use vector observations for an Agent, implement the
-`Agent.CollectObservations()` method to create the feature vector. When you use
+`Agent.CollectObservations(VectorSensor sensor)` method to create the feature vector. When you use
 **Visual Observations**, you only need to identify which Unity Camera objects
 or RenderTextures will provide images and the base Agent class handles the rest.
-You do not need to implement the `CollectObservations()` method when your Agent
+You do not need to implement the `CollectObservations(VectorSensor sensor)` method when your Agent
 uses visual observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to
 represent the agent's observation at each step of the simulation. The Policy
-class calls the `CollectObservations()` method of each Agent. Your
-implementation of this function must call `AddVectorObs` to add vector
+class calls the `CollectObservations(VectorSensor sensor)` method of each Agent. Your
+implementation of this function must call `VectorSensor.AddObservation` to add vector
 observations.
 
 The observation must include all the information an agents needs to accomplish
@@ -78,16 +79,16 @@ noticeably worse.
 public GameObject ball;
 
 private List<float> state = new List<float>();
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
-    AddVectorObs(gameObject.transform.rotation.z);
-    AddVectorObs(gameObject.transform.rotation.x);
-    AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
-    AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
-    AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
+    sensor.AddObservation(gameObject.transform.rotation.z);
+    sensor.AddObservation(gameObject.transform.rotation.x);
+    sensor.AddObservation((ball.transform.position.x - gameObject.transform.position.x));
+    sensor.AddObservation((ball.transform.position.y - gameObject.transform.position.y));
+    sensor.AddObservation((ball.transform.position.z - gameObject.transform.position.z));
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.x);
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.y);
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.z);
 }
 ```
 
@@ -106,7 +107,7 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-The `AddVectorObs` method provides a number of overloads for adding common types
+The `VectorSensor.AddObservation` method provides a number of overloads for adding common types
 of data to your observation vector. You can add Integers and booleans directly to
 the observation vector, as well as some common Unity data types such as `Vector2`,
 `Vector3`, and `Quaternion`.
@@ -121,27 +122,27 @@ the feature vector. The following code example illustrates how to add.
 ```csharp
 enum CarriedItems { Sword, Shield, Bow, LastItem }
 private List<float> state = new List<float>();
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
     for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
     {
-        AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);
+        sensor.AddObservation((int)currentItem == ci ? 1.0f : 0.0f);
     }
 }
 ```
 
-`AddVectorObs` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp
 enum CarriedItems { Sword, Shield, Bow, LastItem }
 const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
 
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
     // The first argument is the selection index; the second is the
     // number of possibilities
-    AddVectorObs((int)currentItem, NUM_ITEM_TYPES);
+    sensor.AddOneHotObservation((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
