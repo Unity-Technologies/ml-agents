@@ -26,7 +26,7 @@ def dummy_config():
         init_entcoef: 0.1
         learning_rate: 3.0e-4
         max_steps: 1024
-        memory_size: 8
+        memory_size: 10
         normalize: false
         num_update: 1
         train_interval: 1
