@@ -481,7 +481,7 @@ namespace MLAgents
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
-                CollectObservations(collectObservationsSensor);
+                CollectObservations(collectObservationsSensor, m_ActionMasker);
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
@@ -544,53 +544,47 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
+        /// Collects the vector observations of the agent.
+        /// The agent observation describes the current environment from the
+        /// perspective of the agent.
         /// </summary>
-        /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
-        protected void SetActionMask(IEnumerable<int> actionIndices)
+        /// <remarks>
+        /// An agents observation is any environment information that helps
+        /// the Agent achieve its goal. For example, for a fighting Agent, its
+        /// observation could include distances to friends or enemies, or the
+        /// current level of ammunition at its disposal.
+        /// Recall that an Agent may attach vector or visual observations.
+        /// Vector observations are added by calling the provided helper methods
+        /// on the VectorSensor input:
+        ///     - <see cref="AddObservation(int)"/>
+        ///     - <see cref="AddObservation(float)"/>
+        ///     - <see cref="AddObservation(Vector3)"/>
+        ///     - <see cref="AddObservation(Vector2)"/>
+        ///     - <see>
+        ///         <cref>AddVectorObs(float[])</cref>
+        ///       </see>
+        ///     - <see>
+        ///         <cref>AddVectorObs(List{float})</cref>
+        ///      </see>
+        ///     - <see cref="AddObservation(Quaternion)"/>
+        ///     - <see cref="AddObservation(bool)"/>
+        ///     - <see cref="AddOneHotObservation(int, int)"/>
+        /// Depending on your environment, any combination of these helpers can
+        /// be used. They just need to be used in the exact same order each time
+        /// this method is called and the resulting size of the vector observation
+        /// needs to match the vectorObservationSize attribute of the linked Brain.
+        /// Visual observations are implicitly added from the cameras attached to
+        /// the Agent.
+        /// When using Discrete Control, you can prevent the Agent from using a certain
+        /// action by masking it. You can call the following method on the ActionMasker
+        /// input :
+        ///     - <see cref="SetActionMask(int branch, IEnumerable<int> actionIndices)"/>
+        /// The branch input is the index of the action, actionIndices are the indices of the
+        /// invalid options for that action.
+        /// </remarks>
+        public virtual void CollectObservations(VectorSensor sensor, ActionMasker actionMasker)
         {
-            m_ActionMasker.SetActionMask(0, actionIndices);
-        }
-
-        /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
-        /// </summary>
-        /// <param name="actionIndex">The index of the masked action on branch 0</param>
-        protected void SetActionMask(int actionIndex)
-        {
-            m_ActionMasker.SetActionMask(0, new[] { actionIndex });
-        }
-
-        /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
-        /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndex">The index of the masked action</param>
-        protected void SetActionMask(int branch, int actionIndex)
-        {
-            m_ActionMasker.SetActionMask(branch, new[] { actionIndex });
-        }
-
-        /// <summary>
-        /// Modifies an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. If no branch is
-        /// specified, the default branch will be 0. The actionIndex or actionIndices correspond
-        /// to the action the agent will be unable to perform.
-        /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndices">The indices of the masked actions</param>
-        protected void SetActionMask(int branch, IEnumerable<int> actionIndices)
-        {
-            m_ActionMasker.SetActionMask(branch, actionIndices);
+            CollectObservations(sensor);
         }
 
         /// <summary>
