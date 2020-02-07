@@ -1,5 +1,5 @@
 import sys
-from typing import List, Dict, Deque, TypeVar, Generic, Tuple
+from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Set
 from collections import defaultdict, Counter, deque
 
 from mlagents_envs.base_env import BatchedStepResult, StepResult
@@ -69,13 +69,14 @@ class AgentProcessor:
                 "Policy/Learning Rate", take_action_outputs["learning_rate"]
             )
 
-        terminated_agents: List[str] = []
+        terminated_agents: Set[str] = set()
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
             get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
         ]
         for global_id in action_global_agent_ids:
-            self.last_take_action_outputs[global_id] = take_action_outputs
+            if global_id in self.last_step_result:  # Don't store if agent just reset
+                self.last_take_action_outputs[global_id] = take_action_outputs
 
         for _id in batched_step_result.agent_id:  # Assume agent_id is 1-D
             local_id = int(
@@ -153,20 +154,9 @@ class AgentProcessor:
                             "Environment/Episode Length",
                             self.episode_steps.get(global_id, 0),
                         )
-                        terminated_agents += [global_id]
+                        terminated_agents.add(global_id)
                 elif not curr_agent_step.done:
                     self.episode_steps[global_id] += 1
-
-            for _gid in action_global_agent_ids:
-                if _gid in self.last_step_result:
-                    if not self.last_step_result[_gid][0].done:
-                        if "action" in take_action_outputs:
-                            self.policy.save_previous_action(
-                                [_gid], take_action_outputs["action"]
-                            )
-                    else:
-                        # If it was done, delete it
-                        del self.last_step_result[_gid]
 
             # Index is needed to grab from last_take_action_outputs
             self.last_step_result[global_id] = (
@@ -177,12 +167,22 @@ class AgentProcessor:
         for terminated_id in terminated_agents:
             self._clean_agent_data(terminated_id)
 
+        for _gid in action_global_agent_ids:
+            # If the ID doesn't have a last step result, the agent just reset,
+            # don't store the action.
+            if _gid in self.last_step_result:
+                if "action" in take_action_outputs:
+                    self.policy.save_previous_action(
+                        [_gid], take_action_outputs["action"]
+                    )
+
     def _clean_agent_data(self, global_id: str) -> None:
         """
         Removes the data for an Agent.
         """
         del self.experience_buffers[global_id]
         del self.last_take_action_outputs[global_id]
+        del self.last_step_result[global_id]
         del self.episode_steps[global_id]
         del self.episode_rewards[global_id]
         self.policy.remove_previous_action([global_id])
