@@ -12,6 +12,7 @@ The versions can be found in
 ### Important changes
 * The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
+* The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
 
 
 ### Steps to Migrate
