@@ -3,7 +3,6 @@ using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
-using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
