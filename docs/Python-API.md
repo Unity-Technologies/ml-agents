@@ -271,7 +271,7 @@ float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 
 #### [Advanced] Create your own SideChannel
 
-you can create your own `SideChannel` in C# and Python and use it to communicate data between the two.
+You can create your own `SideChannel` in C# and Python and use it to communicate data between the two.
 
 ##### Unity side
 The side channel will have to implement the `SideChannel` abstract class. There are two methods
