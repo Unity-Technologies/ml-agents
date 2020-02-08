@@ -267,7 +267,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     StatsReporter.add_writer(csv_writer)
 
     if options.env_path is None:
-        port = 5004  # This is the in Editor Training Port
+        port = UnityEnvironment.DEFAULT_EDITOR_PORT
     env_factory = create_environment_factory(
         options.env_path,
         options.docker_target_name,
