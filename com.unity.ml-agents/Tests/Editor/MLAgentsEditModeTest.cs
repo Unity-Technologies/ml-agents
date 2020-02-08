@@ -484,7 +484,7 @@ namespace MLAgents.Tests
             var j = 0;
             for (var i = 0; i < 500; i++)
             {
-                if (i % 20 == 0)
+                if (i % 21 == 0)
                 {
                     j = 0;
                 }
