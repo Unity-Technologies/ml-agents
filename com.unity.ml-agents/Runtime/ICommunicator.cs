@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using MLAgents.CommunicatorObjects;
 
 namespace MLAgents
 {
@@ -43,7 +42,6 @@ namespace MLAgents
     /// <summary>
     /// Delegate for handling reset parameter updates sent from the communicator.
     /// </summary>
-    /// <param name="resetParams"></param>
     internal delegate void ResetCommandHandler();
 
     /// <summary>
@@ -121,7 +119,6 @@ namespace MLAgents
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="info">Agent info.</param>
         /// <param name="sensors">The list of ISensors of the Agent.</param>
-        /// <param name="action">The action that will be called once the next AgentAction is ready.</param>
         void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors);
 
         /// <summary>

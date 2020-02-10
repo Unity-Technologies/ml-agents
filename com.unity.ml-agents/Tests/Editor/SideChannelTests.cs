@@ -1,6 +1,5 @@
 using System;
 using NUnit.Framework;
-using MLAgents;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,13 +10,13 @@ namespace MLAgents.Tests
         // This test side channel only deals in integers
         public class TestSideChannel : SideChannel
         {
-            public List<int> m_MessagesReceived = new List<int>();
+            public List<int> messagesReceived = new List<int>();
 
             public override int ChannelType() { return -1; }
 
             public override void OnMessageReceived(byte[] data)
             {
-                m_MessagesReceived.Add(BitConverter.ToInt32(data, 0));
+                messagesReceived.Add(BitConverter.ToInt32(data, 0));
             }
 
             public void SendInt(int data)
@@ -41,9 +40,9 @@ namespace MLAgents.Tests
             byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
             RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
 
-            Assert.AreEqual(intReceiver.m_MessagesReceived[0], 4);
-            Assert.AreEqual(intReceiver.m_MessagesReceived[1], 5);
-            Assert.AreEqual(intReceiver.m_MessagesReceived[2], 6);
+            Assert.AreEqual(intReceiver.messagesReceived[0], 4);
+            Assert.AreEqual(intReceiver.messagesReceived[1], 5);
+            Assert.AreEqual(intReceiver.messagesReceived[2], 6);
         }
 
         [Test]

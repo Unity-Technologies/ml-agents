@@ -30,16 +30,9 @@ public class SoccerFieldArea : MonoBehaviour
     public GameObject goalTextUI;
     [HideInInspector]
     public bool canResetBall;
-    Material m_GroundMaterial;
-    Renderer m_GroundRenderer;
-
-    SoccerSettings m_SoccerSettings;
 
     void Awake()
     {
-        m_SoccerSettings = FindObjectOfType<SoccerSettings>();
-        m_GroundRenderer = centerPitch.GetComponent<Renderer>();
-        m_GroundMaterial = m_GroundRenderer.material;
         canResetBall = true;
         if (goalTextUI) { goalTextUI.SetActive(false); }
         ballRb = ball.GetComponent<Rigidbody>();

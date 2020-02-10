@@ -3,7 +3,6 @@ using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
 using MLAgents.InferenceBrain;
-using System.Reflection;
 
 
 namespace MLAgents.Tests
