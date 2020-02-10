@@ -37,7 +37,9 @@ namespace MLAgents.Tests
 
         public int initializeAgentCalls;
         public int collectObservationsCalls;
+        public int collectObservationsCallsSinceLastReset;
         public int agentActionCalls;
+        public int agentActionCallsSinceLastReset;
         public int agentResetCalls;
         public override void InitializeAgent()
         {
@@ -54,19 +56,22 @@ namespace MLAgents.Tests
         public override void CollectObservations()
         {
             collectObservationsCalls += 1;
+            collectObservationsCallsSinceLastReset += 1;
             AddVectorObs(0f);
         }
 
         public override void AgentAction(float[] vectorAction)
         {
             agentActionCalls += 1;
+            agentActionCallsSinceLastReset += 1;
             AddReward(0.1f);
         }
 
         public override void AgentReset()
         {
-            Debug.Log("AgentReset()");
             agentResetCalls += 1;
+            collectObservationsCallsSinceLastReset = 0;
+            agentActionCallsSinceLastReset = 0;
         }
 
         public override float[] Heuristic()
@@ -503,7 +508,7 @@ namespace MLAgents.Tests
         }
 
         [Test]
-        public void TestMaxSteps()
+        public void TestMaxStepsReset()
         {
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
@@ -511,7 +516,7 @@ namespace MLAgents.Tests
             var aca = Academy.Instance;
 
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
-            decisionRequester.DecisionPeriod = 2;
+            decisionRequester.DecisionPeriod = 1;
             decisionRequester.Awake();
 
             var maxStep = 6;
@@ -520,14 +525,20 @@ namespace MLAgents.Tests
 
             for (var i = 0; i < 15; i++)
             {
-                var atMaxStep = agent1.GetStepCount() == maxStep; // whether agent will reset this step
-                if (!atMaxStep)
-                {
-                    //Assert.AreEqual(i % maxStep, agent1.GetStepCount());
-                }
+                // We expect resets to occur when there are maxSteps actions since the last reset (and on the first step)
+                var expectReset = agent1.agentActionCallsSinceLastReset == maxStep || (i == 0);
+                var previousNumResets = agent1.agentResetCalls;
 
-                Debug.Log($"i={i} agent1.GetStepCount()={agent1.GetStepCount()}");
                 aca.EnvironmentStep();
+
+                if (expectReset)
+                {
+                    Assert.AreEqual(previousNumResets + 1, agent1.agentResetCalls);
+                }
+                else
+                {
+                    Assert.AreEqual(previousNumResets, agent1.agentResetCalls);
+                }
             }
         }
     }
