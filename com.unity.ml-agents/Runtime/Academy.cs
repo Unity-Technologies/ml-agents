@@ -193,13 +193,13 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Deregisters SideChannel to the Academy. If the side channel was not registered, 
+        /// Unregisters SideChannel to the Academy. If the side channel was not registered, 
         /// nothing will happen.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be deregistered.</param>
-        public void DeregisterSideChannel(SideChannel channel)
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        public void UnregisterSideChannel(SideChannel channel)
         {
-            Communicator?.DeregisterSideChannel(channel);
+            Communicator?.UnregisterSideChannel(channel);
         }
 
         /// <summary>

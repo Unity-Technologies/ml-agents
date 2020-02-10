@@ -474,10 +474,10 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Deregisters a side channel from the communicator.
+        /// Unregisters a side channel from the communicator.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be deregistered.</param>
-        public void DeregisterSideChannel(SideChannel sideChannel)
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        public void UnregisterSideChannel(SideChannel sideChannel)
         {
             if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
             {

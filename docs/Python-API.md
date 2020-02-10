@@ -370,7 +370,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // De-register the Debug.Log callback
         Application.logMessageReceived -= stringChannel.SendDebugStatementToPython;
         if (Academy.IsInitialized){
-            Academy.Instance.DeregisterSideChannel(stringChannel);
+            Academy.Instance.UnregisterSideChannel(stringChannel);
         }
     }
 
