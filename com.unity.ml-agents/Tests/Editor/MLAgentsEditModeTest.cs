@@ -514,11 +514,11 @@ namespace MLAgents.Tests
             decisionRequester.DecisionPeriod = 2;
             decisionRequester.Awake();
 
-            var maxStep = 20;
+            var maxStep = 6;
             agent1.maxStep = maxStep;
             agent1.LazyInitialize();
 
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 15; i++)
             {
                 var atMaxStep = agent1.GetStepCount() == maxStep; // whether agent will reset this step
                 if (!atMaxStep)
