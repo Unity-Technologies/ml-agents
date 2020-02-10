@@ -136,7 +136,6 @@ def test_agent_deletion():
 
     # Run 3 trajectories, with different workers (to simulate different agents)
     add_calls = []
-    add_calls.append(mock.call([get_global_agent_id(0, 0)], [0.1]))
     remove_calls = []
     for _ep in range(3):
         for _ in range(5):
