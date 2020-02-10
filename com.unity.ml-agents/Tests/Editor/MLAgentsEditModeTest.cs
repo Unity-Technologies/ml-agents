@@ -65,6 +65,7 @@ namespace MLAgents.Tests
 
         public override void AgentReset()
         {
+            Debug.Log("AgentReset()");
             agentResetCalls += 1;
         }
 
@@ -497,6 +498,35 @@ namespace MLAgents.Tests
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
+                aca.EnvironmentStep();
+            }
+        }
+
+        [Test]
+        public void TestMaxSteps()
+        {
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 2;
+            decisionRequester.Awake();
+
+            var maxStep = 20;
+            agent1.maxStep = maxStep;
+            agent1.LazyInitialize();
+
+            for (var i = 0; i < 50; i++)
+            {
+                var atMaxStep = agent1.GetStepCount() == maxStep; // whether agent will reset this step
+                if (!atMaxStep)
+                {
+                    //Assert.AreEqual(i % maxStep, agent1.GetStepCount());
+                }
+
+                Debug.Log($"i={i} agent1.GetStepCount()={agent1.GetStepCount()}");
                 aca.EnvironmentStep();
             }
         }

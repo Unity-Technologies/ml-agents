@@ -758,10 +758,8 @@ namespace MLAgents
                 NotifyAgentDone(true);
                 _AgentReset();
             }
-            else
-            {
-                m_StepCount += 1;
-            }
+            m_StepCount += 1;
+
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
