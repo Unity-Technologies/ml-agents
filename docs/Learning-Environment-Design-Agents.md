@@ -391,10 +391,12 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action, call the method `SetActionMask` within the `CollectObservation` method :
+action, call the method `SetActionMask` on the optional `ActionMasker` argument of the `CollectObservation` method :
 
 ```csharp
-SetActionMask(branch, actionIndices)
+public override void CollectObservations(VectorSensor sensor, ActionMasker actionMasker){
+    actionMasker.SetActionMask(branch, actionIndices)
+}
 ```
 
 Where:
