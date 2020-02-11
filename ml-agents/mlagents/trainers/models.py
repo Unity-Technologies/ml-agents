@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -27,6 +27,13 @@ class EncoderType(Enum):
 class LearningRateSchedule(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
+
+
+class NormalizerTensors(NamedTuple):
+    update_op: tf.Operation
+    steps: tf.Tensor
+    running_mean: tf.Tensor
+    running_variance: tf.Tensor
 
 
 class LearningModel:
@@ -143,9 +150,7 @@ class LearningModel:
         return normalized_state
 
     @staticmethod
-    def create_normalizer(
-        vector_obs: tf.Tensor
-    ) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor, tf.Tensor]:
+    def create_normalizer(vector_obs: tf.Tensor) -> NormalizerTensors:
         vec_obs_size = vector_obs.shape[1]
         steps = tf.get_variable(
             "normalization_steps",
@@ -171,7 +176,9 @@ class LearningModel:
         update_normalization = LearningModel.create_normalizer_update(
             vector_obs, steps, running_mean, running_variance
         )
-        return update_normalization, steps, running_mean, running_variance
+        return NormalizerTensors(
+            update_normalization, steps, running_mean, running_variance
+        )
 
     @staticmethod
     def create_normalizer_update(

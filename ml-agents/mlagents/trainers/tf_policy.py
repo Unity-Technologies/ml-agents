@@ -437,10 +437,10 @@ class TFPolicy(Policy):
             self.vector_in = LearningModel.create_vector_input(self.vec_obs_size)
             if self.normalize:
                 normalization_tensors = LearningModel.create_normalizer(self.vector_in)
-                self.update_normalization_op = normalization_tensors[0]
-                self.normalization_steps = normalization_tensors[1]
-                self.running_mean = normalization_tensors[2]
-                self.running_variance = normalization_tensors[3]
+                self.update_normalization_op = normalization_tensors.update_op
+                self.normalization_steps = normalization_tensors.steps
+                self.running_mean = normalization_tensors.running_mean
+                self.running_variance = normalization_tensors.running_variance
                 self.processed_vector_in = LearningModel.normalize_vector_obs(
                     self.vector_in,
                     self.running_mean,
