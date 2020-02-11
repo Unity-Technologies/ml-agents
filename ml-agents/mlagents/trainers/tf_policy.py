@@ -96,6 +96,13 @@ class TFPolicy(Policy):
                     "The memory size for brain {0} is 0 even "
                     "though the trainer uses recurrent.".format(brain.brain_name)
                 )
+            elif self.m_size % 2 != 0:
+                raise UnityPolicyException(
+                    "The memory size for brain {0} is {1} "
+                    "but it must be divisible by 2.".format(
+                        brain.brain_name, self.m_size
+                    )
+                )
         self._initialize_tensorflow_references()
         self.load = load
 
