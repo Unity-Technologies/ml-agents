@@ -2187,7 +2187,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: FoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114176228333253036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2436,6 +2436,7 @@ GameObject:
   - component: {fileID: 114522573150607728}
   - component: {fileID: 114711827726849508}
   - component: {fileID: 114443152683847924}
+  - component: {fileID: 259154752087955944}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -2511,7 +2512,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: FoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114711827726849508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2567,6 +2568,21 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0
   endVerticalOffset: 0
+--- !u!114 &259154752087955944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495617568563208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1528397385587768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2749,6 +2765,7 @@ GameObject:
   - component: {fileID: 114980787530065684}
   - component: {fileID: 114542632553128056}
   - component: {fileID: 114986980423924774}
+  - component: {fileID: 5519119940433428255}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -2824,7 +2841,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: FoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114542632553128056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2880,6 +2897,21 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0
   endVerticalOffset: 0
+--- !u!114 &5519119940433428255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1601500200010266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1617924810425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -3325,6 +3357,7 @@ GameObject:
   - component: {fileID: 114878550018296316}
   - component: {fileID: 114189751434580810}
   - component: {fileID: 114644889237473510}
+  - component: {fileID: 5884750436653390196}
   m_Layer: 0
   m_Name: Agent (4)
   m_TagString: agent
@@ -3400,7 +3433,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: FoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114189751434580810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3456,6 +3489,21 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0
   endVerticalOffset: 0
+--- !u!114 &5884750436653390196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672905243433088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1688105343773098
 GameObject:
   m_ObjectHideFlags: 0
@@ -3624,6 +3672,7 @@ GameObject:
   - component: {fileID: 114035338027591536}
   - component: {fileID: 114235147148547996}
   - component: {fileID: 114276061479012222}
+  - component: {fileID: 4768752321433982785}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -3699,7 +3748,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: FoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114235147148547996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3755,6 +3804,21 @@ MonoBehaviour:
   useWorldPositions: 1
   startVerticalOffset: 0
   endVerticalOffset: 0
+--- !u!114 &4768752321433982785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706274796045088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1729825611722018
 GameObject:
   m_ObjectHideFlags: 0
