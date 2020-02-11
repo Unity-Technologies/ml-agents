@@ -188,12 +188,12 @@ namespace MLAgents
         /// <param name="sideChannel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel channel)
         {
-            LazyInitialization();
+            LazyInitialize();
             Communicator?.RegisterSideChannel(channel);
         }
 
         /// <summary>
-        /// Unregisters SideChannel to the Academy. If the side channel was not registered, 
+        /// Unregisters SideChannel to the Academy. If the side channel was not registered,
         /// nothing will happen.
         /// </summary>
         /// <param name="sideChannel"> The side channel to be unregistered.</param>
