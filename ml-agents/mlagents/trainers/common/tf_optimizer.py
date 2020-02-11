@@ -14,7 +14,6 @@ from mlagents.trainers.components.bc.module import BCModule
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
     def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
-        super().__init__(policy)
         self.sess = policy.sess
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}

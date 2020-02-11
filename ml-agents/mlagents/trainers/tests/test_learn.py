@@ -120,7 +120,6 @@ def test_commandline_args(mock_file):
         "--docker-target-name=mydockertarget",
         "--no-graphics",
         "--debug",
-        "--multi-gpu",
     ]
 
     opt = parse_command_line(full_args)

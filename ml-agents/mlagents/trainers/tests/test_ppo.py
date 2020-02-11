@@ -176,7 +176,7 @@ def test_trainer_increment_step(ppo_optimizer, dummy_config):
     )
 
     trainer = PPOTrainer(
-        brain_params.brain_name, 0, trainer_params, True, False, 0, "0", False
+        brain_params.brain_name, 0, trainer_params, True, False, 0, "0"
     )
     policy_mock = mock.Mock(spec=NNPolicy)
     policy_mock.get_current_step.return_value = 0
@@ -210,9 +210,7 @@ def test_trainer_update_policy(dummy_config, use_discrete):
     trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
     trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
 
-    trainer = PPOTrainer(
-        mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
-    )
+    trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
     policy = trainer.create_policy(mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
     # Test update with sequence length smaller than batch size
@@ -247,7 +245,7 @@ def test_process_trajectory(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
     trajectory_queue = AgentManagerQueue("testbrain")
@@ -306,7 +304,7 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
 
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0", False)
+    trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
 

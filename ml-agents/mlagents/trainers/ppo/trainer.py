@@ -8,7 +8,6 @@ from collections import defaultdict
 import numpy as np
 
 from mlagents.trainers.common.nn_policy import NNPolicy
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuNNPolicy, get_devices
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
@@ -30,7 +29,6 @@ class PPOTrainer(RLTrainer):
         load: bool,
         seed: int,
         run_id: str,
-        multi_gpu: bool,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -41,7 +39,6 @@ class PPOTrainer(RLTrainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
-        :param multi_gpu: Boolean for multi-gpu policy model
         """
         super(PPOTrainer, self).__init__(
             brain_name, trainer_parameters, training, run_id, reward_buff_cap
@@ -69,7 +66,6 @@ class PPOTrainer(RLTrainer):
         ]
         self._check_param_keys()
         self.load = load
-        self.multi_gpu = multi_gpu
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
 
@@ -217,24 +213,14 @@ class PPOTrainer(RLTrainer):
         :param brain_parameters: specifications for policy construction
         :return policy
         """
-
-        if self.multi_gpu and len(get_devices()) > 1:
-            policy: NNPolicy = MultiGpuNNPolicy(
-                self.seed,
-                brain_parameters,
-                self.trainer_parameters,
-                self.is_training,
-                self.load,
-            )
-        else:
-            policy = NNPolicy(
-                self.seed,
-                brain_parameters,
-                self.trainer_parameters,
-                self.is_training,
-                self.load,
-                create_tf_graph=False,  # We will create the TF graph in the Optimizer
-            )
+        policy = NNPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_parameters,
+            self.is_training,
+            self.load,
+            create_tf_graph=False,  # We will create the TF graph in the Optimizer
+        )
 
         return policy
 

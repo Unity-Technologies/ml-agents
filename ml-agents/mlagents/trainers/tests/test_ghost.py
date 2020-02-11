@@ -70,9 +70,7 @@ def test_load_and_set(dummy_config, use_discrete):
     )
 
     trainer_params = dummy_config
-    trainer = PPOTrainer(
-        mock_brain.brain_name, 0, trainer_params, True, False, 0, "0", False
-    )
+    trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
     trainer.seed = 1
     policy = trainer.create_policy(mock_brain)
     policy.create_tf_graph()
@@ -120,7 +118,7 @@ def test_process_trajectory(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0", False)
+    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     trainer = GhostTrainer(ppo_trainer, brain_name, 0, dummy_config, True, "0")
 
     # first policy encountered becomes policy trained by wrapped PPO
@@ -180,7 +178,7 @@ def test_publish_queue(dummy_config):
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0", False)
+    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     trainer = GhostTrainer(ppo_trainer, brain_name, 0, dummy_config, True, "0")
 
     # First policy encountered becomes policy trained by wrapped PPO
