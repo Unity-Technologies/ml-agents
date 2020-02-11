@@ -11,7 +11,7 @@ class CuriosityModel(object):
     ):
         """
         Creates the curiosity model for the Curiosity reward Generator
-        :param policy: The model being used by the learning policy
+        :param policy: The policy being trained
         :param encoding_size: The size of the encoding for the Curiosity module
         :param learning_rate: The learning rate for the curiosity module
         """
