@@ -2,7 +2,6 @@ import abc
 from typing import Dict
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.policy import Policy
 
 
 class Optimizer(abc.ABC):
@@ -10,14 +9,6 @@ class Optimizer(abc.ABC):
     Creates loss functions and auxillary networks (e.g. Q or Value) needed for training.
     Provides methods to update the Policy.
     """
-
-    @abc.abstractmethod
-    def __init__(self, policy: Policy):
-        """
-        Create loss functions and auxillary networks.
-        :param policy: Policy object that is updated by the Optimizer
-        """
-        pass
 
     @abc.abstractmethod
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

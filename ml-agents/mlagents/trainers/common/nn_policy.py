@@ -86,7 +86,7 @@ class NNPolicy(TFPolicy):
 
             self.create_input_placeholders()
             if self.use_continuous_act:
-                self.create_cc_actor(
+                self._create_cc_actor(
                     self.h_size,
                     self.num_layers,
                     self.vis_encode_type,
@@ -94,7 +94,9 @@ class NNPolicy(TFPolicy):
                     self.resample,
                 )
             else:
-                self.create_dc_actor(self.h_size, self.num_layers, self.vis_encode_type)
+                self._create_dc_actor(
+                    self.h_size, self.num_layers, self.vis_encode_type
+                )
             self.trainable_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
             )
@@ -140,7 +142,7 @@ class NNPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def create_cc_actor(
+    def _create_cc_actor(
         self,
         h_size: int,
         num_layers: int,
@@ -256,7 +258,7 @@ class NNPolicy(TFPolicy):
             shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
         )
 
-    def create_dc_actor(
+    def _create_dc_actor(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
