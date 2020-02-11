@@ -118,7 +118,7 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
 
         return value_estimates
 
-    def create_reward_signals(self, reward_signal_configs):
+    def create_reward_signals(self, reward_signal_configs: Dict[str, Any]) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
@@ -131,10 +131,14 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
-    def create_tf_optimizer(self, learning_rate, name="Adam"):
+    def create_tf_optimizer(
+        self, learning_rate: float, name: str = "Adam"
+    ) -> tf.train.Optimizer:
         return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
 
-    def _execute_model(self, feed_dict, out_dict):
+    def _execute_model(
+        self, feed_dict: Dict[tf.Tensor, np.ndarray], out_dict: Dict[str, tf.Tensor]
+    ) -> Dict[str, np.ndarray]:
         """
         Executes model.
         :param feed_dict: Input dictionary mapping nodes to input data.

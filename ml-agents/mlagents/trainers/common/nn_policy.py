@@ -49,7 +49,7 @@ class NNPolicy(TFPolicy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.optimizer: Optional[tf.train.AdamOptimizer] = None
+        self.tf_optimizer: Optional[tf.train.Optimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = trainer_params["num_layers"]

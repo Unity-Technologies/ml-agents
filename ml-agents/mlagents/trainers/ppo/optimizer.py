@@ -43,9 +43,9 @@ class PPOOptimizer(TFOptimizer):
                     trainer_params.get("vis_encode_type", "simple")
                 )
 
-                self.stream_names = self.reward_signals.keys()
+                self.stream_names = list(self.reward_signals.keys())
 
-                self.optimizer: Optional[tf.train.AdamOptimizer] = None
+                self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
                 self.grads = None
                 self.update_batch: Optional[tf.Operation] = None
 
@@ -278,9 +278,9 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def create_ppo_optimizer(self):
-        self.optimizer = self.create_tf_optimizer(self.learning_rate)
-        self.grads = self.optimizer.compute_gradients(self.loss)
-        self.update_batch = self.optimizer.minimize(self.loss)
+        self.tf_optimizer = self.create_tf_optimizer(self.learning_rate)
+        self.grads = self.tf_optimizer.compute_gradients(self.loss)
+        self.update_batch = self.tf_optimizer.minimize(self.loss)
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
