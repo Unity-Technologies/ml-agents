@@ -13,8 +13,6 @@ from mlagents.trainers.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 
-LOG_STD_MAX = 2
-LOG_STD_MIN = -20
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 
@@ -63,6 +61,11 @@ class NNPolicy(TFPolicy):
         self.tanh_squash = tanh_squash
         self.resample = resample
         self.trainable_variables: List[tf.Variable] = []
+
+        # Non-exposed parameters; these aren't exposed because they don't have a
+        # good explanation and usually shouldn't be touched.
+        self.log_std_min = -20
+        self.log_std_max = 2
         if create_tf_graph:
             self.create_tf_graph()
 
@@ -202,7 +205,7 @@ class NNPolicy(TFPolicy):
                 kernel_initializer=LearningModel.scaled_init(0.01),
             )
 
-            log_sigma = tf.clip_by_value(log_sigma, LOG_STD_MIN, LOG_STD_MAX)
+            log_sigma = tf.clip_by_value(log_sigma, self.log_std_min, self.log_std_max)
 
             sigma = tf.exp(log_sigma)
 

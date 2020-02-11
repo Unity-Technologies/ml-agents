@@ -12,8 +12,6 @@ from mlagents.trainers.buffer import AgentBuffer
 
 logger = logging.getLogger("mlagents.trainers")
 
-BURN_IN_RATIO = 0.0
-
 
 class PPOOptimizer(TFOptimizer):
     def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
@@ -42,6 +40,7 @@ class PPOOptimizer(TFOptimizer):
                 vis_encode_type = EncoderType(
                     trainer_params.get("vis_encode_type", "simple")
                 )
+                self.burn_in_ratio = float(trainer_params.get("burn_in_ratio", 0.0))
 
                 self.stream_names = list(self.reward_signals.keys())
 
@@ -309,7 +308,7 @@ class PPOOptimizer(TFOptimizer):
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         # Do an optional burn-in for memories
-        num_burn_in = int(BURN_IN_RATIO * self.policy.sequence_length)
+        num_burn_in = int(self.burn_in_ratio * self.policy.sequence_length)
         burn_in_mask = np.ones((self.policy.sequence_length), dtype=np.float32)
         burn_in_mask[range(0, num_burn_in)] = 0
         burn_in_mask = np.tile(burn_in_mask, num_sequences)
