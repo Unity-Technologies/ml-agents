@@ -1,7 +1,7 @@
 import logging
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Set
 
 import gym
 from gym import error, spaces
@@ -73,8 +73,8 @@ class UnityEnv(gym.Env):
             self._env.step()
 
         self.visual_obs = None
-        self._n_agents = None
-        self._done_agents: List[int] = []
+        self._n_agents = -1
+        self._done_agents: Set[int] = set()
         self._stored_info: BatchedStepResult = None
         self._multiagent = multiagent
         self._flattener = None
@@ -349,7 +349,7 @@ class UnityEnv(gym.Env):
                 "The environment was launched as a mutli-agent environment, however"
                 "there is only one agent in the scene."
             )
-        if self._n_agents is None:
+        if self._n_agents == -1:
             self._n_agents = n_agents
             logger.info("{} agents within environment.".format(n_agents))
         elif self._n_agents != n_agents:
@@ -363,9 +363,9 @@ class UnityEnv(gym.Env):
         if info.n_agents() == self._n_agents:
             return info
         n_extra_agents = info.n_agents() - self._n_agents
-        if self._n_agents is None:
-            self._n_agents = 1
-        if n_extra_agents < 0 or n_extra_agents > 2 * self._n_agents:
+        if n_extra_agents < 0 or n_extra_agents > self._n_agents:
+            # In this case, some Agents did not request a decision when expected
+            # or too many requested a decision
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
@@ -383,7 +383,7 @@ class UnityEnv(gym.Env):
                 info.done[index] = True
             if agent_id in self._done_agents:
                 info.done[index] = True
-        self._done_agents = []
+        self._done_agents = set()
 
         _mask: Optional[List[np.array]] = None
         if info.action_mask is not None:
@@ -421,12 +421,15 @@ class UnityEnv(gym.Env):
         else:
             self._env.step()
         info = self._env.get_step_result(self.brain_name)
+        # In case some Agents raised a Done flag between steps, we re-request
+        # decisions until the agents request a real decision.
         while info.n_agents() < self._n_agents:
             if not info.done.all():
                 raise UnityGymException(
                     "The environment does not have the expected amount of agents."
+                    + "Some agents did not request decisions at the same time."
                 )
-            self._done_agents += list(info.agent_id)
+            self._done_agents.update(list(info.agent_id))
             self._env.step()
             info = self._env.get_step_result(self.brain_name)
         return self._sanitize_info(info)
