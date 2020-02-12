@@ -1,4 +1,4 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, SideChannelType
+from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
 from mlagents_envs.exception import UnityCommunicationException
 import struct
 from typing import NamedTuple
@@ -27,9 +27,8 @@ class EngineConfigurationChannel(SideChannel):
      - int targetFrameRate;
     """
 
-    @property
-    def channel_type(self) -> int:
-        return SideChannelType.EngineSettings
+    def __init__(self) -> None:
+        super().__init__(ReservedChannelId.EngineSettings)
 
     def on_message_received(self, data: bytes) -> None:
         """

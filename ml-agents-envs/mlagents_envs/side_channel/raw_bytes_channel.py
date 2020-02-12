@@ -1,4 +1,4 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, SideChannelType
+from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
 from typing import List
 
 
@@ -10,12 +10,7 @@ class RawBytesChannel(SideChannel):
 
     def __init__(self, channel_id=0):
         self._received_messages = []
-        self._channel_id = channel_id
-        super().__init__()
-
-    @property
-    def channel_type(self) -> int:
-        return SideChannelType.RawBytesChannelStart + self._channel_id
+        super().__init__(ReservedChannelId.RawBytesChannelStart + self._channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """

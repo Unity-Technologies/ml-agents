@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import List
 from enum import IntEnum
 
 
-class SideChannelType(IntEnum):
+class ReservedChannelId(IntEnum):
     FloatProperties = 1
     EngineSettings = 2
     # Raw bytes channels should start here to avoid conflicting with other
@@ -22,8 +23,9 @@ class SideChannel(ABC):
     to the Env object at construction.
     """
 
-    def __init__(self):
-        self.message_queue = []
+    def __init__(self, channel_id):
+        self._channel_id: int = channel_id
+        self.message_queue: List[bytearray] = []
 
     def queue_message_to_send(self, data: bytearray) -> None:
         """
@@ -42,10 +44,9 @@ class SideChannel(ABC):
         pass
 
     @property
-    @abstractmethod
-    def channel_type(self) -> int:
+    def channel_id(self) -> int:
         """
         :return:The type of side channel used. Will influence how the data is
         processed in the environment.
         """
-        pass
+        return self._channel_id

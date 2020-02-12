@@ -95,13 +95,13 @@ class UnityEnvironment(BaseEnv):
         self.side_channels: Dict[int, SideChannel] = {}
         if side_channels is not None:
             for _sc in side_channels:
-                if _sc.channel_type in self.side_channels:
+                if _sc.channel_id in self.side_channels:
                     raise UnityEnvironmentException(
                         "There cannot be two side channels with the same channel type {0}.".format(
-                            _sc.channel_type
+                            _sc.channel_id
                         )
                     )
-                self.side_channels[_sc.channel_type] = _sc
+                self.side_channels[_sc.channel_id] = _sc
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.

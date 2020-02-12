@@ -1,4 +1,4 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, SideChannelType
+from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
 import struct
 from typing import Dict, Tuple, Optional, List
 
@@ -12,11 +12,7 @@ class FloatPropertiesChannel(SideChannel):
 
     def __init__(self) -> None:
         self._float_properties: Dict[str, float] = {}
-        super().__init__()
-
-    @property
-    def channel_type(self) -> int:
-        return SideChannelType.FloatProperties
+        super().__init__(ReservedChannelId.FloatProperties)
 
     def on_message_received(self, data: bytes) -> None:
         """
