@@ -470,7 +470,7 @@ namespace MLAgents
             {
                 throw new UnityAgentsException(string.Format(
                     "A side channel with type index {0} is already registered. You cannot register multiple " +
-                    "side channels of the same type.", channelId));
+                    "side channels of the same id.", channelId));
             }
             m_SideChannels.Add(channelId, sideChannel);
         }
