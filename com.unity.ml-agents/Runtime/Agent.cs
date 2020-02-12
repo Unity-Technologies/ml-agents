@@ -124,7 +124,6 @@ namespace MLAgents
         internal AgentParameters agentParameters;
         [SerializeField] [HideInInspector]
         internal bool hasUpgradedFromAgentParameters;
-        bool m_MarkDirtFromUpgrade;
 
         /// <summary>
         /// The maximum number of steps the agent takes before being done.
@@ -208,7 +207,6 @@ namespace MLAgents
             if (maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
-                m_MarkDirtFromUpgrade = true;
             }
         }
 
@@ -216,22 +214,10 @@ namespace MLAgents
         {
             if (maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
-                Debug.Log("Upgrading from agentParameters.maxStep to this.maxStep.  Please save your project to keep these changes");
                 maxStep = agentParameters.maxStep;
                 hasUpgradedFromAgentParameters = true;
-                m_MarkDirtFromUpgrade = true;
             }
         }
-
-#if UNITY_EDITOR
-        void Awake()
-        {
-            if (m_MarkDirtFromUpgrade)
-            {
-                EditorUtility.SetDirty(this);
-            }
-        }
-#endif
 
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
