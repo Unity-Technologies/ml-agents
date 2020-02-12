@@ -389,7 +389,7 @@ class UnityEnv(gym.Env):
         if info.action_mask is not None:
             _mask = []
             for mask_index in range(len(info.action_mask)):
-                _mask += [info.action_mask[mask_index][indices_to_keep]]
+                _mask.append(info.action_mask[mask_index][indices_to_keep])
         new_obs: List[np.array] = []
         for obs_index in range(len(info.obs)):
             new_obs += [info.obs[obs_index][indices_to_keep]]
