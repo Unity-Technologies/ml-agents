@@ -69,8 +69,8 @@ of the documentation to one language (Chinese), but we hope to continue
 translating more pages and to other languages. Consequently,
 we welcome any enhancements and improvements from the community.
 
-* [Chinese](docs/localized/zh-CN/)
-* [Korean](docs/localized/KR/)
+* [Chinese](localized/zh-CN/)
+* [Korean](localized/KR/)
 
 ## Deprecated Docs
 We no longer use them ourselves and so they may not be up-to-date.
