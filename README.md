@@ -3,7 +3,7 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit (Beta)
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](docs/Readme.md)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
 ([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
@@ -28,8 +28,12 @@ developer communities.
 
 * Unity environment control from Python
 * 10+ sample Unity environments
-* Two deep reinforcement learning algorithms, [Proximal Policy Optimization](docs/Training-PPO.md) (PPO) and [Soft Actor-Critic](docs/Training-SAC.md) (SAC)
+* Two deep reinforcement learning algorithms,
+[Proximal Policy Optimization](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-PPO.md)
+ (PPO) and [Soft Actor-Critic](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-SAC.md)
+ (SAC)
 * Support for multiple environment configurations and training scenarios
+* Self-play mechanism for training agents in adversarial scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
 * Built-in support for Imitation Learning
@@ -43,7 +47,7 @@ developer communities.
 ## Documentation
 
 * For more information, in addition to installation and usage instructions, see
-  our [documentation home](docs/Readme.md).
+  the [documentation for the latest release](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md).
 * If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our [reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627). Also, see below for instructions on citing this paper.
 * If you have used an earlier version of the ML-Agents toolkit, we strongly
   recommend our [guide on migrating from earlier versions](docs/Migrating.md).
@@ -83,22 +87,11 @@ and make sure to include as much detail as possible.
 If you run into any other problems using the ML-Agents toolkit, or have a specific
 feature requests, please [submit a GitHub issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
-Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
+Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue
+to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
-
-## Translations
-
-To make the Unity ML-Agents toolkit accessible to the global research and
-Unity developer communities, we're attempting to create and maintain
-translations of our documentation. We've started with translating a subset
-of the documentation to one language (Chinese), but we hope to continue
-translating more pages and to other languages. Consequently,
-we welcome any enhancements and improvements from the community.
-
-* [Chinese](docs/localized/zh-CN/)
-* [Korean](docs/localized/KR/)
 
 ## License
 
