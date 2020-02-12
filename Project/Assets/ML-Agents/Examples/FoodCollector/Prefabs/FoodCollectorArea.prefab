@@ -2525,7 +2525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -2854,7 +2854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -3446,7 +3446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -3761,7 +3761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
