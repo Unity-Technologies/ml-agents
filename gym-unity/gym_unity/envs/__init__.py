@@ -379,7 +379,7 @@ class UnityEnv(gym.Env):
         # set the new AgentDone flags to True
         for index in range(len(info.agent_id)):
             agent_id = info.agent_id[index]
-            if agent_id not in self._stored_info.agent_id:
+            if not self._stored_info.contains_agent(agent_id):
                 info.done[index] = True
             if agent_id in self._done_agents:
                 info.done[index] = True
