@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
+    [TestFixture]
     public class SerializationTest
     {
 
@@ -15,16 +16,21 @@ namespace Tests
         {
             SceneManager.LoadScene("SerializeTestScene");
         }
-        
+
         /// <summary>
         /// Test that the serialized agent in the scene, which has its agent parameter value serialized,
         /// properly deserializes it to Agent.maxStep.
         /// </summary>
-        [Test]
-        public void SerializationTestSimplePasses()
+        [UnityTest]
+        public IEnumerator SerializationTestSimplePasses()
         {
             // Use the Assert class to test conditions
             var gameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+            if (SceneManager.GetActiveScene().name != "SerializeTestScene")
+            {
+                yield return null;
+            }
+
             GameObject agent = null;
             foreach (var go in gameObjects)
             {
