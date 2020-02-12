@@ -10,7 +10,7 @@ class RawBytesChannel(SideChannel):
 
     def __init__(self, channel_id=0):
         self._received_messages = []
-        super().__init__(ReservedChannelId.RawBytesChannelStart + self._channel_id)
+        super().__init__(ReservedChannelId.RawBytesChannelStart + channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """

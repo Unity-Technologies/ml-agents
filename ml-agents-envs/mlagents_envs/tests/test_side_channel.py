@@ -8,11 +8,7 @@ from mlagents_envs.environment import UnityEnvironment
 class IntChannel(SideChannel):
     def __init__(self):
         self.list_int = []
-        super().__init__()
-
-    @property
-    def channel_type(self):
-        return -1
+        super().__init__(-1)
 
     def on_message_received(self, data):
         val = struct.unpack_from("<i", data, 0)[0]
@@ -29,10 +25,8 @@ def test_int_channel():
     receiver = IntChannel()
     sender.send_int(5)
     sender.send_int(6)
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_type: sender})
-    UnityEnvironment._parse_side_channel_message(
-        {receiver.channel_type: receiver}, data
-    )
+    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
+    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
     assert receiver.list_int[0] == 5
     assert receiver.list_int[1] == 6
 
@@ -43,10 +37,8 @@ def test_float_properties():
 
     sender.set_property("prop1", 1.0)
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_type: sender})
-    UnityEnvironment._parse_side_channel_message(
-        {receiver.channel_type: receiver}, data
-    )
+    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
+    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     val = receiver.get_property("prop1")
     assert val == 1.0
@@ -54,10 +46,8 @@ def test_float_properties():
     assert val is None
     sender.set_property("prop2", 2.0)
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_type: sender})
-    UnityEnvironment._parse_side_channel_message(
-        {receiver.channel_type: receiver}, data
-    )
+    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
+    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     val = receiver.get_property("prop1")
     assert val == 1.0
@@ -80,10 +70,8 @@ def test_raw_bytes():
     sender.send_raw_data("foo".encode("ascii"))
     sender.send_raw_data("bar".encode("ascii"))
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_type: sender})
-    UnityEnvironment._parse_side_channel_message(
-        {receiver.channel_type: receiver}, data
-    )
+    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
+    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     messages = receiver.get_and_clear_received_messages()
     assert len(messages) == 2
