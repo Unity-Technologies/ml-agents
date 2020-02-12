@@ -204,7 +204,7 @@ namespace MLAgents
 
         public void OnBeforeSerialize()
         {
-            if (maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
             }
@@ -212,7 +212,7 @@ namespace MLAgents
 
         public void OnAfterDeserialize()
         {
-            if (maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
                 hasUpgradedFromAgentParameters = true;
