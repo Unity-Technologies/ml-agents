@@ -73,5 +73,5 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Steps the trainer, taking in trajectories and updates if ready
         """
         super().advance()
-        if not self.is_training:
+        if not self.should_still_train:
             self.clear_update_buffer()
