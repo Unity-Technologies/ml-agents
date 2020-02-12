@@ -370,8 +370,8 @@ class UnityEnv(gym.Env):
 
         # remove the done Agents
         indices_to_keep: List[int] = []
-        for index in range(len(step_result.agent_id)):
-            if not step_result.done[index]:
+        for index, is_done in enumerate(step_result.done):
+            if not is_done:
                 indices_to_keep.append(index)
 
         # Set the new AgentDone flags to True
