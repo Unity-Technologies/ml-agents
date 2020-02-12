@@ -42,9 +42,21 @@ namespace MLAgents
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
 
-        public FloatPropertiesChannel()
+        public FloatPropertiesChannel(int channelId = -1)
         {
-            ChannelId = (int)ReservedChannelId.FloatProperties;
+            if (channelId == -1)
+            {
+                ChannelId = (int)ReservedChannelId.FloatProperties;
+            }
+            else
+            {
+                if (channelId < (int)ReservedChannelId.UserSideChannelStart)
+                {
+                    throw new UnityAgentsException( "A custom side channel must have a channel_id greater "
+                    + "than ReservedChannelId.UserSideChannelStart");
+                }
+                ChannelId = channelId;
+            }
         }
 
         public override void OnMessageReceived(byte[] data)

@@ -1,4 +1,5 @@
 from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
+from mlagents_envs.exception import UnitySideChannelException
 import struct
 from typing import Dict, Tuple, Optional, List
 
@@ -10,9 +11,17 @@ class FloatPropertiesChannel(SideChannel):
     set_property, get_property and list_properties.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, channel_id: int = -1) -> None:
         self._float_properties: Dict[str, float] = {}
-        super().__init__(ReservedChannelId.FloatProperties)
+        if channel_id == -1:
+            super().__init__(ReservedChannelId.FloatProperties)
+        else:
+            if channel_id < ReservedChannelId.UserSideChannelStart:
+                raise UnitySideChannelException(
+                    "A custom side channel must have a channel_id greater "
+                    + "than ReservedChannelId.UserSideChannelStart"
+                )
+            super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """

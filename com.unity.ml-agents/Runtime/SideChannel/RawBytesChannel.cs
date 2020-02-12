@@ -10,9 +10,21 @@ namespace MLAgents
         /// </summary>
         /// <param name="channelId"> The identifier for the RawBytesChannel. Must be
         /// the same on Python and Unity.</param>
-        public RawBytesChannel(int channelId = 0)
+        public RawBytesChannel(int channelId)
         {
-            ChannelId = (int)ReservedChannelId.RawBytesChannelStart + channelId;
+            if ((channelId >= (int)ReservedChannelId.RawBytesChannelStart) && (
+            channelId < (int)ReservedChannelId.UserSideChannelStart))
+            {
+                ChannelId = (int)ReservedChannelId.RawBytesChannelStart + channelId;
+            }
+            else
+            {
+                throw new UnityAgentsException(
+                    "A RawBytesChannel side channel must have a ChannelId between "
+                    + "ReservedChannelId.RawBytesChannelStart and "
+                    + "ReservedChannelId.UserSideChannelStart"
+                );
+            }
         }
 
         public override void OnMessageReceived(byte[] data)

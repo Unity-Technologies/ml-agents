@@ -1,5 +1,5 @@
 import struct
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents_envs.side_channel.raw_bytes_channel import RawBytesChannel
 from mlagents_envs.environment import UnityEnvironment
@@ -64,8 +64,8 @@ def test_float_properties():
 
 
 def test_raw_bytes():
-    sender = RawBytesChannel()
-    receiver = RawBytesChannel()
+    sender = RawBytesChannel(ReservedChannelId.RawBytesChannelStart)
+    receiver = RawBytesChannel(ReservedChannelId.RawBytesChannelStart)
 
     sender.send_raw_data("foo".encode("ascii"))
     sender.send_raw_data("bar".encode("ascii"))

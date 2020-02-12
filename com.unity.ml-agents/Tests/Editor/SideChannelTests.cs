@@ -51,8 +51,8 @@ namespace MLAgents.Tests
             var str1 = "Test string";
             var str2 = "Test string, second";
 
-            var strSender = new RawBytesChannel();
-            var strReceiver = new RawBytesChannel();
+            var strSender = new RawBytesChannel((int)ReservedChannelId.RawBytesChannelStart);
+            var strReceiver = new RawBytesChannel((int)ReservedChannelId.RawBytesChannelStart);
             var dictSender = new Dictionary<int, SideChannel> { { strSender.ChannelId, strSender } };
             var dictReceiver = new Dictionary<int, SideChannel> { { strReceiver.ChannelId, strReceiver } };
 
@@ -67,6 +67,17 @@ namespace MLAgents.Tests
             Assert.AreEqual(messages.Count, 2);
             Assert.AreEqual(Encoding.ASCII.GetString(messages[0]), str1);
             Assert.AreEqual(Encoding.ASCII.GetString(messages[1]), str2);
+        }
+
+        [Test]
+        public void TestSideChannelIdError()
+        {
+            Assert.Throws<UnityAgentsException>(()=>
+                new RawBytesChannel(0)
+            );
+            Assert.Throws<UnityAgentsException>(()=>
+                new FloatPropertiesChannel(0)
+            );
         }
 
         [Test]
