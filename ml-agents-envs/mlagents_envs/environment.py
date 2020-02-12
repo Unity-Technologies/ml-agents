@@ -97,7 +97,7 @@ class UnityEnvironment(BaseEnv):
             for _sc in side_channels:
                 if _sc.channel_id in self.side_channels:
                     raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel type {0}.".format(
+                        "There cannot be two side channels with the same channel id {0}.".format(
                             _sc.channel_id
                         )
                     )
