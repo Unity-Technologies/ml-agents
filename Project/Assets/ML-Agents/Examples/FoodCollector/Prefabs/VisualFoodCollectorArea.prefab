@@ -558,6 +558,7 @@ GameObject:
   - component: {fileID: 114724832030926412}
   - component: {fileID: 114380897261200276}
   - component: {fileID: 114326390494230518}
+  - component: {fileID: 4034342608499629224}
   m_Layer: 0
   m_Name: Agent (3)
   m_TagString: agent
@@ -633,7 +634,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114380897261200276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -646,7 +647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -675,6 +676,21 @@ MonoBehaviour:
   height: 84
   grayscale: 0
   compression: 1
+--- !u!114 &4034342608499629224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165679820726490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1179319070824364
 GameObject:
   m_ObjectHideFlags: 0
@@ -1120,6 +1136,7 @@ GameObject:
   - component: {fileID: 114942033465821694}
   - component: {fileID: 114869844339180154}
   - component: {fileID: 114429222608880102}
+  - component: {fileID: 7234640249101665162}
   m_Layer: 0
   m_Name: Agent (1)
   m_TagString: agent
@@ -1195,7 +1212,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114869844339180154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,7 +1225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -1237,6 +1254,21 @@ MonoBehaviour:
   height: 84
   grayscale: 0
   compression: 1
+--- !u!114 &7234640249101665162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317136368302180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1353209702154624
 GameObject:
   m_ObjectHideFlags: 0
@@ -1572,7 +1604,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114484596947519388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3308,6 +3340,7 @@ GameObject:
   - component: {fileID: 114799611184247278}
   - component: {fileID: 114729119221978826}
   - component: {fileID: 114322691115031348}
+  - component: {fileID: 5903164052970896384}
   m_Layer: 0
   m_Name: Agent (2)
   m_TagString: agent
@@ -3383,7 +3416,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114729119221978826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3396,7 +3429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 0
+  maxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -3425,6 +3458,21 @@ MonoBehaviour:
   height: 84
   grayscale: 0
   compression: 1
+--- !u!114 &5903164052970896384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939112378710628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
 --- !u!1 &1971119195936814
 GameObject:
   m_ObjectHideFlags: 0
