@@ -143,7 +143,7 @@ namespace MLAgentsExamples
             var nnModel = GetModelForBehaviorName(bp.behaviorName);
             Debug.Log($"Overriding behavior {bp.behaviorName} for agent with model {nnModel?.name}");
             // This might give a null model; that's better because we'll fall back to the Heuristic
-            m_Agent.GiveModel($"Override_{bp.behaviorName}", nnModel, InferenceDevice.CPU);
+            m_Agent.GiveModel($"Override_{bp.behaviorName}", nnModel);
 
         }
     }

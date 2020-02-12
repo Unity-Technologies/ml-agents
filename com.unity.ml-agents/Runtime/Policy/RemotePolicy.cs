@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 using System;
 
 namespace MLAgents
@@ -15,7 +14,7 @@ namespace MLAgents
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
 
-        protected ICommunicator m_Communicator;
+        internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(

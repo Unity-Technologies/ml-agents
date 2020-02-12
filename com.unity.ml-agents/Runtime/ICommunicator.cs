@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using MLAgents.CommunicatorObjects;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
-    public struct CommunicatorInitParameters
+    internal struct CommunicatorInitParameters
     {
         /// <summary>
         /// Port to listen for connections on.
@@ -21,14 +19,14 @@ namespace MLAgents
         /// </summary>
         public string version;
     }
-    public struct UnityRLInitParameters
+    internal struct UnityRLInitParameters
     {
         /// <summary>
         /// An RNG seed sent from the python process to Unity.
         /// </summary>
         public int seed;
     }
-    public struct UnityRLInputParameters
+    internal struct UnityRLInputParameters
     {
         /// <summary>
         /// Boolean sent back from python to indicate whether or not training is happening.
@@ -39,19 +37,18 @@ namespace MLAgents
     /// <summary>
     /// Delegate for handling quite events sent back from the communicator.
     /// </summary>
-    public delegate void QuitCommandHandler();
+    internal delegate void QuitCommandHandler();
 
     /// <summary>
     /// Delegate for handling reset parameter updates sent from the communicator.
     /// </summary>
-    /// <param name="resetParams"></param>
-    public delegate void ResetCommandHandler();
+    internal delegate void ResetCommandHandler();
 
     /// <summary>
     /// Delegate to handle UnityRLInputParameters updates from the communicator.
     /// </summary>
     /// <param name="inputParams"></param>
-    public delegate void RLInputReceivedHandler(UnityRLInputParameters inputParams);
+    internal delegate void RLInputReceivedHandler(UnityRLInputParameters inputParams);
 
     /**
     This is the interface of the Communicators.
@@ -122,7 +119,6 @@ namespace MLAgents
         /// <param name="brainKey">Batch Key.</param>
         /// <param name="info">Agent info.</param>
         /// <param name="sensors">The list of ISensors of the Agent.</param>
-        /// <param name="action">The action that will be called once the next AgentAction is ready.</param>
         void PutObservations(string brainKey, AgentInfo info, List<ISensor> sensors);
 
         /// <summary>
@@ -146,5 +142,11 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannel"> The side channel to be registered.</param>
         void RegisterSideChannel(SideChannel sideChannel);
+
+        /// <summary>
+        /// Unregisters a side channel from the communicator.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        void UnregisterSideChannel(SideChannel sideChannel);
     }
 }

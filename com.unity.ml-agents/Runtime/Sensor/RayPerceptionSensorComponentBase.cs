@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     public abstract class RayPerceptionSensorComponentBase : SensorComponent
     {

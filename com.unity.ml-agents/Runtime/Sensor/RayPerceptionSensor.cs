@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     public class RayPerceptionSensor : ISensor
     {
@@ -157,6 +157,7 @@ namespace MLAgents.Sensor
         /// <param name="transform">Transform of the GameObject</param>
         /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
         /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
+        /// <param name="layerMask">Filtering options for the casts</param>
         /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
         ///
         public static void PerceiveStatic(float unscaledRayLength,

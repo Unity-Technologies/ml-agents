@@ -26,11 +26,11 @@ public class HallwayAgent : Agent
         m_GroundMaterial = m_GroundRenderer.material;
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         if (useVectorObs)
         {
-            AddVectorObs(GetStepCount() / (float)maxStep);
+            sensor.AddObservation(GetStepCount() / (float)maxStep);
         }
     }
 

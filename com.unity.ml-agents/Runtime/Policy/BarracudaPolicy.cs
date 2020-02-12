@@ -3,7 +3,6 @@ using Barracuda;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 using System;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -22,7 +21,7 @@ namespace MLAgents
     {
         protected ModelRunner m_ModelRunner;
 
-        private int m_AgentId;
+        int m_AgentId;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.

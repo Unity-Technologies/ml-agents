@@ -31,7 +31,7 @@ public class GridAgent : Agent
     {
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor, ActionMasker actionMasker)
     {
         // There are no numeric observations to collect as this environment uses visual
         // observations.
@@ -39,14 +39,14 @@ public class GridAgent : Agent
         // Mask the necessary actions if selected by the user.
         if (maskActions)
         {
-            SetMask();
+            SetMask(actionMasker);
         }
     }
 
     /// <summary>
     /// Applies the mask for the agents action to disallow unnecessary actions.
     /// </summary>
-    void SetMask()
+    void SetMask(ActionMasker actionMasker)
     {
         // Prevents the agent from picking an action that would make it collide with a wall
         var positionX = (int)transform.position.x;
@@ -55,22 +55,22 @@ public class GridAgent : Agent
 
         if (positionX == 0)
         {
-            SetActionMask(k_Left);
+            actionMasker.SetActionMask(k_Left);
         }
 
         if (positionX == maxPosition)
         {
-            SetActionMask(k_Right);
+            actionMasker.SetActionMask(k_Right);
         }
 
         if (positionZ == 0)
         {
-            SetActionMask(k_Down);
+            actionMasker.SetActionMask(k_Down);
         }
 
         if (positionZ == maxPosition)
         {
-            SetActionMask(k_Up);
+            actionMasker.SetActionMask(k_Up);
         }
     }
 

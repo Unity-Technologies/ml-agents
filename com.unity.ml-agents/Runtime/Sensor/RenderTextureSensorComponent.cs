@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     [AddComponentMenu("ML Agents/Render Texture Sensor", (int)MenuGroup.Sensors)]
     public class RenderTextureSensorComponent : SensorComponent

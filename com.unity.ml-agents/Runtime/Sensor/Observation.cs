@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
-    public struct Observation
+    internal struct Observation
     {
         /// <summary>
         /// The compressed sensor data. Assumed to be non-null if CompressionType != CompressionType.None

@@ -25,7 +25,7 @@ def get_base_path():
 
 def run_standalone_build(base_path: str, verbose: bool = False) -> int:
     """
-    Run BuildStandalonePlayerOSX test to produce a player at UnitySDK/testPlayer
+    Run BuildStandalonePlayerOSX test to produce a player at Project/testPlayer
     :param base_path:
     :return:
     """

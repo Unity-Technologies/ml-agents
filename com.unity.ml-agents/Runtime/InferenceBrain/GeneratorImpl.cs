@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
-using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -139,7 +138,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     internal class RecurrentInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
         Dictionary<int, List<float>> m_Memories;
 
         public RecurrentInputGenerator(

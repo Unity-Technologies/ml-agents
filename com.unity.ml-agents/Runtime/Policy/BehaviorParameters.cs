@@ -1,7 +1,7 @@
 using Barracuda;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -13,7 +13,7 @@ namespace MLAgents
     public class BehaviorParameters : MonoBehaviour
     {
         [Serializable]
-        private enum BehaviorType
+        enum BehaviorType
         {
             Default,
             HeuristicOnly,
@@ -37,11 +37,12 @@ namespace MLAgents
         string m_BehaviorName = "My Behavior";
         [HideInInspector]
         [SerializeField]
-        int m_TeamID = 0;
+        public int m_TeamID;
+        [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
-        bool m_useChildSensors = true;
+        bool m_UseChildSensors = true;
 
         public BrainParameters brainParameters
         {
@@ -50,7 +51,7 @@ namespace MLAgents
 
         public bool useChildSensors
         {
-            get { return m_useChildSensors; }
+            get { return m_UseChildSensors; }
         }
 
         public string behaviorName
@@ -94,13 +95,13 @@ namespace MLAgents
         }
 
         public void GiveModel(
-            string behaviorName,
+            string newBehaviorName,
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
             m_Model = model;
             m_InferenceDevice = inferenceDevice;
-            m_BehaviorName = behaviorName;
+            m_BehaviorName = newBehaviorName;
         }
     }
 }

@@ -2,7 +2,6 @@ using System.IO;
 using System.IO.Abstractions;
 using Google.Protobuf;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {

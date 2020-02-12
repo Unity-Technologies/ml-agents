@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -17,7 +16,8 @@ namespace MLAgents
         /// will make the decision at a later time to allow possible
         /// batching of requests.
         /// </summary>
-        /// <param name="agent"></param>
+        /// <param name="info"></param>
+        /// <param name="sensors"></param>
         void RequestDecision(AgentInfo info, List<ISensor> sensors);
 
         /// <summary>

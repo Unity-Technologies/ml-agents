@@ -41,7 +41,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy's `OnEnvironmentReset` delegate.
 2. Calls the `AgentReset()` function for each Agent in the scene.
-3. Calls the  `CollectObservations()` function for each Agent in the scene.
+3. Calls the  `CollectObservations(VectorSensor sensor)` function for each Agent in the scene.
 4. Uses each Agent's Policy to decide on the Agent's next action.
 5. Calls the `AgentAction()` function for each Agent in the scene, passing in
    the action chosen by the Agent's Policy. (This function is not called if the
@@ -50,7 +50,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
    Step` count or has otherwise marked itself as `done`.
 
 To create a training environment, extend the Agent class to
-implement the above methods. The `Agent.CollectObservations()` and
+implement the above methods. The `Agent.CollectObservations(VectorSensor sensor)` and
 `Agent.AgentAction()` functions are required; the other methods are optional —
 whether you need to implement them or not depends on your specific scenario.
 
@@ -107,9 +107,9 @@ in a football game or a car object in a vehicle simulation. Every Agent must
 have appropriate `Behavior Parameters`.
 
 To create an Agent, extend the Agent class and implement the essential
-`CollectObservations()` and `AgentAction()` methods:
+`CollectObservations(VectorSensor sensor)` and `AgentAction()` methods:
 
-* `CollectObservations()` — Collects the Agent's observation of its environment.
+* `CollectObservations(VectorSensor sensor)` — Collects the Agent's observation of its environment.
 * `AgentAction()` — Carries out the action chosen by the Agent's Policy and
   assigns a reward to the current state.
 

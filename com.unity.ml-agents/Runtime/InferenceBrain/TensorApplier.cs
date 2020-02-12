@@ -30,7 +30,6 @@ namespace MLAgents.InferenceBrain
             /// </param>
             /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
             /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            /// </param>
             void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions);
         }
 
