@@ -253,7 +253,7 @@ class AgentBuffer(dict):
         max_length -= max_length % sequence_length
         if current_length > max_length:
             for _key in self.keys():
-                self[_key] = self[_key][current_length - max_length :]
+                self[_key][:] = self[_key][current_length - max_length :]
 
     def resequence_and_append(
         self,
