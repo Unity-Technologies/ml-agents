@@ -134,7 +134,9 @@ namespace MLAgents
         /// that many steps. Note that setting the max step to a value greater
         /// than the academy max step value renders it useless.
         /// </remarks>
-        [HideInInspector] public int maxStep;
+
+        [HideInInspector] [FormerlySerializedAs("agentParameters.maxStep")]
+        public int maxStep;
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
@@ -318,6 +320,8 @@ namespace MLAgents
             return m_StepCount;
         }
 
+
+
         /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
         /// reward accordingly.
@@ -326,10 +330,7 @@ namespace MLAgents
         public void SetReward(float reward)
         {
 #if DEBUG
-            if (float.IsNaN(reward))
-            {
-                throw new ArgumentException("NaN reward passed to SetReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetReward));
 #endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
@@ -342,14 +343,12 @@ namespace MLAgents
         public void AddReward(float increment)
         {
 #if DEBUG
-            if (float.IsNaN(increment))
-            {
-                throw new ArgumentException("NaN reward passed to AddReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddReward));
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
         }
+
 
         /// <summary>
         /// Retrieves the episode reward for the Agent.
