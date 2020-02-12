@@ -392,7 +392,7 @@ class UnityEnv(gym.Env):
                 _mask.append(info.action_mask[mask_index][indices_to_keep])
         new_obs: List[np.array] = []
         for obs_index in range(len(info.obs)):
-            new_obs += [info.obs[obs_index][indices_to_keep]]
+            new_obs.append(info.obs[obs_index][indices_to_keep])
         return BatchedStepResult(
             obs=new_obs,
             reward=info.reward[indices_to_keep],
