@@ -359,9 +359,6 @@ class UnityEnv(gym.Env):
             )
 
     def _sanitize_info(self, info: BatchedStepResult) -> BatchedStepResult:
-        self._stored_info = info  # store the new original
-        if info.n_agents() == self._n_agents:
-            return info
         n_extra_agents = info.n_agents() - self._n_agents
         if n_extra_agents < 0 or n_extra_agents > self._n_agents:
             # In this case, some Agents did not request a decision when expected
@@ -384,6 +381,7 @@ class UnityEnv(gym.Env):
             if agent_id in self._done_agents:
                 info.done[index] = True
         self._done_agents = set()
+        self._stored_info = info  # store the new original
 
         _mask: Optional[List[np.array]] = None
         if info.action_mask is not None:
@@ -422,8 +420,8 @@ class UnityEnv(gym.Env):
             self._env.step()
         info = self._env.get_step_result(self.brain_name)
         # In case some Agents raised a Done flag between steps, we re-request
-        # decisions until the agents request a real decision.
-        while info.n_agents() < self._n_agents:
+        # decisions until all agents request a real decision.
+        while info.n_agents() - sum(info.done) < self._n_agents:
             if not info.done.all():
                 raise UnityGymException(
                     "The environment does not have the expected amount of agents."
