@@ -41,12 +41,6 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
-
-        self.stats_name_to_update_name = {
-            "Losses/Value Loss": "value_loss",
-            "Losses/Policy Loss": "policy_loss",
-        }
-
         self.tf_optimizer: Optional[tf.train.Optimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None

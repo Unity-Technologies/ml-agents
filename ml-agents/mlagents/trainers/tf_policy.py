@@ -32,7 +32,7 @@ class UnityPolicyException(UnityException):
 class TFPolicy(Policy):
     """
     Contains a learning model, and the necessary
-    functions to interact with it to perform evaluate and updating.
+    functions to save/load models and create the input placeholders.
     """
 
     possible_output_nodes = [
