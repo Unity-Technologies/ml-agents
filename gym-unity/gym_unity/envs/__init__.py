@@ -374,7 +374,7 @@ class UnityEnv(gym.Env):
         indices_to_keep: List[int] = []
         for index in range(len(info.agent_id)):
             if not info.done[index]:
-                indices_to_keep += [index]
+                indices_to_keep.append(index)
 
         # set the new AgentDone flags to True
         for index in range(len(info.agent_id)):
