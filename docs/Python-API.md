@@ -274,13 +274,14 @@ float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 You can create your own `SideChannel` in C# and Python and use it to communicate data between the two.
 
 ##### Unity side
-The side channel will have to implement the `SideChannel` abstract class. There are two methods
-that must be implemented :
+The side channel will have to implement the `SideChannel` abstract class and the following method.
 
- * `ChannelType()` : Must return an integer identifying the side channel (This number must be the same on C#
- and Python). There can only be one side channel of a certain type during communication.
  * `OnMessageReceived(byte[] data)` : You must implement this method to specify what the side channel will be doing
  with the data received from Python. The data is a `byte[]` argument.
+
+The side channel must also assign a `ChannelId` property in the constructor. The `ChannelId` is an int used to
+Uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
+channel of a certain id during communication.
 
 To send a byte array from C# to Python, call the `base.QueueMessageToSend(data)` method inside the side channel.
 The `data` argument must be a `byte[]`.
@@ -291,10 +292,18 @@ as only argument.
 ##### Python side
 The side channel will have to implement the `SideChannel` abstract class. You must implement :
 
- * `channel_type(self) -> int` (property) : Must return an integer identifying the side channel (This number must
-be the same on C# and Python). There can only be one side channel of a certain type during communication.
  * `on_message_received(self, data: bytes) -> None` : You must implement this method to specify what the
  side channel will be doing with the data received from Unity. The data is a `byte[]` argument.
+
+The side channel must also assign a `channel_id` property in the constructor. The `channel_id` is an int used to
+Uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
+channel of a certain id during communication.
+
+To assign the `channel_id` call the abstract class constructor with the appropriate `channel_id` as follows:
+
+```python
+super().__init__(my_channel_id)
+```
 
 To send a byte array from Python to C#, call the `super().queue_message_to_send(bytes_data)` method inside the
 side channel. The `bytes_data` argument must be a `bytes` object.
@@ -318,9 +327,9 @@ using System.Text;
 
 public class StringLogSideChannel : SideChannel
 {
-    public override int ChannelType()
+    public StringLogSideChannel()
     {
-        return (int)SideChannelType.UserSideChannelStart + 1;
+        ChannelId = (int)SideChannelType.UserSideChannelStart + 1;
     }
 
     public override void OnMessageReceived(byte[] data)
@@ -391,15 +400,15 @@ launches a `UnityEnvironment` with that side channel.
 ```python
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.side_channel import SideChannel, SideChannelType
+from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
 import numpy as np
 
 
 # Create the StringLogChannel class
 class StringLogChannel(SideChannel):
-    @property
-    def channel_type(self) -> int:
-        return SideChannelType.UserSideChannelStart + 1
+
+    def __init__(self) -> None:
+        super().__init__(ReservedChannelId.UserSideChannelStart + 1)
 
     def on_message_received(self, data: bytes) -> None:
         """
@@ -434,7 +443,6 @@ for i in range(1000):
     env.step()  # Move the simulation forward
 
 env.close()
-
 ```
 
 Now, if you run this script and press `Play` the Unity Editor when prompted, The console in the Unity Editor will
