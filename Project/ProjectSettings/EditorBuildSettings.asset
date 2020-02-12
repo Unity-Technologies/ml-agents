@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Tests/SerializeTestScene.unity
+    guid: 60783bd849bd242eeb66243542762b23
   m_configObjects: {}
