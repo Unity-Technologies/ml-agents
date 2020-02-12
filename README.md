@@ -94,7 +94,7 @@ For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
 
 ## Releases
-The current version of the release is 0.14.0. Previous releases can be found below:
+The latest release is 0.14.0. Previous releases can be found below:
 
 | **Version** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|
