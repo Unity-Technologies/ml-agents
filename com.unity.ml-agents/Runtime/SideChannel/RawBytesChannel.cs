@@ -4,7 +4,6 @@ namespace MLAgents
     public class RawBytesChannel : SideChannel
     {
         List<byte[]> m_MessagesReceived = new List<byte[]>();
-        int m_ChannelId;
 
         /// <summary>
         /// RawBytesChannel provides a way to exchange raw byte arrays between Unity and Python.
@@ -13,12 +12,7 @@ namespace MLAgents
         /// the same on Python and Unity.</param>
         public RawBytesChannel(int channelId = 0)
         {
-            m_ChannelId = channelId;
-        }
-
-        public override int ChannelType()
-        {
-            return (int)SideChannelType.RawBytesChannelStart + m_ChannelId;
+            ChannelId = (int)ReservedChannelId.RawBytesChannelStart + channelId;
         }
 
         public override void OnMessageReceived(byte[] data)

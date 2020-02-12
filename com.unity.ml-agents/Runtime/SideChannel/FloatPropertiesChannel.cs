@@ -42,9 +42,9 @@ namespace MLAgents
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
 
-        public override int ChannelType()
+        public FloatPropertiesChannel()
         {
-            return (int)SideChannelType.FloatProperties;
+            ChannelId = (int)ReservedChannelId.FloatProperties;
         }
 
         public override void OnMessageReceived(byte[] data)

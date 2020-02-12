@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace MLAgents
 {
-    public enum SideChannelType
+    public enum ReservedChannelId
     {
         // Invalid side channel
         Invalid = 0,
@@ -27,7 +27,10 @@ namespace MLAgents
         /// of each type. Ensure the Unity side channels will be linked to their Python equivalent.
         /// </summary>
         /// <returns> The integer identifier of the SideChannel</returns>
-        public abstract int ChannelType();
+        public int ChannelId{
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// Is called by the communicator every time a message is received from Python by the SideChannel.

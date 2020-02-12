@@ -12,7 +12,7 @@ namespace MLAgents.Tests
         {
             public List<int> messagesReceived = new List<int>();
 
-            public override int ChannelType() { return -1; }
+            public TestSideChannel() { ChannelId = -1; }
 
             public override void OnMessageReceived(byte[] data)
             {
@@ -30,8 +30,8 @@ namespace MLAgents.Tests
         {
             var intSender = new TestSideChannel();
             var intReceiver = new TestSideChannel();
-            var dictSender = new Dictionary<int, SideChannel> { { intSender.ChannelType(), intSender } };
-            var dictReceiver = new Dictionary<int, SideChannel> { { intReceiver.ChannelType(), intReceiver } };
+            var dictSender = new Dictionary<int, SideChannel> { { intSender.ChannelId, intSender } };
+            var dictReceiver = new Dictionary<int, SideChannel> { { intReceiver.ChannelId, intReceiver } };
 
             intSender.SendInt(4);
             intSender.SendInt(5);
@@ -53,8 +53,8 @@ namespace MLAgents.Tests
 
             var strSender = new RawBytesChannel();
             var strReceiver = new RawBytesChannel();
-            var dictSender = new Dictionary<int, SideChannel> { { strSender.ChannelType(), strSender } };
-            var dictReceiver = new Dictionary<int, SideChannel> { { strReceiver.ChannelType(), strReceiver } };
+            var dictSender = new Dictionary<int, SideChannel> { { strSender.ChannelId, strSender } };
+            var dictReceiver = new Dictionary<int, SideChannel> { { strReceiver.ChannelId, strReceiver } };
 
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str1));
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str2));
@@ -78,8 +78,8 @@ namespace MLAgents.Tests
 
             var propA = new FloatPropertiesChannel();
             var propB = new FloatPropertiesChannel();
-            var dictReceiver = new Dictionary<int, SideChannel> { { propA.ChannelType(), propA } };
-            var dictSender = new Dictionary<int, SideChannel> { { propB.ChannelType(), propB } };
+            var dictReceiver = new Dictionary<int, SideChannel> { { propA.ChannelId, propA } };
+            var dictSender = new Dictionary<int, SideChannel> { { propB.ChannelId, propB } };
 
             propA.RegisterCallback(k1, f => { wasCalled++; });
             var tmp = propB.GetPropertyWithDefault(k2, 3.0f);
