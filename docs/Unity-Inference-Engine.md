@@ -6,6 +6,9 @@ Engine. The Unity Inference Engine is using
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html)
 to run the neural network within Unity.
 
+__Note__: The ML-Agents toolkit only supports the models created with our
+trainers.
+
 ## Supported devices
 
 Scripting Backends : The Unity Inference Engine is generally faster with
