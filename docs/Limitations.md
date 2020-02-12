@@ -20,6 +20,10 @@ You can control the frequency of Academy stepping by calling
 `Academy.Instance.DisableAutomaticStepping()`, and then calling
 `Academy.Instance.EnvironmentStep()`
 
+### Unity Inference Engine Models
+Currently, it is only possible to use models created with our trainers to run
+ML-Agents with a neural network behavior.
+
 ## Python API
 
 ### Python version
