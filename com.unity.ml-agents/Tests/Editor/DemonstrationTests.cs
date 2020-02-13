@@ -54,7 +54,7 @@ namespace MLAgents.Tests
             demoRec.record = true;
             demoRec.demonstrationName = k_DemoName;
             demoRec.demonstrationDirectory = k_DemoDirectory;
-            demoRec.InitializeDemoStore(fileSystem);
+            var demoStore = demoRec.InitializeDemoStore(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
             Assert.IsTrue(fileSystem.FileExists(k_DemoDirectory + k_DemoName + k_ExtensionType));
@@ -70,8 +70,15 @@ namespace MLAgents.Tests
             };
 
 
-            demoRec.m_DemoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
+            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
             demoRec.Close();
+
+            // Make sure close can be called multiple times
+            demoStore.Close();
+            demoRec.Close();
+
+            // Make sure trying to write after closing doesn't raise an error.
+            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
         }
 
         public class ObservationAgent : TestAgent

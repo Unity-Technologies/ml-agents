@@ -8,7 +8,7 @@ namespace MLAgents
     /// Used for imitation learning, or other forms of learning from data.
     /// </summary>
     [Serializable]
-    public class Demonstration : ScriptableObject
+    internal class Demonstration : ScriptableObject
     {
         public DemonstrationMetaData metaData;
         public BrainParameters brainParameters;
@@ -26,7 +26,7 @@ namespace MLAgents
     /// Kept in a struct for easy serialization and deserialization.
     /// </summary>
     [Serializable]
-    public class DemonstrationMetaData
+    internal class DemonstrationMetaData
     {
         public int numberExperiences;
         public int numberEpisodes;

@@ -1,7 +1,6 @@
 using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using System.Collections.Generic;
 using System.IO;
 
 namespace MLAgents
@@ -22,7 +21,7 @@ namespace MLAgents
         [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
         public string demonstrationDirectory;
 
-        internal DemonstrationStore m_DemoStore;
+        DemonstrationStore m_DemoStore;
         internal const int MaxNameLength = 16;
 
         const string k_ExtensionType = ".demo";
@@ -39,11 +38,11 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        internal void InitializeDemoStore(IFileSystem fileSystem = null)
+        internal DemonstrationStore InitializeDemoStore(IFileSystem fileSystem = null)
         {
             if (m_DemoStore != null)
             {
-                return;
+                return m_DemoStore;
             }
 
             m_FileSystem = fileSystem ?? new FileSystem();
@@ -73,6 +72,8 @@ namespace MLAgents
             {
                 agent.DemonstrationStores.Add(m_DemoStore);
             }
+
+            return m_DemoStore;
         }
 
         /// <summary>
