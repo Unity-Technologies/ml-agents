@@ -10,6 +10,10 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import LearningModel
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.common.distributions import (
+    GaussianDistribution,
+    TanhSquashedGaussianDistribution,
+)
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -181,75 +185,31 @@ class NNPolicy(TFPolicy):
             hidden_policy = hidden_stream
 
         with tf.variable_scope("policy"):
-            mu = tf.layers.dense(
-                hidden_policy,
-                self.act_size[0],
-                activation=None,
-                name="mu",
-                kernel_initializer=LearningModel.scaled_init(0.01),
-                reuse=tf.AUTO_REUSE,
-            )
-
-            # Policy-dependent log_sigma_sq
-            log_sigma = tf.layers.dense(
-                hidden_policy,
-                self.act_size[0],
-                activation=None,
-                name="log_std",
-                kernel_initializer=LearningModel.scaled_init(0.01),
-            )
-
-            log_sigma = tf.clip_by_value(log_sigma, self.log_std_min, self.log_std_max)
-
-            sigma = tf.exp(log_sigma)
-
-            epsilon = tf.random_normal(tf.shape(mu))
-
-            sampled_policy = mu + sigma * epsilon
-
-            # Stop gradient if we're not doing the resampling trick
-            if not resample:
-                sampled_policy_probs = tf.stop_gradient(sampled_policy)
+            if not tanh_squash:
+                distribution = GaussianDistribution(
+                    hidden_policy, self.act_size, pass_gradients=resample
+                )
             else:
-                sampled_policy_probs = sampled_policy
-
-            # Compute probability of model output.
-            _gauss_pre = -0.5 * (
-                ((sampled_policy_probs - mu) / (sigma + EPSILON)) ** 2
-                + 2 * log_sigma
-                + np.log(2 * np.pi)
-            )
-            all_probs = _gauss_pre
-            all_probs = tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
+                distribution = TanhSquashedGaussianDistribution(
+                    hidden_policy, self.act_size, pass_gradients=resample
+                )
 
         if tanh_squash:
-            self.output_pre = tf.tanh(sampled_policy)
-
-            # Squash correction
-            all_probs -= tf.reduce_sum(
-                tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
-            )
+            self.output_pre = distribution.sample
             self.output = tf.identity(self.output_pre, name="action")
         else:
-            self.output_pre = sampled_policy
+            self.output_pre = distribution.sample
             # Clip and scale output to ensure actions are always within [-1, 1] range.
             output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
             self.output = tf.identity(output_post, name="action")
 
         self.selected_actions = tf.stop_gradient(self.output)
 
-        self.all_log_probs = tf.identity(all_probs, name="action_probs")
-
-        single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + tf.square(log_sigma)
-        )
-        # Make entropy the right shape
-        self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
+        self.entropy = distribution.entropy
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = tf.reduce_sum(
-            (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
+        self.log_probs = self.all_log_probs
 
         self.action_holder = tf.placeholder(
             shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
