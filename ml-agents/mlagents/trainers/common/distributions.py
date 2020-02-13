@@ -32,6 +32,10 @@ class OutputDistribution(abc.ABC):
 
 
 class GaussianDistribution(OutputDistribution):
+    """
+    A Gaussian output distribution for continuous actions.
+    """
+
     class MuSigmaTensors(NamedTuple):
         mu: tf.Tensor
         log_sigma: tf.Tensor
@@ -126,6 +130,11 @@ class GaussianDistribution(OutputDistribution):
 
 
 class TanhSquashedGaussianDistribution(GaussianDistribution):
+    """
+    A Gaussian distribution that is squashed by a tanh at the output. We adjust the log-probabilities
+    to account for this squashing. From: Haarnoja et. al, https://arxiv.org/abs/1801.01290
+    """
+
     def __init__(
         self,
         logits: tf.Tensor,
@@ -136,17 +145,23 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
     ):
         super().__init__(logits, act_size, pass_gradients, log_sigma_min, log_sigma_max)
         self._squashed_policy = tf.tanh(self._sampled_policy)
+        self._corrected_probs = self._do_squash_correction_for_tanh(
+            self._all_probs, self._squashed_policy
+        )
+
+    def _do_squash_correction_for_tanh(self, probs, squashed_policy):
+        all_probs = probs
+        all_probs -= tf.reduce_sum(
+            tf.log(1 - squashed_policy ** 2 + EPSILON), axis=1, keepdims=True
+        )
+        return all_probs
 
     @property
     def log_probs(self) -> tf.Tensor:
         """
         Adjust probabilities for squashed sample before output
         """
-        all_probs = self._all_probs
-        all_probs -= tf.reduce_sum(
-            tf.log(1 - self._squashed_policy ** 2 + EPSILON), axis=1, keepdims=True
-        )
-        return all_probs
+        return self._corrected_probs
 
     @property
     def sample(self) -> tf.Tensor:
