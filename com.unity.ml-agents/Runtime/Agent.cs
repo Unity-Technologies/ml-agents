@@ -106,10 +106,24 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public abstract class Agent : MonoBehaviour
+    public abstract class Agent : MonoBehaviour, ISerializationCallbackReceiver
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
+
+        /// This code is here to make the upgrade path for users using maxStep
+        /// easier.  We will hook into the Serialization code and make sure that
+        /// agentParameters.maxStep and this.maxStep are in sync.
+        [Serializable]
+        internal struct AgentParameters
+        {
+            public int maxStep;
+        }
+
+        [SerializeField] [HideInInspector]
+        internal AgentParameters agentParameters;
+        [SerializeField] [HideInInspector]
+        internal bool hasUpgradedFromAgentParameters;
 
         /// <summary>
         /// The maximum number of steps the agent takes before being done.
@@ -187,6 +201,26 @@ namespace MLAgents
             LazyInitialize();
         }
 
+
+        public void OnBeforeSerialize()
+        {
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            {
+                maxStep = agentParameters.maxStep;
+
+            }
+            hasUpgradedFromAgentParameters = true;
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            {
+                maxStep = agentParameters.maxStep;
+            }
+            hasUpgradedFromAgentParameters = true;
+        }
+
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
         public void LazyInitialize()
@@ -215,7 +249,6 @@ namespace MLAgents
             ResetData();
             InitializeAgent();
             InitializeSensors();
-
         }
 
         /// Monobehavior function that is called when the attached GameObject
