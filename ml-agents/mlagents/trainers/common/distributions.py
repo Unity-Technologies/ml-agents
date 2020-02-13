@@ -126,14 +126,28 @@ class GaussianDistribution(OutputDistribution):
 
 
 class TanhSquashedGaussianDistribution(GaussianDistribution):
+    def __init__(
+        self,
+        logits: tf.Tensor,
+        act_size: List[int],
+        pass_gradients: bool = False,
+        log_sigma_min: float = -20,
+        log_sigma_max: float = 2,
+    ):
+        super().__init__(logits, act_size, pass_gradients, log_sigma_min, log_sigma_max)
+        self._squashed_policy = tf.tanh(self._sampled_policy)
+
     @property
     def log_probs(self) -> tf.Tensor:
+        """
+        Adjust probabilities for squashed sample before output
+        """
         all_probs = self._all_probs
         all_probs -= tf.reduce_sum(
-            tf.log(1 - self.sample ** 2 + EPSILON), axis=1, keepdims=True
+            tf.log(1 - self._squashed_policy ** 2 + EPSILON), axis=1, keepdims=True
         )
         return all_probs
 
     @property
     def sample(self) -> tf.Tensor:
-        return tf.tanh(self._sampled_policy)
+        return self._squashed_policy
