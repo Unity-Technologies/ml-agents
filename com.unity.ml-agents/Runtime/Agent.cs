@@ -10,7 +10,7 @@ namespace MLAgents
     /// Struct that contains all the information for an Agent, including its
     /// observations, actions and current status, that is sent to the Brain.
     /// </summary>
-    public struct AgentInfo
+    internal struct AgentInfo
     {
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -145,7 +145,6 @@ namespace MLAgents
         /// Whether or not the agent requests a decision.
         bool m_RequestDecision;
 
-
         /// Keeps track of the number of steps taken by the agent in this episode.
         /// Note that this value is different for each agent, and may not overlap
         /// with the step counter in the Academy, since agents reset based on
@@ -167,6 +166,14 @@ namespace MLAgents
         /// Demonstration recorder.
         /// </summary>
         DemonstrationRecorder m_Recorder;
+
+        /// <summary>
+        /// Set of DemonstrationStores that the Agent will write its step information to.
+        /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationStore.
+        /// You can also add your own DemonstrationStores; the Agent is not responsible for creating or closing the
+        /// stores, only opening them.
+        /// </summary>
+        public ISet<DemonstrationStore> DemonstrationStores = new HashSet<DemonstrationStore>();
 
         /// <summary>
         /// List of sensors used to generate observations.
@@ -199,8 +206,6 @@ namespace MLAgents
             // Grab the "static" properties for the Agent.
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Recorder = GetComponent<DemonstrationRecorder>();
-
 
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
@@ -221,6 +226,8 @@ namespace MLAgents
         /// becomes disabled or inactive.
         void OnDisable()
         {
+            DemonstrationStores.Clear();
+
             // If Academy.Dispose has already been called, we don't need to unregister with it.
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
@@ -491,10 +498,10 @@ namespace MLAgents
 
             m_Brain.RequestDecision(m_Info, sensors);
 
-            // TODO simplify, only check if m_Recorder.GetExperienceWriter() exists
-            if (m_Recorder != null && m_Recorder.record)
+            // If we have any DemonstrationStores, write the AgentInfo and sensors to them.
+            foreach(var demoWriter in DemonstrationStores)
             {
-                WriteExperience(m_Recorder.GetExperienceWriter());
+                demoWriter.Record(m_Info, sensors);
             }
         }
 
@@ -506,15 +513,6 @@ namespace MLAgents
             }
         }
 
-        public void WriteExperience(IExperienceWriter writer)
-        {
-            ExperienceInfo expInfo = new ExperienceInfo
-            {
-                agentInfo = m_Info,
-                sensors = sensors
-            };
-            writer.Record(expInfo);
-        }
 
         /// <summary>
         /// Collects the vector observations of the agent.

@@ -8,7 +8,7 @@ namespace MLAgents
     /// <summary>
     /// Responsible for writing demonstration data to stream (usually a file stream).
     /// </summary>
-    public class DemonstrationStore : IExperienceWriter
+    public class DemonstrationStore
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
 
@@ -87,20 +87,23 @@ namespace MLAgents
             agentProto.WriteDelimitedTo(m_Writer);
         }
 
-        public void Record(ExperienceInfo expInfo)
-        {
-            Record(expInfo.agentInfo, expInfo.sensors);
-        }
 
         /// <summary>
         /// Performs all clean-up necessary
         /// </summary>
         public void Close()
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             EndEpisode();
             m_MetaData.meanReward = m_CumulativeReward / m_MetaData.numberEpisodes;
             WriteMetadata();
             m_Writer.Close();
+            m_Writer = null;
         }
 
         /// <summary>

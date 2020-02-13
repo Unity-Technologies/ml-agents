@@ -9,7 +9,7 @@ namespace MLAgents.Tests
     [TestFixture]
     public class DemonstrationTests : MonoBehaviour
     {
-        const string k_DemoDirecory = "Assets/Demonstrations/";
+        const string k_DemoDirectory = "Assets/Demonstrations/";
         const string k_ExtensionType = ".demo";
         const string k_DemoName = "Test";
 
@@ -45,17 +45,19 @@ namespace MLAgents.Tests
             bp.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
             bp.brainParameters.vectorActionSize = new[] { 2, 2 };
             bp.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
-            bp.behaviorName = "TestBrain";
 
-            Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirecory));
+            var agent = gameobj.AddComponent<TestAgent>();
+
+            Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirectory));
 
             var demoRec = gameobj.AddComponent<DemonstrationRecorder>();
             demoRec.record = true;
             demoRec.demonstrationName = k_DemoName;
+            demoRec.demoDirectory = k_DemoDirectory;
             demoRec.InitializeDemoStore(fileSystem);
 
-            Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirecory));
-            Assert.IsTrue(fileSystem.FileExists(k_DemoDirecory + k_DemoName + k_ExtensionType));
+            Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
+            Assert.IsTrue(fileSystem.FileExists(k_DemoDirectory + k_DemoName + k_ExtensionType));
 
             var agentInfo = new AgentInfo
             {
@@ -67,12 +69,8 @@ namespace MLAgents.Tests
                 storedVectorActions = new[] { 0f, 1f },
             };
 
-            var expInfo = new ExperienceInfo
-            {
-                agentInfo = agentInfo,
-                sensors = new System.Collections.Generic.List<ISensor>()
-            };
-            demoRec.GetExperienceWriter().Record(expInfo);
+
+            demoRec.m_DemoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
             demoRec.Close();
         }
 
@@ -104,6 +102,7 @@ namespace MLAgents.Tests
             agentGo1.AddComponent<DemonstrationRecorder>();
             var demoRecorder = agentGo1.GetComponent<DemonstrationRecorder>();
             var fileSystem = new MockFileSystem();
+            demoRecorder.demoDirectory = k_DemoDirectory;
             demoRecorder.demonstrationName = "TestBrain";
             demoRecorder.record = true;
             demoRecorder.InitializeDemoStore(fileSystem);

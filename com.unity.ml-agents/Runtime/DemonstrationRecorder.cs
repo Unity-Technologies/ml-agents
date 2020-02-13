@@ -9,7 +9,7 @@ namespace MLAgents
     /// <summary>
     /// Demonstration Recorder Component.
     /// </summary>
-    [RequireComponent(typeof(BehaviorParameters))]
+    [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
@@ -22,19 +22,11 @@ namespace MLAgents
         [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
         public string demoDirectory;
 
-        DemonstrationStore m_DemoStore;
-        public const int MaxNameLength = 16;
+        internal DemonstrationStore m_DemoStore;
+        internal const int MaxNameLength = 16;
 
         const string k_ExtensionType = ".demo";
         IFileSystem m_FileSystem;
-
-        void Start()
-        {
-            if (record)
-            {
-                InitializeDemoStore();
-            }
-        }
 
         void Update()
         {
@@ -47,7 +39,7 @@ namespace MLAgents
         /// <summary>
         /// Creates demonstration store for use in recording.
         /// </summary>
-        public void InitializeDemoStore(IFileSystem fileSystem = null)
+        internal void InitializeDemoStore(IFileSystem fileSystem = null)
         {
             if (m_DemoStore != null)
             {
@@ -66,8 +58,8 @@ namespace MLAgents
             }
 
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            CreateDirectory();
-            var stream = CreateDemonstrationFile(demonstrationName);
+            var filePath = MakeDemonstrationFilePath(m_FileSystem, demoDirectory, demonstrationName);
+            var stream = m_FileSystem.File.Create(filePath);
             m_DemoStore = new DemonstrationStore(stream);
 
             m_DemoStore.Initialize(
@@ -75,6 +67,12 @@ namespace MLAgents
                 behaviorParams.brainParameters,
                 behaviorParams.fullyQualifiedBehaviorName
             );
+
+            var agent = GetComponent<Agent>();
+            if (agent != null)
+            {
+                agent.DemonstrationStores.Add(m_DemoStore);
+            }
         }
 
         /// <summary>
@@ -94,65 +92,63 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Checks for the existence of the Demonstrations directory
-        /// and creates it if it does not exist.
+        /// Gets a unique path for the demonstrationName in the demoDirectory.
         /// </summary>
-        void CreateDirectory()
+        /// <param name="fileSystem"></param>
+        /// <param name="demoDirectory"></param>
+        /// <param name="demonstrationName"></param>
+        /// <returns></returns>
+        internal static string MakeDemonstrationFilePath(
+            IFileSystem fileSystem, string demoDirectory, string demonstrationName
+        )
         {
-            if (!m_FileSystem.Directory.Exists(demoDirectory))
+            // Create the directory if it doesn't already exist
+            if (!fileSystem.Directory.Exists(demoDirectory))
             {
-                m_FileSystem.Directory.CreateDirectory(demoDirectory);
+                fileSystem.Directory.CreateDirectory(demoDirectory);
             }
-        }
 
-        /// <summary>
-        /// Creates demonstration file and returns a Stream to it.
-        /// </summary>
-        Stream CreateDemonstrationFile(string demonstrationName)
-        {
-            // Creates demonstration file.
             var literalName = demonstrationName;
             var filePath = Path.Combine(demoDirectory, literalName + k_ExtensionType);
             var uniqueNameCounter = 0;
-            while (m_FileSystem.File.Exists(filePath))
+            while (fileSystem.File.Exists(filePath))
             {
+                // TODO should we use a timestamp instead of a counter here? This loops an increasing number of times
+                // as the number of demos increases.
                 literalName = demonstrationName + "_" + uniqueNameCounter;
                 filePath = Path.Combine(demoDirectory, literalName + k_ExtensionType);
                 uniqueNameCounter++;
             }
 
-            return m_FileSystem.File.Create(filePath);
+            return filePath;
         }
 
         /// <summary>
-        /// Forwards AgentInfo to Demonstration Store.
+        /// Close the DemonstrationStore and remove it from the Agent.
+        /// Has no effect if the DemonstrationStore is already closed (or wasn't opened)
         /// </summary>
-        public void WriteExperience(AgentInfo info, List<ISensor> sensors)
-        {
-            // TODO remove, all writing goes through the IExperienceWriter
-            m_DemoStore.Record(info, sensors);
-        }
-
         public void Close()
         {
             if (m_DemoStore != null)
             {
+                var agent = GetComponent<Agent>();
+                if (agent != null)
+                {
+                    agent.DemonstrationStores.Remove(m_DemoStore);
+                }
+
                 m_DemoStore.Close();
                 m_DemoStore = null;
             }
         }
 
         /// <summary>
-        /// Closes Demonstration store.
+        /// Clean up the DemonstrationStore when shutting down.
         /// </summary>
         void OnApplicationQuit()
         {
             Close();
         }
 
-        public IExperienceWriter GetExperienceWriter()
-        {
-            return m_DemoStore;
-        }
     }
 }
