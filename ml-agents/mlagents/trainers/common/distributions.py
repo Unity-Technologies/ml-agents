@@ -131,7 +131,7 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
     ) -> tf.Tensor:
         all_probs = super()._get_log_probs(sampled_policy, encoded)
         all_probs -= tf.reduce_sum(
-            tf.log(1 - self._sampled_policy ** 2 + EPSILON), axis=1, keepdims=True
+            tf.log(1 - sampled_policy ** 2 + EPSILON), axis=1, keepdims=True
         )
         return all_probs
 
@@ -139,5 +139,4 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
         self, encoded: "GaussianDistribution.MuSigmaTensors"
     ) -> tf.Tensor:
         sampled_policy = super()._create_sampled_policy(encoded)
-
         return tf.tanh(sampled_policy)
