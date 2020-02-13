@@ -14,7 +14,7 @@ namespace Tests
         [SetUp]
         public void Setup()
         {
-            SceneManager.LoadScene("SerializeTestScene");
+            SceneManager.LoadScene("Packages/com.unity.ml-agents/Tests/Runtime/SerializeTestScene");
         }
 
         /// <summary>
