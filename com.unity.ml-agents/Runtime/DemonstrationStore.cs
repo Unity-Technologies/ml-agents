@@ -33,6 +33,12 @@ namespace MLAgents
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
             var metaProto = m_MetaData.ToProto();
             metaProto.WriteDelimitedTo(m_Writer);
@@ -46,6 +52,12 @@ namespace MLAgents
         /// </summary>
         void WriteMetadata()
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             var metaProto = m_MetaData.ToProto();
             var metaProtoBytes = metaProto.ToByteArray();
             m_Writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
@@ -58,6 +70,12 @@ namespace MLAgents
         /// </summary>
         void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             // Writes BrainParameters to file.
             m_Writer.Seek(MetaDataBytes + 1, 0);
             var brainProto = brainParameters.ToProto(brainName, false);
@@ -69,6 +87,12 @@ namespace MLAgents
         /// </summary>
         internal void Record(AgentInfo info, List<ISensor> sensors)
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             // Increment meta-data counters.
             m_MetaData.numberExperiences++;
             m_CumulativeReward += info.reward;
