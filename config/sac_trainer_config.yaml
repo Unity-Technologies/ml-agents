@@ -34,7 +34,7 @@ FoodCollector:
 
 Bouncer:
     normalize: true
-    max_steps: 2.0e7
+    max_steps: 2.0e6
     num_layers: 2
     hidden_units: 64
     summary_freq: 20000
@@ -48,7 +48,7 @@ PushBlock:
     num_layers: 2
 
 SmallWallJump:
-    max_steps: 3e7
+    max_steps: 5e6
     hidden_units: 256
     summary_freq: 20000
     time_horizon: 128
@@ -57,7 +57,7 @@ SmallWallJump:
     normalize: false
 
 BigWallJump:
-    max_steps: 3e7
+    max_steps: 2e7
     hidden_units: 256
     summary_freq: 20000
     time_horizon: 128
@@ -217,7 +217,7 @@ Hallway:
     memory_size: 256
     init_entcoef: 0.1
     max_steps: 1.0e7
-    summary_freq: 1000
+    summary_freq: 10000
     time_horizon: 64
     use_recurrent: true
 

@@ -11,7 +11,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Continuous Action output tensor. Tensor is assumed to contain the
     /// continuous action data of the agents in the batch.
     /// </summary>
-    public class ContinuousActionOutputApplier : TensorApplier.IApplier
+    internal class ContinuousActionOutputApplier : TensorApplier.IApplier
     {
         public void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
         {
@@ -42,7 +42,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
     /// actions from the logits contained in the tensor.
     /// </summary>
-    public class DiscreteActionOutputApplier : TensorApplier.IApplier
+    internal class DiscreteActionOutputApplier : TensorApplier.IApplier
     {
         readonly int[] m_ActionSize;
         readonly Multinomial m_Multinomial;
@@ -189,7 +189,7 @@ namespace MLAgents.InferenceBrain
     /// The Applier for the Memory output tensor. Tensor is assumed to contain the new
     /// memory data of the agents in the batch.
     /// </summary>
-    public class MemoryOutputApplier : TensorApplier.IApplier
+    internal class MemoryOutputApplier : TensorApplier.IApplier
     {
         Dictionary<int, List<float>> m_Memories;
 
@@ -205,7 +205,7 @@ namespace MLAgents.InferenceBrain
             var memorySize = (int)tensorProxy.shape[tensorProxy.shape.Length - 1];
             foreach (int agentId in actionIds)
             {
-                List<float> memory = null;
+                List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize)
                 {
@@ -219,7 +219,7 @@ namespace MLAgents.InferenceBrain
         }
     }
 
-    public class BarracudaMemoryOutputApplier : TensorApplier.IApplier
+    internal class BarracudaMemoryOutputApplier : TensorApplier.IApplier
     {
         readonly int m_MemoriesCount;
         readonly int m_MemoryIndex;
@@ -243,7 +243,7 @@ namespace MLAgents.InferenceBrain
 
             foreach (int agentId in actionIds)
             {
-                List<float> memory = null;
+                List<float> memory;
                 if (!m_Memories.TryGetValue(agentId, out memory)
                     || memory.Count < memorySize * m_MemoriesCount)
                 {

@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace MLAgents
+namespace MLAgentsExamples
 {
-    public class Startup : MonoBehaviour
+    internal class Startup : MonoBehaviour
     {
         const string k_SceneVariableName = "SCENE_NAME";
 

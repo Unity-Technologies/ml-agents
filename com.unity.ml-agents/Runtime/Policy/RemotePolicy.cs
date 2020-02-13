@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 using System;
 
 namespace MLAgents
@@ -9,13 +8,13 @@ namespace MLAgents
     /// The Remote Policy only works when training.
     /// When training your Agents, the RemotePolicy will be controlled by Python.
     /// </summary>
-    public class RemotePolicy : IPolicy
+    internal class RemotePolicy : IPolicy
     {
 
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
 
-        protected ICommunicator m_Communicator;
+        internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(

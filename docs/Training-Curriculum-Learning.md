@@ -60,12 +60,12 @@ BigWallJump:
     big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
     big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
 SmallWallJump:
-    measure: progress
-    thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
-    signal_smoothing: true
-    parameters:
-      small_wall_height: [1.5, 2.0, 2.5, 4.0]
+  measure: progress
+  thresholds: [0.1, 0.3, 0.5]
+  min_lesson_length: 100
+  signal_smoothing: true
+  parameters:
+    small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
 At the top level of the config is the behavior name.  The curriculum for each

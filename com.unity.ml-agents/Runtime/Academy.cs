@@ -25,7 +25,7 @@ namespace MLAgents
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
     /// </summary>
-    public class AcademyFixedUpdateStepper : MonoBehaviour
+    internal class AcademyFixedUpdateStepper : MonoBehaviour
     {
         void FixedUpdate()
         {
@@ -46,21 +46,22 @@ namespace MLAgents
     /// attached to it.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
-        "docs/Learning-Environment-Design-Academy.md")]
+        "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
-        const string k_ApiVersion = "API-14-dev0";
+
+        const string k_ApiVersion = "API-15-dev0";
         const int k_EditorTrainingPort = 5004;
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
-        static Lazy<Academy> lazy = new Lazy<Academy>(() => new Academy());
+        static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
 
         public static bool IsInitialized
         {
-            get { return lazy.IsValueCreated; }
+            get { return s_Lazy.IsValueCreated; }
         }
 
-        public static Academy Instance { get { return lazy.Value; } }
+        public static Academy Instance { get { return s_Lazy.Value; } }
 
         public IFloatProperties FloatProperties;
 
@@ -92,7 +93,7 @@ namespace MLAgents
         int m_TotalStepCount;
 
         /// Pointer to the communicator currently in use by the Academy.
-        public ICommunicator Communicator;
+        internal ICommunicator Communicator;
 
         bool m_Initialized;
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
@@ -108,30 +109,30 @@ namespace MLAgents
 
         // Signals to all the Agents at each environment step so they can use
         // their Policy to decide on their next action.
-        public event System.Action DecideAction;
+        internal event Action DecideAction;
 
         // Signals to all the listeners that the academy is being destroyed
-        public event System.Action DestroyAction;
+        internal event Action DestroyAction;
 
         // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
         // in addition to aligning on the step count of the global episode.
-        public event System.Action<int> AgentSetStatus;
+        internal event Action<int> AgentSetStatus;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
-        public event System.Action AgentSendState;
+        internal event Action AgentSendState;
 
         // Signals to all the agents at each environment step so they can act if
         // they have requested a decision.
-        public event System.Action AgentAct;
+        internal event Action AgentAct;
 
         // Signals to all the agents each time the Academy force resets.
-        public event System.Action AgentForceReset;
+        internal event Action AgentForceReset;
 
         // Signals that the Academy has been reset by the training process
-        public event System.Action OnEnvironmentReset;
+        public event Action OnEnvironmentReset;
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
         GameObject m_StepperObject;
@@ -147,14 +148,14 @@ namespace MLAgents
         {
             Application.quitting += Dispose;
 
-            LazyInitialization();
+            LazyInitialize();
         }
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
         /// This method is always safe to call; it will have no effect if the Academy is already initialized.
         /// </summary>
-        public void LazyInitialization()
+        internal void LazyInitialize()
         {
             if (!m_Initialized)
             {
@@ -167,7 +168,7 @@ namespace MLAgents
         /// Enable stepping of the Academy during the FixedUpdate phase.  This is done by creating a temporary
         /// GameObject with a MonoBehavior that calls Academy.EnvironmentStep().
         /// </summary>
-        public void EnableAutomaticStepping()
+        void EnableAutomaticStepping()
         {
             if (m_FixedUpdateStepper != null)
             {
@@ -181,10 +182,31 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Registers SideChannel to the Academy to send and receive data with Python.
+        /// If IsCommunicatorOn is false, the SideChannel will not be registered.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be registered.</param>
+        public void RegisterSideChannel(SideChannel channel)
+        {
+            LazyInitialize();
+            Communicator?.RegisterSideChannel(channel);
+        }
+
+        /// <summary>
+        /// Unregisters SideChannel to the Academy. If the side channel was not registered,
+        /// nothing will happen.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        public void UnregisterSideChannel(SideChannel channel)
+        {
+            Communicator?.UnregisterSideChannel(channel);
+        }
+
+        /// <summary>
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
-        public void DisableAutomaticStepping(bool destroyImmediate = false)
+        void DisableAutomaticStepping()
         {
             if (m_FixedUpdateStepper == null)
             {
@@ -192,7 +214,7 @@ namespace MLAgents
             }
 
             m_FixedUpdateStepper = null;
-            if (destroyImmediate)
+            if (Application.isEditor)
             {
                 UnityEngine.Object.DestroyImmediate(m_StepperObject);
             }
@@ -205,11 +227,21 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns whether or not the Academy is automatically stepped during the FixedUpdate phase.
+        /// Determines whether or not the Academy is automatically stepped during the FixedUpdate phase.
         /// </summary>
-        public bool IsAutomaticSteppingEnabled
+        public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
+            set {
+                if (value)
+                {
+                    EnableAutomaticStepping();
+                }
+                else
+                {
+                    DisableAutomaticStepping();
+                }
+            }
         }
 
         // Used to read Python-provided environment parameters
@@ -273,13 +305,13 @@ namespace MLAgents
                 //environment must use Inference.
                 try
                 {
-                    var unityRLInitParameters = Communicator.Initialize(
+                    var unityRlInitParameters = Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
                             version = k_ApiVersion,
                             name = "AcademySingleton",
                         });
-                    UnityEngine.Random.InitState(unityRLInitParameters.seed);
+                    UnityEngine.Random.InitState(unityRlInitParameters.seed);
                 }
                 catch
                 {
@@ -334,9 +366,9 @@ namespace MLAgents
         /// <returns>
         /// Current episode number.
         /// </returns>
-        public int GetEpisodeCount()
+        public int EpisodeCount
         {
-            return m_EpisodeCount;
+            get { return m_EpisodeCount; }
         }
 
         /// <summary>
@@ -345,9 +377,9 @@ namespace MLAgents
         /// <returns>
         /// Current step count.
         /// </returns>
-        public int GetStepCount()
+        public int StepCount
         {
-            return m_StepCount;
+            get { return m_StepCount; }
         }
 
         /// <summary>
@@ -356,9 +388,9 @@ namespace MLAgents
         /// <returns>
         /// Total step count.
         /// </returns>
-        public int GetTotalStepCount()
+        public int TotalStepCount
         {
-            return m_TotalStepCount;
+            get { return m_TotalStepCount; }
         }
 
         /// <summary>
@@ -426,7 +458,7 @@ namespace MLAgents
         /// <param name="inferenceDevice"> The inference device (CPU or GPU)
         /// the ModelRunner will use </param>
         /// <returns> The ModelRunner compatible with the input settings</returns>
-        public ModelRunner GetOrCreateModelRunner(
+        internal ModelRunner GetOrCreateModelRunner(
             NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
@@ -444,7 +476,7 @@ namespace MLAgents
         /// </summary>
         public void Dispose()
         {
-            DisableAutomaticStepping(true);
+            DisableAutomaticStepping();
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
@@ -471,7 +503,7 @@ namespace MLAgents
             m_Initialized = false;
 
             // Reset the Lazy instance
-            lazy = new Lazy<Academy>(() => new Academy());
+            s_Lazy = new Lazy<Academy>(() => new Academy());
         }
     }
 }

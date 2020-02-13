@@ -3,7 +3,6 @@ using Barracuda;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 using System;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -18,11 +17,11 @@ namespace MLAgents
     /// every step. It uses a ModelRunner that is shared accross all
     /// Barracuda Policies that use the same model and inference devices.
     /// </summary>
-    public class BarracudaPolicy : IPolicy
+    internal class BarracudaPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
 
-        private int m_AgentId;
+        int m_AgentId;
 
         /// <summary>
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.

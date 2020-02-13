@@ -3,7 +3,7 @@ namespace MLAgents.InferenceBrain
     /// <summary>
     /// Contains the names of the input and output tensors for the Inference Brain.
     /// </summary>
-    public static class TensorNames
+    internal static class TensorNames
     {
         public const string BatchSizePlaceholder = "batch_size";
         public const string SequenceLengthPlaceholder = "sequence_length";

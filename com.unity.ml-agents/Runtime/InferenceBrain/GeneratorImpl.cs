@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
-using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -12,7 +11,7 @@ namespace MLAgents.InferenceBrain
     /// and initializes its content to be zeros. Will only work on 2-dimensional tensors.
     /// The second dimension of the Tensor will not be modified.
     /// </summary>
-    public class BiDimensionalOutputGenerator : TensorGenerator.IGenerator
+    internal class BiDimensionalOutputGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
 
@@ -31,7 +30,7 @@ namespace MLAgents.InferenceBrain
     /// Generates the Tensor corresponding to the BatchSize input : Will be a one dimensional
     /// integer array of size 1 containing the batch size.
     /// </summary>
-    public class BatchSizeGenerator : TensorGenerator.IGenerator
+    internal class BatchSizeGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
 
@@ -54,7 +53,7 @@ namespace MLAgents.InferenceBrain
     /// Note : the sequence length is always one since recurrent networks only predict for
     /// one step at the time.
     /// </summary>
-    public class SequenceLengthGenerator : TensorGenerator.IGenerator
+    internal class SequenceLengthGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
 
@@ -78,7 +77,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Vector Observation data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class VectorObservationGenerator : TensorGenerator.IGenerator
+    internal class VectorObservationGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
         List<int> m_SensorIndices = new List<int>();
@@ -137,9 +136,9 @@ namespace MLAgents.InferenceBrain
     /// It will use the Memory data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class RecurrentInputGenerator : TensorGenerator.IGenerator
+    internal class RecurrentInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
         Dictionary<int, List<float>> m_Memories;
 
         public RecurrentInputGenerator(
@@ -188,7 +187,7 @@ namespace MLAgents.InferenceBrain
         }
     }
 
-    public class BarracudaRecurrentInputGenerator : TensorGenerator.IGenerator
+    internal class BarracudaRecurrentInputGenerator : TensorGenerator.IGenerator
     {
         int m_MemoriesCount;
         readonly int m_MemoryIndex;
@@ -250,7 +249,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the previous action data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class PreviousActionInputGenerator : TensorGenerator.IGenerator
+    internal class PreviousActionInputGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
 
@@ -285,7 +284,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Action Mask data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class ActionMaskInputGenerator : TensorGenerator.IGenerator
+    internal class ActionMaskInputGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
 
@@ -319,7 +318,7 @@ namespace MLAgents.InferenceBrain
     /// dimensional float array of dimension [batchSize x actionSize].
     /// It will use the generate random input data from a normal Distribution.
     /// </summary>
-    public class RandomNormalInputGenerator : TensorGenerator.IGenerator
+    internal class RandomNormalInputGenerator : TensorGenerator.IGenerator
     {
         readonly RandomNormal m_RandomNormal;
         readonly ITensorAllocator m_Allocator;
@@ -343,7 +342,7 @@ namespace MLAgents.InferenceBrain
     /// It will use the Texture input data contained in the agentInfo to fill the data
     /// of the tensor.
     /// </summary>
-    public class VisualObservationInputGenerator : TensorGenerator.IGenerator
+    internal class VisualObservationInputGenerator : TensorGenerator.IGenerator
     {
         readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;

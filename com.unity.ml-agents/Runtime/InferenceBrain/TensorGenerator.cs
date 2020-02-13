@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Barracuda;
-using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
@@ -16,7 +15,7 @@ namespace MLAgents.InferenceBrain
     /// When the TensorProxy is an Output of the model, only the shape of the Tensor will be
     /// modified using the current batch size. The data will be pre-filled with zeros.
     /// </summary>
-    public class TensorGenerator
+    internal class TensorGenerator
     {
         public interface IGenerator
         {
@@ -122,7 +121,7 @@ namespace MLAgents.InferenceBrain
         /// <param name="tensors"> Enumerable of tensors that will be modified.</param>
         /// <param name="currentBatchSize"> The number of agents present in the current batch
         /// </param>
-        /// <param name="agents"> List of Agents that contains the
+        /// <param name="infos"> List of AgentsInfos and Sensors that contains the
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>

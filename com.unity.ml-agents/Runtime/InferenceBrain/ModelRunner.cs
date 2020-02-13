@@ -2,17 +2,16 @@ using System.Collections.Generic;
 using Barracuda;
 using UnityEngine.Profiling;
 using System;
-using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
-    public struct AgentInfoSensorsPair
+    internal struct AgentInfoSensorsPair
     {
         public AgentInfo agentInfo;
         public List<ISensor> sensors;
     }
 
-    public class ModelRunner
+    internal class ModelRunner
     {
         List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
         Dictionary<int, float[]> m_LastActionsReceived = new Dictionary<int, float[]>();

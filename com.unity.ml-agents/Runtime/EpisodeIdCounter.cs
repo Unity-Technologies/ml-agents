@@ -1,11 +1,11 @@
 namespace MLAgents
 {
-    public static class EpisodeIdCounter
+    internal static class EpisodeIdCounter
     {
-        private static int Counter;
+        static int s_Counter;
         public static int GetEpisodeId()
         {
-            return Counter++;
+            return s_Counter++;
         }
     }
 }

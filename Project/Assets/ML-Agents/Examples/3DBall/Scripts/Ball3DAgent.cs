@@ -15,12 +15,12 @@ public class Ball3DAgent : Agent
         SetResetParameters();
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
-        AddVectorObs(gameObject.transform.rotation.z);
-        AddVectorObs(gameObject.transform.rotation.x);
-        AddVectorObs(ball.transform.position - gameObject.transform.position);
-        AddVectorObs(m_BallRb.velocity);
+        sensor.AddObservation(gameObject.transform.rotation.z);
+        sensor.AddObservation(gameObject.transform.rotation.x);
+        sensor.AddObservation(ball.transform.position - gameObject.transform.position);
+        sensor.AddObservation(m_BallRb.velocity);
     }
 
     public override void AgentAction(float[] vectorAction)

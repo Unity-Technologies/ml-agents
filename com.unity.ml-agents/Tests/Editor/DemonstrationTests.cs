@@ -3,7 +3,6 @@ using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
-using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
@@ -71,12 +70,12 @@ namespace MLAgents.Tests
 
         public class ObservationAgent : TestAgent
         {
-            public override void CollectObservations()
+            public override void CollectObservations(VectorSensor sensor)
             {
                 collectObservationsCalls += 1;
-                AddVectorObs(1f);
-                AddVectorObs(2f);
-                AddVectorObs(3f);
+                sensor.AddObservation(1f);
+                sensor.AddObservation(2f);
+                sensor.AddObservation(3f);
             }
         }
 

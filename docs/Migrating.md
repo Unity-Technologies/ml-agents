@@ -7,10 +7,24 @@ The versions can be found in
 
 # Migrating
 
-
-## Migrating from 0.13 to latest
+## Migrating from 0.14 to latest
 
 ### Important changes
+* The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
+* The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
+* The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
+* The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
+
+
+### Steps to Migrate
+* Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
+* Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectObservations`
+
+
+## Migrating from 0.13 to 0.14
+
+### Important changes
+* The `UnitySDK` folder has been split into a Unity Package (`com.unity.ml-agents`) and an examples project (`Project`).  Please follow the [Installation Guide](Installation.md) to get up and running with this new repo structure.
 * Several changes were made to how agents are reset and marked as done:
   * Calling `Done()` on the Agent will now reset it immediately and call the `AgentReset` virtual method. (This is to simplify the previous logic in which the Agent had to wait for the next `EnvironmentStep` to reset)
   * The "Reset on Done" setting in AgentParameters was removed; this is now effectively always true. `AgentOnDone` virtual method on the Agent has been removed.
@@ -27,9 +41,11 @@ The versions can be found in
   * The `AgentAction` struct no longer contains a `value` field. (Value estimates were not set during inference)
   * The `GetValueEstimate()` method on the Agent has been removed.
   * The `UpdateValueAction()` method on the Agent has been removed.
-* The deprecated `RayPerception3D` and `RayPerception3D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* The deprecated `RayPerception3D` and `RayPerception2D` classes were removed, and the `legacyHitFractionBehavior` argument was removed from `RayPerceptionSensor.PerceiveStatic()`.
+* RayPerceptionSensor was inconsistent in how it handle scale on the Agent's transform. It now scales the ray length and sphere size for casting as the transform's scale changes.
 
 ### Steps to Migrate
+* Follow the instructions on how to install the `com.unity.ml-agents` package into your project in the [Installation Guide](Installation.md).
 * If your Agent implemented `AgentOnDone` and did not have the checkbox `Reset On Done` checked in the inspector, you must call the code that was in `AgentOnDone` manually.
 * If you give your Agent a reward or penalty at the end of an episode (e.g. for reaching a goal or falling off of a platform), make sure you call `AddReward()` or `SetReward()` *before* calling `Done()`. Previously, the order didn't matter.
 * If you were not using `On Demand Decision` for your Agent, you **must** add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.
@@ -39,11 +55,12 @@ The versions can be found in
   * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
     * Move the InitializeAcademy code to MonoBehaviour.OnAwake
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
-    * Move the OnDestroy code to MonoBehaviour.OnDestroy or add it to the to Academy.DestroyAction action.
+    * Move the OnDestroy code to MonoBehaviour.OnDestroy.
     * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
 * Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
+* If you have a model trained which uses RayPerceptionSensor and has non-1.0 scale in the Agent's transform, it must be retrained.
 
 
 ## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0

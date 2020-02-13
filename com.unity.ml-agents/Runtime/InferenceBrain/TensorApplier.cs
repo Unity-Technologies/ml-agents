@@ -12,7 +12,7 @@ namespace MLAgents.InferenceBrain
     /// This action takes as input the tensor and the Dictionary of Agent to AgentInfo for
     /// the current batch.
     /// </summary>
-    public class TensorApplier
+    internal class TensorApplier
     {
         /// <summary>
         /// A tensor Applier's Execute method takes a tensor and a Dictionary of Agent to AgentInfo.
@@ -30,7 +30,6 @@ namespace MLAgents.InferenceBrain
             /// </param>
             /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
             /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            /// </param>
             void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions);
         }
 

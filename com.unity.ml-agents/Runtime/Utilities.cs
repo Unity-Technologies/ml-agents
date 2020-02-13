@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
-    public static class Utilities
+    internal static class Utilities
     {
         /// <summary>
         /// Puts a Texture2D into a WriteAdapter.

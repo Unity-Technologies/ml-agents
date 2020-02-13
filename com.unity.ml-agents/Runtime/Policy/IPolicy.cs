@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -10,14 +9,15 @@ namespace MLAgents
     /// will not be taken immediately but will be taken before or when
     /// DecideAction is called.
     /// </summary>
-    public interface IPolicy : IDisposable
+    internal interface IPolicy : IDisposable
     {
         /// <summary>
         /// Signals the Brain that the Agent needs a Decision. The Policy
         /// will make the decision at a later time to allow possible
         /// batching of requests.
         /// </summary>
-        /// <param name="agent"></param>
+        /// <param name="info"></param>
+        /// <param name="sensors"></param>
         void RequestDecision(AgentInfo info, List<ISensor> sensors);
 
         /// <summary>
