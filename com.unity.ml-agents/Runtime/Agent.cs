@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
-using UnityEditor;
 using UnityEngine.Serialization;
 
 namespace MLAgents
