@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.14.0-preview] - 2020-01-24
 
 ### Major Changes
-- A new self-play mechanism for training agents in adversarial scenarios was added (#3194) 
+- A new self-play mechanism for training agents in adversarial scenarios was added (#3194)
 - Tennis and Soccer environments were refactored to enable training with self-play (#3194, #3331)
 - UnitySDK folder was split into a Unity Package (com.unity.ml-agents) and our examples were moved to the Project folder (#3267)
 - Academy is now a singleton and is no longer abstract (#3210, #3184)
