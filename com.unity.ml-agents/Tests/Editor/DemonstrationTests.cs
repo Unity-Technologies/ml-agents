@@ -53,7 +53,7 @@ namespace MLAgents.Tests
             var demoRec = gameobj.AddComponent<DemonstrationRecorder>();
             demoRec.record = true;
             demoRec.demonstrationName = k_DemoName;
-            demoRec.demoDirectory = k_DemoDirectory;
+            demoRec.demonstrationDirectory = k_DemoDirectory;
             demoRec.InitializeDemoStore(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
@@ -102,7 +102,7 @@ namespace MLAgents.Tests
             agentGo1.AddComponent<DemonstrationRecorder>();
             var demoRecorder = agentGo1.GetComponent<DemonstrationRecorder>();
             var fileSystem = new MockFileSystem();
-            demoRecorder.demoDirectory = k_DemoDirectory;
+            demoRecorder.demonstrationDirectory = k_DemoDirectory;
             demoRecorder.demonstrationName = "TestBrain";
             demoRecorder.record = true;
             demoRecorder.InitializeDemoStore(fileSystem);

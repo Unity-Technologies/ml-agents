@@ -20,7 +20,7 @@ namespace MLAgents
         public string demonstrationName;
 
         [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
-        public string demoDirectory;
+        public string demonstrationDirectory;
 
         internal DemonstrationStore m_DemoStore;
         internal const int MaxNameLength = 16;
@@ -52,13 +52,13 @@ namespace MLAgents
             {
                 demonstrationName = behaviorParams.behaviorName;
             }
-            if (string.IsNullOrEmpty(demoDirectory))
+            if (string.IsNullOrEmpty(demonstrationDirectory))
             {
-                demoDirectory = Path.Combine(Application.dataPath, "Demonstrations");
+                demonstrationDirectory = Path.Combine(Application.dataPath, "Demonstrations");
             }
 
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            var filePath = MakeDemonstrationFilePath(m_FileSystem, demoDirectory, demonstrationName);
+            var filePath = MakeDemonstrationFilePath(m_FileSystem, demonstrationDirectory, demonstrationName);
             var stream = m_FileSystem.File.Create(filePath);
             m_DemoStore = new DemonstrationStore(stream);
 
@@ -92,31 +92,31 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Gets a unique path for the demonstrationName in the demoDirectory.
+        /// Gets a unique path for the demonstrationName in the demonstrationDirectory.
         /// </summary>
         /// <param name="fileSystem"></param>
-        /// <param name="demoDirectory"></param>
+        /// <param name="demonstrationDirectory"></param>
         /// <param name="demonstrationName"></param>
         /// <returns></returns>
         internal static string MakeDemonstrationFilePath(
-            IFileSystem fileSystem, string demoDirectory, string demonstrationName
+            IFileSystem fileSystem, string demonstrationDirectory, string demonstrationName
         )
         {
             // Create the directory if it doesn't already exist
-            if (!fileSystem.Directory.Exists(demoDirectory))
+            if (!fileSystem.Directory.Exists(demonstrationDirectory))
             {
-                fileSystem.Directory.CreateDirectory(demoDirectory);
+                fileSystem.Directory.CreateDirectory(demonstrationDirectory);
             }
 
             var literalName = demonstrationName;
-            var filePath = Path.Combine(demoDirectory, literalName + k_ExtensionType);
+            var filePath = Path.Combine(demonstrationDirectory, literalName + k_ExtensionType);
             var uniqueNameCounter = 0;
             while (fileSystem.File.Exists(filePath))
             {
                 // TODO should we use a timestamp instead of a counter here? This loops an increasing number of times
                 // as the number of demos increases.
                 literalName = demonstrationName + "_" + uniqueNameCounter;
-                filePath = Path.Combine(demoDirectory, literalName + k_ExtensionType);
+                filePath = Path.Combine(demonstrationDirectory, literalName + k_ExtensionType);
                 uniqueNameCounter++;
             }
 
