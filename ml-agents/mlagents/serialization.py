@@ -1,11 +1,16 @@
 import logging
 from typing import Any, List, Set, NamedTuple
 
-import onnx
+try:
+    import onnx
+    from tf2onnx.tfonnx import process_tf_graph, tf_optimize
+    from tf2onnx import optimizer
 
-from tf2onnx.tfonnx import process_tf_graph, tf_optimize
-from tf2onnx import optimizer
-
+    ONNX_EXPORT_ENABLED = True
+except ImportError:
+    # Either onnx and tf2onnx not installed, or they're not compatible with the version of tensorflow
+    ONNX_EXPORT_ENABLED = False
+    pass
 
 from mlagents.tf_utils import tf
 
@@ -61,13 +66,20 @@ def export_policy_model(
         tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
         logger.info(f"Exported {settings.model_path}.nn file")
 
-    # Save to onnx too
-    if settings.convert_to_onnx:
-        onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
-        onnx_output_path = settings.model_path + ".onnx"
-        with open(onnx_output_path, "wb") as f:
-            f.write(onnx_graph.SerializeToString())
-        logger.info(f"Converting to {onnx_output_path}")
+    # Save to onnx too (if we were able to import it)
+    if ONNX_EXPORT_ENABLED and settings.convert_to_onnx:
+        try:
+            onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
+            onnx_output_path = settings.model_path + ".onnx"
+            with open(onnx_output_path, "wb") as f:
+                f.write(onnx_graph.SerializeToString())
+            logger.info(f"Converting to {onnx_output_path}")
+        except Exception:
+            logger.exception(
+                "Exception trying to save ONNX graph. Please report this error on "
+                "https://github.com/Unity-Technologies/ml-agents/issues and "
+                "attach a copy of frozen_graph_def.pb"
+            )
 
 
 def _make_frozen_graph(
