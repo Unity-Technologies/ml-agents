@@ -3,6 +3,7 @@ import logging
 import argparse
 
 import os
+from os import path
 import glob
 import shutil
 import numpy as np
@@ -24,6 +25,7 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.exception import UnityEnvironmentException
 
 
 def _create_parser():
@@ -388,6 +390,14 @@ def create_environment_factory(
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
+        if not path.exists(env_path):
+            raise UnityEnvironmentException(
+                "Couldn't launch the {0} environment. "
+                "Provided filename does not match any environments.".format(
+                    env_path
+                )
+            )
+
         # Strip out executable extensions if passed
         env_path = (
             env_path.strip()
