@@ -126,15 +126,18 @@ class GaussianDistribution(OutputDistribution):
 
 
 class TanhSquashedGaussianDistribution(GaussianDistribution):
-    @property
-    def log_probs(self) -> tf.Tensor:
-        all_probs = self._all_probs
-        # Squash correction
+    def _get_log_probs(
+        self, sampled_policy: tf.Tensor, encoded: "GaussianDistribution.MuSigmaTensors"
+    ) -> tf.Tensor:
+        all_probs = super()._get_log_probs(sampled_policy, encoded)
         all_probs -= tf.reduce_sum(
             tf.log(1 - self._sampled_policy ** 2 + EPSILON), axis=1, keepdims=True
         )
         return all_probs
 
-    @property
-    def sample(self) -> tf.Tensor:
-        return tf.tanh(self._sampled_policy)
+    def _create_sampled_policy(
+        self, encoded: "GaussianDistribution.MuSigmaTensors"
+    ) -> tf.Tensor:
+        sampled_policy = super()._create_sampled_policy(encoded)
+
+        return tf.tanh(sampled_policy)
