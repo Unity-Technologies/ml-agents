@@ -22,7 +22,7 @@ test_mac_training_int_{{ editor.version }}:
         - "ml-agents/**"
         - "ml-agents-envs/**"
         - ".yamato/training-int-tests.yml"
-      exept:
+      except:
         - "*.md"
         - "com.unity.ml-agents/*.md"
         - "com.unity.ml-agents/**/*.md"

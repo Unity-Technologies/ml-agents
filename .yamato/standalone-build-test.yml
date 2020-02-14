@@ -20,7 +20,7 @@ test_mac_standalone_{{ editor.version }}:
         - "com.unity.ml-agents/**"
         - "Project/**"
         - ".yamato/standalone-build-test.yml"
-      exept:
+      except:
         - "*.md"
         - "com.unity.ml-agents/*.md"
         - "com.unity.ml-agents/**/*.md"
