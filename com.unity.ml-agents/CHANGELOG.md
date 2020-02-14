@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Several classes were changed from public to internal visibility. (#3390)
  - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
  - A tutorial on adding custom SideChannels was added (#3391)
+ - Update Barracuda to 0.6.0-preview
 
 ### Bugfixes
 
