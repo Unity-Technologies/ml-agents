@@ -34,12 +34,6 @@ test_{{ platform.name }}_{{ editor.version }}:
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
-    pull_requests:
-      - targets:
-          only:
-            - "master"
-            - "/release-.*/"
-            - "/hotfix-.*/"
     changes:
       only:
         - "com.unity.ml-agents/**"
