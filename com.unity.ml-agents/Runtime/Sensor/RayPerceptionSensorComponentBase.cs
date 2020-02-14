@@ -123,17 +123,17 @@ namespace MLAgents
                 var startPositionWorld = rayInfo.worldStart;
                 var endPositionWorld = rayInfo.worldEnd;
                 var rayDirection = endPositionWorld - startPositionWorld;
-                rayDirection *= rayInfo.hitFraction;
+                rayDirection *= rayInfo.rayOutput.hitFraction;
 
                 // hit fraction ^2 will shift "far" hits closer to the hit color
-                var lerpT = rayInfo.hitFraction * rayInfo.hitFraction;
+                var lerpT = rayInfo.rayOutput.hitFraction * rayInfo.rayOutput.hitFraction;
                 var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
                 color.a *= alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld, rayDirection);
 
                 // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-                if (rayInfo.castHit)
+                if (rayInfo.rayOutput.hasHit)
                 {
                     var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);

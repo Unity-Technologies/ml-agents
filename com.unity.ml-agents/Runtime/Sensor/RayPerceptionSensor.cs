@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Determines which dimensions the sensor will perform the casts in.
+    /// </summary>
     public enum RayPerceptionCastType
     {
+        /// Cast in 2 dimensions, using Physics2D.CircleCast or Physics2D.RayCast.
         Cast2D,
+
+        /// Cast in 3 dimensions, using Physics.SphereCast or Physics.RayCast.
         Cast3D,
     }
 
@@ -68,6 +74,11 @@ namespace MLAgents
             return (detectableObjects.Count + 2) * angles.Count;
         }
 
+        /// <summary>
+        /// Get the cast start and end points for the given ray index/
+        /// </summary>
+        /// <param name="rayIndex"></param>
+        /// <returns>A tuple of the start and end positions in world space.</returns>
         public (Vector3 StartPositionWorld, Vector3 EndPositionWorld) RayExtents(int rayIndex)
         {
             var angle = angles[rayIndex];
@@ -136,22 +147,6 @@ namespace MLAgents
             /// Normalized distance to the hit object.
             /// </summary>
             public float hitFraction;
-
-            /// <summary>
-            /// World space location of the ray start. Only used for debugging.
-            /// </summary>
-            public Vector3 worldStart;
-
-            /// <summary>
-            /// World space location of the ray start. Only used for debugging
-            /// </summary>
-            public Vector3 worldEnd;
-
-            /// <summary>
-            /// The scaled castRadius that was actually used for casting.
-            /// </summary>
-            public float scaledCastRadius;
-
         }
 
         /// <summary>
@@ -192,6 +187,37 @@ namespace MLAgents
         public RayOutput[] rayOutputs;
     }
 
+    /// <summary>
+    /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
+    /// </summary>
+    internal class DebugDisplayInfo
+    {
+        public struct RayInfo
+        {
+            public Vector3 worldStart;
+            public Vector3 worldEnd;
+            public float castRadius;
+            public RayPerceptionOutput.RayOutput rayOutput;
+        }
+
+        public void Reset()
+        {
+            m_Frame = Time.frameCount;
+        }
+
+        /// <summary>
+        /// "Age" of the results in number of frames. This is used to adjust the alpha when drawing.
+        /// </summary>
+        public int age
+        {
+            get { return Time.frameCount - m_Frame; }
+        }
+
+        public RayInfo[] rayInfos;
+
+        int m_Frame;
+    }
+
     public class RayPerceptionSensor : ISensor
     {
         float[] m_Observations;
@@ -201,41 +227,9 @@ namespace MLAgents
         RayPerceptionInput m_RayPerceptionInput;
         RayPerceptionOutput m_Output = new RayPerceptionOutput();
 
-        /// <summary>
-        /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
-        /// </summary>
-        public class DebugDisplayInfo
-        {
-            public struct RayInfo
-            {
-                public Vector3 worldStart;
-                public Vector3 worldEnd;
-                public bool castHit;
-                public float hitFraction;
-                public float castRadius;
-            }
-
-            public void Reset()
-            {
-                m_Frame = Time.frameCount;
-            }
-
-            /// <summary>
-            /// "Age" of the results in number of frames. This is used to adjust the alpha when drawing.
-            /// </summary>
-            public int age
-            {
-                get { return Time.frameCount - m_Frame; }
-            }
-
-            public RayInfo[] rayInfos;
-
-            int m_Frame;
-        }
-
         DebugDisplayInfo m_DebugDisplayInfo;
 
-        public DebugDisplayInfo debugDisplayInfo
+        internal DebugDisplayInfo debugDisplayInfo
         {
             get { return m_DebugDisplayInfo; }
         }
@@ -297,9 +291,19 @@ namespace MLAgents
         /// <param name="output">Output class that will be written to with raycast results.</param>
         /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
         ///
-        public static void PerceiveStatic(RayPerceptionInput input,
-            RayPerceptionOutput output,
-            DebugDisplayInfo debugInfo = null)
+        public static void PerceiveStatic(RayPerceptionInput input, RayPerceptionOutput output)
+        {
+            PerceiveStatic(input, output, null);
+        }
+
+        /// <summary>
+        /// Evaluates the raycasts to be used as part of an observation of an agent.
+        /// </summary>
+        /// <param name="input">Input defining the rays that will be cast.</param>
+        /// <param name="output">Output class that will be written to with raycast results.</param>
+        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
+        ///
+        internal static void PerceiveStatic(RayPerceptionInput input, RayPerceptionOutput output, DebugDisplayInfo debugInfo)
         {
 
             if (output.rayOutputs == null || output.rayOutputs.Length != input.angles.Count)
@@ -332,13 +336,14 @@ namespace MLAgents
                 // We also it to scale up or down the sphere or circle radii
                 var scaledRayLength = rayDirection.magnitude;
                 // Avoid 0/0 if unscaledRayLength is 0
-                var scaledCastRadius = unscaledRayLength > 0 ? unscaledCastRadius * scaledRayLength / unscaledRayLength : unscaledCastRadius;
+                var scaledCastRadius = unscaledRayLength > 0 ?
+                    unscaledCastRadius * scaledRayLength / unscaledRayLength :
+                    unscaledCastRadius;
 
                 // Do the cast and assign the hit information for each detectable object.
                 bool castHit;
                 float hitFraction;
                 GameObject hitObject;
-                var rayOutput = new RayPerceptionOutput.RayOutput();
 
                 if (input.castType == RayPerceptionCastType.Cast3D)
                 {
@@ -377,20 +382,7 @@ namespace MLAgents
                     hitObject = castHit ? rayHit.collider.gameObject : null;
                 }
 
-                if (debugInfo != null)
-                {
-                    debugInfo.rayInfos[rayIndex].worldStart = startPositionWorld;
-                    debugInfo.rayInfos[rayIndex].worldEnd = endPositionWorld;
-                    debugInfo.rayInfos[rayIndex].castHit = castHit;
-                    debugInfo.rayInfos[rayIndex].hitFraction = hitFraction;
-                    debugInfo.rayInfos[rayIndex].castRadius = scaledCastRadius;
-                }
-                else if (Application.isEditor)
-                {
-                    // Legacy drawing
-                    Debug.DrawRay(startPositionWorld, rayDirection, Color.black, 0.01f, true);
-                }
-
+                var rayOutput = new RayPerceptionOutput.RayOutput();
                 rayOutput.hasHit = castHit;
                 rayOutput.hitFraction = hitFraction;
                 rayOutput.hitTaggedObject = false;
@@ -398,6 +390,7 @@ namespace MLAgents
 
                 if (castHit)
                 {
+                    // Find the index of the tag of the object that was hit.
                     for (var i = 0; i < input.detectableObjects.Count; i++)
                     {
                         if (hitObject.CompareTag(input.detectableObjects[i]))
@@ -407,6 +400,19 @@ namespace MLAgents
                             break;
                         }
                     }
+                }
+
+                if (debugInfo != null)
+                {
+                    debugInfo.rayInfos[rayIndex].worldStart = startPositionWorld;
+                    debugInfo.rayInfos[rayIndex].worldEnd = endPositionWorld;
+                    debugInfo.rayInfos[rayIndex].rayOutput = rayOutput;
+                    debugInfo.rayInfos[rayIndex].castRadius = scaledCastRadius;
+                }
+                else if (Application.isEditor)
+                {
+                    // Legacy drawing
+                    Debug.DrawRay(startPositionWorld, rayDirection, Color.black, 0.01f, true);
                 }
 
                 output.rayOutputs[rayIndex] = rayOutput;
