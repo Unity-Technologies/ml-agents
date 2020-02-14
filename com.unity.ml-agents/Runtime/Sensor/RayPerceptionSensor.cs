@@ -65,8 +65,26 @@ namespace MLAgents
 
             return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
         }
-
     }
+
+    // TODO
+//    public class RayPerceptionOutput
+//    {
+//        public class RayOutput
+//        {
+//            public bool hasHit;
+//            public bool hitTaggedObject;
+//            public int hitTagIndex;
+//            public float hitFraction;
+//        }
+//
+//        public void ToFloatArray(float[] buffer)
+//        {
+//
+//        }
+//
+//        public RayOutput[] rayOutputs;
+//    }
 
     public class RayPerceptionSensor : ISensor
     {
@@ -84,8 +102,6 @@ namespace MLAgents
         {
             public struct RayInfo
             {
-                public Vector3 localStart;
-                public Vector3 localEnd;
                 public Vector3 worldStart;
                 public Vector3 worldEnd;
                 public bool castHit;

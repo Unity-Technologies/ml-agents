@@ -97,7 +97,7 @@ namespace MLAgents
         public override int[] GetObservationShape()
         {
             var numRays = 2 * raysPerDirection + 1;
-            var numTags = detectableTags == null ? 0 : detectableTags.Count;
+            var numTags = detectableTags?.Count ?? 0;
             var obsSize = (numTags + 2) * numRays;
             var stacks = observationStacks > 1 ? observationStacks : 1;
             return new[] { obsSize * stacks };
@@ -120,11 +120,8 @@ namespace MLAgents
 
             foreach (var rayInfo in debugInfo.rayInfos)
             {
-                // Either use the original world-space coordinates of the raycast, or transform the agent-local
-                // coordinates of the rays to the current transform of the agent. If the agent acts every frame,
-                // these should be the same.
-                var startPositionWorld = transform.TransformPoint(rayInfo.localStart);
-                var endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
+                var startPositionWorld = rayInfo.worldStart;
+                var endPositionWorld = rayInfo.worldEnd;
                 var rayDirection = endPositionWorld - startPositionWorld;
                 rayDirection *= rayInfo.hitFraction;
 
