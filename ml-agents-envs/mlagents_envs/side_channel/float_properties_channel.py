@@ -10,13 +10,10 @@ class FloatPropertiesChannel(SideChannel):
     set_property, get_property and list_properties.
     """
 
-    def __init__(self, channel_id: int = -1) -> None:
+    def __init__(self, channel_id: int = ReservedChannelId.FloatProperties) -> None:
         self._float_properties: Dict[str, float] = {}
-        if channel_id == -1:
-            super().__init__(ReservedChannelId.FloatProperties)
-        else:
-            ReservedChannelId.assert_is_user_channel(channel_id)
-            super().__init__(channel_id)
+        ReservedChannelId.assert_is_user_channel(channel_id)
+        super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """
