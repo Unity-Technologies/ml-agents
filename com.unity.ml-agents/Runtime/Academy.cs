@@ -113,7 +113,8 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start
+        // Signals the Agent that a new step is about to start. 
+        // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
         // Signals to all the agents at each environment step along with the
@@ -438,8 +439,6 @@ namespace MLAgents
             {
                 AgentAct?.Invoke();
             }
-
-
         }
 
         /// <summary>
