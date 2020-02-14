@@ -203,9 +203,9 @@ class AgentProcessor:
         Ends the episode, terminating the current trajectory and stopping stats collection for that
         episode. Used for forceful reset (e.g. in curriculum or generalization training.)
         """
-        self.experience_buffers.clear()
-        self.episode_rewards.clear()
-        self.episode_steps.clear()
+        all_gids = list(self.experience_buffers.keys())  # Need to make copy
+        for _gid in all_gids:
+            self._clean_agent_data(_gid)
 
 
 class AgentManagerQueue(Generic[T]):
