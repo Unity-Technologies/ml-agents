@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     public class CameraSensor : ISensor
     {

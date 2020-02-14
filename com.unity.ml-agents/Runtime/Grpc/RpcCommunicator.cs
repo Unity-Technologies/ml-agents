@@ -11,7 +11,6 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -233,7 +232,8 @@ namespace MLAgents
         /// Sends the observations of one Agent.
         /// </summary>
         /// <param name="behaviorName">Batch Key.</param>
-        /// <param name="agent">Agent info.</param>
+        /// <param name="info">Agent info.</param>
+        /// <param name="sensors">Sensors that will produce the observations</param>
         public void PutObservations(string behaviorName, AgentInfo info, List<ISensor> sensors)
         {
 # if DEBUG
@@ -465,13 +465,26 @@ namespace MLAgents
         /// <param name="sideChannel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel sideChannel)
         {
-            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            var channelType = sideChannel.ChannelType();
+            if (m_SideChannels.ContainsKey(channelType))
             {
                 throw new UnityAgentsException(string.Format(
-                    "A side channel with type index {} is already registered. You cannot register multiple " +
-                    "side channels of the same type."));
+                    "A side channel with type index {0} is already registered. You cannot register multiple " +
+                    "side channels of the same type.", channelType));
             }
-            m_SideChannels.Add(sideChannel.ChannelType(), sideChannel);
+            m_SideChannels.Add(channelType, sideChannel);
+        }
+
+        /// <summary>
+        /// Unregisters a side channel from the communicator.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        public void UnregisterSideChannel(SideChannel sideChannel)
+        {
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            {
+                m_SideChannels.Remove(sideChannel.ChannelType());
+            }
         }
 
         /// <summary>

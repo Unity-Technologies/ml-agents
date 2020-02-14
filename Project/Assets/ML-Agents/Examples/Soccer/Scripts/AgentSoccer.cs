@@ -26,15 +26,14 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerSettings m_SoccerSettings;
-    Renderer m_AgentRenderer;
-    BehaviorParameters m_BP;
+    BehaviorParameters m_BehaviorParameters;
     Vector3 m_Transform;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_BP = gameObject.GetComponent<BehaviorParameters>();
-        if (m_BP.m_TeamID == (int)Team.Blue)
+        m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
+        if (m_BehaviorParameters.m_TeamID == (int)Team.Blue)
         {
             team = Team.Blue;
             m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
@@ -44,7 +43,6 @@ public class AgentSoccer : Agent
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
         }
-        m_AgentRenderer = GetComponentInChildren<Renderer>();
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
@@ -64,8 +62,6 @@ public class AgentSoccer : Agent
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
-
-        var action = Mathf.FloorToInt(act[0]);
 
         m_KickPower = 0f;
 

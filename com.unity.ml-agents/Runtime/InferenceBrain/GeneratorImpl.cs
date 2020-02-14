@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
-using MLAgents.Sensor;
 using UnityEngine;
 
 namespace MLAgents.InferenceBrain
@@ -139,7 +138,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     internal class RecurrentInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
         Dictionary<int, List<float>> m_Memories;
 
         public RecurrentInputGenerator(
@@ -269,9 +268,11 @@ namespace MLAgents.InferenceBrain
             {
                 var info = infoSensorPair.agentInfo;
                 var pastAction = info.storedVectorActions;
-                for (var j = 0; j < actionSize; j++)
-                {
-                    tensorProxy.data[agentIndex, j] = pastAction[j];
+                if (pastAction != null){
+                    for (var j = 0; j < actionSize; j++)
+                    {
+                        tensorProxy.data[agentIndex, j] = pastAction[j];
+                    }
                 }
 
                 agentIndex++;

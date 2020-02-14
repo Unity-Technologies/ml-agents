@@ -15,12 +15,17 @@ test_mac_training_int_{{ editor.version }}:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.training_int_tests
   triggers:
-    pull_requests:
-      - targets:
-          only:
-            - "master"
-            - "/release-.*/"
-            - "/hotfix-.*/"
+    changes:
+      only:
+        - "com.unity.ml-agents/**"
+        - "Project/**"
+        - "ml-agents/**"
+        - "ml-agents-envs/**"
+        - ".yamato/training-int-tests.yml"
+      except:
+        - "*.md"
+        - "com.unity.ml-agents/*.md"
+        - "com.unity.ml-agents/**/*.md"
   artifacts:
     unit:
       paths:

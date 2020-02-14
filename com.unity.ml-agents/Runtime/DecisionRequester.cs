@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Barracuda;
-using MLAgents.Sensor;
-using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -24,11 +20,11 @@ namespace MLAgents
         [Tooltip("Whether or not Agent decisions should start at a random offset.")]
         public bool offsetStep;
 
-        private Agent m_Agent;
-        private int offset;
+        Agent m_Agent;
+        int m_Offset;
         public void Awake()
         {
-            offset = offsetStep ? gameObject.GetInstanceID() : 0;
+            m_Offset = offsetStep ? gameObject.GetInstanceID() : 0;
             m_Agent = gameObject.GetComponent<Agent>();
             Academy.Instance.AgentSetStatus += MakeRequests;
         }
@@ -43,7 +39,7 @@ namespace MLAgents
 
         void MakeRequests(int count)
         {
-            if ((count + offset) % DecisionPeriod == 0)
+            if ((count + m_Offset) % DecisionPeriod == 0)
             {
                 m_Agent?.RequestDecision();
             }
