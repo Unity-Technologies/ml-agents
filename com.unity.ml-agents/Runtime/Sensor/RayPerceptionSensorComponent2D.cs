@@ -11,9 +11,9 @@ namespace MLAgents
             rayLayerMask = Physics2D.DefaultRaycastLayers;
         }
 
-        public override RayPerceptionSensor.CastType GetCastType()
+        public override RayPerceptionCastType GetCastType()
         {
-            return RayPerceptionSensor.CastType.Cast2D;
+            return RayPerceptionCastType.Cast2D;
         }
     }
 }

@@ -44,7 +44,9 @@ namespace MLAgents
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
 
-        public abstract RayPerceptionSensor.CastType GetCastType();
+        RayPerceptionInput m_rayPerceptionInput = new RayPerceptionInput();
+
+        public abstract RayPerceptionCastType GetCastType();
 
         public virtual float GetStartVerticalOffset()
         {
@@ -59,10 +61,17 @@ namespace MLAgents
         public override ISensor CreateSensor()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-            m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType(),
-                rayLayerMask
-            );
+
+            m_rayPerceptionInput.rayLength = rayLength;
+            m_rayPerceptionInput.detectableObjects = detectableTags;
+            m_rayPerceptionInput.angles = rayAngles;
+            m_rayPerceptionInput.startOffset = GetStartVerticalOffset();
+            m_rayPerceptionInput.endOffset = GetEndVerticalOffset();
+            m_rayPerceptionInput.castRadius = sphereCastRadius;
+            m_rayPerceptionInput.castType = GetCastType();
+            m_rayPerceptionInput.layerMask = rayLayerMask;
+
+            m_RaySensor = new RayPerceptionSensor(sensorName, transform, m_rayPerceptionInput);
 
             if (observationStacks != 1)
             {

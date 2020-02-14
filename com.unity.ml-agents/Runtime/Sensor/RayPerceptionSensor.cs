@@ -4,28 +4,55 @@ using UnityEngine;
 
 namespace MLAgents
 {
-    public class RayPerceptionSensor : ISensor
+    public enum RayPerceptionCastType
     {
-        public enum CastType
+        Cast2D,
+        Cast3D,
+    }
+
+    public class RayPerceptionInput
+    {
+        // TODO
+        /// <param name="unscaledRayLength"></param>
+        /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
+        ///     "forward" relative to the game object</param>
+        /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
+        /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
+        /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
+        /// <param name="unscaledCastRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
+        /// instead - this may be faster, especially for complex environments.</param>
+        /// <param name="transform">Transform of the GameObject</param>
+        /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
+        /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
+        /// <param name="layerMask">Filtering options for the casts</param>
+        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
+
+        public float rayLength;
+        public IReadOnlyList<string> detectableObjects;
+        public IReadOnlyList<float> angles;
+
+        public float startOffset;
+        public float endOffset;
+        public float castRadius;
+        public RayPerceptionCastType castType = RayPerceptionCastType.Cast3D;
+
+        public int layerMask = Physics.DefaultRaycastLayers;
+
+        public int OutputSize()
         {
-            Cast2D,
-            Cast3D,
+            return (detectableObjects.Count + 2) * angles.Count;
         }
 
+    }
+
+    public class RayPerceptionSensor : ISensor
+    {
         float[] m_Observations;
         int[] m_Shape;
         string m_Name;
 
-        float m_RayDistance;
-        List<string> m_DetectableObjects;
-        float[] m_Angles;
-
-        float m_StartOffset;
-        float m_EndOffset;
-        float m_CastRadius;
-        CastType m_CastType;
+        RayPerceptionInput m_RayPerceptionInput;
         Transform m_Transform;
-        int m_LayerMask;
 
         /// <summary>
         /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
@@ -68,26 +95,16 @@ namespace MLAgents
             get { return m_DebugDisplayInfo; }
         }
 
-        public RayPerceptionSensor(string name, float rayDistance, List<string> detectableObjects, float[] angles,
-                                   Transform transform, float startOffset, float endOffset, float castRadius, CastType castType,
-                                   int rayLayerMask)
+        public RayPerceptionSensor(string name, Transform transform, RayPerceptionInput rayInput)
         {
-            var numObservations = (detectableObjects.Count + 2) * angles.Length;
+            var numObservations = rayInput.OutputSize();
             m_Shape = new[] { numObservations };
             m_Name = name;
+            m_RayPerceptionInput = rayInput;
 
             m_Observations = new float[numObservations];
 
-            m_RayDistance = rayDistance;
-            m_DetectableObjects = detectableObjects;
-            // TODO - preprocess angles, save ray directions instead?
-            m_Angles = angles;
             m_Transform = transform;
-            m_StartOffset = startOffset;
-            m_EndOffset = endOffset;
-            m_CastRadius = castRadius;
-            m_CastType = castType;
-            m_LayerMask = rayLayerMask;
 
             if (Application.isEditor)
             {
@@ -99,11 +116,7 @@ namespace MLAgents
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
-                PerceiveStatic(
-                    m_RayDistance, m_Angles, m_DetectableObjects, m_StartOffset, m_EndOffset,
-                    m_CastRadius, m_Transform, m_CastType, m_Observations, m_LayerMask,
-                    m_DebugDisplayInfo
-                );
+                PerceiveStatic(m_RayPerceptionInput, m_Transform, m_Observations, m_DebugDisplayInfo);
                 adapter.AddRange(m_Observations);
             }
             return m_Observations.Length;
@@ -146,49 +159,36 @@ namespace MLAgents
         ///    nothing was hit.
         ///
         /// </summary>
-        /// <param name="unscaledRayLength"></param>
-        /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
-        ///     "forward" relative to the game object</param>
-        /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
-        /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
-        /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
-        /// <param name="unscaledCastRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
-        /// instead - this may be faster, especially for complex environments.</param>
-        /// <param name="transform">Transform of the GameObject</param>
-        /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
-        /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
-        /// <param name="layerMask">Filtering options for the casts</param>
-        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
+
         ///
-        public static void PerceiveStatic(float unscaledRayLength,
-            IReadOnlyList<float> rayAngles, IReadOnlyList<string> detectableObjects,
-            float startOffset, float endOffset, float unscaledCastRadius,
-            Transform transform, CastType castType, float[] perceptionBuffer,
-            int layerMask = Physics.DefaultRaycastLayers,
+        public static void PerceiveStatic(RayPerceptionInput input,
+            Transform transform, float[] perceptionBuffer,
             DebugDisplayInfo debugInfo = null)
         {
             Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
             if (debugInfo != null)
             {
                 debugInfo.Reset();
-                if (debugInfo.rayInfos == null || debugInfo.rayInfos.Length != rayAngles.Count)
+                if (debugInfo.rayInfos == null || debugInfo.rayInfos.Length != input.angles.Count)
                 {
-                    debugInfo.rayInfos = new DebugDisplayInfo.RayInfo[rayAngles.Count];
+                    debugInfo.rayInfos = new DebugDisplayInfo.RayInfo[input.angles.Count];
                 }
             }
 
             // For each ray sublist stores categorical information on detected object
             // along with object distance.
+            var unscaledRayLength = input.rayLength;
+            var unscaledCastRadius = input.castRadius;
             int bufferOffset = 0;
-            for (var rayIndex = 0; rayIndex < rayAngles.Count; rayIndex++)
+            for (var rayIndex = 0; rayIndex < input.angles.Count; rayIndex++)
             {
-                var angle = rayAngles[rayIndex];
+                var angle = input.angles[rayIndex];
                 Vector3 startPositionLocal, endPositionLocal;
-                if (castType == CastType.Cast3D)
+                if (input.castType == RayPerceptionCastType.Cast3D)
                 {
-                    startPositionLocal = new Vector3(0, startOffset, 0);
+                    startPositionLocal = new Vector3(0, input.startOffset, 0);
                     endPositionLocal = PolarToCartesian3D(unscaledRayLength, angle);
-                    endPositionLocal.y += endOffset;
+                    endPositionLocal.y += input.endOffset;
                 }
                 else
                 {
@@ -219,18 +219,18 @@ namespace MLAgents
                 float hitFraction;
                 GameObject hitObject;
 
-                if (castType == CastType.Cast3D)
+                if (input.castType == RayPerceptionCastType.Cast3D)
                 {
                     RaycastHit rayHit;
                     if (scaledCastRadius > 0f)
                     {
                         castHit = Physics.SphereCast(startPositionWorld, scaledCastRadius, rayDirection, out rayHit,
-                            scaledRayLength, layerMask);
+                            scaledRayLength, input.layerMask);
                     }
                     else
                     {
                         castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit,
-                            scaledRayLength, layerMask);
+                            scaledRayLength, input.layerMask);
                     }
 
                     // If scaledRayLength is 0, we still could have a hit with sphere casts (maybe?).
@@ -244,11 +244,11 @@ namespace MLAgents
                     if (scaledCastRadius > 0f)
                     {
                         rayHit = Physics2D.CircleCast(startPositionWorld, scaledCastRadius, rayDirection,
-                            scaledRayLength, layerMask);
+                            scaledRayLength, input.layerMask);
                     }
                     else
                     {
-                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, scaledRayLength, layerMask);
+                        rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, scaledRayLength, input.layerMask);
                     }
 
                     castHit = rayHit;
@@ -275,12 +275,12 @@ namespace MLAgents
                 if (castHit)
                 {
                     bool hitTaggedObject = false;
-                    for (var i = 0; i < detectableObjects.Count; i++)
+                    for (var i = 0; i <input.detectableObjects.Count; i++)
                     {
-                        if (hitObject.CompareTag(detectableObjects[i]))
+                        if (hitObject.CompareTag(input.detectableObjects[i]))
                         {
                             perceptionBuffer[bufferOffset + i] = 1;
-                            perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
+                            perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = hitFraction;
                             hitTaggedObject = true;
                             break;
                         }
@@ -289,17 +289,17 @@ namespace MLAgents
                     if (!hitTaggedObject)
                     {
                         // Something was hit but not on the list. Still set the hit fraction.
-                        perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = hitFraction;
+                        perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = hitFraction;
                     }
                 }
                 else
                 {
-                    perceptionBuffer[bufferOffset + detectableObjects.Count] = 1f;
+                    perceptionBuffer[bufferOffset + input.detectableObjects.Count] = 1f;
                     // Nothing was hit, so there's full clearance in front of the agent.
-                    perceptionBuffer[bufferOffset + detectableObjects.Count + 1] = 1.0f;
+                    perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = 1.0f;
                 }
 
-                bufferOffset += detectableObjects.Count + 2;
+                bufferOffset += input.detectableObjects.Count + 2;
             }
         }
 
