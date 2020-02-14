@@ -37,7 +37,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     changes:
       only:
         - "com.unity.ml-agents/**"
-        - ".yamato/com.unity.ml-agents-tests.yml"
+        - ".yamato/com.unity.ml-agents-test.yml"
 
   {% endfor %}
   {% endfor %}
