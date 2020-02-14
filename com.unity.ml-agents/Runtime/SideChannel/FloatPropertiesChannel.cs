@@ -50,11 +50,7 @@ namespace MLAgents
             }
             else
             {
-                if (channelId < (int)ReservedChannelId.UserSideChannelStart)
-                {
-                    throw new UnityAgentsException( "A custom side channel must have a channel_id greater "
-                    + "than ReservedChannelId.UserSideChannelStart");
-                }
+                ReservedChannelIdCheck.AssertIsUserChannel(channelId);
                 ChannelId = channelId;
             }
         }

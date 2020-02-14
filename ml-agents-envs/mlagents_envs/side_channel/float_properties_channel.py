@@ -1,5 +1,4 @@
 from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
-from mlagents_envs.exception import UnitySideChannelException
 import struct
 from typing import Dict, Tuple, Optional, List
 
@@ -16,11 +15,7 @@ class FloatPropertiesChannel(SideChannel):
         if channel_id == -1:
             super().__init__(ReservedChannelId.FloatProperties)
         else:
-            if channel_id < ReservedChannelId.UserSideChannelStart:
-                raise UnitySideChannelException(
-                    "A custom side channel must have a channel_id greater "
-                    + "than ReservedChannelId.UserSideChannelStart"
-                )
+            ReservedChannelId.assert_is_user_channel(channel_id)
             super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:

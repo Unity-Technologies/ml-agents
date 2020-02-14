@@ -1,5 +1,4 @@
 from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
-from mlagents_envs.exception import UnitySideChannelException
 from typing import List
 
 
@@ -11,16 +10,8 @@ class RawBytesChannel(SideChannel):
 
     def __init__(self, channel_id):
         self._received_messages = []
-        if (channel_id >= ReservedChannelId.RawBytesChannelStart) and (
-            channel_id < ReservedChannelId.UserSideChannelStart
-        ):
-            super().__init__(channel_id)
-        else:
-            raise UnitySideChannelException(
-                "A RawBytesChannel side channel must have a channel_id between "
-                + "ReservedChannelId.RawBytesChannelStart and "
-                + "ReservedChannelId.UserSideChannelStart"
-            )
+        ReservedChannelId.assert_is_raw_bytes_channel(channel_id)
+        super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """
