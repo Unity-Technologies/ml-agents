@@ -15,11 +15,9 @@ The versions can be found in
 * The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
 * The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
 
-
 ### Steps to Migrate
 * Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
 * Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectObservations`
-
 
 ## Migrating from 0.13 to 0.14
 
@@ -51,7 +49,7 @@ The versions can be found in
 * If you were not using `On Demand Decision` for your Agent, you **must** add a `DecisionRequester` component to your Agent GameObject and set its `Decision Period` field to the old `Decision Period` of the Agent.
 * If you have a class that inherits from Academy:
   * If the class didn't override any of the virtual methods and didn't store any additional data, you can just remove the old script from the scene.
-  * If the class had additional data, create a new MonoBehaviour and store the data on this instead.
+  * If the class had additional data, create a new MonoBehaviour and store the data in the new MonoBehaviour instead.
   * If the class overrode the virtual methods, create a new MonoBehaviour and move the logic to it:
     * Move the InitializeAcademy code to MonoBehaviour.OnAwake
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
@@ -89,7 +87,7 @@ Behavioral Cloning features with either PPO or SAC. See [Imitation Learning](Tra
 * Text actions and observations, and custom action and observation protos have been removed.
 * RayPerception3D and RayPerception2D are marked deprecated, and will be removed in a future release. They can be replaced by RayPerceptionSensorComponent3D and RayPerceptionSensorComponent2D.
 * The `Use Heuristic` checkbox in Behavior Parameters has been replaced with a `Behavior Type` dropdown menu. This has the following options:
-  * `Default` corresponds to the previous unchecked behavior, meaning that Agents will train if they connect to a python trainer, otherwise they will performance inference.
+  * `Default` corresponds to the previous unchecked behavior, meaning that Agents will train if they connect to a python trainer, otherwise they will perform inference.
   * `Heuristic Only` means the Agent will always use the `Heuristic()` method. This corresponds to having "Use Heuristic" selected in 0.11.0.
   * `Inference Only` means the Agent will always perform inference.
 * Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package Manager.
