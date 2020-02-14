@@ -40,5 +40,10 @@ test_{{ platform.name }}_{{ editor.version }}:
             - "master"
             - "/release-.*/"
             - "/hotfix-.*/"
+    changes:
+      only:
+        - "com.unity.ml-agents/**"
+        - ".yamato/com.unity.ml-agents-tests.yml"
+
   {% endfor %}
   {% endfor %}
