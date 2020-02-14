@@ -2,6 +2,31 @@ using System.Collections.Generic;
 
 namespace MLAgents
 {
+
+    internal static class ReservedChannelIdCheck{
+        public static void AssertIsRawBytesChannel(int channelId)
+        {
+            if ((channelId < (int)ReservedChannelId.RawBytesChannelStart) || (
+            channelId >= (int)ReservedChannelId.UserSideChannelStart))
+            {
+                throw new UnityAgentsException(
+                    "A RawBytesChannel side channel must have a ChannelId between "
+                    + "ReservedChannelId.RawBytesChannelStart and "
+                    + "ReservedChannelId.UserSideChannelStart"
+                );
+            }
+        }
+
+        public static void AssertIsUserChannel(int channelId)
+        {
+            if (channelId < (int)ReservedChannelId.UserSideChannelStart)
+            {
+                throw new UnityAgentsException( "A custom side channel must have a channelId greater "
+                        + "than ReservedChannelId.UserSideChannelStart");
+            }
+        }
+    }
+
     public enum ReservedChannelId
     {
         // Invalid side channel

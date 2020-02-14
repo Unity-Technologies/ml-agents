@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from enum import IntEnum
+from mlagents_envs.exception import UnitySideChannelException
 
 
 class ReservedChannelId(IntEnum):
@@ -12,6 +13,25 @@ class ReservedChannelId(IntEnum):
     # custom side channels should start here to avoid conflicting with Unity
     # ones.
     UserSideChannelStart = 2000
+
+    @staticmethod
+    def assert_is_raw_bytes_channel(channel_id: int) -> None:
+        if (channel_id < ReservedChannelId.RawBytesChannelStart) or (
+            channel_id >= ReservedChannelId.UserSideChannelStart
+        ):
+            raise UnitySideChannelException(
+                "A RawBytesChannel side channel must have a channel_id between "
+                + "ReservedChannelId.RawBytesChannelStart and "
+                + "ReservedChannelId.UserSideChannelStart"
+            )
+
+    @staticmethod
+    def assert_is_user_channel(channel_id: int) -> None:
+        if channel_id < ReservedChannelId.UserSideChannelStart:
+            raise UnitySideChannelException(
+                "A custom side channel must have a channel_id greater "
+                + "than ReservedChannelId.UserSideChannelStart"
+            )
 
 
 class SideChannel(ABC):
