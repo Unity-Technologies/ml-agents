@@ -489,7 +489,8 @@ namespace MLAgents.Tests
             var j = 0;
             for (var i = 0; i < 500; i++)
             {
-                if (i % 21 == 0)
+                Debug.Log(i);
+                if (i % 20 == 0)
                 {
                     j = 0;
                 }
@@ -524,11 +525,10 @@ namespace MLAgents.Tests
 
             for (var i = 0; i < 15; i++)
             {
-                // We expect resets to occur when there are maxSteps actions since the last reset (and on the first step)
-                var expectReset = agent1.agentActionCallsSinceLastReset == maxStep || (i == 0);
+                Debug.Log(i);
+                // We expect resets to occur when there are maxSteps actions since the last reset 
+                var expectReset = agent1.agentActionCallsSinceLastReset == maxStep;
                 var previousNumResets = agent1.agentResetCalls;
-
-                aca.EnvironmentStep();
 
                 if (expectReset)
                 {
@@ -538,6 +538,8 @@ namespace MLAgents.Tests
                 {
                     Assert.AreEqual(previousNumResets, agent1.agentResetCalls);
                 }
+
+                aca.EnvironmentStep();
             }
         }
     }

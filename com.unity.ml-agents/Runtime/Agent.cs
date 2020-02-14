@@ -692,19 +692,14 @@ namespace MLAgents
 
         void AgentIncrementStep()
         {
-            if ((m_StepCount >= maxStep) && (maxStep > 0))
-            {
-                NotifyAgentDone(true);
-                _AgentReset();
-            }
+
             m_StepCount += 1;
+
         }
 
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-
-
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
@@ -712,6 +707,12 @@ namespace MLAgents
                 {
                     AgentAction(m_Action.vectorActions);
                 }
+            }
+
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
+            {
+                NotifyAgentDone(true);
+                _AgentReset();
             }
         }
 

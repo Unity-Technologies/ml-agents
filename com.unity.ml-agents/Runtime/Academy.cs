@@ -418,10 +418,11 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentIncrementStep?.Invoke();
-
             AgentSetStatus?.Invoke(m_StepCount);
 
+            m_StepCount += 1;
+            m_TotalStepCount += 1;
+            AgentIncrementStep?.Invoke();
 
             using (TimerStack.Instance.Scoped("AgentSendState"))
             {
@@ -438,8 +439,7 @@ namespace MLAgents
                 AgentAct?.Invoke();
             }
 
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
+
         }
 
         /// <summary>
