@@ -5,6 +5,3 @@ Pillow==4.2.1
 protobuf==3.6
 tensorflow==1.7
 h5py==2.9.0
-
-# Tests install onnx and tf2onnx, but this doesn't support tensorflow>=2.0.0
-tf2onnx==1.5.5

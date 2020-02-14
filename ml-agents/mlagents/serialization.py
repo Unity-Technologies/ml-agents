@@ -96,7 +96,7 @@ def _make_frozen_graph(
 
 def convert_frozen_to_onnx(
     settings: SerializationSettings, frozen_graph_def: tf.GraphDef
-) -> onnx.ModelProto:
+) -> Any:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
     # Some constants in the graph need to be read by the inference system.
