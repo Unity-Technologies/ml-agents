@@ -420,7 +420,6 @@ class TFPolicy(Policy):
         self.output_pre: Optional[tf.Tensor] = None
         self.output: Optional[tf.Tensor] = None
         self.selected_actions: Optional[tf.Tensor] = None
-        self.action_holder: Optional[tf.Tensor] = None
         self.action_masks: Optional[tf.Tensor] = None
         self.prev_action: Optional[tf.Tensor] = None
         self.memory_in: Optional[tf.Tensor] = None

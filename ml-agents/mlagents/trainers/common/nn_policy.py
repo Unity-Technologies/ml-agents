@@ -251,10 +251,6 @@ class NNPolicy(TFPolicy):
             (tf.identity(self.all_log_probs)), axis=1, keepdims=True
         )
 
-        self.action_holder = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
-        )
-
     def _create_dc_actor(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
@@ -326,12 +322,9 @@ class NNPolicy(TFPolicy):
         self.output = tf.identity(output)
         self.all_log_probs = tf.identity(normalized_logits, name="action")
 
-        self.action_holder = tf.placeholder(
-            shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
-        )
         self.action_oh = tf.concat(
             [
-                tf.one_hot(self.action_holder[:, i], self.act_size[i])
+                tf.one_hot(self.output[:, i], self.act_size[i])
                 for i in range(len(self.act_size))
             ],
             axis=1,

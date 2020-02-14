@@ -172,7 +172,6 @@ class SACOptimizer(TFOptimizer):
         self.visual_in = self.policy.visual_in
         self.next_vector_in = self.target_network.vector_in
         self.next_visual_in = self.target_network.visual_in
-        self.action_holder = self.policy.action_holder
         self.sequence_length_ph = self.policy.sequence_length_ph
         self.next_sequence_length_ph = self.target_network.sequence_length_ph
         if not self.policy.use_continuous_act:
@@ -613,9 +612,9 @@ class SACOptimizer(TFOptimizer):
             feed_dict[self.rewards_holders[name]] = batch["{}_rewards".format(name)]
 
         if self.policy.use_continuous_act:
-            feed_dict[policy.action_holder] = batch["actions"]
+            feed_dict[self.policy_network.external_action_in] = batch["actions"]
         else:
-            feed_dict[policy.action_holder] = batch["actions"]
+            feed_dict[policy.output] = batch["actions"]
             if self.policy.use_recurrent:
                 feed_dict[policy.prev_action] = batch["prev_action"]
             feed_dict[policy.action_masks] = batch["action_mask"]

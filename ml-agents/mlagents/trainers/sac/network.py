@@ -121,10 +121,14 @@ class SACNetwork:
             self.h_size,
             self.join_scopes(scope, "value"),
         )
-
+        self.external_action_in = tf.placeholder(
+            shape=[None, self.policy.act_size[0]],
+            dtype=tf.float32,
+            name="external_action_in",
+        )
         self.value_vars = self.get_vars(self.join_scopes(scope, "value"))
         if create_qs:
-            hidden_q = tf.concat([hidden_value, self.policy.action_holder], axis=-1)
+            hidden_q = tf.concat([hidden_value, self.external_action_in], axis=-1)
             hidden_qp = tf.concat([hidden_value, self.policy.output], axis=-1)
             self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
                 self.stream_names,
