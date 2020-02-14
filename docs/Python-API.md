@@ -280,7 +280,7 @@ The side channel will have to implement the `SideChannel` abstract class and the
  with the data received from Python. The data is a `byte[]` argument.
 
 The side channel must also assign a `ChannelId` property in the constructor. The `ChannelId` is an int used to
-Uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
+uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
 channel of a certain id during communication.
 
 To send a byte array from C# to Python, call the `base.QueueMessageToSend(data)` method inside the side channel.
