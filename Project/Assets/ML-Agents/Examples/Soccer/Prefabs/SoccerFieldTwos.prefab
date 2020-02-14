@@ -245,7 +245,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Soccer
   m_TeamID: 1
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -604,10 +604,10 @@ MonoBehaviour:
     vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 9d26b71f04a2d4680a68d8de4f6b62e9, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 1
   m_BehaviorName: Soccer
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &114850431417842684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3603,7 +3603,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Soccer
   m_TeamID: 1
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &5320024511406682322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4071,7 +4071,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Soccer
   m_TeamID: 0
-  m_useChildSensors: 1
+  m_UseChildSensors: 1
 --- !u!114 &5379409612883756837
 MonoBehaviour:
   m_ObjectHideFlags: 0

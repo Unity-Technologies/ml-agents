@@ -22,6 +22,7 @@ public class AgentSoccer : Agent
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+    float m_BallTouch;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -32,6 +33,8 @@ public class AgentSoccer : Agent
     public override void InitializeAgent()
     {
         base.InitializeAgent();
+
+        m_BallTouch = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_touch", 0);
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.m_TeamID == (int)Team.Blue)
         {
@@ -152,6 +155,7 @@ public class AgentSoccer : Agent
         var force = 2000f * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
+            AddReward(.2f * m_BallTouch);
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
@@ -160,6 +164,8 @@ public class AgentSoccer : Agent
 
     public override void AgentReset()
     {
+
+        m_BallTouch = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
