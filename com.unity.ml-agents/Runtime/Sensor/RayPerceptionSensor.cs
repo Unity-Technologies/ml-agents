@@ -267,8 +267,6 @@ namespace MLAgents
 
                 if (debugInfo != null)
                 {
-                    debugInfo.rayInfos[rayIndex].localStart = startPositionLocal;
-                    debugInfo.rayInfos[rayIndex].localEnd = endPositionLocal;
                     debugInfo.rayInfos[rayIndex].worldStart = startPositionWorld;
                     debugInfo.rayInfos[rayIndex].worldEnd = endPositionWorld;
                     debugInfo.rayInfos[rayIndex].castHit = castHit;

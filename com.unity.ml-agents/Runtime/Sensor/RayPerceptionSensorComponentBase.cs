@@ -37,9 +37,6 @@ namespace MLAgents
         [Header("Debug Gizmos", order = 999)]
         public Color rayHitColor = Color.red;
         public Color rayMissColor = Color.white;
-        [Tooltip("Whether to draw the raycasts in the world space of when they happened, or using the Agent's current transform'")]
-        public bool useWorldPositions = true;
-
 
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
@@ -126,13 +123,8 @@ namespace MLAgents
                 // Either use the original world-space coordinates of the raycast, or transform the agent-local
                 // coordinates of the rays to the current transform of the agent. If the agent acts every frame,
                 // these should be the same.
-                var startPositionWorld = rayInfo.worldStart;
-                var endPositionWorld = rayInfo.worldEnd;
-                if (!useWorldPositions)
-                {
-                    startPositionWorld = transform.TransformPoint(rayInfo.localStart);
-                    endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
-                }
+                var startPositionWorld = transform.TransformPoint(rayInfo.localStart);
+                var endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
                 var rayDirection = endPositionWorld - startPositionWorld;
                 rayDirection *= rayInfo.hitFraction;
 
