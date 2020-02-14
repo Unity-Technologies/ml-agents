@@ -64,10 +64,11 @@ namespace MLAgents
             rayPerceptionInput.startOffset = GetStartVerticalOffset();
             rayPerceptionInput.endOffset = GetEndVerticalOffset();
             rayPerceptionInput.castRadius = sphereCastRadius;
+            rayPerceptionInput.transform = transform;
             rayPerceptionInput.castType = GetCastType();
             rayPerceptionInput.layerMask = rayLayerMask;
 
-            m_RaySensor = new RayPerceptionSensor(sensorName, transform, rayPerceptionInput);
+            m_RaySensor = new RayPerceptionSensor(sensorName, rayPerceptionInput);
 
             if (observationStacks != 1)
             {

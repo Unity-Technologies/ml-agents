@@ -12,52 +12,77 @@ namespace MLAgents
 
     public class RayPerceptionInput
     {
-        // TODO
-        /// <param name="unscaledRayLength"></param>
-        /// <param name="rayAngles">List of angles (in degrees) used to define the rays. 90 degrees is considered
-        ///     "forward" relative to the game object</param>
-        /// <param name="detectableObjects">List of tags which correspond to object types agent can see</param>
-        /// <param name="startOffset">Starting height offset of ray from center of agent.</param>
-        /// <param name="endOffset">Ending height offset of ray from center of agent.</param>
-        /// <param name="unscaledCastRadius">Radius of the sphere to use for spherecasting. If 0 or less, rays are used
-        /// instead - this may be faster, especially for complex environments.</param>
-        /// <param name="transform">Transform of the GameObject</param>
-        /// <param name="castType">Whether to perform the casts in 2D or 3D.</param>
-        /// <param name="perceptionBuffer">Output array of floats. Must be (num rays) * (num tags + 2) in size.</param>
-        /// <param name="layerMask">Filtering options for the casts</param>
-        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
-
+        /// <summary>
+        /// Length of the rays to cast. This will be scaled up or down based on the scale of the transform.
+        /// </summary>
         public float rayLength;
+
+        /// <summary>
+        /// List of tags which correspond to object types agent can see.
+        /// </summary>
         public IReadOnlyList<string> detectableObjects;
+
+        /// <summary>
+        /// List of angles (in degrees) used to define the rays.
+        /// 90 degrees is considered "forward" relative to the game object.
+        /// </summary>
         public IReadOnlyList<float> angles;
 
+        /// <summary>
+        /// Starting height offset of ray from center of agent
+        /// </summary>
         public float startOffset;
+
+        /// <summary>
+        /// Ending height offset of ray from center of agent.
+        /// </summary>
         public float endOffset;
+
+        /// <summary>
+        /// Radius of the sphere to use for spherecasting.
+        /// If 0 or less, rays are used instead - this may be faster, especially for complex environments.
+        /// </summary>
         public float castRadius;
+
+        /// <summary>
+        /// Transform of the GameObject.
+        /// </summary>
+        public Transform transform;
+
+        /// <summary>
+        /// Whether to perform the casts in 2D or 3D.
+        /// </summary>
         public RayPerceptionCastType castType = RayPerceptionCastType.Cast3D;
 
+        /// <summary>
+        /// Filtering options for the casts.
+        /// </summary>
         public int layerMask = Physics.DefaultRaycastLayers;
 
+        /// <summary>
+        /// Returns the expected number of floats in the output.
+        /// </summary>
+        /// <returns></returns>
         public int OutputSize()
         {
             return (detectableObjects.Count + 2) * angles.Count;
         }
 
-        public (Vector3 StartPositionWorld, Vector3 EndPositionWorld) RayExtents(int rayIndex, Transform transform)
+        public (Vector3 StartPositionWorld, Vector3 EndPositionWorld) RayExtents(int rayIndex)
         {
             var angle = angles[rayIndex];
             Vector3 startPositionLocal, endPositionLocal;
             if (castType == RayPerceptionCastType.Cast3D)
             {
                 startPositionLocal = new Vector3(0, startOffset, 0);
-                endPositionLocal = RayPerceptionSensor.PolarToCartesian3D(rayLength, angle);
+                endPositionLocal = PolarToCartesian3D(rayLength, angle);
                 endPositionLocal.y += endOffset;
             }
             else
             {
                 // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
                 startPositionLocal = new Vector2();
-                endPositionLocal = RayPerceptionSensor.PolarToCartesian2D(rayLength, angle);
+                endPositionLocal = PolarToCartesian2D(rayLength, angle);
             }
 
             var startPositionWorld = transform.TransformPoint(startPositionLocal);
@@ -65,18 +90,84 @@ namespace MLAgents
 
             return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
         }
+
+        /// <summary>
+        /// Converts polar coordinate to cartesian coordinate.
+        /// </summary>
+        static internal Vector3 PolarToCartesian3D(float radius, float angleDegrees)
+        {
+            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
+            var z = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
+            return new Vector3(x, 0f, z);
+        }
+
+        /// <summary>
+        /// Converts polar coordinate to cartesian coordinate.
+        /// </summary>
+        static internal Vector2 PolarToCartesian2D(float radius, float angleDegrees)
+        {
+            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
+            var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
+            return new Vector2(x, y);
+        }
     }
 
     public class RayPerceptionOutput
     {
         public struct RayOutput
         {
+            /// <summary>
+            /// Whether or not the ray hit anything.
+            /// </summary>
             public bool hasHit;
+
+            /// <summary>
+            /// Whether or not the ray hit an object whose tag is in the input's detectableObjects list.
+            /// </summary>
             public bool hitTaggedObject;
+
+            /// <summary>
+            /// The index of the hit object's tag in the detectableObjects list, or -1 if there was no hit, or the
+            /// hit object has a different tag.
+            /// </summary>
             public int hitTagIndex;
+
+            /// <summary>
+            /// Normalized distance to the hit object.
+            /// </summary>
             public float hitFraction;
+
+            /// <summary>
+            /// World space location of the ray start. Only used for debugging.
+            /// </summary>
+            public Vector3 worldStart;
+
+            /// <summary>
+            /// World space location of the ray start. Only used for debugging
+            /// </summary>
+            public Vector3 worldEnd;
+
+            /// <summary>
+            /// The scaled castRadius that was actually used for casting.
+            /// </summary>
+            public float scaledCastRadius;
+
         }
 
+        /// <summary>
+        /// Writes the ray output information to a float array.  Each element in the rayAngles array determines a
+        /// sublist of data to the observation. The sublist contains the observation data for a single cast.
+        /// The list is composed of the following:
+        /// 1. A one-hot encoding for detectable objects. For example, if detectableObjects.Length = n, the
+        ///    first n elements of the sublist will be a one-hot encoding of the detectableObject that was hit, or
+        ///    all zeroes otherwise.
+        /// 2. The 'numDetectableObjects' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
+        ///    something (detectable or not).
+        /// 3. The 'numDetectableObjects+1' element of the sublist will contain the normalized distance to the object
+        ///    hit, or 1.0 if nothing was hit.
+        /// </summary>
+        /// <param name="numDetectableObjects"></param>
+        /// <param name="buffer">Output buffer. The size must be equal to (numDetectableObjects+2) * rayOutputs.Length</param>
         public void ToFloatArray(int numDetectableObjects, float[] buffer)
         {
             Array.Clear(buffer, 0, buffer.Length);
@@ -95,6 +186,9 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// RayOutput for each ray that was cast.
+        /// </summary>
         public RayOutput[] rayOutputs;
     }
 
@@ -106,7 +200,6 @@ namespace MLAgents
 
         RayPerceptionInput m_RayPerceptionInput;
         RayPerceptionOutput m_Output = new RayPerceptionOutput();
-        Transform m_Transform;
 
         /// <summary>
         /// Debug information for the raycast hits. This is used by the RayPerceptionSensorComponent.
@@ -147,7 +240,7 @@ namespace MLAgents
             get { return m_DebugDisplayInfo; }
         }
 
-        public RayPerceptionSensor(string name, Transform transform, RayPerceptionInput rayInput)
+        public RayPerceptionSensor(string name, RayPerceptionInput rayInput)
         {
             var numObservations = rayInput.OutputSize();
             m_Shape = new[] { numObservations };
@@ -155,8 +248,6 @@ namespace MLAgents
             m_RayPerceptionInput = rayInput;
 
             m_Observations = new float[numObservations];
-
-            m_Transform = transform;
 
             if (Application.isEditor)
             {
@@ -168,7 +259,7 @@ namespace MLAgents
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
-                PerceiveStatic(m_RayPerceptionInput, m_Transform, m_Output, m_DebugDisplayInfo);
+                PerceiveStatic(m_RayPerceptionInput, m_Output, m_DebugDisplayInfo);
                 m_Output.ToFloatArray(m_RayPerceptionInput.detectableObjects.Count, m_Observations);
                 adapter.AddRange(m_Observations);
             }
@@ -200,22 +291,13 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Evaluates a perception vector to be used as part of an observation of an agent.
-        /// Each element in the rayAngles array determines a sublist of data to the observation.
-        /// The sublist contains the observation data for a single cast. The list is composed of the following:
-        /// 1. A one-hot encoding for detectable objects. For example, if detectableObjects.Length = n, the
-        ///    first n elements of the sublist will be a one-hot encoding of the detectableObject that was hit, or
-        ///    all zeroes otherwise.
-        /// 2. The 'length' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
-        ///    something (detectable or not).
-        /// 3. The 'length+1' element of the sublist will contain the normalised distance to the object hit, or 1 if
-        ///    nothing was hit.
-        ///
+        /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>
-
+        /// <param name="input">Input defining the rays that will be cast.</param>
+        /// <param name="output">Output class that will be written to with raycast results.</param>
+        /// <param name="debugInfo">Optional debug information output, only used by RayPerceptionSensor.</param>
         ///
         public static void PerceiveStatic(RayPerceptionInput input,
-            Transform transform,
             RayPerceptionOutput output,
             DebugDisplayInfo debugInfo = null)
         {
@@ -238,10 +320,9 @@ namespace MLAgents
             // along with object distance.
             var unscaledRayLength = input.rayLength;
             var unscaledCastRadius = input.castRadius;
-            int bufferOffset = 0;
             for (var rayIndex = 0; rayIndex < input.angles.Count; rayIndex++)
             {
-                var extents = input.RayExtents(rayIndex, transform);
+                var extents = input.RayExtents(rayIndex);
                 var startPositionWorld = extents.StartPositionWorld;
                 var endPositionWorld = extents.EndPositionWorld;
 
@@ -254,12 +335,6 @@ namespace MLAgents
                 var scaledCastRadius = unscaledRayLength > 0 ? unscaledCastRadius * scaledRayLength / unscaledRayLength : unscaledCastRadius;
 
                 // Do the cast and assign the hit information for each detectable object.
-                //     sublist[0           ] <- did hit detectableObjects[0]
-                //     ...
-                //     sublist[numObjects-1] <- did hit detectableObjects[numObjects-1]
-                //     sublist[numObjects  ] <- 1 if missed else 0
-                //     sublist[numObjects+1] <- hit fraction (or 1 if no hit)
-
                 bool castHit;
                 float hitFraction;
                 GameObject hitObject;
@@ -335,28 +410,7 @@ namespace MLAgents
                 }
 
                 output.rayOutputs[rayIndex] = rayOutput;
-                bufferOffset += input.detectableObjects.Count + 2;
             }
-        }
-
-        /// <summary>
-        /// Converts polar coordinate to cartesian coordinate.
-        /// </summary>
-        static internal Vector3 PolarToCartesian3D(float radius, float angleDegrees)
-        {
-            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
-            var z = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
-            return new Vector3(x, 0f, z);
-        }
-
-        /// <summary>
-        /// Converts polar coordinate to cartesian coordinate.
-        /// </summary>
-        static internal Vector2 PolarToCartesian2D(float radius, float angleDegrees)
-        {
-            var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
-            var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
-            return new Vector2(x, y);
         }
     }
 }
