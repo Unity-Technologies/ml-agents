@@ -694,7 +694,6 @@ namespace MLAgents
         {
 
             m_StepCount += 1;
-
         }
 
         /// Used by the brain to make the agent perform a step.
