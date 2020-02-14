@@ -44,7 +44,10 @@ namespace MLAgents
 
         public FloatPropertiesChannel(int channelId = (int)ReservedChannelId.FloatProperties)
         {
-            ReservedChannelIdCheck.AssertIsUserChannel(channelId);
+            if (channelId!= (int)ReservedChannelId.FloatProperties)
+            {
+                ReservedChannelIdCheck.AssertIsUserChannel(channelId);
+            }
             ChannelId = channelId;
         }
 

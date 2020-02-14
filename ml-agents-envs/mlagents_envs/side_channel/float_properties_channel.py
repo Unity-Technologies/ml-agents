@@ -12,7 +12,8 @@ class FloatPropertiesChannel(SideChannel):
 
     def __init__(self, channel_id: int = ReservedChannelId.FloatProperties) -> None:
         self._float_properties: Dict[str, float] = {}
-        ReservedChannelId.assert_is_user_channel(channel_id)
+        if channel_id != ReservedChannelId.FloatProperties:
+            ReservedChannelId.assert_is_user_channel(channel_id)
         super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
