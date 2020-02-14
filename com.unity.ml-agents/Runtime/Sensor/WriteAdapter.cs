@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Barracuda;
 using MLAgents.InferenceBrain;
 
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     /// <summary>
     /// Allows sensors to write to both TensorProxy and float arrays/lists.

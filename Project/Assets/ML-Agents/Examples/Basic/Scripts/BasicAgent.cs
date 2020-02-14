@@ -18,9 +18,9 @@ public class BasicAgent : Agent
     {
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
-        AddVectorObs(m_Position, 20);
+        sensor.AddOneHotObservation(m_Position, 20);
     }
 
     public override void AgentAction(float[] vectorAction)

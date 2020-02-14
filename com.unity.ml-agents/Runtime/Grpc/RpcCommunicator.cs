@@ -11,7 +11,6 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -474,6 +473,18 @@ namespace MLAgents
                     "side channels of the same type.", channelType));
             }
             m_SideChannels.Add(channelType, sideChannel);
+        }
+
+        /// <summary>
+        /// Unregisters a side channel from the communicator.
+        /// </summary>
+        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        public void UnregisterSideChannel(SideChannel sideChannel)
+        {
+            if (m_SideChannels.ContainsKey(sideChannel.ChannelType()))
+            {
+                m_SideChannels.Remove(sideChannel.ChannelType());
+            }
         }
 
         /// <summary>
