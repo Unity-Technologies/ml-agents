@@ -205,7 +205,9 @@ class NNPolicy(TFPolicy):
 
         self.selected_actions = tf.stop_gradient(self.output)
 
-        self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
+        self.all_log_probs = tf.identity(
+            distribution.total_log_probs, name="action_probs"
+        )
         self.entropy = distribution.entropy
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
