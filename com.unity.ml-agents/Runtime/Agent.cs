@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
-using UnityEditor;
 using UnityEngine.Serialization;
 
 namespace MLAgents
@@ -692,7 +691,7 @@ namespace MLAgents
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if ((m_StepCount >= maxStep - 1) && (maxStep > 0))
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
             {
                 NotifyAgentDone(true);
                 _AgentReset();
@@ -701,6 +700,7 @@ namespace MLAgents
             {
                 m_StepCount += 1;
             }
+
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
