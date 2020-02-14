@@ -2,17 +2,20 @@
 
 Describe the changes made in this PR.
 
+### Useful links (Github issues, JIRA tickets, ML-Agents forum threads etc.)
+
+
+
 ### Types of change(s)
 
-- [ ] Bug Fix
+- [ ] Bug fix
 - [ ] New feature
+- [ ] Code refactor
 - [ ] Breaking change
-- [ ] Documentation Update
-- [ ] Other (please describe below)
+- [ ] Documentation update
+- [ ] Other (please describe)
 
 ### Checklist
-- [ ] Do you have useful links such as Github issues, JIRA tickets, ML-Agents forum threads which
- can be attached to this PR?
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] I have added updated the changelog (if applicable)
 - [ ] I have added necessary documentation (if applicable)
