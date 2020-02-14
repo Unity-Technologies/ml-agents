@@ -67,24 +67,36 @@ namespace MLAgents
         }
     }
 
-    // TODO
-//    public class RayPerceptionOutput
-//    {
-//        public class RayOutput
-//        {
-//            public bool hasHit;
-//            public bool hitTaggedObject;
-//            public int hitTagIndex;
-//            public float hitFraction;
-//        }
-//
-//        public void ToFloatArray(float[] buffer)
-//        {
-//
-//        }
-//
-//        public RayOutput[] rayOutputs;
-//    }
+    public class RayPerceptionOutput
+    {
+        public struct RayOutput
+        {
+            public bool hasHit;
+            public bool hitTaggedObject;
+            public int hitTagIndex;
+            public float hitFraction;
+        }
+
+        public void ToFloatArray(int numDetectableObjects, float[] buffer)
+        {
+            Array.Clear(buffer, 0, buffer.Length);
+            var bufferOffset = 0;
+
+            for (var i = 0; i < rayOutputs.Length; i++)
+            {
+                var rayOutput = rayOutputs[i];
+                if (rayOutput.hitTaggedObject)
+                {
+                    buffer[bufferOffset + rayOutput.hitTagIndex] = 1f;
+                }
+                buffer[bufferOffset + numDetectableObjects] = rayOutput.hasHit ? 0f : 1f;
+                buffer[bufferOffset + numDetectableObjects + 1] = rayOutput.hitFraction;
+                bufferOffset += numDetectableObjects + 2;
+            }
+        }
+
+        public RayOutput[] rayOutputs;
+    }
 
     public class RayPerceptionSensor : ISensor
     {
@@ -93,6 +105,7 @@ namespace MLAgents
         string m_Name;
 
         RayPerceptionInput m_RayPerceptionInput;
+        RayPerceptionOutput m_Output = new RayPerceptionOutput();
         Transform m_Transform;
 
         /// <summary>
@@ -155,7 +168,8 @@ namespace MLAgents
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
-                PerceiveStatic(m_RayPerceptionInput, m_Transform, m_Observations, m_DebugDisplayInfo);
+                PerceiveStatic(m_RayPerceptionInput, m_Transform, m_Output, m_DebugDisplayInfo);
+                m_Output.ToFloatArray(m_RayPerceptionInput.detectableObjects.Count, m_Observations);
                 adapter.AddRange(m_Observations);
             }
             return m_Observations.Length;
@@ -201,10 +215,16 @@ namespace MLAgents
 
         ///
         public static void PerceiveStatic(RayPerceptionInput input,
-            Transform transform, float[] perceptionBuffer,
+            Transform transform,
+            RayPerceptionOutput output,
             DebugDisplayInfo debugInfo = null)
         {
-            Array.Clear(perceptionBuffer, 0, perceptionBuffer.Length);
+
+            if (output.rayOutputs == null || output.rayOutputs.Length != input.angles.Count)
+            {
+                output.rayOutputs = new RayPerceptionOutput.RayOutput[input.angles.Count];
+            }
+
             if (debugInfo != null)
             {
                 debugInfo.Reset();
@@ -243,6 +263,7 @@ namespace MLAgents
                 bool castHit;
                 float hitFraction;
                 GameObject hitObject;
+                var rayOutput = new RayPerceptionOutput.RayOutput();
 
                 if (input.castType == RayPerceptionCastType.Cast3D)
                 {
@@ -295,33 +316,25 @@ namespace MLAgents
                     Debug.DrawRay(startPositionWorld, rayDirection, Color.black, 0.01f, true);
                 }
 
+                rayOutput.hasHit = castHit;
+                rayOutput.hitFraction = hitFraction;
+                rayOutput.hitTaggedObject = false;
+                rayOutput.hitTagIndex = -1;
+
                 if (castHit)
                 {
-                    bool hitTaggedObject = false;
-                    for (var i = 0; i <input.detectableObjects.Count; i++)
+                    for (var i = 0; i < input.detectableObjects.Count; i++)
                     {
                         if (hitObject.CompareTag(input.detectableObjects[i]))
                         {
-                            perceptionBuffer[bufferOffset + i] = 1;
-                            perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = hitFraction;
-                            hitTaggedObject = true;
+                            rayOutput.hitTaggedObject = true;
+                            rayOutput.hitTagIndex = i;
                             break;
                         }
                     }
-
-                    if (!hitTaggedObject)
-                    {
-                        // Something was hit but not on the list. Still set the hit fraction.
-                        perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = hitFraction;
-                    }
-                }
-                else
-                {
-                    perceptionBuffer[bufferOffset + input.detectableObjects.Count] = 1f;
-                    // Nothing was hit, so there's full clearance in front of the agent.
-                    perceptionBuffer[bufferOffset + input.detectableObjects.Count + 1] = 1.0f;
                 }
 
+                output.rayOutputs[rayIndex] = rayOutput;
                 bufferOffset += input.detectableObjects.Count + 2;
             }
         }
