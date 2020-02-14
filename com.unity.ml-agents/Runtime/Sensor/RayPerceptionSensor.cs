@@ -43,6 +43,29 @@ namespace MLAgents
             return (detectableObjects.Count + 2) * angles.Count;
         }
 
+        public (Vector3 StartPositionWorld, Vector3 EndPositionWorld) RayExtents(int rayIndex, Transform transform)
+        {
+            var angle = angles[rayIndex];
+            Vector3 startPositionLocal, endPositionLocal;
+            if (castType == RayPerceptionCastType.Cast3D)
+            {
+                startPositionLocal = new Vector3(0, startOffset, 0);
+                endPositionLocal = RayPerceptionSensor.PolarToCartesian3D(rayLength, angle);
+                endPositionLocal.y += endOffset;
+            }
+            else
+            {
+                // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
+                startPositionLocal = new Vector2();
+                endPositionLocal = RayPerceptionSensor.PolarToCartesian2D(rayLength, angle);
+            }
+
+            var startPositionWorld = transform.TransformPoint(startPositionLocal);
+            var endPositionWorld = transform.TransformPoint(endPositionLocal);
+
+            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
+        }
+
     }
 
     public class RayPerceptionSensor : ISensor
@@ -182,23 +205,9 @@ namespace MLAgents
             int bufferOffset = 0;
             for (var rayIndex = 0; rayIndex < input.angles.Count; rayIndex++)
             {
-                var angle = input.angles[rayIndex];
-                Vector3 startPositionLocal, endPositionLocal;
-                if (input.castType == RayPerceptionCastType.Cast3D)
-                {
-                    startPositionLocal = new Vector3(0, input.startOffset, 0);
-                    endPositionLocal = PolarToCartesian3D(unscaledRayLength, angle);
-                    endPositionLocal.y += input.endOffset;
-                }
-                else
-                {
-                    // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
-                    startPositionLocal = new Vector2();
-                    endPositionLocal = PolarToCartesian2D(unscaledRayLength, angle);
-                }
-
-                var startPositionWorld = transform.TransformPoint(startPositionLocal);
-                var endPositionWorld = transform.TransformPoint(endPositionLocal);
+                var extents = input.RayExtents(rayIndex, transform);
+                var startPositionWorld = extents.StartPositionWorld;
+                var endPositionWorld = extents.EndPositionWorld;
 
                 var rayDirection = endPositionWorld - startPositionWorld;
                 // If there is non-unity scale, |rayDirection| will be different from rayLength.
@@ -306,7 +315,7 @@ namespace MLAgents
         /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
-        static Vector3 PolarToCartesian3D(float radius, float angleDegrees)
+        static internal Vector3 PolarToCartesian3D(float radius, float angleDegrees)
         {
             var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
             var z = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
@@ -316,7 +325,7 @@ namespace MLAgents
         /// <summary>
         /// Converts polar coordinate to cartesian coordinate.
         /// </summary>
-        static Vector2 PolarToCartesian2D(float radius, float angleDegrees)
+        static internal Vector2 PolarToCartesian2D(float radius, float angleDegrees)
         {
             var x = radius * Mathf.Cos(Mathf.Deg2Rad * angleDegrees);
             var y = radius * Mathf.Sin(Mathf.Deg2Rad * angleDegrees);
