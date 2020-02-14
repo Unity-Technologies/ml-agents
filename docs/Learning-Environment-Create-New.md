@@ -182,7 +182,7 @@ public class RollerAgent : Agent
 }
 ```
 
-Next, let's implement the `Agent.CollectObservations()` method.
+Next, let's implement the `Agent.CollectObservations(VectorSensor sensor)` method.
 
 ### Observing the Environment
 
@@ -198,13 +198,13 @@ In our case, the information our Agent collects includes:
 * Position of the target.
 
 ```csharp
-AddVectorObs(Target.position);
+sensor.AddObservation(Target.position);
 ```
 
 * Position of the Agent itself.
 
 ```csharp
-AddVectorObs(this.transform.position);
+sensor.AddObservation(this.transform.position);
 ```
 
 * The velocity of the Agent. This helps the Agent learn to control its speed so
@@ -212,23 +212,23 @@ AddVectorObs(this.transform.position);
 
 ```csharp
 // Agent velocity
-AddVectorObs(rBody.velocity.x);
-AddVectorObs(rBody.velocity.z);
+sensor.AddObservation(rBody.velocity.x);
+sensor.AddObservation(rBody.velocity.z);
 ```
 
 In total, the state observation contains 8 values and we need to use the
 continuous state space when we get around to setting the Brain properties:
 
 ```csharp
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
     // Target and Agent positions
-    AddVectorObs(Target.position);
-    AddVectorObs(this.transform.position);
+    sensor.AddObservation(Target.position);
+    sensor.AddObservation(this.transform.position);
 
     // Agent velocity
-    AddVectorObs(rBody.velocity.x);
-    AddVectorObs(rBody.velocity.z);
+    sensor.AddObservation(rBody.velocity.x);
+    sensor.AddObservation(rBody.velocity.z);
 }
 ```
 

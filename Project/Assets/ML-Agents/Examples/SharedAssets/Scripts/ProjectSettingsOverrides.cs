@@ -6,7 +6,7 @@ namespace MLAgentsExamples
     public class ProjectSettingsOverrides : MonoBehaviour
     {
         // Original values
-        float m_OriginalMonitorVerticalOffset;
+
         Vector3 m_OriginalGravity;
         float m_OriginalFixedDeltaTime;
         float m_OriginalMaximumDeltaTime;
@@ -15,9 +15,6 @@ namespace MLAgentsExamples
 
         [Tooltip("Increase or decrease the scene gravity. Use ~3x to make things less floaty")]
         public float gravityMultiplier = 1.0f;
-
-        [Header("Display Settings")]
-        public float monitorVerticalOffset;
 
         [Header("Advanced physics settings")]
         [Tooltip("The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.")]
@@ -32,7 +29,6 @@ namespace MLAgentsExamples
         public void Awake()
         {
             // Save the original values
-            m_OriginalMonitorVerticalOffset = Monitor.verticalOffset;
             m_OriginalGravity = Physics.gravity;
             m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
@@ -40,7 +36,6 @@ namespace MLAgentsExamples
             m_OriginalSolverVelocityIterations = Physics.defaultSolverVelocityIterations;
 
             // Override
-            Monitor.verticalOffset = monitorVerticalOffset;
             Physics.gravity *= gravityMultiplier;
             Time.fixedDeltaTime = fixedDeltaTime;
             Time.maximumDeltaTime = maximumDeltaTime;
@@ -52,7 +47,6 @@ namespace MLAgentsExamples
 
         public void OnDestroy()
         {
-            Monitor.verticalOffset = m_OriginalMonitorVerticalOffset;
             Physics.gravity = m_OriginalGravity;
             Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
