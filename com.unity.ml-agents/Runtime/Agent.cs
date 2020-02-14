@@ -692,7 +692,6 @@ namespace MLAgents
 
         void AgentIncrementStep()
         {
-
             m_StepCount += 1;
         }
 
