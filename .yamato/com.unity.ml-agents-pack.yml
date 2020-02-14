@@ -11,3 +11,8 @@ pack:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+  triggers:
+    changes:
+      only:
+        - "com.unity.ml-agents/**"
+        - ".yamato/com.unity.ml-agents-pack.yml"
