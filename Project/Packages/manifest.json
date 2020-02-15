@@ -4,7 +4,6 @@
     "com.unity.analytics": "3.2.2",
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
-    "com.unity.package-manager-doctools": "1.1.1-preview.3",
     "com.unity.package-manager-ui": "2.0.8",
     "com.unity.package-validation-suite": "0.7.15-preview",
     "com.unity.purchasing": "2.0.3",
