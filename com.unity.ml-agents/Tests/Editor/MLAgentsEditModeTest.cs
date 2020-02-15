@@ -5,14 +5,13 @@ using System.Collections.Generic;
 
 namespace MLAgents.Tests
 {
-
     internal class TestPolicy : IPolicy
     {
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {}
 
         public float[] DecideAction() { return new float[0]; }
 
-        public void Dispose() { }
+        public void Dispose() {}
     }
 
     public class TestAgent : Agent
@@ -114,7 +113,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() { }
+        public void Update() {}
     }
 
     [TestFixture]
