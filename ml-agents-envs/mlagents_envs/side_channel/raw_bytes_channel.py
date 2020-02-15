@@ -1,5 +1,6 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
+from mlagents_envs.side_channel.side_channel import SideChannel
 from typing import List
+import uuid
 
 
 class RawBytesChannel(SideChannel):
@@ -8,9 +9,8 @@ class RawBytesChannel(SideChannel):
     look like. Is meant to be used for general research purpose.
     """
 
-    def __init__(self, channel_id):
-        self._received_messages = []
-        ReservedChannelId.assert_is_raw_bytes_channel(channel_id)
+    def __init__(self, channel_id: uuid.UUID):
+        self._received_messages: List[bytes] = []
         super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
@@ -21,7 +21,7 @@ class RawBytesChannel(SideChannel):
         """
         self._received_messages.append(data)
 
-    def get_and_clear_received_messages(self) -> List[bytearray]:
+    def get_and_clear_received_messages(self) -> List[bytes]:
         """
         returns a list of bytearray received from the environment.
         """

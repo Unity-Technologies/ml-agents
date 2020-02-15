@@ -1,6 +1,7 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
+from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.exception import UnityCommunicationException
 import struct
+import uuid
 from typing import NamedTuple
 
 
@@ -28,7 +29,7 @@ class EngineConfigurationChannel(SideChannel):
     """
 
     def __init__(self) -> None:
-        super().__init__(ReservedChannelId.EngineSettings)
+        super().__init__(uuid.UUID("e951342c-4f7e-11ea-b238-784f4387d1f7"))
 
     def on_message_received(self, data: bytes) -> None:
         """

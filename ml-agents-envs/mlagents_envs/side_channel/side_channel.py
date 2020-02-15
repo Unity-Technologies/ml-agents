@@ -1,37 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from enum import IntEnum
-from mlagents_envs.exception import UnitySideChannelException
-
-
-class ReservedChannelId(IntEnum):
-    FloatProperties = 1
-    EngineSettings = 2
-    # Raw bytes channels should start here to avoid conflicting with other
-    # Unity ones.
-    RawBytesChannelStart = 1000
-    # custom side channels should start here to avoid conflicting with Unity
-    # ones.
-    UserSideChannelStart = 2000
-
-    @staticmethod
-    def assert_is_raw_bytes_channel(channel_id: int) -> None:
-        if (channel_id < ReservedChannelId.RawBytesChannelStart) or (
-            channel_id >= ReservedChannelId.UserSideChannelStart
-        ):
-            raise UnitySideChannelException(
-                "A RawBytesChannel side channel must have a channel_id between "
-                + "ReservedChannelId.RawBytesChannelStart and "
-                + "ReservedChannelId.UserSideChannelStart"
-            )
-
-    @staticmethod
-    def assert_is_user_channel(channel_id: int) -> None:
-        if channel_id < ReservedChannelId.UserSideChannelStart:
-            raise UnitySideChannelException(
-                "A custom side channel must have a channel_id greater "
-                + "than ReservedChannelId.UserSideChannelStart"
-            )
+import uuid
 
 
 class SideChannel(ABC):
@@ -44,7 +13,7 @@ class SideChannel(ABC):
     """
 
     def __init__(self, channel_id):
-        self._channel_id: int = channel_id
+        self._channel_id: uuid.UUID = channel_id
         self.message_queue: List[bytearray] = []
 
     def queue_message_to_send(self, data: bytearray) -> None:
@@ -64,7 +33,7 @@ class SideChannel(ABC):
         pass
 
     @property
-    def channel_id(self) -> int:
+    def channel_id(self) -> uuid.UUID:
         """
         :return:The type of side channel used. Will influence how the data is
         processed in the environment.

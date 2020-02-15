@@ -1,4 +1,5 @@
 using System.IO;
+using System;
 using UnityEngine;
 
 namespace MLAgents
@@ -7,7 +8,7 @@ namespace MLAgents
     {
         public EngineConfigurationChannel()
         {
-            ChannelId = (int)ReservedChannelId.EngineSettings;
+            ChannelId = new Guid("e951342c-4f7e-11ea-b238-784f4387d1f7");
         }
 
         public override void OnMessageReceived(byte[] data)

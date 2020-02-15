@@ -1,46 +1,8 @@
 using System.Collections.Generic;
+using System;
 
 namespace MLAgents
 {
-
-    internal static class ReservedChannelIdCheck{
-        public static void AssertIsRawBytesChannel(int channelId)
-        {
-            if ((channelId < (int)ReservedChannelId.RawBytesChannelStart) || (
-            channelId >= (int)ReservedChannelId.UserSideChannelStart))
-            {
-                throw new UnityAgentsException(
-                    "A RawBytesChannel side channel must have a ChannelId between "
-                    + "ReservedChannelId.RawBytesChannelStart and "
-                    + "ReservedChannelId.UserSideChannelStart"
-                );
-            }
-        }
-
-        public static void AssertIsUserChannel(int channelId)
-        {
-            if (channelId < (int)ReservedChannelId.UserSideChannelStart)
-            {
-                throw new UnityAgentsException( "A custom side channel must have a channelId greater "
-                        + "than ReservedChannelId.UserSideChannelStart");
-            }
-        }
-    }
-
-    public enum ReservedChannelId
-    {
-        // Invalid side channel
-        Invalid = 0,
-        // Reserved for the FloatPropertiesChannel.
-        FloatProperties = 1,
-        //Reserved for the EngineConfigurationChannel.
-        EngineSettings = 2,
-        // Raw bytes channels should start here to avoid conflicting with other Unity ones.
-        RawBytesChannelStart = 1000,
-        // custom side channels should start here to avoid conflicting with Unity ones.
-        UserSideChannelStart = 2000,
-    }
-
     public abstract class SideChannel
     {
         // The list of messages (byte arrays) that need to be sent to Python via the communicator.
@@ -52,7 +14,7 @@ namespace MLAgents
         /// of each type. Ensure the Unity side channels will be linked to their Python equivalent.
         /// </summary>
         /// <returns> The integer identifier of the SideChannel</returns>
-        public int ChannelId{
+        public Guid ChannelId{
             get;
             protected set;
         }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System;
+
 namespace MLAgents
 {
     public class RawBytesChannel : SideChannel
@@ -10,9 +12,8 @@ namespace MLAgents
         /// </summary>
         /// <param name="channelId"> The identifier for the RawBytesChannel. Must be
         /// the same on Python and Unity.</param>
-        public RawBytesChannel(int channelId)
+        public RawBytesChannel(Guid channelId)
         {
-            ReservedChannelIdCheck.AssertIsRawBytesChannel(channelId);
             ChannelId = channelId;
         }
 

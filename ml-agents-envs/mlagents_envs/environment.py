@@ -1,5 +1,6 @@
 import atexit
 import glob
+import uuid
 import logging
 import numpy as np
 import os
@@ -92,7 +93,7 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels: Dict[int, SideChannel] = {}
+        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
         if side_channels is not None:
             for _sc in side_channels:
                 if _sc.channel_id in self.side_channels:
@@ -443,13 +444,15 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[int, SideChannel], data: bytes
+        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
             try:
-                channel_type, message_len = struct.unpack_from("<ii", data, offset)
-                offset = offset + 8
+                channel_type = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
+                offset += 16
+                message_len, = struct.unpack_from("<i", data, offset)
+                offset = offset + 4
                 message_data = data[offset : offset + message_len]
                 offset = offset + message_len
             except Exception:
@@ -473,11 +476,14 @@ class UnityEnvironment(BaseEnv):
                 )
 
     @staticmethod
-    def _generate_side_channel_data(side_channels: Dict[int, SideChannel]) -> bytearray:
+    def _generate_side_channel_data(
+        side_channels: Dict[uuid.UUID, SideChannel]
+    ) -> bytearray:
         result = bytearray()
         for channel_type, channel in side_channels.items():
             for message in channel.message_queue:
-                result += struct.pack("<ii", channel_type, len(message))
+                result += channel_type.bytes_le
+                result += struct.pack("<i", len(message))
                 result += message
             channel.message_queue = []
         return result
