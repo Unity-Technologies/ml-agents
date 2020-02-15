@@ -11,7 +11,6 @@ namespace MLAgents.Tests
     {
         class TestAgent : Agent
         {
-
         }
 
         [Test]
