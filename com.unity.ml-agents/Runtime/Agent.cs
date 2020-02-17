@@ -259,7 +259,7 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
-                Academy.Instance.AgentIncrementStep -=AgentIncrementStep;
+                Academy.Instance.AgentIncrementStep -= AgentIncrementStep;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
