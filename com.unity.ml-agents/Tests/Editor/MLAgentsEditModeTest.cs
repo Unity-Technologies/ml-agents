@@ -68,6 +68,7 @@ namespace MLAgents.Tests
 
         public override void AgentReset()
         {
+
             agentResetCalls += 1;
             collectObservationsCallsSinceLastReset = 0;
             agentActionCallsSinceLastReset = 0;
@@ -486,20 +487,18 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
+            int expectedAgent1Resets= 0;
+            int expectedAgent1ActionSinceReset = 0;
+
             var j = 0;
-            for (var i = 0; i < 500; i++)
+            for (var i = 0; i < 50; i++)
             {
-                Debug.Log(i);
-                if (i % 20 == 0)
-                {
-                    j = 0;
-                }
-                else
-                {
-                    j++;
+                expectedAgent1ActionSinceReset += 1;
+                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0){
+                    expectedAgent1ActionSinceReset = 0;
                 }
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(j * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionSinceReset * 10.1f - agent1.GetCumulativeReward()), 0.05f);
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
@@ -523,23 +522,26 @@ namespace MLAgents.Tests
             agent1.maxStep = maxStep;
             agent1.LazyInitialize();
 
+            int expectedResets= 0;
+            int expectedAgentAction = 0;
+            int expectedAgentActionSinceReset = 0;
+
             for (var i = 0; i < 15; i++)
             {
-                Debug.Log(i);
-                // We expect resets to occur when there are maxSteps actions since the last reset 
-                var expectReset = agent1.agentActionCallsSinceLastReset == maxStep;
-                var previousNumResets = agent1.agentResetCalls;
-
-                if (expectReset)
-                {
-                    Assert.AreEqual(previousNumResets + 1, agent1.agentResetCalls);
-                }
-                else
-                {
-                    Assert.AreEqual(previousNumResets, agent1.agentResetCalls);
+                expectedAgentAction += 1;
+                expectedAgentActionSinceReset += 1;
+                if (expectedAgentActionSinceReset == maxStep || (i == 0)){
+                    expectedResets +=1;
                 }
 
+                if (expectedAgentActionSinceReset == maxStep){
+                    expectedAgentActionSinceReset = 0;
+                }
                 aca.EnvironmentStep();
+
+                Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
+                Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
             }
         }
     }
