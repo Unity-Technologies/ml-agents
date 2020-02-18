@@ -194,9 +194,7 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
-
     def executable_launcher(self, file_name, docker_training, no_graphics, args):
-        cwd = os.getcwd()
         file_name = (
             file_name.strip()
             .replace(".app", "")

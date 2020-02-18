@@ -8,7 +8,6 @@ import shutil
 import numpy as np
 import json
 
-from sys import platform
 from typing import Callable, Optional, List, NamedTuple, Dict
 
 import mlagents.trainers
