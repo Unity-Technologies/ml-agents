@@ -3,12 +3,12 @@ import logging
 import argparse
 
 import os
-from os import path
 import glob
 import shutil
 import numpy as np
 import json
 
+from sys import platform
 from typing import Callable, Optional, List, NamedTuple, Dict
 
 import mlagents.trainers
@@ -381,6 +381,63 @@ def prepare_for_docker_run(docker_target_name, env_path):
     return env_path
 
 
+def environment_launch_check(env_path):
+    if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
+        raise UnityEnvironmentException(
+            "Couldn't launch the {0} environment. "
+            "Provided filename does not match any environments.".format(
+                env_path
+            )
+        )
+    cwd = os.getcwd()
+    launch_string = None
+    true_filename = os.path.basename(os.path.normpath(env_path))
+    if platform == "linux" or platform == "linux2":
+        candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
+        if len(candidates) == 0:
+            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
+        if len(candidates) == 0:
+            candidates = glob.glob(env_path+ ".x86_64")
+        if len(candidates) == 0:
+            candidates = glob.glob(env_path + ".x86")
+        if len(candidates) > 0:
+            launch_string = candidates[0]
+
+    elif platform == "darwin":
+        candidates = glob.glob(
+            os.path.join(
+                cwd, env_path + ".app", "Contents", "MacOS", true_filename
+            )
+        )
+        if len(candidates) == 0:
+            candidates = glob.glob(
+                os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
+            )
+        if len(candidates) == 0:
+            candidates = glob.glob(
+                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
+            )
+        if len(candidates) == 0:
+            candidates = glob.glob(
+                os.path.join(env_path + ".app", "Contents", "MacOS", "*")
+            )
+        if len(candidates) > 0:
+            launch_string = candidates[0]
+    elif platform == "win32":
+        candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
+        if len(candidates) == 0:
+            candidates = glob.glob(env_path + ".exe")
+        if len(candidates) > 0:
+            launch_string = candidates[0]
+    if launch_string is None:
+        raise UnityEnvironmentException(
+            "Couldn't launch the {0} environment. "
+            "Provided filename does not match any environments.".format(
+                true_filename
+            )
+        )
+
+
 def create_environment_factory(
     env_path: Optional[str],
     docker_target_name: Optional[str],
@@ -390,14 +447,6 @@ def create_environment_factory(
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
-        if not path.exists(env_path):
-            raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(
-                    env_path
-                )
-            )
-
         # Strip out executable extensions if passed
         env_path = (
             env_path.strip()
@@ -406,6 +455,7 @@ def create_environment_factory(
             .replace(".x86_64", "")
             .replace(".x86", "")
         )
+        environment_launch_check(env_path)
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:
         #     Comments for future maintenance:
