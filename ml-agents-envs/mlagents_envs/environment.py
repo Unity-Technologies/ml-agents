@@ -147,6 +147,54 @@ class UnityEnvironment(BaseEnv):
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
+    @staticmethod
+    def environment_launch_check(env_path):
+        if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
+            raise UnityEnvironmentException(
+                "Couldn't launch the {0} environment. "
+                "Provided filename does not match any environments.".format(env_path)
+            )
+        cwd = os.getcwd()
+        launch_string = None
+        true_filename = os.path.basename(os.path.normpath(env_path))
+        if platform == "linux" or platform == "linux2":
+            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
+            if len(candidates) == 0:
+                candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
+            if len(candidates) == 0:
+                candidates = glob.glob(env_path + ".x86_64")
+            if len(candidates) == 0:
+                candidates = glob.glob(env_path + ".x86")
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+
+        elif platform == "darwin":
+            candidates = glob.glob(
+                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
+            )
+            if len(candidates) == 0:
+                candidates = glob.glob(
+                    os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
+                )
+            if len(candidates) == 0:
+                candidates = glob.glob(
+                    os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
+                )
+            if len(candidates) == 0:
+                candidates = glob.glob(
+                    os.path.join(env_path + ".app", "Contents", "MacOS", "*")
+                )
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        elif platform == "win32":
+            candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
+            if len(candidates) == 0:
+                candidates = glob.glob(env_path + ".exe")
+            if len(candidates) > 0:
+                launch_string = candidates[0]
+        return launch_string
+
+
     def executable_launcher(self, file_name, docker_training, no_graphics, args):
         cwd = os.getcwd()
         file_name = (
@@ -158,44 +206,7 @@ class UnityEnvironment(BaseEnv):
         )
         true_filename = os.path.basename(os.path.normpath(file_name))
         logger.debug("The true file name is {}".format(true_filename))
-        launch_string = None
-        if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, file_name) + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name) + ".x86")
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-
-        elif platform == "darwin":
-            candidates = glob.glob(
-                os.path.join(
-                    cwd, file_name + ".app", "Contents", "MacOS", true_filename
-                )
-            )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", true_filename)
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(cwd, file_name + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        elif platform == "win32":
-            candidates = glob.glob(os.path.join(cwd, file_name + ".exe"))
-            if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".exe")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
+        launch_string = self.environment_launch_check(file_name)
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(
