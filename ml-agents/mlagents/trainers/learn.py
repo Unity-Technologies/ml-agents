@@ -379,6 +379,7 @@ def prepare_for_docker_run(docker_target_name, env_path):
     env_path = "/ml-agents/{env_path}".format(env_path=env_path)
     return env_path
 
+
 def create_environment_factory(
     env_path: Optional[str],
     docker_target_name: Optional[str],
