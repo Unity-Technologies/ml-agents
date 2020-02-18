@@ -715,16 +715,7 @@ namespace MLAgents
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
             if (m_Action.vectorActions == null){
-                var param = m_PolicyFactory.brainParameters;
-
-                if (param.vectorActionSpaceType == SpaceType.Continuous)
-                {
-                    m_Action.vectorActions = new float[param.vectorActionSize[0]];
-                }
-                else
-                {
-                    m_Action.vectorActions = new float[param.vectorActionSize.Length];
-                }
+                ResetData();
             }
         }
     }
