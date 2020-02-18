@@ -180,7 +180,7 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            sudo apt-get install nuget
+            sudo apt-get install nuget=2.12
             nuget install Grpc.Tools -Version 2.27.0 -OutputDirectory protobuf-definitions/
             nuget install System.Memory -Version 4.5.3 -OutputDirectory protobuf-definitions/
             python3 -m venv venv
