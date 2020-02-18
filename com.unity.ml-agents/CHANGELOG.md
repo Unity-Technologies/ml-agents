@@ -4,6 +4,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Major Changes
+ - Agent.CollectObservations now takes a VectorSensor argument. It was also overloaded to optionally take an ActionMasker argument. (#3352, #3389)
+
+### Minor Changes
+ - Monitor.cs was moved to Examples. (#3372)
+ - Automatic stepping for Academy is now controlled from the AutomaticSteppingEnabled property. (#3376)
+ - The GetEpisodeCount, GetStepCount, GetTotalStepCount and methods of Academy were changed to EpisodeCount, StepCount, TotalStepCount properties respectively. (#3376)
+ - Several classes were changed from public to internal visibility. (#3390)
+ - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
+ - A tutorial on adding custom SideChannels was added (#3391)
+ - Update Barracuda to 0.6.0-preview
+
+### Bugfixes
+- Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
+
 ## [0.14.0-preview] - 2020-02-13
 
 ### Major Changes

@@ -119,9 +119,9 @@ namespace MLAgents
             public int maxStep;
         }
 
-        [SerializeField] [HideInInspector]
+        [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
-        [SerializeField] [HideInInspector]
+        [SerializeField][HideInInspector]
         internal bool hasUpgradedFromAgentParameters;
 
         /// <summary>
@@ -200,13 +200,11 @@ namespace MLAgents
             LazyInitialize();
         }
 
-
         public void OnBeforeSerialize()
         {
             if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
-
             }
             hasUpgradedFromAgentParameters = true;
         }
@@ -636,7 +634,7 @@ namespace MLAgents
         /// </summary>
         public float[] GetAction()
         {
-        	return m_Action.vectorActions;
+            return m_Action.vectorActions;
         }
 
         /// <summary>

@@ -5,6 +5,6 @@
 	"unity": "2018.4",
 	"description": "Add interactivity to your game with Machine Learning Agents trained using Deep Reinforcement Learning.",
 	"dependencies": {
-		"com.unity.barracuda": "0.5.0-preview"
+		"com.unity.barracuda": "0.6.0-preview"
 	}
 }
