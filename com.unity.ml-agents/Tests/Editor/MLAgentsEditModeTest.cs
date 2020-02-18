@@ -537,7 +537,8 @@ namespace MLAgents.Tests
                 expectedAgentStepCount += 1;
 
                 // If the next step will put the agent at maxSteps, we expect it to reset
-                if (agent1.GetStepCount() == maxStep - 1 || (i == 0)){
+                if (agent1.GetStepCount() == maxStep - 1 || (i == 0))
+                {
                     expectedResets +=1;
                 }
 
