@@ -111,12 +111,12 @@ def _process_visual_observation(
 
 
 def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
-    # Check for NaNs or infs in the observations
+    # Check for NaNs or Infinite values in the observation or reward data.
     # If there's a NaN in the observations, the np.mean() result will be NaN
-    # If there's an Inf (either sign) then the result will be Inf
+    # If there's an Infinite value (either sign) then the result will be Inf
     # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
     # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
-    # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
+    # Raise a Runtime error in the case that NaNs or Infinite values make it into the data.
     if data.size == 0:
         return data
 
