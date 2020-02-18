@@ -278,6 +278,11 @@ namespace MLAgents
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
 
+            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            {
+                m_Recorder.WriteExperience(m_Info, sensors);
+            }
+
             UpdateRewardStats();
 
             // The Agent is done, so we give it a new episode Id
@@ -799,16 +804,16 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                if (m_Action.vectorActions != null)
-                {
-                    AgentAction(m_Action.vectorActions);
-                }
+                AgentAction(m_Action.vectorActions);
             }
         }
 
         void DecideAction()
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
+            if (m_Action.vectorActions == null){
+                ResetData();
+            }
         }
     }
 }

@@ -73,7 +73,7 @@ namespace MLAgents
         /// </summary>
         public void WriteExperience(AgentInfo info, List<ISensor> sensors)
         {
-            m_DemoStore.Record(info, sensors);
+            m_DemoStore?.Record(info, sensors);
         }
 
         public void Close()
