@@ -385,9 +385,7 @@ def environment_launch_check(env_path):
     if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
         raise UnityEnvironmentException(
             "Couldn't launch the {0} environment. "
-            "Provided filename does not match any environments.".format(
-                env_path
-            )
+            "Provided filename does not match any environments.".format(env_path)
         )
     cwd = os.getcwd()
     launch_string = None
@@ -397,7 +395,7 @@ def environment_launch_check(env_path):
         if len(candidates) == 0:
             candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
         if len(candidates) == 0:
-            candidates = glob.glob(env_path+ ".x86_64")
+            candidates = glob.glob(env_path + ".x86_64")
         if len(candidates) == 0:
             candidates = glob.glob(env_path + ".x86")
         if len(candidates) > 0:
@@ -405,9 +403,7 @@ def environment_launch_check(env_path):
 
     elif platform == "darwin":
         candidates = glob.glob(
-            os.path.join(
-                cwd, env_path + ".app", "Contents", "MacOS", true_filename
-            )
+            os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
         )
         if len(candidates) == 0:
             candidates = glob.glob(
@@ -432,9 +428,7 @@ def environment_launch_check(env_path):
     if launch_string is None:
         raise UnityEnvironmentException(
             "Couldn't launch the {0} environment. "
-            "Provided filename does not match any environments.".format(
-                true_filename
-            )
+            "Provided filename does not match any environments.".format(true_filename)
         )
 
 
