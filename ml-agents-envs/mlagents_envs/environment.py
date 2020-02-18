@@ -1,5 +1,6 @@
 import atexit
 import glob
+import uuid
 import logging
 import numpy as np
 import os
@@ -92,16 +93,16 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels: Dict[int, SideChannel] = {}
+        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
         if side_channels is not None:
             for _sc in side_channels:
-                if _sc.channel_type in self.side_channels:
+                if _sc.channel_id in self.side_channels:
                     raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel type {0}.".format(
-                            _sc.channel_type
+                        "There cannot be two side channels with the same channel id {0}.".format(
+                            _sc.channel_id
                         )
                     )
-                self.side_channels[_sc.channel_type] = _sc
+                self.side_channels[_sc.channel_id] = _sc
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -443,13 +444,15 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[int, SideChannel], data: bytes
+        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
             try:
-                channel_type, message_len = struct.unpack_from("<ii", data, offset)
-                offset = offset + 8
+                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
+                offset += 16
+                message_len, = struct.unpack_from("<i", data, offset)
+                offset = offset + 4
                 message_data = data[offset : offset + message_len]
                 offset = offset + message_len
             except Exception:
@@ -462,22 +465,25 @@ class UnityEnvironment(BaseEnv):
                 raise UnityEnvironmentException(
                     "The message received by the side channel {0} was "
                     "unexpectedly short. Make sure your Unity Environment "
-                    "sending side channel data properly.".format(channel_type)
+                    "sending side channel data properly.".format(channel_id)
                 )
-            if channel_type in side_channels:
-                side_channels[channel_type].on_message_received(message_data)
+            if channel_id in side_channels:
+                side_channels[channel_id].on_message_received(message_data)
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_type)
+                    ": {0}.".format(channel_id)
                 )
 
     @staticmethod
-    def _generate_side_channel_data(side_channels: Dict[int, SideChannel]) -> bytearray:
+    def _generate_side_channel_data(
+        side_channels: Dict[uuid.UUID, SideChannel]
+    ) -> bytearray:
         result = bytearray()
-        for channel_type, channel in side_channels.items():
+        for channel_id, channel in side_channels.items():
             for message in channel.message_queue:
-                result += struct.pack("<ii", channel_type, len(message))
+                result += channel_id.bytes_le
+                result += struct.pack("<i", len(message))
                 result += message
             channel.message_queue = []
         return result

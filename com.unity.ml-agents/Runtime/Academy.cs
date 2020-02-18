@@ -49,7 +49,6 @@ namespace MLAgents
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
-
         const string k_ApiVersion = "API-15-dev0";
         const int k_EditorTrainingPort = 5004;
 
@@ -232,7 +231,8 @@ namespace MLAgents
         public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
-            set {
+            set
+            {
                 if (value)
                 {
                     EnableAutomaticStepping();

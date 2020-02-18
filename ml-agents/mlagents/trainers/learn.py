@@ -458,6 +458,8 @@ def run_cli(options: RunOptions) -> None:
         trainer_logger.setLevel("DEBUG")
         env_logger.setLevel("DEBUG")
     else:
+        trainer_logger.setLevel("INFO")
+        env_logger.setLevel("INFO")
         # disable noisy warnings from tensorflow.
         tf_utils.set_warnings_enabled(False)
 
