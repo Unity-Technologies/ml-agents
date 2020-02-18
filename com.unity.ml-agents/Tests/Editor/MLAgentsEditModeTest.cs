@@ -542,7 +542,8 @@ namespace MLAgents.Tests
                     expectedResets +=1;
                 }
 
-                if (agent1.GetStepCount() == maxStep - 1){
+                if (agent1.GetStepCount() == maxStep - 1)
+                {
                     expectedAgentActionSinceReset = 0;
                     expectedCollectObsCallsSinceReset = 0;
                     expectedAgentStepCount = 0;
