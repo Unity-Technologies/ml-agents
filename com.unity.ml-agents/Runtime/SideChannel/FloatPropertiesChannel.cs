@@ -41,12 +41,13 @@ namespace MLAgents
     {
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
+        private const string k_FloatPropertiesDefaultId = "60ccf7d0-4f7e-11ea-b238-784f4387d1f7";
 
         public FloatPropertiesChannel(Guid channelId = default(Guid))
         {
             if (channelId == default(Guid))
             {
-                ChannelId = new Guid("60ccf7d0-4f7e-11ea-b238-784f4387d1f7");
+                ChannelId = new Guid(k_FloatPropertiesDefaultId);
             }
             else{
                 ChannelId = channelId;
