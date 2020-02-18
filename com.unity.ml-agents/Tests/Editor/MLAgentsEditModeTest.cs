@@ -487,10 +487,8 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
-            int expectedAgent1Resets= 0;
-            int expectedAgent1ActionSinceReset = 0;
+            var expectedAgent1ActionSinceReset = 0;
 
-            var j = 0;
             for (var i = 0; i < 50; i++)
             {
                 expectedAgent1ActionSinceReset += 1;
@@ -518,30 +516,46 @@ namespace MLAgents.Tests
             decisionRequester.DecisionPeriod = 1;
             decisionRequester.Awake();
 
-            var maxStep = 6;
+            const int maxStep = 6;
             agent1.maxStep = maxStep;
             agent1.LazyInitialize();
 
-            int expectedResets= 0;
-            int expectedAgentAction = 0;
-            int expectedAgentActionSinceReset = 0;
+            var expectedAgentStepCount = 0;
+            var expectedResets= 0;
+            var expectedAgentAction = 0;
+            var expectedAgentActionSinceReset = 0;
+            var expectedCollectObsCalls = 0;
+            var expectedCollectObsCallsSinceReset = 0;
 
             for (var i = 0; i < 15; i++)
             {
+                // Agent should observe and act on each Academy step
                 expectedAgentAction += 1;
                 expectedAgentActionSinceReset += 1;
-                if (expectedAgentActionSinceReset == maxStep || (i == 0)){
+                expectedCollectObsCalls += 1;
+                expectedCollectObsCallsSinceReset += 1;
+                expectedAgentStepCount += 1;
+
+                // If the next step will put the agent at maxSteps, we expect it to reset
+                if (agent1.GetStepCount() == maxStep - 1 || (i == 0))
+                {
                     expectedResets +=1;
                 }
 
-                if (expectedAgentActionSinceReset == maxStep){
+                if (agent1.GetStepCount() == maxStep - 1)
+                {
                     expectedAgentActionSinceReset = 0;
+                    expectedCollectObsCallsSinceReset = 0;
+                    expectedAgentStepCount = 0;
                 }
                 aca.EnvironmentStep();
 
-                Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
+                Assert.AreEqual(expectedAgentStepCount, agent1.GetStepCount());
                 Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
                 Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
+                Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
+                Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
             }
         }
     }
