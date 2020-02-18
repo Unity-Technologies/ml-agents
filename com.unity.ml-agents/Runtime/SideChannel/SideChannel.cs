@@ -7,7 +7,7 @@ namespace MLAgents
     {
         // The list of messages (byte arrays) that need to be sent to Python via the communicator.
         // Should only ever be read and cleared by a ICommunicator object.
-        public List<byte[]> MessageQueue = new List<byte[]>();
+        internal List<byte[]> MessageQueue = new List<byte[]>();
 
         /// <summary>
         /// An int identifier for the SideChannel. Ensures that there is only ever one side channel
