@@ -42,9 +42,8 @@ def generate_list_agent_proto(
             obs_proto.shape.extend(list(shape[obs_index]))
             obs_proto.compression_type = NONE
             obs_proto.float_data.data.extend(
-                np.prod(shape[obs_index]) * [float("nan")]
-                if nan_observations
-                else [0.1]
+                ([float("nan")] if nan_observations else [0.1])
+                * np.prod(shape[obs_index])
             )
             obs_proto_list.append(obs_proto)
         ap.observations.extend(obs_proto_list)
