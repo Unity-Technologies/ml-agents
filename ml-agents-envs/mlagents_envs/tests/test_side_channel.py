@@ -65,8 +65,9 @@ def test_float_properties():
 
 
 def test_raw_bytes():
-    sender = RawBytesChannel(uuid.UUID("a85ba5c0-4f87-11ea-a517-784f4387d1f7"))
-    receiver = RawBytesChannel(uuid.UUID("a85ba5c0-4f87-11ea-a517-784f4387d1f7"))
+    guid = uuid.uuid4()
+    sender = RawBytesChannel(guid)
+    receiver = RawBytesChannel(guid)
 
     sender.send_raw_data("foo".encode("ascii"))
     sender.send_raw_data("bar".encode("ascii"))
