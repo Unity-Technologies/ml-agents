@@ -42,13 +42,15 @@ namespace MLAgents
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
 
-        public FloatPropertiesChannel(int channelId = (int)ReservedChannelId.FloatProperties)
+        public FloatPropertiesChannel(Guid channelId = default(Guid))
         {
-            if (channelId!= (int)ReservedChannelId.FloatProperties)
+            if (channelId == default(Guid))
             {
-                ReservedChannelIdCheck.AssertIsUserChannel(channelId);
+                ChannelId = new Guid("60ccf7d0-4f7e-11ea-b238-784f4387d1f7");
             }
-            ChannelId = channelId;
+            else{
+                ChannelId = channelId;
+            }
         }
 
         public override void OnMessageReceived(byte[] data)

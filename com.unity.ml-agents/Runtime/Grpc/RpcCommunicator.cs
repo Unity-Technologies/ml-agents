@@ -48,7 +48,7 @@ namespace MLAgents
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
 
-        Dictionary<int, SideChannel> m_SideChannels = new Dictionary<int, SideChannel>();
+        Dictionary<Guid, SideChannel> m_SideChannels = new Dictionary<Guid, SideChannel>();
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
@@ -493,7 +493,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannels"> A dictionary of channel type to channel.</param>
         /// <returns></returns>
-        public static byte[] GetSideChannelMessage(Dictionary<int, SideChannel> sideChannels)
+        public static byte[] GetSideChannelMessage(Dictionary<Guid, SideChannel> sideChannels)
         {
             using (var memStream = new MemoryStream())
             {
@@ -504,7 +504,7 @@ namespace MLAgents
                         var messageList = sideChannel.MessageQueue;
                         foreach (var message in messageList)
                         {
-                            binaryWriter.Write(sideChannel.ChannelId);
+                            binaryWriter.Write(sideChannel.ChannelId.ToByteArray());
                             binaryWriter.Write(message.Count());
                             binaryWriter.Write(message);
                         }
@@ -520,7 +520,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannels">A dictionary of channel type to channel.</param>
         /// <param name="dataReceived">The byte array of data received from Python.</param>
-        public static void ProcessSideChannelData(Dictionary<int, SideChannel> sideChannels, byte[] dataReceived)
+        public static void ProcessSideChannelData(Dictionary<Guid, SideChannel> sideChannels, byte[] dataReceived)
         {
             if (dataReceived.Length == 0)
             {
@@ -532,11 +532,11 @@ namespace MLAgents
                 {
                     while (memStream.Position < memStream.Length)
                     {
-                        int channelId = 0;
+                        Guid channelId = Guid.Empty;
                         byte[] message = null;
                         try
                         {
-                            channelId = binaryReader.ReadInt32();
+                            channelId = new Guid(binaryReader.ReadBytes(16));
                             var messageLength = binaryReader.ReadInt32();
                             message = binaryReader.ReadBytes(messageLength);
                         }

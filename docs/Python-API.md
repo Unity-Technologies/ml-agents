@@ -279,9 +279,9 @@ The side channel will have to implement the `SideChannel` abstract class and the
  * `OnMessageReceived(byte[] data)` : You must implement this method to specify what the side channel will be doing
  with the data received from Python. The data is a `byte[]` argument.
 
-The side channel must also assign a `ChannelId` property in the constructor. The `ChannelId` is an int used to
-uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
-channel of a certain id during communication.
+The side channel must also assign a `ChannelId` property in the constructor. The `ChannelId` is a Guid
+(or UUID in Python) used to uniquely identify a side channel. This Guid must be the same on C# and Python.
+There can only be one side channel of a certain id during communication.
 
 To send a byte array from C# to Python, call the `base.QueueMessageToSend(data)` method inside the side channel.
 The `data` argument must be a `byte[]`.
@@ -295,9 +295,9 @@ The side channel will have to implement the `SideChannel` abstract class. You mu
  * `on_message_received(self, data: bytes) -> None` : You must implement this method to specify what the
  side channel will be doing with the data received from Unity. The data is a `byte[]` argument.
 
-The side channel must also assign a `channel_id` property in the constructor. The `channel_id` is an int used to
-Uniquely identify a side channel. This number must be the same on C# and Python. There can only be one side
-channel of a certain id during communication.
+The side channel must also assign a `channel_id` property in the constructor. The `channel_id` is a UUID
+(referred in C# as Guid) used to uniquely identify a side channel. This number must be the same on C# and
+Python. There can only be one side channel of a certain id during communication.
 
 To assign the `channel_id` call the abstract class constructor with the appropriate `channel_id` as follows:
 
@@ -324,12 +324,13 @@ the game :
 using UnityEngine;
 using MLAgents;
 using System.Text;
+using System;
 
 public class StringLogSideChannel : SideChannel
 {
     public StringLogSideChannel()
     {
-        ChannelId = (int)SideChannelType.UserSideChannelStart + 1;
+        ChannelId = new Guid("621f0a70-4f87-11ea-a6bf-784f4387d1f7");
     }
 
     public override void OnMessageReceived(byte[] data)
@@ -400,7 +401,7 @@ launches a `UnityEnvironment` with that side channel.
 ```python
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.side_channel import SideChannel, ReservedChannelId
+from mlagents_envs.side_channel.side_channel import SideChannel
 import numpy as np
 
 
@@ -408,7 +409,7 @@ import numpy as np
 class StringLogChannel(SideChannel):
 
     def __init__(self) -> None:
-        super().__init__(ReservedChannelId.UserSideChannelStart + 1)
+        super().__init__(uuid.UUID("621f0a70-4f87-11ea-a6bf-784f4387d1f7"))
 
     def on_message_received(self, data: bytes) -> None:
         """
