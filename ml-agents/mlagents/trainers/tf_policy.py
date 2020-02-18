@@ -309,7 +309,7 @@ class TFPolicy(Policy):
         :return:
         """
         with self.graph.as_default():
-            last_checkpoint = self.model_path + "/model-" + str(steps) + ".cptk"
+            last_checkpoint = self.model_path + "/model-" + str(steps) + ".ckpt"
             self.saver.save(self.sess, last_checkpoint)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
