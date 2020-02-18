@@ -449,7 +449,7 @@ class UnityEnvironment(BaseEnv):
         offset = 0
         while offset < len(data):
             try:
-                channel_type = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
+                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
                 offset += 16
                 message_len, = struct.unpack_from("<i", data, offset)
                 offset = offset + 4
@@ -465,14 +465,14 @@ class UnityEnvironment(BaseEnv):
                 raise UnityEnvironmentException(
                     "The message received by the side channel {0} was "
                     "unexpectedly short. Make sure your Unity Environment "
-                    "sending side channel data properly.".format(channel_type)
+                    "sending side channel data properly.".format(channel_id)
                 )
-            if channel_type in side_channels:
-                side_channels[channel_type].on_message_received(message_data)
+            if channel_id in side_channels:
+                side_channels[channel_id].on_message_received(message_data)
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_type)
+                    ": {0}.".format(channel_id)
                 )
 
     @staticmethod
@@ -480,9 +480,9 @@ class UnityEnvironment(BaseEnv):
         side_channels: Dict[uuid.UUID, SideChannel]
     ) -> bytearray:
         result = bytearray()
-        for channel_type, channel in side_channels.items():
+        for channel_id, channel in side_channels.items():
             for message in channel.message_queue:
-                result += channel_type.bytes_le
+                result += channel_id.bytes_le
                 result += struct.pack("<i", len(message))
                 result += message
             channel.message_queue = []
