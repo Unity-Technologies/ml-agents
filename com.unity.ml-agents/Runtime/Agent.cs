@@ -331,10 +331,7 @@ namespace MLAgents
         public void SetReward(float reward)
         {
 #if DEBUG
-            if (float.IsNaN(reward))
-            {
-                throw new ArgumentException("NaN reward passed to SetReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetReward));
 #endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
@@ -347,10 +344,7 @@ namespace MLAgents
         public void AddReward(float increment)
         {
 #if DEBUG
-            if (float.IsNaN(increment))
-            {
-                throw new ArgumentException("NaN reward passed to AddReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddReward));
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
