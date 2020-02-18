@@ -181,7 +181,8 @@ jobs:
           name: Install Dependencies
           command: |
             sudo apt-get install nuget
-            nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory protobuf-definitions/
+            nuget install Grpc.Tools -Version 2.27.0 -OutputDirectory protobuf-definitions/
+            nuget install System.Memory -Version 4.5.3 -OutputDirectory protobuf-definitions/
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
