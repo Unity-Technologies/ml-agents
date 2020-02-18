@@ -36,8 +36,8 @@ namespace MLAgents.CommunicatorObjects {
             "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto), global::MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.CompressionTypeProto), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto), global::MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null, null)})
           }));
     }
     #endregion
@@ -108,7 +108,7 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "compression_type" field.</summary>
     public const int CompressionTypeFieldNumber = 2;
-    private global::MLAgents.CommunicatorObjects.CompressionTypeProto compressionType_ = 0;
+    private global::MLAgents.CommunicatorObjects.CompressionTypeProto compressionType_ = global::MLAgents.CommunicatorObjects.CompressionTypeProto.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::MLAgents.CommunicatorObjects.CompressionTypeProto CompressionType {
       get { return compressionType_; }
@@ -183,7 +183,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= shape_.GetHashCode();
-      if (CompressionType != 0) hash ^= CompressionType.GetHashCode();
+      if (CompressionType != global::MLAgents.CommunicatorObjects.CompressionTypeProto.None) hash ^= CompressionType.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.CompressedData) hash ^= CompressedData.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.FloatData) hash ^= FloatData.GetHashCode();
       hash ^= (int) observationDataCase_;
@@ -201,7 +201,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       shape_.WriteTo(output, _repeated_shape_codec);
-      if (CompressionType != 0) {
+      if (CompressionType != global::MLAgents.CommunicatorObjects.CompressionTypeProto.None) {
         output.WriteRawTag(16);
         output.WriteEnum((int) CompressionType);
       }
@@ -222,7 +222,7 @@ namespace MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       size += shape_.CalculateSize(_repeated_shape_codec);
-      if (CompressionType != 0) {
+      if (CompressionType != global::MLAgents.CommunicatorObjects.CompressionTypeProto.None) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) CompressionType);
       }
       if (observationDataCase_ == ObservationDataOneofCase.CompressedData) {
@@ -243,7 +243,7 @@ namespace MLAgents.CommunicatorObjects {
         return;
       }
       shape_.Add(other.shape_);
-      if (other.CompressionType != 0) {
+      if (other.CompressionType != global::MLAgents.CommunicatorObjects.CompressionTypeProto.None) {
         CompressionType = other.CompressionType;
       }
       switch (other.ObservationDataCase) {
@@ -275,7 +275,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 16: {
-            compressionType_ = (global::MLAgents.CommunicatorObjects.CompressionTypeProto) input.ReadEnum();
+            CompressionType = (global::MLAgents.CommunicatorObjects.CompressionTypeProto) input.ReadEnum();
             break;
           }
           case 26: {

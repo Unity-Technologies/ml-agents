@@ -17,22 +17,16 @@ from typing_extensions import (
 )
 
 
-builtin___bool = bool
-builtin___bytes = bytes
-builtin___float = float
-builtin___int = int
-
-
 class UnityRLInitializationInputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    seed = ... # type: builtin___int
+    seed = ... # type: int
 
     def __init__(self,
         *,
-        seed : typing___Optional[builtin___int] = None,
+        seed : typing___Optional[int] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: builtin___bytes) -> UnityRLInitializationInputProto: ...
+    def FromString(cls, s: bytes) -> UnityRLInitializationInputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

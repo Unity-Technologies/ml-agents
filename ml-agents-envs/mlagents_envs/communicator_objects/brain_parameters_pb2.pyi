@@ -27,30 +27,24 @@ from typing_extensions import (
 )
 
 
-builtin___bool = bool
-builtin___bytes = bytes
-builtin___float = float
-builtin___int = int
-
-
 class BrainParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
+    vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[int]
     vector_action_descriptions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
     vector_action_space_type = ... # type: mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto
     brain_name = ... # type: typing___Text
-    is_training = ... # type: builtin___bool
+    is_training = ... # type: bool
 
     def __init__(self,
         *,
-        vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
+        vector_action_size : typing___Optional[typing___Iterable[int]] = None,
         vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
         vector_action_space_type : typing___Optional[mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
         brain_name : typing___Optional[typing___Text] = None,
-        is_training : typing___Optional[builtin___bool] = None,
+        is_training : typing___Optional[bool] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: builtin___bytes) -> BrainParametersProto: ...
+    def FromString(cls, s: bytes) -> BrainParametersProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

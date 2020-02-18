@@ -40,8 +40,8 @@ namespace MLAgents.CommunicatorObjects {
             "bW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentActionReflection.Descriptor, global::MLAgents.CommunicatorObjects.CommandReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Parser, new[]{ "AgentActions", "Command", "SideChannel" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser, new[]{ "Value" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Parser, new[]{ "AgentActions", "Command", "SideChannel" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto), global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser, new[]{ "Value" }, null, null, null, null),
             null, })
           }));
     }
@@ -88,7 +88,7 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "agent_actions" field.</summary>
     public const int AgentActionsFieldNumber = 1;
     private static readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto>.Codec _map_agentActions_codec
-        = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser), 10);
+        = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto>.Codec(pb::FieldCodec.ForString(10, ""), pb::FieldCodec.ForMessage(18, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto.Parser), 10);
     private readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto> agentActions_ = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLInputProto.Types.ListAgentActionProto> AgentActions {
@@ -97,7 +97,7 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "command" field.</summary>
     public const int CommandFieldNumber = 4;
-    private global::MLAgents.CommunicatorObjects.CommandProto command_ = 0;
+    private global::MLAgents.CommunicatorObjects.CommandProto command_ = global::MLAgents.CommunicatorObjects.CommandProto.Step;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::MLAgents.CommunicatorObjects.CommandProto Command {
       get { return command_; }
@@ -140,7 +140,7 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= AgentActions.GetHashCode();
-      if (Command != 0) hash ^= Command.GetHashCode();
+      if (Command != global::MLAgents.CommunicatorObjects.CommandProto.Step) hash ^= Command.GetHashCode();
       if (SideChannel.Length != 0) hash ^= SideChannel.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -156,7 +156,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       agentActions_.WriteTo(output, _map_agentActions_codec);
-      if (Command != 0) {
+      if (Command != global::MLAgents.CommunicatorObjects.CommandProto.Step) {
         output.WriteRawTag(32);
         output.WriteEnum((int) Command);
       }
@@ -173,7 +173,7 @@ namespace MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       size += agentActions_.CalculateSize(_map_agentActions_codec);
-      if (Command != 0) {
+      if (Command != global::MLAgents.CommunicatorObjects.CommandProto.Step) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Command);
       }
       if (SideChannel.Length != 0) {
@@ -191,7 +191,7 @@ namespace MLAgents.CommunicatorObjects {
         return;
       }
       agentActions_.Add(other.agentActions_);
-      if (other.Command != 0) {
+      if (other.Command != global::MLAgents.CommunicatorObjects.CommandProto.Step) {
         Command = other.Command;
       }
       if (other.SideChannel.Length != 0) {
@@ -213,7 +213,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 32: {
-            command_ = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
+            Command = (global::MLAgents.CommunicatorObjects.CommandProto) input.ReadEnum();
             break;
           }
           case 42: {

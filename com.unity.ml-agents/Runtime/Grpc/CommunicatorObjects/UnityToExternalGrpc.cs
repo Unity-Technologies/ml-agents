@@ -29,6 +29,7 @@ namespace MLAgents.CommunicatorObjects {
     }
 
     /// <summary>Base class for server-side implementations of UnityToExternalProto</summary>
+    [grpc::BindServiceMethod(typeof(UnityToExternalProto), "BindService")]
     public abstract partial class UnityToExternalProtoBase
     {
       /// <summary>
@@ -49,7 +50,7 @@ namespace MLAgents.CommunicatorObjects {
     {
       /// <summary>Creates a new client for UnityToExternalProto</summary>
       /// <param name="channel">The channel to use to make remote calls.</param>
-      public UnityToExternalProtoClient(grpc::Channel channel) : base(channel)
+      public UnityToExternalProtoClient(grpc::ChannelBase channel) : base(channel)
       {
       }
       /// <summary>Creates a new client for UnityToExternalProto that uses a custom <c>CallInvoker</c>.</summary>
@@ -124,6 +125,15 @@ namespace MLAgents.CommunicatorObjects {
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_Exchange, serviceImpl.Exchange).Build();
+    }
+
+    /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the  service binding logic.
+    /// Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+    /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+    /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, UnityToExternalProtoBase serviceImpl)
+    {
+      serviceBinder.AddMethod(__Method_Exchange, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::MLAgents.CommunicatorObjects.UnityMessageProto, global::MLAgents.CommunicatorObjects.UnityMessageProto>(serviceImpl.Exchange));
     }
 
   }

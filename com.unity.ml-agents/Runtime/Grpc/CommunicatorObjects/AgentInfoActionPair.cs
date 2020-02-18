@@ -35,8 +35,8 @@ namespace MLAgents.CommunicatorObjects {
             "bXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor, global::MLAgents.CommunicatorObjects.AgentActionReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto), global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto.Parser, new[]{ "AgentInfo", "ActionInfo" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto), global::MLAgents.CommunicatorObjects.AgentInfoActionPairProto.Parser, new[]{ "AgentInfo", "ActionInfo" }, null, null, null, null)
           }));
     }
     #endregion
@@ -68,8 +68,8 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public AgentInfoActionPairProto(AgentInfoActionPairProto other) : this() {
-      AgentInfo = other.agentInfo_ != null ? other.AgentInfo.Clone() : null;
-      ActionInfo = other.actionInfo_ != null ? other.ActionInfo.Clone() : null;
+      agentInfo_ = other.agentInfo_ != null ? other.agentInfo_.Clone() : null;
+      actionInfo_ = other.actionInfo_ != null ? other.actionInfo_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -171,13 +171,13 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.agentInfo_ != null) {
         if (agentInfo_ == null) {
-          agentInfo_ = new global::MLAgents.CommunicatorObjects.AgentInfoProto();
+          AgentInfo = new global::MLAgents.CommunicatorObjects.AgentInfoProto();
         }
         AgentInfo.MergeFrom(other.AgentInfo);
       }
       if (other.actionInfo_ != null) {
         if (actionInfo_ == null) {
-          actionInfo_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
+          ActionInfo = new global::MLAgents.CommunicatorObjects.AgentActionProto();
         }
         ActionInfo.MergeFrom(other.ActionInfo);
       }
@@ -194,16 +194,16 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 10: {
             if (agentInfo_ == null) {
-              agentInfo_ = new global::MLAgents.CommunicatorObjects.AgentInfoProto();
+              AgentInfo = new global::MLAgents.CommunicatorObjects.AgentInfoProto();
             }
-            input.ReadMessage(agentInfo_);
+            input.ReadMessage(AgentInfo);
             break;
           }
           case 18: {
             if (actionInfo_ == null) {
-              actionInfo_ = new global::MLAgents.CommunicatorObjects.AgentActionProto();
+              ActionInfo = new global::MLAgents.CommunicatorObjects.AgentActionProto();
             }
-            input.ReadMessage(actionInfo_);
+            input.ReadMessage(ActionInfo);
             break;
           }
         }

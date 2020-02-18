@@ -35,8 +35,8 @@ namespace MLAgents.CommunicatorObjects {
             "TEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.BrainParametersProto), global::MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorActionSize", "VectorActionDescriptions", "VectorActionSpaceType", "BrainName", "IsTraining" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.BrainParametersProto), global::MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorActionSize", "VectorActionDescriptions", "VectorActionSpaceType", "BrainName", "IsTraining" }, null, null, null, null)
           }));
     }
     #endregion
@@ -103,7 +103,7 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "vector_action_space_type" field.</summary>
     public const int VectorActionSpaceTypeFieldNumber = 6;
-    private global::MLAgents.CommunicatorObjects.SpaceTypeProto vectorActionSpaceType_ = 0;
+    private global::MLAgents.CommunicatorObjects.SpaceTypeProto vectorActionSpaceType_ = global::MLAgents.CommunicatorObjects.SpaceTypeProto.Discrete;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::MLAgents.CommunicatorObjects.SpaceTypeProto VectorActionSpaceType {
       get { return vectorActionSpaceType_; }
@@ -160,7 +160,7 @@ namespace MLAgents.CommunicatorObjects {
       int hash = 1;
       hash ^= vectorActionSize_.GetHashCode();
       hash ^= vectorActionDescriptions_.GetHashCode();
-      if (VectorActionSpaceType != 0) hash ^= VectorActionSpaceType.GetHashCode();
+      if (VectorActionSpaceType != global::MLAgents.CommunicatorObjects.SpaceTypeProto.Discrete) hash ^= VectorActionSpaceType.GetHashCode();
       if (BrainName.Length != 0) hash ^= BrainName.GetHashCode();
       if (IsTraining != false) hash ^= IsTraining.GetHashCode();
       if (_unknownFields != null) {
@@ -178,7 +178,7 @@ namespace MLAgents.CommunicatorObjects {
     public void WriteTo(pb::CodedOutputStream output) {
       vectorActionSize_.WriteTo(output, _repeated_vectorActionSize_codec);
       vectorActionDescriptions_.WriteTo(output, _repeated_vectorActionDescriptions_codec);
-      if (VectorActionSpaceType != 0) {
+      if (VectorActionSpaceType != global::MLAgents.CommunicatorObjects.SpaceTypeProto.Discrete) {
         output.WriteRawTag(48);
         output.WriteEnum((int) VectorActionSpaceType);
       }
@@ -200,7 +200,7 @@ namespace MLAgents.CommunicatorObjects {
       int size = 0;
       size += vectorActionSize_.CalculateSize(_repeated_vectorActionSize_codec);
       size += vectorActionDescriptions_.CalculateSize(_repeated_vectorActionDescriptions_codec);
-      if (VectorActionSpaceType != 0) {
+      if (VectorActionSpaceType != global::MLAgents.CommunicatorObjects.SpaceTypeProto.Discrete) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) VectorActionSpaceType);
       }
       if (BrainName.Length != 0) {
@@ -222,7 +222,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       vectorActionSize_.Add(other.vectorActionSize_);
       vectorActionDescriptions_.Add(other.vectorActionDescriptions_);
-      if (other.VectorActionSpaceType != 0) {
+      if (other.VectorActionSpaceType != global::MLAgents.CommunicatorObjects.SpaceTypeProto.Discrete) {
         VectorActionSpaceType = other.VectorActionSpaceType;
       }
       if (other.BrainName.Length != 0) {
@@ -252,7 +252,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 48: {
-            vectorActionSpaceType_ = (global::MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
+            VectorActionSpaceType = (global::MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
             break;
           }
           case 58: {
