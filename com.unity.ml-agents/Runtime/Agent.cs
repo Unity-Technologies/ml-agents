@@ -345,7 +345,6 @@ namespace MLAgents
             m_CumulativeReward += increment;
         }
 
-
         /// <summary>
         /// Retrieves the episode reward for the Agent.
         /// </summary>
