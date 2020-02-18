@@ -134,9 +134,7 @@ namespace MLAgents
         /// that many steps. Note that setting the max step to a value greater
         /// than the academy max step value renders it useless.
         /// </remarks>
-
-        [HideInInspector] [FormerlySerializedAs("agentParameters.maxStep")]
-        public int maxStep;
+        [HideInInspector] public int maxStep;
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
@@ -319,8 +317,6 @@ namespace MLAgents
         {
             return m_StepCount;
         }
-
-
 
         /// <summary>
         /// Overrides the current step reward of the agent and updates the episode
