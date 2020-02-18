@@ -177,11 +177,6 @@ namespace MLAgents
         ActionMasker m_ActionMasker;
 
         /// <summary>
-        /// Demonstration recorder.
-        /// </summary>
-        DemonstrationRecorder m_Recorder;
-
-        /// <summary>
         /// Set of DemonstrationStores that the Agent will write its step information to.
         /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationStore.
         /// You can also add your own DemonstrationStores; the Agent is not responsible for creating or closing the
@@ -282,9 +277,10 @@ namespace MLAgents
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
 
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            // We also have to write any to any DemonstationStores so that they get the "done" flag.
+            foreach(var demoWriter in DemonstrationStores)
             {
-                m_Recorder.WriteExperience(m_Info, sensors);
+                demoWriter.Record(m_Info, sensors);
             }
 
             UpdateRewardStats();
