@@ -144,9 +144,9 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Clean up the DemonstrationStore when shutting down.
+        /// Clean up the DemonstrationStore when shutting down or destroying the Agent.
         /// </summary>
-        void OnApplicationQuit()
+        void OnDestroy()
         {
             Close();
         }
