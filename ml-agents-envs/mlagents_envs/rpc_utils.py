@@ -117,6 +117,9 @@ def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
     # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
     # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
     # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
+    if data.size == 0:
+        return data
+
     d = np.mean(data)
     has_nan = np.isnan(d)
     has_inf = not np.isfinite(d)
