@@ -22,6 +22,7 @@ test_mac_protobuf_generation:
       chmod +x Grpc.Tools.2.27.0/tools/macosx_x64/protoc
       chmod +x Grpc.Tools.2.27.0/tools/macosx_x64/grpc_csharp_plugin
       ./make.sh
+      mkdir -p artifacts
       git diff --exit-code --quiet -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
       || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
       echo "Apply the patch with the command 'git apply proto.patch'";                                  \
