@@ -56,7 +56,7 @@ The versions can be found in
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
     * Move the OnDestroy code to MonoBehaviour.OnDestroy.
     * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
-* Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
+* Multiply `max_steps` and `summary_freq` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
 * If you have a model trained which uses RayPerceptionSensor and has non-1.0 scale in the Agent's transform, it must be retrained.
