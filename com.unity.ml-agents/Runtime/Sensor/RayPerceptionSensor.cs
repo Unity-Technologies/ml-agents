@@ -149,8 +149,8 @@ namespace MLAgents
             public float hitFraction;
 
             /// <summary>
-            /// Writes the ray output information to a float array.  Each element in the rayAngles array determines a
-            /// sublist of data to the observation. The sublist contains the observation data for a single cast.
+            /// Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
+            /// determines a sublist of data to the observation. The sublist contains the observation data for a single cast.
             /// The list is composed of the following:
             /// 1. A one-hot encoding for detectable tags. For example, if detectableTags.Length = n, the
             ///    first n elements of the sublist will be a one-hot encoding of the detectableTag that was hit, or
@@ -161,7 +161,7 @@ namespace MLAgents
             ///    hit, or 1.0 if nothing was hit.
             /// </summary>
             /// <param name="numDetectableTags"></param>
-            /// <param name="numDetectableTags"></param>
+            /// <param name="rayIndex"></param>
             /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * rayOutputs.Length</param>
             public void ToFloatArray(int numDetectableTags, int rayIndex, float[] buffer)
             {
@@ -172,30 +172,6 @@ namespace MLAgents
                 }
                 buffer[bufferOffset + numDetectableTags] = hasHit ? 0f : 1f;
                 buffer[bufferOffset + numDetectableTags + 1] = hitFraction;
-            }
-        }
-
-        /// <summary>
-        /// Writes the ray output information to a float array.  Each element in the rayAngles array determines a
-        /// sublist of data to the observation. The sublist contains the observation data for a single cast.
-        /// The list is composed of the following:
-        /// 1. A one-hot encoding for detectable tags. For example, if detectableTags.Length = n, the
-        ///    first n elements of the sublist will be a one-hot encoding of the detectableTag that was hit, or
-        ///    all zeroes otherwise.
-        /// 2. The 'numDetectableTags' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
-        ///    something (detectable or not).
-        /// 3. The 'numDetectableTags+1' element of the sublist will contain the normalized distance to the object
-        ///    hit, or 1.0 if nothing was hit.
-        /// </summary>
-        /// <param name="numDetectableTags"></param>
-        /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * rayOutputs.Length</param>
-        public void ToFloatArray(int numDetectableTags, float[] buffer)
-        {
-            Array.Clear(buffer, 0, buffer.Length);
-            for (var i = 0; i < rayOutputs.Length; i++)
-            {
-                var rayOutput = rayOutputs[i];
-                rayOutput.ToFloatArray(numDetectableTags, i, buffer);
             }
         }
 
@@ -348,6 +324,13 @@ namespace MLAgents
             return output;
         }
 
+        /// <summary>
+        /// Evaluate the raycast results of a single ray from the RayPerceptionInput.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="rayIndex"></param>
+        /// <param name="debugRayOut"></param>
+        /// <returns></returns>
         static RayPerceptionOutput.RayOutput PerceiveSingleRay(
             RayPerceptionInput input,
             int rayIndex,
