@@ -62,7 +62,7 @@ CrawlerStatic:
     behavioral_cloning:
         demo_path: Project/Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
         strength: 0.5
-        steps: 5000
+        steps: 50000
     reward_signals:
         gail:
             strength: 1.0
