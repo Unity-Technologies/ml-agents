@@ -14,11 +14,13 @@ The versions can be found in
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
 * The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
 * The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
+* The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
 
 ### Steps to Migrate
 * Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
 * Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectObservations`
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
+* Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
 
 ## Migrating from 0.13 to 0.14
 
