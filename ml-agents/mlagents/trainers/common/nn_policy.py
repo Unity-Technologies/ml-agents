@@ -241,7 +241,7 @@ class NNPolicy(TFPolicy):
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
         single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + tf.square(log_sigma)
+            tf.log(2 * np.pi * np.e) + 2 * log_sigma
         )
         # Make entropy the right shape
         self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
