@@ -37,7 +37,7 @@ namespace MLAgentsExamples
             if (sceneName == null)
             {
                 Console.WriteLine(
-                    $"You didn't specified the {k_SceneVariableName} environment variable."
+                    $"You didn't specify the {k_SceneVariableName} environment variable or the {k_SceneCommandLineFlag} command line argument."
                 );
                 Application.Quit();
                 return;
