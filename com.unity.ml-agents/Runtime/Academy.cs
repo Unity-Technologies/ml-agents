@@ -235,7 +235,8 @@ namespace MLAgents
         public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
-            set {
+            set
+            {
                 if (value)
                 {
                     EnableAutomaticStepping();

@@ -2,15 +2,13 @@ import logging
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 
 from mlagents_envs.exception import UnityException
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
-from tensorflow.python.platform import gfile
-from tensorflow.python.framework import graph_util
-from mlagents.trainers import tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
@@ -33,17 +31,6 @@ class TFPolicy(Policy):
     Contains a learning model, and the necessary
     functions to interact with it to perform evaluate and updating.
     """
-
-    possible_output_nodes = [
-        "action",
-        "value_estimate",
-        "action_probs",
-        "recurrent_out",
-        "memory_size",
-        "version_number",
-        "is_continuous_control",
-        "action_output_shape",
-    ]
 
     def __init__(self, seed, brain, trainer_parameters):
         """
@@ -327,35 +314,6 @@ class TFPolicy(Policy):
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
-
-    def export_model(self):
-        """
-        Exports latest saved model to .nn format for Unity embedding.
-        """
-
-        with self.graph.as_default():
-            target_nodes = ",".join(self._process_graph())
-            graph_def = self.graph.as_graph_def()
-            output_graph_def = graph_util.convert_variables_to_constants(
-                self.sess, graph_def, target_nodes.replace(" ", "").split(",")
-            )
-            frozen_graph_def_path = self.model_path + "/frozen_graph_def.pb"
-            with gfile.GFile(frozen_graph_def_path, "wb") as f:
-                f.write(output_graph_def.SerializeToString())
-            tf2bc.convert(frozen_graph_def_path, self.model_path + ".nn")
-            logger.info("Exported " + self.model_path + ".nn file")
-
-    def _process_graph(self):
-        """
-        Gets the list of the output nodes present in the graph for inference
-        :return: list of node names
-        """
-        all_nodes = [x.name for x in self.graph.as_graph_def().node]
-        nodes = [x for x in all_nodes if x in self.possible_output_nodes]
-        logger.info("List of nodes to export for brain :" + self.brain.brain_name)
-        for n in nodes:
-            logger.info("\t" + n)
-        return nodes
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """

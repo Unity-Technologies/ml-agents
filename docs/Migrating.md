@@ -18,6 +18,7 @@ The versions can be found in
 ### Steps to Migrate
 * Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
 * Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectObservations`
+* Re-import all of your `*.NN` files to work with the updated Barracuda package.
 
 ## Migrating from 0.13 to 0.14
 

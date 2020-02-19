@@ -11,6 +11,7 @@ from collections import deque
 
 from mlagents_envs.exception import UnityException
 from mlagents_envs.timers import set_gauge
+from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
@@ -192,7 +193,9 @@ class Trainer(abc.ABC):
         """
         Exports the model
         """
-        self.get_policy(name_behavior_id).export_model()
+        policy = self.get_policy(name_behavior_id)
+        settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+        export_policy_model(settings, policy.graph, policy.sess)
 
     def _write_summary(self, step: int) -> None:
         """
