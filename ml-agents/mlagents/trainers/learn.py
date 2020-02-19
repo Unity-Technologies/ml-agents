@@ -16,7 +16,12 @@ from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.trainers.stats import TensorboardWriter, CSVWriter, StatsReporter
+from mlagents.trainers.stats import (
+    TensorboardWriter,
+    CSVWriter,
+    StatsReporter,
+    GaugeWriter,
+)
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
@@ -257,8 +262,10 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         required_fields=["Environment/Cumulative Reward", "Environment/Episode Length"],
     )
     tb_writer = TensorboardWriter(summaries_dir)
+    gauge_write = GaugeWriter()
     StatsReporter.add_writer(tb_writer)
     StatsReporter.add_writer(csv_writer)
+    StatsReporter.add_writer(gauge_write)
 
     if options.env_path is None:
         port = UnityEnvironment.DEFAULT_EDITOR_PORT

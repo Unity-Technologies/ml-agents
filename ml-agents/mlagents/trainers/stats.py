@@ -6,6 +6,7 @@ import csv
 import os
 
 from mlagents.tf_utils import tf
+from mlagents_envs.timers import set_gauge
 
 
 class StatsSummary(NamedTuple):
@@ -31,6 +32,28 @@ class StatsWriter(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def write_text(self, category: str, text: str, step: int) -> None:
+        pass
+
+
+class GaugeWriter(StatsWriter):
+    """
+    Write all stats that we recieve to the timer gauges, so we can track them offline easily
+    """
+
+    @staticmethod
+    def sanitize_string(s: str) -> str:
+        """
+        Clean up special characters in the category and value names.
+        """
+        return s.replace("/", ".").replace(" ", "")
+
+    def write_stats(
+        self, category: str, values: Dict[str, StatsSummary], step: int
+    ) -> None:
+        for val, stats_summary in values.items():
+            set_gauge(f"{category}.{val}.mean", float(stats_summary.mean))
+
     def write_text(self, category: str, text: str, step: int) -> None:
         pass
 
