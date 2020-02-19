@@ -51,9 +51,10 @@ def make_demo_buffer(
             previous_action = np.array(
                 pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
             )
-        agent_id = current_step_info.agent_id[0]
-        current_agent_step_info = current_step_info.get_agent_step_result(agent_id)
-        next_agent_step_info = next_step_info.get_agent_step_result(agent_id)
+        curr_agent_id = current_step_info.agent_id[0]
+        current_agent_step_info = current_step_info.get_agent_step_result(curr_agent_id)
+        next_agent_id = next_step_info.agent_id[0]
+        next_agent_step_info = next_step_info.get_agent_step_result(next_agent_id)
 
         demo_raw_buffer["done"].append(next_agent_step_info.done)
         demo_raw_buffer["rewards"].append(next_agent_step_info.reward)

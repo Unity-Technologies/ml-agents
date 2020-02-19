@@ -105,10 +105,24 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public abstract class Agent : MonoBehaviour
+    public abstract class Agent : MonoBehaviour, ISerializationCallbackReceiver
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
+
+        /// This code is here to make the upgrade path for users using maxStep
+        /// easier.  We will hook into the Serialization code and make sure that
+        /// agentParameters.maxStep and this.maxStep are in sync.
+        [Serializable]
+        internal struct AgentParameters
+        {
+            public int maxStep;
+        }
+
+        [SerializeField][HideInInspector]
+        internal AgentParameters agentParameters;
+        [SerializeField][HideInInspector]
+        internal bool hasUpgradedFromAgentParameters;
 
         /// <summary>
         /// The maximum number of steps the agent takes before being done.
@@ -186,6 +200,24 @@ namespace MLAgents
             LazyInitialize();
         }
 
+        public void OnBeforeSerialize()
+        {
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            {
+                maxStep = agentParameters.maxStep;
+            }
+            hasUpgradedFromAgentParameters = true;
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            {
+                maxStep = agentParameters.maxStep;
+            }
+            hasUpgradedFromAgentParameters = true;
+        }
+
         /// Helper method for the <see cref="OnEnable"/> event, created to
         /// facilitate testing.
         public void LazyInitialize()
@@ -206,6 +238,7 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
+            Academy.Instance.AgentIncrementStep += AgentIncrementStep;
             Academy.Instance.AgentSendState += SendInfo;
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
@@ -214,7 +247,6 @@ namespace MLAgents
             ResetData();
             InitializeAgent();
             InitializeSensors();
-
         }
 
         /// Monobehavior function that is called when the attached GameObject
@@ -225,6 +257,7 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
+                Academy.Instance.AgentIncrementStep -= AgentIncrementStep;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
@@ -243,6 +276,11 @@ namespace MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
+
+            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            {
+                m_Recorder.WriteExperience(m_Info, sensors);
+            }
 
             UpdateRewardStats();
 
@@ -295,10 +333,7 @@ namespace MLAgents
         public void SetReward(float reward)
         {
 #if DEBUG
-            if (float.IsNaN(reward))
-            {
-                throw new ArgumentException("NaN reward passed to SetReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(reward, nameof(reward), nameof(SetReward));
 #endif
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
@@ -311,10 +346,7 @@ namespace MLAgents
         public void AddReward(float increment)
         {
 #if DEBUG
-            if (float.IsNaN(increment))
-            {
-                throw new ArgumentException("NaN reward passed to AddReward.");
-            }
+            Utilities.DebugCheckNanAndInfinity(increment, nameof(increment), nameof(AddReward));
 #endif
             m_Reward += increment;
             m_CumulativeReward += increment;
@@ -603,7 +635,7 @@ namespace MLAgents
         /// </summary>
         public float[] GetAction()
         {
-        	return m_Action.vectorActions;
+            return m_Action.vectorActions;
         }
 
         /// <summary>
@@ -655,31 +687,33 @@ namespace MLAgents
             }
         }
 
+        void AgentIncrementStep()
+        {
+            m_StepCount += 1;
+        }
+
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if ((m_StepCount >= maxStep - 1) && (maxStep > 0))
-            {
-                NotifyAgentDone(true);
-                _AgentReset();
-            }
-            else
-            {
-                m_StepCount += 1;
-            }
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                if (m_Action.vectorActions != null)
-                {
-                    AgentAction(m_Action.vectorActions);
-                }
+                AgentAction(m_Action.vectorActions);
+            }
+
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
+            {
+                NotifyAgentDone(true);
+                _AgentReset();
             }
         }
 
         void DecideAction()
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
+            if (m_Action.vectorActions == null){
+                ResetData();
+            }
         }
     }
 }

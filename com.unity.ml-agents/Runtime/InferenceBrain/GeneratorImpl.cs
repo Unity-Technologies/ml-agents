@@ -268,9 +268,12 @@ namespace MLAgents.InferenceBrain
             {
                 var info = infoSensorPair.agentInfo;
                 var pastAction = info.storedVectorActions;
-                for (var j = 0; j < actionSize; j++)
+                if (pastAction != null)
                 {
-                    tensorProxy.data[agentIndex, j] = pastAction[j];
+                    for (var j = 0; j < actionSize; j++)
+                    {
+                        tensorProxy.data[agentIndex, j] = pastAction[j];
+                    }
                 }
 
                 agentIndex++;

@@ -35,11 +35,10 @@ profiling calls to abstract methods that might not use decorator.
 ## Output
 By default, at the end of training, timers are collected and written in json format to
 `{summaries_dir}/{run_id}_timers.json`. The output consists of node objects with the following keys:
- * name (string): The name of the block of code.
  * total (float): The total time in seconds spent in the block, including child calls.
  * count (int): The number of times the block was called.
  * self (float): The total time in seconds spent in the block, excluding child calls.
- * children (list): A list of child nodes.
+ * children (dictionary): A dictionary of child nodes, keyed by the node name.
  * is_parallel (bool): Indicates that the block of code was executed in multiple threads or processes (see below). This
  is optional and defaults to false.
 

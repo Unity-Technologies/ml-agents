@@ -51,6 +51,14 @@ class UnityTimeOutException(UnityException):
     pass
 
 
+class UnitySideChannelException(UnityException):
+    """
+    Related to errors with side channels.
+    """
+
+    pass
+
+
 class UnityWorkerInUseException(UnityException):
     """
     This error occurs when the port for a certain worker ID is already reserved.

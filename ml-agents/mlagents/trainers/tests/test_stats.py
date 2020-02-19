@@ -9,6 +9,7 @@ from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
     StatsSummary,
+    GaugeWriter,
 )
 
 
@@ -129,3 +130,11 @@ def test_csv_writer():
                     assert len(row) == 3
                     line_count += 1
             assert line_count == 3
+
+
+def test_gauge_stat_writer_sanitize():
+    assert GaugeWriter.sanitize_string("Policy/Learning Rate") == "Policy.LearningRate"
+    assert (
+        GaugeWriter.sanitize_string("Very/Very/Very Nested Stat")
+        == "Very.Very.VeryNestedStat"
+    )
