@@ -238,6 +238,7 @@ namespace MLAgents
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
 
+            Academy.Instance.AgentIncrementStep += AgentIncrementStep;
             Academy.Instance.AgentSendState += SendInfo;
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
@@ -256,6 +257,7 @@ namespace MLAgents
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
             {
+                Academy.Instance.AgentIncrementStep -= AgentIncrementStep;
                 Academy.Instance.AgentSendState -= SendInfo;
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
@@ -685,23 +687,24 @@ namespace MLAgents
             }
         }
 
+        void AgentIncrementStep()
+        {
+            m_StepCount += 1;
+        }
+
         /// Used by the brain to make the agent perform a step.
         void AgentStep()
         {
-            if ((m_StepCount >= maxStep) && (maxStep > 0))
-            {
-                NotifyAgentDone(true);
-                _AgentReset();
-            }
-            else
-            {
-                m_StepCount += 1;
-            }
-
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
                 AgentAction(m_Action.vectorActions);
+            }
+
+            if ((m_StepCount >= maxStep) && (maxStep > 0))
+            {
+                NotifyAgentDone(true);
+                _AgentReset();
             }
         }
 
