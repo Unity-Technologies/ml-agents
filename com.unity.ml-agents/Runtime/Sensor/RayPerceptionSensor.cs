@@ -153,7 +153,7 @@ namespace MLAgents
         /// Writes the ray output information to a float array.  Each element in the rayAngles array determines a
         /// sublist of data to the observation. The sublist contains the observation data for a single cast.
         /// The list is composed of the following:
-        /// 1. A one-hot encoding for detectable objects. For example, if detectableTags.Length = n, the
+        /// 1. A one-hot encoding for detectable tags. For example, if detectableTags.Length = n, the
         ///    first n elements of the sublist will be a one-hot encoding of the detectableTag that was hit, or
         ///    all zeroes otherwise.
         /// 2. The 'numDetectableTags' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
@@ -340,7 +340,7 @@ namespace MLAgents
                     unscaledCastRadius * scaledRayLength / unscaledRayLength :
                     unscaledCastRadius;
 
-                // Do the cast and assign the hit information for each detectable object.
+                // Do the cast and assign the hit information for each detectable tag.
                 bool castHit;
                 float hitFraction;
                 GameObject hitObject;
