@@ -1,7 +1,7 @@
 import logging
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union, Set
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -74,7 +74,10 @@ class UnityEnv(gym.Env):
 
         self.visual_obs = None
         self._n_agents = -1
-        self._done_agents: Set[int] = set()
+
+        self._gym_id_order: List[int] = []
+        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+
         # Save the step result from the last time all Agents requested decisions.
         self._previous_step_result: BatchedStepResult = None
         self._multiagent = multiagent
@@ -121,6 +124,7 @@ class UnityEnv(gym.Env):
         step_result = self._env.get_step_result(self.brain_name)
         self._check_agents(step_result.n_agents())
         self._previous_step_result = step_result
+        self._gym_id_order = list(self._previous_step_result.agent_id)
 
         # Set observation and action spaces
         if self.group_spec.is_action_discrete():
@@ -368,11 +372,18 @@ class UnityEnv(gym.Env):
                 "The number of agents in the scene does not match the expected number."
             )
 
-        # remove the done Agents
-        indices_to_keep: List[int] = []
-        for index, is_done in enumerate(step_result.done):
-            if not is_done:
-                indices_to_keep.append(index)
+        if step_result.n_agents() - sum(step_result.done) != self._n_agents:
+            raise UnityGymException(
+                "The number of agents in the scene does not match the expected number."
+            )
+
+        for index, agent_id in enumerate(step_result.agent_id):
+            if step_result.done[index]:
+                gym_index = self._gym_id_order.index(agent_id)
+                self._done_agents_index_to_last_reward[gym_index] = step_result.reward[
+                    index
+                ]
+                self._gym_id_order[gym_index] = -1  # no agent at that index
 
         # Set the new AgentDone flags to True
         # Note that the corresponding agent_id that gets marked done will be different
@@ -380,40 +391,48 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
+                # insert the id in the current id list:
+                self._gym_id_order[self._gym_id_order.index(-1)] = agent_id
+                # This is a new agent
                 step_result.done[index] = True
-            if agent_id in self._done_agents:
-                step_result.done[index] = True
-        self._done_agents = set()
+                # The index of the agent among not-done agents is
+                original_index = self._gym_id_order.index(agent_id)
+                step_result.reward[index] = self._done_agents_index_to_last_reward[
+                    original_index
+                ]
+        self._done_agents_index_to_last_reward = {}
+
         self._previous_step_result = step_result  # store the new original
+
+        new_id_order = []
+        for agent_id in self._gym_id_order:
+            new_id_order.append(list(step_result.agent_id).index(agent_id))
 
         _mask: Optional[List[np.array]] = None
         if step_result.action_mask is not None:
             _mask = []
             for mask_index in range(len(step_result.action_mask)):
-                _mask.append(step_result.action_mask[mask_index][indices_to_keep])
+                _mask.append(step_result.action_mask[mask_index][new_id_order])
         new_obs: List[np.array] = []
         for obs_index in range(len(step_result.obs)):
-            new_obs.append(step_result.obs[obs_index][indices_to_keep])
+            new_obs.append(step_result.obs[obs_index][new_id_order])
         return BatchedStepResult(
             obs=new_obs,
-            reward=step_result.reward[indices_to_keep],
-            done=step_result.done[indices_to_keep],
-            max_step=step_result.max_step[indices_to_keep],
-            agent_id=step_result.agent_id[indices_to_keep],
+            reward=step_result.reward[new_id_order],
+            done=step_result.done[new_id_order],
+            max_step=step_result.max_step[new_id_order],
+            agent_id=step_result.agent_id[new_id_order],
             action_mask=_mask,
         )
 
     def _sanitize_action(self, action: np.array) -> np.array:
-        if self._previous_step_result.n_agents() == self._n_agents:
-            return action
         sanitized_action = np.zeros(
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
-        input_index = 0
-        for index in range(self._previous_step_result.n_agents()):
+        for index, agent_id in enumerate(self._previous_step_result.agent_id):
             if not self._previous_step_result.done[index]:
-                sanitized_action[index, :] = action[input_index, :]
-                input_index = input_index + 1
+                array_index = self._gym_id_order.index(agent_id)
+                sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
 
     def _step(self, needs_reset: bool = False) -> BatchedStepResult:
@@ -432,7 +451,11 @@ class UnityEnv(gym.Env):
                     "The environment does not have the expected amount of agents."
                     + "Some agents did not request decisions at the same time."
                 )
-            self._done_agents.update(list(info.agent_id))
+            for agent_id, reward in zip(info.agent_id, info.reward):
+                gym_index = self._gym_id_order.index(agent_id)
+                self._done_agents_index_to_last_reward[gym_index] = reward
+                self._gym_id_order[gym_index] = -1  # no agent at that index
+
             self._env.step()
             info = self._env.get_step_result(self.brain_name)
         return self._sanitize_info(info)
