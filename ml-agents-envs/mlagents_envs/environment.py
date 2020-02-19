@@ -148,7 +148,7 @@ class UnityEnvironment(BaseEnv):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
     @staticmethod
-    def environment_launch_check(env_path):
+    def environment_launch_check(env_path: str) -> Optional[str]:
         if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
             raise UnityEnvironmentException(
                 "Couldn't launch the {0} environment. "
