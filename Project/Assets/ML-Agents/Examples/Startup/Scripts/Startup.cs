@@ -39,7 +39,7 @@ namespace MLAgentsExamples
                 Console.WriteLine(
                     $"You didn't specify the {k_SceneVariableName} environment variable or the {k_SceneCommandLineFlag} command line argument."
                 );
-                Application.Quit();
+                Application.Quit(22);
                 return;
             }
             if (SceneUtility.GetBuildIndexByScenePath(sceneName) < 0)
@@ -47,7 +47,7 @@ namespace MLAgentsExamples
                 Console.WriteLine(
                     $"The scene {sceneName} doesn't exist within your build."
                 );
-                Application.Quit();
+                Application.Quit(22);
                 return;
             }
             SceneManager.LoadSceneAsync(sceneName);
