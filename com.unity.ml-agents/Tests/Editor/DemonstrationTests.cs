@@ -54,7 +54,7 @@ namespace MLAgents.Tests
             demoRec.record = true;
             demoRec.demonstrationName = k_DemoName;
             demoRec.demonstrationDirectory = k_DemoDirectory;
-            var demoStore = demoRec.InitializeDemoStore(fileSystem);
+            var demoStore = demoRec.LazyInitialize(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
             Assert.IsTrue(fileSystem.FileExists(k_DemoDirectory + k_DemoName + k_ExtensionType));
@@ -112,7 +112,7 @@ namespace MLAgents.Tests
             demoRecorder.demonstrationDirectory = k_DemoDirectory;
             demoRecorder.demonstrationName = "TestBrain";
             demoRecorder.record = true;
-            demoRecorder.InitializeDemoStore(fileSystem);
+            demoRecorder.LazyInitialize(fileSystem);
 
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",
                 BindingFlags.Instance | BindingFlags.NonPublic);

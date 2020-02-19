@@ -31,14 +31,15 @@ namespace MLAgents
         {
             if (record)
             {
-                InitializeDemoStore();
+                LazyInitialize();
             }
         }
 
         /// <summary>
         /// Creates demonstration store for use in recording.
+        /// Has no effect if the demonstration store was already created.
         /// </summary>
-        internal DemonstrationStore InitializeDemoStore(IFileSystem fileSystem = null)
+        internal DemonstrationStore LazyInitialize(IFileSystem fileSystem = null)
         {
             if (m_DemoStore != null)
             {
