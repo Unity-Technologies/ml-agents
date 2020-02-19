@@ -1,5 +1,5 @@
 test_mac_protobuf_generation:
-  name: Test Mac Fast Training {{ editor.version }}
+  name: Protobuf Generation Tests
   agent:
     type: Unity::VM::osx
     image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
@@ -30,6 +30,7 @@ test_mac_protobuf_generation:
     changes:
       only:
         - "protobuf-definitions/**"
+        - ".yamato/protobuf-generation-test.yml"
       except:
         - "protobuf-definitions/*.md"
         - "protobuf-definitions/**/*.md"
