@@ -183,16 +183,16 @@ class TimerStack:
             res["is_parallel"] = True
 
         child_total = 0.0
-        child_list = {}
+        child_dict = {}
         for child_name, child_node in node.children.items():
             child_res: Dict[str, Any] = self.get_timing_tree(child_node)
-            child_list[child_name] = child_res
+            child_dict[child_name] = child_res
             child_total += child_res["total"]
 
         # "self" time is total time minus all time spent on children
         res["self"] = max(0.0, node.total - child_total)
-        if child_list:
-            res["children"] = child_list
+        if child_dict:
+            res["children"] = child_dict
 
         return res
 

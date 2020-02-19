@@ -41,6 +41,13 @@ class GaugeWriter(StatsWriter):
     Write all stats that we recieve to the timer gauges, so we can track them offline easily
     """
 
+    @staticmethod
+    def sanitize_string(s: str) -> str:
+        """
+        Clean up special characters in the category and value names.
+        """
+        return s.replace("/", ".").replace(" ", "")
+
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
