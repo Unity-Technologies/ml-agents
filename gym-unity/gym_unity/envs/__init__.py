@@ -397,7 +397,6 @@ class UnityEnv(gym.Env):
                 # This is a new agent
                 step_result.done[index] = True
                 # The index of the agent among not-done agents is
-                original_index = self._gym_id_order.index(agent_id)
                 step_result.reward[index] = self._done_agents_index_to_last_reward[
                     original_index
                 ]
@@ -431,9 +430,12 @@ class UnityEnv(gym.Env):
         sanitized_action = np.zeros(
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
+        agent_id_to_gym_index = {
+            agent_id: gym_index for gym_index, agent_id in enumerate(self._gym_id_order)
+        }
         for index, agent_id in enumerate(self._previous_step_result.agent_id):
             if not self._previous_step_result.done[index]:
-                array_index = self._gym_id_order.index(agent_id)
+                array_index = agent_id_to_gym_index[agent_id]
                 sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
 

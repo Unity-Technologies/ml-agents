@@ -84,6 +84,46 @@ def test_gym_wrapper_visual(mock_env, use_uint8):
     assert isinstance(info, dict)
 
 
+@mock.patch("gym_unity.envs.UnityEnvironment")
+def test_sanitize_action_shuffled_id(mock_env):
+    mock_spec = create_mock_group_spec(
+        vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
+    )
+    mock_step = create_mock_vector_step_result(num_agents=5)
+    mock_step.agent_id = np.array(range(5))
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
+    env = UnityEnv(" ", use_visual=False, multiagent=True)
+
+    shuffled_step_result = create_mock_vector_step_result(num_agents=5)
+    shuffled_order = [4, 2, 3, 1, 0]
+    shuffled_step_result.reward = np.array(shuffled_order)
+    shuffled_step_result.agent_id = np.array(shuffled_order)
+    sanitized_result = env._sanitize_info(shuffled_step_result)
+    for expected_reward, reward in zip(range(5), sanitized_result.reward):
+        assert expected_reward == reward
+    for expected_agent_id, agent_id in zip(range(5), sanitized_result.agent_id):
+        assert expected_agent_id == agent_id
+
+
+@mock.patch("gym_unity.envs.UnityEnvironment")
+def test_sanitize_action_one_agent_done(mock_env):
+    mock_spec = create_mock_group_spec(
+        vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
+    )
+    mock_step = create_mock_vector_step_result(num_agents=5)
+    mock_step.agent_id = np.array(range(5))
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
+    env = UnityEnv(" ", use_visual=False, multiagent=True)
+
+    received_step_result = create_mock_vector_step_result(num_agents=6)
+    received_step_result.agent_id = np.array(range(6))
+    # agent #3 (id = 2) is Done
+    received_step_result.done = np.array([False] * 2 + [True] + [False] * 3)
+    sanitized_result = env._sanitize_info(received_step_result)
+    for expected_agent_id, agent_id in zip([0, 1, 5, 3, 4], sanitized_result.agent_id):
+        assert expected_agent_id == agent_id
+
+
 # Helper methods
 
 
