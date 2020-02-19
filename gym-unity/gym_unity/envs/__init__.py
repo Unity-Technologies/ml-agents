@@ -392,7 +392,8 @@ class UnityEnv(gym.Env):
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
                 # insert the id in the current id list:
-                self._gym_id_order[self._gym_id_order.index(-1)] = agent_id
+                original_index = self._gym_id_order.index(-1)
+                self._gym_id_order[original_index] = agent_id
                 # This is a new agent
                 step_result.done[index] = True
                 # The index of the agent among not-done agents is
@@ -405,8 +406,9 @@ class UnityEnv(gym.Env):
         self._previous_step_result = step_result  # store the new original
 
         new_id_order = []
+        agent_id_list = list(step_result.agent_id)
         for agent_id in self._gym_id_order:
-            new_id_order.append(list(step_result.agent_id).index(agent_id))
+            new_id_order.append(agent_id_list.index(agent_id))
 
         _mask: Optional[List[np.array]] = None
         if step_result.action_mask is not None:
