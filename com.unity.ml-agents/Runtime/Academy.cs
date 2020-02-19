@@ -51,6 +51,7 @@ namespace MLAgents
     {
         const string k_ApiVersion = "API-15-dev0";
         const int k_EditorTrainingPort = 5004;
+        internal const string k_portCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
@@ -113,7 +114,7 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start. 
+        // Signals the Agent that a new step is about to start.
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
@@ -255,7 +256,7 @@ namespace MLAgents
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == "--port")
+                if (args[i] == k_portCommandLineFlag)
                 {
                     inputPort = args[i + 1];
                 }
