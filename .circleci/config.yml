@@ -163,6 +163,7 @@ jobs:
 
   protobuf_generation_check:
     macos:
+      xcode: 11.3.0
     working_directory: ~/repo/
 
     steps:
