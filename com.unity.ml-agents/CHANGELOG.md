@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
+ - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
 
 ### Bugfixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
