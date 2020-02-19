@@ -150,10 +150,8 @@ class UnityEnvironment(BaseEnv):
     @staticmethod
     def validate_environment_path(env_path: str) -> Optional[str]:
         if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
-            raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(env_path)
-            )
+            return None
+
         cwd = os.getcwd()
         launch_string = None
         true_filename = os.path.basename(os.path.normpath(env_path))
