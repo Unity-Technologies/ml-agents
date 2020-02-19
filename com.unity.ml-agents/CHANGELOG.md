@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bug Fixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
 - Fixed an IndexError when using GAIL or behavioral cloning with demonstrations recorded with 0.14.0 or later (#3464)
+- Updated the `gail_config.yaml` to work with per-Agent steps (#3475)
 
 
 ## [0.14.0-preview] - 2020-02-13
