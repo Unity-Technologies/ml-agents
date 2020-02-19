@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Major Changes
  - Agent.CollectObservations now takes a VectorSensor argument. It was also overloaded to optionally take an ActionMasker argument. (#3352, #3389)
+ - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
+ Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -15,11 +17,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Several classes were changed from public to internal visibility. (#3390)
  - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
  - A tutorial on adding custom SideChannels was added (#3391)
+ - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
  - The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
+ - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
 
 ### Bugfixes
-
+- Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
+- Fixed an IndexError when using GAIL or behavioral cloning with demonstrations recorded with 0.14.0 or later (#3464)
 
 ## [0.14.0-preview] - 2020-02-13
 

@@ -1,16 +1,6 @@
 from abc import ABC, abstractmethod
-from enum import IntEnum
-
-
-class SideChannelType(IntEnum):
-    FloatProperties = 1
-    EngineSettings = 2
-    # Raw bytes channels should start here to avoid conflicting with other
-    # Unity ones.
-    RawBytesChannelStart = 1000
-    # custom side channels should start here to avoid conflicting with Unity
-    # ones.
-    UserSideChannelStart = 2000
+from typing import List
+import uuid
 
 
 class SideChannel(ABC):
@@ -22,8 +12,9 @@ class SideChannel(ABC):
     to the Env object at construction.
     """
 
-    def __init__(self):
-        self.message_queue = []
+    def __init__(self, channel_id):
+        self._channel_id: uuid.UUID = channel_id
+        self.message_queue: List[bytearray] = []
 
     def queue_message_to_send(self, data: bytearray) -> None:
         """
@@ -42,10 +33,9 @@ class SideChannel(ABC):
         pass
 
     @property
-    @abstractmethod
-    def channel_type(self) -> int:
+    def channel_id(self) -> uuid.UUID:
         """
         :return:The type of side channel used. Will influence how the data is
         processed in the environment.
         """
-        pass
+        return self._channel_id
