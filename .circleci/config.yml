@@ -161,38 +161,6 @@ jobs:
             . venv/bin/activate
             pre-commit run --hook-stage manual << parameters.precommit_command >> --all-files
 
-  protobuf_generation_check:
-    macos:
-      xcode: 11.3.0
-    working_directory: ~/repo/
-
-    steps:
-      - checkout
-      - run:
-          name: Combine proto files for caching
-          command: cat protobuf-definitions/proto/mlagents_envs/communicator_objects/*.proto > /tmp/proto_deps.txt
-
-      - restore_cache:
-          keys:
-          - v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
-          - v1-protobuf-gen-dependencies-
-
-      - run:
-          name: Install Dependencies
-          command: |
-            brew install nuget
-            nuget install Grpc.Tools -Version 2.27.0 -OutputDirectory protobuf-definitions/
-            nuget install System.Memory -Version 4.5.3 -OutputDirectory protobuf-definitions/
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install grpcio-tools==1.13.0  --progress-bar=off
-            pip install mypy-protobuf==1.16.0 --progress-bar=off
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-protobuf-gen-dependencies-{{ checksum "/tmp/proto_deps.txt" }}
-
   deploy:
     parameters:
       directory:
@@ -256,7 +224,6 @@ workflows:
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
-      - protobuf_generation_check
       - pre-commit
       - deploy:
           name: deploy ml-agents-envs
