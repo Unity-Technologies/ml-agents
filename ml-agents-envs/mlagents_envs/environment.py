@@ -148,7 +148,7 @@ class UnityEnvironment(BaseEnv):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
     @staticmethod
-    def environment_launch_check(env_path: str) -> Optional[str]:
+    def validate_environment_path(env_path: str) -> Optional[str]:
         if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
             raise UnityEnvironmentException(
                 "Couldn't launch the {0} environment. "
@@ -204,7 +204,7 @@ class UnityEnvironment(BaseEnv):
         )
         true_filename = os.path.basename(os.path.normpath(file_name))
         logger.debug("The true file name is {}".format(true_filename))
-        launch_string = self.environment_launch_check(file_name)
+        launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(

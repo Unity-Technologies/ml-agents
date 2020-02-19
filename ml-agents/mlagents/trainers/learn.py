@@ -397,7 +397,7 @@ def create_environment_factory(
             .replace(".x86_64", "")
             .replace(".x86", "")
         )
-        launch_string = UnityEnvironment.environment_launch_check(env_path)
+        launch_string = UnityEnvironment.validate_environment_path(env_path)
         if launch_string is None:
             raise UnityEnvironmentException(
                 "Couldn't launch the {0} environment. "
