@@ -148,10 +148,24 @@ namespace MLAgents
         /// <param name="observation">Observation.</param>
         public void AddObservation(Quaternion observation)
         {
-            AddFloatObs(observation.x);
-            AddFloatObs(observation.y);
-            AddFloatObs(observation.z);
-            AddFloatObs(observation.w);
+            // For a quaternion q, both q and -q represent the same rotation. In order
+            // to make things easier for training, convert the quaternion to a "canonical" form,
+            // where the the w component is always positive.
+            if (observation.w < 0f)
+            {
+                AddFloatObs(-observation.x);
+                AddFloatObs(-observation.y);
+                AddFloatObs(-observation.z);
+                AddFloatObs(-observation.w);
+            }
+            else
+            {
+                AddFloatObs(observation.x);
+                AddFloatObs(observation.y);
+                AddFloatObs(observation.z);
+                AddFloatObs(observation.w);
+            }
+
         }
 
         /// <summary>
