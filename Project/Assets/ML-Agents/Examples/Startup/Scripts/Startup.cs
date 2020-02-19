@@ -7,7 +7,7 @@ namespace MLAgentsExamples
     internal class Startup : MonoBehaviour
     {
         const string k_SceneVariableName = "SCENE_NAME";
-        private const string k_SceneCommandLineFlag = "--scene-name";
+        private const string k_SceneCommandLineFlag = "--mlagents-scene-name";
 
         void Awake()
         {
