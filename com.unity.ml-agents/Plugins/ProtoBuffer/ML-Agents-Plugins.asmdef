@@ -1,0 +1,22 @@
+{
+    "name": "ML-Agents-Plugins",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Grpc.Core.Api.dll",
+        "Grpc.Core.dll",
+        "System.Buffers.dll",
+        "System.IO.Abstractions.dll",
+        "System.Interactive.Async.dll",
+        "Google.Protobuf.dll",
+        "System.Numerics.Vectors.dll",
+        "System.Runtime.CompilerServices.Unsafe.dll",
+        "System.Memory.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

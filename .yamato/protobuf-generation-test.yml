@@ -25,7 +25,7 @@ test_mac_protobuf_generation:
       git diff --exit-code --quiet -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
       || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
       echo "Apply the patch with the command 'git apply proto.patch'";                                  \
-      git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > ./artifacts/proto.patch; exit $GIT_ERR; }
+      git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > artifacts/proto.patch; exit $GIT_ERR; }
   triggers:
     changes:
       only:
