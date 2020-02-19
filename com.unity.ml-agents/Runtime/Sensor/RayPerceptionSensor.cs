@@ -26,7 +26,7 @@ namespace MLAgents
         /// <summary>
         /// List of tags which correspond to object types agent can see.
         /// </summary>
-        public IReadOnlyList<string> detectableObjects;
+        public IReadOnlyList<string> detectableTags;
 
         /// <summary>
         /// List of angles (in degrees) used to define the rays.
@@ -71,7 +71,7 @@ namespace MLAgents
         /// <returns></returns>
         public int OutputSize()
         {
-            return (detectableObjects.Count + 2) * angles.Count;
+            return (detectableTags.Count + 2) * angles.Count;
         }
 
         /// <summary>
@@ -133,12 +133,12 @@ namespace MLAgents
             public bool hasHit;
 
             /// <summary>
-            /// Whether or not the ray hit an object whose tag is in the input's detectableObjects list.
+            /// Whether or not the ray hit an object whose tag is in the input's detectableTags list.
             /// </summary>
             public bool hitTaggedObject;
 
             /// <summary>
-            /// The index of the hit object's tag in the detectableObjects list, or -1 if there was no hit, or the
+            /// The index of the hit object's tag in the detectableTags list, or -1 if there was no hit, or the
             /// hit object has a different tag.
             /// </summary>
             public int hitTagIndex;
@@ -153,17 +153,17 @@ namespace MLAgents
         /// Writes the ray output information to a float array.  Each element in the rayAngles array determines a
         /// sublist of data to the observation. The sublist contains the observation data for a single cast.
         /// The list is composed of the following:
-        /// 1. A one-hot encoding for detectable objects. For example, if detectableObjects.Length = n, the
-        ///    first n elements of the sublist will be a one-hot encoding of the detectableObject that was hit, or
+        /// 1. A one-hot encoding for detectable objects. For example, if detectableTags.Length = n, the
+        ///    first n elements of the sublist will be a one-hot encoding of the detectableTag that was hit, or
         ///    all zeroes otherwise.
-        /// 2. The 'numDetectableObjects' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
+        /// 2. The 'numDetectableTags' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
         ///    something (detectable or not).
-        /// 3. The 'numDetectableObjects+1' element of the sublist will contain the normalized distance to the object
+        /// 3. The 'numDetectableTags+1' element of the sublist will contain the normalized distance to the object
         ///    hit, or 1.0 if nothing was hit.
         /// </summary>
-        /// <param name="numDetectableObjects"></param>
-        /// <param name="buffer">Output buffer. The size must be equal to (numDetectableObjects+2) * rayOutputs.Length</param>
-        public void ToFloatArray(int numDetectableObjects, float[] buffer)
+        /// <param name="numDetectableTags"></param>
+        /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * rayOutputs.Length</param>
+        public void ToFloatArray(int numDetectableTags, float[] buffer)
         {
             Array.Clear(buffer, 0, buffer.Length);
             var bufferOffset = 0;
@@ -175,9 +175,9 @@ namespace MLAgents
                 {
                     buffer[bufferOffset + rayOutput.hitTagIndex] = 1f;
                 }
-                buffer[bufferOffset + numDetectableObjects] = rayOutput.hasHit ? 0f : 1f;
-                buffer[bufferOffset + numDetectableObjects + 1] = rayOutput.hitFraction;
-                bufferOffset += numDetectableObjects + 2;
+                buffer[bufferOffset + numDetectableTags] = rayOutput.hasHit ? 0f : 1f;
+                buffer[bufferOffset + numDetectableTags + 1] = rayOutput.hitFraction;
+                bufferOffset += numDetectableTags + 2;
             }
         }
 
@@ -254,7 +254,7 @@ namespace MLAgents
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
                 PerceiveStatic(m_RayPerceptionInput, m_Output, m_DebugDisplayInfo);
-                m_Output.ToFloatArray(m_RayPerceptionInput.detectableObjects.Count, m_Observations);
+                m_Output.ToFloatArray(m_RayPerceptionInput.detectableTags.Count, m_Observations);
                 adapter.AddRange(m_Observations);
             }
             return m_Observations.Length;
@@ -391,9 +391,9 @@ namespace MLAgents
                 if (castHit)
                 {
                     // Find the index of the tag of the object that was hit.
-                    for (var i = 0; i < input.detectableObjects.Count; i++)
+                    for (var i = 0; i < input.detectableTags.Count; i++)
                     {
-                        if (hitObject.CompareTag(input.detectableObjects[i]))
+                        if (hitObject.CompareTag(input.detectableTags[i]))
                         {
                             rayOutput.hitTaggedObject = true;
                             rayOutput.hitTagIndex = i;

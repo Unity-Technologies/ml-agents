@@ -59,7 +59,7 @@ namespace MLAgents
 
             var rayPerceptionInput = new RayPerceptionInput();
             rayPerceptionInput.rayLength = rayLength;
-            rayPerceptionInput.detectableObjects = detectableTags;
+            rayPerceptionInput.detectableTags = detectableTags;
             rayPerceptionInput.angles = rayAngles;
             rayPerceptionInput.startOffset = GetStartVerticalOffset();
             rayPerceptionInput.endOffset = GetEndVerticalOffset();
