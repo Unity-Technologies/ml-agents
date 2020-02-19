@@ -113,6 +113,10 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
+        // Signals the Agent that a new step is about to start. 
+        // This will mark the Agent as Done if it has reached its maxSteps.
+        internal event Action AgentIncrementStep;
+
         // Signals to all the agents at each environment step along with the
         // Academy's maxStepReached, done and stepCount values. The agents rely
         // on this event to update their own values of max step reached and done
@@ -418,6 +422,9 @@ namespace MLAgents
 
             AgentSetStatus?.Invoke(m_StepCount);
 
+            m_StepCount += 1;
+            m_TotalStepCount += 1;
+            AgentIncrementStep?.Invoke();
 
             using (TimerStack.Instance.Scoped("AgentSendState"))
             {
@@ -433,9 +440,6 @@ namespace MLAgents
             {
                 AgentAct?.Invoke();
             }
-
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
         }
 
         /// <summary>
