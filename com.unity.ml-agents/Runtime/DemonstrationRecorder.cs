@@ -53,6 +53,11 @@ namespace MLAgents
                 return m_DemoStore;
             }
 
+            if (m_Agent == null)
+            {
+                m_Agent = GetComponent<Agent>();
+            }
+
             m_FileSystem = fileSystem ?? new FileSystem();
             var behaviorParams = GetComponent<BehaviorParameters>();
             if (string.IsNullOrEmpty(demonstrationName))
