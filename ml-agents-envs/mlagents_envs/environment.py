@@ -149,6 +149,17 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def validate_environment_path(env_path: str) -> Optional[str]:
+        # Strip out executable extensions if passed
+        env_path = (
+            env_path.strip()
+                .replace(".app", "")
+                .replace(".exe", "")
+                .replace(".x86_64", "")
+                .replace(".x86", "")
+        )
+        true_filename = os.path.basename(os.path.normpath(env_path))
+        logger.debug("The true file name is {}".format(true_filename))
+
         if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
             return None
 
@@ -193,22 +204,13 @@ class UnityEnvironment(BaseEnv):
         return launch_string
 
     def executable_launcher(self, file_name, docker_training, no_graphics, args):
-        file_name = (
-            file_name.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
-        true_filename = os.path.basename(os.path.normpath(file_name))
-        logger.debug("The true file name is {}".format(true_filename))
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(
                 "Couldn't launch the {0} environment. "
                 "Provided filename does not match any environments.".format(
-                    true_filename
+                    file_name
                 )
             )
         else:

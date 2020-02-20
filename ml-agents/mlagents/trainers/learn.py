@@ -389,14 +389,6 @@ def create_environment_factory(
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
-        # Strip out executable extensions if passed
-        env_path = (
-            env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
         launch_string = UnityEnvironment.validate_environment_path(env_path)
         if launch_string is None:
             raise UnityEnvironmentException(
