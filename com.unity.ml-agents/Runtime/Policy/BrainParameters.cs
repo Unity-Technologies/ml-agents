@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MLAgents
 {
-    public enum SpaceType
+    public enum ActionType
     {
         Discrete,
         Continuous
@@ -36,7 +36,7 @@ namespace MLAgents
         public string[] vectorActionDescriptions;
 
         /// <summary>Defines if the action is discrete or continuous</summary>
-        public SpaceType vectorActionSpaceType = SpaceType.Discrete;
+        public ActionType vectorActionSpaceType = ActionType.Discrete;
 
         /// <summary>
         /// Deep clones the BrainParameter object

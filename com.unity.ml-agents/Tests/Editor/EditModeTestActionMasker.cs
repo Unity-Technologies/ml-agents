@@ -16,7 +16,7 @@ namespace MLAgents.Tests
         public void FailsWithContinuous()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Continuous;
+            bp.vectorActionSpaceType = ActionType.Continuous;
             bp.vectorActionSize = new[] {4};
             var masker = new ActionMasker(bp);
             masker.SetActionMask(0, new[] {0});
@@ -27,7 +27,7 @@ namespace MLAgents.Tests
         public void NullMask()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
+            bp.vectorActionSpaceType = ActionType.Discrete;
             var masker = new ActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
@@ -37,7 +37,7 @@ namespace MLAgents.Tests
         public void FirstBranchMask()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
+            bp.vectorActionSpaceType = ActionType.Discrete;
             bp.vectorActionSize = new[] {4, 5, 6};
             var masker = new ActionMasker(bp);
             var mask = masker.GetMask();
@@ -57,7 +57,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
+                vectorActionSpaceType = ActionType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new ActionMasker(bp);
@@ -77,7 +77,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
+                vectorActionSpaceType = ActionType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new ActionMasker(bp);
@@ -95,7 +95,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
+                vectorActionSpaceType = ActionType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new ActionMasker(bp);
@@ -118,7 +118,7 @@ namespace MLAgents.Tests
         public void MultipleMaskEdit()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
+            bp.vectorActionSpaceType = ActionType.Discrete;
             bp.vectorActionSize = new[] {4, 5, 6};
             var masker = new ActionMasker(bp);
             masker.SetActionMask(0, new[] {0, 1});

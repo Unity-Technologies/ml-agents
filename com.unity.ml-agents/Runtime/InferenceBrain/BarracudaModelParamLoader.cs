@@ -565,7 +565,7 @@ namespace MLAgents.InferenceBrain
                 return failedModelChecks;
             }
             if (isContinuous == ModelActionType.Continuous &&
-                brainParameters.vectorActionSpaceType != SpaceType.Continuous)
+                brainParameters.vectorActionSpaceType != ActionType.Continuous)
             {
                 failedModelChecks.Add(
                     "Model has been trained using Continuous Control but the Brain Parameters " +
@@ -573,7 +573,7 @@ namespace MLAgents.InferenceBrain
                 return failedModelChecks;
             }
             if (isContinuous == ModelActionType.Discrete &&
-                brainParameters.vectorActionSpaceType != SpaceType.Discrete)
+                brainParameters.vectorActionSpaceType != ActionType.Discrete)
             {
                 failedModelChecks.Add(
                     "Model has been trained using Discrete Control but the Brain Parameters " +
@@ -581,7 +581,7 @@ namespace MLAgents.InferenceBrain
                 return failedModelChecks;
             }
             var tensorTester = new Dictionary<string, Func<BrainParameters, TensorShape, int, string>>();
-            if (brainParameters.vectorActionSpaceType == SpaceType.Continuous)
+            if (brainParameters.vectorActionSpaceType == ActionType.Continuous)
             {
                 tensorTester[TensorNames.ActionOutput] = CheckContinuousActionOutputShape;
             }

@@ -118,7 +118,7 @@ namespace MLAgents
         void AssertMask()
         {
             // Action Masks can only be used in Discrete Control.
-            if (m_BrainParameters.vectorActionSpaceType != SpaceType.Discrete)
+            if (m_BrainParameters.vectorActionSpaceType != ActionType.Discrete)
             {
                 throw new UnityAgentsException(
                     "Invalid Action Masking : Can only set action mask for Discrete Control.");

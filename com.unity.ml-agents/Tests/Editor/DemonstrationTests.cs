@@ -46,7 +46,7 @@ namespace MLAgents.Tests
                 numStackedVectorObservations = 2,
                 vectorActionDescriptions = new[] { "TestActionA", "TestActionB" },
                 vectorActionSize = new[] { 2, 2 },
-                vectorActionSpaceType = SpaceType.Discrete
+                vectorActionSpaceType = ActionType.Discrete
             };
 
             demoStore.Initialize(k_DemoName, brainParameters, "TestBrain");
@@ -88,7 +88,7 @@ namespace MLAgents.Tests
             bpA.brainParameters.numStackedVectorObservations = 1;
             bpA.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
             bpA.brainParameters.vectorActionSize = new[] { 2, 2 };
-            bpA.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bpA.brainParameters.vectorActionSpaceType = ActionType.Discrete;
 
             agentGo1.AddComponent<ObservationAgent>();
             var agent1 = agentGo1.GetComponent<ObservationAgent>();

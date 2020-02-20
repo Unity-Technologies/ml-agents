@@ -51,7 +51,7 @@ namespace MLAgents.InferenceBrain
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            if (bp.vectorActionSpaceType == SpaceType.Continuous)
+            if (bp.vectorActionSpaceType == ActionType.Continuous)
             {
                 m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }

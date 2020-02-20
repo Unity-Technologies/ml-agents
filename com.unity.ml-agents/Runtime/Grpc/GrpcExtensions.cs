@@ -122,7 +122,7 @@ namespace MLAgents
             {
                 vectorActionSize = bpp.VectorActionSize.ToArray(),
                 vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
-                vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+                vectorActionSpaceType = (ActionType)bpp.VectorActionSpaceType
             };
             return bp;
         }

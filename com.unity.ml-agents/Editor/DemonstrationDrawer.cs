@@ -74,7 +74,7 @@ internal class DemonstrationEditor : Editor
         var vecActSizeLabel =
             actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
         var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
-            (SpaceType)actSpaceTypeProp.enumValueIndex;
+            (ActionType)actSpaceTypeProp.enumValueIndex;
 
         EditorGUILayout.LabelField(vecObsSizeLabel);
         EditorGUILayout.LabelField(numStackedLabel);
