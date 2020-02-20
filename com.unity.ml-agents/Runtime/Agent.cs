@@ -314,15 +314,14 @@ namespace MLAgents
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
-        /// <summary>
         /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
-        /// Current episode number.
+        /// Current step count.
         /// </returns>
-        public int GetStepCount()
+        public int StepCount
         {
-            return m_StepCount;
+            get { return m_StepCount; }
         }
 
         /// <summary>
