@@ -277,7 +277,7 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def create_ppo_optimizer(self):
-        self.tf_optimizer = self.create_tf_optimizer(self.learning_rate)
+        self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
         self.update_batch = self.tf_optimizer.minimize(self.loss)
 
