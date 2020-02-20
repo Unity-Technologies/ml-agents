@@ -200,12 +200,12 @@ class NNPolicy(TFPolicy):
                     hidden_policy,
                     self.act_size[0],
                     activation=None,
-                    name="log_std",
+                    name="log_sigma",
                     kernel_initializer=LearningModel.scaled_init(0.01),
                 )
             else:
                 log_sigma = tf.get_variable(
-                    "log_sigma_squared",
+                    "log_sigma",
                     [self.act_size[0]],
                     dtype=tf.float32,
                     initializer=tf.zeros_initializer(),
