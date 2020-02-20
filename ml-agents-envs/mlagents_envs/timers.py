@@ -32,7 +32,7 @@ import math
 from time import perf_counter
 
 from contextlib import contextmanager
-from typing import Any, Callable, Dict, Generator, List, TypeVar
+from typing import Any, Callable, Dict, Generator, TypeVar
 
 
 class TimerNode:
@@ -183,19 +183,16 @@ class TimerStack:
             res["is_parallel"] = True
 
         child_total = 0.0
-        child_list = []
+        child_dict = {}
         for child_name, child_node in node.children.items():
-            child_res: Dict[str, Any] = {
-                "name": child_name,
-                **self.get_timing_tree(child_node),
-            }
-            child_list.append(child_res)
+            child_res: Dict[str, Any] = self.get_timing_tree(child_node)
+            child_dict[child_name] = child_res
             child_total += child_res["total"]
 
         # "self" time is total time minus all time spent on children
         res["self"] = max(0.0, node.total - child_total)
-        if child_list:
-            res["children"] = child_list
+        if child_dict:
+            res["children"] = child_dict
 
         return res
 
@@ -208,11 +205,10 @@ class TimerStack:
         else:
             self.gauges[name] = GaugeNode(value)
 
-    def _get_gauges(self) -> List[Dict[str, Any]]:
-        gauges = []
+    def _get_gauges(self) -> Dict[str, Dict[str, float]]:
+        gauges = {}
         for gauge_name, gauge_node in self.gauges.items():
-            gauge_dict: Dict[str, Any] = {"name": gauge_name, **gauge_node.as_dict()}
-            gauges.append(gauge_dict)
+            gauges[gauge_name] = gauge_node.as_dict()
         return gauges
 
 

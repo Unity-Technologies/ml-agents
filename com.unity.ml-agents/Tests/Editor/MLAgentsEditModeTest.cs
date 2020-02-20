@@ -406,7 +406,7 @@ namespace MLAgents.Tests
 
                 Assert.AreEqual(i, aca.TotalStepCount);
 
-                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
+                Assert.AreEqual(agent2StepSinceReset, agent2.StepCount);
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
@@ -536,12 +536,12 @@ namespace MLAgents.Tests
                 expectedAgentStepCount += 1;
 
                 // If the next step will put the agent at maxSteps, we expect it to reset
-                if (agent1.GetStepCount() == maxStep - 1 || (i == 0))
+                if (agent1.StepCount == maxStep - 1 || (i == 0))
                 {
                     expectedResets +=1;
                 }
 
-                if (agent1.GetStepCount() == maxStep - 1)
+                if (agent1.StepCount == maxStep - 1)
                 {
                     expectedAgentActionSinceReset = 0;
                     expectedCollectObsCallsSinceReset = 0;
@@ -549,7 +549,7 @@ namespace MLAgents.Tests
                 }
                 aca.EnvironmentStep();
 
-                Assert.AreEqual(expectedAgentStepCount, agent1.GetStepCount());
+                Assert.AreEqual(expectedAgentStepCount, agent1.StepCount);
                 Assert.AreEqual(expectedResets, agent1.agentResetCalls);
                 Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
                 Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
