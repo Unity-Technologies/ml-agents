@@ -42,7 +42,6 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
-        self.tf_optimizer: Optional[tf.train.Optimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = trainer_params["num_layers"]

@@ -463,13 +463,13 @@ class SACOptimizer(TFOptimizer):
         Creates the Adam optimizers and update ops for SAC, including
         the policy, value, and entropy updates, as well as the target network update.
         """
-        policy_optimizer = self.create_tf_optimizer(
+        policy_optimizer = self.create_optimizer_op(
             learning_rate=self.learning_rate, name="sac_policy_opt"
         )
-        entropy_optimizer = self.create_tf_optimizer(
+        entropy_optimizer = self.create_optimizer_op(
             learning_rate=self.learning_rate, name="sac_entropy_opt"
         )
-        value_optimizer = self.create_tf_optimizer(
+        value_optimizer = self.create_optimizer_op(
             learning_rate=self.learning_rate, name="sac_value_opt"
         )
 

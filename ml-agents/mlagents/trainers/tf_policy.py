@@ -74,7 +74,6 @@ class TFPolicy(Policy):
         )
         tf.set_random_seed(seed)
         self.saver = None
-        self.tf_optimizer = None
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
