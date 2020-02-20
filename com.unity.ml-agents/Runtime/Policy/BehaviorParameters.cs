@@ -38,6 +38,9 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         public int m_TeamID;
+        [HideInInspector]
+        [SerializeField]
+        public string m_Position;
         [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
@@ -64,7 +67,7 @@ namespace MLAgents
         /// </summary>
         public string fullyQualifiedBehaviorName
         {
-            get { return m_BehaviorName + "?team=" + m_TeamID; }
+            get { return m_BehaviorName + "?team=" + m_TeamID + "&position=" + m_Position; }
         }
 
         internal IPolicy GeneratePolicy(Func<float[]> heuristic)

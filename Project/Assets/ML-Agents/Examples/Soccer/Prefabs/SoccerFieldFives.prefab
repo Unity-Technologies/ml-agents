@@ -191,7 +191,7 @@ Transform:
   - {fileID: 4540034559941056}
   - {fileID: 2148914632064875291}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &54348679551516588
 Rigidbody:
@@ -245,6 +245,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 1
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -258,6 +259,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -567,7 +571,7 @@ Transform:
   - {fileID: 4991109413118678}
   - {fileID: 4942358209803819540}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &54609996481602788
 Rigidbody:
@@ -621,6 +625,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 0
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -634,6 +639,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -717,6 +725,7 @@ Transform:
   - {fileID: 4540201673231058}
   - {fileID: 4867652605555692}
   - {fileID: 4109868016055942}
+  - {fileID: 2742884993155201988}
   - {fileID: 4444285537983296}
   - {fileID: 6592692268509673203}
   - {fileID: 5762487118034748752}
@@ -3827,7 +3836,7 @@ Transform:
   - {fileID: 5751751795015510571}
   - {fileID: 6125218000342064285}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &792168953693601571
 Rigidbody:
@@ -3881,6 +3890,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 1
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &6954070104302829726
 MonoBehaviour:
@@ -3894,6 +3904,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -4046,7 +4059,7 @@ Transform:
   - {fileID: 4487837607097757299}
   - {fileID: 2577118983503834457}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &4740781342817847438
 Rigidbody:
@@ -4100,6 +4113,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 0
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &2022429702144620855
 MonoBehaviour:
@@ -4113,6 +4127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -5706,7 +5723,7 @@ Transform:
   - {fileID: 705078624341413935}
   - {fileID: 3001231927452012652}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &6686455466793116393
 Rigidbody:
@@ -5760,6 +5777,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 1
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &6855830296884182341
 MonoBehaviour:
@@ -5773,6 +5791,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -5861,7 +5882,7 @@ Transform:
   - {fileID: 9148156014225625547}
   - {fileID: 7035483554984300467}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &6173031634930322379
 Rigidbody:
@@ -5915,6 +5936,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 0
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &582843529477248009
 MonoBehaviour:
@@ -5928,6 +5950,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -6098,7 +6123,7 @@ Transform:
   - {fileID: 3346248107740252558}
   - {fileID: 4373164346437030907}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &2610000939768136006
 Rigidbody:
@@ -6152,6 +6177,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 1
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &2375211931252174569
 MonoBehaviour:
@@ -6165,6 +6191,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -6330,7 +6359,7 @@ Transform:
   - {fileID: 6133779038795925749}
   - {fileID: 4100055162363763593}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &4166394328999621115
 Rigidbody:
@@ -6384,6 +6413,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 0
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &5596404811566570806
 MonoBehaviour:
@@ -6397,6 +6427,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -6531,6 +6564,62 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &5835087315797701971
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2742884993155201988}
+  - component: {fileID: 6592473545973587338}
+  m_Layer: 0
+  m_Name: BlueCritic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2742884993155201988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5835087315797701971}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4558743310993102}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6592473545973587338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5835087315797701971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 1
+    numStackedVectorObservations: 1
+    vectorActionSize: 
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 1
+  m_BehaviorName: SoccerFives
+  m_TeamID: 0
+  m_Position: critic
+  m_UseChildSensors: 1
 --- !u!1 &5861694282626165495
 GameObject:
   m_ObjectHideFlags: 0
@@ -8078,7 +8167,7 @@ Transform:
   - {fileID: 7843244083652691923}
   - {fileID: 402429278731114673}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &994668501279332153
 Rigidbody:
@@ -8132,6 +8221,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 1
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &7920144334342864513
 MonoBehaviour:
@@ -8145,6 +8235,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -8297,7 +8390,7 @@ Transform:
   - {fileID: 2438437950049752534}
   - {fileID: 6735248220539025067}
   m_Father: {fileID: 4558743310993102}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &901361471225169854
 Rigidbody:
@@ -8351,6 +8444,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
   m_TeamID: 0
+  m_Position: Striker
   m_UseChildSensors: 1
 --- !u!114 &1559066246895354931
 MonoBehaviour:
@@ -8364,6 +8458,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
