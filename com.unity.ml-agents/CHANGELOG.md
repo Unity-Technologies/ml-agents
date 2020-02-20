@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
+ - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
 
 ### Bugfixes
