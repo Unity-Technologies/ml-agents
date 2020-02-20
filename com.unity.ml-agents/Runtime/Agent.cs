@@ -179,10 +179,9 @@ namespace MLAgents
         /// <summary>
         /// Set of DemonstrationStores that the Agent will write its step information to.
         /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationStore.
-        /// You can also add your own DemonstrationStores; the Agent is not responsible for creating or closing the
-        /// stores, only opening them.
+        /// You can also add your own DemonstrationStore by calling DemonstrationRecorder.AddDemonstrationStoreToAgent()
         /// </summary>
-        public ISet<DemonstrationStore> DemonstrationStores = new HashSet<DemonstrationStore>();
+        internal ISet<DemonstrationStore> DemonstrationStores = new HashSet<DemonstrationStore>();
 
         /// <summary>
         /// List of sensors used to generate observations.

@@ -27,6 +27,13 @@ namespace MLAgents
         const string k_ExtensionType = ".demo";
         IFileSystem m_FileSystem;
 
+        Agent m_Agent;
+
+        void OnEnable()
+        {
+            m_Agent = GetComponent<Agent>();
+        }
+
         void Update()
         {
             if (record)
@@ -68,11 +75,7 @@ namespace MLAgents
                 behaviorParams.fullyQualifiedBehaviorName
             );
 
-            var agent = GetComponent<Agent>();
-            if (agent != null)
-            {
-                agent.DemonstrationStores.Add(m_DemoStore);
-            }
+            m_Agent.DemonstrationStores.Add(m_DemoStore);
 
             return m_DemoStore;
         }
@@ -133,11 +136,7 @@ namespace MLAgents
         {
             if (m_DemoStore != null)
             {
-                var agent = GetComponent<Agent>();
-                if (agent != null)
-                {
-                    agent.DemonstrationStores.Remove(m_DemoStore);
-                }
+                m_Agent.DemonstrationStores.Remove(m_DemoStore);
 
                 m_DemoStore.Close();
                 m_DemoStore = null;
@@ -152,5 +151,24 @@ namespace MLAgents
             Close();
         }
 
+        /// <summary>
+        /// Add additional DemonstrationStore to the Agent. It is still up to the user to Close this
+        /// DemonstrationStores when recording is done.
+        /// </summary>
+        /// <param name="demoStore"></param>
+        void AddDemonstrationStoreToAgent(DemonstrationStore demoStore)
+        {
+            m_Agent.DemonstrationStores.Add(demoStore);
+        }
+
+        /// <summary>
+        /// Remove additional DemonstrationStore to the Agent. It is still up to the user to Close this
+        /// DemonstrationStores when recording is done.
+        /// </summary>
+        /// <param name="demoStore"></param>
+        void RemoveDemonstrationStoreFromAgent(DemonstrationStore demoStore)
+        {
+            m_Agent.DemonstrationStores.Remove(demoStore);
+        }
     }
 }
