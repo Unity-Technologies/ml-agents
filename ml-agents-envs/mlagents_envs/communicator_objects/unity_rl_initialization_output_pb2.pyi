@@ -27,6 +27,12 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class UnityRLInitializationOutputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     name = ... # type: typing___Text
@@ -44,7 +50,7 @@ class UnityRLInitializationOutputProto(google___protobuf___message___Message):
         brain_parameters : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___brain_parameters_pb2___BrainParametersProto]] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> UnityRLInitializationOutputProto: ...
+    def FromString(cls, s: builtin___bytes) -> UnityRLInitializationOutputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

@@ -27,28 +27,34 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class AgentInfoProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    reward = ... # type: float
-    done = ... # type: bool
-    max_step_reached = ... # type: bool
-    id = ... # type: int
-    action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[bool]
+    reward = ... # type: builtin___float
+    done = ... # type: builtin___bool
+    max_step_reached = ... # type: builtin___bool
+    id = ... # type: builtin___int
+    action_mask = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bool]
 
     @property
     def observations(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[mlagents_envs___communicator_objects___observation_pb2___ObservationProto]: ...
 
     def __init__(self,
         *,
-        reward : typing___Optional[float] = None,
-        done : typing___Optional[bool] = None,
-        max_step_reached : typing___Optional[bool] = None,
-        id : typing___Optional[int] = None,
-        action_mask : typing___Optional[typing___Iterable[bool]] = None,
+        reward : typing___Optional[builtin___float] = None,
+        done : typing___Optional[builtin___bool] = None,
+        max_step_reached : typing___Optional[builtin___bool] = None,
+        id : typing___Optional[builtin___int] = None,
+        action_mask : typing___Optional[typing___Iterable[builtin___bool]] = None,
         observations : typing___Optional[typing___Iterable[mlagents_envs___communicator_objects___observation_pb2___ObservationProto]] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> AgentInfoProto: ...
+    def FromString(cls, s: builtin___bytes) -> AgentInfoProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):

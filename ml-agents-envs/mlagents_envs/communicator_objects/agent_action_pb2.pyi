@@ -22,18 +22,24 @@ from typing_extensions import (
 )
 
 
+builtin___bool = bool
+builtin___bytes = bytes
+builtin___float = float
+builtin___int = int
+
+
 class AgentActionProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[float]
-    value = ... # type: float
+    vector_actions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___float]
+    value = ... # type: builtin___float
 
     def __init__(self,
         *,
-        vector_actions : typing___Optional[typing___Iterable[float]] = None,
-        value : typing___Optional[float] = None,
+        vector_actions : typing___Optional[typing___Iterable[builtin___float]] = None,
+        value : typing___Optional[builtin___float] = None,
         ) -> None: ...
     @classmethod
-    def FromString(cls, s: bytes) -> AgentActionProto: ...
+    def FromString(cls, s: builtin___bytes) -> AgentActionProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
