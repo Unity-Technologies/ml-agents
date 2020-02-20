@@ -146,6 +146,7 @@ class SACOptimizer(TFOptimizer):
             "Losses/Q1 Loss": "q1_loss",
             "Losses/Q2 Loss": "q2_loss",
             "Policy/Entropy Coeff": "entropy_coef",
+            "Policy/Learning Rate": "learning_rate",
         }
 
         self.update_dict = {
@@ -158,10 +159,8 @@ class SACOptimizer(TFOptimizer):
             "update_batch": self.update_batch_policy,
             "update_value": self.update_batch_value,
             "update_entropy": self.update_batch_entropy,
+            "learning_rate": self.learning_rate,
         }
-
-        # Add some stuff to inference dict from optimizer
-        self.policy.inference_dict["learning_rate"] = self.learning_rate
 
     def create_inputs_and_outputs(self) -> None:
         """

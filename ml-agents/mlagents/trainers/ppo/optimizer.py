@@ -51,6 +51,7 @@ class PPOOptimizer(TFOptimizer):
                 self.stats_name_to_update_name = {
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
+                    "Policy/Learning Rate": "learning_rate",
                 }
                 if self.policy.use_recurrent:
                     self.m_size = self.policy.m_size
@@ -87,11 +88,10 @@ class PPOOptimizer(TFOptimizer):
                     "value_loss": self.value_loss,
                     "policy_loss": self.abs_policy_loss,
                     "update_batch": self.update_batch,
+                    "learning_rate": self.learning_rate,
                 }
             )
 
-            # Add some stuff to inference dict from optimizer
-            self.policy.inference_dict["learning_rate"] = self.learning_rate
             self.policy.initialize_or_load()
 
     def create_cc_critic(
