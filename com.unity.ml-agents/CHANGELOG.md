@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
  - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+ - Renamed the `SpaceType` enum to `ActionType`
 
 ### Bugfixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)

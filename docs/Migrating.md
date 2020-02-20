@@ -17,6 +17,7 @@ The versions can be found in
 * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
 * The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
 * The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+* The enum `SpaceType` was renamed `ActionType`
 
 ### Steps to Migrate
 * Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
@@ -24,6 +25,7 @@ The versions can be found in
 * If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output, use `RayPerceptionOutput.ToFloatArray()`
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
+* Replace the enum `SpaceType` to `ActionType`
 
 ## Migrating from 0.13 to 0.14
 
