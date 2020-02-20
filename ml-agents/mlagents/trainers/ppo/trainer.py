@@ -219,6 +219,7 @@ class PPOTrainer(RLTrainer):
             self.trainer_parameters,
             self.is_training,
             self.load,
+            condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )
 

@@ -26,6 +26,7 @@ class NNPolicy(TFPolicy):
         load: bool,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
         create_tf_graph: bool = True,
     ):
         """
@@ -54,6 +55,7 @@ class NNPolicy(TFPolicy):
         )
         self.tanh_squash = tanh_squash
         self.resample = resample
+        self.condition_sigma_on_obs = condition_sigma_on_obs
         self.trainable_variables: List[tf.Variable] = []
 
         # Non-exposed parameters; these aren't exposed because they don't have a
@@ -89,6 +91,7 @@ class NNPolicy(TFPolicy):
                     self.vis_encode_type,
                     self.tanh_squash,
                     self.resample,
+                    self.condition_sigma_on_obs,
                 )
             else:
                 self._create_dc_actor(
@@ -146,6 +149,7 @@ class NNPolicy(TFPolicy):
         vis_encode_type: EncoderType,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
     ) -> None:
         """
         Creates Continuous control actor-critic model.
@@ -190,15 +194,22 @@ class NNPolicy(TFPolicy):
                 reuse=tf.AUTO_REUSE,
             )
 
-            # Policy-dependent log_sigma_sq
-            log_sigma = tf.layers.dense(
-                hidden_policy,
-                self.act_size[0],
-                activation=None,
-                name="log_std",
-                kernel_initializer=LearningModel.scaled_init(0.01),
-            )
-
+            # Policy-dependent log_sigma
+            if condition_sigma_on_obs:
+                log_sigma = tf.layers.dense(
+                    hidden_policy,
+                    self.act_size[0],
+                    activation=None,
+                    name="log_std",
+                    kernel_initializer=LearningModel.scaled_init(0.01),
+                )
+            else:
+                log_sigma = tf.get_variable(
+                    "log_sigma_squared",
+                    [self.act_size[0]],
+                    dtype=tf.float32,
+                    initializer=tf.zeros_initializer(),
+                )
             log_sigma = tf.clip_by_value(log_sigma, self.log_std_min, self.log_std_max)
 
             sigma = tf.exp(log_sigma)
