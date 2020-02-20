@@ -18,6 +18,8 @@ namespace MLAgents
 
         TensorShape m_TensorShape;
 
+        internal WriteAdapter() { }
+
         /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
