@@ -113,7 +113,7 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start. 
+        // Signals the Agent that a new step is about to start.
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
@@ -188,7 +188,7 @@ namespace MLAgents
         /// Registers SideChannel to the Academy to send and receive data with Python.
         /// If IsCommunicatorOn is false, the SideChannel will not be registered.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be registered.</param>
+        /// <param name="channel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel channel)
         {
             LazyInitialize();
@@ -199,7 +199,7 @@ namespace MLAgents
         /// Unregisters SideChannel to the Academy. If the side channel was not registered,
         /// nothing will happen.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        /// <param name="channel"> The side channel to be unregistered.</param>
         public void UnregisterSideChannel(SideChannel channel)
         {
             Communicator?.UnregisterSideChannel(channel);
