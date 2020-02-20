@@ -26,9 +26,9 @@ namespace MLAgents
         /// Note that this (and GetCompressedObservation) may be called multiple times per agent step, so should not
         /// mutate any internal state.
         /// </summary>
-        /// <param name="adapater"></param>
+        /// <param name="adapter"></param>
         /// <returns>The number of elements written</returns>
-        int Write(WriteAdapter adapater);
+        int Write(WriteAdapter adapter);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations, this should generally not be
