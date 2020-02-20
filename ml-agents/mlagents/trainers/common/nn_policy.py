@@ -76,6 +76,7 @@ class NNPolicy(TFPolicy):
         Builds the tensorflow graph needed for this policy.
         """
         with self.graph.as_default():
+            tf.set_random_seed(self.seed)
             _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
             if len(_vars) > 0:
                 # We assume the first thing created in the graph is the Policy. If

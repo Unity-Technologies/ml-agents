@@ -72,8 +72,8 @@ class TFPolicy(Policy):
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
-        tf.set_random_seed(seed)
         self.saver = None
+        self.seed = seed
         if self.use_recurrent:
             self.m_size = trainer_parameters["memory_size"]
             self.sequence_length = trainer_parameters["sequence_length"]
