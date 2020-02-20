@@ -5,14 +5,13 @@ using System.Collections.Generic;
 
 namespace MLAgents.Tests
 {
-
     internal class TestPolicy : IPolicy
     {
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {}
 
         public float[] DecideAction() { return new float[0]; }
 
-        public void Dispose() { }
+        public void Dispose() {}
     }
 
     public class TestAgent : Agent
@@ -36,7 +35,9 @@ namespace MLAgents.Tests
 
         public int initializeAgentCalls;
         public int collectObservationsCalls;
+        public int collectObservationsCallsSinceLastReset;
         public int agentActionCalls;
+        public int agentActionCallsSinceLastReset;
         public int agentResetCalls;
         public override void InitializeAgent()
         {
@@ -53,18 +54,23 @@ namespace MLAgents.Tests
         public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
+            collectObservationsCallsSinceLastReset += 1;
             sensor.AddObservation(0f);
         }
 
         public override void AgentAction(float[] vectorAction)
         {
             agentActionCalls += 1;
+            agentActionCallsSinceLastReset += 1;
             AddReward(0.1f);
         }
 
         public override void AgentReset()
         {
+
             agentResetCalls += 1;
+            collectObservationsCallsSinceLastReset = 0;
+            agentActionCallsSinceLastReset = 0;
         }
 
         public override float[] Heuristic()
@@ -108,7 +114,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() { }
+        public void Update() {}
     }
 
     [TestFixture]
@@ -400,7 +406,7 @@ namespace MLAgents.Tests
 
                 Assert.AreEqual(i, aca.TotalStepCount);
 
-                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
+                Assert.AreEqual(agent2StepSinceReset, agent2.StepCount);
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
@@ -480,23 +486,75 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
-            var j = 0;
-            for (var i = 0; i < 500; i++)
+            var expectedAgent1ActionSinceReset = 0;
+
+            for (var i = 0; i < 50; i++)
             {
-                if (i % 20 == 0)
-                {
-                    j = 0;
-                }
-                else
-                {
-                    j++;
+                expectedAgent1ActionSinceReset += 1;
+                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0){
+                    expectedAgent1ActionSinceReset = 0;
                 }
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(j * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionSinceReset * 10.1f - agent1.GetCumulativeReward()), 0.05f);
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
                 aca.EnvironmentStep();
+            }
+        }
+
+        [Test]
+        public void TestMaxStepsReset()
+        {
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 1;
+            decisionRequester.Awake();
+
+            const int maxStep = 6;
+            agent1.maxStep = maxStep;
+            agent1.LazyInitialize();
+
+            var expectedAgentStepCount = 0;
+            var expectedResets= 0;
+            var expectedAgentAction = 0;
+            var expectedAgentActionSinceReset = 0;
+            var expectedCollectObsCalls = 0;
+            var expectedCollectObsCallsSinceReset = 0;
+
+            for (var i = 0; i < 15; i++)
+            {
+                // Agent should observe and act on each Academy step
+                expectedAgentAction += 1;
+                expectedAgentActionSinceReset += 1;
+                expectedCollectObsCalls += 1;
+                expectedCollectObsCallsSinceReset += 1;
+                expectedAgentStepCount += 1;
+
+                // If the next step will put the agent at maxSteps, we expect it to reset
+                if (agent1.StepCount == maxStep - 1 || (i == 0))
+                {
+                    expectedResets +=1;
+                }
+
+                if (agent1.StepCount == maxStep - 1)
+                {
+                    expectedAgentActionSinceReset = 0;
+                    expectedCollectObsCallsSinceReset = 0;
+                    expectedAgentStepCount = 0;
+                }
+                aca.EnvironmentStep();
+
+                Assert.AreEqual(expectedAgentStepCount, agent1.StepCount);
+                Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
+                Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
+                Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
+                Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
             }
         }
     }

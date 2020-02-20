@@ -21,7 +21,7 @@ namespace MLAgents
 
         /// <summary>
         /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the actions passed as argument at the next decision. 
+        /// able to perform the actions passed as argument at the next decision.
         /// The actionIndices correspond to the actions the agent will be unable to perform
         /// on the branch 0.
         /// </summary>

@@ -84,10 +84,7 @@ namespace MLAgents
         void AddFloatObs(float obs)
         {
 #if DEBUG
-            if (float.IsNaN(obs))
-            {
-                throw new System.ArgumentException("NaN value passed to observation.");
-            }
+            Utilities.DebugCheckNanAndInfinity(obs, nameof(obs), nameof(AddFloatObs));
 #endif
             m_Observations.Add(obs);
         }

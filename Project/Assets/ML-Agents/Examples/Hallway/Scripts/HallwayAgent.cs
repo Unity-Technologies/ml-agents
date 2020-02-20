@@ -30,7 +30,7 @@ public class HallwayAgent : Agent
     {
         if (useVectorObs)
         {
-            sensor.AddObservation(GetStepCount() / (float)maxStep);
+            sensor.AddObservation(StepCount / (float)maxStep);
         }
     }
 

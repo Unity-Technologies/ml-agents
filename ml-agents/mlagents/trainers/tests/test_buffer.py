@@ -152,3 +152,5 @@ def test_buffer_truncate():
     # Test LSTM, truncate should be some multiple of sequence_length
     update_buffer.truncate(4, sequence_length=3)
     assert update_buffer.num_experiences == 3
+    for buffer_field in update_buffer.values():
+        assert isinstance(buffer_field, AgentBuffer.AgentBufferField)

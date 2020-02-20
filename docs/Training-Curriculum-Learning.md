@@ -68,7 +68,9 @@ SmallWallJump:
     small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
-At the top level of the config is the behavior name.  The curriculum for each
+At the top level of the config is the behavior name. Note that this must be the
+same as the Behavior Name in the [Agent's Behavior Parameters](Learning-Environment-Design-Agents.md#agent-properties).
+ The curriculum for each
 behavior has the following parameters:
 * `measure` - What to measure learning progress, and advancement in lessons by.
   * `reward` - Uses a measure received reward.

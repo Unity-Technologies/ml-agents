@@ -1,5 +1,6 @@
-from mlagents_envs.side_channel.side_channel import SideChannel, SideChannelType
+from mlagents_envs.side_channel.side_channel import SideChannel
 import struct
+import uuid
 from typing import Dict, Tuple, Optional, List
 
 
@@ -10,13 +11,11 @@ class FloatPropertiesChannel(SideChannel):
     set_property, get_property and list_properties.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, channel_id: uuid.UUID = None) -> None:
         self._float_properties: Dict[str, float] = {}
-        super().__init__()
-
-    @property
-    def channel_type(self) -> int:
-        return SideChannelType.FloatProperties
+        if channel_id is None:
+            channel_id = uuid.UUID(("60ccf7d0-4f7e-11ea-b238-784f4387d1f7"))
+        super().__init__(channel_id)
 
     def on_message_received(self, data: bytes) -> None:
         """
