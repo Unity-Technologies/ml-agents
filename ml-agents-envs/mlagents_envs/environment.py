@@ -54,6 +54,7 @@ class UnityEnvironment(BaseEnv):
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     API_VERSION = "API-15-dev0"
     DEFAULT_EDITOR_PORT = 5004
+    PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     def __init__(
         self,
@@ -212,7 +213,10 @@ class UnityEnvironment(BaseEnv):
                 subprocess_args = [launch_string]
                 if no_graphics:
                     subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += ["--port", str(self.port)]
+                subprocess_args += [
+                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
+                    str(self.port),
+                ]
                 subprocess_args += args
                 try:
                     self.proc1 = subprocess.Popen(
@@ -250,10 +254,10 @@ class UnityEnvironment(BaseEnv):
                 #     we created with `xvfb`.
                 #
                 docker_ls = (
-                    "exec xvfb-run --auto-servernum"
-                    " --server-args='-screen 0 640x480x24'"
-                    " {0} --port {1}"
-                ).format(launch_string, str(self.port))
+                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
+                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
+                )
+
                 self.proc1 = subprocess.Popen(
                     docker_ls,
                     stdout=subprocess.PIPE,
