@@ -15,9 +15,9 @@ namespace MLAgents
         [Tooltip("Ray end is offset up or down by this amount.")]
         public float endVerticalOffset;
 
-        public override RayPerceptionSensor.CastType GetCastType()
+        public override RayPerceptionCastType GetCastType()
         {
-            return RayPerceptionSensor.CastType.Cast3D;
+            return RayPerceptionCastType.Cast3D;
         }
 
         public override float GetStartVerticalOffset()
