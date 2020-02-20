@@ -156,7 +156,7 @@ namespace MLAgents
         /// DemonstrationStores when recording is done.
         /// </summary>
         /// <param name="demoStore"></param>
-        void AddDemonstrationStoreToAgent(DemonstrationStore demoStore)
+        public void AddDemonstrationStoreToAgent(DemonstrationStore demoStore)
         {
             m_Agent.DemonstrationStores.Add(demoStore);
         }
@@ -166,7 +166,7 @@ namespace MLAgents
         /// DemonstrationStores when recording is done.
         /// </summary>
         /// <param name="demoStore"></param>
-        void RemoveDemonstrationStoreFromAgent(DemonstrationStore demoStore)
+        public void RemoveDemonstrationStoreFromAgent(DemonstrationStore demoStore)
         {
             m_Agent.DemonstrationStores.Remove(demoStore);
         }
