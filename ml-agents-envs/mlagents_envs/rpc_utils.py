@@ -132,7 +132,7 @@ def _process_vector_observation(
     # If there's an Inf (either sign) then the result will be Inf
     # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
     # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
-    # Raise a Runtime error in the case that NaNs or Infinite values make it into the data.
+    # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
     d = np.mean(np_obs)
     has_nan = np.isnan(d)
     has_inf = not np.isfinite(d)
