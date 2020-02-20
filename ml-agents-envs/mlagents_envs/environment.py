@@ -56,16 +56,16 @@ class UnityEnvironment(BaseEnv):
     DEFAULT_EDITOR_PORT = 5004
 
     def __init__(
-            self,
-            file_name: Optional[str] = None,
-            worker_id: int = 0,
-            base_port: int = 5005,
-            seed: int = 0,
-            docker_training: bool = False,
-            no_graphics: bool = False,
-            timeout_wait: int = 60,
-            args: Optional[List[str]] = None,
-            side_channels: Optional[List[SideChannel]] = None,
+        self,
+        file_name: Optional[str] = None,
+        worker_id: int = 0,
+        base_port: int = 5005,
+        seed: int = 0,
+        docker_training: bool = False,
+        no_graphics: bool = False,
+        timeout_wait: int = 60,
+        args: Optional[List[str]] = None,
+        side_channels: Optional[List[SideChannel]] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
