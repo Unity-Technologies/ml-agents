@@ -75,8 +75,9 @@ class UnityEnv(gym.Env):
         self.visual_obs = None
         self._n_agents = -1
 
-        self._gym_id_order: List[int] = []
-        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+        # self._gym_id_order: List[int] = []
+        # self._done_agents_index_to_last_reward: Dict[int, float] = {}
+        self.agent_mapper = AgentMapper()
 
         # Save the step result from the last time all Agents requested decisions.
         self._previous_step_result: BatchedStepResult = None
@@ -124,7 +125,7 @@ class UnityEnv(gym.Env):
         step_result = self._env.get_step_result(self.brain_name)
         self._check_agents(step_result.n_agents())
         self._previous_step_result = step_result
-        self._gym_id_order = list(self._previous_step_result.agent_id)
+        self.agent_mapper.set_initial_agents(list(self._previous_step_result.agent_id))
 
         # Set observation and action spaces
         if self.group_spec.is_action_discrete():
@@ -379,11 +380,7 @@ class UnityEnv(gym.Env):
 
         for index, agent_id in enumerate(step_result.agent_id):
             if step_result.done[index]:
-                gym_index = self._gym_id_order.index(agent_id)
-                self._done_agents_index_to_last_reward[gym_index] = step_result.reward[
-                    index
-                ]
-                self._gym_id_order[gym_index] = -1  # no agent at that index
+                self.agent_mapper.mark_agent_done(agent_id, step_result.reward[index])
 
         # Set the new AgentDone flags to True
         # Note that the corresponding agent_id that gets marked done will be different
@@ -391,23 +388,16 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
-                # insert the id in the current id list:
-                original_index = self._gym_id_order.index(-1)
-                self._gym_id_order[original_index] = agent_id
+                last_reward = self.agent_mapper.register_new_agent_id(agent_id)
                 # This is a new agent
                 step_result.done[index] = True
-                # The index of the agent among not-done agents is
-                step_result.reward[index] = self._done_agents_index_to_last_reward[
-                    original_index
-                ]
-        self._done_agents_index_to_last_reward = {}
+                step_result.reward[index] = last_reward
+        # self._done_agents_index_to_last_reward = {}
 
         self._previous_step_result = step_result  # store the new original
 
         new_id_order = []
-        agent_id_list = list(step_result.agent_id)
-        for agent_id in self._gym_id_order:
-            new_id_order.append(agent_id_list.index(agent_id))
+        new_id_order = self.agent_mapper.get_new_id_order(list(step_result.agent_id))
 
         _mask: Optional[List[np.array]] = None
         if step_result.action_mask is not None:
@@ -430,12 +420,9 @@ class UnityEnv(gym.Env):
         sanitized_action = np.zeros(
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
-        agent_id_to_gym_index = {
-            agent_id: gym_index for gym_index, agent_id in enumerate(self._gym_id_order)
-        }
         for index, agent_id in enumerate(self._previous_step_result.agent_id):
             if not self._previous_step_result.done[index]:
-                array_index = agent_id_to_gym_index[agent_id]
+                array_index = self.agent_mapper.get_gym_index(agent_id)
                 sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
 
@@ -456,9 +443,7 @@ class UnityEnv(gym.Env):
                     + "Some agents did not request decisions at the same time."
                 )
             for agent_id, reward in zip(info.agent_id, info.reward):
-                gym_index = self._gym_id_order.index(agent_id)
-                self._done_agents_index_to_last_reward[gym_index] = reward
-                self._gym_id_order[gym_index] = -1  # no agent at that index
+                self.agent_mapper.mark_agent_done(agent_id, reward)
 
             self._env.step()
             info = self._env.get_step_result(self.brain_name)
@@ -526,3 +511,53 @@ class ActionFlattener:
         :return: The List containing the branched actions.
         """
         return self.action_lookup[action]
+
+
+class AgentMapper:
+    def __init__(self) -> None:
+        self._gym_id_order: List[int] = []
+        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+
+    def set_initial_agents(self, agent_ids: List[int]) -> None:
+        """
+        Provide the initial list of agent ids for the mapper
+        :param agent_ids:
+        :return:
+        """
+        self._gym_id_order = list(agent_ids)
+
+    def mark_agent_done(self, agent_id: int, reward: float) -> None:
+        """
+        Declare the agent done with the corresponding final reward.
+        """
+        gym_index = self._gym_id_order.index(agent_id)
+        self._done_agents_index_to_last_reward[gym_index] = reward
+        self._gym_id_order[gym_index] = -1
+
+    def register_new_agent_id(self, agent_id: int) -> float:
+        """
+        Returns the reward to use for the previous agent in this index
+        :param agent_id:
+        :return:
+        """
+        original_index = self._gym_id_order.index(-1)
+        self._gym_id_order[original_index] = agent_id
+        reward = self._done_agents_index_to_last_reward.pop(original_index)
+        return reward
+
+    def get_new_id_order(self, agent_ids):
+        """
+        Get the permutation from the old agent ids to the correspodning indices.
+        """
+        new_id_order = []
+        for agent_id in self._gym_id_order:
+            new_id_order.append(agent_ids.index(agent_id))
+        return new_id_order
+
+    def get_gym_index(self, agent_id: int) -> int:
+        """
+        Get the gym index for the current agent.
+        :param agent_id:
+        :return:
+        """
+        return self._gym_id_order.index(agent_id)
