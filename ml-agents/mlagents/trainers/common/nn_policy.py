@@ -8,7 +8,7 @@ from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
@@ -26,6 +26,7 @@ class NNPolicy(TFPolicy):
         load: bool,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
         create_tf_graph: bool = True,
     ):
         """
@@ -41,7 +42,6 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
-        self.tf_optimizer: Optional[tf.train.Optimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = trainer_params["num_layers"]
@@ -54,6 +54,7 @@ class NNPolicy(TFPolicy):
         )
         self.tanh_squash = tanh_squash
         self.resample = resample
+        self.condition_sigma_on_obs = condition_sigma_on_obs
         self.trainable_variables: List[tf.Variable] = []
 
         # Non-exposed parameters; these aren't exposed because they don't have a
@@ -75,6 +76,7 @@ class NNPolicy(TFPolicy):
         Builds the tensorflow graph needed for this policy.
         """
         with self.graph.as_default():
+            tf.set_random_seed(self.seed)
             _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
             if len(_vars) > 0:
                 # We assume the first thing created in the graph is the Policy. If
@@ -89,6 +91,7 @@ class NNPolicy(TFPolicy):
                     self.vis_encode_type,
                     self.tanh_squash,
                     self.resample,
+                    self.condition_sigma_on_obs,
                 )
             else:
                 self._create_dc_actor(
@@ -146,6 +149,7 @@ class NNPolicy(TFPolicy):
         vis_encode_type: EncoderType,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
     ) -> None:
         """
         Creates Continuous control actor-critic model.
@@ -156,7 +160,7 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy.
         """
         with tf.variable_scope("policy"):
-            hidden_stream = LearningModel.create_observation_streams(
+            hidden_stream = ModelUtils.create_observation_streams(
                 self.visual_in,
                 self.processed_vector_in,
                 1,
@@ -169,7 +173,7 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in,
                 self.sequence_length_ph,
@@ -186,19 +190,26 @@ class NNPolicy(TFPolicy):
                 self.act_size[0],
                 activation=None,
                 name="mu",
-                kernel_initializer=LearningModel.scaled_init(0.01),
+                kernel_initializer=ModelUtils.scaled_init(0.01),
                 reuse=tf.AUTO_REUSE,
             )
 
-            # Policy-dependent log_sigma_sq
-            log_sigma = tf.layers.dense(
-                hidden_policy,
-                self.act_size[0],
-                activation=None,
-                name="log_std",
-                kernel_initializer=LearningModel.scaled_init(0.01),
-            )
-
+            # Policy-dependent log_sigma
+            if condition_sigma_on_obs:
+                log_sigma = tf.layers.dense(
+                    hidden_policy,
+                    self.act_size[0],
+                    activation=None,
+                    name="log_sigma",
+                    kernel_initializer=ModelUtils.scaled_init(0.01),
+                )
+            else:
+                log_sigma = tf.get_variable(
+                    "log_sigma",
+                    [self.act_size[0]],
+                    dtype=tf.float32,
+                    initializer=tf.zeros_initializer(),
+                )
             log_sigma = tf.clip_by_value(log_sigma, self.log_std_min, self.log_std_max)
 
             sigma = tf.exp(log_sigma)
@@ -241,7 +252,7 @@ class NNPolicy(TFPolicy):
         self.all_log_probs = tf.identity(all_probs, name="action_probs")
 
         single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + tf.square(log_sigma)
+            tf.log(2 * np.pi * np.e) + 2 * log_sigma
         )
         # Make entropy the right shape
         self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
@@ -261,7 +272,7 @@ class NNPolicy(TFPolicy):
         :param vis_encode_type: Type of visual encoder to use if visual input.
         """
         with tf.variable_scope("policy"):
-            hidden_stream = LearningModel.create_observation_streams(
+            hidden_stream = ModelUtils.create_observation_streams(
                 self.visual_in,
                 self.processed_vector_in,
                 1,
@@ -286,7 +297,7 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
                 hidden_policy,
                 self.memory_in,
                 self.sequence_length_ph,
@@ -306,7 +317,7 @@ class NNPolicy(TFPolicy):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=LearningModel.scaled_init(0.01),
+                        kernel_initializer=ModelUtils.scaled_init(0.01),
                     )
                 )
 
@@ -315,7 +326,7 @@ class NNPolicy(TFPolicy):
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
-        output, self.action_probs, normalized_logits = LearningModel.create_discrete_action_masking_layer(
+        output, self.action_probs, normalized_logits = ModelUtils.create_discrete_action_masking_layer(
             raw_log_probs, self.action_masks, self.act_size
         )
 

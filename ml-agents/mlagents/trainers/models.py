@@ -36,7 +36,7 @@ class NormalizerTensors(NamedTuple):
     running_variance: tf.Tensor
 
 
-class LearningModel:
+class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
@@ -64,6 +64,14 @@ class LearningModel:
         global_step: tf.Tensor,
         max_step: int,
     ) -> tf.Tensor:
+        """
+        Create a learning rate tensor.
+        :param lr_schedule: Type of learning rate schedule.
+        :param lr: Base learning rate.
+        :param global_step: A TF Tensor representing the total global step.
+        :param max_step: The maximum number of steps in the training run.
+        :return: A Tensor containing the learning rate.
+        """
         if lr_schedule == LearningRateSchedule.CONSTANT:
             learning_rate = tf.Variable(lr)
         elif lr_schedule == LearningRateSchedule.LINEAR:
@@ -108,9 +116,15 @@ class LearningModel:
     def create_visual_input_placeholders(
         camera_resolutions: List[CameraResolution]
     ) -> List[tf.Tensor]:
+        """
+        Creates input placeholders for visual inputs.
+        :param camera_resolutions: A List of CameraResolutions that specify the resolutions
+        of the input visual observations.
+        :returns: A List of Tensorflow placeholders where the input iamges should be fed.
+        """
         visual_in: List[tf.Tensor] = []
         for i, camera_resolution in enumerate(camera_resolutions):
-            visual_input = LearningModel.create_visual_input(
+            visual_input = ModelUtils.create_visual_input(
                 camera_resolution, name="visual_observation_" + str(i)
             )
             visual_in.append(visual_input)
@@ -122,9 +136,9 @@ class LearningModel:
     ) -> tf.Tensor:
         """
         Creates ops for vector observation input.
-        :param name: Name of the placeholder op.
         :param vec_obs_size: Size of stacked vector observation.
-        :return:
+        :param name: Name of the placeholder op.
+        :return: Placeholder for vector observations.
         """
         vector_in = tf.placeholder(
             shape=[None, vec_obs_size], dtype=tf.float32, name=name
@@ -138,6 +152,14 @@ class LearningModel:
         running_variance: tf.Tensor,
         normalization_steps: tf.Tensor,
     ) -> tf.Tensor:
+        """
+        Create a normalized version of an input tensor.
+        :param vector_obs: Input vector observation tensor.
+        :param running_mean: Tensorflow tensor representing the current running mean.
+        :param running_variance: Tensorflow tensor representing the current running variance.
+        :param normalization_steps: Tensorflow tensor representing the current number of normalization_steps.
+        :return: A normalized version of vector_obs.
+        """
         normalized_state = tf.clip_by_value(
             (vector_obs - running_mean)
             / tf.sqrt(
@@ -151,6 +173,15 @@ class LearningModel:
 
     @staticmethod
     def create_normalizer(vector_obs: tf.Tensor) -> NormalizerTensors:
+        """
+        Creates the normalizer and the variables required to store its state.
+        :param vector_obs: A Tensor representing the next value to normalize. When the
+            update operation is called, it will use vector_obs to update the running mean
+            and variance.
+        :return: A NormalizerTensors tuple that holds running mean, running variance, number of steps,
+            and the update operation.
+        """
+
         vec_obs_size = vector_obs.shape[1]
         steps = tf.get_variable(
             "normalization_steps",
@@ -173,7 +204,7 @@ class LearningModel:
             dtype=tf.float32,
             initializer=tf.ones_initializer(),
         )
-        update_normalization = LearningModel.create_normalizer_update(
+        update_normalization = ModelUtils.create_normalizer_update(
             vector_obs, steps, running_mean, running_variance
         )
         return NormalizerTensors(
@@ -187,6 +218,14 @@ class LearningModel:
         running_mean: tf.Tensor,
         running_variance: tf.Tensor,
     ) -> tf.Operation:
+        """
+        Creates the update operation for the normalizer.
+        :param vector_input: Vector observation to use for updating the running mean and variance.
+        :param running_mean: Tensorflow tensor representing the current running mean.
+        :param running_variance: Tensorflow tensor representing the current running variance.
+        :param steps: Tensorflow tensor representing the current number of steps that have been normalized.
+        :return: A TF operation that updates the normalization based on vector_input.
+        """
         # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
         # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
         steps_increment = tf.shape(vector_input)[0]
@@ -280,7 +319,7 @@ class LearningModel:
             hidden = tf.layers.flatten(conv2)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -335,7 +374,7 @@ class LearningModel:
             hidden = tf.layers.flatten(conv3)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -403,7 +442,7 @@ class LearningModel:
             hidden = tf.layers.flatten(hidden)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -411,12 +450,12 @@ class LearningModel:
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> EncoderFunction:
         ENCODER_FUNCTION_BY_TYPE = {
-            EncoderType.SIMPLE: LearningModel.create_visual_observation_encoder,
-            EncoderType.NATURE_CNN: LearningModel.create_nature_cnn_visual_observation_encoder,
-            EncoderType.RESNET: LearningModel.create_resnet_visual_observation_encoder,
+            EncoderType.SIMPLE: ModelUtils.create_visual_observation_encoder,
+            EncoderType.NATURE_CNN: ModelUtils.create_nature_cnn_visual_observation_encoder,
+            EncoderType.RESNET: ModelUtils.create_resnet_visual_observation_encoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(
-            encoder_type, LearningModel.create_visual_observation_encoder
+            encoder_type, ModelUtils.create_visual_observation_encoder
         )
 
     @staticmethod
@@ -470,7 +509,7 @@ class LearningModel:
     def _check_resolution_for_encoder(
         vis_in: tf.Tensor, vis_encoder_type: EncoderType
     ) -> None:
-        min_res = LearningModel.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
+        min_res = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
         height = vis_in.shape[1]
         width = vis_in.shape[2]
         if height < min_res or width < min_res:
@@ -498,20 +537,20 @@ class LearningModel:
             the scopes for each of the streams. None if all under the same TF scope.
         :return: List of encoded streams.
         """
-        activation_fn = LearningModel.swish
+        activation_fn = ModelUtils.swish
         vector_observation_input = vector_in
 
         final_hiddens = []
         for i in range(num_streams):
             # Pick the encoder function based on the EncoderType
-            create_encoder_func = LearningModel.get_encoder_for_type(vis_encode_type)
+            create_encoder_func = ModelUtils.get_encoder_for_type(vis_encode_type)
 
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             _scope_add = stream_scopes[i] if stream_scopes else ""
             if len(visual_in) > 0:
                 for j, vis_in in enumerate(visual_in):
-                    LearningModel._check_resolution_for_encoder(vis_in, vis_encode_type)
+                    ModelUtils._check_resolution_for_encoder(vis_in, vis_encode_type)
                     encoded_visual = create_encoder_func(
                         vis_in,
                         h_size,
@@ -523,7 +562,7 @@ class LearningModel:
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if vector_in.get_shape()[-1] > 0:  # Don't encode 0-shape inputs
-                hidden_state = LearningModel.create_vector_observation_encoder(
+                hidden_state = ModelUtils.create_vector_observation_encoder(
                     vector_observation_input,
                     h_size,
                     activation_fn,

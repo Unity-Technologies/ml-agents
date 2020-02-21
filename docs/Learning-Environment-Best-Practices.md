@@ -42,8 +42,8 @@
 * Besides encoding non-numeric values, all inputs should be normalized to be in
   the range 0 to +1 (or -1 to 1). For example, the `x` position information of
   an agent where the maximum possible value is `maxValue` should be recorded as
-  `AddVectorObs(transform.position.x / maxValue);` rather than
-  `AddVectorObs(transform.position.x);`. See the equation below for one approach
+  `VectorSensor.AddObservation(transform.position.x / maxValue);` rather than
+  `VectorSensor.AddObservation(transform.position.x);`. See the equation below for one approach
   of normalization.
 * Positional information of relevant GameObjects should be encoded in relative
   coordinates wherever possible. This is often relative to the agent position.

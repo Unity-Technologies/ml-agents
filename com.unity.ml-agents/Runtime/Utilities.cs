@@ -1,6 +1,6 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -151,5 +151,21 @@ namespace MLAgents
             }
             return numFloatObservations;
         }
+
+#if DEBUG
+        internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
+        {
+
+            if (float.IsNaN(value))
+            {
+                throw new ArgumentException($"NaN {valueCategory} passed to {caller}.");
+            }
+            if (float.IsInfinity(value))
+            {
+                throw new ArgumentException($"Inifinity {valueCategory} passed to {caller}.");
+            }
+        }
+#endif
     }
+
 }

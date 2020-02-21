@@ -57,7 +57,7 @@ BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
 
 
-def create_ppo_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
+def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visual):
     mock_brain = mb.setup_mock_brain(
         use_discrete,
         use_visual,
@@ -84,7 +84,7 @@ def create_ppo_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
 def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # Test evaluate
     tf.reset_default_graph()
-    optimizer = create_ppo_optimizer_mock(
+    optimizer = _create_ppo_optimizer_ops_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     # Test update

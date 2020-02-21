@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensor;
 
 namespace MLAgents.Tests
 {
@@ -219,7 +218,7 @@ namespace MLAgents.Tests
             SetupScene();
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
-            obj.transform.localScale = new Vector3(2, 2,2 );
+            obj.transform.localScale = new Vector3(2, 2, 2);
 
             perception.raysPerDirection = 0;
             perception.maxRayDegrees = 45;
