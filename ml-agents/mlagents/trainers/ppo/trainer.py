@@ -228,7 +228,8 @@ class PPOTrainer(RLTrainer):
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         """
         Adds policy to trainer.
-        :param brain_parameters: specifications for policy construction
+        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param policy: Policy to associate with name_behavior_id.
         """
         if self.policy:
             logger.warning(
