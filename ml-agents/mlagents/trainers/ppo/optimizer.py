@@ -64,9 +64,9 @@ class PPOOptimizer(TFOptimizer):
                 if num_layers < 1:
                     num_layers = 1
                 if policy.use_continuous_act:
-                    self.create_cc_critic(h_size, num_layers, vis_encode_type)
+                    self._create_cc_critic(h_size, num_layers, vis_encode_type)
                 else:
-                    self.create_dc_critic(h_size, num_layers, vis_encode_type)
+                    self._create_dc_critic(h_size, num_layers, vis_encode_type)
 
                 self.learning_rate = LearningModel.create_learning_rate(
                     lr_schedule, lr, self.policy.global_step, int(max_step)
@@ -94,7 +94,7 @@ class PPOOptimizer(TFOptimizer):
 
             self.policy.initialize_or_load()
 
-    def create_cc_critic(
+    def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -134,7 +134,7 @@ class PPOOptimizer(TFOptimizer):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_critic(
+    def _create_dc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
