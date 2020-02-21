@@ -13,7 +13,7 @@ from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -386,19 +386,19 @@ class TFPolicy(Policy):
     def create_input_placeholders(self):
         with self.graph.as_default():
             self.global_step, self.increment_step_op, self.steps_to_increment = (
-                LearningModel.create_global_steps()
+                ModelUtils.create_global_steps()
             )
-            self.visual_in = LearningModel.create_visual_input_placeholders(
+            self.visual_in = ModelUtils.create_visual_input_placeholders(
                 self.brain.camera_resolutions
             )
-            self.vector_in = LearningModel.create_vector_input(self.vec_obs_size)
+            self.vector_in = ModelUtils.create_vector_input(self.vec_obs_size)
             if self.normalize:
-                normalization_tensors = LearningModel.create_normalizer(self.vector_in)
+                normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
                 self.normalization_steps = normalization_tensors.steps
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
-                self.processed_vector_in = LearningModel.normalize_vector_obs(
+                self.processed_vector_in = ModelUtils.normalize_vector_obs(
                     self.vector_in,
                     self.running_mean,
                     self.running_variance,

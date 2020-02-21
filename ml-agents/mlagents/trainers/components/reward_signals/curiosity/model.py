@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.tf_policy import TFPolicy
 
 
@@ -39,7 +39,7 @@ class CuriosityModel(object):
             next_visual_encoders = []
             for i in range(self.policy.vis_obs_size):
                 # Create input ops for next (t+1) visual observations.
-                next_visual_input = LearningModel.create_visual_input(
+                next_visual_input = ModelUtils.create_visual_input(
                     self.policy.brain.camera_resolutions[i],
                     name="curiosity_next_visual_observation_" + str(i),
                 )
@@ -47,19 +47,19 @@ class CuriosityModel(object):
 
                 # Create the encoder ops for current and next visual input.
                 # Note that these encoders are siamese.
-                encoded_visual = LearningModel.create_visual_observation_encoder(
+                encoded_visual = ModelUtils.create_visual_observation_encoder(
                     self.policy.visual_in[i],
                     self.encoding_size,
-                    LearningModel.swish,
+                    ModelUtils.swish,
                     1,
                     "curiosity_stream_{}_visual_obs_encoder".format(i),
                     False,
                 )
 
-                encoded_next_visual = LearningModel.create_visual_observation_encoder(
+                encoded_next_visual = ModelUtils.create_visual_observation_encoder(
                     self.next_visual_in[i],
                     self.encoding_size,
-                    LearningModel.swish,
+                    ModelUtils.swish,
                     1,
                     "curiosity_stream_{}_visual_obs_encoder".format(i),
                     True,
@@ -82,18 +82,18 @@ class CuriosityModel(object):
                 name="curiosity_next_vector_observation",
             )
 
-            encoded_vector_obs = LearningModel.create_vector_observation_encoder(
+            encoded_vector_obs = ModelUtils.create_vector_observation_encoder(
                 self.policy.vector_in,
                 self.encoding_size,
-                LearningModel.swish,
+                ModelUtils.swish,
                 2,
                 "curiosity_vector_obs_encoder",
                 False,
             )
-            encoded_next_vector_obs = LearningModel.create_vector_observation_encoder(
+            encoded_next_vector_obs = ModelUtils.create_vector_observation_encoder(
                 self.next_vector_in,
                 self.encoding_size,
-                LearningModel.swish,
+                ModelUtils.swish,
                 2,
                 "curiosity_vector_obs_encoder",
                 True,
@@ -115,7 +115,7 @@ class CuriosityModel(object):
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
-        hidden = tf.layers.dense(combined_input, 256, activation=LearningModel.swish)
+        hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
         if self.policy.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(
                 hidden, self.policy.act_size[0], activation=None
@@ -155,7 +155,7 @@ class CuriosityModel(object):
         combined_input = tf.concat(
             [encoded_state, self.policy.selected_actions], axis=1
         )
-        hidden = tf.layers.dense(combined_input, 256, activation=LearningModel.swish)
+        hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
         pred_next_state = tf.layers.dense(
             hidden,
             self.encoding_size

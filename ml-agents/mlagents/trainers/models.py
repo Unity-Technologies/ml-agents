@@ -36,7 +36,7 @@ class NormalizerTensors(NamedTuple):
     running_variance: tf.Tensor
 
 
-class LearningModel:
+class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
@@ -124,7 +124,7 @@ class LearningModel:
         """
         visual_in: List[tf.Tensor] = []
         for i, camera_resolution in enumerate(camera_resolutions):
-            visual_input = LearningModel.create_visual_input(
+            visual_input = ModelUtils.create_visual_input(
                 camera_resolution, name="visual_observation_" + str(i)
             )
             visual_in.append(visual_input)
@@ -204,7 +204,7 @@ class LearningModel:
             dtype=tf.float32,
             initializer=tf.ones_initializer(),
         )
-        update_normalization = LearningModel.create_normalizer_update(
+        update_normalization = ModelUtils.create_normalizer_update(
             vector_obs, steps, running_mean, running_variance
         )
         return NormalizerTensors(
@@ -319,7 +319,7 @@ class LearningModel:
             hidden = tf.layers.flatten(conv2)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -374,7 +374,7 @@ class LearningModel:
             hidden = tf.layers.flatten(conv3)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -442,7 +442,7 @@ class LearningModel:
             hidden = tf.layers.flatten(hidden)
 
         with tf.variable_scope(scope + "/" + "flat_encoding"):
-            hidden_flat = LearningModel.create_vector_observation_encoder(
+            hidden_flat = ModelUtils.create_vector_observation_encoder(
                 hidden, h_size, activation, num_layers, scope, reuse
             )
         return hidden_flat
@@ -450,12 +450,12 @@ class LearningModel:
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> EncoderFunction:
         ENCODER_FUNCTION_BY_TYPE = {
-            EncoderType.SIMPLE: LearningModel.create_visual_observation_encoder,
-            EncoderType.NATURE_CNN: LearningModel.create_nature_cnn_visual_observation_encoder,
-            EncoderType.RESNET: LearningModel.create_resnet_visual_observation_encoder,
+            EncoderType.SIMPLE: ModelUtils.create_visual_observation_encoder,
+            EncoderType.NATURE_CNN: ModelUtils.create_nature_cnn_visual_observation_encoder,
+            EncoderType.RESNET: ModelUtils.create_resnet_visual_observation_encoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(
-            encoder_type, LearningModel.create_visual_observation_encoder
+            encoder_type, ModelUtils.create_visual_observation_encoder
         )
 
     @staticmethod
@@ -509,7 +509,7 @@ class LearningModel:
     def _check_resolution_for_encoder(
         vis_in: tf.Tensor, vis_encoder_type: EncoderType
     ) -> None:
-        min_res = LearningModel.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
+        min_res = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
         height = vis_in.shape[1]
         width = vis_in.shape[2]
         if height < min_res or width < min_res:
@@ -537,20 +537,20 @@ class LearningModel:
             the scopes for each of the streams. None if all under the same TF scope.
         :return: List of encoded streams.
         """
-        activation_fn = LearningModel.swish
+        activation_fn = ModelUtils.swish
         vector_observation_input = vector_in
 
         final_hiddens = []
         for i in range(num_streams):
             # Pick the encoder function based on the EncoderType
-            create_encoder_func = LearningModel.get_encoder_for_type(vis_encode_type)
+            create_encoder_func = ModelUtils.get_encoder_for_type(vis_encode_type)
 
             visual_encoders = []
             hidden_state, hidden_visual = None, None
             _scope_add = stream_scopes[i] if stream_scopes else ""
             if len(visual_in) > 0:
                 for j, vis_in in enumerate(visual_in):
-                    LearningModel._check_resolution_for_encoder(vis_in, vis_encode_type)
+                    ModelUtils._check_resolution_for_encoder(vis_in, vis_encode_type)
                     encoded_visual = create_encoder_func(
                         vis_in,
                         h_size,
@@ -562,7 +562,7 @@ class LearningModel:
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if vector_in.get_shape()[-1] > 0:  # Don't encode 0-shape inputs
-                hidden_state = LearningModel.create_vector_observation_encoder(
+                hidden_state = ModelUtils.create_vector_observation_encoder(
                     vector_observation_input,
                     h_size,
                     activation_fn,

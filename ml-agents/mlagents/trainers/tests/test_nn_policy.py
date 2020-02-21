@@ -6,7 +6,7 @@ from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.common.nn_policy import NNPolicy
-from mlagents.trainers.models import EncoderType, LearningModel
+from mlagents.trainers.models import EncoderType, ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents.trainers.tests import mock_brain as mb
@@ -153,38 +153,36 @@ def test_normalization(dummy_config):
 
 def test_min_visual_size():
     # Make sure each EncoderType has an entry in MIS_RESOLUTION_FOR_ENCODER
-    assert set(LearningModel.MIN_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
+    assert set(ModelUtils.MIN_RESOLUTION_FOR_ENCODER.keys()) == set(EncoderType)
 
     for encoder_type in EncoderType:
         with tf.Graph().as_default():
-            good_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
+            good_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
             good_res = CameraResolution(
                 width=good_size, height=good_size, num_channels=3
             )
-            vis_input = LearningModel.create_visual_input(
-                good_res, "test_min_visual_size"
-            )
-            LearningModel._check_resolution_for_encoder(vis_input, encoder_type)
-            enc_func = LearningModel.get_encoder_for_type(encoder_type)
-            enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
+            vis_input = ModelUtils.create_visual_input(good_res, "test_min_visual_size")
+            ModelUtils._check_resolution_for_encoder(vis_input, encoder_type)
+            enc_func = ModelUtils.get_encoder_for_type(encoder_type)
+            enc_func(vis_input, 32, ModelUtils.swish, 1, "test", False)
 
         # Anything under the min size should raise an exception. If not, decrease the min size!
         with pytest.raises(Exception):
             with tf.Graph().as_default():
-                bad_size = LearningModel.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
+                bad_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
                 bad_res = CameraResolution(
                     width=bad_size, height=bad_size, num_channels=3
                 )
-                vis_input = LearningModel.create_visual_input(
+                vis_input = ModelUtils.create_visual_input(
                     bad_res, "test_min_visual_size"
                 )
 
                 with pytest.raises(UnityTrainerException):
                     # Make sure we'd hit a friendly error during model setup time.
-                    LearningModel._check_resolution_for_encoder(vis_input, encoder_type)
+                    ModelUtils._check_resolution_for_encoder(vis_input, encoder_type)
 
-                enc_func = LearningModel.get_encoder_for_type(encoder_type)
-                enc_func(vis_input, 32, LearningModel.swish, 1, "test", False)
+                enc_func = ModelUtils.get_encoder_for_type(encoder_type)
+                enc_func(vis_input, 32, ModelUtils.swish, 1, "test", False)
 
 
 if __name__ == "__main__":
