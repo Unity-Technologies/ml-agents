@@ -64,6 +64,14 @@ class LearningModel:
         global_step: tf.Tensor,
         max_step: int,
     ) -> tf.Tensor:
+        """
+        Create a learning rate tensor.
+        :param lr_schedule: Type of learning rate schedule.
+        :param lr: Base learning rate.
+        :param global_step: A TF Tensor representing the total global step.
+        :param max_step: The maximum number of steps in the training run.
+        :return: A Tensor containing the learning rate.
+        """
         if lr_schedule == LearningRateSchedule.CONSTANT:
             learning_rate = tf.Variable(lr)
         elif lr_schedule == LearningRateSchedule.LINEAR:
@@ -108,6 +116,12 @@ class LearningModel:
     def create_visual_input_placeholders(
         camera_resolutions: List[CameraResolution]
     ) -> List[tf.Tensor]:
+        """
+        Creates input placeholders for visual inputs.
+        :param camera_resolutions: A List of CameraResolutions that specify the resolutions
+        of the input visual observations.
+        :returns: A List of Tensorflow placeholders where the input iamges should be fed.
+        """
         visual_in: List[tf.Tensor] = []
         for i, camera_resolution in enumerate(camera_resolutions):
             visual_input = LearningModel.create_visual_input(
@@ -122,9 +136,9 @@ class LearningModel:
     ) -> tf.Tensor:
         """
         Creates ops for vector observation input.
-        :param name: Name of the placeholder op.
         :param vec_obs_size: Size of stacked vector observation.
-        :return:
+        :param name: Name of the placeholder op.
+        :return: Placeholder for vector observations.
         """
         vector_in = tf.placeholder(
             shape=[None, vec_obs_size], dtype=tf.float32, name=name
@@ -138,6 +152,14 @@ class LearningModel:
         running_variance: tf.Tensor,
         normalization_steps: tf.Tensor,
     ) -> tf.Tensor:
+        """
+        Create a normalized version of an input tensor.
+        :param vector_obs: Input vector observation tensor.
+        :param running_mean: Tensorflow tensor representing the current running mean.
+        :param running_variance: Tensorflow tensor representing the current running variance.
+        :param normalization_steps: Tensorflow tensor representing the current number of normalization_steps.
+        :return: A normalized version of vector_obs.
+        """
         normalized_state = tf.clip_by_value(
             (vector_obs - running_mean)
             / tf.sqrt(
@@ -151,6 +173,15 @@ class LearningModel:
 
     @staticmethod
     def create_normalizer(vector_obs: tf.Tensor) -> NormalizerTensors:
+        """
+        Creates the normalizer and the variables required to store its state.
+        :param vector_obs: A Tensor representing the next value to normalize. When the
+            update operation is called, it will use vector_obs to update the running mean
+            and variance.
+        :return: A NormalizerTensors tuple that holds running mean, running variance, number of steps,
+            and the update operation.
+        """
+
         vec_obs_size = vector_obs.shape[1]
         steps = tf.get_variable(
             "normalization_steps",
@@ -187,6 +218,14 @@ class LearningModel:
         running_mean: tf.Tensor,
         running_variance: tf.Tensor,
     ) -> tf.Operation:
+        """
+        Creates the update operation for the normalizer.
+        :param vector_input: Vector observation to use for updating the running mean and variance.
+        :param running_mean: Tensorflow tensor representing the current running mean.
+        :param running_variance: Tensorflow tensor representing the current running variance.
+        :param steps: Tensorflow tensor representing the current number of steps that have been normalized.
+        :return: A TF operation that updates the normalization based on vector_input.
+        """
         # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
         # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
         steps_increment = tf.shape(vector_input)[0]
