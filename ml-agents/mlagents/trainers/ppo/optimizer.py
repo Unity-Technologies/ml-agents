@@ -71,7 +71,7 @@ class PPOOptimizer(TFOptimizer):
                 self.learning_rate = LearningModel.create_learning_rate(
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
-                self.create_losses(
+                self._create_losses(
                     self.policy.log_probs,
                     self.old_log_probs,
                     self.value_heads,
@@ -199,7 +199,7 @@ class PPOOptimizer(TFOptimizer):
             keepdims=True,
         )
 
-    def create_losses(
+    def _create_losses(
         self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
     ):
         """

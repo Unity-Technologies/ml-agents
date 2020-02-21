@@ -114,7 +114,7 @@ class SACOptimizer(TFOptimizer):
                 self.learning_rate = LearningModel.create_learning_rate(
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
-                self.create_losses(
+                self._create_losses(
                     self.policy_network.q1_heads,
                     self.policy_network.q2_heads,
                     lr,
@@ -195,7 +195,7 @@ class SACOptimizer(TFOptimizer):
                 self.prev_action = self.policy_network.prev_action
             self.next_memory_in = self.target_network.memory_in
 
-    def create_losses(
+    def _create_losses(
         self,
         q1_streams: Dict[str, tf.Tensor],
         q2_streams: Dict[str, tf.Tensor],
