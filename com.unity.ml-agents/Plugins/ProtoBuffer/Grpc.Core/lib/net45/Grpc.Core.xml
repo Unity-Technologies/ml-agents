@@ -1,0 +1,2173 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Grpc.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Grpc.Core.CallInvocationDetails`2">
+            <summary>
+            Details about a client-side call to be invoked.
+            </summary>
+            <typeparam name="TRequest">Request message type for the call.</typeparam>
+            <typeparam name="TResponse">Response message type for the call.</typeparam>
+        </member>
+        <member name="M:Grpc.Core.CallInvocationDetails`2.#ctor(Grpc.Core.Channel,Grpc.Core.Method{`0,`1},Grpc.Core.CallOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Grpc.Core.CallInvocationDetails`2"/> struct.
+            </summary>
+            <param name="channel">Channel to use for this call.</param>
+            <param name="method">Method to call.</param>
+            <param name="options">Call options.</param>
+        </member>
+        <member name="M:Grpc.Core.CallInvocationDetails`2.#ctor(Grpc.Core.Channel,Grpc.Core.Method{`0,`1},System.String,Grpc.Core.CallOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Grpc.Core.CallInvocationDetails`2"/> struct.
+            </summary>
+            <param name="channel">Channel to use for this call.</param>
+            <param name="method">Method to call.</param>
+            <param name="host">Host that contains the method. if <c>null</c>, default host will be used.</param>
+            <param name="options">Call options.</param>
+        </member>
+        <member name="M:Grpc.Core.CallInvocationDetails`2.#ctor(Grpc.Core.Channel,System.String,System.String,Grpc.Core.Marshaller{`0},Grpc.Core.Marshaller{`1},Grpc.Core.CallOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Grpc.Core.CallInvocationDetails`2"/> struct.
+            </summary>
+            <param name="channel">Channel to use for this call.</param>
+            <param name="method">Qualified method name.</param>
+            <param name="host">Host that contains the method.</param>
+            <param name="requestMarshaller">Request marshaller.</param>
+            <param name="responseMarshaller">Response marshaller.</param>
+            <param name="options">Call options.</param>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.Channel">
+            <summary>
+            Get channel associated with this call.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.Method">
+            <summary>
+            Gets name of method to be called.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.Host">
+            <summary>
+            Get name of host.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.RequestMarshaller">
+            <summary>
+            Gets marshaller used to serialize requests.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.ResponseMarshaller">
+            <summary>
+            Gets marshaller used to deserialized responses.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.CallInvocationDetails`2.Options">
+            <summary>
+            Gets the call options.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.CallInvocationDetails`2.WithOptions(Grpc.Core.CallOptions)">
+            <summary>
+            Returns new instance of <see cref="T:Grpc.Core.CallInvocationDetails`2"/> with
+            <c>Options</c> set to the value provided. Values of all other fields are preserved.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Calls">
+            <summary>
+            Helper methods for generated clients to make RPC calls.
+            Most users will use this class only indirectly and will be 
+            making calls using client object generated from protocol
+            buffer definition files.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Calls.BlockingUnaryCall``2(Grpc.Core.CallInvocationDetails{``0,``1},``0)">
+            <summary>
+            Invokes a simple remote call in a blocking fashion.
+            </summary>
+            <returns>The response.</returns>
+            <param name="call">The call definition.</param>
+            <param name="req">Request message.</param>
+            <typeparam name="TRequest">Type of request message.</typeparam>
+            <typeparam name="TResponse">The of response message.</typeparam>
+        </member>
+        <member name="M:Grpc.Core.Calls.AsyncUnaryCall``2(Grpc.Core.CallInvocationDetails{``0,``1},``0)">
+            <summary>
+            Invokes a simple remote call asynchronously.
+            </summary>
+            <returns>An awaitable call object providing access to the response.</returns>
+            <param name="call">The call definition.</param>
+            <param name="req">Request message.</param>
+            <typeparam name="TRequest">Type of request message.</typeparam>
+            <typeparam name="TResponse">The of response message.</typeparam>
+        </member>
+        <member name="M:Grpc.Core.Calls.AsyncServerStreamingCall``2(Grpc.Core.CallInvocationDetails{``0,``1},``0)">
+            <summary>
+            Invokes a server streaming call asynchronously.
+            In server streaming scenario, client sends on request and server responds with a stream of responses.
+            </summary>
+            <returns>A call object providing access to the asynchronous response stream.</returns>
+            <param name="call">The call definition.</param>
+            <param name="req">Request message.</param>
+            <typeparam name="TRequest">Type of request message.</typeparam>
+            <typeparam name="TResponse">The of response messages.</typeparam>
+        </member>
+        <member name="M:Grpc.Core.Calls.AsyncClientStreamingCall``2(Grpc.Core.CallInvocationDetails{``0,``1})">
+            <summary>
+            Invokes a client streaming call asynchronously.
+            In client streaming scenario, client sends a stream of requests and server responds with a single response.
+            </summary>
+            <param name="call">The call definition.</param>
+            <returns>An awaitable call object providing access to the response.</returns>
+            <typeparam name="TRequest">Type of request messages.</typeparam>
+            <typeparam name="TResponse">The of response message.</typeparam>
+        </member>
+        <member name="M:Grpc.Core.Calls.AsyncDuplexStreamingCall``2(Grpc.Core.CallInvocationDetails{``0,``1})">
+            <summary>
+            Invokes a duplex streaming call asynchronously.
+            In duplex streaming scenario, client sends a stream of requests and server responds with a stream of responses.
+            The response stream is completely independent and both side can be sending messages at the same time.
+            </summary>
+            <returns>A call object providing access to the asynchronous request and response streams.</returns>
+            <param name="call">The call definition.</param>
+            <typeparam name="TRequest">Type of request messages.</typeparam>
+            <typeparam name="TResponse">Type of responsemessages.</typeparam>
+        </member>
+        <member name="T:Grpc.Core.Channel">
+            <summary>
+            Represents a gRPC channel. Channels are an abstraction of long-lived connections to remote servers.
+            More client objects can reuse the same channel. Creating a channel is an expensive operation compared to invoking
+            a remote call so in general you should reuse a single channel for as many calls as possible.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Channel.#ctor(System.String,Grpc.Core.ChannelCredentials)">
+            <summary>
+            Creates a channel that connects to a specific host.
+            Port will default to 80 for an unsecure channel and to 443 for a secure channel.
+            </summary>
+            <param name="target">Target of the channel.</param>
+            <param name="credentials">Credentials to secure the channel.</param>
+        </member>
+        <member name="M:Grpc.Core.Channel.#ctor(System.String,Grpc.Core.ChannelCredentials,System.Collections.Generic.IEnumerable{Grpc.Core.ChannelOption})">
+            <summary>
+            Creates a channel that connects to a specific host.
+            Port will default to 80 for an unsecure channel or to 443 for a secure channel.
+            </summary>
+            <param name="target">Target of the channel.</param>
+            <param name="credentials">Credentials to secure the channel.</param>
+            <param name="options">Channel options.</param>
+        </member>
+        <member name="M:Grpc.Core.Channel.#ctor(System.String,System.Int32,Grpc.Core.ChannelCredentials)">
+            <summary>
+            Creates a channel that connects to a specific host and port.
+            </summary>
+            <param name="host">The name or IP address of the host.</param>
+            <param name="port">The port.</param>
+            <param name="credentials">Credentials to secure the channel.</param>
+        </member>
+        <member name="M:Grpc.Core.Channel.#ctor(System.String,System.Int32,Grpc.Core.ChannelCredentials,System.Collections.Generic.IEnumerable{Grpc.Core.ChannelOption})">
+            <summary>
+            Creates a channel that connects to a specific host and port.
+            </summary>
+            <param name="host">The name or IP address of the host.</param>
+            <param name="port">The port.</param>
+            <param name="credentials">Credentials to secure the channel.</param>
+            <param name="options">Channel options.</param>
+        </member>
+        <member name="P:Grpc.Core.Channel.State">
+            <summary>
+            Gets current connectivity state of this channel.
+            After channel has been shutdown, <c>ChannelState.Shutdown</c> will be returned.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Channel.WaitForStateChangedAsync(Grpc.Core.ChannelState,System.Nullable{System.DateTime})">
+            <summary>
+            Returned tasks completes once channel state has become different from 
+            given lastObservedState. 
+            If deadline is reached or an error occurs, returned task is cancelled.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Channel.TryWaitForStateChangedAsync(Grpc.Core.ChannelState,System.Nullable{System.DateTime})">
+            <summary>
+            Returned tasks completes once channel state has become different from
+            given lastObservedState (<c>true</c> is returned) or if the wait has timed out (<c>false</c> is returned).
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Channel.ResolvedTarget">
+            <summary>Resolved address of the remote endpoint in URI format.</summary>
+        </member>
+        <member name="P:Grpc.Core.Channel.ShutdownToken">
+            <summary>
+            Returns a token that gets cancelled once <c>ShutdownAsync</c> is invoked.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Channel.ConnectAsync(System.Nullable{System.DateTime})">
+            <summary>
+            Allows explicitly requesting channel to connect without starting an RPC.
+            Returned task completes once state Ready was seen. If the deadline is reached,
+            or channel enters the Shutdown state, the task is cancelled.
+            There is no need to call this explicitly unless your use case requires that.
+            Starting an RPC on a new channel will request connection implicitly.
+            </summary>
+            <param name="deadline">The deadline. <c>null</c> indicates no deadline.</param>
+        </member>
+        <member name="M:Grpc.Core.Channel.ShutdownAsyncCore">
+            <summary>Provides implementation of a non-virtual public member.</summary>
+        </member>
+        <member name="M:Grpc.Core.Channel.CreateCallInvoker">
+            <summary>
+            Create a new <see cref="T:Grpc.Core.CallInvoker"/> for the channel.
+            </summary>
+            <returns>A new <see cref="T:Grpc.Core.CallInvoker"/>.</returns>
+        </member>
+        <member name="T:Grpc.Core.ChannelOption">
+            <summary>
+            Channel option specified when creating a channel.
+            Corresponds to grpc_channel_args from grpc/grpc.h.
+            Commonly used channel option names are defined in <c>ChannelOptions</c>,
+            but any of the GRPC_ARG_* channel options names defined in grpc_types.h can be used.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.ChannelOption.OptionType">
+            <summary>
+            Type of <c>ChannelOption</c>.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOption.OptionType.Integer">
+            <summary>
+            Channel option with integer value.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOption.OptionType.String">
+            <summary>
+            Channel option with string value.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.#ctor(System.String,System.String)">
+            <summary>
+            Creates a channel option with a string value.
+            </summary>
+            <param name="name">Name.</param>
+            <param name="stringValue">String value.</param>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.#ctor(System.String,System.Int32)">
+            <summary>
+            Creates a channel option with an integer value.
+            </summary>
+            <param name="name">Name.</param>
+            <param name="intValue">Integer value.</param>
+        </member>
+        <member name="P:Grpc.Core.ChannelOption.Type">
+            <summary>
+            Gets the type of the <c>ChannelOption</c>.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.ChannelOption.Name">
+            <summary>
+            Gets the name of the <c>ChannelOption</c>.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.ChannelOption.IntValue">
+            <summary>
+            Gets the integer value the <c>ChannelOption</c>.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.ChannelOption.StringValue">
+            <summary>
+            Gets the string value the <c>ChannelOption</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.Equals(Grpc.Core.ChannelOption)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.GetHashCode">
+            <summary>
+            A hash code for the current object.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.op_Equality(Grpc.Core.ChannelOption,Grpc.Core.ChannelOption)">
+            <summary>
+            Equality operator.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOption.op_Inequality(Grpc.Core.ChannelOption,Grpc.Core.ChannelOption)">
+            <summary>
+            Inequality operator.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.ChannelOptions">
+            <summary>
+            Defines names of most commonly used channel options.
+            Other supported options names can be found in grpc_types.h (GRPC_ARG_* definitions)
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.SslTargetNameOverride">
+            <summary>Override SSL target check. Only to be used for testing.</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.Census">
+            <summary>Enable census for tracing and stats collection</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.MaxConcurrentStreams">
+            <summary>Maximum number of concurrent incoming streams to allow on a http2 connection</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.MaxReceiveMessageLength">
+            <summary>Maximum message length that the channel can receive</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.MaxSendMessageLength">
+            <summary>Maximum message length that the channel can send</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.MaxMessageLength">
+            <summary>Obsolete, for backward compatibility only.</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.Http2InitialSequenceNumber">
+            <summary>Initial sequence number for http2 transports</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.DefaultAuthority">
+            <summary>Default authority for calls.</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.PrimaryUserAgentString">
+            <summary>Primary user agent: goes at the start of the user-agent metadata</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.SecondaryUserAgentString">
+            <summary>Secondary user agent: goes at the end of the user-agent metadata</summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelOptions.SoReuseport">
+            <summary>If non-zero, allow the use of SO_REUSEPORT for server if it's available (default 1)</summary>
+        </member>
+        <member name="M:Grpc.Core.ChannelOptions.CreateChannelArgs(System.Collections.Generic.ICollection{Grpc.Core.ChannelOption})">
+            <summary>
+            Creates native object for a collection of channel options.
+            </summary>
+            <returns>The native channel arguments.</returns>
+        </member>
+        <member name="T:Grpc.Core.ChannelState">
+            <summary>
+            Connectivity state of a channel.
+            Based on grpc_connectivity_state from grpc/grpc.h
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelState.Idle">
+            <summary>
+            Channel is idle
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelState.Connecting">
+            <summary>
+            Channel is connecting
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelState.Ready">
+            <summary>
+            Channel is ready for work
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelState.TransientFailure">
+            <summary>
+            Channel has seen a failure but expects to recover
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ChannelState.Shutdown">
+            <summary>
+            Channel has seen a failure that it cannot recover from
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.CompressionLevel">
+            <summary>
+            Compression level based on grpc_compression_level from grpc/compression.h
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.CompressionLevel.None">
+            <summary>
+            No compression.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.CompressionLevel.Low">
+            <summary>
+            Low compression.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.CompressionLevel.Medium">
+            <summary>
+            Medium compression.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.CompressionLevel.High">
+            <summary>
+            High compression.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.DefaultCallInvoker">
+            <summary>
+            Invokes client RPCs using <see cref="T:Grpc.Core.Calls"/>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.#ctor(Grpc.Core.Channel)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Grpc.Core.DefaultCallInvoker"/> class.
+            </summary>
+            <param name="channel">Channel to use.</param>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.BlockingUnaryCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions,``0)">
+            <summary>
+            Invokes a simple remote call in a blocking fashion.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.AsyncUnaryCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions,``0)">
+            <summary>
+            Invokes a simple remote call asynchronously.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.AsyncServerStreamingCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions,``0)">
+            <summary>
+            Invokes a server streaming call asynchronously.
+            In server streaming scenario, client sends on request and server responds with a stream of responses.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.AsyncClientStreamingCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions)">
+            <summary>
+            Invokes a client streaming call asynchronously.
+            In client streaming scenario, client sends a stream of requests and server responds with a single response.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.AsyncDuplexStreamingCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions)">
+            <summary>
+            Invokes a duplex streaming call asynchronously.
+            In duplex streaming scenario, client sends a stream of requests and server responds with a stream of responses.
+            The response stream is completely independent and both side can be sending messages at the same time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultCallInvoker.CreateCall``2(Grpc.Core.Method{``0,``1},System.String,Grpc.Core.CallOptions)">
+            <summary>Creates call invocation details for given method.</summary>
+        </member>
+        <member name="T:Grpc.Core.GrpcEnvironment">
+            <summary>
+            Encapsulates initialization and shutdown of gRPC library.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.AddRef">
+            <summary>
+            Returns a reference-counted instance of initialized gRPC environment.
+            Subsequent invocations return the same instance unless reference count has dropped to zero previously.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.ReleaseAsync">
+            <summary>
+            Decrements the reference count for currently active environment and asynchronously shuts down the gRPC environment if reference count drops to zero.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.ShutdownChannelsAsync">
+            <summary>
+            Requests shutdown of all channels created by the current process.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.KillServersAsync">
+            <summary>
+            Requests immediate shutdown of all servers created by the current process.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.GrpcEnvironment.Logger">
+            <summary>
+            Gets application-wide logger used by gRPC.
+            </summary>
+            <value>The logger.</value>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetLogger(Grpc.Core.Logging.ILogger)">
+            <summary>
+            Sets the application-wide logger that should be used by gRPC.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetThreadPoolSize(System.Int32)">
+            <summary>
+            Sets the number of threads in the gRPC thread pool that polls for internal RPC events.
+            Can be only invoked before the <c>GrpcEnviroment</c> is started and cannot be changed afterwards.
+            Setting thread pool size is an advanced setting and you should only use it if you know what you are doing.
+            Most users should rely on the default value provided by gRPC library.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetCompletionQueueCount(System.Int32)">
+            <summary>
+            Sets the number of completion queues in the  gRPC thread pool that polls for internal RPC events.
+            Can be only invoked before the <c>GrpcEnviroment</c> is started and cannot be changed afterwards.
+            Setting the number of completions queues is an advanced setting and you should only use it if you know what you are doing.
+            Most users should rely on the default value provided by gRPC library.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetHandlerInlining(System.Boolean)">
+            <summary>
+            By default, gRPC's internal event handlers get offloaded to .NET default thread pool thread (<c>inlineHandlers=false</c>).
+            Setting <c>inlineHandlers</c> to <c>true</c> will allow scheduling the event handlers directly to
+            <c>GrpcThreadPool</c> internal threads. That can lead to significant performance gains in some situations,
+            but requires user to never block in async code (incorrectly written code can easily lead to deadlocks).
+            Inlining handlers is an advanced setting and you should only use it if you know what you are doing.
+            Most users should rely on the default value provided by gRPC library.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.
+            Note: <c>inlineHandlers=true</c> was the default in gRPC C# v1.4.x and earlier.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetBatchContextPoolParams(System.Int32,System.Int32)">
+            <summary>
+            Sets the parameters for a pool that caches batch context instances. Reusing batch context instances
+            instead of creating a new one for every C core operation helps reducing the GC pressure.
+            Can be only invoked before the <c>GrpcEnviroment</c> is started and cannot be changed afterwards.
+            This is an advanced setting and you should only use it if you know what you are doing.
+            Most users should rely on the default value provided by gRPC library.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.SetRequestCallContextPoolParams(System.Int32,System.Int32)">
+            <summary>
+            Sets the parameters for a pool that caches request call context instances. Reusing request call context instances
+            instead of creating a new one for every requested call in C core helps reducing the GC pressure.
+            Can be only invoked before the <c>GrpcEnviroment</c> is started and cannot be changed afterwards.
+            This is an advanced setting and you should only use it if you know what you are doing.
+            Most users should rely on the default value provided by gRPC library.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.
+            </summary>
+        </member>
+        <member name="E:Grpc.Core.GrpcEnvironment.ShuttingDown">
+            <summary>
+            Occurs when <c>GrpcEnvironment</c> is about the start the shutdown logic.
+            If <c>GrpcEnvironment</c> is later initialized and shutdown, the event will be fired again (unless unregistered first).
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.#ctor">
+            <summary>
+            Creates gRPC environment.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.GrpcEnvironment.CompletionQueues">
+            <summary>
+            Gets the completion queues used by this gRPC environment.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.PickCompletionQueue">
+            <summary>
+            Picks a completion queue in a round-robin fashion.
+            Shouldn't be invoked on a per-call basis (used at per-channel basis).
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.GrpcEnvironment.DebugStats">
+            <summary>
+            Gets the completion queue used by this gRPC environment.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.GetCoreVersionString">
+            <summary>
+            Gets version of gRPC C core.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.ShutdownAsync">
+            <summary>
+            Shuts down this environment.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.GrpcEnvironment.ShutdownHooks.HandleShutdown">
+            <summary>
+            Handler for AppDomain.DomainUnload, AppDomain.ProcessExit and AssemblyLoadContext.Unloading hooks.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Interceptors.ServerServiceDefinitionExtensions">
+            <summary>
+            Extends the ServerServiceDefinition class to add methods used to register interceptors on the server side.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Interceptors.ServerServiceDefinitionExtensions.Intercept(Grpc.Core.ServerServiceDefinition,Grpc.Core.Interceptors.Interceptor)">
+            <summary>
+            Returns a <see cref="T:Grpc.Core.ServerServiceDefinition" /> instance that
+            intercepts incoming calls to the underlying service handler through the given interceptor.
+            </summary>
+            <param name="serverServiceDefinition">The <see cref="T:Grpc.Core.ServerServiceDefinition" /> instance to register interceptors on.</param>
+            <param name="interceptor">The interceptor to intercept the incoming invocations with.</param>
+            <remarks>
+            Multiple interceptors can be added on top of each other by calling
+            "serverServiceDefinition.Intercept(a, b, c)".  The order of invocation will be "a", "b", and then "c".
+            Interceptors can be later added to an existing intercepted service definition, effectively
+            building a chain like "serverServiceDefinition.Intercept(c).Intercept(b).Intercept(a)".  Note that
+            in this case, the last interceptor added will be the first to take control.
+            </remarks>
+        </member>
+        <member name="M:Grpc.Core.Interceptors.ServerServiceDefinitionExtensions.Intercept(Grpc.Core.ServerServiceDefinition,Grpc.Core.Interceptors.Interceptor[])">
+            <summary>
+            Returns a <see cref="T:Grpc.Core.ServerServiceDefinition" /> instance that
+            intercepts incoming calls to the underlying service handler through the given interceptors.
+            </summary>
+            <param name="serverServiceDefinition">The <see cref="T:Grpc.Core.ServerServiceDefinition" /> instance to register interceptors on.</param>
+            <param name="interceptors">
+            An array of interceptors to intercept the incoming invocations with.
+            Control is passed to the interceptors in the order specified.
+            </param>
+            <remarks>
+            Multiple interceptors can be added on top of each other by calling
+            "serverServiceDefinition.Intercept(a, b, c)".  The order of invocation will be "a", "b", and then "c".
+            Interceptors can be later added to an existing intercepted service definition, effectively
+            building a chain like "serverServiceDefinition.Intercept(c).Intercept(b).Intercept(a)".  Note that
+            in this case, the last interceptor added will be the first to take control.
+            </remarks>
+        </member>
+        <member name="T:Grpc.Core.Interceptors.ServerServiceDefinitionExtensions.InterceptingServiceBinder">
+            <summary>
+            Helper for creating <c>ServerServiceDefinition</c> with intercepted handlers.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AsyncCall`2">
+            <summary>
+            Manages client side native call lifecycle.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.#ctor(Grpc.Core.CallInvocationDetails{`0,`1},Grpc.Core.Internal.INativeCall)">
+            <summary>
+            This constructor should only be used for testing.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.UnaryCall(`0)">
+            <summary>
+            Blocking unary request - unary response call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.UnaryCallAsync(`0)">
+            <summary>
+            Starts a unary request - unary response call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.ClientStreamingCallAsync">
+            <summary>
+            Starts a streamed request - unary response call.
+            Use StartSendMessage and StartSendCloseFromClient to stream requests.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.StartServerStreamingCall(`0)">
+            <summary>
+            Starts a unary request - streamed response call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.StartDuplexStreamingCall">
+            <summary>
+            Starts a streaming request - streaming response call.
+            Use StartSendMessage and StartSendCloseFromClient to stream requests.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.SendMessageAsync(`0,Grpc.Core.WriteFlags)">
+            <summary>
+            Sends a streaming request. Only one pending send action is allowed at any given time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.ReadMessageAsync">
+            <summary>
+            Receives a streaming response. Only one pending read action is allowed at any given time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.SendCloseFromClientAsync">
+            <summary>
+            Sends halfclose, indicating client is done with streaming requests.
+            Only one pending send action is allowed at any given time.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.AsyncCall`2.StreamingResponseCallFinishedTask">
+            <summary>
+            Get the task that completes once if streaming response call finishes with ok status and throws RpcException with given status otherwise.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.AsyncCall`2.ResponseHeadersAsync">
+            <summary>
+            Get the task that completes once response headers are received.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.GetStatus">
+            <summary>
+            Gets the resulting status if the call has already finished.
+            Throws InvalidOperationException otherwise.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.GetTrailers">
+            <summary>
+            Gets the trailing metadata if the call has already finished.
+            Throws InvalidOperationException otherwise.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.GetWriteFlagsForCall">
+            <summary>
+            Gets WriteFlags set in callDetails.Options.WriteOptions
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.HandleReceivedResponseHeaders(System.Boolean,Grpc.Core.Metadata)">
+            <summary>
+            Handles receive status completion for calls with streaming response.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.HandleUnaryResponse(System.Boolean,Grpc.Core.Internal.ClientSideStatus,Grpc.Core.Internal.IBufferReader,Grpc.Core.Metadata)">
+            <summary>
+            Handler for unary response completion.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCall`2.HandleFinished(System.Boolean,Grpc.Core.Internal.ClientSideStatus)">
+            <summary>
+            Handles receive status completion for calls with streaming response.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AsyncCallBase`2">
+            <summary>
+            Base for handling both client side and server side calls.
+            Manages native call lifecycle and provides convenience methods.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.Cancel">
+            <summary>
+            Requests cancelling the call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.CancelWithStatus(Grpc.Core.Status)">
+            <summary>
+            Requests cancelling the call with given status.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.SendMessageInternalAsync(`0,Grpc.Core.WriteFlags)">
+            <summary>
+            Initiates sending a message. Only one send operation can be active at a time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.ReadMessageInternalAsync">
+            <summary>
+            Initiates reading a message. Only one read operation can be active at a time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.ReleaseResourcesIfPossible">
+            <summary>
+            If there are no more pending actions and no new actions can be started, releases
+            the underlying native resources.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.GetRpcExceptionClientOnly">
+            <summary>
+            Returns an exception to throw for a failed send operation.
+            It is only allowed to call this method for a call that has already finished.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.CheckSendAllowedOrEarlyResult">
+            <summary>
+            Checks if sending is allowed and possibly returns a Task that allows short-circuiting the send
+            logic by directly returning the write operation result task. Normally, null is returned.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.HandleSendFinished(System.Boolean)">
+            <summary>
+            Handles send completion (including SendCloseFromClient).
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.HandleSendStatusFromServerFinished(System.Boolean)">
+            <summary>
+            Handles send status from server completion.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallBase`2.HandleReadFinished(System.Boolean,Grpc.Core.Internal.IBufferReader)">
+            <summary>
+            Handles streaming read completion.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AsyncCallServer`2">
+            <summary>
+            Manages server side native call lifecycle.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.InitializeForTesting(Grpc.Core.Internal.INativeCall)">
+            <summary>
+            Only for testing purposes.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.ServerSideCallAsync">
+            <summary>
+            Starts a server side call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.SendMessageAsync(`1,Grpc.Core.WriteFlags)">
+            <summary>
+            Sends a streaming response. Only one pending send action is allowed at any given time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.ReadMessageAsync">
+            <summary>
+            Receives a streaming request. Only one pending read action is allowed at any given time.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.SendInitialMetadataAsync(Grpc.Core.Metadata)">
+            <summary>
+            Initiates sending a initial metadata. 
+            Even though C-core allows sending metadata in parallel to sending messages, we will treat sending metadata as a send message operation
+            to make things simpler.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.SendStatusFromServerAsync(Grpc.Core.Status,Grpc.Core.Metadata,System.Nullable{Grpc.Core.Internal.AsyncCallServer{`0,`1}.ResponseWithFlags})">
+            <summary>
+            Sends call result status, indicating we are done with writes.
+            Sending a status different from StatusCode.OK will also implicitly cancel the call.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.AsyncCallServer`2.CancellationToken">
+            <summary>
+            Gets cancellation token that gets cancelled once close completion
+            is received and the cancelled flag is set.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AsyncCallServer`2.HandleFinishedServerside(System.Boolean,System.Boolean)">
+            <summary>
+            Handles the server side close completion.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AuthContextSafeHandle">
+            <summary>
+            grpc_auth_context
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.AuthContextSafeHandle.ToAuthContext">
+            <summary>
+            Copies contents of the native auth context into a new <c>AuthContext</c> instance.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AuthContextSafeHandle.NativeAuthProperty">
+            <summary>
+            grpc_auth_property
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.AuthContextSafeHandle.NativeAuthPropertyIterator">
+            <summary>
+            grpc_auth_property_iterator
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.BatchContextSafeHandle">
+            <summary>
+            grpcsharp_batch_context
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CallCredentialsSafeHandle">
+            <summary>
+            grpc_call_credentials from <c>grpc/grpc_security.h</c>
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CallError">
+            <summary>
+            grpc_call_error from grpc/grpc.h
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CallErrorExtensions.CheckOk(Grpc.Core.Internal.CallError)">
+            <summary>
+            Checks the call API invocation's result is OK.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CallOptionsExtensions.Normalize(Grpc.Core.CallOptions)">
+            <summary>
+            Returns a new instance of <see cref="T:Grpc.Core.CallOptions"/> with
+            all previously unset values set to their defaults and deadline and cancellation
+            token propagated when appropriate.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CallSafeHandle">
+            <summary>
+            grpc_call from <c>grpc/grpc.h</c>
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CallSafeHandle.CreateFake(System.IntPtr,Grpc.Core.Internal.CompletionQueueSafeHandle)">
+            <summary>
+            Only for testing.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ChannelArgsSafeHandle">
+            <summary>
+            grpc_channel_args from <c>grpc/grpc.h</c>
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ChannelCredentialsSafeHandle">
+            <summary>
+            grpc_channel_credentials from <c>grpc/grpc_security.h</c>
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ChannelSafeHandle">
+            <summary>
+            grpc_channel from <c>grpc/grpc.h</c>
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ClientRequestStream`2">
+            <summary>
+            Writes requests asynchronously to an underlying AsyncCall object.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ClientSideStatus">
+            <summary>
+            Status + metadata received on client side when call finishes.
+            (when receive_status_on_client operation finishes).
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ClockType">
+            <summary>
+            gpr_clock_type from grpc/support/time.h
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CompletionQueueEvent">
+            <summary>
+            grpc_event from grpc/grpc.h
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CompletionQueueEvent.CompletionType">
+            <summary>
+            grpc_completion_type from grpc/grpc.h
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CompletionQueueSafeHandle">
+            <summary>
+            grpc_completion_queue from <c>grpc/grpc.h</c>
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CompletionQueueSafeHandle.CreateSync">
+            <summary>
+            Create a completion queue that can only be used for Pluck operations.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CompletionQueueSafeHandle.CreateAsync(Grpc.Core.Internal.CompletionRegistry)">
+            <summary>
+            Create a completion queue that can only be used for Next operations.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CompletionQueueSafeHandle.NewScope">
+            <summary>
+            Creates a new usage scope for this completion queue. Once successfully created,
+            the completion queue won't be shutdown before scope.Dispose() is called.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.CompletionQueueSafeHandle.CompletionRegistry">
+            <summary>
+            Completion registry associated with this completion queue.
+            Doesn't need to be set if only using Pluck() operations.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.CompletionRegistry.LastRegisteredKey">
+            <summary>
+            For testing purposes only. NOT threadsafe.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CompletionRegistry.IntPtrComparer">
+            <summary>
+            IntPtr doesn't implement <c>IEquatable{IntPtr}</c> so we need to use custom comparer to avoid boxing.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ContextPropagationFlags">
+            <summary>
+            Context propagation flags from grpc/grpc.h.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ContextPropagationTokenImpl">
+            <summary>
+            Implementation of <c>ContextPropagationToken</c> that carries
+            all fields needed for context propagation by C-core based implementation of gRPC.
+            Instances of <c>ContextPropagationToken</c> that are not of this
+            type will be recognized as "foreign" and will be silently ignored
+            (treated as if null).
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Internal.ContextPropagationTokenImpl.DefaultCoreMask">
+            <summary>
+            Default propagation mask used by C core.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Internal.ContextPropagationTokenImpl.DefaultMask">
+            <summary>
+            Default propagation mask used by C# - we want to propagate deadline 
+            and cancellation token by our own means, everything else will be propagated
+            by C core automatically (according to <c>DefaultCoreMask</c>).
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.ContextPropagationTokenImpl.ParentCall">
+            <summary>
+            Gets the native handle of the parent call.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.ContextPropagationTokenImpl.ParentDeadline">
+            <summary>
+            Gets the parent call's deadline.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.ContextPropagationTokenImpl.ParentCancellationToken">
+            <summary>
+            Gets the parent call's cancellation token.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.ContextPropagationTokenImpl.Options">
+            <summary>
+            Get the context propagation options.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.ContextPropagationTokenExtensions.AsImplOrNull(Grpc.Core.ContextPropagationToken)">
+            <summary>
+            Converts given <c>ContextPropagationToken</c> to <c>ContextPropagationTokenImpl</c>
+            if possible or returns null.
+            Being able to convert means that the context propagation token is recognized as
+            "ours" (was created by this implementation).
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.CStringSafeHandle">
+            <summary>
+            Owned char* object.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DebugStats.CheckOK">
+            <summary>
+            Checks the debug stats and take action for any inconsistency found.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.DefaultCallCredentialsConfigurator">
+            <summary>
+            Creates native call credential objects from instances of <c>CallCredentials</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.CallCredentialsExtensions.ToNativeCredentials(Grpc.Core.CallCredentials)">
+            <summary>
+            Creates native object for the credentials.
+            </summary>
+            <returns>The native credentials.</returns>
+        </member>
+        <member name="T:Grpc.Core.Internal.DefaultChannelCredentialsConfigurator">
+            <summary>
+            Creates native call credential objects from instances of <c>ChannelCredentials</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.ChannelCredentialsExtensions.ToNativeCredentials(Grpc.Core.ChannelCredentials)">
+            <summary>
+            Creates native object for the credentials.
+            </summary>
+            <returns>The native credentials.</returns>
+        </member>
+        <member name="T:Grpc.Core.Internal.DefaultObjectPool`1">
+            <summary>
+            Pool of objects that combines a shared pool and a thread local pool.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultObjectPool`1.#ctor(System.Func{`0},System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of <c>DefaultObjectPool</c> with given shared capacity and thread local capacity.
+            Thread local capacity should be significantly smaller than the shared capacity as we don't guarantee immediately
+            disposing the objects in the thread local pool after this pool is disposed (they will eventually be garbage collected
+            after the thread that owns them has finished).
+            On average, the shared pool will only be accessed approx. once for every <c>threadLocalCapacity / 2</c> rent or lease
+            operations.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultObjectPool`1.Lease">
+            <summary>
+            Leases an item from the pool or creates a new instance if the pool is empty.
+            Attempts to retrieve the item from the thread local pool first.
+            If the thread local pool is empty, the item is taken from the shared pool
+            along with more items that are moved to the thread local pool to avoid
+            prevent acquiring the lock for shared pool too often.
+            The methods should not be called after the pool is disposed, but it won't
+            results in an error to do so (after depleting the items potentially left
+            in the thread local pool, it will continue returning new objects created by the factory).
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultObjectPool`1.Return(`0)">
+            <summary>
+            Returns an item to the pool.
+            Attempts to add the item to the thread local pool first.
+            If the thread local pool is full, item is added to a shared pool,
+            along with half of the items for the thread local pool, which
+            should prevent acquiring the lock for shared pool too often.
+            If called after the pool is disposed, we make best effort not to
+            add anything to the thread local pool and we guarantee not to add
+            anything to the shared pool (items will be disposed instead).
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultSerializationContext.GetBufferWriter">
+            <summary>
+            Expose serializer as buffer writer
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultSerializationContext.Complete">
+            <summary>
+            Complete the payload written so far.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.DefaultSslRootsOverride">
+            <summary>
+            Overrides the content of default SSL roots.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.DefaultSslRootsOverride.Override(Grpc.Core.Internal.NativeMethods)">
+            <summary>
+            Overrides C core's default roots with roots.pem loaded as embedded resource.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.GrpcThreadPool">
+            <summary>
+            Pool of threads polling on a set of completions queues.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.GrpcThreadPool.#ctor(Grpc.Core.GrpcEnvironment,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates a thread pool threads polling on a set of completions queues.
+            </summary>
+            <param name="environment">Environment.</param>
+            <param name="poolSize">Pool size.</param>
+            <param name="completionQueueCount">Completion queue count.</param>
+            <param name="inlineHandlers">Handler inlining.</param>
+        </member>
+        <member name="P:Grpc.Core.Internal.GrpcThreadPool.IsAlive">
+            <summary>
+            Returns true if there is at least one thread pool thread that hasn't
+            already stopped.
+            Threads can either stop because all completion queues shut down or
+            because all foreground threads have already shutdown and process is
+            going to exit.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.GrpcThreadPool.RunHandlerLoop(Grpc.Core.Internal.CompletionQueueSafeHandle,Grpc.Core.Profiling.IProfiler)">
+            <summary>
+            Body of the polling thread.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.INativeCall">
+            <summary>
+            Abstraction of a native call object.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.IObjectPool`1">
+            <summary>
+            Pool of objects.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.IPooledObject`1">
+            <summary>
+            An object that can be pooled in <c>IObjectPool</c>.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Grpc.Core.Internal.IPooledObject`1.SetReturnToPoolAction(System.Action{`0})">
+            <summary>
+            Set the action that will be invoked to return a leased object to the pool.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.IServerResponseStream">
+            <summary>
+            Exposes non-generic members of <c>ServerReponseStream</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.IServerResponseStream.WriteResponseHeadersAsync(Grpc.Core.Metadata)">
+            <summary>
+            Asynchronously sends response headers for the current call to the client. See <c>ServerCallContext.WriteResponseHeadersAsync</c> for exact semantics.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.IServerResponseStream.WriteOptions">
+            <summary>
+            Gets or sets the write options.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.MarshalUtils">
+            <summary>
+            Useful methods for native/managed marshalling.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.MarshalUtils.PtrToStringUTF8(System.IntPtr,System.Int32)">
+            <summary>
+            Converts <c>IntPtr</c> pointing to a UTF-8 encoded byte array to <c>string</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.MarshalUtils.GetBytesUTF8(System.String,System.Byte*,System.Int32)">
+            <summary>
+            UTF-8 encodes the given string into a buffer of sufficient size
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.MarshalUtils.GetMaxByteCountUTF8(System.String)">
+            <summary>
+            Returns the maximum number of bytes required to encode a given string.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.MarshalUtils.GetByteCountUTF8(System.String)">
+            <summary>
+            Returns the actual number of bytes required to encode a given string.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.MetadataArraySafeHandle">
+            <summary>
+            grpc_metadata_array from <c>grpc/grpc.h</c>
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.MetadataArraySafeHandle.ReadMetadataFromPtrUnsafe(System.IntPtr)">
+            <summary>
+            Reads metadata from pointer to grpc_metadata_array
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.MonoPInvokeCallbackAttribute">
+            <summary>
+            Use this attribute to mark methods that will be called back from P/Invoke calls.
+            iOS (and probably other AOT platforms) needs to have delegates registered.
+            Instead of depending on Xamarin.iOS for this, we can just create our own,
+            the iOS runtime just checks for the type name.
+            See: https://docs.microsoft.com/en-gb/xamarin/ios/internals/limitations#reverse-callbacks
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeExtension">
+            <summary>
+            Takes care of loading C# native extension and provides access to PInvoke calls the library exports.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeExtension.Get">
+            <summary>
+            Gets singleton instance of this class.
+            The native extension is loaded when called for the first time.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.NativeExtension.NativeMethods">
+            <summary>
+            Provides access to the exported native methods.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeExtension.LoadUnmanagedLibrary">
+            <summary>
+            Detects which configuration of native extension to load and load it.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethods">
+            <summary>
+            Loads native extension and return native methods delegates.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethodsUnity">
+            <summary>
+            Return native method delegates when running on Unity platform.
+            Unity does not use standard NuGet packages and the native library is treated
+            there as a "native plugin" which is (provided it has the right metadata)
+            automatically made available to <c>[DllImport]</c> loading logic.
+            WARNING: Unity support is experimental and work-in-progress. Don't expect it to work.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeExtension.LoadNativeMethodsXamarin">
+            <summary>
+            Return native method delegates when running on the Xamarin platform.
+            WARNING: Xamarin support is experimental and work-in-progress. Don't expect it to work.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeLogRedirector">
+            <summary>
+            Logs from gRPC C core library can get lost if your application is not a console app.
+            This class allows redirection of logs to gRPC logger.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeLogRedirector.Redirect(Grpc.Core.Internal.NativeMethods)">
+            <summary>
+            Redirects logs from native gRPC C core library to a general logger.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeMethods">
+            <summary>
+            Provides access to all native methods provided by <c>NativeExtension</c>.
+            An extra level of indirection is added to P/Invoke calls to allow intelligent loading
+            of the right configuration of the native extension based on current platform, architecture etc.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.NativeMethods.Get">
+            <summary>
+            Gets singleton instance of this class.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeMethods.Delegates">
+            <summary>
+            Delegate types for all published native methods. Declared under inner class to prevent scope pollution.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromStaticLib">
+            <summary>
+            grpc_csharp_ext used as a static library (e.g Unity iOS).
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.NativeMethods.DllImportsFromSharedLib">
+            <summary>
+            grpc_csharp_ext used a shared library (e.g on Unity Standalone and Android).
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.PlatformApis">
+            <summary>
+            Utility methods for detecting platform and architecture.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsUnity">
+            <summary>
+            true if running on Unity platform.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsUnityIOS">
+            <summary>
+            true if running on Unity iOS, false otherwise.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsXamarin">
+            <summary>
+            true if running on a Xamarin platform (either Xamarin.Android or Xamarin.iOS),
+            false otherwise.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsXamarinIOS">
+            <summary>
+            true if running on Xamarin.iOS, false otherwise.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsXamarinAndroid">
+            <summary>
+            true if running on Xamarin.Android, false otherwise.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.PlatformApis.IsNetCore">
+            <summary>
+            true if running on .NET Core (CoreCLR), false otherwise.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.PlatformApis.GetUnityRuntimePlatform">
+            <summary>
+            Returns <c>UnityEngine.Application.platform</c> as a string.
+            See https://docs.unity3d.com/ScriptReference/Application-platform.html for possible values.
+            Value is obtained via reflection to avoid compile-time dependency on Unity.
+            This method should only be called if <c>IsUnity</c> is <c>true</c>.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.RequestCallContextSafeHandle">
+            <summary>
+            grpcsharp_request_call_context
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.SafeHandleZeroIsInvalid">
+            <summary>
+            Safe handle to wrap native objects.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.UnimplementedMethodCallHandler.UnimplementedMethod(Grpc.Core.IAsyncStreamReader{System.Byte[]},Grpc.Core.IServerStreamWriter{System.Byte[]},Grpc.Core.ServerCallContext)">
+            <summary>
+            Handler used for unimplemented method.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ServerCredentialsSafeHandle">
+            <summary>
+            grpc_server_credentials from <c>grpc/grpc_security.h</c>
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ServerResponseStream`2">
+            <summary>
+            Writes responses asynchronously to an underlying AsyncCallServer object.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ServerRpcNew">
+            <summary>
+            Details of a newly received RPC.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ServerSafeHandle">
+            <summary>
+            grpc_server from grpc/grpc.h
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.ServerServiceDefinitionExtensions.GetCallHandlers(Grpc.Core.ServerServiceDefinition)">
+            <summary>
+            Maps methods from <c>ServerServiceDefinition</c> to server call handlers.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.ServerServiceDefinitionExtensions.DefaultServiceBinder">
+            <summary>
+            Helper for converting <c>ServerServiceDefinition</c> to server call handlers.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.Slice">
+            <summary>
+            Slice of native memory.
+            Rough equivalent of grpc_slice (but doesn't support inlined slices, just a pointer to data and length)
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Slice.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents the current <see cref="T:Grpc.Core.Internal.Slice"/>.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.SliceBufferSafeHandle">
+            <summary>
+            Represents grpc_slice_buffer with some extra utility functions to allow
+            writing data to it using the <c>IBufferWriter</c> interface.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.Timespec">
+            <summary>
+            gpr_timespec from grpc/support/time.h
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.Equals(System.Object)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.ToString">
+            <summary>
+            Returns the full type name of this instance.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.Equals(Grpc.Core.Internal.Timespec)">
+            <summary>
+            Indicates whether this instance and a specified object are equal.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.InfFuture">
+            <summary>
+            Timespec a long time in the future.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.InfPast">
+            <summary>
+            Timespec a long time in the past.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.Now">
+            <summary>
+            Return Timespec representing the current time.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.TimevalSeconds">
+            <summary>
+            Seconds since unix epoch.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.TimevalNanos">
+            <summary>
+            The nanoseconds part of timeval.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.ToClockType(Grpc.Core.Internal.ClockType)">
+            <summary>
+            Converts the timespec to desired clock type.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.ToDateTime">
+            <summary>
+            Converts Timespec to DateTime.
+            Timespec needs to be of type GPRClockType.Realtime and needs to represent a legal value.
+            DateTime has lower resolution (100ns), so rounding can occurs.
+            Value are always rounded up to the nearest DateTime value in the future.
+            
+            For Timespec.InfFuture or if timespec is after the largest representable DateTime, DateTime.MaxValue is returned.
+            For Timespec.InfPast or if timespec is before the lowest representable DateTime, DateTime.MinValue is returned.
+            
+            Unless DateTime.MaxValue or DateTime.MinValue is returned, the resulting DateTime is always in UTC
+            (DateTimeKind.Utc)
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.Timespec.FromDateTime(System.DateTime)">
+            <summary>
+            Creates DateTime to Timespec.
+            DateTime has to be in UTC (DateTimeKind.Utc) unless it's DateTime.MaxValue or DateTime.MinValue.
+            For DateTime.MaxValue of date time after the largest representable Timespec, Timespec.InfFuture is returned.
+            For DateTime.MinValue of date time before the lowest representable Timespec, Timespec.InfPast is returned.
+            </summary>
+            <returns>The date time.</returns>
+            <param name="dateTime">Date time.</param>
+        </member>
+        <member name="P:Grpc.Core.Internal.Timespec.PreciseNow">
+            <summary>
+            Gets current timestamp using <c>GPRClockType.Precise</c>.
+            Only available internally because core needs to be compiled with 
+            GRPC_TIMERS_RDTSC support for this to use RDTSC.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.UnimplementedCallInvoker">
+            <summary>
+            Call invoker that throws <c>NotImplementedException</c> for all requests.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.UnmanagedLibrary">
+            <summary>
+            Represents a dynamically loaded unmanaged library in a (partially) platform independent manner.
+            First, the native library is loaded using dlopen (on Unix systems) or using LoadLibrary (on Windows).
+            dlsym or GetProcAddress are then used to obtain symbol addresses. <c>Marshal.GetDelegateForFunctionPointer</c>
+            transforms the addresses into delegates to native methods.
+            See http://stackoverflow.com/questions/13461989/p-invoke-to-dynamically-loaded-library-on-mono.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.UnmanagedLibrary.LoadSymbol(System.String)">
+            <summary>
+            Loads symbol in a platform specific way.
+            </summary>
+            <param name="symbolName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Grpc.Core.Internal.UnmanagedLibrary.PlatformSpecificLoadLibrary(System.String,System.String@)">
+            <summary>
+            Loads library in a platform specific way.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.UnmanagedLibrary.Mono">
+            <summary>
+            On Linux systems, using using dlopen and dlsym results in
+            DllNotFoundException("libdl.so not found") if libc6-dev
+            is not installed. As a workaround, we load symbols for
+            dlopen and dlsym from the current process as on Linux
+            Mono sure is linked against these symbols.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.UnmanagedLibrary.CoreCLR">
+            <summary>
+            Similarly as for Mono on Linux, we load symbols for
+            dlopen and dlsym from the "libcoreclr.so",
+            to avoid the dependency on libc-dev Linux.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Internal.WellKnownStrings">
+            <summary>
+            Utility type for identifying "well-known" strings (i.e. headers/keys etc that
+            we expect to see frequently, and don't want to allocate lots of copies of)
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.WellKnownStrings.TryIdentify(System.IntPtr,System.Int32)">
+            <summary>
+            Test whether the provided byte sequence is recognized as a well-known string; if
+            so, return a shared instance of that string; otherwise, return null
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Internal.WellKnownStrings.TryIdentify(System.Byte*,System.Int32)">
+            <summary>
+            Test whether the provided byte sequence is recognized as a well-known string; if
+            so, return a shared instance of that string; otherwise, return null
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.DefaultServerCallContext">
+            <summary>
+            Default implementation of <c>ServerCallContext</c>.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.DefaultServerCallContext.#ctor(Grpc.Core.Internal.CallSafeHandle,System.String,System.String,System.DateTime,Grpc.Core.Metadata,System.Threading.CancellationToken,Grpc.Core.Internal.IServerResponseStream)">
+            <summary>
+            Creates a new instance of <c>ServerCallContext</c>.
+            To allow reuse of ServerCallContext API by different gRPC implementations, the implementation of some members is provided externally.
+            To provide state, this <c>ServerCallContext</c> instance and <c>extraData</c> will be passed to the member implementations.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.ConsoleLogger">
+            <summary>Logger that logs to System.Console.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ConsoleLogger.#ctor">
+            <summary>Creates a console logger not associated to any specific type.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ConsoleLogger.#ctor(System.Type)">
+            <summary>Creates a console logger that logs messsage specific for given type.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ConsoleLogger.ForType``1">
+            <summary>
+            Returns a logger associated with the specified type.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.ILogger">
+            <summary>For logging messages.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.ForType``1">
+            <summary>Returns a logger associated with the specified type.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Debug(System.String)">
+            <summary>Logs a message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Debug(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Info(System.String)">
+            <summary>Logs a message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Info(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Warning(System.String)">
+            <summary>Logs a message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Warning(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Warning(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Error(System.String)">
+            <summary>Logs a message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Error(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.ILogger.Error(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Error.</summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.LogLevel">
+            <summary>Standard logging levels.</summary>
+        </member>
+        <member name="F:Grpc.Core.Logging.LogLevel.Debug">
+            <summary>
+            Debug severity.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Logging.LogLevel.Info">
+            <summary>
+            Info severity.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Logging.LogLevel.Warning">
+            <summary>
+            Warning severity.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Logging.LogLevel.Error">
+            <summary>
+            Error severity.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.Logging.LogLevel.Off">
+            <summary>
+            Logging is off.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.LogLevelFilterLogger">
+            <summary>Logger that filters out messages below certain log level.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.#ctor(Grpc.Core.Logging.ILogger,Grpc.Core.Logging.LogLevel)">
+            <summary>
+            Creates and instance of <c>LogLevelFilter.</c>
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.#ctor(Grpc.Core.Logging.ILogger,Grpc.Core.Logging.LogLevel,System.Boolean)">
+            <summary>
+            Creates and instance of <c>LogLevelFilter.</c>
+            The <c>fromEnvironmentVariable</c> parameter allows looking up "GRPC_VERBOSITY" setting provided by C-core
+            and uses the same log level for C# logs. Using this setting is recommended as it can prevent unintentionally hiding
+            C core logs requested by "GRPC_VERBOSITY" environment variable (which could happen if C# logger's log level was set to a more restrictive value).
+            </summary>
+            <param name="logger">the logger to forward filtered logs to.</param>
+            <param name="defaultLogLevel">the default log level, unless overriden by env variable.</param>
+            <param name="fromEnvironmentVariable">if <c>true</c>, override log level with setting from environment variable.</param>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.ForType``1">
+            <summary>
+            Returns a logger associated with the specified type.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Debug(System.String)">
+            <summary>Logs a message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Debug(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Info(System.String)">
+            <summary>Logs a message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Info(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Warning(System.String)">
+            <summary>Logs a message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Warning(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Warning(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Error(System.String)">
+            <summary>Logs a message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Error(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.Error(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.LogLevelFilterLogger.GetLogLevelFromEnvironment(Grpc.Core.Logging.LogLevel,System.Boolean)">
+            <summary>Get log level based on a default and lookup of <c>GRPC_VERBOSITY</c> environment variable.</summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.NullLogger">
+            <summary>
+            Logger which doesn't log any information anywhere.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Debug(System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Debug(System.String,System.Object[])">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Error(System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Error(System.Exception,System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Error(System.String,System.Object[])">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.ForType``1">
+            <summary>
+            Returns a reference to the instance on which the method is called, as
+            instances aren't associated with specific types.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Info(System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Info(System.String,System.Object[])">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Warning(System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Warning(System.Exception,System.String)">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.NullLogger.Warning(System.String,System.Object[])">
+            <summary>
+            As with all logging calls on this logger, this method is a no-op.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Logging.TextWriterLogger">
+            <summary>Logger that logs to an arbitrary <c>System.IO.TextWriter</c>.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.#ctor(System.IO.TextWriter)">
+            <summary>
+            Creates a console logger not associated to any specific type and writes to given <c>System.IO.TextWriter</c>.
+            User is responsible for providing an instance of TextWriter that is thread-safe.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.#ctor(System.Func{System.IO.TextWriter})">
+            <summary>
+            Creates a console logger not associated to any specific type and writes to a <c>System.IO.TextWriter</c> obtained from given provider.
+            User is responsible for providing an instance of TextWriter that is thread-safe.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.#ctor(System.Func{System.IO.TextWriter},System.Type)">
+            <summary>Creates a console logger that logs messsage specific for given type.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.ForType``1">
+            <summary>
+            Returns a logger associated with the specified type.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Debug(System.String)">
+            <summary>Logs a message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Debug(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Debug.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Info(System.String)">
+            <summary>Logs a message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Info(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Info.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Warning(System.String)">
+            <summary>Logs a message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Warning(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Warning(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Warning.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Error(System.String)">
+            <summary>Logs a message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Error(System.String,System.Object[])">
+            <summary>Logs a formatted message with severity Error.</summary>
+        </member>
+        <member name="M:Grpc.Core.Logging.TextWriterLogger.Error(System.Exception,System.String)">
+            <summary>Logs a message and an associated exception with severity Error.</summary>
+        </member>
+        <member name="P:Grpc.Core.Logging.TextWriterLogger.AssociatedType">
+            <summary>Gets the type associated with this logger.</summary>
+        </member>
+        <member name="T:Grpc.Core.Server">
+            <summary>
+            gRPC server. A single server can serve an arbitrary number of services and can listen on more than one port.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.#ctor">
+            <summary>
+            Creates a new server.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.#ctor(System.Collections.Generic.IEnumerable{Grpc.Core.ChannelOption})">
+            <summary>
+            Creates a new server.
+            </summary>
+            <param name="options">Channel options.</param>
+        </member>
+        <member name="P:Grpc.Core.Server.Services">
+            <summary>
+            Services that will be exported by the server once started. Register a service with this
+            server by adding its definition to this collection.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Server.Ports">
+            <summary>
+            Ports on which the server will listen once started. Register a port with this
+            server by adding its definition to this collection.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Server.ShutdownTask">
+            <summary>
+            To allow awaiting termination of the server.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Server.RequestCallTokensPerCompletionQueue">
+            <summary>
+            Experimental API. Might anytime change without prior notice.
+            Number or calls requested via grpc_server_request_call at any given time for each completion queue.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.Start">
+            <summary>
+            Starts the server.
+            Throws <c>IOException</c> if not successful.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ShutdownAsync">
+            <summary>
+            Requests server shutdown and when there are no more calls being serviced,
+            cleans up used resources. The returned task finishes when shutdown procedure
+            is complete.
+            </summary>
+            <remarks>
+            It is strongly recommended to shutdown all previously created servers before exiting from the process.
+            </remarks>
+        </member>
+        <member name="M:Grpc.Core.Server.KillAsync">
+            <summary>
+            Requests server shutdown while cancelling all the in-progress calls.
+            The returned task finishes when shutdown procedure is complete.
+            </summary>
+            <remarks>
+            It is strongly recommended to shutdown all previously created servers before exiting from the process.
+            </remarks>
+        </member>
+        <member name="M:Grpc.Core.Server.ShutdownInternalAsync(System.Boolean)">
+            <summary>
+            Shuts down the server.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ShutdownCompleteOrEnvironmentDeadAsync">
+            <summary>
+            In case the environment's threadpool becomes dead, the shutdown completion will
+            never be delivered, but we need to release the environment's handle anyway.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.AddServiceDefinitionInternal(Grpc.Core.ServerServiceDefinition)">
+            <summary>
+            Adds a service definition.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.AddPortInternal(Grpc.Core.ServerPort)">
+            <summary>
+            Adds a listening port.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.AllowOneRpc(Grpc.Core.Internal.CompletionQueueSafeHandle)">
+            <summary>
+            Allows one new RPC call to be received by server.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.CheckPortsBoundSuccessfully">
+            <summary>
+            Checks that all ports have been bound successfully.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.HandleCallAsync(Grpc.Core.Internal.ServerRpcNew,Grpc.Core.Internal.CompletionQueueSafeHandle,System.Action{Grpc.Core.Server,Grpc.Core.Internal.CompletionQueueSafeHandle})">
+            <summary>
+            Selects corresponding handler for given call and handles the call.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.HandleNewServerRpc(System.Boolean,Grpc.Core.Internal.RequestCallContextSafeHandle,Grpc.Core.Internal.CompletionQueueSafeHandle)">
+            <summary>
+            Handles the native callback.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.HandleServerShutdown(System.Boolean,Grpc.Core.Internal.BatchContextSafeHandle,System.Object)">
+            <summary>
+            Handles native callback.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Server.ServiceDefinitionCollection">
+            <summary>
+            Collection of service definitions.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ServiceDefinitionCollection.Add(Grpc.Core.ServerServiceDefinition)">
+            <summary>
+            Adds a service definition to the server. This is how you register
+            handlers for a service with the server. Only call this before Start().
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ServiceDefinitionCollection.GetEnumerator">
+            <summary>
+            Gets enumerator for this collection.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Server.ServerPortCollection">
+            <summary>
+            Collection of server ports.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ServerPortCollection.Add(Grpc.Core.ServerPort)">
+            <summary>
+            Adds a new port on which server should listen.
+            Only call this before Start().
+            <returns>The port on which server will be listening.</returns>
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Server.ServerPortCollection.Add(System.String,System.Int32,Grpc.Core.ServerCredentials)">
+            <summary>
+            Adds a new port on which server should listen.
+            <returns>The port on which server will be listening.</returns>
+            </summary>
+            <param name="host">the host</param>
+            <param name="port">the port. If zero, an unused port is chosen automatically.</param>
+            <param name="credentials">credentials to use to secure this port.</param>
+        </member>
+        <member name="M:Grpc.Core.Server.ServerPortCollection.GetEnumerator">
+            <summary>
+            Gets enumerator for this collection.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.ServerCredentials">
+            <summary>
+            Server side credentials.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.ServerCredentials.Insecure">
+            <summary>
+            Returns instance of credential that provides no security and 
+            will result in creating an unsecure server port with no encryption whatsoever.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ServerCredentials.ToNativeCredentials">
+            <summary>
+            Creates native object for the credentials.
+            </summary>
+            <returns>The native credentials.</returns>
+        </member>
+        <member name="T:Grpc.Core.SslClientCertificateRequestType">
+            <summary>
+            Modes of requesting client's SSL certificate by the server.
+            Corresponds to <c>grpc_ssl_client_certificate_request_type</c>.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.SslClientCertificateRequestType.DontRequest">
+            <summary>
+            Server does not request client certificate.
+            The certificate presented by the client is not checked by the server at
+            all. (A client may present a self signed or signed certificate or not
+            present a certificate at all and any of those option would be accepted)
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.SslClientCertificateRequestType.RequestButDontVerify">
+             <summary>
+             Server requests client certificate but does not enforce that the client
+             presents a certificate.
+             If the client presents a certificate, the client authentication is left to
+             the application (the necessary metadata will be available to the
+             application via authentication context properties, see grpc_auth_context).
+             The client's key certificate pair must be valid for the SSL connection to
+             be established.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.SslClientCertificateRequestType.RequestAndVerify">
+            <summary>
+            Server requests client certificate but does not enforce that the client
+            presents a certificate.
+            If the client presents a certificate, the client authentication is done by
+            the gRPC framework. (For a successful connection the client needs to either
+            present a certificate that can be verified against the root certificate
+            configured by the server or not present a certificate at all)
+            The client's key certificate pair must be valid for the SSL connection to
+            be established.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.SslClientCertificateRequestType.RequestAndRequireButDontVerify">
+             <summary>
+             Server requests client certificate and enforces that the client presents a
+             certificate.
+             If the client presents a certificate, the client authentication is left to
+             the application (the necessary metadata will be available to the
+             application via authentication context properties, see grpc_auth_context).
+             The client's key certificate pair must be valid for the SSL connection to
+             be established.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.SslClientCertificateRequestType.RequestAndRequireAndVerify">
+            <summary>
+            Server requests client certificate and enforces that the client presents a
+            certificate.
+            The certificate presented by the client is verified by the gRPC framework.
+            (For a successful connection the client needs to present a certificate that
+            can be verified against the root certificate configured by the server)
+            The client's key certificate pair must be valid for the SSL connection to
+            be established.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.SslServerCredentials">
+            <summary>
+            Server-side SSL credentials.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.SslServerCredentials.#ctor(System.Collections.Generic.IEnumerable{Grpc.Core.KeyCertificatePair},System.String,System.Boolean)">
+            <summary>
+            Creates server-side SSL credentials.
+            </summary>
+            <param name="keyCertificatePairs">Key-certificates to use.</param>
+            <param name="rootCertificates">PEM encoded client root certificates used to authenticate client.</param>
+            <param name="forceClientAuth">Deprecated, use clientCertificateRequest overload instead.</param>
+        </member>
+        <member name="M:Grpc.Core.SslServerCredentials.#ctor(System.Collections.Generic.IEnumerable{Grpc.Core.KeyCertificatePair},System.String,Grpc.Core.SslClientCertificateRequestType)">
+            <summary>
+            Creates server-side SSL credentials.
+            </summary>
+            <param name="keyCertificatePairs">Key-certificates to use.</param>
+            <param name="rootCertificates">PEM encoded client root certificates used to authenticate client.</param>
+            <param name="clientCertificateRequest">Options for requesting and verifying client certificate.</param>
+        </member>
+        <member name="M:Grpc.Core.SslServerCredentials.#ctor(System.Collections.Generic.IEnumerable{Grpc.Core.KeyCertificatePair})">
+            <summary>
+            Creates server-side SSL credentials.
+            This constructor should be used if you do not wish to authenticate the client.
+            (client certificate won't be requested and checked by the server at all).
+            </summary>
+            <param name="keyCertificatePairs">Key-certificates to use.</param>
+        </member>
+        <member name="P:Grpc.Core.SslServerCredentials.KeyCertificatePairs">
+            <summary>
+            Key-certificate pairs.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.SslServerCredentials.RootCertificates">
+            <summary>
+            PEM encoded client root certificates.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.SslServerCredentials.ForceClientAuthentication">
+            <summary>
+            Deprecated. If true, the authenticity of client check will be enforced.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.SslServerCredentials.ClientCertificateRequest">
+            <summary>
+            Mode of requesting certificate from client by the server.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.ServerPort">
+            <summary>
+            A port exposed by a server.
+            </summary>
+        </member>
+        <member name="F:Grpc.Core.ServerPort.PickUnused">
+            <summary>
+            Pass this value as port to have the server choose an unused listening port for you.
+            Ports added to a server will contain the bound port in their <see cref="P:Grpc.Core.ServerPort.BoundPort"/> property.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.ServerPort.#ctor(System.String,System.Int32,Grpc.Core.ServerCredentials)">
+            <summary>
+            Creates a new port on which server should listen.
+            </summary>
+            <returns>The port on which server will be listening.</returns>
+            <param name="host">the host</param>
+            <param name="port">the port. If zero, an unused port is chosen automatically.</param>
+            <param name="credentials">credentials to use to secure this port.</param>
+        </member>
+        <member name="M:Grpc.Core.ServerPort.#ctor(Grpc.Core.ServerPort,System.Int32)">
+            <summary>
+            Creates a port from an existing <c>ServerPort</c> instance and boundPort value.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.ServerPort.Host">
+            <value>The host.</value>
+        </member>
+        <member name="P:Grpc.Core.ServerPort.Port">
+            <value>The port.</value>
+        </member>
+        <member name="P:Grpc.Core.ServerPort.Credentials">
+            <value>The server credentials.</value>
+        </member>
+        <member name="P:Grpc.Core.ServerPort.BoundPort">
+            <value>
+            The port actually bound by the server. This is useful if you let server
+            pick port automatically. <see cref="F:Grpc.Core.ServerPort.PickUnused"/>
+            </value>
+        </member>
+        <member name="T:Grpc.Core.Utils.AsyncStreamExtensions">
+            <summary>
+            Extension methods that simplify work with gRPC streaming calls.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Utils.AsyncStreamExtensions.ForEachAsync``1(Grpc.Core.IAsyncStreamReader{``0},System.Func{``0,System.Threading.Tasks.Task})">
+            <summary>
+            Reads the entire stream and executes an async action for each element.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Utils.AsyncStreamExtensions.ToListAsync``1(Grpc.Core.IAsyncStreamReader{``0})">
+            <summary>
+            Reads the entire stream and creates a list containing all the elements read.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Utils.AsyncStreamExtensions.WriteAllAsync``1(Grpc.Core.IClientStreamWriter{``0},System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+            <summary>
+            Writes all elements from given enumerable to the stream.
+            Completes the stream afterwards unless close = false.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Utils.AsyncStreamExtensions.WriteAllAsync``1(Grpc.Core.IServerStreamWriter{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Writes all elements from given enumerable to the stream.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Utils.BenchmarkUtil">
+            <summary>
+            Utility methods to run microbenchmarks.
+            </summary>
+        </member>
+        <member name="M:Grpc.Core.Utils.BenchmarkUtil.RunBenchmark(System.Int32,System.Int32,System.Action)">
+            <summary>
+            Runs a simple benchmark preceded by warmup phase.
+            </summary>
+        </member>
+        <member name="T:Grpc.Core.Utils.TaskUtils">
+            <summary>
+            Utility methods for task parallel library.
+            </summary>
+        </member>
+        <member name="P:Grpc.Core.Utils.TaskUtils.CompletedTask">
+            <summary>
+            Framework independent equivalent of <c>Task.CompletedTask</c>.
+            </summary>
+        </member>
+    </members>
+</doc>

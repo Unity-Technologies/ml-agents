@@ -2,7 +2,7 @@
     "name": "Unity.ML-Agents",
     "references": [
         "Barracuda",
-        "ML-Agents-Plugins"
+        "Unity.ML-Agents.Grpc"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
