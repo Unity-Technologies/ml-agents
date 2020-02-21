@@ -224,7 +224,7 @@ Typical Range: `4` - `128`
 
 `memory_size` corresponds to the size of the array of floating point numbers
 used to store the hidden state of the recurrent neural network in the policy.
-This value must be divisible by 2, and should scale with the amount of information you expect
+This value must be a multiple of 2, and should scale with the amount of information you expect
 the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `32` - `256`
