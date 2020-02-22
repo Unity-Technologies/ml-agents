@@ -1,7 +1,8 @@
 import logging
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from collections import deque
+from typing import Any, Dict, List, Optional, Tuple, Union, Deque
 
 import gym
 from gym import error, spaces
@@ -75,9 +76,7 @@ class UnityEnv(gym.Env):
         self.visual_obs = None
         self._n_agents = -1
 
-        # self._gym_id_order: List[int] = []
-        # self._done_agents_index_to_last_reward: Dict[int, float] = {}
-        self.agent_mapper = AgentMapper()
+        self.agent_mapper = AgentIdIndexMapper()
 
         # Save the step result from the last time all Agents requested decisions.
         self._previous_step_result: BatchedStepResult = None
@@ -396,8 +395,7 @@ class UnityEnv(gym.Env):
 
         self._previous_step_result = step_result  # store the new original
 
-        new_id_order = []
-        new_id_order = self.agent_mapper.get_new_id_order(list(step_result.agent_id))
+        new_id_order = self.agent_mapper.get_id_permutation(list(step_result.agent_id))
 
         _mask: Optional[List[np.array]] = None
         if step_result.action_mask is not None:
@@ -513,51 +511,92 @@ class ActionFlattener:
         return self.action_lookup[action]
 
 
-class AgentMapper:
+class AgentIdIndexMapper:
     def __init__(self) -> None:
-        self._gym_id_order: List[int] = []
+        self._agent_id_to_gym_index: Dict[int, int] = {}
         self._done_agents_index_to_last_reward: Dict[int, float] = {}
+        # Deque isn't strictly necessary, but it matches the behavior of the old slow approach
+        self._available_gym_indices: Deque[int] = deque()
 
     def set_initial_agents(self, agent_ids: List[int]) -> None:
         """
         Provide the initial list of agent ids for the mapper
-        :param agent_ids:
-        :return:
         """
-        self._gym_id_order = list(agent_ids)
+        for idx, agent_id in enumerate(agent_ids):
+            self._agent_id_to_gym_index[agent_id] = idx
 
     def mark_agent_done(self, agent_id: int, reward: float) -> None:
         """
         Declare the agent done with the corresponding final reward.
         """
+        gym_index = self._agent_id_to_gym_index.pop(agent_id)
+        self._done_agents_index_to_last_reward[gym_index] = reward
+        self._available_gym_indices.append(gym_index)
+
+    def register_new_agent_id(self, agent_id: int) -> float:
+        """
+        Adds the new agent ID and returns the reward to use for the previous agent in this index
+        """
+        free_index = self._available_gym_indices.popleft()
+        self._agent_id_to_gym_index[agent_id] = free_index
+        reward = self._done_agents_index_to_last_reward.pop(free_index)
+        return reward
+
+    def get_id_permutation(self, agent_ids):
+        """
+        Get the permutation from new agent ids to the order that preserves the positions of previous agents.
+        The result is a list with each integer from 0 to len(agent_ids)-1 appearing exactly once.
+        """
+        # Map the new agent ids to the their index
+        new_agent_ids_to_index = {
+            agent_id: idx for idx, agent_id in enumerate(agent_ids)
+        }
+
+        # Make the output list. We don't write to it sequentially.
+        new_permutation = [-1] * len(agent_ids)
+
+        # For each agent ID, find the new index of the agent, and write it in the original index.
+        for agent_id, original_index in self._agent_id_to_gym_index.items():
+            new_permutation[original_index] = new_agent_ids_to_index[agent_id]
+        return new_permutation
+
+    def get_gym_index(self, agent_id: int) -> int:
+        """
+        Get the gym index for the current agent.
+        """
+        return self._agent_id_to_gym_index[agent_id]
+
+
+class AgentIdIndexMapperSlow:
+    """
+    Reference implementation of AgentIdIndexMapper.
+    The operations are O(N^2) so it shouldn't be used for large numbers of agents.
+    See AgentIdIndexMapper for method descriptions
+    """
+
+    def __init__(self) -> None:
+        self._gym_id_order: List[int] = []
+        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+
+    def set_initial_agents(self, agent_ids: List[int]) -> None:
+        self._gym_id_order = list(agent_ids)
+
+    def mark_agent_done(self, agent_id: int, reward: float) -> None:
         gym_index = self._gym_id_order.index(agent_id)
         self._done_agents_index_to_last_reward[gym_index] = reward
         self._gym_id_order[gym_index] = -1
 
     def register_new_agent_id(self, agent_id: int) -> float:
-        """
-        Returns the reward to use for the previous agent in this index
-        :param agent_id:
-        :return:
-        """
         original_index = self._gym_id_order.index(-1)
         self._gym_id_order[original_index] = agent_id
         reward = self._done_agents_index_to_last_reward.pop(original_index)
         return reward
 
-    def get_new_id_order(self, agent_ids):
-        """
-        Get the permutation from the old agent ids to the correspodning indices.
-        """
+    def get_id_permutation(self, agent_ids):
         new_id_order = []
         for agent_id in self._gym_id_order:
             new_id_order.append(agent_ids.index(agent_id))
         return new_id_order
 
     def get_gym_index(self, agent_id: int) -> int:
-        """
-        Get the gym index for the current agent.
-        :param agent_id:
-        :return:
-        """
         return self._gym_id_order.index(agent_id)
