@@ -1,80 +1,66 @@
 using System.IO;
-using System.IO.Abstractions;
 using Google.Protobuf;
 using System.Collections.Generic;
 
 namespace MLAgents
 {
     /// <summary>
-    /// Responsible for writing demonstration data to file.
+    /// Responsible for writing demonstration data to stream (usually a file stream).
     /// </summary>
     public class DemonstrationStore
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
-        readonly IFileSystem m_FileSystem;
-        const string k_DemoDirectory = "Assets/Demonstrations/";
-        const string k_ExtensionType = ".demo";
 
-        string m_FilePath;
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
         float m_CumulativeReward;
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
-        public DemonstrationStore(IFileSystem fileSystem)
+        /// <summary>
+        /// Create a DemonstrationStore that will write to the specified stream.
+        /// The stream must support writes and seeking.
+        /// </summary>
+        /// <param name="stream"></param>
+        public DemonstrationStore(Stream stream)
         {
-            if (fileSystem != null)
-            {
-                m_FileSystem = fileSystem;
-            }
-            else
-            {
-                m_FileSystem = new FileSystem();
-            }
+            m_Writer = stream;
         }
 
         /// <summary>
-        /// Initializes the Demonstration Store, and writes initial data.
+        /// Writes the initial data to the stream.
         /// </summary>
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
-            CreateDirectory();
-            CreateDemonstrationFile(demonstrationName);
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
+            m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
+            var metaProto = m_MetaData.ToProto();
+            metaProto.WriteDelimitedTo(m_Writer);
+
             WriteBrainParameters(brainName, brainParameters);
         }
 
         /// <summary>
-        /// Checks for the existence of the Demonstrations directory
-        /// and creates it if it does not exist.
+        /// Writes meta-data. Note that this is called at the *end* of recording, but writes to the
+        /// beginning of the file.
         /// </summary>
-        void CreateDirectory()
+        void WriteMetadata()
         {
-            if (!m_FileSystem.Directory.Exists(k_DemoDirectory))
+            if (m_Writer == null)
             {
-                m_FileSystem.Directory.CreateDirectory(k_DemoDirectory);
-            }
-        }
-
-        /// <summary>
-        /// Creates demonstration file.
-        /// </summary>
-        void CreateDemonstrationFile(string demonstrationName)
-        {
-            // Creates demonstration file.
-            var literalName = demonstrationName;
-            m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
-            var uniqueNameCounter = 0;
-            while (m_FileSystem.File.Exists(m_FilePath))
-            {
-                literalName = demonstrationName + "_" + uniqueNameCounter;
-                m_FilePath = k_DemoDirectory + literalName + k_ExtensionType;
-                uniqueNameCounter++;
+                // Already closed
+                return;
             }
 
-            m_Writer = m_FileSystem.File.Create(m_FilePath);
-            m_MetaData = new DemonstrationMetaData { demonstrationName = demonstrationName };
             var metaProto = m_MetaData.ToProto();
+            var metaProtoBytes = metaProto.ToByteArray();
+            m_Writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
+            m_Writer.Seek(0, 0);
             metaProto.WriteDelimitedTo(m_Writer);
         }
 
@@ -83,6 +69,12 @@ namespace MLAgents
         /// </summary>
         void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             // Writes BrainParameters to file.
             m_Writer.Seek(MetaDataBytes + 1, 0);
             var brainProto = brainParameters.ToProto(brainName, false);
@@ -92,8 +84,14 @@ namespace MLAgents
         /// <summary>
         /// Write AgentInfo experience to file.
         /// </summary>
-        public void Record(AgentInfo info, List<ISensor> sensors)
+        internal void Record(AgentInfo info, List<ISensor> sensors)
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             // Increment meta-data counters.
             m_MetaData.numberExperiences++;
             m_CumulativeReward += info.reward;
@@ -112,15 +110,23 @@ namespace MLAgents
             agentProto.WriteDelimitedTo(m_Writer);
         }
 
+
         /// <summary>
         /// Performs all clean-up necessary
         /// </summary>
         public void Close()
         {
+            if (m_Writer == null)
+            {
+                // Already closed
+                return;
+            }
+
             EndEpisode();
             m_MetaData.meanReward = m_CumulativeReward / m_MetaData.numberEpisodes;
             WriteMetadata();
             m_Writer.Close();
+            m_Writer = null;
         }
 
         /// <summary>
@@ -129,18 +135,6 @@ namespace MLAgents
         void EndEpisode()
         {
             m_MetaData.numberEpisodes += 1;
-        }
-
-        /// <summary>
-        /// Writes meta-data.
-        /// </summary>
-        void WriteMetadata()
-        {
-            var metaProto = m_MetaData.ToProto();
-            var metaProtoBytes = metaProto.ToByteArray();
-            m_Writer.Write(metaProtoBytes, 0, metaProtoBytes.Length);
-            m_Writer.Seek(0, 0);
-            metaProto.WriteDelimitedTo(m_Writer);
         }
     }
 }
