@@ -1,8 +1,7 @@
 import logging
 import itertools
 import numpy as np
-from collections import deque
-from typing import Any, Dict, List, Optional, Tuple, Union, Deque
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -515,8 +514,6 @@ class AgentIdIndexMapper:
     def __init__(self) -> None:
         self._agent_id_to_gym_index: Dict[int, int] = {}
         self._done_agents_index_to_last_reward: Dict[int, float] = {}
-        # Deque isn't strictly necessary, but it matches the behavior of the old slow approach
-        self._available_gym_indices: Deque[int] = deque()
 
     def set_initial_agents(self, agent_ids: List[int]) -> None:
         """
@@ -531,16 +528,15 @@ class AgentIdIndexMapper:
         """
         gym_index = self._agent_id_to_gym_index.pop(agent_id)
         self._done_agents_index_to_last_reward[gym_index] = reward
-        self._available_gym_indices.append(gym_index)
 
     def register_new_agent_id(self, agent_id: int) -> float:
         """
         Adds the new agent ID and returns the reward to use for the previous agent in this index
         """
-        free_index = self._available_gym_indices.popleft()
+        # Any free index is OK here.
+        free_index, last_reward = self._done_agents_index_to_last_reward.popitem()
         self._agent_id_to_gym_index[agent_id] = free_index
-        reward = self._done_agents_index_to_last_reward.pop(free_index)
-        return reward
+        return last_reward
 
     def get_id_permutation(self, agent_ids):
         """
