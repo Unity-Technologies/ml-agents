@@ -80,7 +80,7 @@ namespace MLAgents
                 behaviorParams.fullyQualifiedBehaviorName
             );
 
-            m_Agent.DemonstrationStores.Add(m_DemoStore);
+            AddDemonstrationStoreToAgent(m_DemoStore);
 
             return m_DemoStore;
         }
@@ -141,7 +141,7 @@ namespace MLAgents
         {
             if (m_DemoStore != null)
             {
-                m_Agent.DemonstrationStores.Remove(m_DemoStore);
+                RemoveDemonstrationStoreFromAgent(m_DemoStore);
 
                 m_DemoStore.Close();
                 m_DemoStore = null;
