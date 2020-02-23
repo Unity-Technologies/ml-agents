@@ -99,9 +99,14 @@ namespace MLAgents
             set => m_ObservationStacks = value; // Note: can't change at runtime
         }
 
+        [HideInInspector]
+        [SerializeField]
         [Header("Debug Gizmos", order = 999)]
-        public Color rayHitColor = Color.red;
-        public Color rayMissColor = Color.white;
+        internal Color rayHitColor = Color.red;
+
+        [HideInInspector]
+        [SerializeField]
+        internal Color rayMissColor = Color.white;
 
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;

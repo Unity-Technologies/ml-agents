@@ -22,13 +22,29 @@ namespace MLAgents
             EditorGUI.indentLevel++;
 
             EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_DetectableTags"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_RaysPerDirection"), true);
+
+            // Because the number of rays and the tags affect the observation shape,
+            // they are not editable during play mode.
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_DetectableTags"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_RaysPerDirection"), true);
+            }
+            EditorGUI.EndDisabledGroup();
+
             EditorGUILayout.PropertyField(so.FindProperty("m_MaxRayDegrees"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_SphereCastRadius"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_RayLength"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_RayLayerMask"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
+
+            // Because the number of observation stacks affects the observation shape,
+            // it is not editable during play mode.
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
+            }
+            EditorGUI.EndDisabledGroup();
+
             EditorGUILayout.PropertyField(so.FindProperty("m_StartVerticalOffset"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
 
