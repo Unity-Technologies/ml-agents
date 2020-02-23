@@ -103,6 +103,11 @@ namespace MLAgents
             return new[] { obsSize * stacks };
         }
 
+        internal void UpdateSensor()
+        {
+            // TODO
+        }
+
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
