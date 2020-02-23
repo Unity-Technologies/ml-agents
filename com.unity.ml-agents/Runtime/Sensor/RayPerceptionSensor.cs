@@ -337,7 +337,7 @@ namespace MLAgents
         /// <param name="rayIndex"></param>
         /// <param name="debugRayOut"></param>
         /// <returns></returns>
-        static RayPerceptionOutput.RayOutput PerceiveSingleRay(
+        internal static RayPerceptionOutput.RayOutput PerceiveSingleRay(
             RayPerceptionInput input,
             int rayIndex,
             out DebugDisplayInfo.RayInfo debugRayOut

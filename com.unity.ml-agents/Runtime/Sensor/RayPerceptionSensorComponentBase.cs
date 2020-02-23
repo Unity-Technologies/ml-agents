@@ -184,41 +184,54 @@ namespace MLAgents
             }
         }
 
+        void OnDrawGizmosSelected()
+        {
+            if (m_RaySensor?.debugDisplayInfo?.rayInfos != null)
+            {
+                // If we have cached debug info from the sensor, draw that.
+                // Draw "old" observations in a lighter color.
+                // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
+                var alpha = Mathf.Pow(.5f, m_RaySensor.debugDisplayInfo.age);
+
+                foreach (var rayInfo in m_RaySensor.debugDisplayInfo.rayInfos)
+                {
+                    DrawRaycastGizmos(rayInfo, alpha);
+                }
+            }
+            else
+            {
+                var rayInput = GetRayPerceptionInput();
+                for (var rayIndex = 0; rayIndex < rayInput.angles.Count; rayIndex++)
+                {
+                    DebugDisplayInfo.RayInfo debugRay;
+                    RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
+                    DrawRaycastGizmos(debugRay);
+                }
+            }
+        }
+
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        public void OnDrawGizmos()
+        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha=1.0f)
         {
-            if (m_RaySensor?.debugDisplayInfo?.rayInfos == null)
+            var startPositionWorld = rayInfo.worldStart;
+            var endPositionWorld = rayInfo.worldEnd;
+            var rayDirection = endPositionWorld - startPositionWorld;
+            rayDirection *= rayInfo.rayOutput.hitFraction;
+
+            // hit fraction ^2 will shift "far" hits closer to the hit color
+            var lerpT = rayInfo.rayOutput.hitFraction * rayInfo.rayOutput.hitFraction;
+            var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
+            color.a *= alpha;
+            Gizmos.color = color;
+            Gizmos.DrawRay(startPositionWorld, rayDirection);
+
+            // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
+            if (rayInfo.rayOutput.hasHit)
             {
-                return;
-            }
-            var debugInfo = m_RaySensor.debugDisplayInfo;
-
-            // Draw "old" observations in a lighter color.
-            // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
-            var alpha = Mathf.Pow(.5f, debugInfo.age);
-
-            foreach (var rayInfo in debugInfo.rayInfos)
-            {
-                var startPositionWorld = rayInfo.worldStart;
-                var endPositionWorld = rayInfo.worldEnd;
-                var rayDirection = endPositionWorld - startPositionWorld;
-                rayDirection *= rayInfo.rayOutput.hitFraction;
-
-                // hit fraction ^2 will shift "far" hits closer to the hit color
-                var lerpT = rayInfo.rayOutput.hitFraction * rayInfo.rayOutput.hitFraction;
-                var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
-                color.a *= alpha;
-                Gizmos.color = color;
-                Gizmos.DrawRay(startPositionWorld, rayDirection);
-
-                // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-                if (rayInfo.rayOutput.hasHit)
-                {
-                    var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
-                    Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
-                }
+                var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
+                Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
             }
         }
     }
