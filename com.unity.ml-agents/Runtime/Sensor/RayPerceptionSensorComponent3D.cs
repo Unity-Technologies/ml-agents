@@ -16,7 +16,7 @@ namespace MLAgents
         public float startVerticalOffset
         {
             get => m_StartVerticalOffset;
-            set => m_StartVerticalOffset = value;
+            set { m_StartVerticalOffset = value; UpdateSensor(); }
         }
 
         [HideInInspector]
@@ -28,7 +28,7 @@ namespace MLAgents
         public float endVerticalOffset
         {
             get => m_EndVerticalOffset;
-            set => m_EndVerticalOffset = value;
+            set { m_EndVerticalOffset = value; UpdateSensor(); }
         }
 
         public override RayPerceptionCastType GetCastType()

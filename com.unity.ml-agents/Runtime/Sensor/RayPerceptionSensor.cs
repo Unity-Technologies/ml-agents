@@ -242,6 +242,12 @@ namespace MLAgents
             }
         }
 
+        internal void SetRayPerceptionInput(RayPerceptionInput input)
+        {
+            // TODO make sure that number of rays and tags don't change
+            m_RayPerceptionInput = input;
+        }
+
         public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))

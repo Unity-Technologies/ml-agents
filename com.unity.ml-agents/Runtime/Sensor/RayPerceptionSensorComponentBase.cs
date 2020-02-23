@@ -17,7 +17,7 @@ namespace MLAgents
             set => m_SensorName = value;
         }
 
-        [HideInInspector]
+        //[HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
@@ -25,9 +25,8 @@ namespace MLAgents
         public List<string> detectableTags
         {
             get => m_DetectableTags;
-            set => m_DetectableTags = value;
+            set => m_DetectableTags = value; // Note: can't change at runtime
         }
-
 
         [HideInInspector]
         [SerializeField]
@@ -38,7 +37,7 @@ namespace MLAgents
         internal int raysPerDirection
         {
             get => m_RaysPerDirection;
-            set => m_RaysPerDirection = value;
+            set => m_RaysPerDirection = value; // Note: can't change at runtime
         }
 
         [HideInInspector]
@@ -50,7 +49,7 @@ namespace MLAgents
         public float maxRayDegrees
         {
             get => m_MaxRayDegrees;
-            set => m_MaxRayDegrees = value;
+            set { m_MaxRayDegrees = value; UpdateSensor(); }
         }
 
         [HideInInspector]
@@ -62,7 +61,7 @@ namespace MLAgents
         public float sphereCastRadius
         {
             get => m_SphereCastRadius;
-            set => m_SphereCastRadius = value;
+            set { m_SphereCastRadius = value; UpdateSensor(); }
         }
 
         [HideInInspector]
@@ -74,7 +73,7 @@ namespace MLAgents
         public float rayLength
         {
             get => m_RayLength;
-            set => m_RayLength = value;
+            set { m_RayLength = value; UpdateSensor(); }
         }
 
         [HideInInspector]
@@ -85,7 +84,7 @@ namespace MLAgents
         public LayerMask rayLayerMask
         {
             get => m_RayLayerMask;
-            set => m_RayLayerMask = value;
+            set { m_RayLayerMask = value; UpdateSensor();}
         }
 
         [HideInInspector]
@@ -94,10 +93,10 @@ namespace MLAgents
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         int m_ObservationStacks = 1;
-        public int observationStacks
+        internal int observationStacks
         {
             get => m_ObservationStacks;
-            set => m_ObservationStacks = value;
+            set => m_ObservationStacks = value; // Note: can't change at runtime
         }
 
         [Header("Debug Gizmos", order = 999)]
@@ -121,18 +120,7 @@ namespace MLAgents
 
         public override ISensor CreateSensor()
         {
-            var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-
-            var rayPerceptionInput = new RayPerceptionInput();
-            rayPerceptionInput.rayLength = rayLength;
-            rayPerceptionInput.detectableTags = m_DetectableTags;
-            rayPerceptionInput.angles = rayAngles;
-            rayPerceptionInput.startOffset = GetStartVerticalOffset();
-            rayPerceptionInput.endOffset = GetEndVerticalOffset();
-            rayPerceptionInput.castRadius = sphereCastRadius;
-            rayPerceptionInput.transform = transform;
-            rayPerceptionInput.castType = GetCastType();
-            rayPerceptionInput.layerMask = rayLayerMask;
+            var rayPerceptionInput = GetRayPerceptionInput();
 
             m_RaySensor = new RayPerceptionSensor(m_SensorName, rayPerceptionInput);
 
@@ -169,9 +157,31 @@ namespace MLAgents
             return new[] { obsSize * stacks };
         }
 
+        RayPerceptionInput GetRayPerceptionInput()
+        {
+            var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
+
+            var rayPerceptionInput = new RayPerceptionInput();
+            rayPerceptionInput.rayLength = rayLength;
+            rayPerceptionInput.detectableTags = detectableTags;
+            rayPerceptionInput.angles = rayAngles;
+            rayPerceptionInput.startOffset = GetStartVerticalOffset();
+            rayPerceptionInput.endOffset = GetEndVerticalOffset();
+            rayPerceptionInput.castRadius = sphereCastRadius;
+            rayPerceptionInput.transform = transform;
+            rayPerceptionInput.castType = GetCastType();
+            rayPerceptionInput.layerMask = rayLayerMask;
+
+            return rayPerceptionInput;
+        }
+
         internal void UpdateSensor()
         {
-            // TODO
+            if (m_RaySensor != null)
+            {
+                var rayInput = GetRayPerceptionInput();
+                m_RaySensor.SetRayPerceptionInput(rayInput);
+            }
         }
 
         /// <summary>
