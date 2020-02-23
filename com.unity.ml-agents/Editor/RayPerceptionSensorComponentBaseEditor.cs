@@ -4,15 +4,11 @@ using Barracuda;
 
 namespace MLAgents
 {
-    //[CustomEditor(typeof(RayPerceptionSensorComponentBase))]
-    //[CustomEditor(typeof(RayPerceptionSensorComponent2D))]  # TODO handle inheritance
-    [CustomEditor(typeof(RayPerceptionSensorComponent3D))]
-    [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponentBaseEditor : Editor
     {
         bool m_RequireSensorUpdate;
 
-        public override void OnInspectorGUI()
+        protected void OnRayPerceptionInspectorGUI(bool is3d)
         {
             var so = serializedObject;
             so.Update();
@@ -45,8 +41,11 @@ namespace MLAgents
             }
             EditorGUI.EndDisabledGroup();
 
-            EditorGUILayout.PropertyField(so.FindProperty("m_StartVerticalOffset"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
+            if (is3d)
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_StartVerticalOffset"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
+            }
 
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);
@@ -70,6 +69,27 @@ namespace MLAgents
                     sensorComponent?.UpdateSensor();
                     m_RequireSensorUpdate = false;
                 }
+        }
+    }
+
+    //[CustomEditor(typeof(RayPerceptionSensorComponentBase))]
+    [CustomEditor(typeof(RayPerceptionSensorComponent2D))]
+    [CanEditMultipleObjects]
+    internal class RayPerceptionSensorComponent2DEditor : RayPerceptionSensorComponentBaseEditor
+    {
+        public override void OnInspectorGUI()
+        {
+            OnRayPerceptionInspectorGUI(false);
+        }
+    }
+
+    [CustomEditor(typeof(RayPerceptionSensorComponent3D))]
+    [CanEditMultipleObjects]
+    internal class RayPerceptionSensorComponent3DEditor : RayPerceptionSensorComponentBaseEditor
+    {
+        public override void OnInspectorGUI()
+        {
+            OnRayPerceptionInspectorGUI(true);
         }
     }
 }
