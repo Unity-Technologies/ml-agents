@@ -21,16 +21,16 @@ namespace MLAgents
             EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
 
-            EditorGUILayout.PropertyField(so.FindProperty("sensorName"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("detectableTags"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("raysPerDirection"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("maxRayDegrees"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("sphereCastRadius"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("rayLength"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("rayLayerMask"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("observationStacks"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("startVerticalOffset"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("endVerticalOffset"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_DetectableTags"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_RaysPerDirection"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_MaxRayDegrees"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_SphereCastRadius"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_RayLength"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_RayLayerMask"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_StartVerticalOffset"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
 
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);

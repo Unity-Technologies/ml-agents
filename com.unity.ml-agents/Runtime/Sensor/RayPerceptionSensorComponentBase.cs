@@ -1,38 +1,104 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
     public abstract class RayPerceptionSensorComponentBase : SensorComponent
     {
-        public string sensorName = "RayPerceptionSensor";
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("sensorName")]
+        string m_SensorName = "RayPerceptionSensor";
+        internal string sensorName
+        {
+            get => m_SensorName;
+            set => m_SensorName = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
-        public List<string> detectableTags;
+        List<string> m_DetectableTags;
+        public List<string> detectableTags
+        {
+            get => m_DetectableTags;
+            set => m_DetectableTags = value;
+        }
 
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("raysPerDirection")]
         [Range(0, 50)]
         [Tooltip("Number of rays to the left and right of center.")]
-        public int raysPerDirection = 3;
+        int m_RaysPerDirection = 3;
+        internal int raysPerDirection
+        {
+            get => m_RaysPerDirection;
+            set => m_RaysPerDirection = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("maxRayDegrees")]
         [Range(0, 180)]
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. Greater than 90 degrees will go backwards.")]
-        public float maxRayDegrees = 70;
+        float m_MaxRayDegrees = 70;
+        public float maxRayDegrees
+        {
+            get => m_MaxRayDegrees;
+            set => m_MaxRayDegrees = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("sphereCastRadius")]
         [Range(0f, 10f)]
         [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
-        public float sphereCastRadius = 0.5f;
+        float m_SphereCastRadius = 0.5f;
+        public float sphereCastRadius
+        {
+            get => m_SphereCastRadius;
+            set => m_SphereCastRadius = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("rayLength")]
         [Range(1, 1000)]
         [Tooltip("Length of the rays to cast.")]
-        public float rayLength = 20f;
+        float m_RayLength = 20f;
+        public float rayLength
+        {
+            get => m_RayLength;
+            set => m_RayLength = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
-        public LayerMask rayLayerMask = Physics.DefaultRaycastLayers;
+        LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
+        public LayerMask rayLayerMask
+        {
+            get => m_RayLayerMask;
+            set => m_RayLayerMask = value;
+        }
 
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("observationStacks")]
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
-        public int observationStacks = 1;
+        int m_ObservationStacks = 1;
+        public int observationStacks
+        {
+            get => m_ObservationStacks;
+            set => m_ObservationStacks = value;
+        }
 
         [Header("Debug Gizmos", order = 999)]
         public Color rayHitColor = Color.red;
@@ -59,7 +125,7 @@ namespace MLAgents
 
             var rayPerceptionInput = new RayPerceptionInput();
             rayPerceptionInput.rayLength = rayLength;
-            rayPerceptionInput.detectableTags = detectableTags;
+            rayPerceptionInput.detectableTags = m_DetectableTags;
             rayPerceptionInput.angles = rayAngles;
             rayPerceptionInput.startOffset = GetStartVerticalOffset();
             rayPerceptionInput.endOffset = GetEndVerticalOffset();
@@ -68,7 +134,7 @@ namespace MLAgents
             rayPerceptionInput.castType = GetCastType();
             rayPerceptionInput.layerMask = rayLayerMask;
 
-            m_RaySensor = new RayPerceptionSensor(sensorName, rayPerceptionInput);
+            m_RaySensor = new RayPerceptionSensor(m_SensorName, rayPerceptionInput);
 
             if (observationStacks != 1)
             {
@@ -97,7 +163,7 @@ namespace MLAgents
         public override int[] GetObservationShape()
         {
             var numRays = 2 * raysPerDirection + 1;
-            var numTags = detectableTags?.Count ?? 0;
+            var numTags = m_DetectableTags?.Count ?? 0;
             var obsSize = (numTags + 2) * numRays;
             var stacks = observationStacks > 1 ? observationStacks : 1;
             return new[] { obsSize * stacks };
