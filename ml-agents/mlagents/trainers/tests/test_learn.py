@@ -78,12 +78,13 @@ def test_docker_target_path(
 
 def test_bad_env_path():
     with pytest.raises(UnityEnvironmentException):
-        learn.create_environment_factory(env_path="/foo/bar",
-                                         docker_target_name=None,
-                                         no_graphics=True,
-                                         seed=None,
-                                         start_port=8000,
-                                         env_args=None)
+        learn.create_environment_factory(
+            env_path="/foo/bar",
+            docker_target_name=None,
+            no_graphics=True,
+            seed=None,
+            start_port=8000,
+            env_args=None)
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="{}")
