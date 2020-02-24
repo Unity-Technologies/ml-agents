@@ -183,7 +183,7 @@ class PPOOptimizer(TFOptimizer):
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.policy.action_oh[
+                            labels=self.policy.selected_actions[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                             logits=old_normalized_logits[

@@ -283,10 +283,10 @@ class SACOptimizer(TFOptimizer):
             if discrete:
                 # We need to break up the Q functions by branch, and update them individually.
                 branched_q1_stream = self._apply_as_branches(
-                    self.policy.action_oh * q1_streams[name]
+                    self.policy.selected_actions * q1_streams[name]
                 )
                 branched_q2_stream = self._apply_as_branches(
-                    self.policy.action_oh * q2_streams[name]
+                    self.policy.selected_actions * q2_streams[name]
                 )
 
                 # Reduce each branch into scalar

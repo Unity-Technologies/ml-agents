@@ -1,5 +1,5 @@
 import abc
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Tuple
 import numpy as np
 
 from mlagents.tf_utils import tf
@@ -38,6 +38,14 @@ class OutputDistribution(abc.ABC):
         Returns a Tensor that when evaluated, produces the entropy of this distribution.
         """
         pass
+
+
+class DiscreteOutputDistribution(OutputDistribution):
+    @abc.abstractproperty
+    def sample_onehot(self) -> tf.Tensor:
+        """
+        Returns a one-hot version of the output.
+        """
 
 
 class GaussianDistribution(OutputDistribution):
@@ -187,102 +195,125 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
         return self._squashed_policy
 
 
-# def MultiCategoricalDistribution(OutputDistribution):
+class MultiCategoricalDistribution(DiscreteOutputDistribution):
+    def __init__(self, logits: tf.Tensor, act_size: List[int], action_masks: tf.Tensor):
+        unmasked_log_probs = self._create_policy_branches(logits, act_size)
+        self._sampled_policy, self._all_probs, action_index = self._get_masked_actions_probs(
+            unmasked_log_probs, act_size, action_masks
+        )
+        self._sampled_onehot = self._action_onehot(self._sampled_policy, act_size)
+        self._entropy = self._create_entropy(
+            self._sampled_onehot, self._all_probs, action_index, act_size
+        )
+        self._total_prob = self._get_log_probs(
+            self._sampled_onehot, self._all_probs, action_index, act_size
+        )
 
-#     def __init__(
-#         self,
-#         logits: tf.Tensor,
-#         act_size: List[int],
-#     ):
-#         encoded = self._create_mu_log_sigma(
-#             logits, act_size, log_sigma_min, log_sigma_max
-#         )
-#         sampled_policy = self._create_sampled_policy(encoded)
-#         if not pass_gradients:
-#             self._sampled_policy = tf.stop_gradient(sampled_policy)
-#         else:
-#             self._sampled_policy = sampled_policy
-#         self._all_probs = self._get_log_probs(self._sampled_policy, encoded)
-#         self._total_prob = tf.reduce_sum(self._all_probs, axis=1, keepdims=True)
-#         self._entropy = self._create_entropy(encoded)
+    def _create_policy_branches(
+        self, logits: tf.Tensor, act_size: List[int]
+    ) -> List[tf.Tensor]:
+        policy_branches = []
+        for size in act_size:
+            policy_branches.append(
+                tf.layers.dense(
+                    logits,
+                    size,
+                    activation=None,
+                    use_bias=False,
+                    kernel_initializer=ModelUtils.scaled_init(0.01),
+                )
+            )
+        unmasked_log_probs = tf.concat(policy_branches, axis=1)
+        return unmasked_log_probs
 
-#     def _create_policy_branches(self, logits, act_size: List[int]) -> List[tf.Tensor]:
-#         policy_branches = []
-#         for size in act_size:
-#             policy_branches.append(
-#                 tf.layers.dense(
-#                     logits,
-#                     size,
-#                     activation=None,
-#                     use_bias=False,
-#                     kernel_initializer=ModelUtils.scaled_init(0.01),
-#                 )
-#             )
-#         return policy_branches
+    def _get_masked_actions_probs(
+        self,
+        unmasked_log_probs: tf.Tensor,
+        act_size: List[int],
+        action_masks: tf.Tensor,
+    ) -> Tuple[tf.Tensor, tf.Tensor, np.ndarray]:
+        output, _, all_log_probs = ModelUtils.create_discrete_action_masking_layer(
+            unmasked_log_probs, action_masks, act_size
+        )
 
-#     def _
-#         raw_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
+        action_idx = [0] + list(np.cumsum(act_size))
+        return output, all_log_probs, action_idx
 
-#         self.action_masks = tf.placeholder(
-#             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
-#         )
-#         output, self.action_probs, normalized_logits = ModelUtils.create_discrete_action_masking_layer(
-#             raw_log_probs, self.action_masks, self.act_size
-#         )
+    def _action_onehot(self, sample: tf.Tensor, act_size: List[int]) -> tf.Tensor:
+        action_oh = tf.concat(
+            [tf.one_hot(sample[:, i], act_size[i]) for i in range(len(act_size))],
+            axis=1,
+        )
+        return action_oh
 
-#         self.output = tf.identity(output)
-#         self.all_log_probs = tf.identity(normalized_logits, name="action")
+    def _get_log_probs(
+        self,
+        sample_onehot: tf.Tensor,
+        all_log_probs: tf.Tensor,
+        action_idx: List[int],
+        act_size: List[int],
+    ) -> tf.Tensor:
+        log_probs = tf.reduce_sum(
+            (
+                tf.stack(
+                    [
+                        -tf.nn.softmax_cross_entropy_with_logits_v2(
+                            labels=sample_onehot[:, action_idx[i] : action_idx[i + 1]],
+                            logits=all_log_probs[:, action_idx[i] : action_idx[i + 1]],
+                        )
+                        for i in range(len(act_size))
+                    ],
+                    axis=1,
+                )
+            ),
+            axis=1,
+            keepdims=True,
+        )
+        return log_probs
 
+    def _create_entropy(
+        self,
+        all_log_probs: tf.Tensor,
+        sample_onehot: tf.Tensor,
+        action_idx: List[int],
+        act_size: List[int],
+    ) -> tf.Tensor:
+        entropy = tf.reduce_sum(
+            (
+                tf.stack(
+                    [
+                        tf.nn.softmax_cross_entropy_with_logits_v2(
+                            labels=tf.nn.softmax(
+                                all_log_probs[:, action_idx[i] : action_idx[i + 1]]
+                            ),
+                            logits=all_log_probs[:, action_idx[i] : action_idx[i + 1]],
+                        )
+                        for i in range(len(act_size))
+                    ],
+                    axis=1,
+                )
+            ),
+            axis=1,
+        )
 
-#         self.action_holder = tf.placeholder(
-#             shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
-#         )
-#         self.action_oh = tf.concat(
-#             [
-#                 tf.one_hot(self.action_holder[:, i], self.act_size[i])
-#                 for i in range(len(self.act_size))
-#             ],
-#             axis=1,
-#         )
-#         self.selected_actions = tf.stop_gradient(self.action_oh)
+        return entropy
 
-#         action_idx = [0] + list(np.cumsum(self.act_size))
+    @property
+    def log_probs(self) -> tf.Tensor:
+        return self._all_probs
 
-#         self.entropy = tf.reduce_sum(
-#             (
-#                 tf.stack(
-#                     [
-#                         tf.nn.softmax_cross_entropy_with_logits_v2(
-#                             labels=tf.nn.softmax(
-#                                 self.all_log_probs[:, action_idx[i] : action_idx[i + 1]]
-#                             ),
-#                             logits=self.all_log_probs[
-#                                 :, action_idx[i] : action_idx[i + 1]
-#                             ],
-#                         )
-#                         for i in range(len(self.act_size))
-#                     ],
-#                     axis=1,
-#                 )
-#             ),
-#             axis=1,
-#         )
+    @property
+    def total_log_probs(self) -> tf.Tensor:
+        return self._total_prob
 
-#         self.log_probs = tf.reduce_sum(
-#             (
-#                 tf.stack(
-#                     [
-#                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-#                             labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
-#                             logits=normalized_logits[
-#                                 :, action_idx[i] : action_idx[i + 1]
-#                             ],
-#                         )
-#                         for i in range(len(self.act_size))
-#                     ],
-#                     axis=1,
-#                 )
-#             ),
-#             axis=1,
-#             keepdims=True,
-#         )
+    @property
+    def sample(self) -> tf.Tensor:
+        return self._sampled_policy
+
+    @property
+    def sample_onehot(self) -> tf.Tensor:
+        return self._sampled_onehot
+
+    @property
+    def entropy(self) -> tf.Tensor:
+        return self._entropy
