@@ -399,8 +399,7 @@ def create_environment_factory(
         launch_string = UnityEnvironment.validate_environment_path(env_path)
         if launch_string is None:
             raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(env_path)
+                f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
             )
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:

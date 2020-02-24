@@ -209,8 +209,7 @@ class UnityEnvironment(BaseEnv):
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(file_name)
+                f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
         else:
             logger.debug("This is the launch string {}".format(launch_string))
@@ -362,7 +361,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[agent_group] = action
 
     def set_action_for_agent(
-            self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
+        self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
     ) -> None:
         self._assert_group_exists(agent_group)
         if agent_group not in self._env_state:
@@ -497,7 +496,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-            self, vector_action: Dict[str, np.ndarray]
+        self, vector_action: Dict[str, np.ndarray]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -518,7 +517,7 @@ class UnityEnvironment(BaseEnv):
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
-            self, init_parameters: UnityRLInitializationInputProto
+        self, init_parameters: UnityRLInitializationInputProto
     ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
