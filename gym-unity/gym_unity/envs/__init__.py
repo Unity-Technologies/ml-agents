@@ -386,14 +386,16 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
+                # Register this agent, and get the reward of the previous agent that
+                # was in its index, so that we can return it to the gym.
                 last_reward = self.agent_mapper.register_new_agent_id(agent_id)
-                # This is a new agent
                 step_result.done[index] = True
                 step_result.reward[index] = last_reward
-        # self._done_agents_index_to_last_reward = {}
 
         self._previous_step_result = step_result  # store the new original
 
+        # Get a permutation of the agent IDs so that a given ID stays in the same
+        # index as where it was first seen.
         new_id_order = self.agent_mapper.get_id_permutation(list(step_result.agent_id))
 
         _mask: Optional[List[np.array]] = None
@@ -538,7 +540,7 @@ class AgentIdIndexMapper:
         self._agent_id_to_gym_index[agent_id] = free_index
         return last_reward
 
-    def get_id_permutation(self, agent_ids):
+    def get_id_permutation(self, agent_ids: List[int]) -> List[int]:
         """
         Get the permutation from new agent ids to the order that preserves the positions of previous agents.
         The result is a list with each integer from 0 to len(agent_ids)-1 appearing exactly once.
@@ -548,7 +550,7 @@ class AgentIdIndexMapper:
             agent_id: idx for idx, agent_id in enumerate(agent_ids)
         }
 
-        # Make the output list. We don't write to it sequentially.
+        # Make the output list. We don't write to it sequentially, so start with dummy values.
         new_permutation = [-1] * len(agent_ids)
 
         # For each agent ID, find the new index of the agent, and write it in the original index.
