@@ -213,7 +213,7 @@ def test_agent_id_index_mapper(mapper_cls):
     assert set(permutation) == set(range(0, 4))
 
     # For initial agents that were in the initial group, they need to be in the same slot.
-    # Agents that were added later can be anywhere.
+    # Agents that were added later can appear in any free slot.
     permuted_ids = [new_agent_ids[i] for i in permutation]
     for idx, agent_id in enumerate(initial_agent_ids):
         if agent_id in permuted_ids:
