@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using System.Reflection;
 using Barracuda;
 using MLAgents.InferenceBrain;
 using System;
@@ -12,12 +11,6 @@ namespace MLAgents.Tests
     {
         class TestAgent : Agent
         {
-            public AgentAction GetAction()
-            {
-                var f = typeof(Agent).GetField(
-                    "m_Action", BindingFlags.Instance | BindingFlags.NonPublic);
-                return (AgentAction)f.GetValue(this);
-            }
         }
 
         [Test]

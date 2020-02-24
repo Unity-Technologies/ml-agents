@@ -110,6 +110,26 @@ def _process_visual_observation(
     return np.array(batched_visual, dtype=np.float32)
 
 
+def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
+    # Check for NaNs or Infinite values in the observation or reward data.
+    # If there's a NaN in the observations, the np.mean() result will be NaN
+    # If there's an Infinite value (either sign) then the result will be Inf
+    # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
+    # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
+    # Raise a Runtime error in the case that NaNs or Infinite values make it into the data.
+    if data.size == 0:
+        return data
+
+    d = np.mean(data)
+    has_nan = np.isnan(d)
+    has_inf = not np.isfinite(d)
+
+    if has_nan:
+        raise RuntimeError(f"The {source} provided had NaN values.")
+    if has_inf:
+        raise RuntimeError(f"The {source} provided had Infinite values.")
+
+
 @timed
 def _process_vector_observation(
     obs_index: int,
@@ -127,22 +147,7 @@ def _process_vector_observation(
         ],
         dtype=np.float32,
     )
-    # Check for NaNs or infs in the observations
-    # If there's a NaN in the observations, the np.mean() result will be NaN
-    # If there's an Inf (either sign) then the result will be Inf
-    # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background
-    # Note that a very large values (larger than sqrt(float_max)) will result in an Inf value here
-    # This is OK though, worst case it results in an unnecessary (but harmless) nan_to_num call.
-    d = np.mean(np_obs)
-    has_nan = np.isnan(d)
-    has_inf = not np.isfinite(d)
-
-    # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
-    if has_nan or has_inf:
-        np_obs = np.nan_to_num(np_obs)
-
-    if has_nan:
-        logger.warning(f"An agent had a NaN observation in the environment")
+    _raise_on_nan_and_inf(np_obs, "observations")
     return np_obs
 
 
@@ -169,14 +174,7 @@ def batched_step_result_from_proto(
         [agent_info.reward for agent_info in agent_info_list], dtype=np.float32
     )
 
-    d = np.dot(rewards, rewards)
-    has_nan = np.isnan(d)
-    has_inf = not np.isfinite(d)
-    # In we have any NaN or Infs, use np.nan_to_num to replace these with finite values
-    if has_nan or has_inf:
-        rewards = np.nan_to_num(rewards)
-    if has_nan:
-        logger.warning(f"An agent had a NaN reward in the environment")
+    _raise_on_nan_and_inf(rewards, "rewards")
 
     done = np.array([agent_info.done for agent_info in agent_info_list], dtype=np.bool)
     max_step = np.array(

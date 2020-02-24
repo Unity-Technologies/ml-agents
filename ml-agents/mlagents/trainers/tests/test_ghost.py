@@ -152,6 +152,8 @@ def test_process_trajectory(dummy_config):
 
     # Check that ghost trainer ignored off policy queue
     assert trainer.trainer.update_buffer.num_experiences == 15
+    # Check that it emptied the queue
+    assert trajectory_queue1.empty()
 
 
 def test_publish_queue(dummy_config):

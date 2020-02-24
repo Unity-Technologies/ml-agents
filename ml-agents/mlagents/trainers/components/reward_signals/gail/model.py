@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 
 EPSILON = 1e-7
 
@@ -97,7 +97,7 @@ class GAILModel(object):
             )
             if self.policy.normalize:
                 encoded_expert_list.append(
-                    LearningModel.normalize_vector_obs(
+                    ModelUtils.normalize_vector_obs(
                         self.obs_in_expert,
                         self.policy.running_mean,
                         self.policy.running_variance,
@@ -115,25 +115,25 @@ class GAILModel(object):
             visual_expert_encoders = []
             for i in range(self.policy.vis_obs_size):
                 # Create input ops for next (t+1) visual observations.
-                visual_input = LearningModel.create_visual_input(
+                visual_input = ModelUtils.create_visual_input(
                     self.policy.brain.camera_resolutions[i],
                     name="gail_visual_observation_" + str(i),
                 )
                 self.expert_visual_in.append(visual_input)
 
-                encoded_policy_visual = LearningModel.create_visual_observation_encoder(
+                encoded_policy_visual = ModelUtils.create_visual_observation_encoder(
                     self.policy.visual_in[i],
                     self.encoding_size,
-                    LearningModel.swish,
+                    ModelUtils.swish,
                     1,
                     "gail_stream_{}_visual_obs_encoder".format(i),
                     False,
                 )
 
-                encoded_expert_visual = LearningModel.create_visual_observation_encoder(
+                encoded_expert_visual = ModelUtils.create_visual_observation_encoder(
                     self.expert_visual_in[i],
                     self.encoding_size,
-                    LearningModel.swish,
+                    ModelUtils.swish,
                     1,
                     "gail_stream_{}_visual_obs_encoder".format(i),
                     True,
@@ -167,7 +167,7 @@ class GAILModel(object):
             hidden_1 = tf.layers.dense(
                 concat_input,
                 self.h_size,
-                activation=LearningModel.swish,
+                activation=ModelUtils.swish,
                 name="gail_d_hidden_1",
                 reuse=reuse,
             )
@@ -175,7 +175,7 @@ class GAILModel(object):
             hidden_2 = tf.layers.dense(
                 hidden_1,
                 self.h_size,
-                activation=LearningModel.swish,
+                activation=ModelUtils.swish,
                 name="gail_d_hidden_2",
                 reuse=reuse,
             )
@@ -188,7 +188,7 @@ class GAILModel(object):
                     self.z_size,
                     reuse=reuse,
                     name="gail_z_mean",
-                    kernel_initializer=LearningModel.scaled_init(0.01),
+                    kernel_initializer=ModelUtils.scaled_init(0.01),
                 )
 
                 self.noise = tf.random_normal(tf.shape(z_mean), dtype=tf.float32)

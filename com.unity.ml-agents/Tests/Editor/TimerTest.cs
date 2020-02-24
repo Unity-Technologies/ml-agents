@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using UnityEditor.Graphs;
 using UnityEngine;
 
 namespace MLAgents.Tests
@@ -17,7 +16,7 @@ namespace MLAgents.Tests
                 {
                     using (myTimer.Scoped("bar"))
                     {
-                        myTimer.SetGauge("my_gauge", (float)i);
+                        myTimer.SetGauge("my_gauge", i);
                     }
                 }
             }

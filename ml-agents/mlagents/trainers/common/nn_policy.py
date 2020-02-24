@@ -8,7 +8,7 @@ from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.common.distributions import (
     GaussianDistribution,
@@ -30,6 +30,7 @@ class NNPolicy(TFPolicy):
         load: bool,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
         create_tf_graph: bool = True,
     ):
         """
@@ -45,7 +46,6 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
-        self.tf_optimizer: Optional[tf.train.Optimizer] = None
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = trainer_params["num_layers"]
@@ -58,6 +58,7 @@ class NNPolicy(TFPolicy):
         )
         self.tanh_squash = tanh_squash
         self.resample = resample
+        self.condition_sigma_on_obs = condition_sigma_on_obs
         self.trainable_variables: List[tf.Variable] = []
 
         # Non-exposed parameters; these aren't exposed because they don't have a
@@ -79,6 +80,7 @@ class NNPolicy(TFPolicy):
         Builds the tensorflow graph needed for this policy.
         """
         with self.graph.as_default():
+            tf.set_random_seed(self.seed)
             _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
             if len(_vars) > 0:
                 # We assume the first thing created in the graph is the Policy. If
@@ -93,6 +95,7 @@ class NNPolicy(TFPolicy):
                     self.vis_encode_type,
                     self.tanh_squash,
                     self.resample,
+                    self.condition_sigma_on_obs,
                 )
             else:
                 self._create_dc_actor(
@@ -150,6 +153,7 @@ class NNPolicy(TFPolicy):
         vis_encode_type: EncoderType,
         tanh_squash: bool = False,
         resample: bool = False,
+        condition_sigma_on_obs: bool = True,
     ) -> None:
         """
         Creates Continuous control actor-critic model.
@@ -160,7 +164,7 @@ class NNPolicy(TFPolicy):
         :param resample: Whether we are using the resampling trick to update the policy.
         """
         with tf.variable_scope("policy"):
-            hidden_stream = LearningModel.create_observation_streams(
+            hidden_stream = ModelUtils.create_observation_streams(
                 self.visual_in,
                 self.processed_vector_in,
                 1,
@@ -173,7 +177,7 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in,
                 self.sequence_length_ph,
@@ -213,10 +217,6 @@ class NNPolicy(TFPolicy):
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
         self.log_probs = self.all_log_probs
 
-        self.action_holder = tf.placeholder(
-            shape=[None, self.act_size[0]], dtype=tf.float32, name="action_holder"
-        )
-
     def _create_dc_actor(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
@@ -227,7 +227,7 @@ class NNPolicy(TFPolicy):
         :param vis_encode_type: Type of visual encoder to use if visual input.
         """
         with tf.variable_scope("policy"):
-            hidden_stream = LearningModel.create_observation_streams(
+            hidden_stream = ModelUtils.create_observation_streams(
                 self.visual_in,
                 self.processed_vector_in,
                 1,
@@ -252,7 +252,7 @@ class NNPolicy(TFPolicy):
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
-            hidden_policy, memory_policy_out = LearningModel.create_recurrent_encoder(
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
                 hidden_policy,
                 self.memory_in,
                 self.sequence_length_ph,
@@ -272,7 +272,7 @@ class NNPolicy(TFPolicy):
                         size,
                         activation=None,
                         use_bias=False,
-                        kernel_initializer=LearningModel.scaled_init(0.01),
+                        kernel_initializer=ModelUtils.scaled_init(0.01),
                     )
                 )
 
@@ -281,19 +281,16 @@ class NNPolicy(TFPolicy):
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
-        output, self.action_probs, normalized_logits = LearningModel.create_discrete_action_masking_layer(
+        output, self.action_probs, normalized_logits = ModelUtils.create_discrete_action_masking_layer(
             raw_log_probs, self.action_masks, self.act_size
         )
 
         self.output = tf.identity(output)
         self.all_log_probs = tf.identity(normalized_logits, name="action")
 
-        self.action_holder = tf.placeholder(
-            shape=[None, len(policy_branches)], dtype=tf.int32, name="action_holder"
-        )
         self.action_oh = tf.concat(
             [
-                tf.one_hot(self.action_holder[:, i], self.act_size[i])
+                tf.one_hot(self.output[:, i], self.act_size[i])
                 for i in range(len(self.act_size))
             ],
             axis=1,

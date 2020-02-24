@@ -21,12 +21,12 @@ public class PyramidAgent : Agent
         m_SwitchLogic = areaSwitch.GetComponent<PyramidSwitch>();
     }
 
-    public override void CollectObservations()
+    public override void CollectObservations(VectorSensor sensor)
     {
         if (useVectorObs)
         {
-            AddVectorObs(m_SwitchLogic.GetState());
-            AddVectorObs(transform.InverseTransformDirection(m_AgentRb.velocity));
+            sensor.AddObservation(m_SwitchLogic.GetState());
+            sensor.AddObservation(transform.InverseTransformDirection(m_AgentRb.velocity));
         }
     }
 

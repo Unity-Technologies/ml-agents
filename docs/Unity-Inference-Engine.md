@@ -6,6 +6,9 @@ Engine. The Unity Inference Engine is using
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html)
 to run the neural network within Unity.
 
+__Note__: The ML-Agents toolkit only supports the models created with our
+trainers.
+
 ## Supported devices
 
 Scripting Backends : The Unity Inference Engine is generally faster with
@@ -24,10 +27,17 @@ but we only tested for the following platforms :
 * iOS
 * Android
 
+## Supported formats
+There are currently two supported model formats:
+ * Barracuda (`.nn`) files use a proprietary format produced by the [`tensorflow_to_barracuda.py`]() script.
+ * ONNX (`.onnx`) files use an [industry-standard open format](https://onnx.ai/about.html) produced by the [tf2onnx package](https://github.com/onnx/tensorflow-onnx).
+
+Export to ONNX is currently considered beta. To enable it, make sure `tf2onnx>=1.5.5` is installed in pip.
+tf2onnx does not currently support tensorflow 2.0.0 or later.
+
 ## Using the Unity Inference Engine
 
-When using a model, drag the `.nn` file into the **Model** field
-in the Inspector of the Agent.
+When using a model, drag the model file into the **Model** field in the Inspector of the Agent.
 Select the **Inference Device** : CPU or GPU you want to use for Inference.
 
 **Note:** For most of the models generated with the ML-Agents toolkit, CPU will be faster than GPU.

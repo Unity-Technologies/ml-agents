@@ -4,7 +4,7 @@ from typing import Optional, Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import LearningModel, EncoderType, LearningRateSchedule
+from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.common.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
@@ -51,6 +51,7 @@ class PPOOptimizer(TFOptimizer):
                 self.stats_name_to_update_name = {
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
+                    "Policy/Learning Rate": "learning_rate",
                 }
                 if self.policy.use_recurrent:
                     self.m_size = self.policy.m_size
@@ -63,14 +64,14 @@ class PPOOptimizer(TFOptimizer):
                 if num_layers < 1:
                     num_layers = 1
                 if policy.use_continuous_act:
-                    self.create_cc_critic(h_size, num_layers, vis_encode_type)
+                    self._create_cc_critic(h_size, num_layers, vis_encode_type)
                 else:
-                    self.create_dc_critic(h_size, num_layers, vis_encode_type)
+                    self._create_dc_critic(h_size, num_layers, vis_encode_type)
 
-                self.learning_rate = LearningModel.create_learning_rate(
+                self.learning_rate = ModelUtils.create_learning_rate(
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
-                self.create_losses(
+                self._create_losses(
                     self.policy.log_probs,
                     self.old_log_probs,
                     self.value_heads,
@@ -80,21 +81,20 @@ class PPOOptimizer(TFOptimizer):
                     lr,
                     max_step,
                 )
-                self.create_ppo_optimizer()
+                self._create_ppo_optimizer_ops()
 
             self.update_dict.update(
                 {
                     "value_loss": self.value_loss,
                     "policy_loss": self.abs_policy_loss,
                     "update_batch": self.update_batch,
+                    "learning_rate": self.learning_rate,
                 }
             )
 
-            # Add some stuff to inference dict from optimizer
-            self.policy.inference_dict["learning_rate"] = self.learning_rate
             self.policy.initialize_or_load()
 
-    def create_cc_critic(
+    def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -103,7 +103,7 @@ class PPOOptimizer(TFOptimizer):
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
         """
-        hidden_stream = LearningModel.create_observation_streams(
+        hidden_stream = ModelUtils.create_observation_streams(
             self.policy.visual_in,
             self.policy.processed_vector_in,
             1,
@@ -113,7 +113,7 @@ class PPOOptimizer(TFOptimizer):
         )[0]
 
         if self.policy.use_recurrent:
-            hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
+            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in,
                 self.policy.sequence_length_ph,
@@ -123,7 +123,7 @@ class PPOOptimizer(TFOptimizer):
         else:
             hidden_value = hidden_stream
 
-        self.value_heads, self.value = LearningModel.create_value_heads(
+        self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
         )
         self.all_old_log_probs = tf.placeholder(
@@ -134,7 +134,7 @@ class PPOOptimizer(TFOptimizer):
             (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
         )
 
-    def create_dc_critic(
+    def _create_dc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
@@ -143,7 +143,7 @@ class PPOOptimizer(TFOptimizer):
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
         """
-        hidden_stream = LearningModel.create_observation_streams(
+        hidden_stream = ModelUtils.create_observation_streams(
             self.policy.visual_in,
             self.policy.processed_vector_in,
             1,
@@ -153,7 +153,7 @@ class PPOOptimizer(TFOptimizer):
         )[0]
 
         if self.policy.use_recurrent:
-            hidden_value, memory_value_out = LearningModel.create_recurrent_encoder(
+            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
                 hidden_stream,
                 self.memory_in,
                 self.policy.sequence_length_ph,
@@ -163,7 +163,7 @@ class PPOOptimizer(TFOptimizer):
         else:
             hidden_value = hidden_stream
 
-        self.value_heads, self.value = LearningModel.create_value_heads(
+        self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
         )
 
@@ -172,7 +172,7 @@ class PPOOptimizer(TFOptimizer):
             dtype=tf.float32,
             name="old_probabilities",
         )
-        _, _, old_normalized_logits = LearningModel.create_discrete_action_masking_layer(
+        _, _, old_normalized_logits = ModelUtils.create_discrete_action_masking_layer(
             self.all_old_log_probs, self.policy.action_masks, self.policy.act_size
         )
 
@@ -199,7 +199,7 @@ class PPOOptimizer(TFOptimizer):
             keepdims=True,
         )
 
-    def create_losses(
+    def _create_losses(
         self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
     ):
         """
@@ -276,8 +276,8 @@ class PPOOptimizer(TFOptimizer):
             * tf.reduce_mean(tf.dynamic_partition(entropy, self.policy.mask, 2)[1])
         )
 
-    def create_ppo_optimizer(self):
-        self.tf_optimizer = self.create_tf_optimizer(self.learning_rate)
+    def _create_ppo_optimizer_ops(self):
+        self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
         self.update_batch = self.tf_optimizer.minimize(self.loss)
 
@@ -289,7 +289,7 @@ class PPOOptimizer(TFOptimizer):
         :param num_sequences: Number of sequences to process.
         :return: Results of update.
         """
-        feed_dict = self.construct_feed_dict(batch, num_sequences)
+        feed_dict = self._construct_feed_dict(batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats = {}
         # Collect feed dicts for all reward signals.
@@ -304,7 +304,7 @@ class PPOOptimizer(TFOptimizer):
             update_stats[stat_name] = update_vals[update_name]
         return update_stats
 
-    def construct_feed_dict(
+    def _construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         # Do an optional burn-in for memories
@@ -330,7 +330,7 @@ class PPOOptimizer(TFOptimizer):
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[self.policy.action_holder] = mini_batch["actions"]
+            feed_dict[self.policy.output] = mini_batch["actions"]
             if self.policy.use_recurrent:
                 feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]

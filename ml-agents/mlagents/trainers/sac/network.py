@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.models import LearningModel, EncoderType
+from mlagents.trainers.models import ModelUtils, EncoderType
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
@@ -38,7 +38,7 @@ class SACNetwork:
         self.num_layers = num_layers
         self.stream_names = stream_names
         self.h_size = h_size
-        self.activ_fn = LearningModel.swish
+        self.activ_fn = ModelUtils.swish
 
         self.sequence_length_ph = tf.placeholder(
             shape=None, dtype=tf.int32, name="sac_sequence_length"
@@ -109,7 +109,7 @@ class SACNetwork:
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
-    def create_cc_critic(self, hidden_value, scope, create_qs=True):
+    def _create_cc_critic(self, hidden_value, scope, create_qs=True):
         """
         Creates just the critic network
         """
@@ -121,10 +121,14 @@ class SACNetwork:
             self.h_size,
             self.join_scopes(scope, "value"),
         )
-
+        self.external_action_in = tf.placeholder(
+            shape=[None, self.policy.act_size[0]],
+            dtype=tf.float32,
+            name="external_action_in",
+        )
         self.value_vars = self.get_vars(self.join_scopes(scope, "value"))
         if create_qs:
-            hidden_q = tf.concat([hidden_value, self.policy.action_holder], axis=-1)
+            hidden_q = tf.concat([hidden_value, self.external_action_in], axis=-1)
             hidden_qp = tf.concat([hidden_value, self.policy.output], axis=-1)
             self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
                 self.stream_names,
@@ -144,7 +148,7 @@ class SACNetwork:
             self.q_vars = self.get_vars(self.join_scopes(scope, "q"))
         self.critic_vars = self.get_vars(scope)
 
-    def create_dc_critic(self, hidden_value, scope, create_qs=True):
+    def _create_dc_critic(self, hidden_value, scope, create_qs=True):
         """
         Creates just the critic network
         """
@@ -195,11 +199,11 @@ class SACNetwork:
         :param scope: TF scope for value network.
         """
         with tf.variable_scope(scope):
-            value_hidden = LearningModel.create_vector_observation_encoder(
+            value_hidden = ModelUtils.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "encoder", False
             )
             if self.use_recurrent:
-                value_hidden, memory_out = LearningModel.create_recurrent_encoder(
+                value_hidden, memory_out = ModelUtils.create_recurrent_encoder(
                     value_hidden,
                     self.value_memory_in,
                     self.sequence_length_ph,
@@ -232,11 +236,11 @@ class SACNetwork:
         :param num_outputs: Number of outputs of each Q function. If discrete, equal to number of actions.
         """
         with tf.variable_scope(self.join_scopes(scope, "q1_encoding"), reuse=reuse):
-            q1_hidden = LearningModel.create_vector_observation_encoder(
+            q1_hidden = ModelUtils.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q1_encoder", reuse
             )
             if self.use_recurrent:
-                q1_hidden, memory_out = LearningModel.create_recurrent_encoder(
+                q1_hidden, memory_out = ModelUtils.create_recurrent_encoder(
                     q1_hidden,
                     self.q1_memory_in,
                     self.sequence_length_ph,
@@ -251,11 +255,11 @@ class SACNetwork:
 
             q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
         with tf.variable_scope(self.join_scopes(scope, "q2_encoding"), reuse=reuse):
-            q2_hidden = LearningModel.create_vector_observation_encoder(
+            q2_hidden = ModelUtils.create_vector_observation_encoder(
                 hidden_input, h_size, self.activ_fn, num_layers, "q2_encoder", reuse
             )
             if self.use_recurrent:
-                q2_hidden, memory_out = LearningModel.create_recurrent_encoder(
+                q2_hidden, memory_out = ModelUtils.create_recurrent_encoder(
                     q2_hidden,
                     self.q2_memory_in,
                     self.sequence_length_ph,
@@ -301,17 +305,17 @@ class SACTargetNetwork(SACNetwork):
             vis_encode_type,
         )
         with tf.variable_scope(TARGET_SCOPE):
-            self.visual_in = LearningModel.create_visual_input_placeholders(
+            self.visual_in = ModelUtils.create_visual_input_placeholders(
                 policy.brain.camera_resolutions
             )
-            self.vector_in = LearningModel.create_vector_input(policy.vec_obs_size)
+            self.vector_in = ModelUtils.create_vector_input(policy.vec_obs_size)
             if self.policy.normalize:
-                normalization_tensors = LearningModel.create_normalizer(self.vector_in)
+                normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
                 self.normalization_steps = normalization_tensors.steps
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
-                self.processed_vector_in = LearningModel.normalize_vector_obs(
+                self.processed_vector_in = ModelUtils.normalize_vector_obs(
                     self.vector_in,
                     self.running_mean,
                     self.running_variance,
@@ -326,7 +330,7 @@ class SACTargetNetwork(SACNetwork):
                     shape=[None, m_size], dtype=tf.float32, name="target_recurrent_in"
                 )
                 self.value_memory_in = self.memory_in
-            hidden_streams = LearningModel.create_observation_streams(
+            hidden_streams = ModelUtils.create_observation_streams(
                 self.visual_in,
                 self.processed_vector_in,
                 1,
@@ -336,9 +340,9 @@ class SACTargetNetwork(SACNetwork):
                 stream_scopes=["critic/value/"],
             )
         if self.policy.use_continuous_act:
-            self.create_cc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
+            self._create_cc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
         else:
-            self.create_dc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
+            self._create_dc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
         if self.use_recurrent:
             self.memory_out = tf.concat(
                 self.value_memory_out, axis=1
@@ -387,24 +391,24 @@ class SACPolicyNetwork(SACNetwork):
             vis_encode_type,
         )
         if self.policy.use_recurrent:
-            self.create_memory_ins(m_size)
+            self._create_memory_ins(m_size)
 
-        hidden_critic = self.create_observation_in(vis_encode_type)
+        hidden_critic = self._create_observation_in(vis_encode_type)
         self.policy.output = self.policy.output
         # Use the sequence length of the policy
         self.sequence_length_ph = self.policy.sequence_length_ph
 
         if self.policy.use_continuous_act:
-            self.create_cc_critic(hidden_critic, POLICY_SCOPE)
+            self._create_cc_critic(hidden_critic, POLICY_SCOPE)
 
         else:
-            self.create_dc_critic(hidden_critic, POLICY_SCOPE)
+            self._create_dc_critic(hidden_critic, POLICY_SCOPE)
 
         if self.use_recurrent:
             mem_outs = [self.value_memory_out, self.q1_memory_out, self.q2_memory_out]
             self.memory_out = tf.concat(mem_outs, axis=1)
 
-    def create_memory_ins(self, m_size):
+    def _create_memory_ins(self, m_size):
         """
         Creates the memory input placeholders for LSTM.
         :param m_size: the total size of the memory.
@@ -425,7 +429,7 @@ class SACPolicyNetwork(SACNetwork):
         self.q1_memory_in = mem_ins[1]
         self.q2_memory_in = mem_ins[2]
 
-    def create_observation_in(self, vis_encode_type):
+    def _create_observation_in(self, vis_encode_type):
         """
         Creates the observation inputs, and a CNN if needed,
         :param vis_encode_type: Type of CNN encoder.
@@ -434,7 +438,7 @@ class SACPolicyNetwork(SACNetwork):
         once and thrown away.
         """
         with tf.variable_scope(POLICY_SCOPE):
-            hidden_streams = LearningModel.create_observation_streams(
+            hidden_streams = ModelUtils.create_observation_streams(
                 self.policy.visual_in,
                 self.policy.processed_vector_in,
                 1,

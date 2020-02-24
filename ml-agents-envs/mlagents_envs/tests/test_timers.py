@@ -57,45 +57,30 @@ def test_timers() -> None:
             "total": mock.ANY,
             "count": 1,
             "self": mock.ANY,
-            "children": [
-                {
-                    "name": "top_level",
+            "children": {
+                "top_level": {
                     "total": mock.ANY,
                     "count": 1,
                     "self": mock.ANY,
-                    "children": [
-                        {
-                            "name": "multiple",
+                    "children": {
+                        "multiple": {
                             "total": mock.ANY,
                             "count": 3,
                             "self": mock.ANY,
-                            "children": [
-                                {
-                                    "name": "decorated_func",
+                            "children": {
+                                "decorated_func": {
                                     "total": mock.ANY,
                                     "count": 3,
                                     "self": mock.ANY,
                                 }
-                            ],
+                            },
                         },
-                        {
-                            "name": "raises",
-                            "total": mock.ANY,
-                            "count": 1,
-                            "self": mock.ANY,
-                        },
-                        {
-                            "name": "post_raise",
-                            "total": mock.ANY,
-                            "count": 1,
-                            "self": mock.ANY,
-                        },
-                    ],
+                        "raises": {"total": mock.ANY, "count": 1, "self": mock.ANY},
+                        "post_raise": {"total": mock.ANY, "count": 1, "self": mock.ANY},
+                    },
                 }
-            ],
-            "gauges": [
-                {"name": "my_gauge", "value": 4.0, "max": 4.0, "min": 0.0, "count": 3}
-            ],
+            },
+            "gauges": {"my_gauge": {"value": 4.0, "max": 4.0, "min": 0.0, "count": 3}},
         }
 
         assert timer_tree == expected_tree

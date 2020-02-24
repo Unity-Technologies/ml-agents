@@ -24,39 +24,16 @@ file, it Policy will use the neural network `Model` to take decisions.
 
 ## Decisions
 
-The observation-decision-action-reward cycle repeats after a configurable number
-of simulation steps (the frequency defaults to once-per-step). You can also set
-up an Agent to request decisions on demand. Making decisions at regular step
-intervals is generally most appropriate for physics-based simulations. Making
-decisions on demand is generally appropriate for situations where Agents only
-respond to specific events or take actions of variable duration. For example, an
+The observation-decision-action-reward cycle repeats each time the Agent request
+a decision.
+Agents will request a decision when `Agent.RequestDecision()` is called. If you need
+the Agent to request decisions on its own at regular intervals, add a
+`Decision Requester` component to the Agent's Game Object. Making decisions at regular step
+intervals is generally most appropriate for physics-based simulations. For example, an
 agent in a robotic simulator that must provide fine-control of joint torques
 should make its decisions every step of the simulation. On the other hand, an
 agent that only needs to make decisions when certain game or simulation events
-occur, should use on-demand decision making.
-
-To control the frequency of step-based decision making, set the **Decision
-Frequency** value for the Agent object in the Unity Inspector window. Agents
-using the same Model can use a different frequency. During simulation
-steps in which no decision is requested, the Agent receives the same action
-chosen by the previous decision.
-
-### On Demand Decision Making
-
-On demand decision making allows Agents to request decisions from their Policies
-only when needed instead of receiving decisions at a fixed frequency. This is
-useful when the agents commit to an action for a variable number of steps or
-when the agents cannot make decisions at the same time. This typically the case
-for turn based games, games where agents must react to events or games where
-agents can take actions of variable duration.
-
-When you turn on **On Demand Decisions** for an Agent, your agent code must call
-the `Agent.RequestDecision()` function. This function call starts one iteration
-of the observation-decision-action-reward cycle. The Agent's
-`CollectObservations()` method is called, the Policy makes a decision and
-returns it by calling the
-`AgentAction()` method. The Policy waits for the Agent to request the next
-decision before starting another iteration.
+occur, should call `Agent.RequestDecision()` manually.
 
 ## Observations
 
@@ -68,18 +45,18 @@ state of the world. A state observation can take the following forms:
 * **Visual Observations** — one or more camera images and/or render textures.
 
 When you use vector observations for an Agent, implement the
-`Agent.CollectObservations()` method to create the feature vector. When you use
+`Agent.CollectObservations(VectorSensor sensor)` method to create the feature vector. When you use
 **Visual Observations**, you only need to identify which Unity Camera objects
 or RenderTextures will provide images and the base Agent class handles the rest.
-You do not need to implement the `CollectObservations()` method when your Agent
+You do not need to implement the `CollectObservations(VectorSensor sensor)` method when your Agent
 uses visual observations (unless it also uses vector observations).
 
 ### Vector Observation Space: Feature Vectors
 
 For agents using a continuous state space, you create a feature vector to
 represent the agent's observation at each step of the simulation. The Policy
-class calls the `CollectObservations()` method of each Agent. Your
-implementation of this function must call `AddVectorObs` to add vector
+class calls the `CollectObservations(VectorSensor sensor)` method of each Agent. Your
+implementation of this function must call `VectorSensor.AddObservation` to add vector
 observations.
 
 The observation must include all the information an agents needs to accomplish
@@ -101,16 +78,16 @@ noticeably worse.
 public GameObject ball;
 
 private List<float> state = new List<float>();
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
-    AddVectorObs(gameObject.transform.rotation.z);
-    AddVectorObs(gameObject.transform.rotation.x);
-    AddVectorObs((ball.transform.position.x - gameObject.transform.position.x));
-    AddVectorObs((ball.transform.position.y - gameObject.transform.position.y));
-    AddVectorObs((ball.transform.position.z - gameObject.transform.position.z));
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.x);
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.y);
-    AddVectorObs(ball.transform.GetComponent<Rigidbody>().velocity.z);
+    sensor.AddObservation(gameObject.transform.rotation.z);
+    sensor.AddObservation(gameObject.transform.rotation.x);
+    sensor.AddObservation((ball.transform.position.x - gameObject.transform.position.x));
+    sensor.AddObservation((ball.transform.position.y - gameObject.transform.position.y));
+    sensor.AddObservation((ball.transform.position.z - gameObject.transform.position.z));
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.x);
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.y);
+    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.z);
 }
 ```
 
@@ -129,7 +106,7 @@ properties to use a continuous vector observation:
 The observation feature vector is a list of floating point numbers, which means
 you must convert any other data types to a float or a list of floats.
 
-The `AddVectorObs` method provides a number of overloads for adding common types
+The `VectorSensor.AddObservation` method provides a number of overloads for adding common types
 of data to your observation vector. You can add Integers and booleans directly to
 the observation vector, as well as some common Unity data types such as `Vector2`,
 `Vector3`, and `Quaternion`.
@@ -144,27 +121,27 @@ the feature vector. The following code example illustrates how to add.
 ```csharp
 enum CarriedItems { Sword, Shield, Bow, LastItem }
 private List<float> state = new List<float>();
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
     for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
     {
-        AddVectorObs((int)currentItem == ci ? 1.0f : 0.0f);
+        sensor.AddObservation((int)currentItem == ci ? 1.0f : 0.0f);
     }
 }
 ```
 
-`AddVectorObs` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp
 enum CarriedItems { Sword, Shield, Bow, LastItem }
 const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
 
-public override void CollectObservations()
+public override void CollectObservations(VectorSensor sensor)
 {
     // The first argument is the selection index; the second is the
     // number of possibilities
-    AddVectorObs((int)currentItem, NUM_ITEM_TYPES);
+    sensor.AddOneHotObservation((int)currentItem, NUM_ITEM_TYPES);
 }
 ```
 
@@ -413,10 +390,12 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action, call the method `SetActionMask` within the `CollectObservation` method :
+action, call the method `SetActionMask` on the optional `ActionMasker` argument of the `CollectObservation` method :
 
 ```csharp
-SetActionMask(branch, actionIndices)
+public override void CollectObservations(VectorSensor sensor, ActionMasker actionMasker){
+    actionMasker.SetActionMask(branch, actionIndices)
+}
 ```
 
 Where:
@@ -555,6 +534,9 @@ called independently of the `Max Step` property.
 
 * `Behavior Parameters` - The parameters dictating what Policy the Agent will
 receive.
+  * `Behavior Name` - The identifier for the behavior. Agents with the same behavior name
+  will learn the same policy. If you're using [curriculum learning](Training-Curriculum-Learning.md),
+   this is used as the top-level key in the config.
   * `Vector Observation`
     * `Space Size` - Length of vector observation for the Agent.
     * `Stacked Vectors` - The number of previous vector observations that will
@@ -571,31 +553,15 @@ receive.
   * `Model` - The neural network model used for inference (obtained after
   training)
   * `Inference Device` - Whether to use CPU or GPU to run the model during inference
-  * `Use Heuristic` - If checked, the Agent will use its 'Heuristic()' method for
-  decisions.
+  * `Behavior Type` - Determines whether the Agent will do training, inference, or use its
+  Heuristic() method:
+    * `Default` - the Agent will train if they connect to a python trainer, otherwise they will perform inference.
+    * `Heuristic Only` - the Agent will always use the `Heuristic()` method.
+    * `Inference Only` - the Agent will always perform inference.
+  * `Team ID` - Used to define the team for [self-play](Training-Self-Play.md)
+  * `Use Child Sensors` - Whether to use all Sensor components attached to child GameObjects of this Agent.
 * `Max Step` - The per-agent maximum number of steps. Once this number is
-  reached, the Agent will be reset if `Reset On Done` is checked.
-* `Reset On Done` - Whether the Agent's `AgentReset()` function should be called
-  when the Agent reaches its `Max Step` count or is marked as done in code.
-* `On Demand Decision` - Whether the Agent requests decisions at a fixed step
-  interval or explicitly requests decisions by calling `RequestDecision()`.
-  * If not checked, the Agent will request a new decision every `Decision
-     Frequency` steps and perform an action every step. In the example above,
-     `CollectObservations()` will be called every 5 steps and `AgentAction()`
-     will be called at every step. This means that the Agent will reuse the
-     decision the Policy has given it.
-  * If checked, the Agent controls when to receive decisions, and take actions.
-     To do so, the Agent may leverage one or two methods:
-    * `RequestDecision()` Signals that the Agent is requesting a decision. This
-        causes the Agent to collect its observations and ask the Policy for a
-        decision at the next step of the simulation. Note that when an Agent
-        requests a decision, it also request an action. This is to ensure that
-        all decisions lead to an action during training.
-    * `RequestAction()` Signals that the Agent is requesting an action. The
-        action provided to the Agent in this case is the same action that was
-        provided the last time it requested a decision.
-* `Decision Interval` - The number of steps between decision requests. Not used
-  if `On Demand Decision`, is true.
+  reached, the Agent will be reset.
 
 ## Monitoring Agents
 

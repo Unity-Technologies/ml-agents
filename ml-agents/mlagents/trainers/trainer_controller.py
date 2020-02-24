@@ -109,7 +109,7 @@ class TrainerController(object):
         timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
         try:
             with open(timing_path, "w") as f:
-                json.dump(get_timer_tree(), f, indent=2)
+                json.dump(get_timer_tree(), f, indent=4)
         except FileNotFoundError:
             self.logger.warning(
                 f"Unable to save to {timing_path}. Make sure the directory exists"

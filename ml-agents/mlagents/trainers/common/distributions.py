@@ -3,7 +3,7 @@ from typing import NamedTuple, List
 import numpy as np
 
 from mlagents.tf_utils import tf
-from mlagents.trainers.models import LearningModel
+from mlagents.trainers.models import ModelUtils
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -83,7 +83,7 @@ class GaussianDistribution(OutputDistribution):
             act_size[0],
             activation=None,
             name="mu",
-            kernel_initializer=LearningModel.scaled_init(0.01),
+            kernel_initializer=ModelUtils.scaled_init(0.01),
             reuse=tf.AUTO_REUSE,
         )
 
@@ -93,7 +93,7 @@ class GaussianDistribution(OutputDistribution):
             act_size[0],
             activation=None,
             name="log_std",
-            kernel_initializer=LearningModel.scaled_init(0.01),
+            kernel_initializer=ModelUtils.scaled_init(0.01),
         )
         log_sigma = tf.clip_by_value(log_sigma, log_sigma_min, log_sigma_max)
         sigma = tf.exp(log_sigma)
@@ -215,7 +215,7 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
 #                     size,
 #                     activation=None,
 #                     use_bias=False,
-#                     kernel_initializer=LearningModel.scaled_init(0.01),
+#                     kernel_initializer=ModelUtils.scaled_init(0.01),
 #                 )
 #             )
 #         return policy_branches
@@ -226,7 +226,7 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
 #         self.action_masks = tf.placeholder(
 #             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
 #         )
-#         output, self.action_probs, normalized_logits = LearningModel.create_discrete_action_masking_layer(
+#         output, self.action_probs, normalized_logits = ModelUtils.create_discrete_action_masking_layer(
 #             raw_log_probs, self.action_masks, self.act_size
 #         )
 
