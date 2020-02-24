@@ -53,7 +53,6 @@ namespace MLAgents
         public float[] vectorActions;
     }
 
-
     /// <summary>
     /// Agent MonoBehavior class that is attached to a Unity GameObject, making it
     /// an Agent. An agent produces observations and takes actions in the
@@ -111,7 +110,7 @@ namespace MLAgents
         BehaviorParameters m_PolicyFactory;
 
         /// This code is here to make the upgrade path for users using maxStep
-        /// easier.  We will hook into the Serialization code and make sure that
+        /// easier. We will hook into the Serialization code and make sure that
         /// agentParameters.maxStep and this.maxStep are in sync.
         [Serializable]
         internal struct AgentParameters
@@ -159,7 +158,6 @@ namespace MLAgents
         /// Whether or not the agent requests a decision.
         bool m_RequestDecision;
 
-
         /// Keeps track of the number of steps taken by the agent in this episode.
         /// Note that this value is different for each agent, and may not overlap
         /// with the step counter in the Academy, since agents reset based on
@@ -193,15 +191,18 @@ namespace MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        /// MonoBehaviour function that is called when the attached GameObject
-        /// becomes enabled or active.
         void OnEnable()
         {
             LazyInitialize();
         }
 
+        /// <summary>
+        /// <inheritdoc cref="OnBeforeSerialize"/>
+        /// </summary>
         public void OnBeforeSerialize()
         {
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // from AgentParameters (since removed) to Agent
             if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
@@ -209,8 +210,13 @@ namespace MLAgents
             hasUpgradedFromAgentParameters = true;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="OnAfterDeserialize"/>
+        /// </summary>
         public void OnAfterDeserialize()
         {
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // from AgentParameters (since removed) to Agent
             if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
@@ -235,7 +241,6 @@ namespace MLAgents
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Recorder = GetComponent<DemonstrationRecorder>();
 
-
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
             sensors = new List<ISensor>();
@@ -251,8 +256,6 @@ namespace MLAgents
             InitializeSensors();
         }
 
-        /// Monobehavior function that is called when the attached GameObject
-        /// becomes disabled or inactive.
         void OnDisable()
         {
             // If Academy.Dispose has already been called, we don't need to unregister with it.
@@ -563,7 +566,7 @@ namespace MLAgents
         ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
         ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
         ///     - <see cref="VectorSensor.AddObservation(bool)"/>
-        ///     - <see cref="VectorSensor.AddObservation(IEnumerable)"/>
+        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
         ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
@@ -601,7 +604,7 @@ namespace MLAgents
         ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
         ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
         ///     - <see cref="VectorSensor.AddObservation(bool)"/>
-        ///     - <see cref="VectorSensor.AddObservation(IEnumerable)"/>
+        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
         ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
@@ -614,8 +617,8 @@ namespace MLAgents
         /// input :
         ///     - <see cref="ActionMasker.SetActionMask(int)"/>
         ///     - <see cref="ActionMasker.SetActionMask(int, int)"/>
-        ///     - <see cref="ActionMasker.SetActionMask(int, IEnumerable)"/>
-        ///     - <see cref="ActionMasker.SetActionMask(IEnumerable)"/>
+        ///     - <see cref="ActionMasker.SetActionMask(int, IEnumerable{int})"/>
+        ///     - <see cref="ActionMasker.SetActionMask(IEnumerable{int})"/>
         /// The branch input is the index of the action, actionIndices are the indices of the
         /// invalid options for that action.
         /// </remarks>
@@ -684,7 +687,7 @@ namespace MLAgents
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <returns></returns>
-        protected float ScaleAction(float rawAction, float min, float max)
+        protected static float ScaleAction(float rawAction, float min, float max)
         {
             var middle = (min + max) / 2;
             var range = (max - min) / 2;
