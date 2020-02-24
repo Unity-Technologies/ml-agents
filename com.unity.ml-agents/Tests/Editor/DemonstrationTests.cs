@@ -54,7 +54,7 @@ namespace MLAgents.Tests
             demoRec.record = true;
             demoRec.demonstrationName = k_DemoName;
             demoRec.demonstrationDirectory = k_DemoDirectory;
-            var demoStore = demoRec.LazyInitialize(fileSystem);
+            var demoWriter = demoRec.LazyInitialize(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
             Assert.IsTrue(fileSystem.FileExists(k_DemoDirectory + k_DemoName + k_ExtensionType));
@@ -70,15 +70,15 @@ namespace MLAgents.Tests
             };
 
 
-            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
+            demoWriter.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
             demoRec.Close();
 
             // Make sure close can be called multiple times
-            demoStore.Close();
+            demoWriter.Close();
             demoRec.Close();
 
             // Make sure trying to write after closing doesn't raise an error.
-            demoStore.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
+            demoWriter.Record(agentInfo, new System.Collections.Generic.List<ISensor>());
         }
 
         public class ObservationAgent : TestAgent
@@ -129,7 +129,7 @@ namespace MLAgents.Tests
 
             // Read back the demo file and make sure observations were written
             var reader = fileSystem.File.OpenRead("Assets/Demonstrations/TestBrain.demo");
-            reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
+            reader.Seek(DemonstrationWriter.MetaDataBytes + 1, 0);
             BrainParametersProto.Parser.ParseDelimitedFrom(reader);
 
             var agentInfoProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader).AgentInfo;
