@@ -271,12 +271,12 @@ class NNPolicy(TFPolicy):
             distribution = MultiCategoricalDistribution(
                 hidden_policy, self.act_size, self.action_masks
             )
-
-        self.output = tf.identity(distribution.sample)
+        # It's important that we are able to feed_dict a value into this tensor to get the
+        # right one-hot encoding, so we can't do identity on it.
+        self.output = distribution.sample
         self.all_log_probs = tf.identity(distribution.log_probs, name="action")
         self.selected_actions = tf.stop_gradient(
             distribution.sample_onehot
         )  # In discrete, these are onehot
         self.entropy = distribution.entropy
         self.log_probs = distribution.total_log_probs
-        print(self.act_size)
