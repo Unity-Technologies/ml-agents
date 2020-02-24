@@ -54,7 +54,7 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// Agent MonoBehavior class that is attached to a Unity GameObject, making it
+    /// Agent MonoBehaviour class that is attached to a Unity GameObject, making it
     /// an Agent. An agent produces observations and takes actions in the
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the

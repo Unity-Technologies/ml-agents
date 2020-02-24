@@ -181,7 +181,7 @@ namespace MLAgents
 
         /// <summary>
         /// Enable stepping of the Academy during the FixedUpdate phase. This is done by creating
-        /// a temporary GameObject with a MonoBehavior that calls Academy.EnvironmentStep().
+        /// a temporary GameObject with a MonoBehaviour that calls Academy.EnvironmentStep().
         /// </summary>
         void EnableAutomaticStepping()
         {
