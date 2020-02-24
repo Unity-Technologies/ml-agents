@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
-using UnityEngine.Serialization;
 
 namespace MLAgents
 {
     /// <summary>
     /// Struct that contains all the information for an Agent, including its
-    /// observations, actions and current status, that is sent to the Brain.
+    /// observations, actions and current status.
     /// </summary>
     internal struct AgentInfo
     {
@@ -54,15 +53,15 @@ namespace MLAgents
         public float[] vectorActions;
     }
 
-
     /// <summary>
-    /// Agent Monobehavior class that is attached to a Unity GameObject, making it
+    /// Agent MonoBehaviour class that is attached to a Unity GameObject, making it
     /// an Agent. An agent produces observations and takes actions in the
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
-    /// user in <see cref="CollectObservations"/>. On the other hand, actions
-    /// are determined by decisions produced by a Policy. Currently, this
-    /// class is expected to be extended to implement the desired agent behavior.
+    /// user in <see cref="Agent.CollectObservations(VectorSensor)"/> or
+    /// <see cref="Agent.CollectObservations(VectorSensor, ActionMasker)"/>.
+    /// On the other hand, actions are determined by decisions produced by a Policy.
+    /// Currently, this class is expected to be extended to implement the desired agent behavior.
     /// </summary>
     /// <remarks>
     /// Simply speaking, an agent roams through an environment and at each step
@@ -71,8 +70,7 @@ namespace MLAgents
     /// however, an agent need not send its observation at every step since very
     /// little may have changed between successive steps.
     ///
-    /// At any step, an agent may be considered <see cref="m_Done"/>.
-    /// This could occur due to a variety of reasons:
+    /// At any step, an agent may be considered done due to a variety of reasons:
     ///     - The agent reached an end state within its environment.
     ///     - The agent reached the maximum # of steps (i.e. timed out).
     ///     - The academy reached the maximum # of steps (forced agent to be done).
@@ -111,7 +109,7 @@ namespace MLAgents
         BehaviorParameters m_PolicyFactory;
 
         /// This code is here to make the upgrade path for users using maxStep
-        /// easier.  We will hook into the Serialization code and make sure that
+        /// easier. We will hook into the Serialization code and make sure that
         /// agentParameters.maxStep and this.maxStep are in sync.
         [Serializable]
         internal struct AgentParameters
@@ -194,15 +192,18 @@ namespace MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        /// MonoBehaviour function that is called when the attached GameObject
-        /// becomes enabled or active.
         void OnEnable()
         {
             LazyInitialize();
         }
 
+        /// <summary>
+        /// <inheritdoc cref="OnBeforeSerialize"/>
+        /// </summary>
         public void OnBeforeSerialize()
         {
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // from AgentParameters (since removed) to Agent
             if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
@@ -210,8 +211,13 @@ namespace MLAgents
             hasUpgradedFromAgentParameters = true;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="OnAfterDeserialize"/>
+        /// </summary>
         public void OnAfterDeserialize()
         {
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // from AgentParameters (since removed) to Agent
             if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
                 maxStep = agentParameters.maxStep;
@@ -219,8 +225,9 @@ namespace MLAgents
             hasUpgradedFromAgentParameters = true;
         }
 
-        /// Helper method for the <see cref="OnEnable"/> event, created to
-        /// facilitate testing.
+        /// <summary>
+        /// Initializes the agent. Can be safely called multiple times.
+        /// </summary>
         public void LazyInitialize()
         {
             if (m_Initialized)
@@ -248,8 +255,6 @@ namespace MLAgents
             InitializeSensors();
         }
 
-        /// Monobehavior function that is called when the attached GameObject
-        /// becomes disabled or inactive.
         void OnDisable()
         {
             DemonstrationStores.Clear();
@@ -316,6 +321,7 @@ namespace MLAgents
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
 
+        /// <summary>
         /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
@@ -441,10 +447,9 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            throw new UnityAgentsException(string.Format(
+            throw new UnityAgentsException(
                 "The Heuristic method was not implemented for the Agent on the " +
-                "{0} GameObject.",
-                gameObject.name));
+                $"{gameObject.name} GameObject.");
         }
 
         /// <summary>
@@ -477,7 +482,8 @@ namespace MLAgents
                 collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
                 if (param.numStackedVectorObservations > 1)
                 {
-                    var stackingSensor = new StackingSensor(collectObservationsSensor, param.numStackedVectorObservations);
+                    var stackingSensor = new StackingSensor(
+                        collectObservationsSensor, param.numStackedVectorObservations);
                     sensors.Add(stackingSensor);
                 }
                 else
@@ -493,7 +499,9 @@ namespace MLAgents
             // Make sure the names are actually unique
             for (var i = 0; i < sensors.Count - 1; i++)
             {
-                Debug.Assert(!sensors[i].GetName().Equals(sensors[i + 1].GetName()), "Sensor names must be unique.");
+                Debug.Assert(
+                    !sensors[i].GetName().Equals(sensors[i + 1].GetName()),
+                    "Sensor names must be unique.");
             }
 #endif
         }
@@ -533,9 +541,9 @@ namespace MLAgents
 
         void UpdateSensors()
         {
-            for (var i = 0; i < sensors.Count; i++)
+            foreach (var sensor in sensors)
             {
-                sensors[i].Update();
+                sensor.Update();
             }
         }
 
@@ -545,6 +553,9 @@ namespace MLAgents
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
+        /// <param name="sensor">
+        /// The vector observations for the agent.
+        /// </param>
         /// <remarks>
         /// An agents observation is any environment information that helps
         /// the Agent achieve its goal. For example, for a fighting Agent, its
@@ -553,13 +564,14 @@ namespace MLAgents
         /// Recall that an Agent may attach vector or visual observations.
         /// Vector observations are added by calling the provided helper methods
         /// on the VectorSensor input:
-        ///     - <see cref="AddObservation(int)"/>
-        ///     - <see cref="AddObservation(float)"/>
-        ///     - <see cref="AddObservation(Vector3)"/>
-        ///     - <see cref="AddObservation(Vector2)"/>
-        ///     - <see cref="AddObservation(Quaternion)"/>
-        ///     - <see cref="AddObservation(bool)"/>
-        ///     - <see cref="AddOneHotObservation(int, int)"/>
+        ///     - <see cref="VectorSensor.AddObservation(int)"/>
+        ///     - <see cref="VectorSensor.AddObservation(float)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Vector3)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
+        ///     - <see cref="VectorSensor.AddObservation(bool)"/>
+        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
+        ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation
@@ -572,10 +584,16 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Collects the vector observations of the agent.
+        /// Collects the vector observations of the agent alongside the masked actions.
         /// The agent observation describes the current environment from the
         /// perspective of the agent.
         /// </summary>
+        /// <param name="sensor">
+        /// The vector observations for the agent.
+        /// </param>
+        /// <param name="actionMasker">
+        /// The masked actions for the agent.
+        /// </param>
         /// <remarks>
         /// An agents observation is any environment information that helps
         /// the Agent achieve its goal. For example, for a fighting Agent, its
@@ -584,13 +602,14 @@ namespace MLAgents
         /// Recall that an Agent may attach vector or visual observations.
         /// Vector observations are added by calling the provided helper methods
         /// on the VectorSensor input:
-        ///     - <see cref="AddObservation(int)"/>
-        ///     - <see cref="AddObservation(float)"/>
-        ///     - <see cref="AddObservation(Vector3)"/>
-        ///     - <see cref="AddObservation(Vector2)"/>
-        ///     - <see cref="AddObservation(Quaternion)"/>
-        ///     - <see cref="AddObservation(bool)"/>
-        ///     - <see cref="AddOneHotObservation(int, int)"/>
+        ///     - <see cref="VectorSensor.AddObservation(int)"/>
+        ///     - <see cref="VectorSensor.AddObservation(float)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Vector3)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
+        ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
+        ///     - <see cref="VectorSensor.AddObservation(bool)"/>
+        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
+        ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation
@@ -600,10 +619,10 @@ namespace MLAgents
         /// When using Discrete Control, you can prevent the Agent from using a certain
         /// action by masking it. You can call the following method on the ActionMasker
         /// input :
-        ///     - <see cref="SetActionMask(int branch, IEnumerable<int> actionIndices)"/>
-        ///     - <see cref="SetActionMask(int branch, int actionIndex)"/>
-        ///     - <see cref="SetActionMask(IEnumerable<int> actionIndices)"/>
-        ///     - <see cref="SetActionMask(int branch, int actionIndex)"/>
+        ///     - <see cref="ActionMasker.SetActionMask(int)"/>
+        ///     - <see cref="ActionMasker.SetActionMask(int, int)"/>
+        ///     - <see cref="ActionMasker.SetActionMask(int, IEnumerable{int})"/>
+        ///     - <see cref="ActionMasker.SetActionMask(IEnumerable{int})"/>
         /// The branch input is the index of the action, actionIndices are the indices of the
         /// invalid options for that action.
         /// </remarks>
@@ -634,8 +653,11 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the last action that was decided on by the Agent (returns null if no decision has been made)
+        /// Returns the last action that was decided on by the Agent
         /// </summary>
+        /// <returns>
+        /// The last action that was decided by the Agent (or null if no decision has been made)
+        /// </returns>
         public float[] GetAction()
         {
             return m_Action.vectorActions;
@@ -669,7 +691,7 @@ namespace MLAgents
         /// <param name="min"></param>
         /// <param name="max"></param>
         /// <returns></returns>
-        protected float ScaleAction(float rawAction, float min, float max)
+        protected static float ScaleAction(float rawAction, float min, float max)
         {
             var middle = (min + max) / 2;
             var range = (max - min) / 2;
