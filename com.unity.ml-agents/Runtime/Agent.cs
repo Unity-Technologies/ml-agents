@@ -9,7 +9,7 @@ namespace MLAgents
     /// Struct that contains all the information for an Agent, including its
     /// observations, actions and current status.
     /// </summary>
-    public struct AgentInfo
+    internal struct AgentInfo
     {
         /// <summary>
         /// Keeps track of the last vector action taken by the Brain.
@@ -176,9 +176,11 @@ namespace MLAgents
         ActionMasker m_ActionMasker;
 
         /// <summary>
-        /// Demonstration recorder.
+        /// Set of DemonstrationStores that the Agent will write its step information to.
+        /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationStore.
+        /// You can also add your own DemonstrationStore by calling DemonstrationRecorder.AddDemonstrationStoreToAgent()
         /// </summary>
-        DemonstrationRecorder m_Recorder;
+        internal ISet<DemonstrationStore> DemonstrationStores = new HashSet<DemonstrationStore>();
 
         /// <summary>
         /// List of sensors used to generate observations.
@@ -239,7 +241,6 @@ namespace MLAgents
             // Grab the "static" properties for the Agent.
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_PolicyFactory = GetComponent<BehaviorParameters>();
-            m_Recorder = GetComponent<DemonstrationRecorder>();
 
             m_Info = new AgentInfo();
             m_Action = new AgentAction();
@@ -258,6 +259,8 @@ namespace MLAgents
 
         void OnDisable()
         {
+            DemonstrationStores.Clear();
+
             // If Academy.Dispose has already been called, we don't need to unregister with it.
             // We don't want to even try, because this will lazily create a new Academy!
             if (Academy.IsInitialized)
@@ -282,9 +285,10 @@ namespace MLAgents
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
 
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            // We also have to write any to any DemonstationStores so that they get the "done" flag.
+            foreach(var demoWriter in DemonstrationStores)
             {
-                m_Recorder.WriteExperience(m_Info, sensors);
+                demoWriter.Record(m_Info, sensors);
             }
 
             UpdateRewardStats();
@@ -530,9 +534,10 @@ namespace MLAgents
 
             m_Brain.RequestDecision(m_Info, sensors);
 
-            if (m_Recorder != null && m_Recorder.record && Application.isEditor)
+            // If we have any DemonstrationStores, write the AgentInfo and sensors to them.
+            foreach(var demoWriter in DemonstrationStores)
             {
-                m_Recorder.WriteExperience(m_Info, sensors);
+                demoWriter.Record(m_Info, sensors);
             }
         }
 
@@ -543,6 +548,7 @@ namespace MLAgents
                 t.Update();
             }
         }
+
 
         /// <summary>
         /// Collects the vector observations of the agent.

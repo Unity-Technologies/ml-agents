@@ -37,14 +37,11 @@ namespace MLAgents
         [Header("Debug Gizmos", order = 999)]
         public Color rayHitColor = Color.red;
         public Color rayMissColor = Color.white;
-        [Tooltip("Whether to draw the raycasts in the world space of when they happened, or using the Agent's current transform'")]
-        public bool useWorldPositions = true;
-
 
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
 
-        public abstract RayPerceptionSensor.CastType GetCastType();
+        public abstract RayPerceptionCastType GetCastType();
 
         public virtual float GetStartVerticalOffset()
         {
@@ -59,10 +56,19 @@ namespace MLAgents
         public override ISensor CreateSensor()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
-            m_RaySensor = new RayPerceptionSensor(sensorName, rayLength, detectableTags, rayAngles,
-                transform, GetStartVerticalOffset(), GetEndVerticalOffset(), sphereCastRadius, GetCastType(),
-                rayLayerMask
-            );
+
+            var rayPerceptionInput = new RayPerceptionInput();
+            rayPerceptionInput.rayLength = rayLength;
+            rayPerceptionInput.detectableTags = detectableTags;
+            rayPerceptionInput.angles = rayAngles;
+            rayPerceptionInput.startOffset = GetStartVerticalOffset();
+            rayPerceptionInput.endOffset = GetEndVerticalOffset();
+            rayPerceptionInput.castRadius = sphereCastRadius;
+            rayPerceptionInput.transform = transform;
+            rayPerceptionInput.castType = GetCastType();
+            rayPerceptionInput.layerMask = rayLayerMask;
+
+            m_RaySensor = new RayPerceptionSensor(sensorName, rayPerceptionInput);
 
             if (observationStacks != 1)
             {
@@ -91,7 +97,7 @@ namespace MLAgents
         public override int[] GetObservationShape()
         {
             var numRays = 2 * raysPerDirection + 1;
-            var numTags = detectableTags == null ? 0 : detectableTags.Count;
+            var numTags = detectableTags?.Count ?? 0;
             var obsSize = (numTags + 2) * numRays;
             var stacks = observationStacks > 1 ? observationStacks : 1;
             return new[] { obsSize * stacks };
@@ -114,28 +120,20 @@ namespace MLAgents
 
             foreach (var rayInfo in debugInfo.rayInfos)
             {
-                // Either use the original world-space coordinates of the raycast, or transform the agent-local
-                // coordinates of the rays to the current transform of the agent. If the agent acts every frame,
-                // these should be the same.
                 var startPositionWorld = rayInfo.worldStart;
                 var endPositionWorld = rayInfo.worldEnd;
-                if (!useWorldPositions)
-                {
-                    startPositionWorld = transform.TransformPoint(rayInfo.localStart);
-                    endPositionWorld = transform.TransformPoint(rayInfo.localEnd);
-                }
                 var rayDirection = endPositionWorld - startPositionWorld;
-                rayDirection *= rayInfo.hitFraction;
+                rayDirection *= rayInfo.rayOutput.hitFraction;
 
                 // hit fraction ^2 will shift "far" hits closer to the hit color
-                var lerpT = rayInfo.hitFraction * rayInfo.hitFraction;
+                var lerpT = rayInfo.rayOutput.hitFraction * rayInfo.rayOutput.hitFraction;
                 var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
                 color.a *= alpha;
                 Gizmos.color = color;
                 Gizmos.DrawRay(startPositionWorld, rayDirection);
 
                 // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-                if (rayInfo.castHit)
+                if (rayInfo.rayOutput.hasHit)
                 {
                     var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
                     Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
