@@ -70,8 +70,7 @@ namespace MLAgents
     /// however, an agent need not send its observation at every step since very
     /// little may have changed between successive steps.
     ///
-    /// At any step, an agent may be considered <see cref="AgentInfo.done"/>.
-    /// This could occur due to a variety of reasons:
+    /// At any step, an agent may be considered done due to a variety of reasons:
     ///     - The agent reached an end state within its environment.
     ///     - The agent reached the maximum # of steps (i.e. timed out).
     ///     - The academy reached the maximum # of steps (forced agent to be done).
@@ -543,9 +542,9 @@ namespace MLAgents
 
         void UpdateSensors()
         {
-            foreach (var t in sensors)
+            foreach (var sensor in sensors)
             {
-                t.Update();
+                sensor.Update();
             }
         }
 
