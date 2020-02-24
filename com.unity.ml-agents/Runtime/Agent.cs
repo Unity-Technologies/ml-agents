@@ -226,8 +226,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Helper method for the <see cref="OnEnable"/> event, created to
-        /// facilitate testing.
+        /// Initializes the agent. Can be safely called multiple times.
         /// </summary>
         public void LazyInitialize()
         {
