@@ -84,7 +84,8 @@ def test_bad_env_path():
             no_graphics=True,
             seed=None,
             start_port=8000,
-            env_args=None)
+            env_args=None,
+        )
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="{}")
