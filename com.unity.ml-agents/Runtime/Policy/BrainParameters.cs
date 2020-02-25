@@ -3,9 +3,19 @@ using UnityEngine;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Whether the action space is discrete or continuous.
+    /// </summary>
     public enum SpaceType
     {
+        /// <summary>
+        /// Discrete action space: a fixed number of options are available
+        /// </summary>
         Discrete,
+
+        /// <summary>
+        /// Continuous action space: each action can take on a float value
+        /// </summary>
         Continuous
     }
 
@@ -23,6 +33,10 @@ namespace MLAgents
         /// </summary>
         public int vectorObservationSize = 1;
 
+        /// <summary>
+        /// Stacking refers to concatenating the observations across multiple frames. This field
+        /// indicates the number of frames to concatenate across.
+        /// </summary>
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
         /// <summary>
@@ -32,10 +46,14 @@ namespace MLAgents
         /// </summary>
         public int[] vectorActionSize = new[] {1};
 
-        /// <summary></summary>The list of strings describing what the actions correpond to */
+        /// <summary>
+        /// The list of strings describing what the actions correspond to
+        /// </summary>
         public string[] vectorActionDescriptions;
 
-        /// <summary>Defines if the action is discrete or continuous</summary>
+        /// <summary>
+        /// Defines if the action is discrete or continuous
+        /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
         /// <summary>
