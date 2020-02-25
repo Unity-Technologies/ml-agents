@@ -19,7 +19,7 @@ namespace MLAgents
         /// being stored in the tensor.
         /// </param>
         /// <returns>The number of floats written</returns>
-        public static int TextureToTensorProxy(
+        internal static int TextureToTensorProxy(
             Texture2D texture,
             WriteAdapter adapter,
             bool grayScale)
@@ -62,7 +62,7 @@ namespace MLAgents
         /// Input array whose elements will be cumulatively added
         /// </param>
         /// <returns> The cumulative sum of the input array.</returns>
-        public static int[] CumSum(int[] input)
+        internal static int[] CumSum(int[] input)
         {
             var runningSum = 0;
             var result = new int[input.Length + 1];
@@ -75,7 +75,7 @@ namespace MLAgents
         }
 
 #if DEBUG
-        public static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
+        internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
         {
 
             if (float.IsNaN(value))
