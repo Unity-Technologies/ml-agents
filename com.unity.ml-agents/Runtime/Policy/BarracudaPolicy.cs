@@ -6,15 +6,25 @@ using System;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Where to perform inference.
+    /// </summary>
     public enum InferenceDevice
     {
+        /// <summary>
+        /// CPU inference
+        /// </summary>
         CPU = 0,
+
+        /// <summary>
+        /// GPU inference
+        /// </summary>
         GPU = 1
     }
 
     /// <summary>
     /// The Barracuda Policy uses a Barracuda Model to make decisions at
-    /// every step. It uses a ModelRunner that is shared accross all
+    /// every step. It uses a ModelRunner that is shared across all
     /// Barracuda Policies that use the same model and inference devices.
     /// </summary>
     internal class BarracudaPolicy : IPolicy
