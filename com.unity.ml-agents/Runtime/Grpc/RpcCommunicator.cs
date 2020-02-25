@@ -11,7 +11,6 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
-using UnityEditor.Experimental.UIElements.GraphView;
 
 namespace MLAgents
 {
