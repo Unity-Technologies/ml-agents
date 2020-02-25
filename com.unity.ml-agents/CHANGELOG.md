@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `DemonstrationRecorder` now has an optional path for the demonstrations. This will default to `Application.dataPath` if not set.
  - `DemonstrationStore` was changed to accept a `Stream` for its constructor, and was renamed to `DemonstrationWriter`
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+ - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
+ - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
 
 ### Bugfixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
