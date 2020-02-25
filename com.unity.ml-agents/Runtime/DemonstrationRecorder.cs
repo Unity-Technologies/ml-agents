@@ -12,19 +12,30 @@ namespace MLAgents
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
+        /// <summary>
+        /// Whether or not to record demonstrations.
+        /// </summary>
         [Tooltip("Whether or not to record demonstrations.")]
         public bool record;
 
-        [Tooltip("Base demonstration file name. Will have numbers appended to make unique.")]
+        /// <summary>
+        /// Base demonstration file name. Saved filenames will have a unique number appended.
+        /// </summary>
+        [Tooltip("Base demonstration file name. Saved filenames will have a unique number appended.")]
         public string demonstrationName;
 
-        [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
+        /// <summary>
+        /// Directory to save the demo files. Will default to a "Demonstrations/" folder in the
+        /// Application data path if not specified.
+        /// </summary>
+        [Tooltip("Directory to save the demo files. Will default to " +
+                 "{Application.dataPath}/Demonstrations if not specified.")]
         public string demonstrationDirectory;
 
         DemonstrationStore m_DemoStore;
-        internal const int MaxNameLength = 16;
-
+        const int k_MaxNameLength = 16;
         const string k_ExtensionType = ".demo";
+        const string k_DefaultFolderName = "Demonstrations";
         IFileSystem m_FileSystem;
 
         Agent m_Agent;
@@ -66,10 +77,10 @@ namespace MLAgents
             }
             if (string.IsNullOrEmpty(demonstrationDirectory))
             {
-                demonstrationDirectory = Path.Combine(Application.dataPath, "Demonstrations");
+                demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultFolderName);
             }
 
-            demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
+            demonstrationName = SanitizeName(demonstrationName, k_MaxNameLength);
             var filePath = MakeDemonstrationFilePath(m_FileSystem, demonstrationDirectory, demonstrationName);
             var stream = m_FileSystem.File.Create(filePath);
             m_DemoStore = new DemonstrationStore(stream);
