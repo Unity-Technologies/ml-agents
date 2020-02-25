@@ -32,7 +32,7 @@ namespace MLAgents
             m_Height = height;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            m_Shape = GenerateShape(width, height, grayscale);
             m_CompressionType = compression;
         }
 
@@ -46,9 +46,10 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Accessor for the size of the sensor data.
+        /// Accessor for the size of the sensor data. Will be h x w x 1 for grayscale and
+        /// h x w x 3 for color.
         /// </summary>
-        /// <returns>Size of each dimension. Will be 2D for grayscale and 3D for color.</returns>
+        /// <returns>Size of each of the three dimensions.</returns>
         public int[] GetObservationShape()
         {
             return m_Shape;
@@ -131,6 +132,11 @@ namespace MLAgents
             RenderTexture.active = prevActiveRt;
             RenderTexture.ReleaseTemporary(tempRt);
             return texture2D;
+        }
+        
+        internal static int[] GenerateShape(int width, int height, bool grayscale)
+        {
+            return new[] { height, width, grayscale ? 1 : 3 };
         }
     }
 }
