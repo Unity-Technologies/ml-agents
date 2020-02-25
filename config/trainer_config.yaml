@@ -151,14 +151,14 @@ Soccer:
     time_horizon: 1000
     num_layers: 2
     self_play:
-        window: 10
-        play_against_current_self_ratio: 0.5
+        window: 100
+        play_against_current_self_ratio: 0.2
         save_steps: 50000
         swap_steps: 50000
 
 SoccerFives:
     normalize: false
-    max_steps: 2.0e8
+    max_steps: 1.0e8
     learning_rate_schedule: constant
     batch_size: 5096
     buffer_size: 50960

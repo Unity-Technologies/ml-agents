@@ -258,6 +258,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -292,7 +295,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &9152743230243588598
@@ -325,6 +327,7 @@ GameObject:
   - component: {fileID: 65538481445822874}
   - component: {fileID: 65974650177247600}
   - component: {fileID: 65269913502125968}
+  - component: {fileID: 2408833276378911063}
   m_Layer: 0
   m_Name: GoalNetPurple
   m_TagString: purpleGoal
@@ -444,6 +447,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 200.00047, y: 13.09334, z: 830}
   m_Center: {x: -0.00023841858, y: 185.45909, z: 0}
+--- !u!65 &2408833276378911063
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1100217258374548}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 384.01212, z: 830}
+  m_Center: {x: 8, y: 0, z: 0}
 --- !u!1 &1101518129530804
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +620,7 @@ MonoBehaviour:
     vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 9d26b71f04a2d4680a68d8de4f6b62e9, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: Soccer
   m_TeamID: 0
   m_UseChildSensors: 1
@@ -620,6 +636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -654,7 +673,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &404683423509059512
@@ -2483,6 +2501,7 @@ GameObject:
   - component: {fileID: 65767512957129032}
   - component: {fileID: 65230081291738200}
   - component: {fileID: 65915005475286318}
+  - component: {fileID: 2176241418515062440}
   m_Layer: 0
   m_Name: GoalNetBlue
   m_TagString: blueGoal
@@ -2602,6 +2621,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 186.31436, y: 7.4030876, z: 830}
   m_Center: {x: 6.8431735, y: 188.3043, z: 0}
+--- !u!65 &2176241418515062440
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943024639806226}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 384.01212, z: 830}
+  m_Center: {x: -8, y: 0, z: 0}
 --- !u!1 &1983326172887706
 GameObject:
   m_ObjectHideFlags: 0
@@ -2913,8 +2945,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
   rayLayerMask:
@@ -2923,7 +2955,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &742736642297762088
@@ -3050,8 +3081,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
   rayLayerMask:
@@ -3060,7 +3091,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &2016057044266316337
@@ -3341,8 +3371,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
   rayLayerMask:
@@ -3351,7 +3381,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &4599713170205044794
@@ -3616,6 +3645,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -3650,7 +3682,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &8734522883866558980
@@ -4084,6 +4115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -4118,7 +4152,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &1018414316889932458
@@ -4341,8 +4374,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 20
   rayLayerMask:
@@ -4351,6 +4384,5 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5

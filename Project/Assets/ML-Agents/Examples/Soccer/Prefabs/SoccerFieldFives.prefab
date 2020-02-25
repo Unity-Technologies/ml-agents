@@ -258,6 +258,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -292,7 +295,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &9152743230243588598
@@ -634,6 +636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -668,7 +673,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &404683423509059512
@@ -3328,8 +3332,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -3338,7 +3342,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &1380156559769609756
@@ -3894,6 +3897,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -3928,7 +3934,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &1627345754148825771
@@ -3997,8 +4002,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -4007,7 +4012,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &1986779485041503505
@@ -4113,6 +4117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -4147,7 +4154,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &383509589018865836
@@ -4216,8 +4222,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -4226,7 +4232,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &2226531867376102072
@@ -4507,8 +4512,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -4517,7 +4522,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &2525142235152062310
@@ -4807,8 +4811,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -4817,7 +4821,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &3088685873901699079
@@ -4871,8 +4874,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -4881,7 +4884,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &3137532328811276395
@@ -5773,6 +5775,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -5807,7 +5812,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &6384345363145965643
@@ -5928,6 +5932,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -5962,7 +5969,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &207635274551600999
@@ -6165,6 +6171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -6199,7 +6208,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &8829516373144387202
@@ -6397,6 +6405,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -6431,7 +6442,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &3995363798833944065
@@ -7657,8 +7667,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -7667,7 +7677,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &7995690102123273994
@@ -7721,8 +7730,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -7731,7 +7740,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &8107722383771667773
@@ -8145,6 +8153,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 0
   area: {fileID: 114559182131992928}
@@ -8179,7 +8190,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &3783133589427975123
@@ -8248,8 +8258,8 @@ MonoBehaviour:
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -8258,7 +8268,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!1 &9137412374636088465
@@ -8364,6 +8373,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2688ef4a36349f9aa010020c32d198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   team: 1
   area: {fileID: 114559182131992928}
@@ -8398,7 +8410,6 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
 --- !u!114 &6424037218293500571
@@ -8467,8 +8478,8 @@ MonoBehaviour:
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 1
-  maxRayDegrees: 45
+  raysPerDirection: 2
+  maxRayDegrees: 90
   sphereCastRadius: 0.5
   rayLength: 60
   rayLayerMask:
@@ -8477,6 +8488,5 @@ MonoBehaviour:
   observationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  useWorldPositions: 1
   startVerticalOffset: 0.5
   endVerticalOffset: 0.5
