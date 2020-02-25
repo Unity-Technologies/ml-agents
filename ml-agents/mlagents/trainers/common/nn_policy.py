@@ -25,7 +25,7 @@ class NNPolicy(TFPolicy):
         is_training: bool,
         load: bool,
         tanh_squash: bool = False,
-        resample: bool = False,
+        reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
         create_tf_graph: bool = True,
     ):
@@ -39,7 +39,7 @@ class NNPolicy(TFPolicy):
         :param is_training: Whether the model should be trained.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
-        :param resample: Whether we are using the resampling trick to update the policy in continuous output.
+        :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
         self.grads = None
@@ -53,7 +53,7 @@ class NNPolicy(TFPolicy):
             trainer_params.get("vis_encode_type", "simple")
         )
         self.tanh_squash = tanh_squash
-        self.resample = resample
+        self.reparameterize = reparameterize
         self.condition_sigma_on_obs = condition_sigma_on_obs
         self.trainable_variables: List[tf.Variable] = []
 
@@ -84,19 +84,22 @@ class NNPolicy(TFPolicy):
                 return
 
             self.create_input_placeholders()
+            encoded = self._create_encoder(
+                self.visual_in,
+                self.processed_vector_in,
+                self.h_size,
+                self.num_layers,
+                self.vis_encode_type,
+            )
             if self.use_continuous_act:
                 self._create_cc_actor(
-                    self.h_size,
-                    self.num_layers,
-                    self.vis_encode_type,
+                    encoded,
                     self.tanh_squash,
-                    self.resample,
+                    self.reparameterize,
                     self.condition_sigma_on_obs,
                 )
             else:
-                self._create_dc_actor(
-                    self.h_size, self.num_layers, self.vis_encode_type
-                )
+                self._create_dc_actor(encoded)
             self.trainable_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
             )
@@ -142,13 +145,37 @@ class NNPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def _create_cc_actor(
+    def _create_encoder(
         self,
+        visual_in: List[tf.Tensor],
+        vector_in: tf.Tensor,
         h_size: int,
         num_layers: int,
         vis_encode_type: EncoderType,
+    ) -> tf.Tensor:
+        """
+        Creates an encoder for visual and vector observations.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        :return: The hidden layer (tf.Tensor) after the encoder.
+        """
+        with tf.variable_scope("policy"):
+            encoded = ModelUtils.create_observation_streams(
+                self.visual_in,
+                self.processed_vector_in,
+                1,
+                h_size,
+                num_layers,
+                vis_encode_type,
+            )[0]
+        return encoded
+
+    def _create_cc_actor(
+        self,
+        encoded: tf.Tensor,
         tanh_squash: bool = False,
-        resample: bool = False,
+        reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
     ) -> None:
         """
@@ -157,32 +184,19 @@ class NNPolicy(TFPolicy):
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: Type of visual encoder to use if visual input.
         :param tanh_squash: Whether to use a tanh function, or a clipped output.
-        :param resample: Whether we are using the resampling trick to update the policy.
+        :param reparameterize: Whether we are using the resampling trick to update the policy.
         """
-        with tf.variable_scope("policy"):
-            hidden_stream = ModelUtils.create_observation_streams(
-                self.visual_in,
-                self.processed_vector_in,
-                1,
-                h_size,
-                num_layers,
-                vis_encode_type,
-            )[0]
-
         if self.use_recurrent:
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
             )
             hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
-                hidden_stream,
-                self.memory_in,
-                self.sequence_length_ph,
-                name="lstm_policy",
+                encoded, self.memory_in, self.sequence_length_ph, name="lstm_policy"
             )
 
             self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
         else:
-            hidden_policy = hidden_stream
+            hidden_policy = encoded
 
         with tf.variable_scope("policy"):
             mu = tf.layers.dense(
@@ -219,7 +233,7 @@ class NNPolicy(TFPolicy):
             sampled_policy = mu + sigma * epsilon
 
             # Stop gradient if we're not doing the resampling trick
-            if not resample:
+            if not reparameterize:
                 sampled_policy_probs = tf.stop_gradient(sampled_policy)
             else:
                 sampled_policy_probs = sampled_policy
@@ -262,25 +276,13 @@ class NNPolicy(TFPolicy):
             (tf.identity(self.all_log_probs)), axis=1, keepdims=True
         )
 
-    def _create_dc_actor(
-        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
-    ) -> None:
+    def _create_dc_actor(self, encoded: tf.Tensor) -> None:
         """
         Creates Discrete control actor-critic model.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: Type of visual encoder to use if visual input.
         """
-        with tf.variable_scope("policy"):
-            hidden_stream = ModelUtils.create_observation_streams(
-                self.visual_in,
-                self.processed_vector_in,
-                1,
-                h_size,
-                num_layers,
-                vis_encode_type,
-            )[0]
-
         if self.use_recurrent:
             self.prev_action = tf.placeholder(
                 shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
@@ -292,7 +294,7 @@ class NNPolicy(TFPolicy):
                 ],
                 axis=1,
             )
-            hidden_policy = tf.concat([hidden_stream, prev_action_oh], axis=1)
+            hidden_policy = tf.concat([encoded, prev_action_oh], axis=1)
 
             self.memory_in = tf.placeholder(
                 shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
@@ -306,7 +308,7 @@ class NNPolicy(TFPolicy):
 
             self.memory_out = tf.identity(memory_policy_out, "recurrent_out")
         else:
-            hidden_policy = hidden_stream
+            hidden_policy = encoded
 
         policy_branches = []
         with tf.variable_scope("policy"):

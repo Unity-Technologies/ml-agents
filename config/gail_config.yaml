@@ -84,7 +84,7 @@ PushBlock:
             strength: 1.0
             gamma: 0.99
             encoding_size: 128
-            demo_path: Project/Assets/Demonstrations/PushblockDemo.demo
+            demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPush.demo
 
 Hallway:
     use_recurrent: true

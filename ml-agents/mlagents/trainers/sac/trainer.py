@@ -220,7 +220,7 @@ class SACTrainer(RLTrainer):
             self.is_training,
             self.load,
             tanh_squash=True,
-            resample=True,
+            reparameterize=True,
             create_tf_graph=False,
         )
         for _reward_signal in policy.reward_signals.keys():
