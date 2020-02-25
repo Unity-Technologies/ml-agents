@@ -31,7 +31,7 @@ namespace MLAgents
                 var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
                 var metaData = metaDataProto.ToDemonstrationMetaData();
 
-                reader.Seek(DemonstrationStore.MetaDataBytes + 1, 0);
+                reader.Seek(DemonstrationWriter.MetaDataBytes + 1, 0);
                 var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
                 var brainParameters = brainParamsProto.ToBrainParameters();
 

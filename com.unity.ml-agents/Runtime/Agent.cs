@@ -175,11 +175,12 @@ namespace MLAgents
         ActionMasker m_ActionMasker;
 
         /// <summary>
-        /// Set of DemonstrationStores that the Agent will write its step information to.
-        /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationStore.
-        /// You can also add your own DemonstrationStore by calling DemonstrationRecorder.AddDemonstrationStoreToAgent()
+        /// Set of DemonstrationWriters that the Agent will write its step information to.
+        /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationWriter.
+        /// You can also add your own DemonstrationWriter by calling
+        /// DemonstrationRecorder.AddDemonstrationWriterToAgent()
         /// </summary>
-        internal ISet<DemonstrationStore> DemonstrationStores = new HashSet<DemonstrationStore>();
+        internal ISet<DemonstrationWriter> DemonstrationWriters = new HashSet<DemonstrationWriter>();
 
         /// <summary>
         /// List of sensors used to generate observations.
@@ -257,7 +258,7 @@ namespace MLAgents
 
         void OnDisable()
         {
-            DemonstrationStores.Clear();
+            DemonstrationWriters.Clear();
 
             // If Academy.Dispose has already been called, we don't need to unregister with it.
             // We don't want to even try, because this will lazily create a new Academy!
@@ -284,7 +285,7 @@ namespace MLAgents
             m_Brain?.RequestDecision(m_Info, sensors);
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach(var demoWriter in DemonstrationStores)
+            foreach(var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -532,8 +533,8 @@ namespace MLAgents
 
             m_Brain.RequestDecision(m_Info, sensors);
 
-            // If we have any DemonstrationStores, write the AgentInfo and sensors to them.
-            foreach(var demoWriter in DemonstrationStores)
+            // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
+            foreach(var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }

@@ -21,7 +21,7 @@ namespace MLAgents
         [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
         public string demonstrationDirectory;
 
-        DemonstrationStore m_DemoStore;
+        DemonstrationWriter m_DemoWriter;
         internal const int MaxNameLength = 16;
 
         const string k_ExtensionType = ".demo";
@@ -46,11 +46,11 @@ namespace MLAgents
         /// Creates demonstration store for use in recording.
         /// Has no effect if the demonstration store was already created.
         /// </summary>
-        internal DemonstrationStore LazyInitialize(IFileSystem fileSystem = null)
+        internal DemonstrationWriter LazyInitialize(IFileSystem fileSystem = null)
         {
-            if (m_DemoStore != null)
+            if (m_DemoWriter != null)
             {
-                return m_DemoStore;
+                return m_DemoWriter;
             }
 
             if (m_Agent == null)
@@ -72,17 +72,17 @@ namespace MLAgents
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             var filePath = MakeDemonstrationFilePath(m_FileSystem, demonstrationDirectory, demonstrationName);
             var stream = m_FileSystem.File.Create(filePath);
-            m_DemoStore = new DemonstrationStore(stream);
+            m_DemoWriter = new DemonstrationWriter(stream);
 
-            m_DemoStore.Initialize(
+            m_DemoWriter.Initialize(
                 demonstrationName,
                 behaviorParams.brainParameters,
                 behaviorParams.fullyQualifiedBehaviorName
             );
 
-            AddDemonstrationStoreToAgent(m_DemoStore);
+            AddDemonstrationWriterToAgent(m_DemoWriter);
 
-            return m_DemoStore;
+            return m_DemoWriter;
         }
 
         /// <summary>
@@ -134,22 +134,22 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Close the DemonstrationStore and remove it from the Agent.
-        /// Has no effect if the DemonstrationStore is already closed (or wasn't opened)
+        /// Close the DemonstrationWriter and remove it from the Agent.
+        /// Has no effect if the DemonstrationWriter is already closed (or wasn't opened)
         /// </summary>
         public void Close()
         {
-            if (m_DemoStore != null)
+            if (m_DemoWriter != null)
             {
-                RemoveDemonstrationStoreFromAgent(m_DemoStore);
+                RemoveDemonstrationWriterFromAgent(m_DemoWriter);
 
-                m_DemoStore.Close();
-                m_DemoStore = null;
+                m_DemoWriter.Close();
+                m_DemoWriter = null;
             }
         }
 
         /// <summary>
-        /// Clean up the DemonstrationStore when shutting down or destroying the Agent.
+        /// Clean up the DemonstrationWriter when shutting down or destroying the Agent.
         /// </summary>
         void OnDestroy()
         {
@@ -157,23 +157,23 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Add additional DemonstrationStore to the Agent. It is still up to the user to Close this
-        /// DemonstrationStores when recording is done.
+        /// Add additional DemonstrationWriter to the Agent. It is still up to the user to Close this
+        /// DemonstrationWriters when recording is done.
         /// </summary>
-        /// <param name="demoStore"></param>
-        public void AddDemonstrationStoreToAgent(DemonstrationStore demoStore)
+        /// <param name="demoWriter"></param>
+        public void AddDemonstrationWriterToAgent(DemonstrationWriter demoWriter)
         {
-            m_Agent.DemonstrationStores.Add(demoStore);
+            m_Agent.DemonstrationWriters.Add(demoWriter);
         }
 
         /// <summary>
-        /// Remove additional DemonstrationStore to the Agent. It is still up to the user to Close this
-        /// DemonstrationStores when recording is done.
+        /// Remove additional DemonstrationWriter to the Agent. It is still up to the user to Close this
+        /// DemonstrationWriters when recording is done.
         /// </summary>
-        /// <param name="demoStore"></param>
-        public void RemoveDemonstrationStoreFromAgent(DemonstrationStore demoStore)
+        /// <param name="demoWriter"></param>
+        public void RemoveDemonstrationWriterFromAgent(DemonstrationWriter demoWriter)
         {
-            m_Agent.DemonstrationStores.Remove(demoStore);
+            m_Agent.DemonstrationWriters.Remove(demoWriter);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace MLAgents
     /// <summary>
     /// Responsible for writing demonstration data to stream (usually a file stream).
     /// </summary>
-    public class DemonstrationStore
+    public class DemonstrationWriter
     {
         public const int MetaDataBytes = 32; // Number of bytes allocated to metadata in demo file.
 
@@ -17,11 +17,11 @@ namespace MLAgents
         WriteAdapter m_WriteAdapter = new WriteAdapter();
 
         /// <summary>
-        /// Create a DemonstrationStore that will write to the specified stream.
+        /// Create a DemonstrationWriter that will write to the specified stream.
         /// The stream must support writes and seeking.
         /// </summary>
         /// <param name="stream"></param>
-        public DemonstrationStore(Stream stream)
+        public DemonstrationWriter(Stream stream)
         {
             m_Writer = stream;
         }
