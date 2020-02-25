@@ -102,7 +102,7 @@ TRAINER_CONFIG = """
         hidden_units: 128
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 300
+        max_steps: 100
         memory_size: 256
         normalize: false
         num_epoch: 3
@@ -123,4 +123,4 @@ def test_simple_metacurriculum(curriculum_brain_name):
     env = Simple1DEnvironment(use_discrete=False)
     curriculum_config = json.loads(dummy_curriculum_json_str)
     mc = MetaCurriculum({curriculum_brain_name: curriculum_config})
-    _check_environment_trains(env, TRAINER_CONFIG, mc, -100.0)
+    _check_environment_trains(env, TRAINER_CONFIG, mc, None)
