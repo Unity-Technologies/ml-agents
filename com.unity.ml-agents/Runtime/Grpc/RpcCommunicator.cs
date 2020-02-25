@@ -11,6 +11,7 @@ using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using System.IO;
 using Google.Protobuf;
+using UnityEditor.Experimental.UIElements.GraphView;
 
 namespace MLAgents
 {
@@ -142,8 +143,8 @@ namespace MLAgents
                 ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
-            var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
-            unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
+            var result = m_Client.Exchange(WrapMessage(unityOutput, 200), deadline: DateTime.Now.AddSeconds(5));
+            unityInput = m_Client.Exchange(WrapMessage(null, 200), deadline: DateTime.UtcNow.AddSeconds(5)).UnityInput;
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
 #endif
@@ -171,7 +172,7 @@ namespace MLAgents
 
             try
             {
-                m_Client.Exchange(WrapMessage(null, 400));
+                m_Client.Exchange(WrapMessage(null, 400), deadline:DateTime.UtcNow.AddSeconds(5));
                 m_IsOpen = false;
             }
             catch
@@ -368,7 +369,7 @@ namespace MLAgents
             }
             try
             {
-                var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
+                var message = m_Client.Exchange(WrapMessage(unityOutput, 200), deadline:DateTime.UtcNow.AddSeconds(5));
                 if (message.Header.Status == 200)
                 {
                     return message.UnityInput;
