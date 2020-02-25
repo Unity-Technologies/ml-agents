@@ -8,7 +8,6 @@ namespace MLAgents
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
-    ///
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
     public class BehaviorParameters : MonoBehaviour
     {
@@ -35,6 +34,10 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
         string m_BehaviorName = "My Behavior";
+
+        /// <summary>
+        /// The team ID for this behavior.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         public int m_TeamID;
@@ -44,16 +47,26 @@ namespace MLAgents
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
         bool m_UseChildSensors = true;
 
+        /// <summary>
+        /// The associated <see cref="BrainParameters"/> for this behavior.
+        /// </summary>
         public BrainParameters brainParameters
         {
             get { return m_BrainParameters; }
         }
 
+        /// <summary>
+        /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
+        /// </summary>
         public bool useChildSensors
         {
             get { return m_UseChildSensors; }
         }
 
+        /// <summary>
+        /// The name of this behavior, which is used as a base name.
+        /// <see cref="fullyQualifiedBehaviorName"/>
+        /// </summary>
         public string behaviorName
         {
             get { return m_BehaviorName; }
@@ -93,6 +106,12 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Updates the model and related details for this behavior.
+        /// </summary>
+        /// <param name="newBehaviorName">New name for the behavior.</param>
+        /// <param name="model">New neural network model for this behavior.</param>
+        /// <param name="inferenceDevice">New inference device for this behavior.</param>
         public void GiveModel(
             string newBehaviorName,
             NNModel model,
