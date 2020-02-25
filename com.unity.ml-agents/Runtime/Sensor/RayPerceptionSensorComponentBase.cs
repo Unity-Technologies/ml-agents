@@ -11,13 +11,13 @@ namespace MLAgents
         [SerializeField]
         [FormerlySerializedAs("sensorName")]
         string m_SensorName = "RayPerceptionSensor";
-        internal string sensorName
+        public string sensorName
         {
             get => m_SensorName;
-            set => m_SensorName = value;
+            // Restrict the access on the name, since changing it a runtime doesn't re-sort the Agent sensors.
+            internal set => m_SensorName = value;
         }
 
-        //[HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
@@ -25,7 +25,8 @@ namespace MLAgents
         public List<string> detectableTags
         {
             get => m_DetectableTags;
-            set => m_DetectableTags = value; // Note: can't change at runtime
+            // Note: can't change at runtime
+            internal set => m_DetectableTags = value;
         }
 
         [HideInInspector]
@@ -34,10 +35,11 @@ namespace MLAgents
         [Range(0, 50)]
         [Tooltip("Number of rays to the left and right of center.")]
         int m_RaysPerDirection = 3;
-        internal int raysPerDirection
+        public int raysPerDirection
         {
             get => m_RaysPerDirection;
-            set => m_RaysPerDirection = value; // Note: can't change at runtime
+            // Note: can't change at runtime
+            internal set => m_RaysPerDirection = value;
         }
 
         [HideInInspector]

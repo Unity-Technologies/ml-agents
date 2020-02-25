@@ -13,7 +13,7 @@ namespace MLAgents
             var so = serializedObject;
             so.Update();
 
-            // Drawing the Behavior Parameters
+            // Drawing the RayPerceptionSensorComponent
             EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
 
@@ -72,7 +72,6 @@ namespace MLAgents
         }
     }
 
-    //[CustomEditor(typeof(RayPerceptionSensorComponentBase))]
     [CustomEditor(typeof(RayPerceptionSensorComponent2D))]
     [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponent2DEditor : RayPerceptionSensorComponentBaseEditor
