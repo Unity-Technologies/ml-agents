@@ -1,4 +1,4 @@
-using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MLAgents
@@ -10,19 +10,38 @@ namespace MLAgents
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
     public class DecisionRequester : MonoBehaviour
     {
+        /// <summary>
+        /// The frequency with which the agent requests a decision. A DecisionPeriod of 5 means
+        /// that the Agent will request a decision every 5 Academy steps.
+        /// </summary>
         [Range(1, 20)]
-        [Tooltip("The agent will automatically request a decision every X Academy steps.")]
+        [Tooltip("The frequency with which the agent requests a decision. A DecisionPeriod " +
+                 "of 5 means that the Agent will request a decision every 5 Academy steps.")]
         public int DecisionPeriod = 5;
 
-        [Tooltip("Whether or not AgentAction will be called on Academy steps that decisions aren't requested. Has no effect if DecisionPeriod is 1.")]
+        /// <summary>
+        /// Indicates whether or not the agent will take an action during the Academy steps where
+        /// it does not request a decision. Has no effect when DecisionPeriod is set to 1.
+        /// </summary>
+        [Tooltip("Indicates whether or not the agent will take an action during the Academy " +
+                 "steps where it does not request a decision. Has no effect when DecisionPeriod " +
+                 "is set to 1.")]
         public bool RepeatAction = true;
 
+        /// <summary>
+        /// Whether or not Agent decisions should start at a random offset. This does not affect
+        /// <see cref="DecisionPeriod"/>. Turning this on will distribute the decision-making
+        /// computations across multiple Academy steps. This can be valuable in scenarios where you
+        /// have many agents in the scene, particularly during the inference phase.
+        /// </summary>
         [Tooltip("Whether or not Agent decisions should start at a random offset.")]
         public bool offsetStep;
 
         Agent m_Agent;
         int m_Offset;
-        public void Awake()
+
+        [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
+        internal void Awake()
         {
             m_Offset = offsetStep ? gameObject.GetInstanceID() : 0;
             m_Agent = gameObject.GetComponent<Agent>();
