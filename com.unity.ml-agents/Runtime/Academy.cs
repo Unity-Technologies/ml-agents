@@ -51,17 +51,27 @@ namespace MLAgents
     {
         const string k_ApiVersion = "API-15-dev0";
         const int k_EditorTrainingPort = 5004;
+        internal const string k_portCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
 
+        /// <summary>
+        /// True if the Academy is initialized, false otherwise.
+        /// </summary>
         public static bool IsInitialized
         {
             get { return s_Lazy.IsValueCreated; }
         }
 
+        /// <summary>
+        /// The singleton Academy object.
+        /// </summary>
         public static Academy Instance { get { return s_Lazy.Value; } }
 
+        /// <summary>
+        /// Collection of float properties (indexed by a string).
+        /// </summary>
         public IFloatProperties FloatProperties;
 
 
@@ -113,7 +123,7 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start. 
+        // Signals the Agent that a new step is about to start.
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
@@ -134,7 +144,9 @@ namespace MLAgents
         // Signals to all the agents each time the Academy force resets.
         internal event Action AgentForceReset;
 
-        // Signals that the Academy has been reset by the training process
+        /// <summary>
+        /// Signals that the Academy has been reset by the training process.
+        /// </summary>
         public event Action OnEnvironmentReset;
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
@@ -156,7 +168,8 @@ namespace MLAgents
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
-        /// This method is always safe to call; it will have no effect if the Academy is already initialized.
+        /// This method is always safe to call; it will have no effect if the Academy is already
+        /// initialized.
         /// </summary>
         internal void LazyInitialize()
         {
@@ -168,8 +181,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Enable stepping of the Academy during the FixedUpdate phase.  This is done by creating a temporary
-        /// GameObject with a MonoBehavior that calls Academy.EnvironmentStep().
+        /// Enable stepping of the Academy during the FixedUpdate phase. This is done by creating
+        /// a temporary GameObject with a MonoBehaviour that calls Academy.EnvironmentStep().
         /// </summary>
         void EnableAutomaticStepping()
         {
@@ -188,7 +201,7 @@ namespace MLAgents
         /// Registers SideChannel to the Academy to send and receive data with Python.
         /// If IsCommunicatorOn is false, the SideChannel will not be registered.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be registered.</param>
+        /// <param name="channel"> The side channel to be registered.</param>
         public void RegisterSideChannel(SideChannel channel)
         {
             LazyInitialize();
@@ -199,7 +212,7 @@ namespace MLAgents
         /// Unregisters SideChannel to the Academy. If the side channel was not registered,
         /// nothing will happen.
         /// </summary>
-        /// <param name="sideChannel"> The side channel to be unregistered.</param>
+        /// <param name="channel"> The side channel to be unregistered.</param>
         public void UnregisterSideChannel(SideChannel channel)
         {
             Communicator?.UnregisterSideChannel(channel);
@@ -255,7 +268,7 @@ namespace MLAgents
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == "--port")
+                if (args[i] == k_portCommandLineFlag)
                 {
                     inputPort = args[i + 1];
                 }

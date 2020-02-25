@@ -20,7 +20,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
+ - The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
+ - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
+ - `DemonstrationRecorder` can now record observations outside of the editor.
+ - `DemonstrationRecorder` now has an optional path for the demonstrations. This will default to `Application.dataPath` if not set.
+ - `DemonstrationStore` was changed to accept a `Stream` for its constructor, and was renamed to `DemonstrationWriter`
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
 
 ### Bugfixes

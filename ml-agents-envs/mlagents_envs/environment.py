@@ -54,6 +54,7 @@ class UnityEnvironment(BaseEnv):
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
     API_VERSION = "API-15-dev0"
     DEFAULT_EDITOR_PORT = 5004
+    PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     def __init__(
         self,
@@ -148,62 +149,68 @@ class UnityEnvironment(BaseEnv):
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    def executable_launcher(self, file_name, docker_training, no_graphics, args):
-        cwd = os.getcwd()
-        file_name = (
-            file_name.strip()
+    @staticmethod
+    def validate_environment_path(env_path: str) -> Optional[str]:
+        # Strip out executable extensions if passed
+        env_path = (
+            env_path.strip()
             .replace(".app", "")
             .replace(".exe", "")
             .replace(".x86_64", "")
             .replace(".x86", "")
         )
-        true_filename = os.path.basename(os.path.normpath(file_name))
+        true_filename = os.path.basename(os.path.normpath(env_path))
         logger.debug("The true file name is {}".format(true_filename))
+
+        if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
+            return None
+
+        cwd = os.getcwd()
         launch_string = None
+        true_filename = os.path.basename(os.path.normpath(env_path))
         if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, file_name) + ".x86_64")
+            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
             if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name) + ".x86")
+                candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86_64")
+                candidates = glob.glob(env_path + ".x86_64")
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86")
+                candidates = glob.glob(env_path + ".x86")
             if len(candidates) > 0:
                 launch_string = candidates[0]
 
         elif platform == "darwin":
             candidates = glob.glob(
-                os.path.join(
-                    cwd, file_name + ".app", "Contents", "MacOS", true_filename
-                )
+                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
             )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", true_filename)
+                    os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
                 )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(cwd, file_name + ".app", "Contents", "MacOS", "*")
+                    os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
                 )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", "*")
+                    os.path.join(env_path + ".app", "Contents", "MacOS", "*")
                 )
             if len(candidates) > 0:
                 launch_string = candidates[0]
         elif platform == "win32":
-            candidates = glob.glob(os.path.join(cwd, file_name + ".exe"))
+            candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".exe")
+                candidates = glob.glob(env_path + ".exe")
             if len(candidates) > 0:
                 launch_string = candidates[0]
+        return launch_string
+
+    def executable_launcher(self, file_name, docker_training, no_graphics, args):
+        launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(
-                    true_filename
-                )
+                f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
         else:
             logger.debug("This is the launch string {}".format(launch_string))
@@ -212,7 +219,10 @@ class UnityEnvironment(BaseEnv):
                 subprocess_args = [launch_string]
                 if no_graphics:
                     subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += ["--port", str(self.port)]
+                subprocess_args += [
+                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
+                    str(self.port),
+                ]
                 subprocess_args += args
                 try:
                     self.proc1 = subprocess.Popen(
@@ -250,10 +260,10 @@ class UnityEnvironment(BaseEnv):
                 #     we created with `xvfb`.
                 #
                 docker_ls = (
-                    "exec xvfb-run --auto-servernum"
-                    " --server-args='-screen 0 640x480x24'"
-                    " {0} --port {1}"
-                ).format(launch_string, str(self.port))
+                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
+                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
+                )
+
                 self.proc1 = subprocess.Popen(
                     docker_ls,
                     stdout=subprocess.PIPE,
