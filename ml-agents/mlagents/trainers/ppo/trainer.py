@@ -7,11 +7,11 @@ from collections import defaultdict
 
 import numpy as np
 
-from mlagents.trainers.ppo.policy import PPOPolicy
-from mlagents.trainers.ppo.multi_gpu_policy import MultiGpuPPOPolicy, get_devices
+from mlagents.trainers.common.nn_policy import NNPolicy
 from mlagents.trainers.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 
 logger = logging.getLogger("mlagents.trainers")
@@ -29,7 +29,6 @@ class PPOTrainer(RLTrainer):
         load: bool,
         seed: int,
         run_id: str,
-        multi_gpu: bool,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -40,7 +39,6 @@ class PPOTrainer(RLTrainer):
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
-        :param multi_gpu: Boolean for multi-gpu policy model
         """
         super(PPOTrainer, self).__init__(
             brain_name, trainer_parameters, training, run_id, reward_buff_cap
@@ -68,9 +66,8 @@ class PPOTrainer(RLTrainer):
         ]
         self._check_param_keys()
         self.load = load
-        self.multi_gpu = multi_gpu
         self.seed = seed
-        self.policy: PPOPolicy = None  # type: ignore
+        self.policy: NNPolicy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -90,26 +87,22 @@ class PPOTrainer(RLTrainer):
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
-        value_estimates = self.policy.get_batched_value_estimates(
-            agent_buffer_trajectory
+        value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
+            agent_buffer_trajectory,
+            trajectory.next_obs,
+            trajectory.done_reached and not trajectory.max_step_reached,
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
             self.stats_reporter.add_stat(
-                self.policy.reward_signals[name].value_name, np.mean(v)
+                self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
-
-        value_next = self.policy.get_value_estimates(
-            trajectory.next_obs,
-            agent_id,
-            trajectory.done_reached and not trajectory.max_step_reached,
-        )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
-        for name, reward_signal in self.policy.reward_signals.items():
+        for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
@@ -120,7 +113,7 @@ class PPOTrainer(RLTrainer):
         # Compute GAE and returns
         tmp_advantages = []
         tmp_returns = []
-        for name in self.policy.reward_signals:
+        for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
             local_rewards = agent_buffer_trajectory[
@@ -133,7 +126,7 @@ class PPOTrainer(RLTrainer):
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
                 value_next=bootstrap_value,
-                gamma=self.policy.reward_signals[name].gamma,
+                gamma=self.optimizer.reward_signals[name].gamma,
                 lambd=self.trainer_parameters["lambd"],
             )
             local_return = local_advantage + local_value_estimates
@@ -157,9 +150,7 @@ class PPOTrainer(RLTrainer):
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
-            self._update_end_episode_stats(
-                agent_id, self.get_policy(trajectory.behavior_id)
-            )
+            self._update_end_episode_stats(agent_id, self.optimizer)
 
     def _is_ready_update(self):
         """
@@ -201,7 +192,7 @@ class PPOTrainer(RLTrainer):
             buffer = self.update_buffer
             max_num_batch = buffer_length // batch_size
             for l in range(0, max_num_batch * batch_size, batch_size):
-                update_stats = self.policy.update(
+                update_stats = self.optimizer.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
                 )
                 for stat_name, value in update_stats.items():
@@ -210,8 +201,8 @@ class PPOTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self.stats_reporter.add_stat(stat, np.mean(stat_list))
 
-        if self.policy.bc_module:
-            update_stats = self.policy.bc_module.update()
+        if self.optimizer.bc_module:
+            update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self.stats_reporter.add_stat(stat, val)
         self.clear_update_buffer()
@@ -222,33 +213,23 @@ class PPOTrainer(RLTrainer):
         :param brain_parameters: specifications for policy construction
         :return policy
         """
-
-        if self.multi_gpu and len(get_devices()) > 1:
-            policy: PPOPolicy = MultiGpuPPOPolicy(
-                self.seed,
-                brain_parameters,
-                self.trainer_parameters,
-                self.is_training,
-                self.load,
-            )
-        else:
-            policy = PPOPolicy(
-                self.seed,
-                brain_parameters,
-                self.trainer_parameters,
-                self.is_training,
-                self.load,
-            )
-
-        for _reward_signal in policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+        policy = NNPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_parameters,
+            self.is_training,
+            self.load,
+            condition_sigma_on_obs=False,  # Faster training for PPO
+            create_tf_graph=False,  # We will create the TF graph in the Optimizer
+        )
 
         return policy
 
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         """
         Adds policy to trainer.
-        :param brain_parameters: specifications for policy construction
+        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param policy: Policy to associate with name_behavior_id.
         """
         if self.policy:
             logger.warning(
@@ -256,9 +237,12 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, PPOPolicy):
-            raise RuntimeError("Non-PPOPolicy passed to PPOTrainer.add_policy()")
+        if not isinstance(policy, NNPolicy):
+            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
+        self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
+        for _reward_signal in self.optimizer.reward_signals.keys():
+            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
         self.next_summary_step = self._get_next_summary_step()

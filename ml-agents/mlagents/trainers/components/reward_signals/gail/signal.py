@@ -5,7 +5,6 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.models import LearningModel
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -16,7 +15,6 @@ class GAILRewardSignal(RewardSignal):
     def __init__(
         self,
         policy: TFPolicy,
-        policy_model: LearningModel,
         strength: float,
         gamma: float,
         demo_path: str,
@@ -39,11 +37,11 @@ class GAILRewardSignal(RewardSignal):
         :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
         See https://arxiv.org/abs/1810.00821.
         """
-        super().__init__(policy, policy_model, strength, gamma)
+        super().__init__(policy, strength, gamma)
         self.use_terminal_states = False
 
         self.model = GAILModel(
-            policy.model, 128, learning_rate, encoding_size, use_actions, use_vail
+            policy, 128, learning_rate, encoding_size, use_actions, use_vail
         )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
         self.has_updated = False
@@ -68,23 +66,23 @@ class GAILRewardSignal(RewardSignal):
 
     def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.model.batch_size: len(mini_batch["actions"]),
-            self.policy.model.sequence_length: self.policy.sequence_length,
+            self.policy.batch_size_ph: len(mini_batch["actions"]),
+            self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         if self.model.use_vail:
             feed_dict[self.model.use_noise] = [0]
 
         if self.policy.use_vec_obs:
-            feed_dict[self.policy.model.vector_in] = mini_batch["vector_obs"]
-        if self.policy.model.vis_obs_size > 0:
-            for i in range(len(self.policy.model.visual_in)):
+            feed_dict[self.policy.vector_in] = mini_batch["vector_obs"]
+        if self.policy.vis_obs_size > 0:
+            for i in range(len(self.policy.visual_in)):
                 _obs = mini_batch["visual_obs%d" % i]
-                feed_dict[self.policy.model.visual_in[i]] = _obs
+                feed_dict[self.policy.visual_in[i]] = _obs
 
         if self.policy.use_continuous_act:
-            feed_dict[self.policy.model.selected_actions] = mini_batch["actions"]
+            feed_dict[self.policy.selected_actions] = mini_batch["actions"]
         else:
-            feed_dict[self.policy.model.action_holder] = mini_batch["actions"]
+            feed_dict[self.policy.action_holder] = mini_batch["actions"]
         feed_dict[self.model.done_policy_holder] = np.array(
             mini_batch["done"]
         ).flatten()
@@ -106,10 +104,7 @@ class GAILRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self,
-        policy_model: LearningModel,
-        mini_batch: Dict[str, np.ndarray],
-        num_sequences: int,
+        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
@@ -139,18 +134,18 @@ class GAILRewardSignal(RewardSignal):
 
         feed_dict[self.model.action_in_expert] = np.array(mini_batch_demo["actions"])
         if self.policy.use_continuous_act:
-            feed_dict[policy_model.selected_actions] = mini_batch["actions"]
+            feed_dict[policy.selected_actions] = mini_batch["actions"]
         else:
-            feed_dict[policy_model.action_holder] = mini_batch["actions"]
+            feed_dict[policy.action_holder] = mini_batch["actions"]
 
         if self.policy.use_vis_obs > 0:
-            for i in range(len(policy_model.visual_in)):
-                feed_dict[policy_model.visual_in[i]] = mini_batch["visual_obs%d" % i]
+            for i in range(len(policy.visual_in)):
+                feed_dict[policy.visual_in[i]] = mini_batch["visual_obs%d" % i]
                 feed_dict[self.model.expert_visual_in[i]] = mini_batch_demo[
                     "visual_obs%d" % i
                 ]
         if self.policy.use_vec_obs:
-            feed_dict[policy_model.vector_in] = mini_batch["vector_obs"]
+            feed_dict[policy.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.obs_in_expert] = mini_batch_demo["vector_obs"]
         self.has_updated = True
         return feed_dict
