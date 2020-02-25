@@ -44,6 +44,7 @@ namespace MLAgents
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
+        Channel m_GrpcChannel;
 #endif
         /// The communicator parameters sent at construction
         CommunicatorInitParameters m_CommunicatorInitParameters;
@@ -137,12 +138,12 @@ namespace MLAgents
         {
 # if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
-            var channel = new Channel(
+            m_GrpcChannel = new Channel(
                 "localhost:" + m_CommunicatorInitParameters.port,
                 ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
-            var result = m_Client.Exchange(WrapMessage(unityOutput, 200), deadline: DateTime.Now.AddSeconds(5));
+            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(m_GrpcChannel);
+            var result = m_Client.Exchange(WrapMessage(unityOutput, 200), deadline: DateTime.UtcNow.AddSeconds(5));
             unityInput = m_Client.Exchange(WrapMessage(null, 200), deadline: DateTime.UtcNow.AddSeconds(5)).UnityInput;
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
@@ -172,6 +173,7 @@ namespace MLAgents
             try
             {
                 m_Client.Exchange(WrapMessage(null, 400), deadline:DateTime.UtcNow.AddSeconds(5));
+                m_GrpcChannel.ShutdownAsync();
                 m_IsOpen = false;
             }
             catch
