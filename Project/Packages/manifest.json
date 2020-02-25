@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.ads": "2.0.8",
     "com.unity.analytics": "3.2.2",
+    "com.unity.barracuda": "0.6.0-preview",
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.package-manager-ui": "2.0.8",
@@ -40,7 +41,7 @@
     "com.unity.modules.xr": "1.0.0"
   },
   "registry": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
-  "testables" : [
+  "testables": [
     "com.unity.ml-agents"
   ]
 }
