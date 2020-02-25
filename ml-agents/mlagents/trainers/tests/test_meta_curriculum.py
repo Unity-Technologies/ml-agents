@@ -102,7 +102,7 @@ TRAINER_CONFIG = """
         hidden_units: 128
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 200
+        max_steps: 300
         memory_size: 256
         normalize: false
         num_epoch: 3

@@ -8,6 +8,8 @@ import numpy as np
 def basic_mock_brain():
     mock_brain = MagicMock()
     mock_brain.vector_action_space_type = "continuous"
+    mock_brain.vector_observation_space_size = 1
+    mock_brain.vector_action_space_size = [1]
     return mock_brain
 
 
@@ -15,9 +17,17 @@ def basic_params():
     return {"use_recurrent": False, "model_path": "my/path"}
 
 
+class FakePolicy(TFPolicy):
+    def create_tf_graph(self):
+        pass
+
+    def get_trainable_variables(self):
+        return []
+
+
 def test_take_action_returns_empty_with_no_agents():
     test_seed = 3
-    policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
+    policy = FakePolicy(test_seed, basic_mock_brain(), basic_params())
     # Doesn't really matter what this is
     dummy_groupspec = AgentGroupSpec([(1,)], "continuous", 1)
     no_agent_step = BatchedStepResult.empty(dummy_groupspec)
@@ -27,7 +37,7 @@ def test_take_action_returns_empty_with_no_agents():
 
 def test_take_action_returns_nones_on_missing_values():
     test_seed = 3
-    policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
+    policy = FakePolicy(test_seed, basic_mock_brain(), basic_params())
     policy.evaluate = MagicMock(return_value={})
     policy.save_memories = MagicMock()
     step_with_agents = BatchedStepResult(
@@ -44,7 +54,7 @@ def test_take_action_returns_nones_on_missing_values():
 
 def test_take_action_returns_action_info_when_available():
     test_seed = 3
-    policy = TFPolicy(test_seed, basic_mock_brain(), basic_params())
+    policy = FakePolicy(test_seed, basic_mock_brain(), basic_params())
     policy_eval_out = {
         "action": np.array([1.0], dtype=np.float32),
         "memory_out": np.array([[2.5]], dtype=np.float32),
