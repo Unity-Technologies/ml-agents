@@ -5,7 +5,8 @@ import logging
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.trainer import Trainer, UnityTrainerException
+from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
@@ -81,7 +82,6 @@ def initialize_trainer(
     :param load_model: Whether to load the model or randomly initialize
     :param seed: The random seed to use
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
-    :param multi_gpu: Whether to use multi-GPU training
     :return:
     """
     if "default" not in trainer_config and brain_name not in trainer_config:
@@ -136,7 +136,6 @@ def initialize_trainer(
             load_model,
             seed,
             run_id,
-            multi_gpu,
         )
     elif trainer_type == "sac":
         trainer = SACTrainer(

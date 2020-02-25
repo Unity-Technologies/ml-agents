@@ -117,12 +117,6 @@ def _create_parser():
         help="Whether to run ML-Agents in debug mode with detailed logging",
     )
     argparser.add_argument(
-        "--multi-gpu",
-        default=False,
-        action="store_true",
-        help="Setting this flag enables the use of multiple GPU's (if available) during training",
-    )
-    argparser.add_argument(
         "--env-args",
         default=None,
         nargs=argparse.REMAINDER,

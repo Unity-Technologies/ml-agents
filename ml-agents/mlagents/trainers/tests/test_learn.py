@@ -113,7 +113,6 @@ def test_commandline_args(mock_file):
     assert opt.docker_target_name is None
     assert opt.no_graphics is False
     assert opt.debug is False
-    assert opt.multi_gpu is False
     assert opt.env_args is None
 
     full_args = [
@@ -133,7 +132,6 @@ def test_commandline_args(mock_file):
         "--docker-target-name=mydockertarget",
         "--no-graphics",
         "--debug",
-        "--multi-gpu",
     ]
 
     opt = parse_command_line(full_args)
@@ -153,7 +151,6 @@ def test_commandline_args(mock_file):
     assert opt.docker_target_name == "mydockertarget"
     assert opt.no_graphics is True
     assert opt.debug is True
-    assert opt.multi_gpu is True
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="{}")

@@ -8,7 +8,7 @@ default:
     learning_rate: 3.0e-4
     learning_rate_schedule: constant
     max_steps: 5.0e5
-    memory_size: 256
+    memory_size: 128
     normalize: false
     num_update: 1
     train_interval: 1
@@ -214,7 +214,7 @@ Hallway:
     sequence_length: 32
     num_layers: 2
     hidden_units: 128
-    memory_size: 256
+    memory_size: 128
     init_entcoef: 0.1
     max_steps: 1.0e7
     summary_freq: 10000
@@ -225,10 +225,11 @@ VisualHallway:
     sequence_length: 32
     num_layers: 1
     hidden_units: 128
-    memory_size: 256
+    memory_size: 128
     gamma: 0.99
     batch_size: 64
     max_steps: 1.0e7
+    summary_freq: 10000
     time_horizon: 64
     use_recurrent: true
 
@@ -237,7 +238,7 @@ VisualPushBlock:
     sequence_length: 32
     num_layers: 1
     hidden_units: 128
-    memory_size: 256
+    memory_size: 128
     gamma: 0.99
     buffer_size: 1024
     batch_size: 64

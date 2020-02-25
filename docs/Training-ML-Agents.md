@@ -151,7 +151,6 @@ environment, you can set the following command line options when invoking
   [here](https://docs.unity3d.com/Manual/CommandLineArguments.html) for more
   details.
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
-* `--multi-gpu`: Setting this flag enables the use of multiple GPU's (if available) during training.
 * `--cpu`: Forces training using CPU only.
 * Engine Configuration :
   * `--width' : The width of the executable window of the environment(s) in pixels
