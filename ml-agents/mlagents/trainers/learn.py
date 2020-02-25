@@ -29,6 +29,7 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.exception import UnityEnvironmentException
 
 
 def _create_parser():
@@ -395,14 +396,11 @@ def create_environment_factory(
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
-        # Strip out executable extensions if passed
-        env_path = (
-            env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
+        launch_string = UnityEnvironment.validate_environment_path(env_path)
+        if launch_string is None:
+            raise UnityEnvironmentException(
+                f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
+            )
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:
         #     Comments for future maintenance:

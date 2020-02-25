@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch, mock_open
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.learn import parse_command_line
+from mlagents_envs.exception import UnityEnvironmentException
 
 
 def basic_options(extra_args=None):
@@ -73,6 +74,18 @@ def test_docker_target_path(
             mock_init.assert_called_once()
             assert mock_init.call_args[0][1] == "/dockertarget/models/ppo"
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
+
+
+def test_bad_env_path():
+    with pytest.raises(UnityEnvironmentException):
+        learn.create_environment_factory(
+            env_path="/foo/bar",
+            docker_target_name=None,
+            no_graphics=True,
+            seed=None,
+            start_port=8000,
+            env_args=None,
+        )
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="{}")
