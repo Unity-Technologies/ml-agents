@@ -75,7 +75,7 @@ namespace MLAgents
         }
 
 #if DEBUG
-        internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
+        public static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
         {
 
             if (float.IsNaN(value))
