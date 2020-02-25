@@ -133,7 +133,7 @@ namespace MLAgents
             RenderTexture.ReleaseTemporary(tempRt);
             return texture2D;
         }
-        
+
         internal static int[] GenerateShape(int width, int height, bool grayscale)
         {
             return new[] { height, width, grayscale ? 1 : 3 };

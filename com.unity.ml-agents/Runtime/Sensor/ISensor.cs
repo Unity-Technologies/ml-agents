@@ -68,6 +68,10 @@ namespace MLAgents
         string GetName();
     }
 
+
+    /// <summary>
+    /// Helper methods to be shared by all classes that implement <see cref="ISensor"/>.
+    /// </summary>
     public static class SensorExtensions
     {
         /// <summary>
