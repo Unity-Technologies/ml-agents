@@ -265,8 +265,7 @@ i = env.reset()
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var sharedProperties = Academy.Instance.FloatProperties;
-float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
+float property1 = Academy.Instance.FloatProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```
 
 #### [Advanced] Create your own SideChannel
@@ -274,7 +273,7 @@ float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 You can create your own `SideChannel` in C# and Python and use it to communicate data between the two.
 
 ##### Unity side
-The side channel will have to implement the `SideChannel` abstract class and the following method.
+The side channel will have to implement the `MLAgents.SideChannels.SideChannel` abstract class and the following method.
 
  * `OnMessageReceived(byte[] data)` : You must implement this method to specify what the side channel will be doing
  with the data received from Python. The data is a `byte[]` argument.
@@ -323,6 +322,7 @@ the game :
 ```csharp
 using UnityEngine;
 using MLAgents;
+using MLAgents.SideChannels;
 using System.Text;
 using System;
 
@@ -357,6 +357,7 @@ so we write a simple MonoBehavior for this. (Do not forget to attach it to a Gam
 ```csharp
 using UnityEngine;
 using MLAgents;
+using MLAgents.SideChannels;
 
 
 public class RegisterStringLogSideChannel : MonoBehaviour
