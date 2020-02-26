@@ -543,7 +543,8 @@ class AgentIdIndexMapper:
     def get_id_permutation(self, agent_ids: List[int]) -> List[int]:
         """
         Get the permutation from new agent ids to the order that preserves the positions of previous agents.
-        The result is a list with each integer from 0 to len(agent_ids)-1 appearing exactly once.
+        The result is a list with each integer from 0 to len(_agent_id_to_gym_index)-1
+        appearing exactly once.
         """
         # Map the new agent ids to the their index
         new_agent_ids_to_index = {
