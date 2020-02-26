@@ -3,6 +3,11 @@ using System;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Side channels provides an alternative mechanism of sending/receiving data from Unity
+    /// to Python that is outside of the traditional machine learning loop. ML-Agents provides
+    /// some specific implementations of side channels, but users can create their own.
+    /// </summary>
     public abstract class SideChannel
     {
         // The list of messages (byte arrays) that need to be sent to Python via the communicator.
