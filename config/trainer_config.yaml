@@ -141,9 +141,9 @@ Tennis:
         save_steps: 50000
         swap_steps: 50000
 
-Soccer:
+SoccerTwos:
     normalize: false
-    max_steps: 5.0e7
+    max_steps: 1.0e8
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
@@ -158,7 +158,7 @@ Soccer:
 
 SoccerFives:
     normalize: false
-    max_steps: 1.0e8
+    max_steps: 2.0e8
     learning_rate_schedule: constant
     batch_size: 5096
     buffer_size: 50960
