@@ -188,17 +188,25 @@ class GhostTrainer(Trainer):
         return self.trainer.create_policy(brain_parameters)
 
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
-        # for saving/swapping snapshots
-        policy.init_load_weights()
+        """
+        Adds policy to trainer. For the first policy added, add a trainer
+        to the policy and set the learning behavior name to name_behavior_id.
+        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param policy: Policy to associate with name_behavior_id.
+        """
         self.policies[name_behavior_id] = policy
+        policy.create_tf_graph()
 
         # First policy encountered
         if not self.learning_behavior_name:
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            self._save_snapshot(policy)
             self.trainer.add_policy(name_behavior_id, policy)
+            self._save_snapshot(policy)  # Need to save after trainer initializes policy
             self.learning_behavior_name = name_behavior_id
+        else:
+            # for saving/swapping snapshots
+            policy.init_load_weights()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         return self.policies[name_behavior_id]

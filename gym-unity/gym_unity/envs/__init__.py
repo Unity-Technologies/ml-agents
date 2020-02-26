@@ -164,7 +164,7 @@ class UnityEnv(gym.Env):
         """Resets the state of the environment and returns an initial observation.
         In the case of multi-agent environments, this is a list.
         Returns: observation (object/list): the initial observation of the
-            space.
+        space.
         """
         step_result = self._step(True)
         n_agents = step_result.n_agents()
@@ -250,7 +250,7 @@ class UnityEnv(gym.Env):
             default_observation = self._get_vector_obs(info)[0, :]
         else:
             raise UnityGymException(
-                "The Agent does not have vector observations and the environment was not setup"
+                "The Agent does not have vector observations and the environment was not setup "
                 + "to use visual observations."
             )
 
@@ -345,12 +345,12 @@ class UnityEnv(gym.Env):
     def _check_agents(self, n_agents: int) -> None:
         if not self._multiagent and n_agents > 1:
             raise UnityGymException(
-                "The environment was launched as a single-agent environment, however"
+                "The environment was launched as a single-agent environment, however "
                 "there is more than one agent in the scene."
             )
         elif self._multiagent and n_agents <= 1:
             raise UnityGymException(
-                "The environment was launched as a mutli-agent environment, however"
+                "The environment was launched as a mutli-agent environment, however "
                 "there is only one agent in the scene."
             )
         if self._n_agents == -1:
@@ -438,7 +438,7 @@ class UnityEnv(gym.Env):
         while info.n_agents() - sum(info.done) < self._n_agents:
             if not info.done.all():
                 raise UnityGymException(
-                    "The environment does not have the expected amount of agents."
+                    "The environment does not have the expected amount of agents. "
                     + "Some agents did not request decisions at the same time."
                 )
             for agent_id, reward in zip(info.agent_id, info.reward):
@@ -543,7 +543,8 @@ class AgentIdIndexMapper:
     def get_id_permutation(self, agent_ids: List[int]) -> List[int]:
         """
         Get the permutation from new agent ids to the order that preserves the positions of previous agents.
-        The result is a list with each integer from 0 to len(agent_ids)-1 appearing exactly once.
+        The result is a list with each integer from 0 to len(_agent_id_to_gym_index)-1
+        appearing exactly once.
         """
         # Map the new agent ids to the their index
         new_agent_ids_to_index = {
@@ -551,7 +552,7 @@ class AgentIdIndexMapper:
         }
 
         # Make the output list. We don't write to it sequentially, so start with dummy values.
-        new_permutation = [-1] * len(agent_ids)
+        new_permutation = [-1] * len(self._agent_id_to_gym_index)
 
         # For each agent ID, find the new index of the agent, and write it in the original index.
         for agent_id, original_index in self._agent_id_to_gym_index.items():
