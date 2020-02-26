@@ -263,12 +263,12 @@ namespace MLAgents
             }
         }
 
-        /// <summary>
-        /// Computes the ray perception observations and saves them to the provided
-        /// <see cref="WriteAdapter"/>.
-        /// </summary>
-        /// <param name="adapter">Where the ray perception observations are written to</param>
-        /// <returns></returns>
+        internal void SetRayPerceptionInput(RayPerceptionInput input)
+        {
+            // TODO make sure that number of rays and tags don't change
+            m_RayPerceptionInput = input;
+        }
+
         public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
@@ -362,7 +362,7 @@ namespace MLAgents
         /// <param name="rayIndex"></param>
         /// <param name="debugRayOut"></param>
         /// <returns></returns>
-        static RayPerceptionOutput.RayOutput PerceiveSingleRay(
+        internal static RayPerceptionOutput.RayOutput PerceiveSingleRay(
             RayPerceptionInput input,
             int rayIndex,
             out DebugDisplayInfo.RayInfo debugRayOut
