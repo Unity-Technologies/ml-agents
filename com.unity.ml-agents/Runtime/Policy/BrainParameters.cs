@@ -27,9 +27,8 @@ namespace MLAgents
     public class BrainParameters
     {
         /// <summary>
-        /// If continuous : The length of the float vector that represents
-        /// the state
-        /// If discrete : The number of possible values the state can take
+        /// If continuous : The length of the float vector that represents the state.
+        /// If discrete : The number of possible values the state can take.
         /// </summary>
         public int vectorObservationSize = 1;
 
@@ -40,24 +39,23 @@ namespace MLAgents
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
         /// <summary>
-        /// If continuous : The length of the float vector that represents
-        /// the action
-        /// If discrete : The number of possible values the action can take*/
+        /// If continuous : The length of the float vector that represents the action.
+        /// If discrete : The number of possible values the action can take.
         /// </summary>
         public int[] vectorActionSize = new[] {1};
 
         /// <summary>
-        /// The list of strings describing what the actions correspond to
+        /// The list of strings describing what the actions correspond to.
         /// </summary>
         public string[] vectorActionDescriptions;
 
         /// <summary>
-        /// Defines if the action is discrete or continuous
+        /// Defines if the action is discrete or continuous.
         /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
         /// <summary>
-        /// Deep clones the BrainParameter object
+        /// Deep clones the BrainParameter object.
         /// </summary>
         /// <returns> A new BrainParameter object with the same values as the original.</returns>
         public BrainParameters Clone()

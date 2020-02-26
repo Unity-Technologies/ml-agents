@@ -5,7 +5,7 @@ using System.Linq;
 namespace MLAgents
 {
     /// <summary>
-    /// For agents that take discrete actions, they can explicitly indicate that specific actions
+    /// Agents that take discrete actions can explicitly indicate that specific actions
     /// are not allowed at a point in time. This enables the agent to indicate that some actions
     /// may be illegal (e.g. the King in Chess taking a move to the left if it is already in the
     /// left side of the board). This class represents an the set of masked actions and provides

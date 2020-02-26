@@ -64,8 +64,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// The name of this behavior, which is used as a base name.
-        /// <see cref="fullyQualifiedBehaviorName"/>
+        /// The name of this behavior, which is used as a base name. See
+        /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
         /// </summary>
         public string behaviorName
         {

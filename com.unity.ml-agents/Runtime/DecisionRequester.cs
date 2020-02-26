@@ -29,18 +29,18 @@ namespace MLAgents
         public bool RepeatAction = true;
 
         /// <summary>
-        /// Whether or not Agent decisions should start at a random offset. This does not affect
-        /// <see cref="DecisionPeriod"/>. Turning this on will distribute the decision-making
-        /// computations across multiple Academy steps. This can be valuable in scenarios where you
-        /// have many agents in the scene, particularly during the inference phase.
+        /// Whether or not the Agent decisions should start at an offset (different for each agent).
+        /// This does not affect <see cref="DecisionPeriod"/>. Turning this on will distribute
+        /// the decision-making computations for all the agents across multiple Academy steps.
+        /// This can be valuable in scenarios where you have many agents in the scene, particularly
+        /// during the inference phase.
         /// </summary>
-        [Tooltip("Whether or not Agent decisions should start at a random offset.")]
+        [Tooltip("Whether or not Agent decisions should start at an offset.")]
         public bool offsetStep;
 
         Agent m_Agent;
         int m_Offset;
 
-        [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
         internal void Awake()
         {
             m_Offset = offsetStep ? gameObject.GetInstanceID() : 0;

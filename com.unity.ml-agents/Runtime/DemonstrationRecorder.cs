@@ -19,9 +19,11 @@ namespace MLAgents
         public bool record;
 
         /// <summary>
-        /// Base demonstration file name. Saved filenames will have a unique number appended.
+        /// Base demonstration file name. If multiple files are saved, the additional filenames
+        /// will have a unique number appended.
         /// </summary>
-        [Tooltip("Base demonstration file name. Saved filenames will have a unique number appended.")]
+        [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
+                 "filenames will have a unique number appended.")]
         public string demonstrationName;
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace MLAgents
         DemonstrationStore m_DemoStore;
         const int k_MaxNameLength = 16;
         const string k_ExtensionType = ".demo";
-        const string k_DefaultFolderName = "Demonstrations";
+        const string k_DefaultDirectoryName = "Demonstrations";
         IFileSystem m_FileSystem;
 
         Agent m_Agent;
@@ -77,7 +79,7 @@ namespace MLAgents
             }
             if (string.IsNullOrEmpty(demonstrationDirectory))
             {
-                demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultFolderName);
+                demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultDirectoryName);
             }
 
             demonstrationName = SanitizeName(demonstrationName, k_MaxNameLength);

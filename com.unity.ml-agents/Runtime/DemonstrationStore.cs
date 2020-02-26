@@ -10,9 +10,9 @@ namespace MLAgents
     public class DemonstrationStore
     {
         /// <summary>
-        /// Number of bytes allocated to metadata in a demo file.
+        /// Number of bytes reserved for the Demonstration metadata at the start of the demo file.
         /// </summary>
-        public const int MetaDataBytes = 32;
+        const int MetaDataBytes = 32;
 
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
