@@ -83,7 +83,7 @@ namespace MLAgents
                 demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultDirectoryName);
             }
 
-            demonstrationName = SanitizeName(demonstrationName, k_MaxNameLength);
+            demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
             var filePath = MakeDemonstrationFilePath(m_FileSystem, demonstrationDirectory, demonstrationName);
             var stream = m_FileSystem.File.Create(filePath);
             m_DemoWriter = new DemonstrationWriter(stream);
