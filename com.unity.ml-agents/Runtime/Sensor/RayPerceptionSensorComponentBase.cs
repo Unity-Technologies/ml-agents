@@ -10,6 +10,9 @@ namespace MLAgents
     /// </summary>
     public abstract class RayPerceptionSensorComponentBase : SensorComponent
     {
+        /// <summary>
+        /// The name of the Sensor that this component wraps.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("sensorName")]
@@ -21,6 +24,9 @@ namespace MLAgents
             internal set => m_SensorName = value;
         }
 
+        /// <summary>
+        /// List of tags in the scene to compare against.
+        /// </summary>
         [SerializeField]
         [FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
@@ -32,6 +38,9 @@ namespace MLAgents
             internal set => m_DetectableTags = value;
         }
 
+        /// <summary>
+        /// Number of rays to the left and right of center.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("raysPerDirection")]
@@ -45,11 +54,16 @@ namespace MLAgents
             internal set => m_RaysPerDirection = value;
         }
 
+        /// <summary>
+        /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
+        /// Greater than 90 degrees will go backwards.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("maxRayDegrees")]
         [Range(0, 180)]
-        [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. Greater than 90 degrees will go backwards.")]
+        [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. " +
+                 "Greater than 90 degrees will go backwards.")]
         float m_MaxRayDegrees = 70;
         public float maxRayDegrees
         {
@@ -57,6 +71,9 @@ namespace MLAgents
             set { m_MaxRayDegrees = value; UpdateSensor(); }
         }
 
+        /// <summary>
+        /// Radius of sphere to cast. Set to zero for raycasts.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("sphereCastRadius")]
@@ -69,6 +86,9 @@ namespace MLAgents
             set { m_SphereCastRadius = value; UpdateSensor(); }
         }
 
+        /// <summary>
+        /// Length of the rays to cast.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("rayLength")]
@@ -81,6 +101,9 @@ namespace MLAgents
             set { m_RayLength = value; UpdateSensor(); }
         }
 
+        /// <summary>
+        /// Controls which layers the rays can hit.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("rayLayerMask")]
@@ -92,6 +115,9 @@ namespace MLAgents
             set { m_RayLayerMask = value; UpdateSensor();}
         }
 
+        /// <summary>
+        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("observationStacks")]
@@ -104,11 +130,17 @@ namespace MLAgents
             set => m_ObservationStacks = value; // Note: can't change at runtime
         }
 
+        /// <summary>
+        /// Color to code a ray that hits another object.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         [Header("Debug Gizmos", order = 999)]
         internal Color rayHitColor = Color.red;
 
+        /// <summary>
+        /// Color to code a ray that avoid or misses all other objects.
+        /// </summary>
         [HideInInspector]
         [SerializeField]
         internal Color rayMissColor = Color.white;
