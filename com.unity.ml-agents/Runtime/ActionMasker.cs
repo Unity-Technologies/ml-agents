@@ -32,7 +32,7 @@ namespace MLAgents
         /// The actionIndices correspond to the actions the agent will be unable to perform
         /// on the branch 0.
         /// </summary>
-        /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
+        /// <param name="actionIndices">The indices of the masked actions on branch 0.</param>
         public void SetActionMask(IEnumerable<int> actionIndices)
         {
             SetActionMask(0, actionIndices);
@@ -44,8 +44,8 @@ namespace MLAgents
         /// action branch. The actionIndex correspond to the action the agent will be unable
         /// to perform.
         /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndex">The index of the masked action</param>
+        /// <param name="branch">The branch for which the actions will be masked.</param>
+        /// <param name="actionIndex">The index of the masked action.</param>
         public void SetActionMask(int branch, int actionIndex)
         {
             SetActionMask(branch, new[] { actionIndex });

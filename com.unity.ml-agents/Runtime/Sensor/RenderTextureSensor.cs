@@ -1,8 +1,10 @@
-using System;
 using UnityEngine;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Sensor class that wraps a <see cref="RenderTexture"/> instance.
+    /// </summary>
     public class RenderTextureSensor : ISensor
     {
         RenderTexture m_RenderTexture;
@@ -11,8 +13,15 @@ namespace MLAgents
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
 
-        public RenderTextureSensor(RenderTexture renderTexture, bool grayscale, string name,
-                                   SensorCompressionType compressionType)
+        /// <summary>
+        /// Initializes the sensor.
+        /// </summary>
+        /// <param name="renderTexture">The <see cref="RenderTexture"/> instance to wrap.</param>
+        /// <param name="grayscale">Whether to convert it to grayscale or not.</param>
+        /// <param name="name">Name of the sensor.</param>
+        /// <param name="compressionType">Compression method for the render texture.</param>
+        public RenderTextureSensor(
+            RenderTexture renderTexture, bool grayscale, string name, SensorCompressionType compressionType)
         {
             m_RenderTexture = renderTexture;
             var width = renderTexture != null ? renderTexture.width : 0;
@@ -23,16 +32,19 @@ namespace MLAgents
             m_CompressionType = compressionType;
         }
 
+        /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;
         }
 
+        /// <inheritdoc/>
         public int[] GetObservationShape()
         {
             return m_Shape;
         }
 
+        /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
@@ -45,6 +57,7 @@ namespace MLAgents
             }
         }
 
+        /// <inheritdoc/>
         public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
@@ -56,8 +69,10 @@ namespace MLAgents
             }
         }
 
+        /// <inheritdoc/>
         public void Update() {}
 
+        /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
         {
             return m_CompressionType;

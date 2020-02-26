@@ -1,8 +1,10 @@
-using System;
 using UnityEngine;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// A sensor that wraps a Camera object to generate visual observations for an agent.
+    /// </summary>
     public class CameraSensor : ISensor
     {
         Camera m_Camera;
@@ -13,28 +15,50 @@ namespace MLAgents
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
 
-        public CameraSensor(Camera camera, int width, int height, bool grayscale, string name,
-                            SensorCompressionType compression)
+        /// <summary>
+        /// Creates and returns the camera sensor.
+        /// </summary>
+        /// <param name="camera">Camera object to capture images from.</param>
+        /// <param name="width">The width of the generated visual observation.</param>
+        /// <param name="height">The height of the generated visual observation.</param>
+        /// <param name="grayscale">Whether to convert the generated image to grayscale or keep color.</param>
+        /// <param name="name">The name of the camera sensor.</param>
+        /// <param name="compression">The compression to apply to the generated image.</param>
+        public CameraSensor(
+            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression)
         {
             m_Camera = camera;
             m_Width = width;
             m_Height = height;
             m_Grayscale = grayscale;
             m_Name = name;
-            m_Shape = new[] { height, width, grayscale ? 1 : 3 };
+            m_Shape = GenerateShape(width, height, grayscale);
             m_CompressionType = compression;
         }
 
+        /// <summary>
+        /// Accessor for the name of the sensor.
+        /// </summary>
+        /// <returns>Sensor name.</returns>
         public string GetName()
         {
             return m_Name;
         }
 
+        /// <summary>
+        /// Accessor for the size of the sensor data. Will be h x w x 1 for grayscale and
+        /// h x w x 3 for color.
+        /// </summary>
+        /// <returns>Size of each of the three dimensions.</returns>
         public int[] GetObservationShape()
         {
             return m_Shape;
         }
 
+        /// <summary>
+        /// Generates a compressed image. This can be valuable in speeding-up training.
+        /// </summary>
+        /// <returns>Compressed image.</returns>
         public byte[] GetCompressedObservation()
         {
             using (TimerStack.Instance.Scoped("CameraSensor.GetCompressedObservation"))
@@ -47,6 +71,11 @@ namespace MLAgents
             }
         }
 
+        /// <summary>
+        /// Writes out the generated, uncompressed image to the provided <see cref="WriteAdapter"/>.
+        /// </summary>
+        /// <param name="adapter">Where the observation is written to.</param>
+        /// <returns></returns>
         public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
@@ -58,15 +87,17 @@ namespace MLAgents
             }
         }
 
+        /// <inheritdoc/>
         public void Update() {}
 
+        /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
         {
             return m_CompressionType;
         }
 
         /// <summary>
-        /// Converts a m_Camera and corresponding resolution to a 2D texture.
+        /// Renders a Camera instance to a 2D texture at the corresponding resolution.
         /// </summary>
         /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>
@@ -101,6 +132,19 @@ namespace MLAgents
             RenderTexture.active = prevActiveRt;
             RenderTexture.ReleaseTemporary(tempRt);
             return texture2D;
+        }
+
+        /// <summary>
+        /// Computes the observation shape for a camera sensor based on the height, width
+        /// and grayscale flag.
+        /// </summary>
+        /// <param name="width">Width of the image captures from the camera.</param>
+        /// <param name="height">Height of the image captures from the camera.</param>
+        /// <param name="grayscale">Whether or not to convert the image to grayscale.</param>
+        /// <returns>The observation shape.</returns>
+        internal static int[] GenerateShape(int width, int height, bool grayscale)
+        {
+            return new[] { height, width, grayscale ? 1 : 3 };
         }
     }
 }

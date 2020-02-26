@@ -469,12 +469,12 @@ namespace MLAgents
         /// Creates or retrieves an existing ModelRunner that uses the same
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
-        /// <param name="model"> The NNModel the ModelRunner must use </param>
-        /// <param name="brainParameters"> The brainParameters used to create
-        /// the ModelRunner </param>
-        /// <param name="inferenceDevice"> The inference device (CPU or GPU)
-        /// the ModelRunner will use </param>
-        /// <returns> The ModelRunner compatible with the input settings</returns>
+        /// <param name="model">The NNModel the ModelRunner must use.</param>
+        /// <param name="brainParameters">The brainParameters used to create the ModelRunner.</param>
+        /// <param name="inferenceDevice">
+        /// The inference device (CPU or GPU) the ModelRunner will use.
+        /// </param>
+        /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
             NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
         {

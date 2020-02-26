@@ -25,9 +25,9 @@ namespace MLAgents.InferenceBrain
         /// Generates the Tensor inputs that are expected to be present in the Model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Barracuda engine model for loading static parameters.
         /// </param>
-        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs</returns>
+        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs.</returns>
         public static IReadOnlyList<TensorProxy> GetInputTensors(Model model)
         {
             var tensors = new List<TensorProxy>();

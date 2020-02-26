@@ -109,8 +109,8 @@ namespace MLAgents
         /// <summary>
         /// Registers a new Brain to the Communicator.
         /// </summary>
-        /// <param name="name">The name or key uniquely identifying the Brain</param>
-        /// <param name="brainParameters">The Parameters for the Brain being registered</param>
+        /// <param name="name">The name or key uniquely identifying the Brain.</param>
+        /// <param name="brainParameters">The Parameters for the Brain being registered.</param>
         void SubscribeBrain(string name, BrainParameters brainParameters);
 
         /// <summary>
@@ -131,8 +131,8 @@ namespace MLAgents
         /// <summary>
         /// Gets the AgentActions based on the batching key.
         /// </summary>
-        /// <param name="key">A key to identify which behavior actions to get</param>
-        /// <param name="agentId">A key to identify which Agent actions to get</param>
+        /// <param name="key">A key to identify which behavior actions to get.</param>
+        /// <param name="agentId">A key to identify which Agent actions to get.</param>
         /// <returns></returns>
         float[] GetActions(string key, int agentId);
 
