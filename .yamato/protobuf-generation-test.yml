@@ -6,7 +6,7 @@ test_mac_protobuf_generation:
     flavor: b1.small
   variables:
     GRPC_VERSION: "1.14.1"
-    COMPILER: "Grpc.Tools.${GRPC_VERSION}/tools/macosx_x64"
+    COMPILER: "Grpc.Tools.$GRPC_VERSION/tools/macosx_x64"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
@@ -18,8 +18,8 @@ test_mac_protobuf_generation:
       pip install grpcio-tools==1.13.0  --progress-bar=off
       pip install mypy-protobuf==1.16.0 --progress-bar=off
       cd protobuf-definitions
-      chmod +x Grpc.Tools.${GRPC_VERSION}/tools/macosx_x64/protoc
-      chmod +x Grpc.Tools.${GRPC_VERSION}/tools/macosx_x64/grpc_csharp_plugin
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/protoc
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/grpc_csharp_plugin
       ./make.sh
       mkdir -p artifacts
       touch artifacts/proto.patch
