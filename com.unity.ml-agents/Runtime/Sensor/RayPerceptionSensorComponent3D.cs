@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// A component for 3D Ray Perception.

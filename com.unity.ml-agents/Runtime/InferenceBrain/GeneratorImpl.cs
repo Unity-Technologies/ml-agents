@@ -3,6 +3,7 @@ using System;
 using Barracuda;
 using MLAgents.InferenceBrain.Utils;
 using UnityEngine;
+using MLAgents.Sensors;
 
 namespace MLAgents.InferenceBrain
 {

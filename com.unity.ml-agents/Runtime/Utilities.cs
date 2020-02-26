@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MLAgents.Sensors;
 
 namespace MLAgents
 {

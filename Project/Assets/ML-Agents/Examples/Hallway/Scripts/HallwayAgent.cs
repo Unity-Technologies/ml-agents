@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensors;
 
 public class HallwayAgent : Agent
 {

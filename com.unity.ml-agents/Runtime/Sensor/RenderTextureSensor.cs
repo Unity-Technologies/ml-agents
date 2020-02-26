@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// Sensor class that wraps a <see cref="RenderTexture"/> instance.

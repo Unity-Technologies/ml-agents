@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using Barracuda;
+using MLAgents.Sensors;
 
 namespace MLAgents
 {
