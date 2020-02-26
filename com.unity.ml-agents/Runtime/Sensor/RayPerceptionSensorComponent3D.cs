@@ -15,6 +15,10 @@ namespace MLAgents
         [Range(-10f, 10f)]
         [Tooltip("Ray start is offset up or down by this amount.")]
         float m_StartVerticalOffset;
+
+        /// <summary>
+        /// Ray start is offset up or down by this amount.
+        /// </summary>
         public float startVerticalOffset
         {
             get => m_StartVerticalOffset;
@@ -27,6 +31,10 @@ namespace MLAgents
         [Range(-10f, 10f)]
         [Tooltip("Ray end is offset up or down by this amount.")]
         float m_EndVerticalOffset;
+
+        /// <summary>
+        /// Ray end is offset up or down by this amount.
+        /// </summary>
         public float endVerticalOffset
         {
             get => m_EndVerticalOffset;

@@ -1,6 +1,8 @@
 namespace MLAgents
 {
-
+    /// <summary>
+    /// A base sensor that provides a number default implementations.
+    /// </summary>
     public abstract class SensorBase : ISensor
     {
         /// <summary>
