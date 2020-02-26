@@ -33,7 +33,7 @@ namespace MLAgents.Tests
         }
 
         [Test]
-        public void TestStoreInitalize()
+        public void TestStoreInitialize()
         {
             var fileSystem = new MockFileSystem();
 

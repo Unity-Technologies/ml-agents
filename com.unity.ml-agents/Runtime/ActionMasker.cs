@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Agents that take discrete actions can explicitly indicate that specific actions
+    /// are not allowed at a point in time. This enables the agent to indicate that some actions
+    /// may be illegal (e.g. the King in Chess taking a move to the left if it is already in the
+    /// left side of the board). This class represents the set of masked actions and provides
+    /// the utilities for setting and retrieving them.
+    /// </summary>
     public class ActionMasker
     {
         /// When using discrete control, is the starting indices of the actions
@@ -25,7 +32,7 @@ namespace MLAgents
         /// The actionIndices correspond to the actions the agent will be unable to perform
         /// on the branch 0.
         /// </summary>
-        /// <param name="actionIndices">The indices of the masked actions on branch 0</param>
+        /// <param name="actionIndices">The indices of the masked actions on branch 0.</param>
         public void SetActionMask(IEnumerable<int> actionIndices)
         {
             SetActionMask(0, actionIndices);
@@ -37,8 +44,8 @@ namespace MLAgents
         /// action branch. The actionIndex correspond to the action the agent will be unable
         /// to perform.
         /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndex">The index of the masked action</param>
+        /// <param name="branch">The branch for which the actions will be masked.</param>
+        /// <param name="actionIndex">The index of the masked action.</param>
         public void SetActionMask(int branch, int actionIndex)
         {
             SetActionMask(branch, new[] { actionIndex });

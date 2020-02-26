@@ -22,7 +22,7 @@ namespace MLAgents
 
         /// <summary>
         /// The uncompressed dimensions of the data.
-        /// E.g. for RGB visual observations, this will be {Width, Height, 3}
+        /// E.g. for RGB visual observations, this will be {Height, Width, 3}
         /// </summary>
         public int[] Shape;
     }
