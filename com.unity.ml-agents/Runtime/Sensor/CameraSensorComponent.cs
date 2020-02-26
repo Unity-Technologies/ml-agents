@@ -3,7 +3,7 @@ using UnityEngine;
 namespace MLAgents
 {
     /// <summary>
-    /// A SensorComponent that wraps a <see cref="CameraSensor"/>.
+    /// A SensorComponent that creates a <see cref="CameraSensor"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Camera Sensor", (int)MenuGroup.Sensors)]
     public class CameraSensorComponent : SensorComponent

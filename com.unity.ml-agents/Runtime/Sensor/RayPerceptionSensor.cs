@@ -340,7 +340,7 @@ namespace MLAgents
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>
         /// <param name="input">Input defining the rays that will be cast.</param>
-        /// <returns>Output class that will be include the raycast results.</returns>
+        /// <returns>Output struct containing the raycast results.</returns>
         public static RayPerceptionOutput PerceiveStatic(RayPerceptionInput input)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();

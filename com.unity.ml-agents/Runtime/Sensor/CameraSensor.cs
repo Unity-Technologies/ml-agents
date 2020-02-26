@@ -97,7 +97,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Converts a Camera instance and corresponding resolution to a 2D texture.
+        /// Renders a Camera instance to a 2D texture at the corresponding resolution.
         /// </summary>
         /// <returns>The 2D texture.</returns>
         /// <param name="obsCamera">Camera.</param>
@@ -134,6 +134,14 @@ namespace MLAgents
             return texture2D;
         }
 
+        /// <summary>
+        /// Computes the observation shape for a camera sensor based on the height, width
+        /// and grayscale flag.
+        /// </summary>
+        /// <param name="width">Width of the image captures from the camera.</param>
+        /// <param name="height">Height of the image captures from the camera.</param>
+        /// <param name="grayscale">Whether or not to convert the image to grayscale</param>
+        /// <returns>The observation shape.</returns>
         internal static int[] GenerateShape(int width, int height, bool grayscale)
         {
             return new[] { height, width, grayscale ? 1 : 3 };

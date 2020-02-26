@@ -18,22 +18,23 @@ namespace MLAgents
 
     /// <summary>
     /// Sensor interface for generating observations.
-    /// For custom implementations, it is recommended to SensorBase instead.
+    /// For custom implementations, it is recommended to <see cref="SensorBase"/> instead.
     /// </summary>
     public interface ISensor
     {
         /// <summary>
         /// Returns the size of the observations that will be generated.
         /// For example, a sensor that observes the velocity of a rigid body (in 3D) would return
-        /// new {3}. A sensor that returns an RGB image would return new [] {Width, Height, 3}
+        /// new {3}. A sensor that returns an RGB image would return new [] {Height, Width, 3}
         /// </summary>
         /// <returns>Size of the observations that will be generated.</returns>
         int[] GetObservationShape();
 
         /// <summary>
         /// Write the observation data directly to the <see cref="WriteAdapter"/>.
-        /// This is considered an advanced interface; for a simpler approach, use SensorBase
-        /// and override WriteFloats instead. Note that this (and GetCompressedObservation) may
+        /// This is considered an advanced interface; for a simpler approach, use
+        /// <see cref="SensorBase"/> and override <see cref="SensorBase.WriteObservation"/> instead.
+        /// Note that this (and  <see cref="GetCompressedObservation"/>) may
         /// be called multiple times per agent step, so should not mutate any internal state.
         /// </summary>
         /// <param name="adapter">Where the observations will be written to.</param>
