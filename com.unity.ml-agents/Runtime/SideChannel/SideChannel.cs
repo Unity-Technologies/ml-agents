@@ -4,7 +4,7 @@ using System;
 namespace MLAgents
 {
     /// <summary>
-    /// Side channels provides an alternative mechanism of sending/receiving data from Unity
+    /// Side channels provide an alternative mechanism of sending/receiving data from Unity
     /// to Python that is outside of the traditional machine learning loop. ML-Agents provides
     /// some specific implementations of side channels, but users can create their own.
     /// </summary>
@@ -18,7 +18,7 @@ namespace MLAgents
         /// An int identifier for the SideChannel. Ensures that there is only ever one side channel
         /// of each type. Ensure the Unity side channels will be linked to their Python equivalent.
         /// </summary>
-        /// <returns> The integer identifier of the SideChannel</returns>
+        /// <returns> The integer identifier of the SideChannel.</returns>
         public Guid ChannelId{
             get;
             protected set;
