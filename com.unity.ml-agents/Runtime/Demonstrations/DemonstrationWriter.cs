@@ -12,7 +12,7 @@ namespace MLAgents
         /// <summary>
         /// Number of bytes reserved for the Demonstration metadata at the start of the demo file.
         /// </summary>
-        const int MetaDataBytes = 32;
+        internal const int MetaDataBytes = 32;
 
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
