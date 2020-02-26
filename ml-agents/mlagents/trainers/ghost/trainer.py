@@ -168,7 +168,7 @@ class GhostTrainer(Trainer):
             except AgentManagerQueue.Empty:
                 pass
 
-        if self.get_step - self.last_save > self.steps_between_save:
+        if self.get_step - self.last_save > self.steps_between_save and self.learning_behavior_name == self.global_learning_behavior_name:
             self._save_snapshot(self.trainer.policy)
             self.last_save = self.get_step
 
