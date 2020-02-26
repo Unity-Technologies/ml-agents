@@ -2,8 +2,10 @@
     "name": "Unity.ML-Agents.Editor",
     "references": [
         "Unity.ML-Agents",
-        "Barracuda"
+        "Barracuda",
+        "Unity.ML-Agents.CommunicatorObjects"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,7 +14,5 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

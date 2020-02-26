@@ -1,0 +1,40 @@
+test_mac_protobuf_generation:
+  name: Protobuf Generation Tests
+  agent:
+    type: Unity::VM::osx
+    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
+    flavor: b1.small
+  variables:
+    GRPC_VERSION: "1.14.1"
+    CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
+  commands:
+    - |
+      brew install nuget
+      nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
+      python3 -m venv venv
+      . venv/bin/activate
+      pip install --upgrade pip
+      pip install grpcio-tools==1.13.0  --progress-bar=off
+      pip install mypy-protobuf==1.16.0 --progress-bar=off
+      cd protobuf-definitions
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/protoc
+      chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/grpc_csharp_plugin
+      COMPILER=Grpc.Tools.$GRPC_VERSION/tools/macosx_x64 ./make.sh
+      mkdir -p artifacts
+      touch artifacts/proto.patch
+      git diff --exit-code -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta"                          \
+      || { GIT_ERR=$?; echo "protobufs need to be regenerated, apply the patch uploaded to artifacts."; \
+      echo "Apply the patch with the command 'git apply proto.patch'";                                  \
+      git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > artifacts/proto.patch; exit $GIT_ERR; }
+  triggers:
+    changes:
+      only:
+        - "protobuf-definitions/**"
+        - ".yamato/protobuf-generation-test.yml"
+      except:
+        - "protobuf-definitions/*.md"
+        - "protobuf-definitions/**/*.md"
+  artifacts:
+    dist:
+      paths:
+        - "artifacts/*"
