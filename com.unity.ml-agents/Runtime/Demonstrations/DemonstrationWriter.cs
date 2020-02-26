@@ -32,9 +32,9 @@ namespace MLAgents
         /// <summary>
         /// Writes the initial data to the stream.
         /// </summary>
-        /// <param name="demonstrationName">Base name of the demonstration file(s)</param>
-        /// <param name="brainName">The name of the Brain the agent is attached to</param>
-        /// <param name="brainParameters">The parameters of the Brain the agent is attached to</param>
+        /// <param name="demonstrationName">Base name of the demonstration file(s).</param>
+        /// <param name="brainName">The name of the Brain the agent is attached to.</param>
+        /// <param name="brainParameters">The parameters of the Brain the agent is attached to.</param>
         public void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
@@ -73,8 +73,8 @@ namespace MLAgents
         /// <summary>
         /// Writes brain parameters to file.
         /// </summary>
-        /// <param name="brainName">The name of the Brain the agent is attached to</param>
-        /// <param name="brainParameters">The parameters of the Brain the agent is attached to</param>
+        /// <param name="brainName">The name of the Brain the agent is attached to.</param>
+        /// <param name="brainParameters">The parameters of the Brain the agent is attached to.</param>
         void WriteBrainParameters(string brainName, BrainParameters brainParameters)
         {
             if (m_Writer == null)
@@ -92,8 +92,8 @@ namespace MLAgents
         /// <summary>
         /// Write AgentInfo experience to file.
         /// </summary>
-        /// <param name="info"> <see cref="AgentInfo"/> for the agent being recorded</param>
-        /// <param name="sensors">List of sensors to record for the agent</param>
+        /// <param name="info"> <see cref="AgentInfo"/> for the agent being recorded.</param>
+        /// <param name="sensors">List of sensors to record for the agent.</param>
         internal void Record(AgentInfo info, List<ISensor> sensors)
         {
             if (m_Writer == null)

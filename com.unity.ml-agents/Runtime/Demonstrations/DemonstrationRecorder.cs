@@ -20,7 +20,7 @@ namespace MLAgents
 
         /// <summary>
         /// Base demonstration file name. If multiple files are saved, the additional filenames
-        /// will have a unique number appended.
+        /// will have a sequence of unique numbers appended.
         /// </summary>
         [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
                  "filenames will have a unique number appended.")]

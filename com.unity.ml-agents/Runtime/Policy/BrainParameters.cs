@@ -9,12 +9,12 @@ namespace MLAgents
     public enum SpaceType
     {
         /// <summary>
-        /// Discrete action space: a fixed number of options are available
+        /// Discrete action space: a fixed number of options are available.
         /// </summary>
         Discrete,
 
         /// <summary>
-        /// Continuous action space: each action can take on a float value
+        /// Continuous action space: each action can take on a float value.
         /// </summary>
         Continuous
     }

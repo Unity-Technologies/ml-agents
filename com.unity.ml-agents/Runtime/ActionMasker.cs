@@ -8,7 +8,7 @@ namespace MLAgents
     /// Agents that take discrete actions can explicitly indicate that specific actions
     /// are not allowed at a point in time. This enables the agent to indicate that some actions
     /// may be illegal (e.g. the King in Chess taking a move to the left if it is already in the
-    /// left side of the board). This class represents an the set of masked actions and provides
+    /// left side of the board). This class represents the set of masked actions and provides
     /// the utilities for setting and retrieving them.
     /// </summary>
     public class ActionMasker
