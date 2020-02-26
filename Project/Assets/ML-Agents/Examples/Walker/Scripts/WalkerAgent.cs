@@ -32,8 +32,6 @@ public class WalkerAgent : Agent
     Rigidbody m_ChestRb;
     Rigidbody m_SpineRb;
 
-    IFloatProperties m_ResetParams;
-
     public override void InitializeAgent()
     {
         m_JdController = GetComponent<JointDriveController>();
@@ -57,8 +55,6 @@ public class WalkerAgent : Agent
         m_HipsRb = hips.GetComponent<Rigidbody>();
         m_ChestRb = chest.GetComponent<Rigidbody>();
         m_SpineRb = spine.GetComponent<Rigidbody>();
-
-        m_ResetParams = Academy.Instance.FloatProperties;
 
         SetResetParameters();
     }
@@ -177,9 +173,9 @@ public class WalkerAgent : Agent
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams.GetPropertyWithDefault("chest_mass", 8);
-        m_SpineRb.mass = m_ResetParams.GetPropertyWithDefault("spine_mass", 10);
-        m_HipsRb.mass = m_ResetParams.GetPropertyWithDefault("hip_mass", 15);
+        m_ChestRb.mass = Academy.Instance.FloatProperties.GetPropertyWithDefault("chest_mass", 8);
+        m_SpineRb.mass = Academy.Instance.FloatProperties.GetPropertyWithDefault("spine_mass", 10);
+        m_HipsRb.mass = Academy.Instance.FloatProperties.GetPropertyWithDefault("hip_mass", 15);
     }
 
     public void SetResetParameters()

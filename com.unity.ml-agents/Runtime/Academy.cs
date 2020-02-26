@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using MLAgents.InferenceBrain;
+using MLAgents.SideChannels;
 using Barracuda;
 
 /**

@@ -2,7 +2,7 @@ using System.IO;
 using System;
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.SideChannels
 {
     /// <summary>
     /// Side channel that supports modifying attributes specific to the Unity Engine.

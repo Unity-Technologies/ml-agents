@@ -3,7 +3,7 @@ using System.IO;
 using System;
 using System.Text;
 
-namespace MLAgents
+namespace MLAgents.SideChannels
 {
     /// <summary>
     /// Interface for managing a collection of float properties keyed by a string variable.
