@@ -180,8 +180,8 @@ namespace MLAgents
         /// <summary>
         /// Adds a one-hot encoding observation.
         /// </summary>
-        /// <param name="observation">The index of this observation</param>
-        /// <param name="range">The max index for any observation</param>
+        /// <param name="observation">The index of this observation.</param>
+        /// <param name="range">The max index for any observation.</param>
         public void AddOneHotObservation(int observation, int range)
         {
             for (var i = 0; i < range; i++)

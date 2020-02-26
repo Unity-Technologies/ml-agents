@@ -273,7 +273,7 @@ namespace MLAgents
         /// Computes the ray perception observations and saves them to the provided
         /// <see cref="WriteAdapter"/>.
         /// </summary>
-        /// <param name="adapter">Where the ray perception observations are written to</param>
+        /// <param name="adapter">Where the ray perception observations are written to.</param>
         /// <returns></returns>
         public int Write(WriteAdapter adapter)
         {

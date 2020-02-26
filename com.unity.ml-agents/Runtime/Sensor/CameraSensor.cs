@@ -18,12 +18,12 @@ namespace MLAgents
         /// <summary>
         /// Creates and returns the camera sensor.
         /// </summary>
-        /// <param name="camera">Camera object to capture images from</param>
-        /// <param name="width">The width of the generated visual observation</param>
-        /// <param name="height">The height of the generated visual observation</param>
-        /// <param name="grayscale">Whether to convert the generated image to grayscale or keep color</param>
-        /// <param name="name">The name of the camera sensor</param>
-        /// <param name="compression">The compression to apply to the generated image</param>
+        /// <param name="camera">Camera object to capture images from.</param>
+        /// <param name="width">The width of the generated visual observation.</param>
+        /// <param name="height">The height of the generated visual observation.</param>
+        /// <param name="grayscale">Whether to convert the generated image to grayscale or keep color.</param>
+        /// <param name="name">The name of the camera sensor.</param>
+        /// <param name="compression">The compression to apply to the generated image.</param>
         public CameraSensor(
             Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression)
         {
@@ -72,7 +72,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Writes out the generated, uncompressed image to the provided <see cref="WriteAdapter"/>
+        /// Writes out the generated, uncompressed image to the provided <see cref="WriteAdapter"/>.
         /// </summary>
         /// <param name="adapter">Where the observation is written to.</param>
         /// <returns></returns>
@@ -140,7 +140,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="width">Width of the image captures from the camera.</param>
         /// <param name="height">Height of the image captures from the camera.</param>
-        /// <param name="grayscale">Whether or not to convert the image to grayscale</param>
+        /// <param name="grayscale">Whether or not to convert the image to grayscale.</param>
         /// <returns>The observation shape.</returns>
         internal static int[] GenerateShape(int width, int height, bool grayscale)
         {

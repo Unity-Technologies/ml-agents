@@ -26,9 +26,9 @@ namespace MLAgents.InferenceBrain.Utils
         double m_SpareUnscaled;
 
         /// <summary>
-        /// Return the next random double number
+        /// Return the next random double number.
         /// </summary>
-        /// <returns>Next random double number</returns>
+        /// <returns>Next random double number.</returns>
         public double NextDouble()
         {
             if (m_HasSpare)
