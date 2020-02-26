@@ -58,6 +58,7 @@ class GhostTrainer(Trainer):
         self.policy_snapshots: List[Any] = []
         self.snapshot_counter: int = 0
         self.learning_behavior_name: str = None
+        self.global_learning_behavior_name: str = None
         self.current_policy_snapshot = None
         self.last_save = 0
         self.last_swap = 0
@@ -76,7 +77,9 @@ class GhostTrainer(Trainer):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.trainer.get_step
+        return self.step
+
+    #    return self.trainer.get_step
 
     @property
     def reward_buffer(self) -> Deque[float]:
@@ -88,22 +91,22 @@ class GhostTrainer(Trainer):
          """
         return self.trainer.reward_buffer
 
-    def _write_summary(self, step: int) -> None:
-        """
-        Saves training statistics to Tensorboard.
-        """
-        opponents = np.array(self.policy_elos, dtype=np.float32)
-        LOGGER.info(
-            " Learning brain {} ELO: {:0.3f}\n"
-            "Mean Opponent ELO: {:0.3f}"
-            " Std Opponent ELO: {:0.3f}".format(
-                self.learning_behavior_name,
-                self.current_elo,
-                opponents.mean(),
-                opponents.std(),
-            )
-        )
-        self.stats_reporter.add_stat("ELO", self.current_elo)
+    # def _write_summary(self, step: int) -> None:
+    #    """
+    #    Saves training statistics to Tensorboard.
+    #    """
+    #    opponents = np.array(self.policy_elos, dtype=np.float32)
+    #    LOGGER.info(
+    #        " Learning brain {} ELO: {:0.3f}\n"
+    #        "Mean Opponent ELO: {:0.3f}"
+    #        " Std Opponent ELO: {:0.3f}".format(
+    #            self.learning_behavior_name,
+    #            self.current_elo,
+    #            opponents.mean(),
+    #            opponents.std(),
+    #        )
+    #    )
+    #    self.stats_reporter.add_stat("ELO", self.current_elo)
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         if trajectory.done_reached and not trajectory.max_step_reached:
@@ -120,6 +123,7 @@ class GhostTrainer(Trainer):
             )
             self.current_elo += change
             self.policy_elos[self.current_opponent] -= change
+        super()._process_trajectory(trajectory)
 
     def _is_ready_update(self) -> bool:
         return False
@@ -141,14 +145,19 @@ class GhostTrainer(Trainer):
                 for _ in range(traj_queue.maxlen):
                     t = traj_queue.get_nowait()
                     # adds to wrapped trainers queue
-                    internal_traj_queue.put(t)
+
+                    if (
+                        self.global_learning_behavior_name
+                        == internal_traj_queue.behavior_id
+                    ):
+                        internal_traj_queue.put(t)
                     self._process_trajectory(t)
             except AgentManagerQueue.Empty:
                 pass
 
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
-        self._maybe_write_summary(self.get_step)
+        # self._maybe_write_summary(self.get_step)
 
         for internal_q in self.internal_policy_queues:
             # Get policies that correspond to the policy queue in question
@@ -224,7 +233,9 @@ class GhostTrainer(Trainer):
         for q in self.policy_queues:
             name_behavior_id = q.behavior_id
             # here is the place for a sampling protocol
-            if name_behavior_id == self.learning_behavior_name:
+            if (
+                name_behavior_id == self.global_learning_behavior_name
+            ):  # self.learning_behavior_name:
                 continue
             elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
@@ -235,8 +246,12 @@ class GhostTrainer(Trainer):
                 self.policy_elos[-1] = self.current_elo
             self.current_opponent = -1 if x == "current" else x
             LOGGER.debug(
-                "Step {}: Swapping snapshot {} to id {} with {} learning".format(
-                    self.get_step, x, name_behavior_id, self.learning_behavior_name
+                "Step {}: Swapping snapshot {} to id {} with {} local learning and {} global learning".format(
+                    self.get_step,
+                    x,
+                    name_behavior_id,
+                    self.learning_behavior_name,
+                    self.global_learning_behavior_name,
                 )
             )
             policy = self.get_policy(name_behavior_id)

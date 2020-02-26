@@ -99,6 +99,13 @@ def _create_parser():
         help="Number of parallel environments to use for training",
     )
     argparser.add_argument(
+        "--ghost-swap",
+        default=1000,
+        type=int,
+        help="Number of global steps between ghost trainer swaps for asymmetric games",
+    )
+
+    argparser.add_argument(
         "--docker-target-name",
         default=None,
         dest="docker_target_name",
@@ -177,6 +184,7 @@ class RunOptions(NamedTuple):
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
     base_port: int = parser.get_default("base_port")
     num_envs: int = parser.get_default("num_envs")
+    ghost_swap: int = parser.get_default("ghost_swap")
     curriculum_config: Optional[Dict] = None
     lesson: int = parser.get_default("lesson")
     no_graphics: bool = parser.get_default("no_graphics")
@@ -316,6 +324,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         run_seed,
         sampler_manager,
         resampling_interval,
+        options.ghost_swap,
     )
     # Begin training
     try:

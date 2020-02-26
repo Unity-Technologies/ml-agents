@@ -20,6 +20,7 @@ from mlagents_envs.exception import (
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
 from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -39,6 +40,7 @@ class TrainerController(object):
         training_seed: int,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
+        ghost_swap: int,
     ):
         """
         :param model_path: Path to save the model.
@@ -63,6 +65,9 @@ class TrainerController(object):
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
+        self.ghost_swap = ghost_swap
+        self.ghost_index: int = 0
+        self.ghost_names: List[str] = []
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
@@ -172,6 +177,9 @@ class TrainerController(object):
             trainer = self.trainers[brain_name]
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
+            if isinstance(trainer, GhostTrainer):
+                self.ghost_names.append(name_behavior_id)
+
             self.trainers[brain_name] = trainer
             self.logger.info(trainer)
             if self.train_model:
@@ -215,6 +223,21 @@ class TrainerController(object):
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     global_step += 1
+                    if global_step % self.ghost_swap == 0 or global_step == 1:
+                        for trainer in self.trainers.values():
+                            if isinstance(trainer, GhostTrainer):
+                                trainer.global_learning_behavior_name = self.ghost_names[
+                                    self.ghost_index
+                                ]
+                                self.logger.debug(
+                                    "Global step {}: Swapping {} as global learning".format(
+                                        global_step, self.ghost_names[self.ghost_index]
+                                    )
+                                )
+
+                        self.ghost_index = (self.ghost_index + 1) % len(
+                            self.ghost_names
+                        )
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
                         self._save_model()
