@@ -10,13 +10,14 @@ namespace MLAgents
     /// </summary>
     public abstract class RayPerceptionSensorComponentBase : SensorComponent
     {
-        /// <summary>
-        /// The name of the Sensor that this component wraps.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("sensorName")]
         string m_SensorName = "RayPerceptionSensor";
+
+        /// <summary>
+        /// The name of the Sensor that this component wraps.
+        /// </summary>
         public string sensorName
         {
             get => m_SensorName;
@@ -24,13 +25,14 @@ namespace MLAgents
             internal set => m_SensorName = value;
         }
 
-        /// <summary>
-        /// List of tags in the scene to compare against.
-        /// </summary>
         [SerializeField]
         [FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
         List<string> m_DetectableTags;
+
+        /// <summary>
+        /// List of tags in the scene to compare against.
+        /// </summary>
         public List<string> detectableTags
         {
             get => m_DetectableTags;
@@ -38,15 +40,16 @@ namespace MLAgents
             internal set => m_DetectableTags = value;
         }
 
-        /// <summary>
-        /// Number of rays to the left and right of center.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("raysPerDirection")]
         [Range(0, 50)]
         [Tooltip("Number of rays to the left and right of center.")]
         int m_RaysPerDirection = 3;
+
+        /// <summary>
+        /// Number of rays to the left and right of center.
+        /// </summary>
         public int raysPerDirection
         {
             get => m_RaysPerDirection;
@@ -54,10 +57,6 @@ namespace MLAgents
             internal set => m_RaysPerDirection = value;
         }
 
-        /// <summary>
-        /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
-        /// Greater than 90 degrees will go backwards.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("maxRayDegrees")]
@@ -65,65 +64,74 @@ namespace MLAgents
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. " +
                  "Greater than 90 degrees will go backwards.")]
         float m_MaxRayDegrees = 70;
+
+        /// <summary>
+        /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
+        /// Greater than 90 degrees will go backwards.
+        /// </summary>
         public float maxRayDegrees
         {
             get => m_MaxRayDegrees;
             set { m_MaxRayDegrees = value; UpdateSensor(); }
         }
 
-        /// <summary>
-        /// Radius of sphere to cast. Set to zero for raycasts.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("sphereCastRadius")]
         [Range(0f, 10f)]
         [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
         float m_SphereCastRadius = 0.5f;
+
+        /// <summary>
+        /// Radius of sphere to cast. Set to zero for raycasts.
+        /// </summary>
         public float sphereCastRadius
         {
             get => m_SphereCastRadius;
             set { m_SphereCastRadius = value; UpdateSensor(); }
         }
 
-        /// <summary>
-        /// Length of the rays to cast.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("rayLength")]
         [Range(1, 1000)]
         [Tooltip("Length of the rays to cast.")]
         float m_RayLength = 20f;
+
+        /// <summary>
+        /// Length of the rays to cast.
+        /// </summary>
         public float rayLength
         {
             get => m_RayLength;
             set { m_RayLength = value; UpdateSensor(); }
         }
 
-        /// <summary>
-        /// Controls which layers the rays can hit.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
         LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
+
+        /// <summary>
+        /// Controls which layers the rays can hit.
+        /// </summary>
         public LayerMask rayLayerMask
         {
             get => m_RayLayerMask;
             set { m_RayLayerMask = value; UpdateSensor();}
         }
 
-        /// <summary>
-        /// Whether to stack previous observations. Using 1 means no previous observations.
-        /// </summary>
         [HideInInspector]
         [SerializeField]
         [FormerlySerializedAs("observationStacks")]
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         int m_ObservationStacks = 1;
+
+        /// <summary>
+        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// </summary>
         internal int observationStacks
         {
             get => m_ObservationStacks;
