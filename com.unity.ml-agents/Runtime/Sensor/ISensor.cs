@@ -37,7 +37,7 @@ namespace MLAgents
         /// be called multiple times per agent step, so should not mutate any internal state.
         /// </summary>
         /// <param name="adapter">Where the observations will be written to.</param>
-        /// <returns>The number of elements written</returns>
+        /// <returns>The number of elements written.</returns>
         int Write(WriteAdapter adapter);
 
         /// <summary>
