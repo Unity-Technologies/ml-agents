@@ -94,10 +94,11 @@ For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
 
 ## Releases
-The latest release is 0.14.0. Previous releases can be found below:
+The latest release is 0.14.1. Previous releases can be found below:
 
 | **Version** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|
+| **0.14.0**  | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
 | **0.13.1**  | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
 | **0.13.0**  | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.0.zip) |
 | **0.12.1**  | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.12.1.zip) |
