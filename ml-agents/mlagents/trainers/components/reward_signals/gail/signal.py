@@ -79,10 +79,7 @@ class GAILRewardSignal(RewardSignal):
                 _obs = mini_batch["visual_obs%d" % i]
                 feed_dict[self.policy.visual_in[i]] = _obs
 
-        if self.policy.use_continuous_act:
-            feed_dict[self.policy.selected_actions] = mini_batch["actions"]
-        else:
-            feed_dict[self.policy.output] = mini_batch["actions"]
+        feed_dict[self.model.selected_actions_ph] = mini_batch["actions"]
         feed_dict[self.model.done_policy_holder] = np.array(
             mini_batch["done"]
         ).flatten()
@@ -133,10 +130,7 @@ class GAILRewardSignal(RewardSignal):
             feed_dict[self.model.use_noise] = [1]
 
         feed_dict[self.model.action_in_expert] = np.array(mini_batch_demo["actions"])
-        if self.policy.use_continuous_act:
-            feed_dict[policy.selected_actions] = mini_batch["actions"]
-        else:
-            feed_dict[policy.output] = mini_batch["actions"]
+        feed_dict[self.model.selected_actions_ph] = mini_batch["actions"]
 
         if self.policy.use_vis_obs > 0:
             for i in range(len(policy.visual_in)):

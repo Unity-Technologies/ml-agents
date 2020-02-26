@@ -152,6 +152,13 @@ class PPOOptimizer(TFOptimizer):
             vis_encode_type,
         )[0]
 
+        self._discrete_action_ph = ModelUtils.create_action_input_placeholder(
+            self.policy.act_size, is_discrete=True
+        )
+        action_oh = ModelUtils.to_onehot_tensor(
+            self._discrete_action_ph, self.policy.act_size
+        )
+
         if self.policy.use_recurrent:
             hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
                 hidden_stream,
@@ -183,9 +190,7 @@ class PPOOptimizer(TFOptimizer):
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.policy.action_oh[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
+                            labels=action_oh[:, action_idx[i] : action_idx[i + 1]],
                             logits=old_normalized_logits[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
@@ -327,10 +332,8 @@ class PPOOptimizer(TFOptimizer):
                 "{}_value_estimates".format(name)
             ]
 
-        if self.policy.output_pre is not None and "actions_pre" in mini_batch:
-            feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
-        else:
-            feed_dict[self.policy.output] = mini_batch["actions"]
+        if not self.policy.use_continuous_act:
+            feed_dict[self._discrete_action_ph] = mini_batch["actions"]
             if self.policy.use_recurrent:
                 feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]

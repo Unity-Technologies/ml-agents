@@ -17,10 +17,21 @@ class CuriosityModel(object):
         """
         self.encoding_size = encoding_size
         self.policy = policy
+        is_discrete = self.policy.brain.vector_action_space_type != "continuous"
+        self.selected_actions_ph = ModelUtils.create_action_input_placeholder(
+            self.policy.act_size, is_discrete
+        )
+        if is_discrete:
+            action_input = ModelUtils.to_onehot_tensor(
+                self.selected_actions_ph, self.policy.act_size
+            )
+        else:
+            action_input = self.selected_actions_ph
+
         self.next_visual_in: List[tf.Tensor] = []
         encoded_state, encoded_next_state = self.create_curiosity_encoders()
-        self.create_inverse_model(encoded_state, encoded_next_state)
-        self.create_forward_model(encoded_state, encoded_next_state)
+        self.create_inverse_model(action_input, encoded_state, encoded_next_state)
+        self.create_forward_model(action_input, encoded_state, encoded_next_state)
         self.create_loss(learning_rate)
 
     def create_curiosity_encoders(self) -> Tuple[tf.Tensor, tf.Tensor]:
@@ -106,11 +117,15 @@ class CuriosityModel(object):
         return encoded_state, encoded_next_state
 
     def create_inverse_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+        self,
+        action_input: tf.Tensor,
+        encoded_state: tf.Tensor,
+        encoded_next_state: tf.Tensor,
     ) -> None:
         """
         Creates inverse model TensorFlow ops for Curiosity module.
         Predicts action taken given current and future encoded states.
+        :param action_input: Tensor representing the current selected action.
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
@@ -121,7 +136,7 @@ class CuriosityModel(object):
                 hidden, self.policy.act_size[0], activation=None
             )
             squared_difference = tf.reduce_sum(
-                tf.squared_difference(pred_action, self.policy.selected_actions), axis=1
+                tf.squared_difference(pred_action, action_input), axis=1
             )
             self.inverse_loss = tf.reduce_mean(
                 tf.dynamic_partition(squared_difference, self.policy.mask, 2)[1]
@@ -137,24 +152,26 @@ class CuriosityModel(object):
                 axis=1,
             )
             cross_entropy = tf.reduce_sum(
-                -tf.log(pred_action + 1e-10) * self.policy.selected_actions, axis=1
+                -tf.log(pred_action + 1e-10) * action_input, axis=1
             )
             self.inverse_loss = tf.reduce_mean(
                 tf.dynamic_partition(cross_entropy, self.policy.mask, 2)[1]
             )
 
     def create_forward_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+        self,
+        action_input: tf.Tensor,
+        encoded_state: tf.Tensor,
+        encoded_next_state: tf.Tensor,
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
         Predicts encoded future state based on encoded current state and given action.
+        :param action_input: Tensor representing the current selected action.
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
-        combined_input = tf.concat(
-            [encoded_state, self.policy.selected_actions], axis=1
-        )
+        combined_input = tf.concat([encoded_state, action_input], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
         pred_next_state = tf.layers.dense(
             hidden,

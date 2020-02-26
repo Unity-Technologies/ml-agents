@@ -56,10 +56,7 @@ class CuriosityRewardSignal(RewardSignal):
                 feed_dict[self.policy.visual_in[i]] = _obs
                 feed_dict[self.model.next_visual_in[i]] = _next_obs
 
-        if self.policy.use_continuous_act:
-            feed_dict[self.policy.selected_actions] = mini_batch["actions"]
-        else:
-            feed_dict[self.policy.output] = mini_batch["actions"]
+        feed_dict[self.model.selected_actions_ph] = mini_batch["actions"]
         unscaled_reward = self.policy.sess.run(
             self.model.intrinsic_reward, feed_dict=feed_dict
         )
@@ -93,10 +90,7 @@ class CuriosityRewardSignal(RewardSignal):
             policy.sequence_length_ph: self.policy.sequence_length,
             policy.mask_input: mini_batch["masks"],
         }
-        if self.policy.use_continuous_act:
-            feed_dict[policy.selected_actions] = mini_batch["actions"]
-        else:
-            feed_dict[policy.output] = mini_batch["actions"]
+        feed_dict[self.model.selected_actions_ph] = mini_batch["actions"]
         if self.policy.use_vec_obs:
             feed_dict[policy.vector_in] = mini_batch["vector_obs"]
             feed_dict[self.model.next_vector_in] = mini_batch["next_vector_in"]

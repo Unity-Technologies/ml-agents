@@ -38,7 +38,17 @@ class GAILModel(object):
         self.encoding_size = encoding_size
         self.gradient_penalty_weight = gradient_penalty_weight
         self.use_vail = use_vail
-        self.use_actions = use_actions  # True # Not using actions
+        self.use_actions = use_actions  # Not using actions
+        is_discrete = self.policy.brain.vector_action_space_type != "continuous"
+        self.selected_actions_ph = ModelUtils.create_action_input_placeholder(
+            self.policy.act_size, is_discrete
+        )
+        if is_discrete:
+            self.action_input = ModelUtils.to_onehot_tensor(
+                self.selected_actions_ph, self.policy.act_size
+            )
+        else:
+            self.action_input = self.selected_actions_ph
 
         self.noise: Optional[tf.Tensor] = None
         self.z: Optional[tf.Tensor] = None
@@ -228,10 +238,7 @@ class GAILModel(object):
             self.encoded_expert, self.expert_action, self.done_expert, reuse=False
         )
         self.policy_estimate, self.z_mean_policy, _ = self.create_encoder(
-            self.encoded_policy,
-            self.policy.selected_actions,
-            self.done_policy,
-            reuse=True,
+            self.encoded_policy, self.action_input, self.done_policy, reuse=True
         )
         self.mean_policy_estimate = tf.reduce_mean(self.policy_estimate)
         self.mean_expert_estimate = tf.reduce_mean(self.expert_estimate)
@@ -246,7 +253,7 @@ class GAILModel(object):
         for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
         expert = [self.encoded_expert, self.expert_action, self.done_expert]
-        policy = [self.encoded_policy, self.policy.selected_actions, self.done_policy]
+        policy = [self.encoded_policy, self.action_input, self.done_policy]
         interp = []
         for _expert_in, _policy_in in zip(expert, policy):
             alpha = tf.random_uniform(tf.shape(_expert_in))

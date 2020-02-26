@@ -287,12 +287,8 @@ class NNPolicy(TFPolicy):
             self.prev_action = tf.placeholder(
                 shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
             )
-            prev_action_oh = tf.concat(
-                [
-                    tf.one_hot(self.prev_action[:, i], self.act_size[i])
-                    for i in range(len(self.act_size))
-                ],
-                axis=1,
+            prev_action_oh = ModelUtils.to_onehot_tensor(
+                self.prev_action, self.act_size
             )
             hidden_policy = tf.concat([encoded, prev_action_oh], axis=1)
 
@@ -335,14 +331,7 @@ class NNPolicy(TFPolicy):
         self.output = tf.identity(output)
         self.all_log_probs = tf.identity(normalized_logits, name="action")
 
-        self.action_oh = tf.concat(
-            [
-                tf.one_hot(self.output[:, i], self.act_size[i])
-                for i in range(len(self.act_size))
-            ],
-            axis=1,
-        )
-        self.selected_actions = tf.stop_gradient(self.action_oh)
+        action_oh = ModelUtils.to_onehot_tensor(self.output, self.act_size)
 
         action_idx = [0] + list(np.cumsum(self.act_size))
 
@@ -371,7 +360,7 @@ class NNPolicy(TFPolicy):
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
+                            labels=action_oh[:, action_idx[i] : action_idx[i + 1]],
                             logits=normalized_logits[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],

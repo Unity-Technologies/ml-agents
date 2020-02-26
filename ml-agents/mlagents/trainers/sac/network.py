@@ -121,10 +121,8 @@ class SACNetwork:
             self.h_size,
             self.join_scopes(scope, "value"),
         )
-        self.external_action_in = tf.placeholder(
-            shape=[None, self.policy.act_size[0]],
-            dtype=tf.float32,
-            name="external_action_in",
+        self.external_action_in = ModelUtils.create_action_input_placeholder(
+            self.policy.act_size, is_discrete=False
         )
         self.value_vars = self.get_vars(self.join_scopes(scope, "value"))
         if create_qs:
@@ -160,7 +158,9 @@ class SACNetwork:
             self.h_size,
             self.join_scopes(scope, "value"),
         )
-
+        self.external_action_in = ModelUtils.create_action_input_placeholder(
+            self.policy.act_size, is_discrete=True
+        )
         self.value_vars = self.get_vars("/".join([scope, "value"]))
 
         if create_qs:

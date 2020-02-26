@@ -124,9 +124,6 @@ class SACOptimizer(TFOptimizer):
                 )
                 self._create_sac_optimizer_ops()
 
-                self.selected_actions = (
-                    self.policy.selected_actions
-                )  # For GAIL and other reward signals
                 if self.policy.normalize:
                     target_update_norm = self.target_network.copy_normalization(
                         self.policy.running_mean,
@@ -281,12 +278,15 @@ class SACOptimizer(TFOptimizer):
             )
 
             if discrete:
+                onehot_action = ModelUtils.to_onehot_tensor(
+                    self.policy_network.external_action_in, self.policy.act_size
+                )
                 # We need to break up the Q functions by branch, and update them individually.
                 branched_q1_stream = self._apply_as_branches(
-                    self.policy.action_oh * q1_streams[name]
+                    onehot_action * q1_streams[name]
                 )
                 branched_q2_stream = self._apply_as_branches(
-                    self.policy.action_oh * q2_streams[name]
+                    onehot_action * q2_streams[name]
                 )
 
                 # Reduce each branch into scalar
@@ -609,11 +609,8 @@ class SACOptimizer(TFOptimizer):
         }
         for name in self.reward_signals:
             feed_dict[self.rewards_holders[name]] = batch["{}_rewards".format(name)]
-
-        if self.policy.use_continuous_act:
-            feed_dict[self.policy_network.external_action_in] = batch["actions"]
-        else:
-            feed_dict[policy.output] = batch["actions"]
+        feed_dict[self.policy_network.external_action_in] = batch["actions"]
+        if not self.policy.use_continuous_act:
             if self.policy.use_recurrent:
                 feed_dict[policy.prev_action] = batch["prev_action"]
             feed_dict[policy.action_masks] = batch["action_mask"]

@@ -373,10 +373,8 @@ class TFPolicy(Policy):
         self.all_log_probs: tf.Tensor = None
         self.log_probs: Optional[tf.Tensor] = None
         self.entropy: Optional[tf.Tensor] = None
-        self.action_oh: tf.Tensor = None
         self.output_pre: Optional[tf.Tensor] = None
         self.output: Optional[tf.Tensor] = None
-        self.selected_actions: Optional[tf.Tensor] = None
         self.action_masks: Optional[tf.Tensor] = None
         self.prev_action: Optional[tf.Tensor] = None
         self.memory_in: Optional[tf.Tensor] = None

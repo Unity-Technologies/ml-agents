@@ -621,6 +621,8 @@ class ModelUtils:
         :param stream_names: The list of reward signal names
         :param hidden_input: The last layer of the Critic. The heads will consist of one dense hidden layer on top
         of the hidden input.
+        :return: A tuple of (value heads, value) where the value heads are a dict of reward signal name to
+            value output, and the value is an average of all of them.
         """
         value_heads = {}
         for name in stream_names:
@@ -628,3 +630,40 @@ class ModelUtils:
             value_heads[name] = value
         value = tf.reduce_mean(list(value_heads.values()), 0)
         return value_heads, value
+
+    @staticmethod
+    def to_onehot_tensor(action: tf.Tensor, act_size: List[int]) -> tf.Tensor:
+        """
+        For discrete actions, converts the action tensor (array of ints, one for each action)
+        to a one-hot representation. This could be useful e.g. to feed in as input to a
+        neural network.
+        :param action: Tensor that represents a branched discrete action. Length should be the
+            number of action branches, with the values as the action type.
+        :param act_size: List of ints that represent the number of actions for each branch.
+        :return: One-hot tensor of the action.
+        """
+        action_oh = tf.concat(
+            [tf.one_hot(action[:, i], act_size[i]) for i in range(len(act_size))],
+            axis=1,
+        )
+        return action_oh
+
+    @staticmethod
+    def create_action_input_placeholder(
+        act_size: List[int], is_discrete: bool = False
+    ) -> tf.Tensor:
+        """
+        Create a placeholder input for actions.
+        :param is_discrete: whether or nto the act_size describes discrete actions (otherwise, it is continuous.)
+        :param act_size: List of ints that represent the number of actions for each branch.
+        :return: Placeholder for the specified action.
+        """
+        if is_discrete:
+            action_holder = tf.placeholder(
+                shape=[None, len(act_size)], dtype=tf.int32, name="action_holder"
+            )
+        else:
+            action_holder = tf.placeholder(
+                shape=[None, act_size[0]], dtype=tf.float32, name="action_holder"
+            )
+        return action_holder
