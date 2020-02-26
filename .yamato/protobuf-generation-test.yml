@@ -19,7 +19,7 @@ test_mac_protobuf_generation:
       cd protobuf-definitions
       chmod +x Grpc.Tools."$GRPC_VERSION"/tools/macosx_x64/protoc
       chmod +x Grpc.Tools."$GRPC_VERSION"/tools/macosx_x64/grpc_csharp_plugin
-      COMPILER=Grpc.Tools.-\"$GRPC_VERSION\"/tools/macosx_x64
+      COMPILER=Grpc.Tools."$GRPC_VERSION"/tools/macosx_x64
       ./make.sh
       mkdir -p artifacts
       touch artifacts/proto.patch
