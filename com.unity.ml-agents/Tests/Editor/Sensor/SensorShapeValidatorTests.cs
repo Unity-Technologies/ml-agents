@@ -55,18 +55,51 @@ namespace MLAgents.Tests
 
     public class SensorShapeValidatorTests
     {
+
+        [Test]
+        public void TestShapesAgree()
+        {
+            var validator = new SensorShapeValidator();
+            var sensorList1 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 6) };
+            validator.ValidateSensors(sensorList1);
+
+            var sensorList2 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 6) };
+            validator.ValidateSensors(sensorList2);
+        }
+
+        [Test]
+        public void TestNumSensorMismatch()
+        {
+            var validator = new SensorShapeValidator();
+            var sensorList1 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 6) };
+            validator.ValidateSensors(sensorList1);
+
+            var sensorList2 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), };
+            LogAssert.Expect(LogType.Assert, "Number of Sensors must match. 3 != 2");
+            validator.ValidateSensors(sensorList2);
+        }
+        [Test]
+        public void TestDimensionMismatch()
+        {
+            var validator = new SensorShapeValidator();
+            var sensorList1 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 6) };
+            validator.ValidateSensors(sensorList1);
+
+            var sensorList2 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5) };
+            LogAssert.Expect(LogType.Assert, "Sensor dimensions must match.");
+            validator.ValidateSensors(sensorList2);
+        }
+
         [Test]
         public void TestSizeMismatch()
         {
             var validator = new SensorShapeValidator();
             var sensorList1 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 6) };
             validator.ValidateSensors(sensorList1);
-            validator.ValidateSensors(sensorList1);
 
             var sensorList2 = new List<ISensor>() { new NoopSensor(1), new NoopSensor(2, 3), new NoopSensor(4, 5, 7) };
             LogAssert.Expect(LogType.Assert, "Sensor sizes much match.");
             validator.ValidateSensors(sensorList2);
-
         }
     }
 }

@@ -27,12 +27,12 @@ namespace MLAgents
                 // Check for compatibility with the other Agents' Sensors
                 // TODO make sure this only checks once per agent
                 Debug.Assert(m_SensorShapes.Count == sensors.Count, $"Number of Sensors must match. {m_SensorShapes.Count} != {sensors.Count}");
-                for (var i = 0; i < m_SensorShapes.Count; i++)
+                for (var i = 0; i < Mathf.Min(m_SensorShapes.Count, sensors.Count); i++)
                 {
                     var cachedShape = m_SensorShapes[i];
                     var sensorShape = sensors[i].GetObservationShape();
                     Debug.Assert(cachedShape.Length == sensorShape.Length, "Sensor dimensions must match.");
-                    for (var j = 0; j < cachedShape.Length; j++)
+                    for (var j = 0; j < Mathf.Min(cachedShape.Length, sensorShape.Length); j++)
                     {
                         Debug.Assert(cachedShape[j] == sensorShape[j], "Sensor sizes much match.");
                     }
