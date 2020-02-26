@@ -5,7 +5,7 @@ test_mac_protobuf_generation:
     image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
     flavor: b1.small
   variables:
-    GRPC_VERSION: "1.41.1"
+    GRPC_VERSION: "1.14.1"
     COMPILER: "Grpc.Tools.${GRPC_VERSION}/tools/macosx_x64"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
