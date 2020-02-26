@@ -23,12 +23,15 @@ from PIL import Image
 
 
 def generate_list_agent_proto(
-    n_agent: int, shape: List[Tuple[int]]
+    n_agent: int,
+    shape: List[Tuple[int]],
+    infinite_rewards: bool = False,
+    nan_observations: bool = False,
 ) -> List[AgentInfoProto]:
     result = []
     for agent_index in range(n_agent):
         ap = AgentInfoProto()
-        ap.reward = agent_index
+        ap.reward = float("inf") if infinite_rewards else agent_index
         ap.done = agent_index % 2 == 0
         ap.max_step_reached = agent_index % 2 == 1
         ap.id = agent_index
@@ -38,7 +41,10 @@ def generate_list_agent_proto(
             obs_proto = ObservationProto()
             obs_proto.shape.extend(list(shape[obs_index]))
             obs_proto.compression_type = NONE
-            obs_proto.float_data.data.extend([0.1] * np.prod(shape[obs_index]))
+            obs_proto.float_data.data.extend(
+                ([float("nan")] if nan_observations else [0.1])
+                * np.prod(shape[obs_index])
+            )
             obs_proto_list.append(obs_proto)
         ap.observations.extend(obs_proto_list)
         result.append(ap)
@@ -210,3 +216,21 @@ def test_agent_group_spec_from_proto():
     assert not group_spec.is_action_discrete()
     assert group_spec.is_action_continuous()
     assert group_spec.action_size == 6
+
+
+def test_batched_step_result_from_proto_raises_on_infinite():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 3)
+    ap_list = generate_list_agent_proto(n_agents, shapes, infinite_rewards=True)
+    with pytest.raises(RuntimeError):
+        batched_step_result_from_proto(ap_list, group_spec)
+
+
+def test_batched_step_result_from_proto_raises_on_nan():
+    n_agents = 10
+    shapes = [(3,), (4,)]
+    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 3)
+    ap_list = generate_list_agent_proto(n_agents, shapes, nan_observations=True)
+    with pytest.raises(RuntimeError):
+        batched_step_result_from_proto(ap_list, group_spec)

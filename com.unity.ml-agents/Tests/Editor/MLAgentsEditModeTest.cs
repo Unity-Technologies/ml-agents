@@ -1,19 +1,17 @@
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
-using MLAgents.Sensor;
 using System.Collections.Generic;
 
 namespace MLAgents.Tests
 {
-
     internal class TestPolicy : IPolicy
     {
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) { }
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {}
 
         public float[] DecideAction() { return new float[0]; }
 
-        public void Dispose() { }
+        public void Dispose() {}
     }
 
     public class TestAgent : Agent
@@ -53,11 +51,11 @@ namespace MLAgents.Tests
             sensors.Add(sensor1);
         }
 
-        public override void CollectObservations()
+        public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
             collectObservationsCallsSinceLastReset += 1;
-            AddVectorObs(0f);
+            sensor.AddObservation(0f);
         }
 
         public override void AgentAction(float[] vectorAction)
@@ -69,6 +67,7 @@ namespace MLAgents.Tests
 
         public override void AgentReset()
         {
+
             agentResetCalls += 1;
             collectObservationsCallsSinceLastReset = 0;
             agentActionCallsSinceLastReset = 0;
@@ -115,7 +114,7 @@ namespace MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() { }
+        public void Update() {}
     }
 
     [TestFixture]
@@ -135,9 +134,9 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
             Assert.AreNotEqual(null, aca);
-            Assert.AreEqual(0, aca.GetEpisodeCount());
-            Assert.AreEqual(0, aca.GetStepCount());
-            Assert.AreEqual(0, aca.GetTotalStepCount());
+            Assert.AreEqual(0, aca.EpisodeCount);
+            Assert.AreEqual(0, aca.StepCount);
+            Assert.AreEqual(0, aca.TotalStepCount);
         }
 
         [Test]
@@ -171,12 +170,12 @@ namespace MLAgents.Tests
             Assert.AreEqual(true, Academy.IsInitialized);
 
             // Check that init is idempotent
-            aca.LazyInitialization();
-            aca.LazyInitialization();
+            aca.LazyInitialize();
+            aca.LazyInitialize();
 
-            Assert.AreEqual(0, aca.GetEpisodeCount());
-            Assert.AreEqual(0, aca.GetStepCount());
-            Assert.AreEqual(0, aca.GetTotalStepCount());
+            Assert.AreEqual(0, aca.EpisodeCount);
+            Assert.AreEqual(0, aca.StepCount);
+            Assert.AreEqual(0, aca.TotalStepCount);
             Assert.AreNotEqual(null, aca.FloatProperties);
 
             // Check that Dispose is idempotent
@@ -253,8 +252,8 @@ namespace MLAgents.Tests
             var numberReset = 0;
             for (var i = 0; i < 10; i++)
             {
-                Assert.AreEqual(numberReset, aca.GetEpisodeCount());
-                Assert.AreEqual(i, aca.GetStepCount());
+                Assert.AreEqual(numberReset, aca.EpisodeCount);
+                Assert.AreEqual(i, aca.StepCount);
 
                 // The reset happens at the beginning of the first step
                 if (i == 0)
@@ -269,11 +268,11 @@ namespace MLAgents.Tests
         public void TestAcademyAutostep()
         {
             var aca = Academy.Instance;
-            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
-            aca.DisableAutomaticStepping(true);
-            Assert.IsFalse(aca.IsAutomaticSteppingEnabled);
-            aca.EnableAutomaticStepping();
-            Assert.IsTrue(aca.IsAutomaticSteppingEnabled);
+            Assert.IsTrue(aca.AutomaticSteppingEnabled);
+            aca.AutomaticSteppingEnabled = false;
+            Assert.IsFalse(aca.AutomaticSteppingEnabled);
+            aca.AutomaticSteppingEnabled = true;
+            Assert.IsTrue(aca.AutomaticSteppingEnabled);
         }
 
         [Test]
@@ -364,9 +363,9 @@ namespace MLAgents.Tests
             var stepsSinceReset = 0;
             for (var i = 0; i < 50; i++)
             {
-                Assert.AreEqual(stepsSinceReset, aca.GetStepCount());
-                Assert.AreEqual(numberReset, aca.GetEpisodeCount());
-                Assert.AreEqual(i, aca.GetTotalStepCount());
+                Assert.AreEqual(stepsSinceReset, aca.StepCount);
+                Assert.AreEqual(numberReset, aca.EpisodeCount);
+                Assert.AreEqual(i, aca.TotalStepCount);
                 // Academy resets at the first step
                 if (i == 0)
                 {
@@ -402,12 +401,12 @@ namespace MLAgents.Tests
             var agent2StepSinceReset = 0;
             for (var i = 0; i < 5000; i++)
             {
-                Assert.AreEqual(acaStepsSinceReset, aca.GetStepCount());
-                Assert.AreEqual(numberAcaReset, aca.GetEpisodeCount());
+                Assert.AreEqual(acaStepsSinceReset, aca.StepCount);
+                Assert.AreEqual(numberAcaReset, aca.EpisodeCount);
 
-                Assert.AreEqual(i, aca.GetTotalStepCount());
+                Assert.AreEqual(i, aca.TotalStepCount);
 
-                Assert.AreEqual(agent2StepSinceReset, agent2.GetStepCount());
+                Assert.AreEqual(agent2StepSinceReset, agent2.StepCount);
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
@@ -487,19 +486,16 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
-            var j = 0;
-            for (var i = 0; i < 500; i++)
+            var expectedAgent1ActionSinceReset = 0;
+
+            for (var i = 0; i < 50; i++)
             {
-                if (i % 21 == 0)
-                {
-                    j = 0;
-                }
-                else
-                {
-                    j++;
+                expectedAgent1ActionSinceReset += 1;
+                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0){
+                    expectedAgent1ActionSinceReset = 0;
                 }
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(j * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionSinceReset * 10.1f - agent1.GetCumulativeReward()), 0.05f);
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
@@ -519,26 +515,46 @@ namespace MLAgents.Tests
             decisionRequester.DecisionPeriod = 1;
             decisionRequester.Awake();
 
-            var maxStep = 6;
+            const int maxStep = 6;
             agent1.maxStep = maxStep;
             agent1.LazyInitialize();
 
+            var expectedAgentStepCount = 0;
+            var expectedResets= 0;
+            var expectedAgentAction = 0;
+            var expectedAgentActionSinceReset = 0;
+            var expectedCollectObsCalls = 0;
+            var expectedCollectObsCallsSinceReset = 0;
+
             for (var i = 0; i < 15; i++)
             {
-                // We expect resets to occur when there are maxSteps actions since the last reset (and on the first step)
-                var expectReset = agent1.agentActionCallsSinceLastReset == maxStep || (i == 0);
-                var previousNumResets = agent1.agentResetCalls;
+                // Agent should observe and act on each Academy step
+                expectedAgentAction += 1;
+                expectedAgentActionSinceReset += 1;
+                expectedCollectObsCalls += 1;
+                expectedCollectObsCallsSinceReset += 1;
+                expectedAgentStepCount += 1;
 
+                // If the next step will put the agent at maxSteps, we expect it to reset
+                if (agent1.StepCount == maxStep - 1 || (i == 0))
+                {
+                    expectedResets +=1;
+                }
+
+                if (agent1.StepCount == maxStep - 1)
+                {
+                    expectedAgentActionSinceReset = 0;
+                    expectedCollectObsCallsSinceReset = 0;
+                    expectedAgentStepCount = 0;
+                }
                 aca.EnvironmentStep();
 
-                if (expectReset)
-                {
-                    Assert.AreEqual(previousNumResets + 1, agent1.agentResetCalls);
-                }
-                else
-                {
-                    Assert.AreEqual(previousNumResets, agent1.agentResetCalls);
-                }
+                Assert.AreEqual(expectedAgentStepCount, agent1.StepCount);
+                Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
+                Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
+                Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
+                Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
             }
         }
     }

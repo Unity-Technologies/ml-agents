@@ -8,7 +8,7 @@ namespace MLAgents.InferenceBrain.Utils
     /// https://en.wikipedia.org/wiki/Marsaglia_polar_method
     /// TODO: worth overriding System.Random instead of aggregating?
     /// </summary>
-    public class RandomNormal
+    internal class RandomNormal
     {
         readonly double m_Mean;
         readonly double m_Stddev;
@@ -26,9 +26,9 @@ namespace MLAgents.InferenceBrain.Utils
         double m_SpareUnscaled;
 
         /// <summary>
-        /// Return the next random double number
+        /// Return the next random double number.
         /// </summary>
-        /// <returns>Next random double number</returns>
+        /// <returns>Next random double number.</returns>
         public double NextDouble()
         {
             if (m_HasSpare)

@@ -16,7 +16,12 @@ from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import load_config, TrainerFactory
-from mlagents.trainers.stats import TensorboardWriter, CSVWriter, StatsReporter
+from mlagents.trainers.stats import (
+    TensorboardWriter,
+    CSVWriter,
+    StatsReporter,
+    GaugeWriter,
+)
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
@@ -24,6 +29,7 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.exception import UnityEnvironmentException
 
 
 def _create_parser():
@@ -109,12 +115,6 @@ def _create_parser():
         default=False,
         action="store_true",
         help="Whether to run ML-Agents in debug mode with detailed logging",
-    )
-    argparser.add_argument(
-        "--multi-gpu",
-        default=False,
-        action="store_true",
-        help="Setting this flag enables the use of multiple GPU's (if available) during training",
     )
     argparser.add_argument(
         "--env-args",
@@ -263,11 +263,13 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         required_fields=["Environment/Cumulative Reward", "Environment/Episode Length"],
     )
     tb_writer = TensorboardWriter(summaries_dir)
+    gauge_write = GaugeWriter()
     StatsReporter.add_writer(tb_writer)
     StatsReporter.add_writer(csv_writer)
+    StatsReporter.add_writer(gauge_write)
 
     if options.env_path is None:
-        port = 5004  # This is the in Editor Training Port
+        port = UnityEnvironment.DEFAULT_EDITOR_PORT
     env_factory = create_environment_factory(
         options.env_path,
         options.docker_target_name,
@@ -388,14 +390,11 @@ def create_environment_factory(
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
-        # Strip out executable extensions if passed
-        env_path = (
-            env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
+        launch_string = UnityEnvironment.validate_environment_path(env_path)
+        if launch_string is None:
+            raise UnityEnvironmentException(
+                f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
+            )
     docker_training = docker_target_name is not None
     if docker_training and env_path is not None:
         #     Comments for future maintenance:

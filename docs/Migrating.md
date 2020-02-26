@@ -7,6 +7,25 @@ The versions can be found in
 
 # Migrating
 
+## Migrating from 0.14 to latest
+
+### Important changes
+* The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
+* The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
+* The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
+* The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
+* The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
+* The `SetActionMask` method must now be called on the optional `ActionMasker` argument of the `CollectObservations` method. (We now consider an action mask as a type of observation)
+* The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+* The `--multi-gpu` option has been removed temporarily.
+
+### Steps to Migrate
+* Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
+* Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectObservations`
+* If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output, use `RayPerceptionOutput.ToFloatArray()`
+* Re-import all of your `*.NN` files to work with the updated Barracuda package.
+* Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
+
 ## Migrating from 0.13 to 0.14
 
 ### Important changes
@@ -43,7 +62,7 @@ The versions can be found in
     * Move the AcademyStep code to MonoBehaviour.FixedUpdate
     * Move the OnDestroy code to MonoBehaviour.OnDestroy.
     * Move the AcademyReset code to a new method and add it to the Academy.OnEnvironmentReset action.
-* Multiply `max_steps` and `summary_steps` in your `trainer_config.yaml` by the number of Agents in the scene.
+* Multiply `max_steps` and `summary_freq` in your `trainer_config.yaml` by the number of Agents in the scene.
 * Combine curriculum configs into a single file.  See [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of the new curriculum config format.
   A tool like https://www.json2yaml.com may be useful to help with the conversion.
 * If you have a model trained which uses RayPerceptionSensor and has non-1.0 scale in the Agent's transform, it must be retrained.

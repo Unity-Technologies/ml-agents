@@ -1,4 +1,4 @@
-namespace MLAgents.Sensor
+namespace MLAgents
 {
     /// <summary>
     /// Sensor that wraps around another Sensor to provide temporal stacking.
@@ -34,8 +34,8 @@ namespace MLAgents.Sensor
         /// <summary>
         ///
         /// </summary>
-        /// <param name="wrapped">The wrapped sensor</param>
-        /// <param name="numStackedObservations">Number of stacked observations to keep</param>
+        /// <param name="wrapped">The wrapped sensor.</param>
+        /// <param name="numStackedObservations">Number of stacked observations to keep.</param>
         public StackingSensor(ISensor wrapped, int numStackedObservations)
         {
             // TODO ensure numStackedObservations > 1

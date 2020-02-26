@@ -4,14 +4,46 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+### Major Changes
+ - Agent.CollectObservations now takes a VectorSensor argument. It was also overloaded to optionally take an ActionMasker argument. (#3352, #3389)
+ - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
+ Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
+ - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
+
+### Minor Changes
+ - Monitor.cs was moved to Examples. (#3372)
+ - Automatic stepping for Academy is now controlled from the AutomaticSteppingEnabled property. (#3376)
+ - The GetEpisodeCount, GetStepCount, GetTotalStepCount and methods of Academy were changed to EpisodeCount, StepCount, TotalStepCount properties respectively. (#3376)
+ - Several classes were changed from public to internal visibility. (#3390)
+ - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
+ - A tutorial on adding custom SideChannels was added (#3391)
+ - The stepping logic for the Agent and the Academy has been simplified (#3448)
+ - Update Barracuda to 0.6.0-preview
+ - The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
+ - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
+ - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
+ - `DemonstrationRecorder` can now record observations outside of the editor.
+ - `DemonstrationRecorder` now has an optional path for the demonstrations. This will default to `Application.dataPath` if not set.
+ - `DemonstrationStore` was changed to accept a `Stream` for its constructor, and was renamed to `DemonstrationWriter`
+ - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+ - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
+ - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
+ - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
+
+### Bugfixes
+- Fixed demonstration recording of experiences when the Agent is done. (#3463)
+- Fixed a bug with the rewards of multiple Agents in the gym interface (#3471, #3496)
+
+
 ## [0.14.1-preview] - 2020-02-25
 
 ### Bug Fixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)
 - Fixed an IndexError when using GAIL or behavioral cloning with demonstrations recorded with 0.14.0 or later (#3464)
 - Updated the `gail_config.yaml` to work with per-Agent steps (#3475)
-- Fixed demonstration recording of experiences when the Agent is done. (#3463)
-- Fixed a bug with the rewards of multiple Agents in the gym interface (#3471, #3496)
+
 
 ## [0.14.0-preview] - 2020-02-13
 

@@ -108,15 +108,7 @@ def test_initialize_trainer_parameters_override_defaults(
     external_brains = {"testbrain": brain_params_mock}
 
     def mock_constructor(
-        self,
-        brain,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
-        multi_gpu,
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
     ):
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
@@ -125,7 +117,6 @@ def test_initialize_trainer_parameters_override_defaults(
         assert load == load_model
         assert seed == seed
         assert run_id == run_id
-        assert multi_gpu == multi_gpu
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         trainer_factory = trainer_util.TrainerFactory(
@@ -168,15 +159,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     expected_config["keep_checkpoints"] = keep_checkpoints
 
     def mock_constructor(
-        self,
-        brain,
-        reward_buff_cap,
-        trainer_parameters,
-        training,
-        load,
-        seed,
-        run_id,
-        multi_gpu,
+        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
     ):
         assert brain == brain_params_mock.brain_name
         assert trainer_parameters == expected_config
@@ -185,7 +168,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         assert load == load_model
         assert seed == seed
         assert run_id == run_id
-        assert multi_gpu == multi_gpu
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         trainer_factory = trainer_util.TrainerFactory(

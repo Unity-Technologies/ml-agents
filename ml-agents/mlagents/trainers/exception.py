@@ -57,3 +57,11 @@ class SamplerException(TrainerError):
     """
 
     pass
+
+
+class UnityTrainerException(TrainerError):
+    """
+    Related to errors with the Trainer.
+    """
+
+    pass

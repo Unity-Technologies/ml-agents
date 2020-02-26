@@ -8,7 +8,7 @@ namespace MLAgents
     /// Inspector.
     /// </summary>
     [CustomPropertyDrawer(typeof(BrainParameters))]
-    public class BrainParametersDrawer : PropertyDrawer
+    internal class BrainParametersDrawer : PropertyDrawer
     {
         // The height of a line in the Unity Inspectors
         const float k_LineHeight = 17f;
@@ -163,9 +163,9 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// The Height required to draw the Vector Action parameters
+        /// The Height required to draw the Vector Action parameters.
         /// </summary>
-        /// <returns>The height of the drawer of the Vector Action </returns>
+        /// <returns>The height of the drawer of the Vector Action.</returns>
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
             var actionSize = 2 + property.FindPropertyRelative(k_ActionSizePropName).arraySize;

@@ -113,10 +113,11 @@ def make_fake_trajectory(
         done = False
         if is_discrete:
             action_size = len(action_space)
+            action_probs = np.ones(np.sum(action_space), dtype=np.float32)
         else:
             action_size = action_space[0]
+            action_probs = np.ones((1), dtype=np.float32)
         action = np.zeros(action_size, dtype=np.float32)
-        action_probs = np.ones(action_size, dtype=np.float32)
         action_pre = np.zeros(action_size, dtype=np.float32)
         action_mask = (
             [[False for _ in range(branch)] for branch in action_space]

@@ -1,6 +1,5 @@
+using System;
 using UnityEngine;
-using System.Collections.Generic;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -20,7 +19,7 @@ namespace MLAgents
         /// being stored in the tensor.
         /// </param>
         /// <returns>The number of floats written</returns>
-        public static int TextureToTensorProxy(
+        internal static int TextureToTensorProxy(
             Texture2D texture,
             WriteAdapter adapter,
             bool grayScale)
@@ -63,7 +62,7 @@ namespace MLAgents
         /// Input array whose elements will be cumulatively added
         /// </param>
         /// <returns> The cumulative sum of the input array.</returns>
-        public static int[] CumSum(int[] input)
+        internal static int[] CumSum(int[] input)
         {
             var runningSum = 0;
             var result = new int[input.Length + 1];
@@ -75,81 +74,20 @@ namespace MLAgents
             return result;
         }
 
-        /// <summary>
-        /// Shifts list elements to the left by the specified amount (in-place).
-        /// <param name="list">
-        /// List whose elements will be shifted
-        /// </param>
-        /// <param name="shiftAmount">
-        /// Amount to shift the elements to the left by
-        /// </param>
-        /// </summary>
-        public static void ShiftLeft<T>(List<T> list, int shiftAmount)
+#if DEBUG
+        internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
         {
-            for (var i = shiftAmount; i < list.Count; i++)
-            {
-                list[i - shiftAmount] = list[i];
-            }
-        }
 
-        /// <summary>
-        /// Replaces target list elements with source list elements starting at specified position
-        /// in target list.
-        /// <param name="dst">
-        /// Target list, where the elements are added to
-        /// </param>
-        /// <param name="src">
-        /// Source array, where the elements are copied from
-        /// </param>
-        /// <param name="start">
-        /// Starting position in target list to copy elements to
-        /// </param>
-        /// </summary>
-        public static void ReplaceRange<T>(List<T> dst, List<T> src, int start)
-        {
-            for (var i = 0; i < src.Count; i++)
+            if (float.IsNaN(value))
             {
-                dst[i + start] = src[i];
+                throw new ArgumentException($"NaN {valueCategory} passed to {caller}.");
+            }
+            if (float.IsInfinity(value))
+            {
+                throw new ArgumentException($"Inifinity {valueCategory} passed to {caller}.");
             }
         }
-
-        /// <summary>
-        /// Adds elements to list without extra temp allocations (assuming it fits pre-allocated
-        /// capacity of the list). The built-in List/<T/>.AddRange() unfortunately allocates
-        /// a temporary list to add items (even if the original array has sufficient capacity):
-        /// https://stackoverflow.com/questions/2123161/listt-addrange-implementation-suboptimal
-        /// Note: this implementation might be slow with a large source array.
-        /// <param name="dst">
-        /// Target list, where the elements are added to
-        /// </param>
-        /// <param name="src">
-        /// Source array, where the elements are copied from
-        /// </param>
-        /// </summary>
-        // ReSharper disable once ParameterTypeCanBeEnumerable.Global
-        public static void AddRangeNoAlloc<T>(List<T> dst, T[] src)
-        {
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var item in src)
-            {
-                dst.Add(item);
-            }
-        }
-
-        /// <summary>
-        /// Calculates the number of uncompressed floats in a list of ISensor
-        /// </summary>
-        public static int GetSensorFloatObservationSize(this List<ISensor> sensors)
-        {
-            int numFloatObservations = 0;
-            for (var i = 0; i < sensors.Count; i++)
-            {
-                if (sensors[i].GetCompressionType() == SensorCompressionType.None)
-                {
-                    numFloatObservations += sensors[i].ObservationSize();
-                }
-            }
-            return numFloatObservations;
-        }
+#endif
     }
+
 }

@@ -1,15 +1,25 @@
 using System.IO;
+using System;
 using UnityEngine;
 
 namespace MLAgents
 {
+    /// <summary>
+    /// Side channel that supports modifying attributes specific to the Unity Engine.
+    /// </summary>
     public class EngineConfigurationChannel : SideChannel
     {
-        public override int ChannelType()
+        private const string k_EngineConfigId = "e951342c-4f7e-11ea-b238-784f4387d1f7";
+
+        /// <summary>
+        /// Initializes the side channel.
+        /// </summary>
+        public EngineConfigurationChannel()
         {
-            return (int)SideChannelType.EngineSettings;
+            ChannelId = new Guid(k_EngineConfigId);
         }
 
+        /// <inheritdoc/>
         public override void OnMessageReceived(byte[] data)
         {
             using (var memStream = new MemoryStream(data))

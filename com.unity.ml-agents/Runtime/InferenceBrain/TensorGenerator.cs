@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Barracuda;
-using MLAgents.Sensor;
 
 namespace MLAgents.InferenceBrain
 {
@@ -24,10 +23,12 @@ namespace MLAgents.InferenceBrain
             /// Modifies the data inside a Tensor according to the information contained in the
             /// AgentInfos contained in the current batch.
             /// </summary>
-            /// <param name="tensorProxy"> The tensor the data and shape will be modified</param>
-            /// <param name="batchSize"> The number of agents present in the current batch</param>
-            /// <param name="infos"> List of AgentInfos containing the
-            /// information that will be used to populate the tensor's data</param>
+            /// <param name="tensorProxy"> The tensor the data and shape will be modified.</param>
+            /// <param name="batchSize"> The number of agents present in the current batch.</param>
+            /// <param name="infos">
+            /// List of AgentInfos containing the information that will be used to populate
+            /// the tensor's data.
+            /// </param>
             void Generate(
                 TensorProxy tensorProxy, int batchSize, IEnumerable<AgentInfoSensorsPair> infos);
         }
@@ -38,7 +39,7 @@ namespace MLAgents.InferenceBrain
         /// Returns a new TensorGenerators object.
         /// </summary>
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
-        /// <param name="allocator"> Tensor allocator</param>
+        /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorGenerator(

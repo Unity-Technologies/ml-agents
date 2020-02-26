@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using Barracuda;
-using MLAgents.Sensor;
 
 namespace MLAgents
 {
@@ -10,7 +9,7 @@ namespace MLAgents
     */
     [CustomEditor(typeof(BehaviorParameters))]
     [CanEditMultipleObjects]
-    public class BehaviorParametersEditor : Editor
+    internal class BehaviorParametersEditor : Editor
     {
         const float k_TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model

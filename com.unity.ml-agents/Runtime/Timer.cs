@@ -17,7 +17,8 @@ namespace MLAgents
         static double s_TicksToSeconds = 1e-7; // 100 ns per tick
 
         /// <summary>
-        ///  Full name of the node. This is the node's parents full name concatenated with this node's name
+        /// Full name of the node. This is the node's parents full name concatenated with this
+        /// node's name.
         /// </summary>
         string m_FullName;
 
@@ -304,6 +305,10 @@ namespace MLAgents
             Reset();
         }
 
+        /// <summary>
+        /// Resets the timer stack and the root node.
+        /// </summary>
+        /// <param name="name">Name of the root node.</param>
         public void Reset(string name = "root")
         {
             m_Stack = new Stack<TimerNode>();
@@ -311,6 +316,9 @@ namespace MLAgents
             m_Stack.Push(m_RootNode);
         }
 
+        /// <summary>
+        /// The singleton <see cref="TimerStack"/> instance.
+        /// </summary>
         public static TimerStack Instance
         {
             get { return k_Instance; }
@@ -321,12 +329,20 @@ namespace MLAgents
             get { return m_RootNode; }
         }
 
+        /// <summary>
+        /// Whether or not new timers and gauges can be added.
+        /// </summary>
         public bool Recording
         {
             get { return m_Recording; }
             set { m_Recording = value; }
         }
 
+        /// <summary>
+        /// Updates the referenced gauge in the root node with the provided value.
+        /// </summary>
+        /// <param name="name">The name of the Gauge to modify.</param>
+        /// <param name="value">The value to update the Gauge with.</param>
         public void SetGauge(string name, float value)
         {
             if (!Recording)

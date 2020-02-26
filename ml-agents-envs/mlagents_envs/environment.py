@@ -1,5 +1,6 @@
 import atexit
 import glob
+import uuid
 import logging
 import numpy as np
 import os
@@ -51,7 +52,9 @@ logger = logging.getLogger("mlagents_envs")
 class UnityEnvironment(BaseEnv):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    API_VERSION = "API-14"
+    API_VERSION = "API-15-dev0"
+    DEFAULT_EDITOR_PORT = 5004
+    PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     def __init__(
         self,
@@ -91,16 +94,16 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels: Dict[int, SideChannel] = {}
+        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
         if side_channels is not None:
             for _sc in side_channels:
-                if _sc.channel_type in self.side_channels:
+                if _sc.channel_id in self.side_channels:
                     raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel type {0}.".format(
-                            _sc.channel_type
+                        "There cannot be two side channels with the same channel id {0}.".format(
+                            _sc.channel_id
                         )
                     )
-                self.side_channels[_sc.channel_type] = _sc
+                self.side_channels[_sc.channel_id] = _sc
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -146,62 +149,68 @@ class UnityEnvironment(BaseEnv):
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    def executable_launcher(self, file_name, docker_training, no_graphics, args):
-        cwd = os.getcwd()
-        file_name = (
-            file_name.strip()
+    @staticmethod
+    def validate_environment_path(env_path: str) -> Optional[str]:
+        # Strip out executable extensions if passed
+        env_path = (
+            env_path.strip()
             .replace(".app", "")
             .replace(".exe", "")
             .replace(".x86_64", "")
             .replace(".x86", "")
         )
-        true_filename = os.path.basename(os.path.normpath(file_name))
+        true_filename = os.path.basename(os.path.normpath(env_path))
         logger.debug("The true file name is {}".format(true_filename))
+
+        if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
+            return None
+
+        cwd = os.getcwd()
         launch_string = None
+        true_filename = os.path.basename(os.path.normpath(env_path))
         if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, file_name) + ".x86_64")
+            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
             if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, file_name) + ".x86")
+                candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86_64")
+                candidates = glob.glob(env_path + ".x86_64")
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".x86")
+                candidates = glob.glob(env_path + ".x86")
             if len(candidates) > 0:
                 launch_string = candidates[0]
 
         elif platform == "darwin":
             candidates = glob.glob(
-                os.path.join(
-                    cwd, file_name + ".app", "Contents", "MacOS", true_filename
-                )
+                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
             )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", true_filename)
+                    os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
                 )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(cwd, file_name + ".app", "Contents", "MacOS", "*")
+                    os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
                 )
             if len(candidates) == 0:
                 candidates = glob.glob(
-                    os.path.join(file_name + ".app", "Contents", "MacOS", "*")
+                    os.path.join(env_path + ".app", "Contents", "MacOS", "*")
                 )
             if len(candidates) > 0:
                 launch_string = candidates[0]
         elif platform == "win32":
-            candidates = glob.glob(os.path.join(cwd, file_name + ".exe"))
+            candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
             if len(candidates) == 0:
-                candidates = glob.glob(file_name + ".exe")
+                candidates = glob.glob(env_path + ".exe")
             if len(candidates) > 0:
                 launch_string = candidates[0]
+        return launch_string
+
+    def executable_launcher(self, file_name, docker_training, no_graphics, args):
+        launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close()
             raise UnityEnvironmentException(
-                "Couldn't launch the {0} environment. "
-                "Provided filename does not match any environments.".format(
-                    true_filename
-                )
+                f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
         else:
             logger.debug("This is the launch string {}".format(launch_string))
@@ -210,7 +219,10 @@ class UnityEnvironment(BaseEnv):
                 subprocess_args = [launch_string]
                 if no_graphics:
                     subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += ["--port", str(self.port)]
+                subprocess_args += [
+                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
+                    str(self.port),
+                ]
                 subprocess_args += args
                 try:
                     self.proc1 = subprocess.Popen(
@@ -248,10 +260,10 @@ class UnityEnvironment(BaseEnv):
                 #     we created with `xvfb`.
                 #
                 docker_ls = (
-                    "exec xvfb-run --auto-servernum"
-                    " --server-args='-screen 0 640x480x24'"
-                    " {0} --port {1}"
-                ).format(launch_string, str(self.port))
+                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
+                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
+                )
+
                 self.proc1 = subprocess.Popen(
                     docker_ls,
                     stdout=subprocess.PIPE,
@@ -442,13 +454,15 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[int, SideChannel], data: bytes
+        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
             try:
-                channel_type, message_len = struct.unpack_from("<ii", data, offset)
-                offset = offset + 8
+                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
+                offset += 16
+                message_len, = struct.unpack_from("<i", data, offset)
+                offset = offset + 4
                 message_data = data[offset : offset + message_len]
                 offset = offset + message_len
             except Exception:
@@ -461,22 +475,25 @@ class UnityEnvironment(BaseEnv):
                 raise UnityEnvironmentException(
                     "The message received by the side channel {0} was "
                     "unexpectedly short. Make sure your Unity Environment "
-                    "sending side channel data properly.".format(channel_type)
+                    "sending side channel data properly.".format(channel_id)
                 )
-            if channel_type in side_channels:
-                side_channels[channel_type].on_message_received(message_data)
+            if channel_id in side_channels:
+                side_channels[channel_id].on_message_received(message_data)
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_type)
+                    ": {0}.".format(channel_id)
                 )
 
     @staticmethod
-    def _generate_side_channel_data(side_channels: Dict[int, SideChannel]) -> bytearray:
+    def _generate_side_channel_data(
+        side_channels: Dict[uuid.UUID, SideChannel]
+    ) -> bytearray:
         result = bytearray()
-        for channel_type, channel in side_channels.items():
+        for channel_id, channel in side_channels.items():
             for message in channel.message_queue:
-                result += struct.pack("<ii", channel_type, len(message))
+                result += channel_id.bytes_le
+                result += struct.pack("<i", len(message))
                 result += message
             channel.message_queue = []
         return result
