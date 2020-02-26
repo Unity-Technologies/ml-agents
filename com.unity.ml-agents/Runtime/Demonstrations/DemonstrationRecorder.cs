@@ -12,19 +12,33 @@ namespace MLAgents
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
     {
+        /// <summary>
+        /// Whether or not to record demonstrations.
+        /// </summary>
         [Tooltip("Whether or not to record demonstrations.")]
         public bool record;
 
-        [Tooltip("Base demonstration file name. Will have numbers appended to make unique.")]
+        /// <summary>
+        /// Base demonstration file name. If multiple files are saved, the additional filenames
+        /// will have a sequence of unique numbers appended.
+        /// </summary>
+        [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
+                 "filenames will have a unique number appended.")]
         public string demonstrationName;
 
-        [Tooltip("Base directory to write the demo files. If null, will use {Application.dataPath}/Demonstrations.")]
+        /// <summary>
+        /// Directory to save the demo files. Will default to a "Demonstrations/" folder in the
+        /// Application data path if not specified.
+        /// </summary>
+        [Tooltip("Directory to save the demo files. Will default to " +
+                 "{Application.dataPath}/Demonstrations if not specified.")]
         public string demonstrationDirectory;
 
         DemonstrationWriter m_DemoWriter;
         internal const int MaxNameLength = 16;
 
         const string k_ExtensionType = ".demo";
+        const string k_DefaultDirectoryName = "Demonstrations";
         IFileSystem m_FileSystem;
 
         Agent m_Agent;
@@ -66,7 +80,7 @@ namespace MLAgents
             }
             if (string.IsNullOrEmpty(demonstrationDirectory))
             {
-                demonstrationDirectory = Path.Combine(Application.dataPath, "Demonstrations");
+                demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultDirectoryName);
             }
 
             demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
