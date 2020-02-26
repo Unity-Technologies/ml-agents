@@ -180,7 +180,7 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            sudo apt-get install nuget
+            sudo apt-get install nuget=5.2.0.6090
             nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory protobuf-definitions/
             python3 -m venv venv
             . venv/bin/activate
@@ -273,7 +273,7 @@ workflows:
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
-      #- protobuf_generation_check
+      - protobuf_generation_check
       - pre-commit
       - deploy:
           name: deploy ml-agents-envs
