@@ -151,7 +151,8 @@ class GhostTrainer(Trainer):
                         == internal_traj_queue.behavior_id
                     ):
                         internal_traj_queue.put(t)
-                    self._process_trajectory(t)
+                    self.step += len(t.steps) 
+                    #self._process_trajectory(t)
             except AgentManagerQueue.Empty:
                 pass
 
