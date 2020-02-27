@@ -152,7 +152,7 @@ namespace MLAgents.Sensors
             if (Application.isEditor)
             {
                 // Edit Mode tests complain if we use Destroy()
-                // TODO move to extension methods?
+                // TODO move to extension methods for UnityEngine.Object?
                 UnityEngine.Object.DestroyImmediate(texture);
             }
             else
