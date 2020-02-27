@@ -123,7 +123,7 @@ class GaussianDistribution(OutputDistribution):
             + 2 * encoded.log_sigma
             + np.log(2 * np.pi)
         )
-        return tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
+        return _gauss_pre
 
     def _create_entropy(
         self, encoded: "GaussianDistribution.MuSigmaTensors"
