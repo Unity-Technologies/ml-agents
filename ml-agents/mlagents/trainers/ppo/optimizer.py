@@ -98,7 +98,7 @@ class PPOOptimizer(TFOptimizer):
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
-        Creates Continuous control actor-critic model.
+        Creates Continuous control critic (value) network.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
@@ -138,7 +138,7 @@ class PPOOptimizer(TFOptimizer):
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
-        Creates Discrete control actor-critic model.
+        Creates Discrete control critic (value) network.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
@@ -330,7 +330,7 @@ class PPOOptimizer(TFOptimizer):
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]
         else:
-            feed_dict[self.policy.action_holder] = mini_batch["actions"]
+            feed_dict[self.policy.output] = mini_batch["actions"]
             if self.policy.use_recurrent:
                 feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]
