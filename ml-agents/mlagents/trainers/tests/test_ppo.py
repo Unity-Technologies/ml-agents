@@ -78,6 +78,29 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
     return optimizer
 
 
+def _create_fake_trajectory(use_discrete, use_visual, time_horizon):
+    if use_discrete:
+        act_space = DISCRETE_ACTION_SPACE
+    else:
+        act_space = VECTOR_ACTION_SPACE
+
+    if use_visual:
+        num_vis_obs = 1
+        vec_obs_size = 0
+    else:
+        num_vis_obs = 0
+        vec_obs_size = VECTOR_OBS_SPACE
+
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        vec_obs_size=vec_obs_size,
+        num_vis_obs=num_vis_obs,
+        action_space=act_space,
+    )
+    return trajectory
+
+
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
@@ -99,33 +122,17 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     )
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
-def test_ppo_get_value_estimates(mock_communicator, mock_launcher, dummy_config):
+@pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
+@pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
+@pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
+def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     tf.reset_default_graph()
 
-    brain_params = BrainParameters(
-        brain_name="test_brain",
-        vector_observation_space_size=1,
-        camera_resolutions=[],
-        vector_action_space_size=[2],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
+    optimizer = _create_ppo_optimizer_ops_mock(
+        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-    policy = NNPolicy(
-        0, brain_params, dummy_config, False, False, create_tf_graph=False
-    )
-    optimizer = PPOOptimizer(policy, dummy_config)
     time_horizon = 15
-    trajectory = make_fake_trajectory(
-        length=time_horizon,
-        max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
-        action_space=[2],
-    )
+    trajectory = _create_fake_trajectory(discrete, visual, time_horizon)
     run_out, final_value_out = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
     )

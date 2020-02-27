@@ -49,8 +49,10 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
                 _obs = batch["visual_obs%d" % i]
                 feed_dict[self.policy.visual_in[i]] = _obs
         if self.policy.use_recurrent:
-            feed_dict[self.policy.memory_in] = [np.zeros((self.policy.m_size))]
-            feed_dict[self.memory_in] = [np.zeros((self.m_size))]
+            feed_dict[self.policy.memory_in] = [
+                np.zeros((self.policy.m_size), dtype=np.float32)
+            ]
+            feed_dict[self.memory_in] = [np.zeros((self.m_size), dtype=np.float32)]
         if self.policy.prev_action is not None:
             feed_dict[self.policy.prev_action] = batch["prev_action"]
 
@@ -58,7 +60,9 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
             value_estimates, policy_mem, value_mem = self.sess.run(
                 [self.value_heads, self.policy.memory_out, self.memory_out], feed_dict
             )
-            prev_action = batch["actions"][-1]
+            prev_action = (
+                batch["actions"][-1] if not self.policy.use_continuous_act else None
+            )
         else:
             value_estimates = self.sess.run(self.value_heads, feed_dict)
             prev_action = None
