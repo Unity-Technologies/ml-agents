@@ -47,7 +47,7 @@ namespace MLAgents.Sensors
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
-            using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
+            using (TimerStack.Instance.Scoped("RenderTextureSensor.GetCompressedObservation"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
                 // TODO support more types here, e.g. JPG
@@ -60,7 +60,7 @@ namespace MLAgents.Sensors
         /// <inheritdoc/>
         public int Write(WriteAdapter adapter)
         {
-            using (TimerStack.Instance.Scoped("RenderTexSensor.GetCompressedObservation"))
+            using (TimerStack.Instance.Scoped("RenderTextureSensor.Write"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
                 var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
