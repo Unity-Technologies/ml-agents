@@ -62,19 +62,19 @@ class GaussianDistribution(OutputDistribution):
         self,
         logits: tf.Tensor,
         act_size: List[int],
-        pass_gradients: bool = False,
+        reparameterize: bool = False,
         log_sigma_min: float = -20,
         log_sigma_max: float = 2,
     ):
         encoded = self._create_mu_log_sigma(
             logits, act_size, log_sigma_min, log_sigma_max
         )
-        sampled_policy = self._create_sampled_policy(encoded)
-        if not pass_gradients:
-            self._sampled_policy = tf.stop_gradient(sampled_policy)
+        self._sampled_policy = self._create_sampled_policy(encoded)
+        if not reparameterize:
+            _sampled_policy_probs = tf.stop_gradient(self._sampled_policy)
         else:
-            self._sampled_policy = sampled_policy
-        self._all_probs = self._get_log_probs(self._sampled_policy, encoded)
+            _sampled_policy_probs = self._sampled_policy
+        self._all_probs = self._get_log_probs(_sampled_policy_probs, encoded)
         self._total_prob = tf.reduce_sum(self._all_probs, axis=1, keepdims=True)
         self._entropy = self._create_entropy(encoded)
 
@@ -161,11 +161,11 @@ class TanhSquashedGaussianDistribution(GaussianDistribution):
         self,
         logits: tf.Tensor,
         act_size: List[int],
-        pass_gradients: bool = False,
+        reparameterize: bool = False,
         log_sigma_min: float = -20,
         log_sigma_max: float = 2,
     ):
-        super().__init__(logits, act_size, pass_gradients, log_sigma_min, log_sigma_max)
+        super().__init__(logits, act_size, reparameterize, log_sigma_min, log_sigma_max)
         self._squashed_policy = tf.tanh(self._sampled_policy)
         self._corrected_probs = self._do_squash_correction_for_tanh(
             self._all_probs, self._squashed_policy

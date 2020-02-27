@@ -205,11 +205,11 @@ class NNPolicy(TFPolicy):
         with tf.variable_scope("policy"):
             if not tanh_squash:
                 distribution = GaussianDistribution(
-                    hidden_policy, self.act_size, pass_gradients=reparameterize
+                    hidden_policy, self.act_size, reparameterize=reparameterize
                 )
             else:
                 distribution = TanhSquashedGaussianDistribution(
-                    hidden_policy, self.act_size, pass_gradients=reparameterize
+                    hidden_policy, self.act_size, reparameterize=reparameterize
                 )
 
         if tanh_squash:
