@@ -98,7 +98,7 @@ class PPOOptimizer(TFOptimizer):
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
-        Creates Continuous control actor-critic model.
+        Creates Continuous control critic (value) network.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
@@ -138,7 +138,7 @@ class PPOOptimizer(TFOptimizer):
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
         """
-        Creates Discrete control actor-critic model.
+        Creates Discrete control critic (value) network.
         :param h_size: Size of hidden linear layers.
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
