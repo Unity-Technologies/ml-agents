@@ -285,7 +285,7 @@ namespace MLAgents
     /// This implements the Singleton pattern (solution 4) as described in
     /// https://csharpindepth.com/articles/singleton
     /// </remarks>
-    public class TimerStack : IDisposable
+    internal class TimerStack : IDisposable
     {
         static readonly TimerStack k_Instance = new TimerStack();
 
