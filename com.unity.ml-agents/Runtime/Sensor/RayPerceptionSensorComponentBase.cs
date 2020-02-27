@@ -209,7 +209,7 @@ namespace MLAgents.Sensors
         /// Greater than 90 degrees will go backwards.
         /// </param>
         /// <returns></returns>
-        public static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
+        internal static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
         {
             // Example:
             // { 90, 90 - delta, 90 + delta, 90 - 2*delta, 90 + 2*delta }
