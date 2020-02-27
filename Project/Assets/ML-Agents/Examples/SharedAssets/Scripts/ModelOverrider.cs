@@ -87,8 +87,6 @@ namespace MLAgentsExamples
             {
                 if (m_NumSteps > m_MaxEpisodes * m_Agent.maxStep)
                 {
-                    // Stop recording so that we don't write partial rewards to the timer info.
-                    TimerStack.Instance.Recording = false;
                     Application.Quit(0);
                 }
             }
