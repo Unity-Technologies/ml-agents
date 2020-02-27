@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// Editor components for creating Sensors. Generally an ISensor implementation should have a

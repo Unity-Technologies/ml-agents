@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensors;
 using System.IO;
 using Google.Protobuf;
 

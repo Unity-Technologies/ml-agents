@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
-using UnityEngine;
+using MLAgents.Sensors;
 
 namespace MLAgents.InferenceBrain
 {

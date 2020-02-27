@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// A base class to support sensor components for raycast-based sensors.

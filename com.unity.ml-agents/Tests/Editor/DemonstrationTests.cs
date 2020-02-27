@@ -3,11 +3,12 @@ using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
+using MLAgents.Sensors;
 
 namespace MLAgents.Tests
 {
     [TestFixture]
-    public class DemonstrationTests : MonoBehaviour
+    public class DemonstrationTests
     {
         const string k_DemoDirectory = "Assets/Demonstrations/";
         const string k_ExtensionType = ".demo";

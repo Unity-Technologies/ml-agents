@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
+using MLAgents.Sensors;
 
 namespace MLAgents
 {

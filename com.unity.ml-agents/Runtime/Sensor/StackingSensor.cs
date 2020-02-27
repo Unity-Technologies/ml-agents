@@ -1,4 +1,4 @@
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// Sensor that wraps around another Sensor to provide temporal stacking.

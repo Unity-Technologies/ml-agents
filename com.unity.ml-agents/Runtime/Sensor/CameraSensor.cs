@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.

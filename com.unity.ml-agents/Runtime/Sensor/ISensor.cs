@@ -1,4 +1,4 @@
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// The compression setting for visual/camera observations.

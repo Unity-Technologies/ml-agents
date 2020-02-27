@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// A SensorComponent that creates a <see cref="CameraSensor"/>.
