@@ -50,10 +50,6 @@ namespace MLAgents
     public class Academy : IDisposable
     {
         const string k_ApiVersion = "API-15-dev0";
-        // 0.15.0-dev0.0.1
-
-        // 0.15.0
-
         const int k_EditorTrainingPort = 5004;
         internal const string k_portCommandLineFlag = "--mlagents-port";
 
