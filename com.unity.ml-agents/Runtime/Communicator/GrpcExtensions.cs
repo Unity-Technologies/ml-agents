@@ -9,7 +9,6 @@ using MLAgents.Sensors;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Runtime.Tests")]
 
 namespace MLAgents
 {
