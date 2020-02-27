@@ -390,11 +390,11 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action, call the method `SetActionMask` on the optional `ActionMasker` argument of the `CollectObservation` method :
+action, call the method `SetDiscreteActionMask` on the `ActionMasker` argument of the `CollectDiscreteActionMasks` method :
 
 ```csharp
-public override void CollectObservations(VectorSensor sensor, ActionMasker actionMasker){
-    actionMasker.SetActionMask(branch, actionIndices)
+public override void CollectDiscreteActionMasks(ActionMasker actionMasker){
+    actionMasker.SetDiscreteActionMask(branch, actionIndices)
 }
 ```
 
@@ -402,8 +402,8 @@ Where:
 
 * `branch` is the index (starting at 0) of the branch on which you want to mask
   the action
-* `actionIndices` is a list of `int` or a single `int` corresponding to the
-  index of the action that the Agent cannot perform.
+* `actionIndices` is a list of `int` corresponding to the
+  indices of the actions that the Agent cannot perform.
 
 For example, if you have an Agent with 2 branches and on the first branch
 (branch 0) there are 4 possible actions : _"do nothing"_, _"jump"_, _"shoot"_
@@ -412,12 +412,12 @@ nothing"_ or _"change weapon"_ for his next decision (since action index 1 and 2
 are masked)
 
 ```csharp
-SetActionMask(0, new int[2]{1,2})
+SetDiscreteActionMask(0, new int[2]{1,2})
 ```
 
 Notes:
 
-* You can call `SetActionMask` multiple times if you want to put masks on
+* You can call `SetDiscreteActionMask` multiple times if you want to put masks on
   multiple branches.
 * You cannot mask all the actions of a branch.
 * You cannot mask actions in continuous control.
