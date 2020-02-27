@@ -357,9 +357,9 @@ return.
     * -1 When ball enters team's goal.
     * -0.001 Existential penalty.
 * Behavior Parameters:
-  * Vector Observation space: 336 corresponding to 11 ray-casts forward distributed over 120 degrees (264)
-    and 3 ray-casts backward distributed over 90 degrees each detecting 6 possible object types, along with the object's distance.
-    The forward ray-casts contribute 264 state dimensions and backward 72 state dimensions.
+  * Vector Observation space: 384 corresponding to 11 ray-casts forward distributed over 120 degrees (264)
+    and 5 ray-casts backward distributed over 180 degrees each detecting 6 possible object types, along with the object's distance.
+    The forward ray-casts contribute 264 state dimensions and backward 120 state dimensions.
   * Vector Action space: (Discrete) Three branched actions corresponding to forward, backward, sideways movement,
       as well as rotation.
   * Visual Observations: None
