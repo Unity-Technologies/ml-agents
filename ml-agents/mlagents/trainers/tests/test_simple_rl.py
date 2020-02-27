@@ -173,7 +173,7 @@ SAC_CONFIG = f"""
         buffer_size: 500
         buffer_init_steps: 100
         hidden_units: 16
-        init_entcoef: 0.01
+        init_entcoef: 0.1
         learning_rate: 5.0e-3
         max_steps: 1000
         memory_size: 256
