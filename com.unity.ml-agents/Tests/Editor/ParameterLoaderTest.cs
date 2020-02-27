@@ -38,7 +38,7 @@ namespace MLAgents.Tests
             var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
             var inputNames = inputTensors.Select(x => x.name).ToList();
             Assert.Contains(TensorNames.RandomNormalEpsilonPlaceholder, inputNames);
-            Assert.Contains(TensorNames.VectorObservationPlacholder, inputNames);
+            Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
             Assert.AreEqual(2, inputNames.Count);
 
         }

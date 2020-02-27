@@ -7,7 +7,7 @@ namespace MLAgents.InferenceBrain
     {
         public const string BatchSizePlaceholder = "batch_size";
         public const string SequenceLengthPlaceholder = "sequence_length";
-        public const string VectorObservationPlacholder = "vector_observation";
+        public const string VectorObservationPlaceholder = "vector_observation";
         public const string RecurrentInPlaceholder = "recurrent_in";
         public const string recurrentInPlaceholderH = "recurrent_in_h";
         public const string recurrentInPlaceholderC = "recurrent_in_c";

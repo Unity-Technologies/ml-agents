@@ -112,7 +112,7 @@ namespace MLAgents.InferenceBrain
 
             if (vecObsGen != null)
             {
-                m_Dict[TensorNames.VectorObservationPlacholder] = vecObsGen;
+                m_Dict[TensorNames.VectorObservationPlaceholder] = vecObsGen;
             }
         }
 
