@@ -18,13 +18,15 @@ namespace MLAgents
 
         TensorShape m_TensorShape;
 
+        internal WriteAdapter() { }
+
         /// <summary>
         /// Set the adapter to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data">Float array or list that will be written to.</param>
         /// <param name="shape">Shape of the observations to be written.</param>
         /// <param name="offset">Offset from the start of the float data to write to.</param>
-        public void SetTarget(IList<float> data, int[] shape, int offset)
+        internal void SetTarget(IList<float> data, int[] shape, int offset)
         {
             m_Data = data;
             m_Offset = offset;
@@ -44,10 +46,10 @@ namespace MLAgents
         /// <summary>
         /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
-        /// <param name="tensorProxy">Tensor proxy that will be writtent to.</param>
-        /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent)</param>
+        /// <param name="tensorProxy">Tensor proxy that will be written to.</param>
+        /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent).</param>
         /// <param name="channelOffset">Offset from the start of the channel to write to.</param>
-        public void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
+        internal void SetTarget(TensorProxy tensorProxy, int batchIndex, int channelOffset)
         {
             m_Proxy = tensorProxy;
             m_Batch = batchIndex;
@@ -59,7 +61,7 @@ namespace MLAgents
         /// <summary>
         /// 1D write access at a specified index. Use AddRange if possible instead.
         /// </summary>
-        /// <param name="index">Index to write to</param>
+        /// <param name="index">Index to write to.</param>
         public float this[int index]
         {
             set
@@ -114,7 +116,7 @@ namespace MLAgents
         /// Write the range of floats
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="writeOffset">Optional write offset</param>
+        /// <param name="writeOffset">Optional write offset.</param>
         public void AddRange(IEnumerable<float> data, int writeOffset = 0)
         {
             if (m_Data != null)

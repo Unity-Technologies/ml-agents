@@ -163,9 +163,9 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// The Height required to draw the Vector Action parameters
+        /// The Height required to draw the Vector Action parameters.
         /// </summary>
-        /// <returns>The height of the drawer of the Vector Action </returns>
+        /// <returns>The height of the drawer of the Vector Action.</returns>
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
             var actionSize = 2 + property.FindPropertyRelative(k_ActionSizePropName).arraySize;

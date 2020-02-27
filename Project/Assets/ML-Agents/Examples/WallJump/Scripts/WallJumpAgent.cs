@@ -157,10 +157,10 @@ public class WallJumpAgent : Agent
     }
 
     /// <summary>
-    /// Chenges the color of the ground for a moment
+    /// Changes the color of the ground for a moment.
     /// </summary>
-    /// <returns>The Enumerator to be used in a Coroutine</returns>
-    /// <param name="mat">The material to be swaped.</param>
+    /// <returns>The Enumerator to be used in a Coroutine.</returns>
+    /// <param name="mat">The material to be swapped.</param>
     /// <param name="time">The time the material will remain.</param>
     IEnumerator GoalScoredSwapGroundMaterial(Material mat, float time)
     {
@@ -304,7 +304,8 @@ public class WallJumpAgent : Agent
     /// <param name="config">Config.
     /// If 0 : No wall and noWallBrain.
     /// If 1:  Small wall and smallWallBrain.
-    /// Other : Tall wall and BigWallBrain. </param>
+    /// Other : Tall wall and BigWallBrain.
+    /// </param>
     void ConfigureAgent(int config)
     {
         var localScale = wall.transform.localScale;

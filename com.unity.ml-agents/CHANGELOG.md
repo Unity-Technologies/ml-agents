@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Agent.CollectObservations now takes a VectorSensor argument. It was also overloaded to optionally take an ActionMasker argument. (#3352, #3389)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
  Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
+ - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -19,8 +20,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
+ - The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
+ - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
+ - `DemonstrationRecorder` can now record observations outside of the editor.
+ - `DemonstrationRecorder` now has an optional path for the demonstrations. This will default to `Application.dataPath` if not set.
+ - `DemonstrationStore` was changed to accept a `Stream` for its constructor, and was renamed to `DemonstrationWriter`
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
+ - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
+ - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
+ - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
 
 ### Bugfixes
 - Fixed an issue which caused self-play training sessions to consume a lot of memory. (#3451)

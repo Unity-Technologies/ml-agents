@@ -68,13 +68,13 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
 
         # We do this in a separate step to feed the memory outs - a further optimization would
         # be to append to the obs before running sess.run.
-        final_value_estimates = self.get_value_estimates(
+        final_value_estimates = self._get_value_estimates(
             next_obs, done, policy_mem, value_mem, prev_action
         )
 
         return value_estimates, final_value_estimates
 
-    def get_value_estimates(
+    def _get_value_estimates(
         self,
         next_obs: List[np.ndarray],
         done: bool,
@@ -132,7 +132,7 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
     def create_optimizer_op(
-        self, learning_rate: float, name: str = "Adam"
+        self, learning_rate: tf.Tensor, name: str = "Adam"
     ) -> tf.train.Optimizer:
         return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
 

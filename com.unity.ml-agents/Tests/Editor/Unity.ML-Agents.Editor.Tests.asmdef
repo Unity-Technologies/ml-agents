@@ -3,7 +3,8 @@
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Barracuda"
+        "Barracuda",
+        "Unity.ML-Agents.CommunicatorObjects"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -1,7 +1,7 @@
 import logging
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union, Set
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -74,7 +74,9 @@ class UnityEnv(gym.Env):
 
         self.visual_obs = None
         self._n_agents = -1
-        self._done_agents: Set[int] = set()
+
+        self.agent_mapper = AgentIdIndexMapper()
+
         # Save the step result from the last time all Agents requested decisions.
         self._previous_step_result: BatchedStepResult = None
         self._multiagent = multiagent
@@ -121,6 +123,7 @@ class UnityEnv(gym.Env):
         step_result = self._env.get_step_result(self.brain_name)
         self._check_agents(step_result.n_agents())
         self._previous_step_result = step_result
+        self.agent_mapper.set_initial_agents(list(self._previous_step_result.agent_id))
 
         # Set observation and action spaces
         if self.group_spec.is_action_discrete():
@@ -161,7 +164,7 @@ class UnityEnv(gym.Env):
         """Resets the state of the environment and returns an initial observation.
         In the case of multi-agent environments, this is a list.
         Returns: observation (object/list): the initial observation of the
-            space.
+        space.
         """
         step_result = self._step(True)
         n_agents = step_result.n_agents()
@@ -247,7 +250,7 @@ class UnityEnv(gym.Env):
             default_observation = self._get_vector_obs(info)[0, :]
         else:
             raise UnityGymException(
-                "The Agent does not have vector observations and the environment was not setup"
+                "The Agent does not have vector observations and the environment was not setup "
                 + "to use visual observations."
             )
 
@@ -342,12 +345,12 @@ class UnityEnv(gym.Env):
     def _check_agents(self, n_agents: int) -> None:
         if not self._multiagent and n_agents > 1:
             raise UnityGymException(
-                "The environment was launched as a single-agent environment, however"
+                "The environment was launched as a single-agent environment, however "
                 "there is more than one agent in the scene."
             )
         elif self._multiagent and n_agents <= 1:
             raise UnityGymException(
-                "The environment was launched as a mutli-agent environment, however"
+                "The environment was launched as a mutli-agent environment, however "
                 "there is only one agent in the scene."
             )
         if self._n_agents == -1:
@@ -368,11 +371,14 @@ class UnityEnv(gym.Env):
                 "The number of agents in the scene does not match the expected number."
             )
 
-        # remove the done Agents
-        indices_to_keep: List[int] = []
-        for index, is_done in enumerate(step_result.done):
-            if not is_done:
-                indices_to_keep.append(index)
+        if step_result.n_agents() - sum(step_result.done) != self._n_agents:
+            raise UnityGymException(
+                "The number of agents in the scene does not match the expected number."
+            )
+
+        for index, agent_id in enumerate(step_result.agent_id):
+            if step_result.done[index]:
+                self.agent_mapper.mark_agent_done(agent_id, step_result.reward[index])
 
         # Set the new AgentDone flags to True
         # Note that the corresponding agent_id that gets marked done will be different
@@ -380,40 +386,43 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
+                # Register this agent, and get the reward of the previous agent that
+                # was in its index, so that we can return it to the gym.
+                last_reward = self.agent_mapper.register_new_agent_id(agent_id)
                 step_result.done[index] = True
-            if agent_id in self._done_agents:
-                step_result.done[index] = True
-        self._done_agents = set()
+                step_result.reward[index] = last_reward
+
         self._previous_step_result = step_result  # store the new original
+
+        # Get a permutation of the agent IDs so that a given ID stays in the same
+        # index as where it was first seen.
+        new_id_order = self.agent_mapper.get_id_permutation(list(step_result.agent_id))
 
         _mask: Optional[List[np.array]] = None
         if step_result.action_mask is not None:
             _mask = []
             for mask_index in range(len(step_result.action_mask)):
-                _mask.append(step_result.action_mask[mask_index][indices_to_keep])
+                _mask.append(step_result.action_mask[mask_index][new_id_order])
         new_obs: List[np.array] = []
         for obs_index in range(len(step_result.obs)):
-            new_obs.append(step_result.obs[obs_index][indices_to_keep])
+            new_obs.append(step_result.obs[obs_index][new_id_order])
         return BatchedStepResult(
             obs=new_obs,
-            reward=step_result.reward[indices_to_keep],
-            done=step_result.done[indices_to_keep],
-            max_step=step_result.max_step[indices_to_keep],
-            agent_id=step_result.agent_id[indices_to_keep],
+            reward=step_result.reward[new_id_order],
+            done=step_result.done[new_id_order],
+            max_step=step_result.max_step[new_id_order],
+            agent_id=step_result.agent_id[new_id_order],
             action_mask=_mask,
         )
 
     def _sanitize_action(self, action: np.array) -> np.array:
-        if self._previous_step_result.n_agents() == self._n_agents:
-            return action
         sanitized_action = np.zeros(
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
-        input_index = 0
-        for index in range(self._previous_step_result.n_agents()):
+        for index, agent_id in enumerate(self._previous_step_result.agent_id):
             if not self._previous_step_result.done[index]:
-                sanitized_action[index, :] = action[input_index, :]
-                input_index = input_index + 1
+                array_index = self.agent_mapper.get_gym_index(agent_id)
+                sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
 
     def _step(self, needs_reset: bool = False) -> BatchedStepResult:
@@ -429,10 +438,12 @@ class UnityEnv(gym.Env):
         while info.n_agents() - sum(info.done) < self._n_agents:
             if not info.done.all():
                 raise UnityGymException(
-                    "The environment does not have the expected amount of agents."
+                    "The environment does not have the expected amount of agents. "
                     + "Some agents did not request decisions at the same time."
                 )
-            self._done_agents.update(list(info.agent_id))
+            for agent_id, reward in zip(info.agent_id, info.reward):
+                self.agent_mapper.mark_agent_done(agent_id, reward)
+
             self._env.step()
             info = self._env.get_step_result(self.brain_name)
         return self._sanitize_info(info)
@@ -499,3 +510,92 @@ class ActionFlattener:
         :return: The List containing the branched actions.
         """
         return self.action_lookup[action]
+
+
+class AgentIdIndexMapper:
+    def __init__(self) -> None:
+        self._agent_id_to_gym_index: Dict[int, int] = {}
+        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+
+    def set_initial_agents(self, agent_ids: List[int]) -> None:
+        """
+        Provide the initial list of agent ids for the mapper
+        """
+        for idx, agent_id in enumerate(agent_ids):
+            self._agent_id_to_gym_index[agent_id] = idx
+
+    def mark_agent_done(self, agent_id: int, reward: float) -> None:
+        """
+        Declare the agent done with the corresponding final reward.
+        """
+        gym_index = self._agent_id_to_gym_index.pop(agent_id)
+        self._done_agents_index_to_last_reward[gym_index] = reward
+
+    def register_new_agent_id(self, agent_id: int) -> float:
+        """
+        Adds the new agent ID and returns the reward to use for the previous agent in this index
+        """
+        # Any free index is OK here.
+        free_index, last_reward = self._done_agents_index_to_last_reward.popitem()
+        self._agent_id_to_gym_index[agent_id] = free_index
+        return last_reward
+
+    def get_id_permutation(self, agent_ids: List[int]) -> List[int]:
+        """
+        Get the permutation from new agent ids to the order that preserves the positions of previous agents.
+        The result is a list with each integer from 0 to len(_agent_id_to_gym_index)-1
+        appearing exactly once.
+        """
+        # Map the new agent ids to the their index
+        new_agent_ids_to_index = {
+            agent_id: idx for idx, agent_id in enumerate(agent_ids)
+        }
+
+        # Make the output list. We don't write to it sequentially, so start with dummy values.
+        new_permutation = [-1] * len(self._agent_id_to_gym_index)
+
+        # For each agent ID, find the new index of the agent, and write it in the original index.
+        for agent_id, original_index in self._agent_id_to_gym_index.items():
+            new_permutation[original_index] = new_agent_ids_to_index[agent_id]
+        return new_permutation
+
+    def get_gym_index(self, agent_id: int) -> int:
+        """
+        Get the gym index for the current agent.
+        """
+        return self._agent_id_to_gym_index[agent_id]
+
+
+class AgentIdIndexMapperSlow:
+    """
+    Reference implementation of AgentIdIndexMapper.
+    The operations are O(N^2) so it shouldn't be used for large numbers of agents.
+    See AgentIdIndexMapper for method descriptions
+    """
+
+    def __init__(self) -> None:
+        self._gym_id_order: List[int] = []
+        self._done_agents_index_to_last_reward: Dict[int, float] = {}
+
+    def set_initial_agents(self, agent_ids: List[int]) -> None:
+        self._gym_id_order = list(agent_ids)
+
+    def mark_agent_done(self, agent_id: int, reward: float) -> None:
+        gym_index = self._gym_id_order.index(agent_id)
+        self._done_agents_index_to_last_reward[gym_index] = reward
+        self._gym_id_order[gym_index] = -1
+
+    def register_new_agent_id(self, agent_id: int) -> float:
+        original_index = self._gym_id_order.index(-1)
+        self._gym_id_order[original_index] = agent_id
+        reward = self._done_agents_index_to_last_reward.pop(original_index)
+        return reward
+
+    def get_id_permutation(self, agent_ids):
+        new_id_order = []
+        for agent_id in self._gym_id_order:
+            new_id_order.append(agent_ids.index(agent_id))
+        return new_id_order
+
+    def get_gym_index(self, agent_id: int) -> int:
+        return self._gym_id_order.index(agent_id)

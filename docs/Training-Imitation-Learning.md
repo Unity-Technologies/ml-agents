@@ -76,7 +76,7 @@ is played from the Editor. Depending on the complexity of the task, anywhere
 from a few minutes or a few hours of demonstration data may be necessary to
 be useful for imitation learning. When you have recorded enough data, end
 the Editor play session, and a `.demo` file will be created in the
-`Assets/Demonstrations` folder. This file contains the demonstrations.
+`Assets/Demonstrations` folder (by default). This file contains the demonstrations.
 Clicking on the file will provide metadata about the demonstration in the
 inspector.
 

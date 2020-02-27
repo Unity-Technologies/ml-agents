@@ -178,7 +178,7 @@ class SACOptimizer(TFOptimizer):
         else:
             self.output_pre = self.policy_network.output_pre
 
-        # Don't use value estimate during inference. TODO: Check why PPO uses value_estimate in inference.
+        # Don't use value estimate during inference.
         self.value = tf.identity(
             self.policy_network.value, name="value_estimate_unused"
         )
