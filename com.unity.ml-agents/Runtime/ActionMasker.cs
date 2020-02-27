@@ -11,7 +11,7 @@ namespace MLAgents
     /// left side of the board). This class represents the set of masked actions and provides
     /// the utilities for setting and retrieving them.
     /// </summary>
-    public class ActionMasker
+    public class DiscreteActionMasker
     {
         /// When using discrete control, is the starting indices of the actions
         /// when all the branches are concatenated with each other.
@@ -21,45 +21,9 @@ namespace MLAgents
 
         readonly BrainParameters m_BrainParameters;
 
-        internal ActionMasker(BrainParameters brainParameters)
+        internal DiscreteActionMasker(BrainParameters brainParameters)
         {
             m_BrainParameters = brainParameters;
-        }
-
-        /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the actions passed as argument at the next decision.
-        /// The actionIndices correspond to the actions the agent will be unable to perform
-        /// on the branch 0.
-        /// </summary>
-        /// <param name="actionIndices">The indices of the masked actions on branch 0.</param>
-        public void SetActionMask(IEnumerable<int> actionIndices)
-        {
-            SetActionMask(0, actionIndices);
-        }
-
-        /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision for the specified
-        /// action branch. The actionIndex correspond to the action the agent will be unable
-        /// to perform.
-        /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked.</param>
-        /// <param name="actionIndex">The index of the masked action.</param>
-        public void SetActionMask(int branch, int actionIndex)
-        {
-            SetActionMask(branch, new[] { actionIndex });
-        }
-
-        /// <summary>
-        /// Sets an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the action passed as argument at the next decision. The actionIndex
-        /// correspond to the action the agent will be unable to perform on the branch 0.
-        /// </summary>
-        /// <param name="actionIndex">The index of the masked action on branch 0</param>
-        public void SetActionMask(int actionIndex)
-        {
-            SetActionMask(0, new[] { actionIndex });
         }
 
         /// <summary>
@@ -70,7 +34,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndices">The indices of the masked actions</param>
-        public void SetActionMask(int branch, IEnumerable<int> actionIndices)
+        public void SetDiscreteActionMask(int branch, IEnumerable<int> actionIndices)
         {
             // If the branch does not exist, raise an error
             if (branch >= m_BrainParameters.vectorActionSize.Length)
@@ -110,7 +74,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>A mask for the agent. A boolean array of length equal to the total number of
         /// actions.</returns>
-        internal bool[] GetMask()
+        internal bool[] GetDiscreteActionMask()
         {
             if (m_CurrentMask != null)
             {

@@ -32,46 +32,35 @@ public class GridAgent : Agent
     {
     }
 
-    public override void CollectObservations(VectorSensor sensor, ActionMasker actionMasker)
+    public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
-        // There are no numeric observations to collect as this environment uses visual
-        // observations.
-
         // Mask the necessary actions if selected by the user.
         if (maskActions)
         {
-            SetMask(actionMasker);
-        }
-    }
+           // Prevents the agent from picking an action that would make it collide with a wall
+            var positionX = (int)transform.position.x;
+            var positionZ = (int)transform.position.z;
+            var maxPosition = (int)Academy.Instance.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
 
-    /// <summary>
-    /// Applies the mask for the agents action to disallow unnecessary actions.
-    /// </summary>
-    void SetMask(ActionMasker actionMasker)
-    {
-        // Prevents the agent from picking an action that would make it collide with a wall
-        var positionX = (int)transform.position.x;
-        var positionZ = (int)transform.position.z;
-        var maxPosition = (int)Academy.Instance.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
+            if (positionX == 0)
+            {
+                actionMasker.SetDiscreteActionMask(0, new int[]{ k_Left});
+            }
 
-        if (positionX == 0)
-        {
-            actionMasker.SetActionMask(k_Left);
-        }
+            if (positionX == maxPosition)
+            {
+                actionMasker.SetDiscreteActionMask(0, new int[]{k_Right});
+            }
 
-        if (positionX == maxPosition)
-        {
-            actionMasker.SetActionMask(k_Right);
-        }
+            if (positionZ == 0)
+            {
+                actionMasker.SetDiscreteActionMask(0, new int[]{k_Down});
+            }
 
-        if (positionZ == 0)
-        {
-            actionMasker.SetActionMask(k_Down);
-        }
-
-        if (positionZ == maxPosition)
-        {
-            actionMasker.SetActionMask(k_Up);
+            if (positionZ == maxPosition)
+            {
+                actionMasker.SetDiscreteActionMask(0, new int[]{k_Up});
+            }
         }
     }
 
