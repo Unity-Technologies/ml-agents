@@ -7,7 +7,7 @@ using MLAgents.CommunicatorObjects;
 namespace MLAgents.Tests
 {
     [TestFixture]
-    public class DemonstrationTests : MonoBehaviour
+    public class DemonstrationTests
     {
         const string k_DemoDirectory = "Assets/Demonstrations/";
         const string k_ExtensionType = ".demo";
@@ -33,7 +33,7 @@ namespace MLAgents.Tests
         }
 
         [Test]
-        public void TestStoreInitalize()
+        public void TestStoreInitialize()
         {
             var fileSystem = new MockFileSystem();
 

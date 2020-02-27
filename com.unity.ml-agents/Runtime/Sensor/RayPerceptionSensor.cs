@@ -9,13 +9,20 @@ namespace MLAgents
     /// </summary>
     public enum RayPerceptionCastType
     {
+        /// <summary>
         /// Cast in 2 dimensions, using Physics2D.CircleCast or Physics2D.RayCast.
+        /// </summary>
         Cast2D,
 
+        /// <summary>
         /// Cast in 3 dimensions, using Physics.SphereCast or Physics.RayCast.
+        /// </summary>
         Cast3D,
     }
 
+    /// <summary>
+    /// Contains the elements that define a ray perception sensor.
+    /// </summary>
     public struct RayPerceptionInput
     {
         /// <summary>
@@ -123,8 +130,14 @@ namespace MLAgents
         }
     }
 
+    /// <summary>
+    /// Contains the data generated/produced from a ray perception sensor.
+    /// </summary>
     public class RayPerceptionOutput
     {
+        /// <summary>
+        /// Contains the data generated from a single ray of a ray perception sensor.
+        /// </summary>
         public struct RayOutput
         {
             /// <summary>
@@ -212,6 +225,9 @@ namespace MLAgents
         int m_Frame;
     }
 
+    /// <summary>
+    /// A sensor implementation that supports ray cast-based observations.
+    /// </summary>
     public class RayPerceptionSensor : ISensor
     {
         float[] m_Observations;
@@ -227,6 +243,11 @@ namespace MLAgents
             get { return m_DebugDisplayInfo; }
         }
 
+        /// <summary>
+        /// Creates the RayPerceptionSensor.
+        /// </summary>
+        /// <param name="name">The name of the sensor.</param>
+        /// <param name="rayInput">The inputs for the sensor.</param>
         public RayPerceptionSensor(string name, RayPerceptionInput rayInput)
         {
             var numObservations = rayInput.OutputSize();
@@ -242,6 +263,18 @@ namespace MLAgents
             }
         }
 
+        internal void SetRayPerceptionInput(RayPerceptionInput input)
+        {
+            // TODO make sure that number of rays and tags don't change
+            m_RayPerceptionInput = input;
+        }
+
+        /// <summary>
+        /// Computes the ray perception observations and saves them to the provided
+        /// <see cref="WriteAdapter"/>.
+        /// </summary>
+        /// <param name="adapter">Where the ray perception observations are written to.</param>
+        /// <returns></returns>
         public int Write(WriteAdapter adapter)
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
@@ -280,25 +313,30 @@ namespace MLAgents
             return m_Observations.Length;
         }
 
+        /// <inheritdoc/>
         public void Update()
         {
         }
 
+        /// <inheritdoc/>
         public int[] GetObservationShape()
         {
             return m_Shape;
         }
 
+        /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;
         }
 
+        /// <inheritdoc/>
         public virtual byte[] GetCompressedObservation()
         {
             return null;
         }
 
+        /// <inheritdoc/>
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;
@@ -308,8 +346,7 @@ namespace MLAgents
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>
         /// <param name="input">Input defining the rays that will be cast.</param>
-        /// <param name="output">Output class that will be written to with raycast results.</param>
-        ///
+        /// <returns>Output struct containing the raycast results.</returns>
         public static RayPerceptionOutput PerceiveStatic(RayPerceptionInput input)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
@@ -331,7 +368,7 @@ namespace MLAgents
         /// <param name="rayIndex"></param>
         /// <param name="debugRayOut"></param>
         /// <returns></returns>
-        static RayPerceptionOutput.RayOutput PerceiveSingleRay(
+        internal static RayPerceptionOutput.RayOutput PerceiveSingleRay(
             RayPerceptionInput input,
             int rayIndex,
             out DebugDisplayInfo.RayInfo debugRayOut
@@ -424,7 +461,6 @@ namespace MLAgents
             debugRayOut.castRadius = scaledCastRadius;
 
             return rayOutput;
-
         }
     }
 }

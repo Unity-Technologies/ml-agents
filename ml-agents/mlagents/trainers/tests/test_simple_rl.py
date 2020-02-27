@@ -263,9 +263,12 @@ def _check_environment_trains(
         # Begin training
         tc.start_learning(env_manager)
         print(tc._get_measure_vals())
-        for mean_reward in tc._get_measure_vals().values():
-            assert not math.isnan(mean_reward)
-            assert mean_reward > success_threshold
+        if (
+            success_threshold is not None
+        ):  # For tests where we are just checking setup and not reward
+            for mean_reward in tc._get_measure_vals().values():
+                assert not math.isnan(mean_reward)
+                assert mean_reward > success_threshold
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])

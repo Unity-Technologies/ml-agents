@@ -34,8 +34,8 @@ namespace MLAgents
         /// <summary>
         ///
         /// </summary>
-        /// <param name="wrapped">The wrapped sensor</param>
-        /// <param name="numStackedObservations">Number of stacked observations to keep</param>
+        /// <param name="wrapped">The wrapped sensor.</param>
+        /// <param name="numStackedObservations">Number of stacked observations to keep.</param>
         public StackingSensor(ISensor wrapped, int numStackedObservations)
         {
             // TODO ensure numStackedObservations > 1
