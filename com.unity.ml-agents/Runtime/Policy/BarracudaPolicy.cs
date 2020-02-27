@@ -3,6 +3,7 @@ using Barracuda;
 using System.Collections.Generic;
 using MLAgents.InferenceBrain;
 using System;
+using MLAgents.Sensors;
 
 namespace MLAgents
 {

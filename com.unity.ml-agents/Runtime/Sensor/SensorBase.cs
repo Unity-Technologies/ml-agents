@@ -1,4 +1,4 @@
-namespace MLAgents
+namespace MLAgents.Sensors
 {
     /// <summary>
     /// A base sensor that provides a number default implementations.

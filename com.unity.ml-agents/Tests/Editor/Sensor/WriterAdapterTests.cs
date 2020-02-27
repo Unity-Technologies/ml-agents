@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using UnityEngine;
+using MLAgents.Sensors;
 using Barracuda;
 using MLAgents.InferenceBrain;
 

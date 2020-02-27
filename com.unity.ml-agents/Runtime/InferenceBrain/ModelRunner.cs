@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Barracuda;
 using UnityEngine.Profiling;
-using System;
+using MLAgents.Sensors;
 
 namespace MLAgents.InferenceBrain
 {

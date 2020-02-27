@@ -1,5 +1,6 @@
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensors;
 
 public class Ball3DHardAgent : Agent
 {
