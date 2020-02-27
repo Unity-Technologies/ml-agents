@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using MLAgents.Sensors;
 
 namespace MLAgents.Tests
 {

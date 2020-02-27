@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
+using MLAgents.Sensors;
 using UnityEngine.Serialization;
 
 public class GridAgent : Agent

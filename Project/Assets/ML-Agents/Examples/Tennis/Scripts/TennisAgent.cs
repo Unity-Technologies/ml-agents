@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using MLAgents;
+using MLAgents.Sensors;
 
 public class TennisAgent : Agent
 {

@@ -5,6 +5,7 @@ using Google.Protobuf;
 using MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
+using MLAgents.Sensors;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
