@@ -259,7 +259,7 @@ namespace MLAgents.InferenceBrain
 
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParameters.vectorObservationSize != 0) &&
-                (!tensorsNames.Contains(TensorNames.VectorObservationPlacholder)))
+                (!tensorsNames.Contains(TensorNames.VectorObservationPlaceholder)))
             {
                 failedModelChecks.Add(
                     "The model does not contain a Vector Observation  Placeholder Input. " +
@@ -402,7 +402,7 @@ namespace MLAgents.InferenceBrain
             var tensorTester =
                 new Dictionary<string, Func<BrainParameters, TensorProxy, SensorComponent[], string>>()
             {
-                {TensorNames.VectorObservationPlacholder, CheckVectorObsShape},
+                {TensorNames.VectorObservationPlaceholder, CheckVectorObsShape},
                 {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
                 {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs) => null)},
                 {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs) => null)},
