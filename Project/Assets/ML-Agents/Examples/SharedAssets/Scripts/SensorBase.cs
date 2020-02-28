@@ -1,7 +1,9 @@
-namespace MLAgents.Sensors
+using MLAgents.Sensors;
+
+namespace MLAgentsExamples
 {
     /// <summary>
-    /// A base sensor that provides a number default implementations.
+    /// A simple sensor that provides a number default implementations.
     /// </summary>
     public abstract class SensorBase : ISensor
     {
