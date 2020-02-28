@@ -390,7 +390,7 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action, call the method `SetDiscreteActionMask` on the `ActionMasker` argument of the `CollectDiscreteActionMasks` method :
+action, call the method `SetDiscreteActionMask` on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` method :
 
 ```csharp
 public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker){
