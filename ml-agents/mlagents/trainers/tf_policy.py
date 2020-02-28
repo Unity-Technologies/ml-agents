@@ -371,7 +371,7 @@ class TFPolicy(Policy):
         self.update_normalization_op: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
         self.all_log_probs: tf.Tensor = None
-        self.log_probs: Optional[tf.Tensor] = None
+        self.total_log_probs: Optional[tf.Tensor] = None
         self.entropy: Optional[tf.Tensor] = None
         self.output_pre: Optional[tf.Tensor] = None
         self.output: Optional[tf.Tensor] = None
