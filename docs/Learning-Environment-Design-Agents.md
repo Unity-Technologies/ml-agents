@@ -393,7 +393,7 @@ still be able to decide to perform the masked action. In order to mask an
 action, call the method `SetDiscreteActionMask` on the `ActionMasker` argument of the `CollectDiscreteActionMasks` method :
 
 ```csharp
-public override void CollectDiscreteActionMasks(ActionMasker actionMasker){
+public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker){
     actionMasker.SetDiscreteActionMask(branch, actionIndices)
 }
 ```
