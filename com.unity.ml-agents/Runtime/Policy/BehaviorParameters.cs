@@ -31,7 +31,7 @@ namespace MLAgents
         [HideInInspector]
         [SerializeField]
 
-        // Disable warning /com.unity.ml-agents/Runtime/Policy/BehaviorParameters.cs(34,22):
+        // Disable warning /com.unity.ml-agents/Runtime/Policy/BehaviorParameters.cs(...):
         //   warning CS0649: Field 'BehaviorParameters.m_BehaviorType' is never assigned to,
         //   and will always have its default value
         // This field is set in the custom editor.
