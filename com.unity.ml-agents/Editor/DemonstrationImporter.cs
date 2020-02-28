@@ -4,6 +4,7 @@ using MLAgents.CommunicatorObjects;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
+using MLAgents.Demonstrations;
 
 namespace MLAgents
 {

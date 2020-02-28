@@ -3,7 +3,7 @@ using Google.Protobuf;
 using System.Collections.Generic;
 using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Demonstrations
 {
     /// <summary>
     /// Responsible for writing demonstration data to stream (typically a file stream).

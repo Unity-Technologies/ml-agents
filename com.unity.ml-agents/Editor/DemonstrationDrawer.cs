@@ -1,6 +1,7 @@
 using System.Text;
 using MLAgents;
 using UnityEditor;
+using MLAgents.Demonstrations;
 
 /// <summary>
 /// Renders a custom UI for Demonstration Scriptable Object.
