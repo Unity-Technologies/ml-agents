@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
- - Added `Agent.CollectDiscreteActionMasks`virtual method with a `ActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
+ - Added `Agent.CollectDiscreteActionMasks` virtual method with a `DiscreteActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
  Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
  - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
