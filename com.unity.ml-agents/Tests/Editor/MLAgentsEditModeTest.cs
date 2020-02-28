@@ -68,7 +68,6 @@ namespace MLAgents.Tests
 
         public override void AgentReset()
         {
-
             agentResetCalls += 1;
             collectObservationsCallsSinceLastReset = 0;
             agentActionCallsSinceLastReset = 0;
@@ -492,7 +491,8 @@ namespace MLAgents.Tests
             for (var i = 0; i < 50; i++)
             {
                 expectedAgent1ActionSinceReset += 1;
-                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0){
+                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0)
+                {
                     expectedAgent1ActionSinceReset = 0;
                 }
                 agent2.RequestAction();
@@ -521,7 +521,7 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
 
             var expectedAgentStepCount = 0;
-            var expectedResets= 0;
+            var expectedResets = 0;
             var expectedAgentAction = 0;
             var expectedAgentActionSinceReset = 0;
             var expectedCollectObsCalls = 0;
@@ -539,7 +539,7 @@ namespace MLAgents.Tests
                 // If the next step will put the agent at maxSteps, we expect it to reset
                 if (agent1.StepCount == maxStep - 1 || (i == 0))
                 {
-                    expectedResets +=1;
+                    expectedResets += 1;
                 }
 
                 if (agent1.StepCount == maxStep - 1)

@@ -66,7 +66,7 @@ namespace MLAgents.Sensors
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
                 // TODO support more types here, e.g. JPG
                 var compressed = texture.EncodeToPNG();
-                UnityEngine.Object.Destroy(texture);
+                DestroyTexture(texture);
                 return compressed;
             }
         }
@@ -82,7 +82,7 @@ namespace MLAgents.Sensors
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
                 var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
-                UnityEngine.Object.Destroy(texture);
+                DestroyTexture(texture);
                 return numWritten;
             }
         }
@@ -145,6 +145,20 @@ namespace MLAgents.Sensors
         internal static int[] GenerateShape(int width, int height, bool grayscale)
         {
             return new[] { height, width, grayscale ? 1 : 3 };
+        }
+
+        static void DestroyTexture(Texture2D texture)
+        {
+            if (Application.isEditor)
+            {
+                // Edit Mode tests complain if we use Destroy()
+                // TODO move to extension methods for UnityEngine.Object?
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(texture);
+            }
         }
     }
 }

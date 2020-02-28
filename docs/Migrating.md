@@ -15,7 +15,7 @@ The versions can be found in
 * We consolidated our API for `DiscreteActionMasker`. `SetMask` takes two arguments : the branch index and the list of masked actions for that branch.
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
 * The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
-* The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
+* The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class, and the method was renamed to `Perceive()`.
 * The `SetMask` method must now be called on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` method.
 * The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
 * The `--multi-gpu` option has been removed temporarily.
@@ -23,8 +23,9 @@ The versions can be found in
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
 * Replace your Agent's implementation of `CollectObservations()` with `CollectObservations(VectorSensor sensor)`. In addition, replace all calls to `AddVectorObs()` with `sensor.AddObservation()` or `sensor.AddOneHotObservation()` on the `VectorSensor` passed as argument.
-* Replace your calls to `SetActionMask` on your Agent to `ActionMasker.SetActionMask` in `CollectDiscreteActionMasks`.
-* If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output, use `RayPerceptionOutput.ToFloatArray()`
+* Replace your calls to `SetActionMask` on your Agent to `DiscreteActionMasker.SetActionMask` in `CollectDiscreteActionMasks`.
+* If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output,
+ iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
 

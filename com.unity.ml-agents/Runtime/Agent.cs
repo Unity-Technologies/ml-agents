@@ -256,6 +256,27 @@ namespace MLAgents
             InitializeSensors();
         }
 
+        /// <summary>
+        /// Reason that the Agent is being considered "done"
+        /// </summary>
+        enum DoneReason
+        {
+            /// <summary>
+            /// The <see cref="Done"/> method was called.
+            /// </summary>
+            DoneCalled,
+
+            /// <summary>
+            /// The max steps for the Agent were reached.
+            /// </summary>
+            MaxStepReached,
+
+            /// <summary>
+            /// The Agent was disabled
+            /// </summary>
+            Disabled,
+        }
+
         void OnDisable()
         {
             DemonstrationWriters.Clear();
@@ -270,16 +291,16 @@ namespace MLAgents
                 Academy.Instance.AgentAct -= AgentStep;
                 Academy.Instance.AgentForceReset -= _AgentReset;
             }
-            NotifyAgentDone();
+            NotifyAgentDone(DoneReason.Disabled);
             m_Brain?.Dispose();
             m_Initialized = false;
         }
 
-        void NotifyAgentDone(bool maxStepReached = false)
+        void NotifyAgentDone(DoneReason doneReason)
         {
             m_Info.reward = m_Reward;
             m_Info.done = true;
-            m_Info.maxStepReached = maxStepReached;
+            m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
@@ -290,7 +311,12 @@ namespace MLAgents
                 demoWriter.Record(m_Info, sensors);
             }
 
-            UpdateRewardStats();
+            if (doneReason != DoneReason.Disabled)
+            {
+                // We don't want to udpate the reward stats when the Agent is disabled, because this will make
+                // the rewards look lower than they actually are during shutdown.
+                UpdateRewardStats();
+            }
 
             // The Agent is done, so we give it a new episode Id
             m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
@@ -380,7 +406,7 @@ namespace MLAgents
         /// </summary>
         public void Done()
         {
-            NotifyAgentDone();
+            NotifyAgentDone(DoneReason.DoneCalled);
             _AgentReset();
         }
 
@@ -703,7 +729,7 @@ namespace MLAgents
 
             if ((m_StepCount >= maxStep) && (maxStep > 0))
             {
-                NotifyAgentDone(true);
+                NotifyAgentDone(DoneReason.MaxStepReached);
                 _AgentReset();
             }
         }
