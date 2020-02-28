@@ -44,7 +44,11 @@ namespace MLAgents.Tests
 
         public int Write(WriteAdapter adapter)
         {
-            return m_Width * m_Height * m_Width;
+            for (int i = 0; i < m_Width * m_Height * m_Channels; i++)
+            {
+                adapter[i] = 0.0f;
+            }
+            return m_Width * m_Height * m_Channels;
         }
 
         public byte[] GetCompressedObservation()
@@ -66,10 +70,10 @@ namespace MLAgents.Tests
     }
 
     [TestFixture]
-    public class ParameterLoaderTest : MonoBehaviour
+    public class ParameterLoaderTest
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/Ressources/continuous2vis8vec2action.nn";
-        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/Ressources/discrete1vis0vec_2_3action_recurr.nn";
+        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/continuous2vis8vec2action.nn";
+        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/discrete1vis0vec_2_3action_recurr.nn";
         NNModel continuous2vis8vec2actionModel;
         NNModel discrete1vis0vec_2_3action_recurrModel;
         Test3DSensorComponent sensor_21_20_3;
@@ -140,11 +144,6 @@ namespace MLAgents.Tests
             var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
             var inputNames = inputTensors.Select(x => x.name).ToList();
             // Model should contain 2 inputs : recurrent and visual 1
-
-            foreach (var c in inputNames)
-            {
-                Debug.Log(c);
-            }
 
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
             // TODO :There are some memory tensors as well
