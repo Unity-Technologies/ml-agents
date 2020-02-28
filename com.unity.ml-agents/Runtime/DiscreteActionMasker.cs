@@ -34,7 +34,7 @@ namespace MLAgents
         /// </summary>
         /// <param name="branch">The branch for which the actions will be masked</param>
         /// <param name="actionIndices">The indices of the masked actions</param>
-        public void SetDiscreteActionMask(int branch, IEnumerable<int> actionIndices)
+        public void SetMask(int branch, IEnumerable<int> actionIndices)
         {
             // If the branch does not exist, raise an error
             if (branch >= m_BrainParameters.vectorActionSize.Length)
@@ -74,7 +74,7 @@ namespace MLAgents
         /// </summary>
         /// <returns>A mask for the agent. A boolean array of length equal to the total number of
         /// actions.</returns>
-        internal bool[] GetDiscreteActionMask()
+        internal bool[] GetMask()
         {
             if (m_CurrentMask != null)
             {

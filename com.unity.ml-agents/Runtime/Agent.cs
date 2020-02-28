@@ -59,8 +59,7 @@ namespace MLAgents
     /// an Agent. An agent produces observations and takes actions in the
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
-    /// user in <see cref="Agent.CollectObservations(VectorSensor)"/> or
-    /// <see cref="Agent.CollectObservations(VectorSensor, DiscreteActionMasker)"/>.
+    /// user in <see cref="Agent.CollectObservations(VectorSensor)"/>.
     /// On the other hand, actions are determined by decisions produced by a Policy.
     /// Currently, this class is expected to be extended to implement the desired agent behavior.
     /// </summary>
@@ -532,7 +531,7 @@ namespace MLAgents
                     CollectDiscreteActionMasks(m_ActionMasker);
                 }
             }
-            m_Info.actionMasks = m_ActionMasker.GetDiscreteActionMask();
+            m_Info.actionMasks = m_ActionMasker.GetMask();
 
             m_Info.reward = m_Reward;
             m_Info.done = false;
@@ -603,7 +602,7 @@ namespace MLAgents
         /// When using Discrete Control, you can prevent the Agent from using a certain
         /// action by masking it. You can call the following method on the ActionMasker
         /// input :
-        ///     - <see cref="DiscreteActionMasker.SetDiscreteActionMask(int, IEnumerable{int})"/>
+        ///     - <see cref="DiscreteActionMasker.SetMask(int, IEnumerable{int})"/>
         /// The first argument is the branch of the action, the second is an Enumerable
         /// of indices corresponding to the invalid options for that action.
         /// </remarks>
