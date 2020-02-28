@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using Barracuda;
 using MLAgents.Inference;
-using System;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {

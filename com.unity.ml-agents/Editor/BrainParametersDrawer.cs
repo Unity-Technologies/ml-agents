@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using MLAgents.Policies;
 
 namespace MLAgents.Editor
 {

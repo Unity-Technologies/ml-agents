@@ -5,6 +5,7 @@ using Barracuda;
 using MLAgents.Inference;
 using MLAgents.Sensors;
 using System.Linq;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {

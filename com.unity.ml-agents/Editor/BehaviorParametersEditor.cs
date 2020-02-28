@@ -1,6 +1,7 @@
 using MLAgents.Sensors;
 using UnityEditor;
 using Barracuda;
+using MLAgents.Policies;
 
 namespace MLAgents.Editor
 {

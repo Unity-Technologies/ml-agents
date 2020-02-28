@@ -5,6 +5,7 @@ using System.Reflection;
 using MLAgents.CommunicatorObjects;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {
