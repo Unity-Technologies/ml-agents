@@ -11,14 +11,21 @@ namespace MLAgents
         /// Port to listen for connections on.
         /// </summary>
         public int port;
+
         /// <summary>
         /// The name of the environment.
         /// </summary>
         public string name;
+
         /// <summary>
         /// The version of the Unity SDK.
         /// </summary>
-        public string version;
+        public string packageVersion;
+
+        /// <summary>
+        /// The version of the communication API.
+        /// </summary>
+        public string communicationVersion;
     }
     internal struct UnityRLInitParameters
     {
@@ -26,6 +33,16 @@ namespace MLAgents
         /// An RNG seed sent from the python process to Unity.
         /// </summary>
         public int seed;
+
+        /// <summary>
+        /// The library version of the python process.
+        /// </summary>
+        public string packageVersion;
+
+        /// <summary>
+        /// The version of the communication API that python is using..
+        /// </summary>
+        public string communicationVersion;
     }
     internal struct UnityRLInputParameters
     {

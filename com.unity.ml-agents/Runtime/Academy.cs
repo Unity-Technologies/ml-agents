@@ -49,9 +49,11 @@ namespace MLAgents
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
+        // TODO move the versions to Constants.cs?
         const string k_ApiVersion = "API-15-dev0";
+        internal const string k_PackageVersion = "0.14.1-preview";
         const int k_EditorTrainingPort = 5004;
-        internal const string k_portCommandLineFlag = "--mlagents-port";
+        const string k_portCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
@@ -325,10 +327,12 @@ namespace MLAgents
                     var unityRlInitParameters = Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
-                            version = k_ApiVersion,
+                            communicationVersion = k_ApiVersion,
+                            packageVersion = k_PackageVersion,
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
+                    // TODO save unityRlInitParameters.packageVersion for logging later
                 }
                 catch
                 {
@@ -494,6 +498,7 @@ namespace MLAgents
         public void Dispose()
         {
             DisableAutomaticStepping();
+
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
@@ -506,6 +511,7 @@ namespace MLAgents
                 {
                     mr.Dispose();
                 }
+
                 m_ModelRunners = null;
             }
 

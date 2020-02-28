@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import json
 import sys
 from typing import Dict
 import argparse
@@ -12,6 +13,8 @@ DIRECTORIES = [
     "ml-agents-envs/mlagents_envs",
     "gym-unity/gym_unity",
 ]
+
+UNITY_PACKAGE_JSON = "com.unity.ml-agents/package.json"
 
 
 def extract_version_string(filename):
@@ -45,6 +48,16 @@ def set_version(new_version: str) -> None:
         print(f"Setting {path} to version {new_version}")
         with open(path, "w") as f:
             f.write(new_contents)
+
+
+def set_package_version(new_version: str) -> None:
+    with open(UNITY_PACKAGE_JSON, "r") as f:
+        package_json = json.load(f)
+    if "version" in package_json:
+        package_json["version"] = new_version
+    out_temp = "new_" + UNITY_PACKAGE_JSON
+    with open(out_temp, "w") as f:
+        json.dump(package_json, f, indent=2)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@ from google.protobuf.message import (
 
 from typing import (
     Optional as typing___Optional,
+    Text as typing___Text,
 )
 
 from typing_extensions import (
@@ -26,16 +27,20 @@ builtin___int = int
 class UnityRLInitializationInputProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     seed = ... # type: builtin___int
+    communication_version = ... # type: typing___Text
+    package_version = ... # type: typing___Text
 
     def __init__(self,
         *,
         seed : typing___Optional[builtin___int] = None,
+        communication_version : typing___Optional[typing___Text] = None,
+        package_version : typing___Optional[typing___Text] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityRLInitializationInputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"seed"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"communication_version",u"package_version",u"seed"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"seed",b"seed"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"communication_version",b"communication_version",u"package_version",b"package_version",u"seed",b"seed"]) -> None: ...

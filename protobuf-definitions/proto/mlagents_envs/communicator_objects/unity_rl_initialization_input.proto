@@ -6,4 +6,6 @@ package communicator_objects;
 
 message UnityRLInitializationInputProto {
     int32 seed = 1;
+    string communication_version = 2;
+    string package_version = 3;
 }

@@ -73,7 +73,8 @@ namespace MLAgents
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
-                Version = initParameters.version
+                PackageVersion = initParameters.packageVersion,
+                CommunicationVersion = initParameters.communicationVersion
             };
 
             UnityInputProto input;

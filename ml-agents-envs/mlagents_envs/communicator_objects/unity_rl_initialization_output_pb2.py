@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_rl_initialization_output.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nGmlagents_envs/communicator_objects/unity_rl_initialization_output.proto\x12\x14\x63ommunicator_objects\x1a\x39mlagents_envs/communicator_objects/brain_parameters.proto\"\x9f\x01\n UnityRLInitializationOutputProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x10\n\x08log_path\x18\x03 \x01(\t\x12\x44\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32*.communicator_objects.BrainParametersProtoJ\x04\x08\x06\x10\x07\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\nGmlagents_envs/communicator_objects/unity_rl_initialization_output.proto\x12\x14\x63ommunicator_objects\x1a\x39mlagents_envs/communicator_objects/brain_parameters.proto\"\xc6\x01\n UnityRLInitializationOutputProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x10\n\x08log_path\x18\x03 \x01(\t\x12\x44\n\x10\x62rain_parameters\x18\x05 \x03(\x0b\x32*.communicator_objects.BrainParametersProto\x12\x17\n\x0fpackage_version\x18\x07 \x01(\tJ\x04\x08\x06\x10\x07\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_brain__parameters__pb2.DESCRIPTOR,])
 
@@ -42,7 +42,7 @@ _UNITYRLINITIALIZATIONOUTPUTPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='version', full_name='communicator_objects.UnityRLInitializationOutputProto.version', index=1,
+      name='communication_version', full_name='communicator_objects.UnityRLInitializationOutputProto.communication_version', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -62,6 +62,13 @@ _UNITYRLINITIALIZATIONOUTPUTPROTO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='package_version', full_name='communicator_objects.UnityRLInitializationOutputProto.package_version', index=4,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -75,7 +82,7 @@ _UNITYRLINITIALIZATIONOUTPUTPROTO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=157,
-  serialized_end=316,
+  serialized_end=355,
 )
 
 _UNITYRLINITIALIZATIONOUTPUTPROTO.fields_by_name['brain_parameters'].message_type = mlagents__envs_dot_communicator__objects_dot_brain__parameters__pb2._BRAINPARAMETERSPROTO

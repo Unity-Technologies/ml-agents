@@ -132,7 +132,9 @@ namespace MLAgents
         {
             return new UnityRLInitParameters
             {
-                seed = inputProto.Seed
+                seed = inputProto.Seed,
+                packageVersion = inputProto.PackageVersion,
+                communicationVersion = inputProto.CommunicationVersion,
             };
         }
 

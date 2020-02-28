@@ -7,6 +7,7 @@ import os
 import subprocess
 from typing import Dict, List, Optional, Any
 
+import mlagents_envs
 from mlagents_envs.side_channel.side_channel import SideChannel
 
 from mlagents_envs.base_env import (
@@ -86,7 +87,6 @@ class UnityEnvironment(BaseEnv):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = UnityEnvironment.API_VERSION
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
@@ -122,7 +122,11 @@ class UnityEnvironment(BaseEnv):
             )
         self._loaded = True
 
-        rl_init_parameters_in = UnityRLInitializationInputProto(seed=seed)
+        rl_init_parameters_in = UnityRLInitializationInputProto(
+            seed=seed,
+            communication_version=self.API_VERSION,
+            package_version=mlagents_envs.__version__,
+        )
         try:
             aca_output = self.send_academy_parameters(rl_init_parameters_in)
             aca_params = aca_output.rl_initialization_output
@@ -130,14 +134,19 @@ class UnityEnvironment(BaseEnv):
             self._close()
             raise
         # TODO : think of a better way to expose the academyParameters
-        self._unity_version = aca_params.version
-        if self._unity_version != self._version_:
+        unity_communicator_version = aca_params.communication_version
+        if unity_communicator_version != UnityEnvironment.API_VERSION:
             self._close()
             raise UnityEnvironmentException(
-                f"The API number is not compatible between Unity and python. "
-                f"Python API: {self._version_}, Unity API: {self._unity_version}.\n"
-                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release"
+                f"The communication API version is not compatible between Unity and python. "
+                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
+                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
                 f"to download the latest version of ML-Agents."
+            )
+        else:
+            logger.info(
+                f"Connected to Unity environment with package version {aca_params.package_version} "
+                f"and communication version {aca_params.communication_version}"
             )
         self._env_state: Dict[str, BatchedStepResult] = {}
         self._env_specs: Dict[str, AgentGroupSpec] = {}
