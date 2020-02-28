@@ -72,7 +72,7 @@ class PPOOptimizer(TFOptimizer):
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
                 self._create_losses(
-                    self.policy.log_probs,
+                    self.policy.total_log_probs,
                     self.old_log_probs,
                     self.value_heads,
                     self.policy.entropy,

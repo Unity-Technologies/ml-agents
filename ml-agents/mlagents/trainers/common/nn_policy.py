@@ -223,13 +223,11 @@ class NNPolicy(TFPolicy):
 
         self.selected_actions = tf.stop_gradient(self.output)
 
-        self.all_log_probs = tf.identity(
-            distribution.total_log_probs, name="action_probs"
-        )
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
         self.entropy = distribution.entropy
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = self.all_log_probs
+        self.total_log_probs = distribution.total_log_probs
 
     def _create_dc_actor(self, encoded: tf.Tensor) -> None:
         """
@@ -281,4 +279,4 @@ class NNPolicy(TFPolicy):
             distribution.sample_onehot
         )  # In discrete, these are onehot
         self.entropy = distribution.entropy
-        self.log_probs = distribution.total_log_probs
+        self.total_log_probs = distribution.total_log_probs
