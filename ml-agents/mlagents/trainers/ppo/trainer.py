@@ -7,10 +7,10 @@ from collections import defaultdict
 
 import numpy as np
 
-from mlagents.trainers.common.nn_policy import NNPolicy
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.common.policy.nn_policy import NNPolicy
+from mlagents.trainers.common.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.common.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 

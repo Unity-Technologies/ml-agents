@@ -7,7 +7,7 @@ import abc
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.common.policy.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 

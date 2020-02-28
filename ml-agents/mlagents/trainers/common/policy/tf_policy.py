@@ -8,7 +8,7 @@ from mlagents.tf_utils import tf
 from mlagents import tf_utils
 
 from mlagents_envs.exception import UnityException
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.common.policy.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id

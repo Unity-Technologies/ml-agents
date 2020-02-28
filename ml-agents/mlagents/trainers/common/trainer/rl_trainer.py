@@ -3,9 +3,9 @@ import logging
 from typing import Dict
 from collections import defaultdict
 
-from mlagents.trainers.common.tf_optimizer import TFOptimizer
+from mlagents.trainers.common.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.common.trainer.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 

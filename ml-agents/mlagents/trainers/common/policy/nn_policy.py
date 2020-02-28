@@ -8,7 +8,7 @@ from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import ModelUtils
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.common.policy.tf_policy import TFPolicy
 from mlagents.trainers.common.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,

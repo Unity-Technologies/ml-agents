@@ -19,7 +19,7 @@ from mlagents_envs.exception import (
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
-from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.common.trainer.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers

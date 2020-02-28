@@ -4,8 +4,8 @@ from collections import defaultdict, Counter, deque
 
 from mlagents_envs.base_env import BatchedStepResult, StepResult
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.policy import Policy
+from mlagents.trainers.common.policy.tf_policy import TFPolicy
+from mlagents.trainers.common.policy.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
