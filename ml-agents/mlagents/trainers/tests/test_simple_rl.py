@@ -175,7 +175,7 @@ SAC_CONFIG = f"""
         hidden_units: 16
         init_entcoef: 0.1
         learning_rate: 5.0e-3
-        max_steps: 1000
+        max_steps: 2000
         memory_size: 256
         normalize: false
         num_update: 1
