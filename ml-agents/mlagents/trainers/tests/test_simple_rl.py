@@ -173,9 +173,9 @@ SAC_CONFIG = f"""
         buffer_size: 500
         buffer_init_steps: 100
         hidden_units: 16
-        init_entcoef: 0.1
+        init_entcoef: 0.01
         learning_rate: 5.0e-3
-        max_steps: 2000
+        max_steps: 1000
         memory_size: 256
         normalize: false
         num_update: 1
@@ -183,8 +183,8 @@ SAC_CONFIG = f"""
         num_layers: 1
         time_horizon: 64
         sequence_length: 64
-        summary_freq: 500
-        tau: 0.005
+        summary_freq: 100
+        tau: 0.01
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None
