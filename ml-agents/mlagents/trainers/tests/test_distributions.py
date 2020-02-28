@@ -6,7 +6,6 @@ import yaml
 
 from mlagents.trainers.common.distributions import (
     GaussianDistribution,
-    TanhSquashedGaussianDistribution,
     MultiCategoricalDistribution,
 )
 
@@ -56,7 +55,10 @@ def test_gaussian_distribution():
     with tf.Graph().as_default():
         logits = tf.Variable(initial_value=[[0, 0]], trainable=True, dtype=tf.float32)
         distribution = GaussianDistribution(
-            logits, act_size=VECTOR_ACTION_SPACE, reparameterize=False
+            logits,
+            act_size=VECTOR_ACTION_SPACE,
+            reparameterize=False,
+            tanh_squash=False,
         )
         sess = tf.Session()
         with tf.Session() as sess:
@@ -74,8 +76,8 @@ def test_gaussian_distribution():
 def test_tanh_distribution():
     with tf.Graph().as_default():
         logits = tf.Variable(initial_value=[[0, 0]], trainable=True, dtype=tf.float32)
-        distribution = TanhSquashedGaussianDistribution(
-            logits, act_size=VECTOR_ACTION_SPACE, reparameterize=False
+        distribution = GaussianDistribution(
+            logits, act_size=VECTOR_ACTION_SPACE, reparameterize=False, tanh_squash=True
         )
         sess = tf.Session()
         with tf.Session() as sess:

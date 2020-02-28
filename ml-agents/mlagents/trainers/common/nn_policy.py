@@ -11,7 +11,6 @@ from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.tf_policy import TFPolicy
 from mlagents.trainers.common.distributions import (
     GaussianDistribution,
-    TanhSquashedGaussianDistribution,
     MultiCategoricalDistribution,
 )
 
@@ -203,14 +202,12 @@ class NNPolicy(TFPolicy):
             hidden_policy = encoded
 
         with tf.variable_scope("policy"):
-            if not tanh_squash:
-                distribution = GaussianDistribution(
-                    hidden_policy, self.act_size, reparameterize=reparameterize
-                )
-            else:
-                distribution = TanhSquashedGaussianDistribution(
-                    hidden_policy, self.act_size, reparameterize=reparameterize
-                )
+            distribution = GaussianDistribution(
+                hidden_policy,
+                self.act_size,
+                reparameterize=reparameterize,
+                tanh_squash=tanh_squash,
+            )
 
         if tanh_squash:
             self.output_pre = distribution.sample

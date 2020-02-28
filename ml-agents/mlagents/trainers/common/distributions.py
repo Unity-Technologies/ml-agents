@@ -63,9 +63,21 @@ class GaussianDistribution(OutputDistribution):
         logits: tf.Tensor,
         act_size: List[int],
         reparameterize: bool = False,
+        tanh_squash: bool = False,
         log_sigma_min: float = -20,
         log_sigma_max: float = 2,
     ):
+        """
+        A Gaussian output distribution for continuous actions.
+        :param logits: Hidden layer to use as the input to the Gaussian distribution.
+        :param act_size: List containing the number of continuous actions.
+        :param reparameterize: Whether or not to use the reparameterization trick (block gradients through
+            log probability calculation.)
+        :param tanh_squash: Squash the output using tanh, constraining it between -1 and 1.
+            From: Haarnoja et. al, https://arxiv.org/abs/1801.01290
+        :param log_sigma_min: Minimum log standard deviation to clip by.
+        :param log_sigma_max: Maximum log standard deviation to clip by.
+        """
         encoded = self._create_mu_log_sigma(
             logits, act_size, log_sigma_min, log_sigma_max
         )
@@ -74,7 +86,12 @@ class GaussianDistribution(OutputDistribution):
             _sampled_policy_probs = tf.stop_gradient(self._sampled_policy)
         else:
             _sampled_policy_probs = self._sampled_policy
-        self._all_probs = self._get_log_probs(_sampled_policy_probs, encoded)
+        self._all_probs = self._create_log_probs(_sampled_policy_probs, encoded)
+        if tanh_squash:
+            self._sampled_policy = tf.tanh(self._sampled_policy)
+            self._all_probs = self._do_squash_correction_for_tanh(
+                self._all_probs, self._sampled_policy
+            )
         self._total_prob = tf.reduce_sum(self._all_probs, axis=1, keepdims=True)
         self._entropy = self._create_entropy(encoded)
 
@@ -115,7 +132,7 @@ class GaussianDistribution(OutputDistribution):
 
         return sampled_policy
 
-    def _get_log_probs(
+    def _create_log_probs(
         self, sampled_policy: tf.Tensor, encoded: "GaussianDistribution.MuSigmaTensors"
     ) -> tf.Tensor:
         _gauss_pre = -0.5 * (
@@ -134,6 +151,13 @@ class GaussianDistribution(OutputDistribution):
         # Make entropy the right shape
         return tf.ones_like(tf.reshape(encoded.mu[:, 0], [-1])) * single_dim_entropy
 
+    def _do_squash_correction_for_tanh(self, probs, squashed_policy):
+        """
+        Adjust probabilities for squashed sample before output
+        """
+        probs -= tf.log(1 - squashed_policy ** 2 + EPSILON)
+        return probs
+
     @property
     def total_log_probs(self) -> tf.Tensor:
         return self._total_prob
@@ -151,52 +175,19 @@ class GaussianDistribution(OutputDistribution):
         return self._entropy
 
 
-class TanhSquashedGaussianDistribution(GaussianDistribution):
-    """
-    A Gaussian distribution that is squashed by a tanh at the output. We adjust the log-probabilities
-    to account for this squashing. From: Haarnoja et. al, https://arxiv.org/abs/1801.01290
-    """
-
-    def __init__(
-        self,
-        logits: tf.Tensor,
-        act_size: List[int],
-        reparameterize: bool = False,
-        log_sigma_min: float = -20,
-        log_sigma_max: float = 2,
-    ):
-        super().__init__(logits, act_size, reparameterize, log_sigma_min, log_sigma_max)
-        self._squashed_policy = tf.tanh(self._sampled_policy)
-        self._corrected_probs = self._do_squash_correction_for_tanh(
-            self._all_probs, self._squashed_policy
-        )
-        self._corrected_total_prob = tf.reduce_sum(
-            self._corrected_probs, axis=1, keepdims=True
-        )
-
-    def _do_squash_correction_for_tanh(self, probs, squashed_policy):
-        """
-        Adjust probabilities for squashed sample before output
-        """
-        all_probs = probs
-        all_probs -= tf.log(1 - squashed_policy ** 2 + EPSILON)
-        return all_probs
-
-    @property
-    def log_probs(self) -> tf.Tensor:
-        return self._corrected_probs
-
-    @property
-    def total_log_probs(self) -> tf.Tensor:
-        return self._corrected_total_prob
-
-    @property
-    def sample(self) -> tf.Tensor:
-        return self._squashed_policy
-
-
 class MultiCategoricalDistribution(DiscreteOutputDistribution):
+    """
+    A categorical distribution for multi-branched discrete actions. Also supports action masking.
+    """
+
     def __init__(self, logits: tf.Tensor, act_size: List[int], action_masks: tf.Tensor):
+        """
+        A categorical distribution for multi-branched discrete actions.
+        :param logits: Hidden layer to use as the input to the Gaussian distribution.
+        :param act_size: List containing the number of discrete actions per branch.
+        :param action_masks: Tensor representing action masks. Should be of length sum(act_size), and 0 for masked
+            and 1 for unmasked.
+        """
         unmasked_log_probs = self._create_policy_branches(logits, act_size)
         self._sampled_policy, self._all_probs, action_index = self._get_masked_actions_probs(
             unmasked_log_probs, act_size, action_masks
