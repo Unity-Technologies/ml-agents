@@ -2,29 +2,29 @@ using UnityEngine;
 using MLAgents;
 using MLAgents.Sensors;
 
-public class BasicAgent : Agent
+public class BasicAgent : MonoBehaviour
 {
-    [Header("Specific to Basic")]
     public float timeBetweenDecisionsAtInference;
     float m_TimeSinceDecision;
-    int m_Position;
-    int m_SmallGoalPosition;
-    int m_LargeGoalPosition;
+    [HideInInspector]
+    public int m_Position;
+    const int k_SmallGoalPosition = 7;
+    const int k_LargeGoalPosition = 17;
     public GameObject largeGoal;
     public GameObject smallGoal;
-    int m_MinPosition;
-    int m_MaxPosition;
+    const int k_MinPosition = 0;
+    const int k_MaxPosition = 20;
+    public const int k_Extents = k_MaxPosition - k_MinPosition;
 
-    public override void InitializeAgent()
+    Agent m_Agent;
+
+    public void OnEnable()
     {
+        m_Agent = GetComponent<Agent>();
+        ResetAgent();
     }
 
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        sensor.AddOneHotObservation(m_Position, 20);
-    }
-
-    public override void AgentAction(float[] vectorAction)
+    public void ApplyAction(float[] vectorAction)
     {
         var movement = (int)vectorAction[0];
 
@@ -41,67 +41,66 @@ public class BasicAgent : Agent
         }
 
         m_Position += direction;
-        if (m_Position < m_MinPosition) { m_Position = m_MinPosition; }
-        if (m_Position > m_MaxPosition) { m_Position = m_MaxPosition; }
+        if (m_Position < k_MinPosition) { m_Position = k_MinPosition; }
+        if (m_Position > k_MaxPosition) { m_Position = k_MaxPosition; }
 
         gameObject.transform.position = new Vector3(m_Position - 10f, 0f, 0f);
 
-        AddReward(-0.01f);
+        m_Agent.AddReward(-0.01f);
 
-        if (m_Position == m_SmallGoalPosition)
+        if (m_Position == k_SmallGoalPosition)
         {
-            AddReward(0.1f);
-            Done();
+            m_Agent.AddReward(0.1f);
+            m_Agent.Done();
+            ResetAgent();
         }
 
-        if (m_Position == m_LargeGoalPosition)
+        if (m_Position == k_LargeGoalPosition)
         {
-            AddReward(1f);
-            Done();
+            m_Agent.AddReward(1f);
+            m_Agent.Done();
+            ResetAgent();
         }
     }
 
-    public override void AgentReset()
+    public void ResetAgent()
     {
         m_Position = 10;
-        m_MinPosition = 0;
-        m_MaxPosition = 20;
-        m_SmallGoalPosition = 7;
-        m_LargeGoalPosition = 17;
-        smallGoal.transform.position = new Vector3(m_SmallGoalPosition - 10f, 0f, 0f);
-        largeGoal.transform.position = new Vector3(m_LargeGoalPosition - 10f, 0f, 0f);
+        smallGoal.transform.position = new Vector3(k_SmallGoalPosition - 10f, 0f, 0f);
+        largeGoal.transform.position = new Vector3(k_LargeGoalPosition - 10f, 0f, 0f);
     }
 
-    public override float[] Heuristic()
-    {
-        if (Input.GetKey(KeyCode.D))
-        {
-            return new float[] { 2 };
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            return new float[] { 1 };
-        }
-        return new float[] { 0 };
-    }
+//    public override float[] Heuristic()
+//    {
+//        if (Input.GetKey(KeyCode.D))
+//        {
+//            return new float[] { 2 };
+//        }
+//        if (Input.GetKey(KeyCode.A))
+//        {
+//            return new float[] { 1 };
+//        }
+//        return new float[] { 0 };
+//    }
 
     public void FixedUpdate()
     {
         WaitTimeInference();
+        ApplyAction(m_Agent.GetAction());
     }
 
     void WaitTimeInference()
     {
         if (!Academy.Instance.IsCommunicatorOn)
         {
-            RequestDecision();
+            m_Agent.RequestDecision();
         }
         else
         {
             if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
             {
                 m_TimeSinceDecision = 0f;
-                RequestDecision();
+                m_Agent.RequestDecision();
             }
             else
             {

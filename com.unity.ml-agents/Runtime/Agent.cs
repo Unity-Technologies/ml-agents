@@ -104,7 +104,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public abstract class Agent : MonoBehaviour, ISerializationCallbackReceiver
+    public class Agent : MonoBehaviour, ISerializationCallbackReceiver
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
@@ -475,9 +475,7 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            throw new UnityAgentsException(
-                "The Heuristic method was not implemented for the Agent on the " +
-                $"{gameObject.name} GameObject.");
+            return null;
         }
 
         /// <summary>
