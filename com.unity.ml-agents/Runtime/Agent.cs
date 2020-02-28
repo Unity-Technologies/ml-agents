@@ -600,11 +600,7 @@ namespace MLAgents
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it. You can call the following method on the ActionMasker
-        /// input :
-        ///     - <see cref="DiscreteActionMasker.SetMask(int, IEnumerable{int})"/>
-        /// The first argument is the branch of the action, the second is an Enumerable
-        /// of indices corresponding to the invalid options for that action.
+        /// action by masking it with <see cref="DiscreteActionMasker.SetMask(int, IEnumerable{int})"/>
         /// </remarks>
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
         {

@@ -44,22 +44,22 @@ public class GridAgent : Agent
 
             if (positionX == 0)
             {
-                actionMasker.SetDiscreteActionMask(0, new int[]{ k_Left});
+                actionMasker.SetMask(0, new int[]{ k_Left});
             }
 
             if (positionX == maxPosition)
             {
-                actionMasker.SetDiscreteActionMask(0, new int[]{k_Right});
+                actionMasker.SetMask(0, new int[]{k_Right});
             }
 
             if (positionZ == 0)
             {
-                actionMasker.SetDiscreteActionMask(0, new int[]{k_Down});
+                actionMasker.SetMask(0, new int[]{k_Down});
             }
 
             if (positionZ == maxPosition)
             {
-                actionMasker.SetDiscreteActionMask(0, new int[]{k_Up});
+                actionMasker.SetMask(0, new int[]{k_Up});
             }
         }
     }

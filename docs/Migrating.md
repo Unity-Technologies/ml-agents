@@ -12,6 +12,7 @@ The versions can be found in
 ### Important changes
 * The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
 * The `SetMask` was renamed to `SetMask` method must now be called on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` virtual method.
+* We consolidated our API for `DiscreteActionMasker`. `SetMask` takes two arguments : the branch index and the list of masked actions for that branch.
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
 * The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
 * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
