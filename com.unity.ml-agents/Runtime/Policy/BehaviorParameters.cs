@@ -30,7 +30,14 @@ namespace MLAgents
         InferenceDevice m_InferenceDevice;
         [HideInInspector]
         [SerializeField]
+
+        // Disable warning /com.unity.ml-agents/Runtime/Policy/BehaviorParameters.cs(34,22):
+        //   warning CS0649: Field 'BehaviorParameters.m_BehaviorType' is never assigned to,
+        //   and will always have its default value
+        // This field is set in the custom editor.
+        #pragma warning disable 0649
         BehaviorType m_BehaviorType;
+        #pragma warning restore 0649
         [HideInInspector]
         [SerializeField]
         string m_BehaviorName = "My Behavior";
