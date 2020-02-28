@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace MLAgents
+namespace MLAgents.Editor
 {
     /*
      This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(Agent), true)]
     [CanEditMultipleObjects]
-    internal class AgentEditor : Editor
+    internal class AgentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
