@@ -50,7 +50,7 @@ namespace MLAgents
     public class Academy : IDisposable
     {
         // TODO move the versions to Constants.cs?
-        const string k_ApiVersion = "API-15-dev0";
+        const string k_ApiVersion = "0.15.0";
         internal const string k_PackageVersion = "0.14.1-preview";
         const int k_EditorTrainingPort = 5004;
         const string k_portCommandLineFlag = "--mlagents-port";
