@@ -8,7 +8,7 @@ namespace MLAgents.Tests
         public void Contruction()
         {
             var bp = new BrainParameters();
-            var masker = new ActionMasker(bp);
+            var masker = new DiscreteActionMasker(bp);
             Assert.IsNotNull(masker);
         }
 
@@ -18,8 +18,8 @@ namespace MLAgents.Tests
             var bp = new BrainParameters();
             bp.vectorActionSpaceType = SpaceType.Continuous;
             bp.vectorActionSize = new[] {4};
-            var masker = new ActionMasker(bp);
-            masker.SetActionMask(0, new[] {0});
+            var masker = new DiscreteActionMasker(bp);
+            masker.SetMask(0, new[] {0});
             Assert.Catch<UnityAgentsException>(() => masker.GetMask());
         }
 
@@ -28,7 +28,7 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters();
             bp.vectorActionSpaceType = SpaceType.Discrete;
-            var masker = new ActionMasker(bp);
+            var masker = new DiscreteActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
         }
@@ -39,10 +39,10 @@ namespace MLAgents.Tests
             var bp = new BrainParameters();
             bp.vectorActionSpaceType = SpaceType.Discrete;
             bp.vectorActionSize = new[] {4, 5, 6};
-            var masker = new ActionMasker(bp);
+            var masker = new DiscreteActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
-            masker.SetActionMask(0, new[] {1, 2, 3});
+            masker.SetMask(0, new[] {1, 2, 3});
             mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsTrue(mask[1]);
@@ -60,8 +60,8 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
-            var masker = new ActionMasker(bp);
-            masker.SetActionMask(1, new[] {1, 2, 3});
+            var masker = new DiscreteActionMasker(bp);
+            masker.SetMask(1, new[] {1, 2, 3});
             var mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsFalse(mask[4]);
@@ -80,8 +80,8 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
-            var masker = new ActionMasker(bp);
-            masker.SetActionMask(1, new[] {1, 2, 3});
+            var masker = new DiscreteActionMasker(bp);
+            masker.SetMask(1, new[] {1, 2, 3});
             masker.ResetMask();
             var mask = masker.GetMask();
             for (var i = 0; i < 15; i++)
@@ -98,18 +98,18 @@ namespace MLAgents.Tests
                 vectorActionSpaceType = SpaceType.Discrete,
                 vectorActionSize = new[] { 4, 5, 6 }
             };
-            var masker = new ActionMasker(bp);
+            var masker = new DiscreteActionMasker(bp);
 
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(0, new[] {5}));
+                () => masker.SetMask(0, new[] {5}));
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(1, new[] {5}));
-            masker.SetActionMask(2, new[] {5});
+                () => masker.SetMask(1, new[] {5}));
+            masker.SetMask(2, new[] {5});
             Assert.Catch<UnityAgentsException>(
-                () => masker.SetActionMask(3, new[] {1}));
+                () => masker.SetMask(3, new[] {1}));
             masker.GetMask();
             masker.ResetMask();
-            masker.SetActionMask(0, new[] {0, 1, 2, 3});
+            masker.SetMask(0, new[] {0, 1, 2, 3});
             Assert.Catch<UnityAgentsException>(
                 () => masker.GetMask());
         }
@@ -120,10 +120,10 @@ namespace MLAgents.Tests
             var bp = new BrainParameters();
             bp.vectorActionSpaceType = SpaceType.Discrete;
             bp.vectorActionSize = new[] {4, 5, 6};
-            var masker = new ActionMasker(bp);
-            masker.SetActionMask(0, new[] {0, 1});
-            masker.SetActionMask(0, new[] {3});
-            masker.SetActionMask(2, new[] {1});
+            var masker = new DiscreteActionMasker(bp);
+            masker.SetMask(0, new[] {0, 1});
+            masker.SetMask(0, new[] {3});
+            masker.SetMask(2, new[] {1});
             var mask = masker.GetMask();
             for (var i = 0; i < 15; i++)
             {
