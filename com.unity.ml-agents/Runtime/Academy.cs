@@ -6,6 +6,7 @@ using UnityEditor;
 #endif
 using MLAgents.Inference;
 using MLAgents.Policies;
+using MLAgents.SideChannels;
 using Barracuda;
 
 /**

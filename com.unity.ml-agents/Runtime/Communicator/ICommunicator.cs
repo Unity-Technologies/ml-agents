@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MLAgents.Policies;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 namespace MLAgents
 {
