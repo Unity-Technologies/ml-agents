@@ -2,14 +2,14 @@ using MLAgents.Sensors;
 using UnityEditor;
 using Barracuda;
 
-namespace MLAgents
+namespace MLAgents.Editor
 {
     /*
      This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(BehaviorParameters))]
     [CanEditMultipleObjects]
-    internal class BehaviorParametersEditor : Editor
+    internal class BehaviorParametersEditor : UnityEditor.Editor
     {
         const float k_TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model

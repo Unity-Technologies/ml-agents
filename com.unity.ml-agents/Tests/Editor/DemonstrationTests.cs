@@ -4,6 +4,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
 using MLAgents.CommunicatorObjects;
 using MLAgents.Sensors;
+using MLAgents.Demonstrations;
 
 namespace MLAgents.Tests
 {
