@@ -347,7 +347,7 @@ namespace MLAgents.Sensors
         /// </summary>
         /// <param name="input">Input defining the rays that will be cast.</param>
         /// <returns>Output struct containing the raycast results.</returns>
-        public static RayPerceptionOutput PerceiveStatic(RayPerceptionInput input)
+        public static RayPerceptionOutput Perceive(RayPerceptionInput input)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
             output.rayOutputs = new RayPerceptionOutput.RayOutput[input.angles.Count];
