@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// IPolicy is connected to a single Agent. Each time the agent needs

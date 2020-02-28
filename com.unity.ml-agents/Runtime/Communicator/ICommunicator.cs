@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using MLAgents.Policies;
 using MLAgents.Sensors;
 
 namespace MLAgents

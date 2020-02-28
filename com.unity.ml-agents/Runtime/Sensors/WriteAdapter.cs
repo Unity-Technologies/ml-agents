@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Barracuda;
-using MLAgents.InferenceBrain;
+using MLAgents.Inference;
 
 namespace MLAgents.Sensors
 {

@@ -4,6 +4,7 @@ using UnityEngine;
 using Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
 namespace MLAgents
 {

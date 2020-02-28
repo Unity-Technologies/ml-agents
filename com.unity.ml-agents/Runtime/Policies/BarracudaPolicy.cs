@@ -1,11 +1,9 @@
-using UnityEngine;
 using Barracuda;
 using System.Collections.Generic;
-using MLAgents.InferenceBrain;
-using System;
+using MLAgents.Inference;
 using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// Where to perform inference.

@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEngine;
 using MLAgents.CommunicatorObjects;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 using System.IO;
 using Google.Protobuf;
 

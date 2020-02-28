@@ -4,7 +4,8 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using MLAgents.InferenceBrain;
+using MLAgents.Inference;
+using MLAgents.Policies;
 using Barracuda;
 
 /**

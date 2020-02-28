@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Barracuda;
 using UnityEngine.Profiling;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 
-namespace MLAgents.InferenceBrain
+namespace MLAgents.Inference
 {
     internal struct AgentInfoSensorsPair
     {

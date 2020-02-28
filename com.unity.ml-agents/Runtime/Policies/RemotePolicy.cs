@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// The Remote Policy only works when training.

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 
-namespace MLAgents.InferenceBrain
+namespace MLAgents.Inference
 {
     /// <summary>
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
