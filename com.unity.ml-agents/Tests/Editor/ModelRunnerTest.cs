@@ -47,7 +47,7 @@ namespace MLAgents.Tests
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
             sensor_20_22_3 = go.AddComponent<Test3DSensorComponent>();
-            sensor_20_22_3.Sensor = new Test3DSensor("SensorA", 20, 22, 3);
+            sensor_20_22_3.Sensor = new Test3DSensor("SensorB", 20, 22, 3);
         }
 
         [Test]
