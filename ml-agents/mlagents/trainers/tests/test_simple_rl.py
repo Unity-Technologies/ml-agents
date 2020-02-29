@@ -77,7 +77,7 @@ GHOST_CONFIG = f"""
         hidden_units: 128
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 5000
+        max_steps: 2500
         memory_size: 256
         normalize: false
         num_epoch: 3
@@ -92,8 +92,8 @@ GHOST_CONFIG = f"""
                 gamma: 0.99
         self_play:
             play_against_current_self_ratio: 1.0
-            save_step: 2000
-            swap_snapshot: 2000
+            save_steps: 2000
+            swap_steps: 2000
     """
 
 
@@ -146,16 +146,16 @@ def _check_environment_trains(env, config, meta_curriculum=None, success_thresho
                 assert mean_reward > success_threshold
 
 
-# @pytest.mark.parametrize("use_discrete", [True, False])
-# def test_simple_ppo(use_discrete):
-#    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-#    _check_environment_trains(env, PPO_CONFIG)
-#
-#
-# @pytest.mark.parametrize("use_discrete", [True, False])
-# def test_simple_sac(use_discrete):
-#    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-#    _check_environment_trains(env, SAC_CONFIG)
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_ppo(use_discrete):
+    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    _check_environment_trains(env, PPO_CONFIG)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_sac(use_discrete):
+    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    _check_environment_trains(env, SAC_CONFIG)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
