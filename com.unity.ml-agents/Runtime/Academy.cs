@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -279,7 +280,7 @@ namespace MLAgents
         {
             // TODO we can potentially replace this in 2019.2 and later with
             //   UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Agent).Assembly)
-            var loadedText = System.IO.File.ReadAllText("Packages/com.unity.ml-agents/package.json");
+            var loadedText = File.ReadAllText(Path.GetFullPath("Packages/com.unity.ml-agents/package.json"));
             var loadedPackageInfo = JsonUtility.FromJson<PackageVersionHelper>(loadedText);
             var packageVersion = loadedPackageInfo.version;
             return packageVersion;
