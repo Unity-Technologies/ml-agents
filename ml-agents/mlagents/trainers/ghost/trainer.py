@@ -8,10 +8,10 @@ import numpy as np
 import logging
 
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.common.policy.policy import Policy
+from mlagents.trainers.common.policy import Policy
 from mlagents.trainers.common.policy.tf_policy import TFPolicy
 
-from mlagents.trainers.common.trainer.trainer import Trainer
+from mlagents.trainers.common.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 

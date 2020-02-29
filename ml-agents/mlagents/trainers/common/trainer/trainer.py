@@ -16,7 +16,7 @@ from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.common.policy.policy import Policy
+from mlagents.trainers.common.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.timers import hierarchical_timer
 
