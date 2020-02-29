@@ -280,10 +280,11 @@ namespace MLAgents
         {
             // TODO we can potentially replace this in 2019.2 and later with
             //   UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Agent).Assembly)
-            var loadedText = File.ReadAllText(Path.GetFullPath("Packages/com.unity.ml-agents/package.json"));
-            var loadedPackageInfo = JsonUtility.FromJson<PackageVersionHelper>(loadedText);
-            var packageVersion = loadedPackageInfo.version;
-            return packageVersion;
+            var textAsset = (TextAsset) AssetDatabase.LoadAssetAtPath(
+                "Packages/com.unity.ml-agents/package.json", typeof(TextAsset)
+                );
+            var loadedPackageInfo = JsonUtility.FromJson<PackageVersionHelper>(textAsset.text);
+            return loadedPackageInfo.version;
         }
 
         // Used to read Python-provided environment parameters
