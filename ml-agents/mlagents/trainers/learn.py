@@ -98,6 +98,14 @@ def _create_parser():
         type=int,
         help="Number of parallel environments to use for training",
     )
+
+    argparser.add_argument(
+        "--ghost-swap",
+        default=50000,
+        type=int,
+        help="Number of trainer steps between swapping behavior id being ghosted",
+    )
+
     argparser.add_argument(
         "--docker-target-name",
         default=None,
@@ -177,6 +185,7 @@ class RunOptions(NamedTuple):
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
     base_port: int = parser.get_default("base_port")
     num_envs: int = parser.get_default("num_envs")
+    ghost_swap: int = parser.get_default("ghost_swap")
     curriculum_config: Optional[Dict] = None
     lesson: int = parser.get_default("lesson")
     no_graphics: bool = parser.get_default("no_graphics")
@@ -300,6 +309,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         options.keep_checkpoints,
         options.train_model,
         options.load_model,
+        options.ghost_swap,
         run_seed,
         maybe_meta_curriculum,
         options.multi_gpu,

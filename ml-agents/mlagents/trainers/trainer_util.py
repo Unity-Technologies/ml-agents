@@ -10,6 +10,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
+from mlagents.trainers.ghost.controller import GhostController
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -24,6 +25,7 @@ class TrainerFactory:
         keep_checkpoints: int,
         train_model: bool,
         load_model: bool,
+        ghost_swap: int,
         seed: int,
         meta_curriculum: MetaCurriculum = None,
         multi_gpu: bool = False,
@@ -38,6 +40,7 @@ class TrainerFactory:
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
+        self.ghost_controller = GhostController(ghost_swap)
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
@@ -49,6 +52,7 @@ class TrainerFactory:
             self.keep_checkpoints,
             self.train_model,
             self.load_model,
+            self.ghost_controller,
             self.seed,
             self.meta_curriculum,
             self.multi_gpu,
@@ -64,6 +68,7 @@ def initialize_trainer(
     keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
+    ghost_controller: GhostController,
     seed: int,
     meta_curriculum: MetaCurriculum = None,
     multi_gpu: bool = False,
@@ -157,6 +162,7 @@ def initialize_trainer(
         trainer = GhostTrainer(
             trainer,
             brain_name,
+            ghost_controller,
             min_lesson_length,
             trainer_parameters,
             train_model,

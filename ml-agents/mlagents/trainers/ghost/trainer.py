@@ -20,12 +20,20 @@ LOGGER = logging.getLogger("mlagents.trainers")
 
 class GhostTrainer(Trainer):
     def __init__(
-        self, trainer, brain_name, reward_buff_cap, trainer_parameters, training, run_id
+        self,
+        trainer,
+        brain_name,
+        controller,
+        reward_buff_cap,
+        trainer_parameters,
+        training,
+        run_id,
     ):
         """
         Responsible for collecting experiences and training trainer model via self_play.
         :param trainer: The trainer of the policy/policies being trained with self_play
         :param brain_name: The name of the brain associated with trainer config
+        :param controller: Object that coordinates all ghost trainers
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
@@ -37,6 +45,7 @@ class GhostTrainer(Trainer):
         )
 
         self.trainer = trainer
+        self.controller = controller
 
         self.internal_policy_queues: List[AgentManagerQueue[Policy]] = []
         self.internal_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
@@ -131,20 +140,27 @@ class GhostTrainer(Trainer):
         """
         Steps the trainer, passing trajectories to wrapped trainer and calling trainer advance
         """
-        for traj_queue, internal_traj_queue in zip(
-            self.trajectory_queues, self.internal_trajectory_queues
-        ):
-            try:
-                # We grab at most the maximum length of the queue.
-                # This ensures that even if the queue is being filled faster than it is
-                # being emptied, the trajectories in the queue are on-policy.
-                for _ in range(traj_queue.maxlen):
-                    t = traj_queue.get_nowait()
-                    # adds to wrapped trainers queue
-                    internal_traj_queue.put(t)
-                    self._process_trajectory(t)
-            except AgentManagerQueue.Empty:
-                pass
+        for traj_queue in self.trajectory_queues:
+            if traj_queue.behavior_id == self.learning_behavior_name:
+                for internal_traj_queue in self.internal_trajectory_queues:
+                    try:
+                        # We grab at most the maximum length of the queue.
+                        # This ensures that even if the queue is being filled faster than it is
+                        # being emptied, the trajectories in the queue are on-policy.
+                        for _ in range(traj_queue.maxlen):
+                            t = traj_queue.get_nowait()
+                            # adds to wrapped trainers queue
+                            internal_traj_queue.put(t)
+                            self._process_trajectory(t)
+                    except AgentManagerQueue.Empty:
+                        pass
+            else:
+                # Dump trajectories from non-learning policy
+                try:
+                    for _ in range(traj_queue.maxlen):
+                        traj_queue.get_nowait()
+                except AgentManagerQueue.Empty:
+                    pass
 
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
@@ -167,13 +183,7 @@ class GhostTrainer(Trainer):
             self._swap_snapshots()
             self.last_swap = self.get_step
 
-        # Dump trajectories from non-learning policy
-        for traj_queue in self.ignored_trajectory_queues:
-            try:
-                for _ in range(traj_queue.maxlen):
-                    traj_queue.get_nowait()
-            except AgentManagerQueue.Empty:
-                pass
+        self.learning_behavior_name = self.controller.get_learning_id(self.get_step)
 
     def end_episode(self):
         self.trainer.end_episode()
@@ -194,6 +204,7 @@ class GhostTrainer(Trainer):
         :param name_behavior_id: Behavior ID that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
+        self.controller.subscribe_behavior_id(name_behavior_id)
         self.policies[name_behavior_id] = policy
         policy.create_tf_graph()
 
@@ -267,18 +278,14 @@ class GhostTrainer(Trainer):
         Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
         :param queue: Trajectory queue to publish to.
         """
-
+        super().subscribe_trajectory_queue(trajectory_queue)
         if trajectory_queue.behavior_id == self.learning_behavior_name:
-            super().subscribe_trajectory_queue(trajectory_queue)
-
             internal_trajectory_queue: AgentManagerQueue[
                 Trajectory
             ] = AgentManagerQueue(trajectory_queue.behavior_id)
 
             self.internal_trajectory_queues.append(internal_trajectory_queue)
             self.trainer.subscribe_trajectory_queue(internal_trajectory_queue)
-        else:
-            self.ignored_trajectory_queues.append(trajectory_queue)
 
 
 # Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
