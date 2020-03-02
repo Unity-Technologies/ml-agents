@@ -25,14 +25,15 @@ PPO_CONFIG = f"""
         beta: 5.0e-3
         buffer_size: 64
         epsilon: 0.2
-        hidden_units: 128
+        hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 2500
+        learning_rate_schedule: constant
+        max_steps: 1500
         memory_size: 256
         normalize: false
         num_epoch: 3
-        num_layers: 2
+        num_layers: 1
         time_horizon: 64
         sequence_length: 64
         summary_freq: 500
@@ -50,14 +51,15 @@ PPO_CONFIG_RECURRENT = f"""
         beta: 5.0e-3
         buffer_size: 64
         epsilon: 0.2
-        hidden_units: 128
+        hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 5000
-        memory_size: 64
+        max_steps: 4000
+        memory_size: 8
         normalize: false
+        learning_rate_schedule: constant
         num_epoch: 3
-        num_layers: 2
+        num_layers: 1
         time_horizon: 64
         sequence_length: 64
         summary_freq: 500
@@ -97,6 +99,35 @@ SAC_CONFIG = f"""
                 gamma: 0.99
     """
 
+SAC_CONFIG_RECURRENT = f"""
+    {BRAIN_NAME}:
+        trainer: sac
+        batch_size: 8
+        buffer_size: 500
+        buffer_init_steps: 100
+        hidden_units: 16
+        init_entcoef: 0.01
+        learning_rate: 5.0e-3
+        max_steps: 1000
+        memory_size: 16
+        normalize: false
+        num_update: 1
+        train_interval: 1
+        num_layers: 1
+        time_horizon: 64
+        sequence_length: 16
+        summary_freq: 100
+        tau: 0.01
+        use_recurrent: true
+        curiosity_enc_size: 128
+        demo_path: None
+        vis_encode_type: simple
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+    """
+
 GHOST_CONFIG_PASS = f"""
     {BRAIN_NAME}:
         trainer: ppo
@@ -104,14 +135,14 @@ GHOST_CONFIG_PASS = f"""
         beta: 5.0e-3
         buffer_size: 64
         epsilon: 0.2
-        hidden_units: 128
+        hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
         max_steps: 2500
         memory_size: 256
         normalize: false
         num_epoch: 3
-        num_layers: 2
+        num_layers: 1
         time_horizon: 64
         sequence_length: 64
         summary_freq: 500
@@ -135,14 +166,14 @@ GHOST_CONFIG_FAIL = f"""
         beta: 5.0e-3
         buffer_size: 64
         epsilon: 0.2
-        hidden_units: 128
+        hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
         max_steps: 2500
         memory_size: 256
         normalize: false
         num_epoch: 3
-        num_layers: 2
+        num_layers: 1
         time_horizon: 64
         sequence_length: 64
         summary_freq: 500
@@ -246,9 +277,15 @@ def test_simple_ppo(use_discrete):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ppo_recurrent(use_discrete):
+def test_recurrent_ppo(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     _check_environment_trains(env, PPO_CONFIG_RECURRENT)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_recurrent_sac(use_discrete):
+    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    _check_environment_trains(env, SAC_CONFIG_RECURRENT)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])

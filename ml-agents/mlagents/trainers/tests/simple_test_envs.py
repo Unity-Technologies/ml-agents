@@ -143,26 +143,19 @@ class Simple1DEnvironment(BaseEnv):
 
 
 class Memory1DEnvironment(Simple1DEnvironment):
-    def __init__(self, brain_names, use_discrete):
-        super().__init__(brain_names, use_discrete)
-        action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
-        self.group_spec = AgentGroupSpec(
-            [(2 * OBS_SIZE,)], action_type, (2,) if use_discrete else 1
-        )
-
-    def _reset_agent(self, name: str) -> None:
-        super()._reset_agent(name)
-        self.goal = self.random.choice([-1, 1])
+    def __init__(self, brain_names, use_discrete, step_size=0.2):
+        super().__init__(brain_names, use_discrete, step_size=0.2)
+        # Number of steps to reveal the goal for. Lower is harder. Should be
+        # less than 1/step_size to force agent to use memory
+        self.num_show_steps = 2
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float
     ) -> BatchedStepResult:
-        base_obs = np.zeros((1, OBS_SIZE), dtype=np.float32)
-        # Feed the recurrent obs for the 1st step
-        recurrent_obs_val = self.goal if self.step_count[name] <= 1 else 0
-        recurrent_obs = recurrent_obs_val * np.ones((1, OBS_SIZE), dtype=np.float32)
-
-        m_vector_obs = [np.concatenate([base_obs, recurrent_obs], axis=1)]
+        recurrent_obs_val = (
+            self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
+        )
+        m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * recurrent_obs_val]
         m_reward = np.array([reward], dtype=np.float32)
         m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([0], dtype=np.int32)
