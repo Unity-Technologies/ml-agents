@@ -144,7 +144,6 @@ def _check_environment_trains(
     reward_processor=default_reward_processor,
     meta_curriculum=None,
     success_threshold=0.99,
-    check_fail=False,
 ):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
@@ -190,12 +189,7 @@ def _check_environment_trains(
                 reward_processor(rewards) for rewards in env.final_rewards.values()
             ]
             assert all(not math.isnan(reward) for reward in processed_rewards)
-            if not check_fail:
-                assert all(reward > success_threshold for reward in processed_rewards)
-            else:
-                assert any(
-                    reward > success_threshold for reward in processed_rewards
-                ) and any(reward < success_threshold for reward in processed_rewards)
+            assert all(reward > success_threshold for reward in processed_rewards)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -223,4 +217,11 @@ def test_simple_ghost_fails(use_discrete):
     env = Simple1DEnvironment(
         [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
     )
-    _check_environment_trains(env, GHOST_CONFIG_FAIL, check_fail=True)
+    _check_environment_trains(env, GHOST_CONFIG_FAIL, success_threshold=None)
+    processed_rewards = [
+        default_reward_processor(rewards) for rewards in env.final_rewards.values()
+    ]
+    success_threshold = 0.99
+    assert any(reward > success_threshold for reward in processed_rewards) and any(
+        reward < success_threshold for reward in processed_rewards
+    )
