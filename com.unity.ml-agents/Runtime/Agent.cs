@@ -4,6 +4,7 @@ using UnityEngine;
 using Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
 namespace MLAgents
 {
@@ -22,7 +23,7 @@ namespace MLAgents
         /// For discrete control, specifies the actions that the agent cannot take. Is true if
         /// the action is masked.
         /// </summary>
-        public bool[] actionMasks;
+        public bool[] discreteActionMasks;
 
         /// <summary>
         /// Current agent reward.
@@ -104,7 +105,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public abstract class Agent : MonoBehaviour, ISerializationCallbackReceiver
+    public class Agent : MonoBehaviour, ISerializationCallbackReceiver
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
@@ -428,6 +429,7 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
+
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
@@ -475,9 +477,13 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            throw new UnityAgentsException(
-                "The Heuristic method was not implemented for the Agent on the " +
-                $"{gameObject.name} GameObject.");
+            Debug.LogWarning("Heuristic method called but not implemented. Return placeholder actions.");
+            var param = m_PolicyFactory.brainParameters;
+            var actionSize = param.vectorActionSpaceType == SpaceType.Continuous ?
+                param.vectorActionSize[0] :
+                param.vectorActionSize.Length;
+
+            return new float[actionSize];
         }
 
         /// <summary>
@@ -558,7 +564,7 @@ namespace MLAgents
                     CollectDiscreteActionMasks(m_ActionMasker);
                 }
             }
-            m_Info.actionMasks = m_ActionMasker.GetMask();
+            m_Info.discreteActionMasks = m_ActionMasker.GetMask();
 
             m_Info.reward = m_Reward;
             m_Info.done = false;

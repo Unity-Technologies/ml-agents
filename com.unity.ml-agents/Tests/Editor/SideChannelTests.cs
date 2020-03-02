@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
+using MLAgents.SideChannels;
 
 namespace MLAgents.Tests
 {
@@ -12,8 +13,8 @@ namespace MLAgents.Tests
         {
             public List<int> messagesReceived = new List<int>();
 
-            public TestSideChannel() { 
-                ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7"); 
+            public TestSideChannel() {
+                ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
             public override void OnMessageReceived(byte[] data)

@@ -5,6 +5,7 @@ using System.Reflection;
 using MLAgents.CommunicatorObjects;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {
@@ -64,7 +65,7 @@ namespace MLAgents.Tests
             var agentInfo = new AgentInfo
             {
                 reward = 1f,
-                actionMasks = new[] { false, true },
+                discreteActionMasks = new[] { false, true },
                 done = true,
                 episodeId = 5,
                 maxStepReached = true,

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MLAgents.Policies;
 
 namespace MLAgents.Demonstrations
 {

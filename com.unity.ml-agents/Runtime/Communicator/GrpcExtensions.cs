@@ -7,6 +7,8 @@ using UnityEngine;
 using System.Runtime.CompilerServices;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
+
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
@@ -49,9 +51,9 @@ namespace MLAgents
                 Id = ai.episodeId,
             };
 
-            if (ai.actionMasks != null)
+            if (ai.discreteActionMasks != null)
             {
-                agentInfoProto.ActionMask.AddRange(ai.actionMasks);
+                agentInfoProto.ActionMask.AddRange(ai.discreteActionMasks);
             }
 
             return agentInfoProto;

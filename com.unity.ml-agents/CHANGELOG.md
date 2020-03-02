@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
  - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
  - All Sensor related code has been moved to the namespace `MLAgents.Sensors`.
+ - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -33,6 +34,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
  - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
+ - The `Agent` class is no longer abstract.
+ - SensorBase was moved out of the package and into the Examples directory.
+ - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
 
 
 ## [0.14.1-preview] - 2020-02-25

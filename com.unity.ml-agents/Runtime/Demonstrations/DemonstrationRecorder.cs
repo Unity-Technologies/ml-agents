@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
+using MLAgents.Policies;
 
 namespace MLAgents.Demonstrations
 {

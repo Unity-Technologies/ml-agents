@@ -6,8 +6,8 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
 from mlagents.trainers.models import LearningRateSchedule, EncoderType, ModelUtils
-from mlagents.trainers.common.tf_optimizer import TFOptimizer
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 

@@ -1,4 +1,4 @@
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec
 from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
