@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -52,6 +51,7 @@ namespace MLAgents
     {
         // TODO move the versions to Constants.cs?
         const string k_ApiVersion = "0.15.0";
+        internal const string k_PackageVersion = "0.14.1-preview";
         const int k_EditorTrainingPort = 5004;
         const string k_portCommandLineFlag = "--mlagents-port";
 
@@ -75,6 +75,9 @@ namespace MLAgents
         /// Collection of float properties (indexed by a string).
         /// </summary>
         public IFloatProperties FloatProperties;
+
+
+        // Fields not provided in the Inspector.
 
         /// <summary>
         /// Returns whether or not the communicator is on.
@@ -150,11 +153,6 @@ namespace MLAgents
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
         GameObject m_StepperObject;
-
-        /// <summary>
-        /// Package version, loaded from the JSON file.
-        /// </summary>
-        string m_PackageVersion;
 
 
         /// <summary>
@@ -265,28 +263,6 @@ namespace MLAgents
             }
         }
 
-        /// <summary>
-        /// Helper class to receive the JSON package information.
-        /// </summary>
-        [Serializable]
-        struct PackageVersionHelper
-        {
-            #pragma warning disable 0649
-            public string version;
-            #pragma warning restore 0649
-        }
-
-        static string ReadPackageVersion()
-        {
-            // TODO we can potentially replace this in 2019.2 and later with
-            //   UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Agent).Assembly)
-            var textAsset = (TextAsset) AssetDatabase.LoadAssetAtPath(
-                "Packages/com.unity.ml-agents/package.json", typeof(TextAsset)
-                );
-            var loadedPackageInfo = JsonUtility.FromJson<PackageVersionHelper>(textAsset.text);
-            return loadedPackageInfo.version;
-        }
-
         // Used to read Python-provided environment parameters
         static int ReadPortFromArgs()
         {
@@ -322,8 +298,6 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
-            m_PackageVersion = ReadPackageVersion();
-
             EnableAutomaticStepping();
 
             var floatProperties = new FloatPropertiesChannel();
@@ -354,7 +328,7 @@ namespace MLAgents
                         new CommunicatorInitParameters
                         {
                             communicationVersion = k_ApiVersion,
-                            packageVersion = m_PackageVersion,
+                            packageVersion = k_PackageVersion,
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
