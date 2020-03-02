@@ -8,7 +8,7 @@ import yaml
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
-from mlagents.trainers.common.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb

@@ -5,8 +5,8 @@ import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
-from mlagents.trainers.common.policy.tf_policy import TFPolicy
-from mlagents.trainers.common.optimizer.tf_optimizer import TFOptimizer
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 
 

@@ -4,7 +4,7 @@ from mlagents.tf_utils import tf
 
 import yaml
 
-from mlagents.trainers.common.distributions import (
+from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )

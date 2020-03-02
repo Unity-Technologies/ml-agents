@@ -3,8 +3,8 @@ import numpy as np
 
 from mlagents.tf_utils.tf import tf
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.common.policy.tf_policy import TFPolicy
-from mlagents.trainers.common.optimizer import Optimizer
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,

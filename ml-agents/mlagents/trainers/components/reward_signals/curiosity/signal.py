@@ -4,7 +4,7 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
-from mlagents.trainers.common.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
 class CuriosityRewardSignal(RewardSignal):
