@@ -1,14 +1,16 @@
 using System;
 using MLAgents.Sensors;
+using UnityEngine.Serialization;
+
 namespace MLAgentsExamples
 {
     /// <summary>
     /// A simple example of a SensorComponent.
-    /// This should be added to the same GameObject as the Agent (or Agent subclass).
+    /// This should be added to the same GameObject as the BasicController
     /// </summary>
     public class BasicSensorComponent : SensorComponent
     {
-        public BasicAgent m_BasicAgent;
+        public BasicController basicController;
 
         /// <summary>
         /// Creates a BasicSensor.
@@ -16,13 +18,13 @@ namespace MLAgentsExamples
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new BasicSensor(m_BasicAgent);
+            return new BasicSensor(basicController);
         }
 
         /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            return new[] { BasicAgent.k_Extents };
+            return new[] { BasicController.k_Extents };
         }
     }
 
@@ -32,11 +34,11 @@ namespace MLAgentsExamples
     /// </summary>
     public class BasicSensor : SensorBase
     {
-        public BasicAgent m_BasicAgent;
+        public BasicController basicController;
 
-        public BasicSensor(BasicAgent agent)
+        public BasicSensor(BasicController controller)
         {
-            m_BasicAgent = agent;
+            basicController = controller;
         }
 
         /// <summary>
@@ -48,13 +50,13 @@ namespace MLAgentsExamples
         {
             // One-hot encoding of the position
             Array.Clear(output, 0, output.Length);
-            output[m_BasicAgent.m_Position] = 1;
+            output[basicController.m_Position] = 1;
         }
 
         /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            return new[] { BasicAgent.k_Extents };
+            return new[] { BasicController.k_Extents };
         }
 
         /// <inheritdoc/>

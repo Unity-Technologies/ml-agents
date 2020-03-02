@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ee410d6d45349218d5e69bb2a347c63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BasicAgent: {fileID: 1335907381}
+  basicController: {fileID: 1335907381}
 --- !u!1001 &1502457254
 PrefabInstance:
   m_ObjectHideFlags: 0
