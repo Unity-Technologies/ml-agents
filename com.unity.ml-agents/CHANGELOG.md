@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
  - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
+ - The `Agent` class is no longer abstract.
+ - SensorBase was moved out of the package and into the Examples directory.
 
 
 ## [0.14.1-preview] - 2020-02-25

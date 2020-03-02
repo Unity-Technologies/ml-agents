@@ -105,7 +105,7 @@ namespace MLAgents
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
-    public abstract class Agent : MonoBehaviour, ISerializationCallbackReceiver
+    public class Agent : MonoBehaviour, ISerializationCallbackReceiver
     {
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
@@ -429,6 +429,7 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
+
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
@@ -476,9 +477,13 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            throw new UnityAgentsException(
-                "The Heuristic method was not implemented for the Agent on the " +
-                $"{gameObject.name} GameObject.");
+            Debug.LogWarning("Heuristic method called but not implemented. Return placeholder actions.");
+            var param = m_PolicyFactory.brainParameters;
+            var actionSize = param.vectorActionSpaceType == SpaceType.Continuous ?
+                param.vectorActionSize[0] :
+                param.vectorActionSize.Length;
+
+            return new float[actionSize];
         }
 
         /// <summary>
