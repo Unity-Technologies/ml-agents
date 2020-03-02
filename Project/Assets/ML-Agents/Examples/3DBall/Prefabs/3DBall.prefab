@@ -289,7 +289,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: 3DBall
   m_TeamID: 0
-  m_UseChildSensors: 1
+  m_useChildSensors: 1
 --- !u!114 &114715123104194396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,9 +302,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaba48bf82bee4751aa7b89569e57f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
   maxStep: 5000
   ball: {fileID: 1036225416237908}
 --- !u!114 &1306725529891448089
