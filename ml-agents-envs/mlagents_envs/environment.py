@@ -58,6 +58,7 @@ class UnityEnvironment(BaseEnv):
     # When connecting to C#, this must match Academy.k_ApiVersion
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
+    # This should be incremented whenever a change is made to the communication protocol.
     API_VERSION = "0.15.0"
 
     # Default port that the editor listens on. If an environment executable

@@ -56,6 +56,7 @@ namespace MLAgents
         /// When connecting to python, this must match UnityEnvironment.API_VERSION.
         /// Currently we require strict equality between the communication protocol
         /// on each side, although we may allow some flexibility in the future.
+        /// This should be incremented whenever a change is made to the communication protocol.
         /// </summary>
         const string k_ApiVersion = "0.15.0";
 
