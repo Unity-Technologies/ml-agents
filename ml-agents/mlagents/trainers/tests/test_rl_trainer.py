@@ -1,7 +1,7 @@
 import yaml
 from unittest import mock
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 
@@ -79,7 +79,7 @@ def test_clear_update_buffer():
         assert len(arr) == 0
 
 
-@mock.patch("mlagents.trainers.rl_trainer.RLTrainer.clear_update_buffer")
+@mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer.clear_update_buffer")
 def test_advance(mocked_clear_update_buffer):
     trainer = create_rl_trainer()
     trajectory_queue = AgentManagerQueue("testbrain")

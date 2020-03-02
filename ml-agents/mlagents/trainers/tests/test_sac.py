@@ -7,7 +7,7 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
