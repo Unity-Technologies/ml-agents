@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 from typing import Any, Dict, Optional, List
 
 from mlagents.tf_utils import tf
@@ -10,6 +9,10 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.common.distributions import (
+    GaussianDistribution,
+    MultiCategoricalDistribution,
+)
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -199,82 +202,29 @@ class NNPolicy(TFPolicy):
             hidden_policy = encoded
 
         with tf.variable_scope("policy"):
-            mu = tf.layers.dense(
+            distribution = GaussianDistribution(
                 hidden_policy,
-                self.act_size[0],
-                activation=None,
-                name="mu",
-                kernel_initializer=ModelUtils.scaled_init(0.01),
-                reuse=tf.AUTO_REUSE,
+                self.act_size,
+                reparameterize=reparameterize,
+                tanh_squash=tanh_squash,
             )
-
-            # Policy-dependent log_sigma
-            if condition_sigma_on_obs:
-                log_sigma = tf.layers.dense(
-                    hidden_policy,
-                    self.act_size[0],
-                    activation=None,
-                    name="log_sigma",
-                    kernel_initializer=ModelUtils.scaled_init(0.01),
-                )
-            else:
-                log_sigma = tf.get_variable(
-                    "log_sigma",
-                    [self.act_size[0]],
-                    dtype=tf.float32,
-                    initializer=tf.zeros_initializer(),
-                )
-            log_sigma = tf.clip_by_value(log_sigma, self.log_std_min, self.log_std_max)
-
-            sigma = tf.exp(log_sigma)
-
-            epsilon = tf.random_normal(tf.shape(mu))
-
-            sampled_policy = mu + sigma * epsilon
-
-            # Stop gradient if we're not doing the resampling trick
-            if not reparameterize:
-                sampled_policy_probs = tf.stop_gradient(sampled_policy)
-            else:
-                sampled_policy_probs = sampled_policy
-
-            # Compute probability of model output.
-            _gauss_pre = -0.5 * (
-                ((sampled_policy_probs - mu) / (sigma + EPSILON)) ** 2
-                + 2 * log_sigma
-                + np.log(2 * np.pi)
-            )
-            all_probs = _gauss_pre
-            all_probs = tf.reduce_sum(_gauss_pre, axis=1, keepdims=True)
 
         if tanh_squash:
-            self.output_pre = tf.tanh(sampled_policy)
-
-            # Squash correction
-            all_probs -= tf.reduce_sum(
-                tf.log(1 - self.output_pre ** 2 + EPSILON), axis=1, keepdims=True
-            )
+            self.output_pre = distribution.sample
             self.output = tf.identity(self.output_pre, name="action")
         else:
-            self.output_pre = sampled_policy
+            self.output_pre = distribution.sample
             # Clip and scale output to ensure actions are always within [-1, 1] range.
             output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
             self.output = tf.identity(output_post, name="action")
 
         self.selected_actions = tf.stop_gradient(self.output)
 
-        self.all_log_probs = tf.identity(all_probs, name="action_probs")
-
-        single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + 2 * log_sigma
-        )
-        # Make entropy the right shape
-        self.entropy = tf.ones_like(tf.reshape(mu[:, 0], [-1])) * single_dim_entropy
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
+        self.entropy = distribution.entropy
 
         # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-        self.log_probs = tf.reduce_sum(
-            (tf.identity(self.all_log_probs)), axis=1, keepdims=True
-        )
+        self.total_log_probs = distribution.total_log_probs
 
     def _create_dc_actor(self, encoded: tf.Tensor) -> None:
         """
@@ -310,77 +260,20 @@ class NNPolicy(TFPolicy):
         else:
             hidden_policy = encoded
 
-        policy_branches = []
-        with tf.variable_scope("policy"):
-            for size in self.act_size:
-                policy_branches.append(
-                    tf.layers.dense(
-                        hidden_policy,
-                        size,
-                        activation=None,
-                        use_bias=False,
-                        kernel_initializer=ModelUtils.scaled_init(0.01),
-                    )
-                )
-
-        raw_log_probs = tf.concat(policy_branches, axis=1, name="action_probs")
-
         self.action_masks = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
         )
-        output, self.action_probs, normalized_logits = ModelUtils.create_discrete_action_masking_layer(
-            raw_log_probs, self.action_masks, self.act_size
-        )
 
-        self.output = tf.identity(output)
-        self.all_log_probs = tf.identity(normalized_logits, name="action")
-
-        self.action_oh = tf.concat(
-            [
-                tf.one_hot(self.output[:, i], self.act_size[i])
-                for i in range(len(self.act_size))
-            ],
-            axis=1,
-        )
-        self.selected_actions = tf.stop_gradient(self.action_oh)
-
-        action_idx = [0] + list(np.cumsum(self.act_size))
-
-        self.entropy = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=tf.nn.softmax(
-                                self.all_log_probs[:, action_idx[i] : action_idx[i + 1]]
-                            ),
-                            logits=self.all_log_probs[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-        )
-
-        self.log_probs = tf.reduce_sum(
-            (
-                tf.stack(
-                    [
-                        -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.action_oh[:, action_idx[i] : action_idx[i + 1]],
-                            logits=normalized_logits[
-                                :, action_idx[i] : action_idx[i + 1]
-                            ],
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-            ),
-            axis=1,
-            keepdims=True,
-        )
+        with tf.variable_scope("policy"):
+            distribution = MultiCategoricalDistribution(
+                hidden_policy, self.act_size, self.action_masks
+            )
+        # It's important that we are able to feed_dict a value into this tensor to get the
+        # right one-hot encoding, so we can't do identity on it.
+        self.output = distribution.sample
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action")
+        self.selected_actions = tf.stop_gradient(
+            distribution.sample_onehot
+        )  # In discrete, these are onehot
+        self.entropy = distribution.entropy
+        self.total_log_probs = distribution.total_log_probs

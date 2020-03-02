@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
 using MLAgents.Sensors;
+using MLAgents.Demonstrations;
 
 namespace MLAgents
 {
@@ -59,8 +60,7 @@ namespace MLAgents
     /// an Agent. An agent produces observations and takes actions in the
     /// environment. Observations are determined by the cameras attached
     /// to the agent in addition to the vector observations implemented by the
-    /// user in <see cref="Agent.CollectObservations(VectorSensor)"/> or
-    /// <see cref="Agent.CollectObservations(VectorSensor, ActionMasker)"/>.
+    /// user in <see cref="Agent.CollectObservations(VectorSensor)"/>.
     /// On the other hand, actions are determined by decisions produced by a Policy.
     /// Currently, this class is expected to be extended to implement the desired agent behavior.
     /// </summary>
@@ -173,7 +173,7 @@ namespace MLAgents
         bool m_Initialized;
 
         /// Keeps track of the actions that are masked at each step.
-        ActionMasker m_ActionMasker;
+        DiscreteActionMasker m_ActionMasker;
 
         /// <summary>
         /// Set of DemonstrationWriters that the Agent will write its step information to.
@@ -434,7 +434,7 @@ namespace MLAgents
         void ResetData()
         {
             var param = m_PolicyFactory.brainParameters;
-            m_ActionMasker = new ActionMasker(param);
+            m_ActionMasker = new DiscreteActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
             // should stay the previous action before the Done(), so that it is properly recorded.
@@ -549,7 +549,14 @@ namespace MLAgents
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
-                CollectObservations(collectObservationsSensor, m_ActionMasker);
+                CollectObservations(collectObservationsSensor);
+            }
+            using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
+            {
+                if (m_PolicyFactory.brainParameters.vectorActionSpaceType == SpaceType.Discrete)
+                {
+                    CollectDiscreteActionMasks(m_ActionMasker);
+                }
             }
             m_Info.actionMasks = m_ActionMasker.GetMask();
 
@@ -612,51 +619,18 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Collects the vector observations of the agent alongside the masked actions.
-        /// The agent observation describes the current environment from the
-        /// perspective of the agent.
+        /// Collects the masks for discrete actions.
+        /// When using discrete actions, the agent will not perform the masked action.
         /// </summary>
-        /// <param name="sensor">
-        /// The vector observations for the agent.
-        /// </param>
         /// <param name="actionMasker">
-        /// The masked actions for the agent.
+        /// The action masker for the agent.
         /// </param>
         /// <remarks>
-        /// An agents observation is any environment information that helps
-        /// the Agent achieve its goal. For example, for a fighting Agent, its
-        /// observation could include distances to friends or enemies, or the
-        /// current level of ammunition at its disposal.
-        /// Recall that an Agent may attach vector or visual observations.
-        /// Vector observations are added by calling the provided helper methods
-        /// on the VectorSensor input:
-        ///     - <see cref="VectorSensor.AddObservation(int)"/>
-        ///     - <see cref="VectorSensor.AddObservation(float)"/>
-        ///     - <see cref="VectorSensor.AddObservation(Vector3)"/>
-        ///     - <see cref="VectorSensor.AddObservation(Vector2)"/>
-        ///     - <see cref="VectorSensor.AddObservation(Quaternion)"/>
-        ///     - <see cref="VectorSensor.AddObservation(bool)"/>
-        ///     - <see cref="VectorSensor.AddObservation(IEnumerable{float})"/>
-        ///     - <see cref="VectorSensor.AddOneHotObservation(int, int)"/>
-        /// Depending on your environment, any combination of these helpers can
-        /// be used. They just need to be used in the exact same order each time
-        /// this method is called and the resulting size of the vector observation
-        /// needs to match the vectorObservationSize attribute of the linked Brain.
-        /// Visual observations are implicitly added from the cameras attached to
-        /// the Agent.
         /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it. You can call the following method on the ActionMasker
-        /// input :
-        ///     - <see cref="ActionMasker.SetActionMask(int)"/>
-        ///     - <see cref="ActionMasker.SetActionMask(int, int)"/>
-        ///     - <see cref="ActionMasker.SetActionMask(int, IEnumerable{int})"/>
-        ///     - <see cref="ActionMasker.SetActionMask(IEnumerable{int})"/>
-        /// The branch input is the index of the action, actionIndices are the indices of the
-        /// invalid options for that action.
+        /// action by masking it with <see cref="DiscreteActionMasker.SetMask(int, IEnumerable{int})"/>
         /// </remarks>
-        public virtual void CollectObservations(VectorSensor sensor, ActionMasker actionMasker)
+        public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
         {
-            CollectObservations(sensor);
         }
 
         /// <summary>

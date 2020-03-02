@@ -82,7 +82,7 @@ def test_bcmodule_defaults():
 
 
 # Test with continuous control env and vector actions
-@pytest.mark.parametrize("is_sac", [True, False], ids=["ppo", "sac"])
+@pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_update(is_sac):
     mock_brain = mb.create_mock_3dball_brain()
     bc_module = create_bc_module(
@@ -94,7 +94,7 @@ def test_bcmodule_update(is_sac):
 
 
 # Test with constant pretraining learning rate
-@pytest.mark.parametrize("is_sac", [True, False], ids=["ppo", "sac"])
+@pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_constant_lr_update(is_sac):
     trainer_config = ppo_dummy_config()
     mock_brain = mb.create_mock_3dball_brain()
@@ -110,7 +110,7 @@ def test_bcmodule_constant_lr_update(is_sac):
 
 
 # Test with RNN
-@pytest.mark.parametrize("is_sac", [True, False], ids=["ppo", "sac"])
+@pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_rnn_update(is_sac):
     mock_brain = mb.create_mock_3dball_brain()
     bc_module = create_bc_module(
@@ -122,7 +122,7 @@ def test_bcmodule_rnn_update(is_sac):
 
 
 # Test with discrete control and visual observations
-@pytest.mark.parametrize("is_sac", [True, False], ids=["ppo", "sac"])
+@pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_dc_visual_update(is_sac):
     mock_brain = mb.create_mock_banana_brain()
     bc_module = create_bc_module(
@@ -134,7 +134,7 @@ def test_bcmodule_dc_visual_update(is_sac):
 
 
 # Test with discrete control, visual observations and RNN
-@pytest.mark.parametrize("is_sac", [True, False], ids=["ppo", "sac"])
+@pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
 def test_bcmodule_rnn_dc_update(is_sac):
     mock_brain = mb.create_mock_banana_brain()
     bc_module = create_bc_module(

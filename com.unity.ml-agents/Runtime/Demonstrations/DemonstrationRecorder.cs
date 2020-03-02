@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
 
-namespace MLAgents
+namespace MLAgents.Demonstrations
 {
     /// <summary>
     /// Demonstration Recorder Component.
