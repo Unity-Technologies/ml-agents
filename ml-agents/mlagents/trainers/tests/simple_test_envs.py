@@ -38,13 +38,14 @@ class Simple1DEnvironment(BaseEnv):
         self.position: Dict[str, float] = {}
         self.step_count: Dict[str, float] = {}
         self.random = random.Random(str(self.group_spec))
-        self.goal = self.random.choice([-1, 1])
+        self.goal: Dict[str, int] = {}
         self.action = {}
         self.rewards: Dict[str, float] = {}
         self.final_rewards: Dict[str, List[float]] = {}
         self.step_result: Dict[str, BatchedStepResult] = {}
 
         for name in self.names:
+            self.goal[name] = self.random.choice([-1, 1])
             self.rewards[name] = 0
             self.final_rewards[name] = []
             self._reset_agent(name)
@@ -81,12 +82,12 @@ class Simple1DEnvironment(BaseEnv):
             self.step_count[name] += 1
             done = self.position[name] >= 1.0 or self.position[name] <= -1.0
             if done:
-                reward = SUCCESS_REWARD * self.position[name] * self.goal
+                reward = SUCCESS_REWARD * self.position[name] * self.goal[name]
             else:
                 reward = -TIME_PENALTY
             self.rewards[name] += reward
 
-            m_vector_obs = [np.zeros((1, OBS_SIZE), dtype=np.float32)]
+            m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * self.goal[name]]
             m_reward = np.array([reward], dtype=np.float32)
             m_done = np.array([done], dtype=np.bool)
             m_agent_id = np.array([0], dtype=np.int32)
@@ -110,6 +111,7 @@ class Simple1DEnvironment(BaseEnv):
         return action_mask
 
     def _reset_agent(self, name):
+        self.goal[name] = self.random.choice([-1, 1])
         self.position[name] = 0.0
         self.step_count[name] = 0
         self.final_rewards[name].append(self.rewards[name])
@@ -119,7 +121,7 @@ class Simple1DEnvironment(BaseEnv):
         for name in self.names:
             self._reset_agent(name)
 
-            m_vector_obs = [np.zeros((1, OBS_SIZE), dtype=np.float32)]
+            m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * self.goal[name]]
             m_reward = np.array([0], dtype=np.float32)
             m_done = np.array([False], dtype=np.bool)
             m_agent_id = np.array([0], dtype=np.int32)
