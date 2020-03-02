@@ -20,6 +20,7 @@ The versions can be found in
 * The `SetMask` method must now be called on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` method.
 * The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
 * The `--multi-gpu` option has been removed temporarily.
+* `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.

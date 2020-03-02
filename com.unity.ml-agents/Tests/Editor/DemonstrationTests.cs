@@ -65,7 +65,7 @@ namespace MLAgents.Tests
             var agentInfo = new AgentInfo
             {
                 reward = 1f,
-                actionMasks = new[] { false, true },
+                discreteActionMasks = new[] { false, true },
                 done = true,
                 episodeId = 5,
                 maxStepReached = true,
