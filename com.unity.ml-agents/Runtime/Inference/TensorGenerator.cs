@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Barracuda;
 using MLAgents.Sensors;
 
-namespace MLAgents.InferenceBrain
+namespace MLAgents.Inference
 {
     /// <summary>
     /// Mapping between Tensor names and generators.

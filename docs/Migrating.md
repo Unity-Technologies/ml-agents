@@ -14,7 +14,8 @@ The versions can be found in
 * The `SetMask` was renamed to `SetMask` method must now be called on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` virtual method.
 * We consolidated our API for `DiscreteActionMasker`. `SetMask` takes two arguments : the branch index and the list of masked actions for that branch.
 * The `Monitor` class has been moved to the Examples Project. (It was prone to errors during testing)
-* The `MLAgents.Sensor` namespace has been removed. All sensors now belong to the `MLAgents` namespace.
+* The `MLAgents.Sensors` namespace has been introduced. All sensors classes are part of the `MLAgents.Sensors` namespace.
+* The `MLAgents.SideChannels` namespace has been introduced. All side channel classes are part of the `MLAgents.SideChannels` namespace.
 * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class, and the method was renamed to `Perceive()`.
 * The `SetMask` method must now be called on the `DiscreteActionMasker` argument of the `CollectDiscreteActionMasks` method.
 * The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`

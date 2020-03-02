@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// The Factory to generate policies.

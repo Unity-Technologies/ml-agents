@@ -2,6 +2,7 @@ using System.IO;
 using Google.Protobuf;
 using System.Collections.Generic;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 
 namespace MLAgents.Demonstrations
 {

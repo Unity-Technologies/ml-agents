@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.InferenceBrain;
-
+using MLAgents.Inference;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {

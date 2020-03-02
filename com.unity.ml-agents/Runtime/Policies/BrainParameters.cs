@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// Whether the action space is discrete or continuous.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace MLAgents
+namespace MLAgents.SideChannels
 {
     /// <summary>
     /// Side channels provide an alternative mechanism of sending/receiving data from Unity

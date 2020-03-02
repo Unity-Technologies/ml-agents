@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Barracuda;
-using System;
+using MLAgents.Policies;
 
-namespace MLAgents.InferenceBrain
+namespace MLAgents.Inference
 {
     /// <summary>
     /// Mapping between the output tensor names and the method that will use the

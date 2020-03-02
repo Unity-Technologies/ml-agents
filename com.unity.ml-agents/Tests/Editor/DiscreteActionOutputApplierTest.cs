@@ -2,8 +2,8 @@ using System;
 using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.InferenceBrain;
-using MLAgents.InferenceBrain.Utils;
+using MLAgents.Inference;
+using MLAgents.Inference.Utils;
 
 namespace MLAgents.Tests
 {
