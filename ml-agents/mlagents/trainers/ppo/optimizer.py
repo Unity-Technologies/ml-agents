@@ -72,7 +72,7 @@ class PPOOptimizer(TFOptimizer):
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
                 self._create_losses(
-                    self.policy.log_probs,
+                    self.policy.total_log_probs,
                     self.old_log_probs,
                     self.value_heads,
                     self.policy.entropy,
@@ -183,7 +183,7 @@ class PPOOptimizer(TFOptimizer):
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.policy.action_oh[
+                            labels=self.policy.selected_actions[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                             logits=old_normalized_logits[

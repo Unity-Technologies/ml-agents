@@ -55,8 +55,8 @@ SAC_CONFIG = f"""
         num_layers: 1
         time_horizon: 64
         sequence_length: 64
-        summary_freq: 500
-        tau: 0.005
+        summary_freq: 100
+        tau: 0.01
         use_recurrent: false
         curiosity_enc_size: 128
         demo_path: None

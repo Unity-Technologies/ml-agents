@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
- - Agent.CollectObservations now takes a VectorSensor argument. It was also overloaded to optionally take an ActionMasker argument. (#3352, #3389)
+ - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
+ - Added `Agent.CollectDiscreteActionMasks` virtual method with a `DiscreteActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
  Note that Barracuda 0.6.0 or later is required to import the `.onnx` files properly
  - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
@@ -22,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
  - Update Barracuda to 0.6.0-preview
- - The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class.
+ * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class, and the method was renamed to `Perceive()`.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
  - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
  - `DemonstrationRecorder` can now record observations outside of the editor.

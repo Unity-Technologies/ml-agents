@@ -152,16 +152,12 @@ namespace MLAgents
         /// <summary>
         /// Stop timing a block of code, and increment internal counts.
         /// </summary>
-        public void End(bool isRecording)
+        public void End()
         {
-            if (isRecording)
-            {
-                var elapsed = DateTime.Now.Ticks - m_TickStart;
-                m_TotalTicks += elapsed;
-                m_TickStart = 0;
-                m_NumCalls++;
-            }
-            // Note that samplers are always updated regardless of recording state, to ensure matching start and ends.
+            var elapsed = DateTime.Now.Ticks - m_TickStart;
+            m_TotalTicks += elapsed;
+            m_TickStart = 0;
+            m_NumCalls++;
             m_Sampler?.End();
         }
 
@@ -285,14 +281,12 @@ namespace MLAgents
     /// This implements the Singleton pattern (solution 4) as described in
     /// https://csharpindepth.com/articles/singleton
     /// </remarks>
-    public class TimerStack : IDisposable
+    internal class TimerStack : IDisposable
     {
         static readonly TimerStack k_Instance = new TimerStack();
 
         Stack<TimerNode> m_Stack;
         TimerNode m_RootNode;
-        // Whether or not new timers and gauges can be added.
-        bool m_Recording = true;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -330,26 +324,12 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Whether or not new timers and gauges can be added.
-        /// </summary>
-        public bool Recording
-        {
-            get { return m_Recording; }
-            set { m_Recording = value; }
-        }
-
-        /// <summary>
         /// Updates the referenced gauge in the root node with the provided value.
         /// </summary>
         /// <param name="name">The name of the Gauge to modify.</param>
         /// <param name="value">The value to update the Gauge with.</param>
         public void SetGauge(string name, float value)
         {
-            if (!Recording)
-            {
-                return;
-            }
-
             if (!float.IsNaN(value))
             {
                 GaugeNode gauge;
@@ -375,7 +355,7 @@ namespace MLAgents
         void Pop()
         {
             var node = m_Stack.Pop();
-            node.End(Recording);
+            node.End();
         }
 
         /// <summary>
