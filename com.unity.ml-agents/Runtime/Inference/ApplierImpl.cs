@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Barracuda;
-using MLAgents.InferenceBrain.Utils;
+using MLAgents.Inference.Utils;
 using UnityEngine;
 
-namespace MLAgents.InferenceBrain
+namespace MLAgents.Inference
 {
     /// <summary>
     /// The Applier for the Continuous Action output tensor. Tensor is assumed to contain the

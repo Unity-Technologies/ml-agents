@@ -1,6 +1,6 @@
 using System;
 
-namespace MLAgents.InferenceBrain.Utils
+namespace MLAgents.Inference.Utils
 {
     /// <summary>
     /// RandomNormal - A random number generator that produces normally distributed random

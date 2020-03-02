@@ -4,6 +4,7 @@ using UnityEngine;
 using Barracuda;
 using System.IO;
 using MLAgents;
+using MLAgents.Policies;
 
 namespace MLAgentsExamples
 {

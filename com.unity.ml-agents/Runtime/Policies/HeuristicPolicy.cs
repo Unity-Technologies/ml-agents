@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System;
 using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Policies
 {
     /// <summary>
     /// The Heuristic Policy uses a hards coded Heuristic method

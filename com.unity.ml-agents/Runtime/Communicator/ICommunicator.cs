@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using MLAgents.Policies;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 namespace MLAgents
 {
