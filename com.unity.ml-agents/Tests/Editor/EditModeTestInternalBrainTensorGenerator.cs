@@ -44,13 +44,13 @@ namespace MLAgents.Tests
             var infoA = new AgentInfo
             {
                 storedVectorActions = new[] { 1f, 2f },
-                actionMasks = null
+                discreteActionMasks = null
             };
 
             var infoB = new AgentInfo
             {
                 storedVectorActions = new[] { 3f, 4f },
-                actionMasks = new[] { true, false, false, false, false },
+                discreteActionMasks = new[] { true, false, false, false, false },
             };
 
 

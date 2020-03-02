@@ -51,9 +51,9 @@ namespace MLAgents
                 Id = ai.episodeId,
             };
 
-            if (ai.actionMasks != null)
+            if (ai.discreteActionMasks != null)
             {
-                agentInfoProto.ActionMask.AddRange(ai.actionMasks);
+                agentInfoProto.ActionMask.AddRange(ai.discreteActionMasks);
             }
 
             return agentInfoProto;

@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
  - The `Agent` class is no longer abstract.
  - SensorBase was moved out of the package and into the Examples directory.
+ - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
 
 
 ## [0.14.1-preview] - 2020-02-25

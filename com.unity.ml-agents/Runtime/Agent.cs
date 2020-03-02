@@ -23,7 +23,7 @@ namespace MLAgents
         /// For discrete control, specifies the actions that the agent cannot take. Is true if
         /// the action is masked.
         /// </summary>
-        public bool[] actionMasks;
+        public bool[] discreteActionMasks;
 
         /// <summary>
         /// Current agent reward.
@@ -564,7 +564,7 @@ namespace MLAgents
                     CollectDiscreteActionMasks(m_ActionMasker);
                 }
             }
-            m_Info.actionMasks = m_ActionMasker.GetMask();
+            m_Info.discreteActionMasks = m_ActionMasker.GetMask();
 
             m_Info.reward = m_Reward;
             m_Info.done = false;
