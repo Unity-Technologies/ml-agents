@@ -21,12 +21,12 @@ namespace MLAgents
         /// <summary>
         /// The version of the Unity SDK.
         /// </summary>
-        public string packageVersion;
+        public string unityPackageVersion;
 
         /// <summary>
         /// The version of the communication API.
         /// </summary>
-        public string communicationVersion;
+        public string unityCommunicationVersion;
     }
     internal struct UnityRLInitParameters
     {
@@ -38,12 +38,12 @@ namespace MLAgents
         /// <summary>
         /// The library version of the python process.
         /// </summary>
-        public string packageVersion;
+        public string pythonLibraryVersion;
 
         /// <summary>
         /// The version of the communication API that python is using..
         /// </summary>
-        public string communicationVersion;
+        public string pythonCommunicationVersion;
     }
     internal struct UnityRLInputParameters
     {

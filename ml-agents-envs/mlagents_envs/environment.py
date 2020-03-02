@@ -53,8 +53,18 @@ logger = logging.getLogger("mlagents_envs")
 class UnityEnvironment(BaseEnv):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
+
+    # Communication protocol version.
+    # When connecting to C#, this must match Academy.k_ApiVersion
+    # Currently we require strict equality between the communication protocol
+    # on each side, although we may allow some flexibility in the future.
     API_VERSION = "0.15.0"
+
+    # Default port that the editor listens on. If an environment executable
+    # isn't specified, this port will be used.
     DEFAULT_EDITOR_PORT = 5004
+
+    # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     def __init__(

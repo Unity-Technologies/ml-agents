@@ -40,6 +40,9 @@ namespace MLAgents.CommunicatorObjects {
 
   }
   #region Messages
+  /// <summary>
+  /// The initializaiton message - this is typically sent from the Python trainer to the C# environment.
+  /// </summary>
   internal sealed partial class UnityRLInitializationInputProto : pb::IMessage<UnityRLInitializationInputProto> {
     private static readonly pb::MessageParser<UnityRLInitializationInputProto> _parser = new pb::MessageParser<UnityRLInitializationInputProto>(() => new UnityRLInitializationInputProto());
     private pb::UnknownFieldSet _unknownFields;
@@ -90,6 +93,9 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "communication_version" field.</summary>
     public const int CommunicationVersionFieldNumber = 2;
     private string communicationVersion_ = "";
+    /// <summary>
+    /// Communication protocol version that the initiating side (typically the Python trainer) is using.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string CommunicationVersion {
       get { return communicationVersion_; }
@@ -101,6 +107,9 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "package_version" field.</summary>
     public const int PackageVersionFieldNumber = 3;
     private string packageVersion_ = "";
+    /// <summary>
+    /// Package/library version that the initiating side (typically the Python trainer) is using.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string PackageVersion {
       get { return packageVersion_; }

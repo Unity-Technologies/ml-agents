@@ -98,6 +98,9 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "communication_version" field.</summary>
     public const int CommunicationVersionFieldNumber = 2;
     private string communicationVersion_ = "";
+    /// <summary>
+    /// Communication protocol version that the responding side (typically the C# environment) is using.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string CommunicationVersion {
       get { return communicationVersion_; }
@@ -130,6 +133,9 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "package_version" field.</summary>
     public const int PackageVersionFieldNumber = 7;
     private string packageVersion_ = "";
+    /// <summary>
+    /// Package/library version that the responding side (typically the C# environment) is using.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string PackageVersion {
       get { return packageVersion_; }
