@@ -2,6 +2,7 @@ import math
 import tempfile
 import pytest
 import yaml
+import numpy as np
 
 from mlagents.trainers.tests.simple_test_envs import Simple1DEnvironment
 from mlagents.trainers.trainer_controller import TrainerController
@@ -11,7 +12,7 @@ from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.stats import StatsReporter
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 
-BRAIN_NAME = "1D"  # __name__
+BRAIN_NAME = "1D"
 
 PPO_CONFIG = f"""
     {BRAIN_NAME}:
@@ -67,7 +68,7 @@ SAC_CONFIG = f"""
                 gamma: 0.99
     """
 
-GHOST_CONFIG = f"""
+GHOST_CONFIG_PASS = f"""
     {BRAIN_NAME}:
         trainer: ppo
         batch_size: 16
@@ -96,8 +97,55 @@ GHOST_CONFIG = f"""
             swap_steps: 2000
     """
 
+# This config should fail because the ghosted policy is never swapped with a competent policy.
+# Swap occurs after max step is reached.
+GHOST_CONFIG_FAIL = f"""
+    {BRAIN_NAME}:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.95
+        learning_rate: 5.0e-3
+        max_steps: 2500
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+        self_play:
+            play_against_current_self_ratio: 1.0
+            save_steps: 2000
+            swap_steps: 4000
+    """
 
-def _check_environment_trains(env, config, meta_curriculum=None, success_threshold=1.0):
+
+# The reward processor is passed as an argument to _check_environment_trains.
+# It is applied to the list pf all final rewards for each brain individually.
+# This is so that we can process all final rewards in different ways for different algorithms.
+# Custom reward processors shuld be built within the test function and passed to _check_environment_trains
+# Default is average over the last 5 final rewards
+def default_reward_processor(rewards, last_n_rewards=5):
+    return np.array(rewards[-last_n_rewards:]).mean()
+
+
+def _check_environment_trains(
+    env,
+    config,
+    reward_processor=default_reward_processor,
+    meta_curriculum=None,
+    success_threshold=0.99,
+    check_fail=False,
+):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -138,12 +186,16 @@ def _check_environment_trains(env, config, meta_curriculum=None, success_thresho
             success_threshold is not None
         ):  # For tests where we are just checking setup and not reward
 
-            print(env.final_rewards.values())
-            # for mean_reward in tc._get_measure_vals().values():
-            for name, mean_reward in env.final_rewards.items():
-                print(name)
-                assert not math.isnan(mean_reward)
-                assert mean_reward > success_threshold
+            processed_rewards = [
+                reward_processor(rewards) for rewards in env.final_rewards.values()
+            ]
+            assert all(not math.isnan(reward) for reward in processed_rewards)
+            if not check_fail:
+                assert all(reward > success_threshold for reward in processed_rewards)
+            else:
+                assert any(
+                    reward > success_threshold for reward in processed_rewards
+                ) and any(reward < success_threshold for reward in processed_rewards)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -163,4 +215,12 @@ def test_simple_ghost(use_discrete):
     env = Simple1DEnvironment(
         [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
     )
-    _check_environment_trains(env, GHOST_CONFIG)
+    _check_environment_trains(env, GHOST_CONFIG_PASS)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_ghost_fails(use_discrete):
+    env = Simple1DEnvironment(
+        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
+    )
+    _check_environment_trains(env, GHOST_CONFIG_FAIL, check_fail=True)

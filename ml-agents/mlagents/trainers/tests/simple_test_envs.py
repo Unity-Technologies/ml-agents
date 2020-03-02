@@ -1,5 +1,5 @@
 import random
-from typing import Dict
+from typing import Dict, List
 import numpy as np
 
 from mlagents_envs.base_env import (
@@ -34,7 +34,6 @@ class Simple1DEnvironment(BaseEnv):
         self.group_spec = AgentGroupSpec(
             [(OBS_SIZE,)], action_type, (2,) if use_discrete else 1
         )
-        # state
         self.names = brain_names
         self.position: Dict[str, float] = {}
         self.step_count: Dict[str, float] = {}
@@ -42,13 +41,13 @@ class Simple1DEnvironment(BaseEnv):
         self.goal = self.random.choice([-1, 1])
         self.action = {}
         self.rewards: Dict[str, float] = {}
-        self.final_rewards: Dict[str, float] = {}
+        self.final_rewards: Dict[str, List[float]] = {}
         self.step_result: Dict[str, BatchedStepResult] = {}
 
         for name in self.names:
             self.rewards[name] = 0
+            self.final_rewards[name] = []
             self._reset_agent(name)
-            self.final_rewards[name] = 0
             self.action[name] = None
             self.step_result[name] = None
 
@@ -113,7 +112,7 @@ class Simple1DEnvironment(BaseEnv):
     def _reset_agent(self, name):
         self.position[name] = 0.0
         self.step_count[name] = 0
-        self.final_rewards[name] = self.rewards[name]
+        self.final_rewards[name].append(self.rewards[name])
         self.rewards[name] = 0
 
     def reset(self) -> None:  # type: ignore
@@ -129,7 +128,6 @@ class Simple1DEnvironment(BaseEnv):
             self.step_result[name] = BatchedStepResult(
                 m_vector_obs, m_reward, m_done, m_done, m_agent_id, action_mask
             )
-        # self.goal = self.random.choice([-1, 1])
 
     @property
     def reset_parameters(self) -> Dict[str, str]:
@@ -137,18 +135,3 @@ class Simple1DEnvironment(BaseEnv):
 
     def close(self):
         pass
-
-
-# class Ghost1DEnv(Simple1DEnvironment):
-#    """
-#    Extends the 1D environment to include another agent.  This is not
-#    adversarial but checks to see that the ghost trainer (1) trains an agent successfully
-#    and (2) properly ghosts another agent. The two agents are distinguished by team id.
-#    """
-#
-#    def __init__(self, use_discrete):
-#        super().__init__(use_discrete)
-#
-# def get_agent_groups(self):
-#        return [BRAIN_NAME+"?team=0", BRAIN_NAME+"?team=1"]
-#
