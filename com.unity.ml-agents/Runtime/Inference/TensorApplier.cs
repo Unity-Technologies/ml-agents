@@ -58,7 +58,7 @@ namespace MLAgents.Inference
             else
             {
                 m_Dict[TensorNames.ActionOutput] =
-                    new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
+                    new DiscreteActionOutputApplier(bp.discreteActionBranches, seed, allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 

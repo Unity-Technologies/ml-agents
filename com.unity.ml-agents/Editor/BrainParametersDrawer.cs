@@ -15,6 +15,7 @@ namespace MLAgents.Editor
         const float k_LineHeight = 17f;
         const int k_VecObsNumLine = 3;
         const string k_ActionSizePropName = "vectorActionSize";
+        const string k_ActionBranchesPropName = "discreteActionBranches";
         const string k_ActionTypePropName = "vectorActionSpaceType";
         const string k_ActionDescriptionPropName = "vectorActionDescriptions";
         const string k_VecObsPropName = "vectorObservationSize";
@@ -124,12 +125,9 @@ namespace MLAgents.Editor
         static void DrawContinuousVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-            vecActionSize.arraySize = 1;
-            var continuousActionSize =
-                vecActionSize.GetArrayElementAtIndex(0);
             EditorGUI.PropertyField(
                 position,
-                continuousActionSize,
+                vecActionSize,
                 new GUIContent("Space Size", "Length of continuous action vector."));
         }
 
@@ -142,17 +140,19 @@ namespace MLAgents.Editor
         static void DrawDiscreteVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-            vecActionSize.arraySize = EditorGUI.IntField(
-                position, "Branches Size", vecActionSize.arraySize);
+            var vecBranches = property.FindPropertyRelative(k_ActionBranchesPropName);
+            vecActionSize.intValue = EditorGUI.IntField(
+                position, "Branches Size", vecActionSize.intValue);
+            vecBranches.arraySize = vecActionSize.intValue;
             position.y += k_LineHeight;
             position.x += 20;
             position.width -= 20;
             for (var branchIndex = 0;
-                 branchIndex < vecActionSize.arraySize;
+                 branchIndex < vecBranches.arraySize;
                  branchIndex++)
             {
                 var branchActionSize =
-                    vecActionSize.GetArrayElementAtIndex(branchIndex);
+                    vecBranches.GetArrayElementAtIndex(branchIndex);
 
                 EditorGUI.PropertyField(
                     position,
@@ -169,10 +169,10 @@ namespace MLAgents.Editor
         /// <returns>The height of the drawer of the Vector Action.</returns>
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
-            var actionSize = 2 + property.FindPropertyRelative(k_ActionSizePropName).arraySize;
-            if (property.FindPropertyRelative(k_ActionTypePropName).enumValueIndex == 0)
+            var actionSize = 3 ;
+            if (property.FindPropertyRelative(k_ActionTypePropName).enumValueIndex == 0) // IE : Discrete
             {
-                actionSize += 1;
+                actionSize += property.FindPropertyRelative(k_ActionBranchesPropName).arraySize;
             }
             return actionSize * k_LineHeight;
         }

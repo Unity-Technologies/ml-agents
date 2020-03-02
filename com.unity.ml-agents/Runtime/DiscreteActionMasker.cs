@@ -38,11 +38,11 @@ namespace MLAgents
         public void SetMask(int branch, IEnumerable<int> actionIndices)
         {
             // If the branch does not exist, raise an error
-            if (branch >= m_BrainParameters.vectorActionSize.Length)
+            if (branch >= m_BrainParameters.vectorActionSize)
                 throw new UnityAgentsException(
                     "Invalid Action Masking : Branch " + branch + " does not exist.");
 
-            var totalNumberActions = m_BrainParameters.vectorActionSize.Sum();
+            var totalNumberActions = m_BrainParameters.discreteActionBranches.Sum();
 
             // By default, the masks are null. If we want to specify a new mask, we initialize
             // the actionMasks with trues.
@@ -55,13 +55,13 @@ namespace MLAgents
             // indices for each branch.
             if (m_StartingActionIndices == null)
             {
-                m_StartingActionIndices = Utilities.CumSum(m_BrainParameters.vectorActionSize);
+                m_StartingActionIndices = Utilities.CumSum(m_BrainParameters.discreteActionBranches);
             }
 
             // Perform the masking
             foreach (var actionIndex in actionIndices)
             {
-                if (actionIndex >= m_BrainParameters.vectorActionSize[branch])
+                if (actionIndex >= m_BrainParameters.discreteActionBranches[branch])
                 {
                     throw new UnityAgentsException(
                         "Invalid Action Masking: Action Mask is too large for specified branch.");
@@ -96,7 +96,7 @@ namespace MLAgents
                     "Invalid Action Masking : Can only set action mask for Discrete Control.");
             }
 
-            var numBranches = m_BrainParameters.vectorActionSize.Length;
+            var numBranches = m_BrainParameters.vectorActionSize;
             for (var branchIndex = 0; branchIndex < numBranches; branchIndex++)
             {
                 if (AreAllActionsMasked(branchIndex))

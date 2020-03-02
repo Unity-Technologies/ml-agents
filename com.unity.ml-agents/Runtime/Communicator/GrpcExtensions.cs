@@ -122,12 +122,22 @@ namespace MLAgents
         /// <returns>A BrainParameters struct.</returns>
         public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
         {
+            var actionSizeArray = bpp.VectorActionSize.ToArray();
+
             var bp = new BrainParameters
             {
-                vectorActionSize = bpp.VectorActionSize.ToArray(),
                 vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
                 vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
             };
+            if (bp.vectorActionSpaceType == SpaceType.Continuous)
+            {
+                bp.vectorActionSize = actionSizeArray[0];
+            }
+            else
+            {
+                bp.vectorActionSize = actionSizeArray.Length;
+                bp.discreteActionBranches = actionSizeArray;
+            }
             return bp;
         }
 

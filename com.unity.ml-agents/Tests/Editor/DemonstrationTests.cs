@@ -46,7 +46,8 @@ namespace MLAgents.Tests
             bp.brainParameters.vectorObservationSize = 3;
             bp.brainParameters.numStackedVectorObservations = 2;
             bp.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bp.brainParameters.vectorActionSize = new[] { 2, 2 };
+            bp.brainParameters.vectorActionSize = 2;
+            bp.brainParameters.discreteActionBranches = new[] { 2, 2 };
             bp.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
 
             var agent = gameobj.AddComponent<TestAgent>();
@@ -103,7 +104,8 @@ namespace MLAgents.Tests
             bpA.brainParameters.vectorObservationSize = 3;
             bpA.brainParameters.numStackedVectorObservations = 1;
             bpA.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bpA.brainParameters.vectorActionSize = new[] { 2, 2 };
+            bpA.brainParameters.vectorActionSize = 2;
+            bpA.brainParameters.discreteActionBranches = new[] { 2, 2 };
             bpA.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
 
             agentGo1.AddComponent<ObservationAgent>();

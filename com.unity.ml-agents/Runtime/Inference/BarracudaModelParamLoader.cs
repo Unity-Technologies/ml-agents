@@ -523,7 +523,7 @@ namespace MLAgents.Inference
         static string CheckPreviousActionShape(
             BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents)
         {
-            var numberActionsBp = brainParameters.vectorActionSize.Length;
+            var numberActionsBp = brainParameters.vectorActionSize;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];
             if (numberActionsBp != numberActionsT)
             {
@@ -624,7 +624,7 @@ namespace MLAgents.Inference
         static string CheckDiscreteActionOutputShape(
             BrainParameters brainParameters, TensorShape shape, int modelActionSize)
         {
-            var bpActionSize = brainParameters.vectorActionSize.Sum();
+            var bpActionSize = brainParameters.discreteActionBranches.Sum();
             if (modelActionSize != bpActionSize)
             {
                 return "Action Size of the model does not match. The BrainParameters expect " +
@@ -649,7 +649,7 @@ namespace MLAgents.Inference
         static string CheckContinuousActionOutputShape(
             BrainParameters brainParameters, TensorShape shape, int modelActionSize)
         {
-            var bpActionSize = brainParameters.vectorActionSize[0];
+            var bpActionSize = brainParameters.vectorActionSize;
             if (modelActionSize != bpActionSize)
             {
                 return "Action Size of the model does not match. The BrainParameters expect " +

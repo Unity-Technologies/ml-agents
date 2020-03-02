@@ -23,7 +23,7 @@ namespace MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.vectorObservationSize = 8;
-            validBrainParameters.vectorActionSize = new int[] { 2 };
+            validBrainParameters.vectorActionSize = 2;
             validBrainParameters.numStackedVectorObservations = 1;
             validBrainParameters.vectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
@@ -33,7 +33,8 @@ namespace MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.vectorObservationSize = 0;
-            validBrainParameters.vectorActionSize = new int[] { 2, 3 };
+            validBrainParameters.vectorActionSize = 2;
+            validBrainParameters.discreteActionBranches = new int[] { 2, 3 };
             validBrainParameters.numStackedVectorObservations = 1;
             validBrainParameters.vectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
@@ -94,7 +95,7 @@ namespace MLAgents.Tests
             Assert.IsNotNull(modelRunner.GetAction(1));
             Assert.IsNotNull(modelRunner.GetAction(2));
             Assert.IsNull(modelRunner.GetAction(3));
-            Assert.AreEqual(brainParameters.vectorActionSize.Count(), modelRunner.GetAction(1).Count());
+            Assert.AreEqual(brainParameters.vectorActionSize, modelRunner.GetAction(1).Count());
             modelRunner.Dispose();
         }
     }

@@ -39,10 +39,14 @@ namespace MLAgents.Policies
         [Range(1, 50)] public int numStackedVectorObservations = 1;
 
         /// <summary>
-        /// If continuous : The length of the float vector that represents the action.
-        /// If discrete : The number of possible values the action can take.
+        /// The length of the float vector that represents the action.
         /// </summary>
-        public int[] vectorActionSize = new[] {1};
+        public int vectorActionSize = 1;
+
+        /// <summary>
+        /// For discrete only: The number of possible options per action branches
+        /// </summary>
+        public int[] discreteActionBranches = new[] {1};
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
@@ -64,7 +68,8 @@ namespace MLAgents.Policies
             {
                 vectorObservationSize = vectorObservationSize,
                 numStackedVectorObservations = numStackedVectorObservations,
-                vectorActionSize = (int[])vectorActionSize.Clone(),
+                vectorActionSize = vectorActionSize,
+                discreteActionBranches = (int[])discreteActionBranches?.Clone(),
                 vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
                 vectorActionSpaceType = vectorActionSpaceType
             };
