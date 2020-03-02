@@ -135,7 +135,7 @@ GHOST_CONFIG_FAIL = f"""
 # Custom reward processors shuld be built within the test function and passed to _check_environment_trains
 # Default is average over the last 5 final rewards
 def default_reward_processor(rewards, last_n_rewards=5):
-    return np.array(rewards[-last_n_rewards:]).mean()
+    return np.array(rewards[-last_n_rewards:], dtype=np.float32).mean()
 
 
 def _check_environment_trains(
