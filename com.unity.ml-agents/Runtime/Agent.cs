@@ -120,10 +120,16 @@ namespace MLAgents
         }
 
         public int TeamId {
-            get { return GetComponent<BehaviorParameters>().TeamId; }
+            get {
+                LazyInitialize();
+                return m_PolicyFactory.TeamId;
+                }
         }
         public string BehaviorName  {
-            get { return GetComponent<BehaviorParameters>().behaviorName; }
+            get {
+                LazyInitialize();
+                return m_PolicyFactory.behaviorName;
+                }
         }
 
         [SerializeField][HideInInspector]
