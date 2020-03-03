@@ -29,12 +29,21 @@ class Simple1DEnvironment(BaseEnv):
     """
 
     def __init__(
-        self, brain_names, use_discrete, step_size=STEP_SIZE, num_visual=0, num_vector=1
+        self,
+        brain_names,
+        use_discrete,
+        step_size=STEP_SIZE,
+        num_visual=0,
+        num_vector=1,
+        vis_obs_size=VIS_OBS_SIZE,
+        vec_obs_size=OBS_SIZE,
     ):
         super().__init__()
         self.discrete = use_discrete
         self.num_visual = num_visual
         self.num_vector = num_vector
+        self.vis_obs_size = vis_obs_size
+        self.vec_obs_size = vec_obs_size
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         self.group_spec = AgentGroupSpec(
             self._make_obs_spec(), action_type, (2,) if use_discrete else 1
@@ -61,17 +70,17 @@ class Simple1DEnvironment(BaseEnv):
     def _make_obs_spec(self) -> List[Any]:
         obs_spec: List[Any] = []
         for _ in range(self.num_vector):
-            obs_spec.append((OBS_SIZE,))
+            obs_spec.append((self.vec_obs_size,))
         for _ in range(self.num_visual):
-            obs_spec.append(VIS_OBS_SIZE)
+            obs_spec.append(self.vis_obs_size)
         return obs_spec
 
     def _make_obs(self, value: float) -> List[np.ndarray]:
         obs = []
         for _ in range(self.num_vector):
-            obs.append(np.ones((1, OBS_SIZE), dtype=np.float32) * value)
+            obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * value)
         for _ in range(self.num_visual):
-            obs.append(np.ones((1,) + VIS_OBS_SIZE, dtype=np.float32) * value)
+            obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
         return obs
 
     def get_agent_groups(self):

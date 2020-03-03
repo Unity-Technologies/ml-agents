@@ -181,6 +181,26 @@ def test_visual_ppo(num_visual, use_discrete):
     _check_environment_trains(env, config)
 
 
+@pytest.mark.parametrize("num_visual", [1, 2])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+def test_visual_advanced_ppo(vis_encode_type, num_visual):
+    env = Simple1DEnvironment(
+        [BRAIN_NAME],
+        use_discrete=True,
+        num_visual=num_visual,
+        num_vector=0,
+        vis_obs_size=(36, 36, 3),
+    )
+    override_vals = {
+        "learning_rate": 3.0e-4,
+        "vis_encode_type": vis_encode_type,
+        "max_steps": 500,
+    }
+    config = generate_config(PPO_CONFIG, override_vals)
+    # The number of steps is pretty small for these encoders, so don't check the reward.
+    _check_environment_trains(env, config, success_threshold=None)
+
+
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
@@ -210,6 +230,28 @@ def test_visual_sac(num_visual, use_discrete):
     override_vals = {"batch_size": 16, "learning_rate": 3e-4}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
+
+
+@pytest.mark.parametrize("num_visual", [1, 2])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+def test_visual_advanced_sac(vis_encode_type, num_visual):
+    env = Simple1DEnvironment(
+        [BRAIN_NAME],
+        use_discrete=True,
+        num_visual=num_visual,
+        num_vector=0,
+        vis_obs_size=(36, 36, 3),
+    )
+    override_vals = {
+        "batch_size": 16,
+        "learning_rate": 3.0e-4,
+        "vis_encode_type": vis_encode_type,
+        "buffer_init_steps": 0,
+        "max_steps": 100,
+    }
+    config = generate_config(SAC_CONFIG, override_vals)
+    # The number of steps is pretty small for these encoders
+    _check_environment_trains(env, config, success_threshold=None)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
