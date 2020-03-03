@@ -47,15 +47,12 @@ developer communities.
 ## Releases & Documentation
 The table below lists all our releases, including our `master` branch which is under active development 
 and may be unstable. Our latest, stable release is 0.14.1. A few helpful guidelines: 
-
 * The docs links in the table below include installation and usage instructions specific to each release.
 Remember to always use the documentation that corresponds to the release version you're using. Click 
 [here](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md) to
 get started with the latest release of ML-Agents.
-
 * See  the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more details of the 
 changes between versions. 
-
 * If you have used an earlier version of the ML-Agents Toolkit, we strongly recommend our 
 [guide on migrating from earlier versions](docs/Migrating.md).
 
