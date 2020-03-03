@@ -46,7 +46,7 @@ Omitting that will get the `master` branch which is potentially unstable.
 
 ### Install the `com.unity.ml-agents` Unity package
 
-The Unity ML-Agents C# SDK is now a Unity Package. We are working on getting it added to the
+The Unity ML-Agents C# SDK is a Unity Package. We are working on getting it added to the
 official Unity package registery which will enable you to install the `com.unity.ml-agents` package
 without cloning this repository. Until then, you can add the `com.unity.ml-agents` package to 
 your project by navigating to the menu `Window`  -> `Package Manager`.  In the package manager 
@@ -91,10 +91,6 @@ parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the [setup.py file](../ml-agents/setup.py) are also installed. These include [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)
 and [Jupyter](Background-Jupyter.md).
-
-**Note:** If you are using Anaconda and are having trouble with TensorFlow, please see
-the following [link](https://www.tensorflow.org/install/pip) on how to install TensorFlow 
-in an Anaconda environment.
 
 #### Advanced: Installing for Development
 
