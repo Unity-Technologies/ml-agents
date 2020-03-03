@@ -118,7 +118,7 @@ namespace MLAgents.Tests
         public byte[] GetCompressedObservation()
         {
             numCompressedCalls++;
-            return null;
+            return new byte[] { 0 };
         }
 
         public SensorCompressionType GetCompressionType()

@@ -230,18 +230,20 @@ namespace MLAgents
             else
             {
                 var compressedObs = sensor.GetCompressedObservation();
-                observationProto = new ObservationProto
+                if (compressedObs == null)
                 {
-                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
-                };
-
-                // Passing a null byte[] to CompressedData will raise an exception, so leave it unset
-                // if the observations are null.
-                if (compressedObs != null)
-                {
-                    observationProto.CompressedData = ByteString.CopyFrom(compressedObs);
+                    throw new UnityAgentsException(
+                        $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
+                        "You must return a byte[]. If you don't want to use compressed observations, " +
+                        "return SensorCompressionType.None from GetCompressionType()."
+                        );
                 }
 
+                observationProto = new ObservationProto
+                {
+                    CompressedData = ByteString.CopyFrom(compressedObs),
+                    CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                };
             }
             observationProto.Shape.AddRange(shape);
             return observationProto;
