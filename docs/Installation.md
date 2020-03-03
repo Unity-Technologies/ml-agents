@@ -47,7 +47,7 @@ Omitting that will get the `master` branch which is potentially unstable.
 ### Install the `com.unity.ml-agents` Unity package
 
 The Unity ML-Agents C# SDK is a Unity Package. We are working on getting it added to the
-official Unity package registery which will enable you to install the `com.unity.ml-agents` package
+official Unity package registry which will enable you to install the `com.unity.ml-agents` package
 (directly from the registry)[https://docs.unity3d.com/Manual/upm-ui-install.html] without cloning 
 this repository. Until then, you will need to 
 [install it from the local package](https://docs.unity3d.com/Manual/upm-ui-local.html) that you just cloned.
