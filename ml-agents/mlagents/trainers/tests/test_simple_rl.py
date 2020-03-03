@@ -276,6 +276,7 @@ def test_simple_ppo(use_discrete):
     _check_environment_trains(env, PPO_CONFIG)
 
 
+<<<<<<< Updated upstream
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)

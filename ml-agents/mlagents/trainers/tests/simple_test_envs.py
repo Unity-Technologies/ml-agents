@@ -8,6 +8,7 @@ from mlagents_envs.base_env import (
     BatchedStepResult,
     ActionType,
 )
+from mlagents_envs.rpc_utils import proto_from_batched_step_result
 
 OBS_SIZE = 1
 STEP_SIZE = 0.1
