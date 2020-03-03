@@ -189,16 +189,18 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         use_discrete=True,
         num_visual=num_visual,
         num_vector=0,
+        step_size=0.5,
         vis_obs_size=(36, 36, 3),
     )
     override_vals = {
         "learning_rate": 3.0e-4,
         "vis_encode_type": vis_encode_type,
         "max_steps": 500,
+        "summary_freq": 100,
     }
     config = generate_config(PPO_CONFIG, override_vals)
-    # The number of steps is pretty small for these encoders, so don't check the reward.
-    _check_environment_trains(env, config, success_threshold=None)
+    # The number of steps is pretty small for these encoders
+    _check_environment_trains(env, config, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -240,6 +242,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         use_discrete=True,
         num_visual=num_visual,
         num_vector=0,
+        step_size=0.5,
         vis_obs_size=(36, 36, 3),
     )
     override_vals = {
@@ -251,7 +254,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
     }
     config = generate_config(SAC_CONFIG, override_vals)
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=None)
+    _check_environment_trains(env, config, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
