@@ -58,10 +58,10 @@ on the top left of the packages list.
 
 <p align="center">
   <img src="images/unity_package_manager_window.png"
-       alt="Linux Build Support"
-       width="500" border="10" />
+       alt="Unity Package Manager Window"
+       width="300" border="10" />
   <img src="images/unity_package_json.png"
-     alt="Linux Build Support"
+     alt="package.json"
      width="500" border="10" />
 </p>
 
