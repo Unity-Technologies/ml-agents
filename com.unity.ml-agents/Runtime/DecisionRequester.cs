@@ -26,7 +26,7 @@ namespace MLAgents
         [Tooltip("Indicates whether or not the agent will take an action during the Academy " +
                  "steps where it does not request a decision. Has no effect when DecisionPeriod " +
                  "is set to 1.")]
-        [FormerlySerializedAs("RepeastAction")]
+        [FormerlySerializedAs("RepeatAction")]
         public bool TakeActionsBetweenDecisions = true;
 
         /// <summary>
