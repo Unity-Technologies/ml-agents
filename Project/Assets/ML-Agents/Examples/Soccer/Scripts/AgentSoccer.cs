@@ -27,14 +27,12 @@ public class AgentSoccer : Agent
     [HideInInspector]
     public Rigidbody agentRb;
     SoccerSettings m_SoccerSettings;
-    BehaviorParameters m_BehaviorParameters;
     Vector3 m_Transform;
 
     public override void InitializeAgent()
     {
         base.InitializeAgent();
-        m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
-        if (m_BehaviorParameters.m_TeamID == (int)Team.Blue)
+        if (TeamId == (int)Team.Blue)
         {
             team = Team.Blue;
             m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);

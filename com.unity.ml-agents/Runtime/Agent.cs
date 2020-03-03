@@ -119,6 +119,19 @@ namespace MLAgents
             public int maxStep;
         }
 
+        public int TeamId {
+            get {
+                LazyInitialize();
+                return m_PolicyFactory.TeamId;
+                }
+        }
+        public string BehaviorName  {
+            get {
+                LazyInitialize();
+                return m_PolicyFactory.behaviorName;
+                }
+        }
+
         [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
         [SerializeField][HideInInspector]

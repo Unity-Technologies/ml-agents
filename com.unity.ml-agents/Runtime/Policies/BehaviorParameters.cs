@@ -9,7 +9,7 @@ namespace MLAgents.Policies
     /// The Factory to generate policies.
     /// </summary>
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
-    public class BehaviorParameters : MonoBehaviour
+    internal class BehaviorParameters : MonoBehaviour
     {
         [Serializable]
         enum BehaviorType
@@ -47,7 +47,9 @@ namespace MLAgents.Policies
         /// </summary>
         [HideInInspector]
         [SerializeField]
-        public int m_TeamID;
+        [FormerlySerializedAs("m_TeamID")]
+        public int TeamId;
+
         [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
@@ -84,10 +86,10 @@ namespace MLAgents.Policies
         /// </summary>
         public string fullyQualifiedBehaviorName
         {
-            get { return m_BehaviorName + "?team=" + m_TeamID; }
+            get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
+        public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {

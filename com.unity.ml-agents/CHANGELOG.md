@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - All Sensor related code has been moved to the namespace `MLAgents.Sensors`.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
  - `BrainParameters` and `SpaceType` have been removed from the public API
+ - `BehaviorParameters` have been removed from the public API.
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
