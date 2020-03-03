@@ -48,12 +48,13 @@ developer communities.
 [here](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md) to
 get started with the latest release of ML-Agents.**
 
-The table below lists all our releases, including our `master` branch which is under active development
-and may be unstable. A few helpful guidelines:
-* The docs links in the table below include installation and usage instructions specific to each release.
-Remember to always use the documentation that corresponds to the release version you're using.
-* See  the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more details of the
-changes between versions.
+The table below lists all our releases, including our `master` branch which is under active
+development and may be unstable. A few helpful guidelines:
+* The docs links in the table below include installation and usage instructions specific to each
+release. Remember to always use the documentation that corresponds to the release version you're
+using.
+* See the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more
+details of the changes between versions.
 * If you have used an earlier version of the ML-Agents Toolkit, we strongly recommend our
 [guide on migrating from earlier versions](docs/Migrating.md).
 
@@ -74,10 +75,11 @@ changes between versions.
 
 ## Citation
 
-If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our
-[reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
+If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print
+of our [reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
 
-If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
+If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following
+paper as a reference:
 
 Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D. (2018). Unity: A General Platform for Intelligent Agents. *arXiv preprint arXiv:1809.02627.* https://github.com/Unity-Technologies/ml-agents.
 
@@ -125,8 +127,9 @@ and make sure to include as much detail as possible.
 If you run into any other problems using the ML-Agents Toolkit, or have a specific
 feature requests, please [submit a GitHub issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
-Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents Toolkit can we continue
-to improve and grow. Please take a few minutes to [let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
+Your opinion matters a great deal to us. Only by hearing your thoughts on the Unity ML-Agents
+Toolkit can we continue to improve and grow. Please take a few minutes to
+[let us know about it](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 
 For any other questions or feedback, connect directly with the ML-Agents
 team at ml-agents@unity3d.com.
