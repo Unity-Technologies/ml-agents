@@ -20,22 +20,22 @@ Consequently, to install and use ML-Agents you will need to:
 
 [Download](https://unity3d.com/get-unity/download) and install Unity. We strongly recommend
 that you install Unity through the Unity Hub as it will enable you to manage multiple Unity
-versions. 
+versions.
 
 ### Install **Python 3.6.1** or Higher
 
-We recommend [installing](https://www.python.org/downloads/) Python 3.6 or 3.7. If your Python 
-environment doesn't include `pip3`, see these 
+We recommend [installing](https://www.python.org/downloads/) Python 3.6 or 3.7. If your Python
+environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not support the Anaconda installation path for Windows, the previous 
+Although we do not support the Anaconda installation path for Windows, the previous
 [Windows Anaconda Installation (Deprecated) guide](Installation-Windows.md)
-is still available. 
+is still available.
 
 ### Clone the ML-Agents Toolkit Repository
 
-Now that you have installed Unity and Python, you will need to clone the 
+Now that you have installed Unity and Python, you will need to clone the
 ML-Agents Toolkit GitHub repository to install the Unity package.
 
 ```sh
@@ -48,15 +48,15 @@ Omitting that will get the `master` branch which is potentially unstable.
 
 The Unity ML-Agents C# SDK is a Unity Package. We are working on getting it added to the
 official Unity package registry which will enable you to install the `com.unity.ml-agents` package
-(directly from the registry)[https://docs.unity3d.com/Manual/upm-ui-install.html] without cloning 
-this repository. Until then, you will need to 
+(directly from the registry)[https://docs.unity3d.com/Manual/upm-ui-install.html] without cloning
+this repository. Until then, you will need to
 [install it from the local package](https://docs.unity3d.com/Manual/upm-ui-local.html) that you just cloned.
-You can add the `com.unity.ml-agents` package to 
-your project by navigating to the menu `Window`  -> `Package Manager`. In the package manager 
+You can add the `com.unity.ml-agents` package to
+your project by navigating to the menu `Window`  -> `Package Manager`. In the package manager
 window click on the `+` button. Select `Add package from disk...` and navigate into the
 `com.unity.ml-agents` folder and select the `package.json` folder.
 
-**NOTE:** In Unity 2018.4 it's on the bottom right of the packages list, and in Unity 2019.3 it's 
+**NOTE:** In Unity 2018.4 it's on the bottom right of the packages list, and in Unity 2019.3 it's
 on the top left of the packages list.
 
 <p align="center">
@@ -74,11 +74,11 @@ folder in Unity and start tinkering immediately.
 ### Install the `mlagents` Python package
 
 Installing the `mlagents` Python package involves installing other Python package
-that `mlagents` depends on. So you may run into installation issues if your machine 
+that `mlagents` depends on. So you may run into installation issues if your machine
 has older versions of any of those dependencies already installed. Consequently, our
 supported path for installing `mlagents` is to leverage Python Virtual Environments.
-Virtual Environments provide a mechanim for isolating the dependencies for each project 
-and are supported on Mac / Windows / Linux. We offer a dedicated 
+Virtual Environments provide a mechanim for isolating the dependencies for each project
+and are supported on Mac / Windows / Linux. We offer a dedicated
 [guide on Virtual Environments](Using-Virtual-Environment.md).
 
 To install the `mlagents` Python package, activate your virtual environment and run from the command line:

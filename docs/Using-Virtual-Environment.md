@@ -32,7 +32,7 @@ python3-distutils needs to be installed. Install python3-distutils using `sudo a
 1. To activate the environment execute `$ source ~/python-envs/sample-env/bin/activate`
 1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to
 the latest pip version using `$ pip3 install --upgrade pip`
-1. To deactivate the environment execute `$ deactivate` 
+1. To deactivate the environment execute `$ deactivate`
 
 ## Ubuntu Setup
 

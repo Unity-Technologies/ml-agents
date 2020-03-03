@@ -44,23 +44,23 @@ developer communities.
 * Train using concurrent Unity environment instances
 
 ## Releases & Documentation
-**Our latest, stable release is 0.14.1. Click 
+**Our latest, stable release is 0.14.1. Click
 [here](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md) to
 get started with the latest release of ML-Agents.**
 
-The table below lists all our releases, including our `master` branch which is under active development 
-and may be unstable. A few helpful guidelines: 
+The table below lists all our releases, including our `master` branch which is under active development
+and may be unstable. A few helpful guidelines:
 * The docs links in the table below include installation and usage instructions specific to each release.
-Remember to always use the documentation that corresponds to the release version you're using. 
-* See  the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more details of the 
-changes between versions. 
-* If you have used an earlier version of the ML-Agents Toolkit, we strongly recommend our 
+Remember to always use the documentation that corresponds to the release version you're using.
+* See  the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more details of the
+changes between versions.
+* If you have used an earlier version of the ML-Agents Toolkit, we strongly recommend our
 [guide on migrating from earlier versions](docs/Migrating.md).
 
 
-| **Version** | **Release Date** | **Source** | **Documentation** | **Download** | 
+| **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **master** (unstable) | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) | 
+| **master** (unstable) | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
 | **0.14.1** (latest stable release) | February 26, 2020 | **[source](https://github.com/Unity-Technologies/ml-agents/tree/latest_release)** |  **[docs](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/latest_release.zip)** |
 | **0.14.0**  | February 13, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
 | **0.13.1**  | January 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
@@ -74,8 +74,8 @@ changes between versions.
 
 ## Citation
 
-If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our 
-[reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627). 
+If you are a researcher interested in a discussion of Unity as an AI platform, see a pre-print of our
+[reference paper on Unity and the ML-Agents Toolkit](https://arxiv.org/abs/1809.02627).
 
 If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you cite the following paper as a reference:
 

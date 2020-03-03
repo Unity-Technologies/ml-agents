@@ -1,7 +1,7 @@
 # About Unity MLAgents package
 
-The MLAgents package contains the C# SDK for the 
-[Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents). 
+The MLAgents package contains the C# SDK for the
+[Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
 
 The package provides the ability for any Unity scene to be converted into a learning environment where
 character behaviors can be trained using a variety of machine learning algorithms. Additionally, it enables
@@ -12,7 +12,7 @@ that generate observations (through sensors), take actions and receive rewards f
 * Define Brains: entities that specifiy a behavior. Multiple agents can share the same Brain and a scene may
 have multiple Brains.
 * Record demonstrations of an agent within the Editor. These demonstrations can be valuable to train a behavior for that agent.
-* Embedding a trained behavior into the scene. This an Agent can switch from a learning brain to an inference brain. 
+* Embedding a trained behavior into the scene. This an Agent can switch from a learning brain to an inference brain.
 
 Note that this package does not contain the machine learning algorithms for training behaviors. It relies on a Python
 package to orchestrate the training. This package only enables instrumenting a Unity scene and setting it up for training.
