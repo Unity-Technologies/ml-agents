@@ -9,7 +9,9 @@ data messaging between Unity scene and the Python machine learning algorithms. C
   * [`gym-unity`](../gym-unity/) provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
 * Unity [Project](../Project/) that contains several [example environments](Learning-Environment-Examples.md) that highlight the various features of the toolkit to help you get started.
 
-Consequently, to install and use ML-Agents you will need to:
+## Basic Installation
+
+To install and use ML-Agents you will need to:
 * Install Unity (2018.4 or later)
 * Install Python (3.6.1 or higher)
 * Clone this repository
@@ -18,13 +20,13 @@ Consequently, to install and use ML-Agents you will need to:
 
 Each step above has a dedicated section below.
 
-## Install **Unity 2018.4** or Later
+### Install **Unity 2018.4** or Later
 
 [Download](https://unity3d.com/get-unity/download) and install Unity. We strongly recommend
 that you install Unity through the Unity Hub as it will enable you to manage multiple Unity
 versions. 
 
-## Install **Python 3.6.1** or Higher
+### Install **Python 3.6.1** or Higher
 
 In order to use ML-Agents toolkit, you need Python 3.6.1 or higher. We recommend [installing]((https://www.python.org/downloads/)) a 3.6.x or 3.7.x version of Python.
 
@@ -36,7 +38,7 @@ Although we do not support the Anaconda installation path of ML-Agents for Windo
 [Windows Anaconda Installation (Deprecated) guide](Installation-Windows.md)
 is still available. 
 
-## Clone the ML-Agents Toolkit Repository
+### Clone the ML-Agents Toolkit Repository
 
 Now that you have installed Unity and Python, you will need to clone the 
 ML-Agents Toolkit GitHub repository to install the Unity package.
@@ -47,7 +49,7 @@ git clone --branch latest_release https://github.com/Unity-Technologies/ml-agent
 The `--branch latest_release` option will switch to the tag of the latest stable release.
 Omitting that will get the `master` branch which is potentially unstable.
 
-## Install the `com.unity.ml-agents` Unity package
+### Install the `com.unity.ml-agents` Unity package
 The Unity ML-Agents C# SDK is now a Unity Package. We are working on getting it added to the
 official Unity package registery which will enable you to install the `com.unity.ml-agents` package
 without cloning this repository. Until then, you can add the `com.unity.ml-agents` package to 
@@ -106,6 +108,8 @@ Some of the primary dependencies include:
 the following [link](https://www.tensorflow.org/install/pip) on how to install TensorFlow 
 in an Anaconda environment.
 
+## Advanced Installation
+
 ### Installing for Development
 
 If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install
@@ -124,19 +128,6 @@ Running pip with the `-e` flag will let you make changes to the Python files dir
 reflected when you run `mlagents-learn`. It is important to install these packages in this order as the
 `mlagents` package depends on `mlagents_envs`, and installing it in the other
 order will download `mlagents_envs` from PyPi.
-
-## Docker
-
-If you would
-like to use our Docker set-up (introduced later), make sure to select the _Linux
-Build Support_ component when installing Unity.
-
-<p align="center">
-  <img src="images/unity_linux_build_support.png"
-       alt="Linux Build Support"
-       width="500" border="10" />
-</p>
-
 
 ## Next Steps
 
