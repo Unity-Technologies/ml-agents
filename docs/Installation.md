@@ -29,7 +29,7 @@ environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not support the Anaconda installation path of ML-Agents for Windows, the previous 
+Although we do not support the Anaconda installation path for Windows, the previous 
 [Windows Anaconda Installation (Deprecated) guide](Installation-Windows.md)
 is still available. 
 
