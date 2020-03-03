@@ -41,7 +41,7 @@ namespace MLAgents
         public string pythonLibraryVersion;
 
         /// <summary>
-        /// The version of the communication API that python is using..
+        /// The version of the communication API that python is using.
         /// </summary>
         public string pythonCommunicationVersion;
     }

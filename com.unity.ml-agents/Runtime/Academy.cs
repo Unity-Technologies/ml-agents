@@ -347,7 +347,6 @@ namespace MLAgents
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
-                    // TODO save unityRlInitParameters.packageVersion for logging later
                 }
                 catch
                 {

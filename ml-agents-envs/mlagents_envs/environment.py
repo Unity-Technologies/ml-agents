@@ -144,7 +144,7 @@ class UnityEnvironment(BaseEnv):
         except UnityTimeOutException:
             self._close()
             raise
-        # TODO : think of a better way to expose the academyParameters
+
         unity_communicator_version = aca_params.communication_version
         if unity_communicator_version != UnityEnvironment.API_VERSION:
             self._close()
