@@ -75,7 +75,8 @@ namespace MLAgents
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
-                Version = initParameters.version
+                PackageVersion = initParameters.unityPackageVersion,
+                CommunicationVersion = initParameters.unityCommunicationVersion
             };
 
             UnityInputProto input;
@@ -88,6 +89,34 @@ namespace MLAgents
                         RlInitializationOutput = academyParameters
                     },
                     out input);
+
+                // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
+                // API strings, so log an explicit warning if that's the case.
+                if (initializationInput != null && input == null)
+                {
+                    var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+                    var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                    if (pythonCommunicationVersion != initParameters.unityCommunicationVersion)
+                    {
+                        Debug.LogWarningFormat(
+                            "Communication protocol between python ({0}) and Unity ({1}) don't match. " +
+                            "Python library version: {2}.",
+                            pythonCommunicationVersion, initParameters.unityCommunicationVersion,
+                            pythonPackageVersion
+                            );
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat(
+                            "Unknown communication error between Python. Python communication protocol: {0}, " +
+                            "Python library version: {1}.",
+                            pythonCommunicationVersion,
+                            pythonPackageVersion
+                        );
+                    }
+
+                    throw new UnityAgentsException("ICommunicator.Initialize() failed.");
+                }
             }
             catch
             {
