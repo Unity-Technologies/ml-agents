@@ -3,22 +3,27 @@
 The MLAgents package contains the C# SDK for the
 [Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
 
-The package provides the ability for any Unity scene to be converted into a learning environment where
-character behaviors can be trained using a variety of machine learning algorithms. Additionally, it enables
-any trained behavior to embedded back into the Unity scene. More specifically, the package provides the
-following core functionalities:
+The package provides the ability for any Unity scene to be converted into a learning
+environment where character behaviors can be trained using a variety of machine learning
+algorithms. Additionally, it enables any trained behavior to embedded back into the Unity
+scene. More specifically, the package provides the following core functionalities:
 * Define Agents: entities whose behavior will be learned. Agents are entities
-that generate observations (through sensors), take actions and receive rewards from the environment.
-* Define Brains: entities that specifiy a behavior. Multiple agents can share the same Brain and a scene may
-have multiple Brains.
-* Record demonstrations of an agent within the Editor. These demonstrations can be valuable to train a behavior for that agent.
-* Embedding a trained behavior into the scene. This an Agent can switch from a learning brain to an inference brain.
+that generate observations (through sensors), take actions and receive rewards from
+the environment.
+* Define Policies: entities that specifiy a behavior. Multiple agents can share the
+same Policy and a scene may have multiple Brains.
+* Record demonstrations of an agent within the Editor. These demonstrations can be
+valuable to train a behavior for that agent.
+* Embedding a trained behavior into the scene. This an Agent can switch from a
+learning brain to an inference brain.
 
-Note that this package does not contain the machine learning algorithms for training behaviors. It relies on a Python
-package to orchestrate the training. This package only enables instrumenting a Unity scene and setting it up for training.
+Note that this package does not contain the machine learning algorithms for training
+behaviors. It relies on a Python package to orchestrate the training. This package
+only enables instrumenting a Unity scene and setting it up for training.
 
 ## Preview package
-This package is available as a preview, so it is not ready for production use. The features and documentation in this package might change before it is verified for release.
+This package is available as a preview, so it is not ready for production use.
+The features and documentation in this package might change before it is verified for release.
 
 
 ## Package contents
@@ -37,7 +42,8 @@ The following table describes the package folder structure:
 
 ## Installation
 
-To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Manual/upm-ui-install.html).
+To install this package, follow the instructions in the
+[Package Manager documentation](https://docs.unity3d.com/Manual/upm-ui-install.html).
 
 
 ## Requirements
@@ -59,6 +65,7 @@ There are currently no known limitations.
 ## Helpful links
 
 If you are new to MLAgents, or have a question after reading the documentation, you can
-checkout our [GitHUb Repository](https://github.com/Unity-Technologies/ml-agents), which also
-includes a number of ways to [connect with us](https://github.com/Unity-Technologies/ml-agents#community-and-feedback).
+checkout our [GitHUb Repository](https://github.com/Unity-Technologies/ml-agents), which
+also includes a number of ways to
+[connect with us](https://github.com/Unity-Technologies/ml-agents#community-and-feedback).
 
