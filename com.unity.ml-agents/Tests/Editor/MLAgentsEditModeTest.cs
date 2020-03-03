@@ -35,19 +35,29 @@ namespace MLAgents.Tests
             typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, policy);
         }
 
+        internal IPolicy GetPolicy()
+        {
+            return (IPolicy) typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+        }
+
         public int initializeAgentCalls;
         public int collectObservationsCalls;
         public int collectObservationsCallsSinceLastReset;
         public int agentActionCalls;
         public int agentActionCallsSinceLastReset;
         public int agentResetCalls;
+        public int heuristicCalls;
+        public TestSensor sensor1;
+        public TestSensor sensor2;
+
         public override void InitializeAgent()
         {
             initializeAgentCalls += 1;
 
             // Add in some custom Sensors so we can confirm they get sorted as expected.
-            var sensor1 = new TestSensor("testsensor1");
-            var sensor2 = new TestSensor("testsensor2");
+            sensor1 = new TestSensor("testsensor1");
+            sensor2 = new TestSensor("testsensor2");
+            sensor2.compressionType = SensorCompressionType.PNG;
 
             sensors.Add(sensor2);
             sensors.Add(sensor1);
@@ -76,6 +86,7 @@ namespace MLAgents.Tests
 
         public override float[] Heuristic()
         {
+            heuristicCalls++;
             return new float[0];
         }
     }
@@ -83,6 +94,9 @@ namespace MLAgents.Tests
     public class TestSensor : ISensor
     {
         public string sensorName;
+        public int numWriteCalls;
+        public int numCompressedCalls;
+        public SensorCompressionType compressionType = SensorCompressionType.None;
 
         public TestSensor(string n)
         {
@@ -96,18 +110,20 @@ namespace MLAgents.Tests
 
         public int Write(WriteAdapter adapter)
         {
+            numWriteCalls++;
             // No-op
             return 0;
         }
 
         public byte[] GetCompressedObservation()
         {
+            numCompressedCalls++;
             return null;
         }
 
         public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.None;
+            return compressionType;
         }
 
         public string GetName()
@@ -558,6 +574,32 @@ namespace MLAgents.Tests
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
                 Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
             }
+        }
+
+        [Test]
+        public void TestHeuristicPolicyStepsSensors()
+        {
+            // Make sure that Agents with HeuristicPolicies step their sensors each Academy step.
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 1;
+            decisionRequester.Awake();
+
+            agent1.LazyInitialize();
+            Assert.AreEqual(agent1.GetPolicy().GetType(), typeof(HeuristicPolicy));
+
+            var numSteps = 10;
+            for (var i = 0; i < numSteps; i++)
+            {
+                aca.EnvironmentStep();
+            }
+            Assert.AreEqual(numSteps, agent1.heuristicCalls);
+            Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
+            Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
         }
     }
 }

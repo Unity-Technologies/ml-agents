@@ -26,19 +26,23 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkZtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX2lucHV0LnByb3RvEhRjb21tdW5pY2F0b3Jfb2Jq",
-            "ZWN0cyIvCh9Vbml0eVJMSW5pdGlhbGl6YXRpb25JbnB1dFByb3RvEgwKBHNl",
-            "ZWQYASABKAVCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnBy",
-            "b3RvMw=="));
+            "ZWN0cyJnCh9Vbml0eVJMSW5pdGlhbGl6YXRpb25JbnB1dFByb3RvEgwKBHNl",
+            "ZWQYASABKAUSHQoVY29tbXVuaWNhdGlvbl92ZXJzaW9uGAIgASgJEhcKD3Bh",
+            "Y2thZ2VfdmVyc2lvbhgDIAEoCUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9y",
+            "T2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
+  /// <summary>
+  /// The initializaiton message - this is typically sent from the Python trainer to the C# environment.
+  /// </summary>
   internal sealed partial class UnityRLInitializationInputProto : pb::IMessage<UnityRLInitializationInputProto> {
     private static readonly pb::MessageParser<UnityRLInitializationInputProto> _parser = new pb::MessageParser<UnityRLInitializationInputProto>(() => new UnityRLInitializationInputProto());
     private pb::UnknownFieldSet _unknownFields;
@@ -65,6 +69,8 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLInitializationInputProto(UnityRLInitializationInputProto other) : this() {
       seed_ = other.seed_;
+      communicationVersion_ = other.communicationVersion_;
+      packageVersion_ = other.packageVersion_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -84,6 +90,34 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "communication_version" field.</summary>
+    public const int CommunicationVersionFieldNumber = 2;
+    private string communicationVersion_ = "";
+    /// <summary>
+    /// Communication protocol version that the initiating side (typically the Python trainer) is using.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string CommunicationVersion {
+      get { return communicationVersion_; }
+      set {
+        communicationVersion_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "package_version" field.</summary>
+    public const int PackageVersionFieldNumber = 3;
+    private string packageVersion_ = "";
+    /// <summary>
+    /// Package/library version that the initiating side (typically the Python trainer) is using.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string PackageVersion {
+      get { return packageVersion_; }
+      set {
+        packageVersion_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInitializationInputProto);
@@ -98,6 +132,8 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (Seed != other.Seed) return false;
+      if (CommunicationVersion != other.CommunicationVersion) return false;
+      if (PackageVersion != other.PackageVersion) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -105,6 +141,8 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       if (Seed != 0) hash ^= Seed.GetHashCode();
+      if (CommunicationVersion.Length != 0) hash ^= CommunicationVersion.GetHashCode();
+      if (PackageVersion.Length != 0) hash ^= PackageVersion.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -122,6 +160,14 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(8);
         output.WriteInt32(Seed);
       }
+      if (CommunicationVersion.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(CommunicationVersion);
+      }
+      if (PackageVersion.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(PackageVersion);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -132,6 +178,12 @@ namespace MLAgents.CommunicatorObjects {
       int size = 0;
       if (Seed != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Seed);
+      }
+      if (CommunicationVersion.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(CommunicationVersion);
+      }
+      if (PackageVersion.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(PackageVersion);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -147,6 +199,12 @@ namespace MLAgents.CommunicatorObjects {
       if (other.Seed != 0) {
         Seed = other.Seed;
       }
+      if (other.CommunicationVersion.Length != 0) {
+        CommunicationVersion = other.CommunicationVersion;
+      }
+      if (other.PackageVersion.Length != 0) {
+        PackageVersion = other.PackageVersion;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -160,6 +218,14 @@ namespace MLAgents.CommunicatorObjects {
             break;
           case 8: {
             Seed = input.ReadInt32();
+            break;
+          }
+          case 18: {
+            CommunicationVersion = input.ReadString();
+            break;
+          }
+          case 26: {
+            PackageVersion = input.ReadString();
             break;
           }
         }

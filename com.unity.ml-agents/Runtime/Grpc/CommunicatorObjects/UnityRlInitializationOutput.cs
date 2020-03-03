@@ -27,15 +27,16 @@ namespace MLAgents.CommunicatorObjects {
             "CkdtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX291dHB1dC5wcm90bxIUY29tbXVuaWNhdG9yX29i",
             "amVjdHMaOW1sYWdlbnRzX2VudnMvY29tbXVuaWNhdG9yX29iamVjdHMvYnJh",
-            "aW5fcGFyYW1ldGVycy5wcm90byKfAQogVW5pdHlSTEluaXRpYWxpemF0aW9u",
-            "T3V0cHV0UHJvdG8SDAoEbmFtZRgBIAEoCRIPCgd2ZXJzaW9uGAIgASgJEhAK",
-            "CGxvZ19wYXRoGAMgASgJEkQKEGJyYWluX3BhcmFtZXRlcnMYBSADKAsyKi5j",
-            "b21tdW5pY2F0b3Jfb2JqZWN0cy5CcmFpblBhcmFtZXRlcnNQcm90b0oECAYQ",
-            "B0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "aW5fcGFyYW1ldGVycy5wcm90byLGAQogVW5pdHlSTEluaXRpYWxpemF0aW9u",
+            "T3V0cHV0UHJvdG8SDAoEbmFtZRgBIAEoCRIdChVjb21tdW5pY2F0aW9uX3Zl",
+            "cnNpb24YAiABKAkSEAoIbG9nX3BhdGgYAyABKAkSRAoQYnJhaW5fcGFyYW1l",
+            "dGVycxgFIAMoCzIqLmNvbW11bmljYXRvcl9vYmplY3RzLkJyYWluUGFyYW1l",
+            "dGVyc1Byb3RvEhcKD3BhY2thZ2VfdmVyc2lvbhgHIAEoCUoECAYQB0IfqgIc",
+            "TUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "Version", "LogPath", "BrainParameters" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "CommunicationVersion", "LogPath", "BrainParameters", "PackageVersion" }, null, null, null)
           }));
     }
     #endregion
@@ -71,9 +72,10 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLInitializationOutputProto(UnityRLInitializationOutputProto other) : this() {
       name_ = other.name_;
-      version_ = other.version_;
+      communicationVersion_ = other.communicationVersion_;
       logPath_ = other.logPath_;
       brainParameters_ = other.brainParameters_.Clone();
+      packageVersion_ = other.packageVersion_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -93,14 +95,17 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "version" field.</summary>
-    public const int VersionFieldNumber = 2;
-    private string version_ = "";
+    /// <summary>Field number for the "communication_version" field.</summary>
+    public const int CommunicationVersionFieldNumber = 2;
+    private string communicationVersion_ = "";
+    /// <summary>
+    /// Communication protocol version that the responding side (typically the C# environment) is using.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Version {
-      get { return version_; }
+    public string CommunicationVersion {
+      get { return communicationVersion_; }
       set {
-        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        communicationVersion_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -125,6 +130,20 @@ namespace MLAgents.CommunicatorObjects {
       get { return brainParameters_; }
     }
 
+    /// <summary>Field number for the "package_version" field.</summary>
+    public const int PackageVersionFieldNumber = 7;
+    private string packageVersion_ = "";
+    /// <summary>
+    /// Package/library version that the responding side (typically the C# environment) is using.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string PackageVersion {
+      get { return packageVersion_; }
+      set {
+        packageVersion_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInitializationOutputProto);
@@ -139,9 +158,10 @@ namespace MLAgents.CommunicatorObjects {
         return true;
       }
       if (Name != other.Name) return false;
-      if (Version != other.Version) return false;
+      if (CommunicationVersion != other.CommunicationVersion) return false;
       if (LogPath != other.LogPath) return false;
       if(!brainParameters_.Equals(other.brainParameters_)) return false;
+      if (PackageVersion != other.PackageVersion) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -149,9 +169,10 @@ namespace MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Version.Length != 0) hash ^= Version.GetHashCode();
+      if (CommunicationVersion.Length != 0) hash ^= CommunicationVersion.GetHashCode();
       if (LogPath.Length != 0) hash ^= LogPath.GetHashCode();
       hash ^= brainParameters_.GetHashCode();
+      if (PackageVersion.Length != 0) hash ^= PackageVersion.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -169,15 +190,19 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(10);
         output.WriteString(Name);
       }
-      if (Version.Length != 0) {
+      if (CommunicationVersion.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteString(Version);
+        output.WriteString(CommunicationVersion);
       }
       if (LogPath.Length != 0) {
         output.WriteRawTag(26);
         output.WriteString(LogPath);
       }
       brainParameters_.WriteTo(output, _repeated_brainParameters_codec);
+      if (PackageVersion.Length != 0) {
+        output.WriteRawTag(58);
+        output.WriteString(PackageVersion);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -189,13 +214,16 @@ namespace MLAgents.CommunicatorObjects {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
-      if (Version.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Version);
+      if (CommunicationVersion.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(CommunicationVersion);
       }
       if (LogPath.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(LogPath);
       }
       size += brainParameters_.CalculateSize(_repeated_brainParameters_codec);
+      if (PackageVersion.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(PackageVersion);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -210,13 +238,16 @@ namespace MLAgents.CommunicatorObjects {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
-      if (other.Version.Length != 0) {
-        Version = other.Version;
+      if (other.CommunicationVersion.Length != 0) {
+        CommunicationVersion = other.CommunicationVersion;
       }
       if (other.LogPath.Length != 0) {
         LogPath = other.LogPath;
       }
       brainParameters_.Add(other.brainParameters_);
+      if (other.PackageVersion.Length != 0) {
+        PackageVersion = other.PackageVersion;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -233,7 +264,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 18: {
-            Version = input.ReadString();
+            CommunicationVersion = input.ReadString();
             break;
           }
           case 26: {
@@ -242,6 +273,10 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 42: {
             brainParameters_.AddEntriesFrom(input, _repeated_brainParameters_codec);
+            break;
+          }
+          case 58: {
+            PackageVersion = input.ReadString();
             break;
           }
         }

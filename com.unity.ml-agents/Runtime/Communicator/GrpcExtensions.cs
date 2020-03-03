@@ -135,7 +135,9 @@ namespace MLAgents
         {
             return new UnityRLInitParameters
             {
-                seed = inputProto.Seed
+                seed = inputProto.Seed,
+                pythonLibraryVersion = inputProto.PackageVersion,
+                pythonCommunicationVersion = inputProto.CommunicationVersion,
             };
         }
 
