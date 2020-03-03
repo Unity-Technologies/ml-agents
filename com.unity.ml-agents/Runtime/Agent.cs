@@ -119,6 +119,13 @@ namespace MLAgents
             public int maxStep;
         }
 
+        public int TeamId {
+            get { return GetComponent<BehaviorParameters>().TeamId; }
+        }
+        public string BehaviorName  {
+            get { return GetComponent<BehaviorParameters>().behaviorName; }
+        }
+
         [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
         [SerializeField][HideInInspector]

@@ -22,6 +22,7 @@ The versions can be found in
 * The `--multi-gpu` option has been removed temporarily.
 * `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
 * `BrainParameters` and `SpaceType` have been removed from the public API
+* `BehaviorParameters` have been removed from the public API.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
