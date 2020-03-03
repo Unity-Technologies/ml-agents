@@ -54,8 +54,8 @@ PPO_CONFIG_RECURRENT = f"""
         hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 5000
-        memory_size: 8
+        max_steps: 3000
+        memory_size: 16
         normalize: false
         learning_rate_schedule: constant
         num_epoch: 3
