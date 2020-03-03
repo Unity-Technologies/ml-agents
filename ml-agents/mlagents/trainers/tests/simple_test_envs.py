@@ -1,5 +1,5 @@
 import random
-from typing import Dict, List
+from typing import Dict, List, Any
 import numpy as np
 
 from mlagents_envs.base_env import (
@@ -10,6 +10,7 @@ from mlagents_envs.base_env import (
 )
 
 OBS_SIZE = 1
+VIS_OBS_SIZE = (16, 16, 3)
 STEP_SIZE = 0.1
 
 TIME_PENALTY = 0.001
@@ -27,12 +28,16 @@ class Simple1DEnvironment(BaseEnv):
     it reaches -1. The position is incremented by the action amount (clamped to [-step_size, step_size]).
     """
 
-    def __init__(self, brain_names, use_discrete, step_size=STEP_SIZE):
+    def __init__(
+        self, brain_names, use_discrete, step_size=STEP_SIZE, num_visual=0, num_vector=1
+    ):
         super().__init__()
         self.discrete = use_discrete
+        self.num_visual = num_visual
+        self.num_vector = num_vector
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         self.group_spec = AgentGroupSpec(
-            [(OBS_SIZE,)], action_type, (2,) if use_discrete else 1
+            self._make_obs_spec(), action_type, (2,) if use_discrete else 1
         )
         self.names = brain_names
         self.position: Dict[str, float] = {}
@@ -52,6 +57,22 @@ class Simple1DEnvironment(BaseEnv):
             self._reset_agent(name)
             self.action[name] = None
             self.step_result[name] = None
+
+    def _make_obs_spec(self) -> List[Any]:
+        obs_spec: List[Any] = []
+        for _ in range(self.num_vector):
+            obs_spec.append((OBS_SIZE,))
+        for _ in range(self.num_visual):
+            obs_spec.append(VIS_OBS_SIZE)
+        return obs_spec
+
+    def _make_obs(self, value: float) -> List[np.ndarray]:
+        obs = []
+        for _ in range(self.num_vector):
+            obs.append(np.ones((1, OBS_SIZE), dtype=np.float32) * value)
+        for _ in range(self.num_visual):
+            obs.append(np.ones(VIS_OBS_SIZE, dtype=np.float32) * value)
+        return obs
 
     def get_agent_groups(self):
         return self.names
@@ -91,7 +112,7 @@ class Simple1DEnvironment(BaseEnv):
     def _make_batched_step(
         self, name: str, done: bool, reward: float
     ) -> BatchedStepResult:
-        m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * self.goal[name]]
+        m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
         m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([0], dtype=np.int32)
@@ -155,7 +176,7 @@ class Memory1DEnvironment(Simple1DEnvironment):
         recurrent_obs_val = (
             self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
         )
-        m_vector_obs = [np.ones((1, OBS_SIZE), dtype=np.float32) * recurrent_obs_val]
+        m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
         m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([0], dtype=np.int32)
