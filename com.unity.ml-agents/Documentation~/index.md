@@ -49,26 +49,16 @@ This version of MLAgents is compatible with the following versions of the Unity 
 
 To use this package, you must have the following 3rd party products:
 
-* &lt;TBC&gt;&trade;
+* &lt;TBC&gt;
 
 
 ## Known limitations
 
 There are currently no known limitations.
 
----
-
-*The Unity Recorder version 1.0 has the following limitations:*
-
-* *The Unity Recorder does not support sound.*
-* *The Recorder window and Recorder properties are not available in standalone Players.*
-* *MP4 encoding is only available on Windows.*
-
----
-
 ## Helpful links
 
 If you are new to MLAgents, or have a question after reading the documentation, you can
 checkout our [GitHUb Repository](https://github.com/Unity-Technologies/ml-agents), which also
-includes a number of ways to (connect with us)[https://github.com/Unity-Technologies/ml-agents#community-and-feedback].
+includes a number of ways to [connect with us](https://github.com/Unity-Technologies/ml-agents#community-and-feedback).
 
