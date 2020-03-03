@@ -47,7 +47,7 @@ PPO_CONFIG = f"""
 PPO_CONFIG_RECURRENT = f"""
     {BRAIN_NAME}:
         trainer: ppo
-        batch_size: 16
+        batch_size: 32
         beta: 5.0e-3
         buffer_size: 64
         epsilon: 0.2
@@ -61,7 +61,7 @@ PPO_CONFIG_RECURRENT = f"""
         num_epoch: 3
         num_layers: 1
         time_horizon: 64
-        sequence_length: 64
+        sequence_length: 32
         summary_freq: 500
         use_recurrent: true
         reward_signals:
@@ -102,7 +102,7 @@ SAC_CONFIG = f"""
 SAC_CONFIG_RECURRENT = f"""
     {BRAIN_NAME}:
         trainer: sac
-        batch_size: 8
+        batch_size: 32
         buffer_size: 500
         buffer_init_steps: 100
         hidden_units: 16
@@ -115,7 +115,7 @@ SAC_CONFIG_RECURRENT = f"""
         train_interval: 1
         num_layers: 1
         time_horizon: 64
-        sequence_length: 16
+        sequence_length: 32
         summary_freq: 100
         tau: 0.01
         use_recurrent: true
