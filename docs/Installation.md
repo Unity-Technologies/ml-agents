@@ -1,13 +1,13 @@
 # Installation
 
 The ML-Agents Toolkit contains several components:
-* Unity package (`com.unity.ml-agents`) contains the Unity C# SDK that will be integrated into your Unity scene.
+* Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the Unity C# SDK that will be integrated into your Unity scene.
 * Three Python packages:
-  ** [`ml-agents`](../ml-agents/) contains the machine learning algorithms that enables you to train behaviors in your Unity scene. Most users of ML-Agents will only need to directly install `ml-agents`.
-  ** `ml-agents-envs` contains a Python API to interact with a Unity scene. It is a foundational layer that facilitates
+  * [`ml-agents`](../ml-agents/) contains the machine learning algorithms that enables you to train behaviors in your Unity scene. Most users of ML-Agents will only need to directly install `ml-agents`.
+  * [`ml-agents-envs`](../ml-agents-envs/) contains a Python API to interact with a Unity scene. It is a foundational layer that facilitates
 data messaging between Unity scene and the Python machine learning algorithms. Consequently, `ml-agents` depends on `ml-agents-envs`.
-  ** `gym-unity` provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
-* Unity project that contains several [example environments](Learning-Environment-Examples.md) that highlight the various features of the toolkit.
+  * [`gym-unity`](../gym-unity/) provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
+* Unity [Project](../Project/) that contains several [example environments](Learning-Environment-Examples.md) that highlight the various features of the toolkit to help you get started.
 
 Consequently, to install and use ML-Agents you will need to:
 * Install Unity (2018.4 or later)
@@ -46,19 +46,6 @@ git clone --branch latest_release https://github.com/Unity-Technologies/ml-agent
 ```
 The `--branch latest_release` option will switch to the tag of the latest stable release.
 Omitting that will get the `master` branch which is potentially unstable.
-
-The repository contains a few key high-level sub-directories worth highlighting:
-
-* `Project/` includes the Unity project with contains many [example environments](Learning-Environment-Examples.md)
-to help you get started.
-
-* `com.unity.ml-agents/` contains the Unity package
-
-* `ml-agents/` contains the `ml-agents` Python package
-
-* `ml-agents-envs/` contains the `ml-agents-envs` Python package
-
-* `gym-unity/` contains the `gym-unity` Python package
 
 ## Install the `com.unity.ml-agents` Unity package
 The Unity ML-Agents C# SDK is now a Unity Package. We are working on getting it added to the
