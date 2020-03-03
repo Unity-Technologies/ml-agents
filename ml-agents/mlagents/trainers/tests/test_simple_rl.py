@@ -44,6 +44,32 @@ PPO_CONFIG = f"""
                 gamma: 0.99
     """
 
+PPO_CONFIG_VISUAL = f"""
+    {BRAIN_NAME}:
+        trainer: ppo
+        batch_size: 16
+        beta: 5.0e-3
+        buffer_size: 64
+        epsilon: 0.2
+        hidden_units: 32
+        lambd: 0.95
+        learning_rate: 3.0e-4
+        learning_rate_schedule: constant
+        max_steps: 1500
+        memory_size: 256
+        normalize: false
+        num_epoch: 3
+        num_layers: 1
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 500
+        use_recurrent: false
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+    """
+
 PPO_CONFIG_RECURRENT = f"""
     {BRAIN_NAME}:
         trainer: ppo
@@ -79,6 +105,35 @@ SAC_CONFIG = f"""
         hidden_units: 16
         init_entcoef: 0.01
         learning_rate: 5.0e-3
+        max_steps: 1000
+        memory_size: 256
+        normalize: false
+        num_update: 1
+        train_interval: 1
+        num_layers: 1
+        time_horizon: 64
+        sequence_length: 64
+        summary_freq: 100
+        tau: 0.01
+        use_recurrent: false
+        curiosity_enc_size: 128
+        demo_path: None
+        vis_encode_type: simple
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+    """
+
+SAC_CONFIG_VISUAL = f"""
+    {BRAIN_NAME}:
+        trainer: sac
+        batch_size: 16
+        buffer_size: 500
+        buffer_init_steps: 100
+        hidden_units: 16
+        init_entcoef: 0.01
+        learning_rate: 3.0e-4
         max_steps: 1000
         memory_size: 256
         normalize: false
@@ -277,21 +332,39 @@ def test_simple_ppo(use_discrete):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("num_visual", [1, 2])
+def test_visual_ppo(num_visual, use_discrete):
+    env = Simple1DEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+    )
+    _check_environment_trains(env, PPO_CONFIG_VISUAL)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     _check_environment_trains(env, PPO_CONFIG_RECURRENT)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_recurrent_sac(use_discrete):
-    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    _check_environment_trains(env, SAC_CONFIG_RECURRENT)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_sac(use_discrete):
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     _check_environment_trains(env, SAC_CONFIG)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("num_visual", [1, 2])
+def test_visual_sac(num_visual, use_discrete):
+    env = Simple1DEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+    )
+    _check_environment_trains(env, SAC_CONFIG_VISUAL)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_recurrent_sac(use_discrete):
+    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    _check_environment_trains(env, SAC_CONFIG_RECURRENT)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])

@@ -10,7 +10,7 @@ from mlagents_envs.base_env import (
 )
 
 OBS_SIZE = 1
-VIS_OBS_SIZE = (16, 16, 3)
+VIS_OBS_SIZE = (20, 20, 3)
 STEP_SIZE = 0.1
 
 TIME_PENALTY = 0.001
@@ -71,7 +71,7 @@ class Simple1DEnvironment(BaseEnv):
         for _ in range(self.num_vector):
             obs.append(np.ones((1, OBS_SIZE), dtype=np.float32) * value)
         for _ in range(self.num_visual):
-            obs.append(np.ones(VIS_OBS_SIZE, dtype=np.float32) * value)
+            obs.append(np.ones((1,) + VIS_OBS_SIZE, dtype=np.float32) * value)
         return obs
 
     def get_agent_groups(self):
