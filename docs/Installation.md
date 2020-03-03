@@ -3,10 +3,10 @@
 The ML-Agents Toolkit contains several components:
 * Unity package (`com.unity.ml-agents`) contains the Unity C# SDK that will be integrated into your Unity scene.
 * Three Python packages:
-** `ml-agents` contains the machine learning algorithms that enables you to train behaviors in your Unity scene. Most users of ML-Agents will only need to directly install `ml-agents`.
-** `ml-agents-envs` contains a Python API to interact with a Unity scene. It is a foundational layer that facilitates
+  ** [`ml-agents`](../ml-agents/) contains the machine learning algorithms that enables you to train behaviors in your Unity scene. Most users of ML-Agents will only need to directly install `ml-agents`.
+  ** `ml-agents-envs` contains a Python API to interact with a Unity scene. It is a foundational layer that facilitates
 data messaging between Unity scene and the Python machine learning algorithms. Consequently, `ml-agents` depends on `ml-agents-envs`.
-** `gym-unity` provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
+  ** `gym-unity` provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
 * Unity project that contains several [example environments](Learning-Environment-Examples.md) that highlight the various features of the toolkit.
 
 Consequently, to install and use ML-Agents you will need to:
