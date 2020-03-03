@@ -9,16 +9,12 @@ data messaging between Unity scene and the Python machine learning algorithms. C
   * [`gym-unity`](../gym-unity/) provides a Python-wrapper for your Unity scene that supports the OpenAI Gym interface.
 * Unity [Project](../Project/) that contains several [example environments](Learning-Environment-Examples.md) that highlight the various features of the toolkit to help you get started.
 
-## Basic Installation
-
-To install and use ML-Agents you will need to:
+Consequently, to install and use ML-Agents you will need to:
 * Install Unity (2018.4 or later)
 * Install Python (3.6.1 or higher)
 * Clone this repository
 * Install the `com.unity.ml-agents` Unity package
 * Install the `ml-agents` Python package
-
-Each step above has a dedicated section below.
 
 ### Install **Unity 2018.4** or Later
 
@@ -108,9 +104,7 @@ Some of the primary dependencies include:
 the following [link](https://www.tensorflow.org/install/pip) on how to install TensorFlow 
 in an Anaconda environment.
 
-## Advanced Installation
-
-### Installing for Development
+#### Advanced Installation: Installing for Development
 
 If you intend to make modifications to `ml-agents` or `ml-agents-envs`, you should install
 the packages from the cloned repo rather than from PyPi. To do this, you will need to install
