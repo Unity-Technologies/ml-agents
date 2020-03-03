@@ -27,7 +27,7 @@ developer communities.
 ## Features
 
 * Unity environment control from Python
-* 10+ sample Unity environments
+* 15+ sample Unity environments
 * Two deep reinforcement learning algorithms,
 [Proximal Policy Optimization](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-PPO.md)
  (PPO) and [Soft Actor-Critic](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-SAC.md)
@@ -39,7 +39,6 @@ developer communities.
 * Built-in support for Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
-* Simplified set-up with Docker
 * Wrap learning environments as a gym
 * Utilizes the Unity Inference Engine
 * Train using concurrent Unity environment instances
