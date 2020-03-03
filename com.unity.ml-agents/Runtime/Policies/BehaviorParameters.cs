@@ -47,7 +47,9 @@ namespace MLAgents.Policies
         /// </summary>
         [HideInInspector]
         [SerializeField]
+        [FormerlySerializedAs("m_TeamID")]
         public int TeamId;
+
         [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
