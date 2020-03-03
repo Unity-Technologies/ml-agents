@@ -477,7 +477,7 @@ namespace MLAgents
         /// </returns>
         public virtual float[] Heuristic()
         {
-            Debug.LogWarning("Heuristic method called but not implemented. Return placeholder actions.");
+            Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
             var param = m_PolicyFactory.brainParameters;
             var actionSize = param.vectorActionSpaceType == SpaceType.Continuous ?
                 param.vectorActionSize[0] :
