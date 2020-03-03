@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
  - All Sensor related code has been moved to the namespace `MLAgents.Sensors`.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
+ - `BrainParameters` and `SpaceType` have been removed from the public API
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)

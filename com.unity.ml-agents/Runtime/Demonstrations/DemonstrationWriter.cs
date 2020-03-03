@@ -37,7 +37,7 @@ namespace MLAgents.Demonstrations
         /// <param name="demonstrationName">Base name of the demonstration file(s).</param>
         /// <param name="brainName">The name of the Brain the agent is attached to.</param>
         /// <param name="brainParameters">The parameters of the Brain the agent is attached to.</param>
-        public void Initialize(
+        internal void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
             if (m_Writer == null)

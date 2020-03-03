@@ -57,7 +57,7 @@ namespace MLAgents.Policies
         /// <summary>
         /// The associated <see cref="BrainParameters"/> for this behavior.
         /// </summary>
-        public BrainParameters brainParameters
+        internal BrainParameters brainParameters
         {
             get { return m_BrainParameters; }
         }
