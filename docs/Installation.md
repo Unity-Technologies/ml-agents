@@ -59,10 +59,10 @@ on the top left of the packages list.
 <p align="center">
   <img src="images/unity_package_manager_window.png"
        alt="Unity Package Manager Window"
-       width="300" border="10" />
+       height="450" border="10" />
   <img src="images/unity_package_json.png"
      alt="package.json"
-     width="500" border="10" />
+     height="450" border="10" />
 </p>
 
 If you are going to follow the examples from our documentation, you can open the `Project`
