@@ -229,11 +229,19 @@ namespace MLAgents
             }
             else
             {
+                var compressedObs = sensor.GetCompressedObservation();
                 observationProto = new ObservationProto
                 {
-                    CompressedData = ByteString.CopyFrom(sensor.GetCompressedObservation()),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
                 };
+
+                // Passing a null byte[] to CompressedData will raise an exception, so leave it unset
+                // if the observations are null.
+                if (compressedObs != null)
+                {
+                    observationProto.CompressedData = ByteString.CopyFrom(compressedObs);
+                }
+
             }
             observationProto.Shape.AddRange(shape);
             return observationProto;
