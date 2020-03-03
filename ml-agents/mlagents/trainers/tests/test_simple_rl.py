@@ -47,14 +47,14 @@ PPO_CONFIG = f"""
 PPO_CONFIG_RECURRENT = f"""
     {BRAIN_NAME}:
         trainer: ppo
-        batch_size: 32
+        batch_size: 64
         beta: 5.0e-3
-        buffer_size: 64
+        buffer_size: 128
         epsilon: 0.2
         hidden_units: 32
         lambd: 0.95
         learning_rate: 5.0e-3
-        max_steps: 4000
+        max_steps: 5000
         memory_size: 8
         normalize: false
         learning_rate_schedule: constant
