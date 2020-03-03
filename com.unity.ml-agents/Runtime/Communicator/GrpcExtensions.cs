@@ -68,9 +68,13 @@ namespace MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToProto(this BrainParameters bp, string name, bool isTraining)
         {
+            int[] actionSize = bp.discreteActionBranches;
+            if (bp.vectorActionSpaceType == SpaceType.Continuous){
+                actionSize = new int[] { bp.vectorActionSize };
+            }
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSize = { bp.vectorActionSize },
+                VectorActionSize = {actionSize},
                 VectorActionSpaceType =
                     (SpaceTypeProto)bp.vectorActionSpaceType,
                 BrainName = name,
