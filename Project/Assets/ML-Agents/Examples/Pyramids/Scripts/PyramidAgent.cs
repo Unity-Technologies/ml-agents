@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using MLAgents;
+using MLAgents.Sensors;
 
 public class PyramidAgent : Agent
 {

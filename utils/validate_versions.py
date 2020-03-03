@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
+import json
 import sys
 from typing import Dict
 import argparse
@@ -12,6 +13,9 @@ DIRECTORIES = [
     "ml-agents-envs/mlagents_envs",
     "gym-unity/gym_unity",
 ]
+
+UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
+ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
 
 
 def extract_version_string(filename):
@@ -45,6 +49,43 @@ def set_version(new_version: str) -> None:
         print(f"Setting {path} to version {new_version}")
         with open(path, "w") as f:
             f.write(new_contents)
+    # Package version is a bit stricter - only set it if we're not a "dev" version.
+    if "dev" not in new_version:
+        package_version = new_version + "-preview"
+        print(
+            f"Setting package version to {package_version} in {UNITY_PACKAGE_JSON_PATH}"
+        )
+        set_package_version(package_version)
+        print(f"Setting package version to {package_version} in {ACADEMY_PATH}")
+        set_academy_version_string(package_version)
+
+
+def set_package_version(new_version: str) -> None:
+    with open(UNITY_PACKAGE_JSON_PATH, "r") as f:
+        package_json = json.load(f)
+    if "version" in package_json:
+        package_json["version"] = new_version
+    with open(UNITY_PACKAGE_JSON_PATH, "w") as f:
+        json.dump(package_json, f, indent=2)
+
+
+def set_academy_version_string(new_version):
+    needle = "internal const string k_PackageVersion"
+    found = 0
+    with open(ACADEMY_PATH) as f:
+        lines = f.readlines()
+    for i, l in enumerate(lines):
+        if needle in l:
+            left, right = l.split(" = ")
+            right = f' = "{new_version}";\n'
+            lines[i] = left + right
+            found += 1
+    if found != 1:
+        raise RuntimeError(
+            f'Expected to find search string "{needle}" exactly once, but found it {found} times'
+        )
+    with open(ACADEMY_PATH, "w") as f:
+        f.writelines(lines)
 
 
 if __name__ == "__main__":

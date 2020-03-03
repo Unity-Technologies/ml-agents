@@ -11,10 +11,10 @@ import numpy as np
 
 
 from mlagents_envs.timers import timed
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 

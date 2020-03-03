@@ -1,7 +1,7 @@
 using System;
 using Barracuda;
-using MLAgents.InferenceBrain;
-using MLAgents.InferenceBrain.Utils;
+using MLAgents.Inference;
+using MLAgents.Inference.Utils;
 using NUnit.Framework;
 
 namespace MLAgents.Tests

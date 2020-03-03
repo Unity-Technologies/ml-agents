@@ -1,7 +1,7 @@
 from typing import Dict, Any
 import numpy as np
 
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.exception import UnityTrainerException

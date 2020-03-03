@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using MLAgents.InferenceBrain.Utils;
+using MLAgents.Inference.Utils;
 
 namespace MLAgents.Tests
 {

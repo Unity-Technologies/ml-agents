@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEditor;
-using Barracuda;
+using MLAgents.Sensors;
 
-namespace MLAgents
+namespace MLAgents.Editor
 {
-    internal class RayPerceptionSensorComponentBaseEditor : Editor
+    internal class RayPerceptionSensorComponentBaseEditor : UnityEditor.Editor
     {
         bool m_RequireSensorUpdate;
 

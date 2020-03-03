@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 import yaml
 
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.models import EncoderType, ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution

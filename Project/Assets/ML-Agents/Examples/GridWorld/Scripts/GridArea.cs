@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
+using MLAgents.SideChannels;
 
 
 public class GridArea : MonoBehaviour

@@ -2,8 +2,9 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
+using MLAgents.Policies;
 
-namespace MLAgents
+namespace MLAgents.Demonstrations
 {
     /// <summary>
     /// Demonstration Recorder Component.
@@ -88,12 +89,6 @@ namespace MLAgents
             var stream = m_FileSystem.File.Create(filePath);
             m_DemoWriter = new DemonstrationWriter(stream);
 
-            m_DemoWriter.Initialize(
-                demonstrationName,
-                behaviorParams.brainParameters,
-                behaviorParams.fullyQualifiedBehaviorName
-            );
-
             AddDemonstrationWriterToAgent(m_DemoWriter);
 
             return m_DemoWriter;
@@ -177,6 +172,12 @@ namespace MLAgents
         /// <param name="demoWriter"></param>
         public void AddDemonstrationWriterToAgent(DemonstrationWriter demoWriter)
         {
+            var behaviorParams = GetComponent<BehaviorParameters>();
+            demoWriter.Initialize(
+                demonstrationName,
+                behaviorParams.brainParameters,
+                behaviorParams.fullyQualifiedBehaviorName
+            );
             m_Agent.DemonstrationWriters.Add(demoWriter);
         }
 

@@ -1,15 +1,16 @@
-using UnityEngine;
+using MLAgents.Sensors;
 using UnityEditor;
 using Barracuda;
+using MLAgents.Policies;
 
-namespace MLAgents
+namespace MLAgents.Editor
 {
     /*
      This code is meant to modify the behavior of the inspector on Agent Components.
     */
     [CustomEditor(typeof(BehaviorParameters))]
     [CanEditMultipleObjects]
-    internal class BehaviorParametersEditor : Editor
+    internal class BehaviorParametersEditor : UnityEditor.Editor
     {
         const float k_TimeBetweenModelReloads = 2f;
         // Time since the last reload of the model
@@ -32,7 +33,7 @@ namespace MLAgents
             EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_TeamID"));
+            EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
             EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;
@@ -75,7 +76,7 @@ namespace MLAgents
             }
             if (brainParameters != null)
             {
-                var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
+                var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
                     barracudaModel, brainParameters, sensorComponents);
                 foreach (var check in failedChecks)
                 {

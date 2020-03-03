@@ -117,7 +117,7 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
-2. In the editor, add the `using MLAgents;` statement and then change the base
+2. In the editor, add the `using MLAgents;` and `using MLAgents.Sensors` statements and then change the base
     class from `MonoBehaviour` to `Agent`.
 3. Delete the `Update()` method, but we will use the `Start()` function, so
     leave it alone for now.
@@ -155,6 +155,7 @@ So far, our RollerAgent script looks like:
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
+using MLAgents.Sensors;
 
 public class RollerAgent : Agent
 {

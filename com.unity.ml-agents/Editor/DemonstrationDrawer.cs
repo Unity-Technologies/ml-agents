@@ -1,94 +1,99 @@
 using System.Text;
-using MLAgents;
 using UnityEditor;
+using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
-/// <summary>
-/// Renders a custom UI for Demonstration Scriptable Object.
-/// </summary>
-[CustomEditor(typeof(Demonstration))]
-[CanEditMultipleObjects]
-internal class DemonstrationEditor : Editor
+
+namespace MLAgents.Editor
 {
-    SerializedProperty m_BrainParameters;
-    SerializedProperty m_DemoMetaData;
-
-    void OnEnable()
-    {
-        m_BrainParameters = serializedObject.FindProperty("brainParameters");
-        m_DemoMetaData = serializedObject.FindProperty("metaData");
-    }
-
     /// <summary>
-    /// Renders Inspector UI for Demonstration metadata.
+    /// Renders a custom UI for Demonstration Scriptable Object.
     /// </summary>
-    void MakeMetaDataProperty(SerializedProperty property)
+    [CustomEditor(typeof(Demonstration))]
+    [CanEditMultipleObjects]
+    internal class DemonstrationEditor : UnityEditor.Editor
     {
-        var nameProp = property.FindPropertyRelative("demonstrationName");
-        var expProp = property.FindPropertyRelative("numberExperiences");
-        var epiProp = property.FindPropertyRelative("numberEpisodes");
-        var rewProp = property.FindPropertyRelative("meanReward");
+        SerializedProperty m_BrainParameters;
+        SerializedProperty m_DemoMetaData;
 
-        var nameLabel = nameProp.displayName + ": " + nameProp.stringValue;
-        var expLabel = expProp.displayName + ": " + expProp.intValue;
-        var epiLabel = epiProp.displayName + ": " + epiProp.intValue;
-        var rewLabel = rewProp.displayName + ": " + rewProp.floatValue;
-
-        EditorGUILayout.LabelField(nameLabel);
-        EditorGUILayout.LabelField(expLabel);
-        EditorGUILayout.LabelField(epiLabel);
-        EditorGUILayout.LabelField(rewLabel);
-    }
-
-    /// <summary>
-    /// Constructs label for action size array.
-    /// </summary>
-    static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
-    {
-        var actionSize = actionSizeProperty.arraySize;
-        var actionLabel = new StringBuilder("[ ");
-        for (var i = 0; i < actionSize; i++)
+        void OnEnable()
         {
-            actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
-            if (i < actionSize - 1)
-            {
-                actionLabel.Append(", ");
-            }
+            m_BrainParameters = serializedObject.FindProperty("brainParameters");
+            m_DemoMetaData = serializedObject.FindProperty("metaData");
         }
 
-        actionLabel.Append(" ]");
-        return actionLabel.ToString();
-    }
+        /// <summary>
+        /// Renders Inspector UI for Demonstration metadata.
+        /// </summary>
+        void MakeMetaDataProperty(SerializedProperty property)
+        {
+            var nameProp = property.FindPropertyRelative("demonstrationName");
+            var expProp = property.FindPropertyRelative("numberExperiences");
+            var epiProp = property.FindPropertyRelative("numberEpisodes");
+            var rewProp = property.FindPropertyRelative("meanReward");
 
-    /// <summary>
-    /// Renders Inspector UI for Brain Parameters of Demonstration.
-    /// </summary>
-    void MakeBrainParametersProperty(SerializedProperty property)
-    {
-        var vecObsSizeProp = property.FindPropertyRelative("vectorObservationSize");
-        var numStackedProp = property.FindPropertyRelative("numStackedVectorObservations");
-        var actSizeProperty = property.FindPropertyRelative("vectorActionSize");
-        var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
+            var nameLabel = nameProp.displayName + ": " + nameProp.stringValue;
+            var expLabel = expProp.displayName + ": " + expProp.intValue;
+            var epiLabel = epiProp.displayName + ": " + epiProp.intValue;
+            var rewLabel = rewProp.displayName + ": " + rewProp.floatValue;
 
-        var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
-        var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
-        var vecActSizeLabel =
-            actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
-        var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
-            (SpaceType)actSpaceTypeProp.enumValueIndex;
+            EditorGUILayout.LabelField(nameLabel);
+            EditorGUILayout.LabelField(expLabel);
+            EditorGUILayout.LabelField(epiLabel);
+            EditorGUILayout.LabelField(rewLabel);
+        }
 
-        EditorGUILayout.LabelField(vecObsSizeLabel);
-        EditorGUILayout.LabelField(numStackedLabel);
-        EditorGUILayout.LabelField(vecActSizeLabel);
-        EditorGUILayout.LabelField(actSpaceTypeLabel);
-    }
+        /// <summary>
+        /// Constructs label for action size array.
+        /// </summary>
+        static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
+        {
+            var actionSize = actionSizeProperty.arraySize;
+            var actionLabel = new StringBuilder("[ ");
+            for (var i = 0; i < actionSize; i++)
+            {
+                actionLabel.Append(actionSizeProperty.GetArrayElementAtIndex(i).intValue);
+                if (i < actionSize - 1)
+                {
+                    actionLabel.Append(", ");
+                }
+            }
 
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-        EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
-        MakeMetaDataProperty(m_DemoMetaData);
-        EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
-        MakeBrainParametersProperty(m_BrainParameters);
-        serializedObject.ApplyModifiedProperties();
+            actionLabel.Append(" ]");
+            return actionLabel.ToString();
+        }
+
+        /// <summary>
+        /// Renders Inspector UI for Brain Parameters of Demonstration.
+        /// </summary>
+        void MakeBrainParametersProperty(SerializedProperty property)
+        {
+            var vecObsSizeProp = property.FindPropertyRelative("vectorObservationSize");
+            var numStackedProp = property.FindPropertyRelative("numStackedVectorObservations");
+            var actSizeProperty = property.FindPropertyRelative("vectorActionSize");
+            var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
+
+            var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
+            var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
+            var vecActSizeLabel =
+                actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
+            var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
+                (SpaceType)actSpaceTypeProp.enumValueIndex;
+
+            EditorGUILayout.LabelField(vecObsSizeLabel);
+            EditorGUILayout.LabelField(numStackedLabel);
+            EditorGUILayout.LabelField(vecActSizeLabel);
+            EditorGUILayout.LabelField(actSpaceTypeLabel);
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+            EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
+            MakeMetaDataProperty(m_DemoMetaData);
+            EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
+            MakeBrainParametersProperty(m_BrainParameters);
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 }

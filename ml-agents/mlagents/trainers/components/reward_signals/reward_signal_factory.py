@@ -10,7 +10,7 @@ from mlagents.trainers.components.reward_signals.gail.signal import GAILRewardSi
 from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 logger = logging.getLogger("mlagents.trainers")
 

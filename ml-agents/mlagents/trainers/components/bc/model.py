@@ -1,6 +1,6 @@
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
 class BCModel(object):

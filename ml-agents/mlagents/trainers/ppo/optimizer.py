@@ -5,8 +5,8 @@ import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.common.tf_optimizer import TFOptimizer
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 
 
@@ -72,7 +72,7 @@ class PPOOptimizer(TFOptimizer):
                     lr_schedule, lr, self.policy.global_step, int(max_step)
                 )
                 self._create_losses(
-                    self.policy.log_probs,
+                    self.policy.total_log_probs,
                     self.old_log_probs,
                     self.value_heads,
                     self.policy.entropy,
@@ -127,7 +127,9 @@ class PPOOptimizer(TFOptimizer):
             self.stream_names, hidden_value
         )
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, 1], dtype=tf.float32, name="old_probabilities"
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
         )
 
         self.old_log_probs = tf.reduce_sum(
@@ -183,7 +185,7 @@ class PPOOptimizer(TFOptimizer):
                 tf.stack(
                     [
                         -tf.nn.softmax_cross_entropy_with_logits_v2(
-                            labels=self.policy.action_oh[
+                            labels=self.policy.selected_actions[
                                 :, action_idx[i] : action_idx[i + 1]
                             ],
                             logits=old_normalized_logits[

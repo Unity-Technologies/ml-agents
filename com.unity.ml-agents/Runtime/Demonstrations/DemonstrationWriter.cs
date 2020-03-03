@@ -1,8 +1,10 @@
 using System.IO;
 using Google.Protobuf;
 using System.Collections.Generic;
+using MLAgents.Sensors;
+using MLAgents.Policies;
 
-namespace MLAgents
+namespace MLAgents.Demonstrations
 {
     /// <summary>
     /// Responsible for writing demonstration data to stream (typically a file stream).
@@ -35,7 +37,7 @@ namespace MLAgents
         /// <param name="demonstrationName">Base name of the demonstration file(s).</param>
         /// <param name="brainName">The name of the Brain the agent is attached to.</param>
         /// <param name="brainParameters">The parameters of the Brain the agent is attached to.</param>
-        public void Initialize(
+        internal void Initialize(
             string demonstrationName, BrainParameters brainParameters, string brainName)
         {
             if (m_Writer == null)

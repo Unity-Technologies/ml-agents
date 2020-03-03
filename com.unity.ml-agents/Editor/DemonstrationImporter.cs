@@ -4,8 +4,9 @@ using MLAgents.CommunicatorObjects;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
+using MLAgents.Demonstrations;
 
-namespace MLAgents
+namespace MLAgents.Editor
 {
     /// <summary>
     /// Asset Importer used to parse demonstration files.

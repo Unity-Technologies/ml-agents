@@ -9,7 +9,7 @@ import logging
 
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory

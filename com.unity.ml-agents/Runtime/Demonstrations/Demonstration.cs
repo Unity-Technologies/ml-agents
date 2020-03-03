@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using MLAgents.Policies;
 
-namespace MLAgents
+namespace MLAgents.Demonstrations
 {
     /// <summary>
     /// Demonstration Object. Contains meta-data regarding demonstration.
