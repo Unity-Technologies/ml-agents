@@ -74,10 +74,12 @@ SAC_CONFIG = f"""
     """
 
 
-def generate_config(config: str, override_vals: Dict[str, Any]) -> Dict[str, Any]:
+def generate_config(
+    config: str, override_vals: Dict[str, Any] = None
+) -> Dict[str, Any]:
     trainer_config = yaml.safe_load(config)
-    for key, val in override_vals.items():
-        trainer_config[BRAIN_NAME][key] = val
+    if override_vals is not None:
+        trainer_config[BRAIN_NAME].update(override_vals)
     return trainer_config
 
 
