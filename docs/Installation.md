@@ -37,7 +37,7 @@ environment doesn't include `pip3`, see these
 on installing it.
 
 Although we do not provide support for Anaconda installation on Windows, the previous
-[Windows Anaconda Installation (Deprecated) guide](Installation-Windows.md)
+[Windows Anaconda Installation (Deprecated) guide](Installation-Anaconda-Windows.md)
 is still available.
 
 ### Clone the ML-Agents Toolkit Repository
