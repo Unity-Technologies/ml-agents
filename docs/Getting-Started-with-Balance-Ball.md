@@ -66,25 +66,25 @@ Perhaps the more interesting aspect of an agents is the Agent subclass
 implementation. When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
-* agent.AgentReset() — Called when the Agent resets, including at the beginning
+* `Agent.OnEpisodeBegin()` — Called when the Agent resets, including at the beginning
   of a session. The Ball3DAgent class uses the reset function to reset the
   agent cube and ball. The function randomizes the reset values so that the
   training generalizes to more than a specific starting position and agent cube
   attitude.
-* agent.CollectObservations(VectorSensor sensor) — Called every simulation step. Responsible for
+* `Agent.CollectObservations(VectorSensor sensor)` — Called every simulation step. Responsible for
   collecting the Agent's observations of the environment. Since the Behavior
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
   `VectorSensor.AddObservation()` such that vector size adds up to 8.
-* agent.AgentAction() — Called every simulation step. Receives the action chosen
+* `Agent.OnActionReceived()` — Called every simulation step. Receives the action chosen
   by the Agent. The vector action spaces result in a
-  small change in the agent cube's rotation at each step. The `AgentAction()` function
+  small change in the agent cube's rotation at each step. The `OnActionReceived()` function
   assigns a reward to the Agent; in this example, an Agent receives a small
   positive reward for each step it keeps the ball on the agent cube's head and a larger,
   negative reward for dropping the ball. An Agent is also marked as done when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
-* agent.Heuristic() - When the `Use Heuristic` checkbox is checked in the Behavior
+* `Agent.Heuristic()` - When the `Use Heuristic` checkbox is checked in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
   the actions of the Agent. As such, the `Heuristic()` method returns an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
