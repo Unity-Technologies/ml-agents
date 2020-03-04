@@ -57,7 +57,7 @@ class Simple1DEnvironment(BaseEnv):
         self.rewards: Dict[str, float] = {}
         self.final_rewards: Dict[str, List[float]] = {}
         self.step_result: Dict[str, BatchedStepResult] = {}
-        self.agent_id: Dict[str.int] = {}
+        self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
 
         for name in self.names:
@@ -211,7 +211,7 @@ class Simple1DEnvironment(BaseEnv):
         self.step_count[name] = 0
         self.final_rewards[name].append(self.rewards[name])
         self.rewards[name] = 0
-        self.agent_id[name] = (self.agent_id[name] + 1) % 2
+        self.agent_id[name] = self.agent_id[name] + 1
 
     def reset(self) -> None:  # type: ignore
         for name in self.names:
