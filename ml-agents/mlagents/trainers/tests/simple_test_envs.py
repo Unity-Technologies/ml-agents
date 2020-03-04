@@ -1,5 +1,5 @@
 import random
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 import numpy as np
 
 from mlagents_envs.base_env import (
@@ -133,24 +133,21 @@ class Simple1DEnvironment(BaseEnv):
         if done:
             self._reset_agent(name)
             new_vector_obs = self._make_obs(self.goal[name])
-            new_reward = np.array([0.0], dtype=np.float32)
-            new_done = np.array([False], dtype=np.bool)
-            new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
-            new_action_mask = self._generate_mask()
-
-            m_vector_obs = [
-                np.concatenate((old, new), axis=0)
-                for old, new in zip(m_vector_obs, new_vector_obs)
-            ]
-            m_reward = np.concatenate((m_reward, new_reward), axis=0)
-            m_done = np.concatenate((m_done, new_done), axis=0)
-            m_agent_id = np.concatenate((m_agent_id, new_agent_id), axis=0)
-            if action_mask is not None:
-                action_mask = [
-                    np.concatenate((old, new), axis=0)
-                    for old, new in zip(action_mask, new_action_mask)
-                ]
-            m_reward = np.concatenate((m_reward, new_reward), axis=0)
+            (
+                m_vector_obs,
+                m_reward,
+                m_done,
+                m_agent_id,
+                action_mask,
+            ) = self._construct_reset_step(
+                m_vector_obs,
+                new_vector_obs,
+                m_reward,
+                m_done,
+                m_agent_id,
+                action_mask,
+                name,
+            )
         return BatchedStepResult(
             m_vector_obs,
             m_reward,
@@ -159,6 +156,35 @@ class Simple1DEnvironment(BaseEnv):
             m_agent_id,
             action_mask,
         )
+
+    def _construct_reset_step(
+        self,
+        vector_obs: List[np.ndarray],
+        new_vector_obs: List[np.ndarray],
+        reward: np.ndarray,
+        done: np.ndarray,
+        agent_id: np.ndarray,
+        action_mask: List[np.ndarray],
+        name: str,
+    ) -> Tuple[List[np.ndarray], np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        new_reward = np.array([0.0], dtype=np.float32)
+        new_done = np.array([False], dtype=np.bool)
+        new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
+        new_action_mask = self._generate_mask()
+
+        m_vector_obs = [
+            np.concatenate((old, new), axis=0)
+            for old, new in zip(vector_obs, new_vector_obs)
+        ]
+        m_reward = np.concatenate((reward, new_reward), axis=0)
+        m_done = np.concatenate((done, new_done), axis=0)
+        m_agent_id = np.concatenate((agent_id, new_agent_id), axis=0)
+        if action_mask is not None:
+            action_mask = [
+                np.concatenate((old, new), axis=0)
+                for old, new in zip(action_mask, new_action_mask)
+            ]
+        return m_vector_obs, m_reward, m_done, m_agent_id, action_mask
 
     def step(self) -> None:
         assert all(action is not None for action in self.action.values())
@@ -216,8 +242,34 @@ class Memory1DEnvironment(Simple1DEnvironment):
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
         m_done = np.array([done], dtype=np.bool)
-        m_agent_id = np.array([0], dtype=np.int32)
+        m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
+        if done:
+            self._reset_agent(name)
+            recurrent_obs_val = (
+                self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
+            )
+            new_vector_obs = self._make_obs(recurrent_obs_val)
+            (
+                m_vector_obs,
+                m_reward,
+                m_done,
+                m_agent_id,
+                action_mask,
+            ) = self._construct_reset_step(
+                m_vector_obs,
+                new_vector_obs,
+                m_reward,
+                m_done,
+                m_agent_id,
+                action_mask,
+                name,
+            )
         return BatchedStepResult(
-            m_vector_obs, m_reward, m_done, m_done, m_agent_id, action_mask
+            m_vector_obs,
+            m_reward,
+            m_done,
+            np.zeros(m_done.shape, dtype=bool),
+            m_agent_id,
+            action_mask,
         )
