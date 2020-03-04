@@ -20,7 +20,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.timers import hierarchical_timer
 
-LOGGER = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class Trainer(abc.ABC):
@@ -84,7 +84,7 @@ class Trainer(abc.ABC):
                 s = sess.run(s_op)
                 self.stats_reporter.write_text(s, self.get_step)
         except Exception:
-            LOGGER.info("Could not write text summary for Tensorboard.")
+            logger.info("Could not write text summary for Tensorboard.")
             pass
 
     def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
@@ -198,7 +198,7 @@ class Trainer(abc.ABC):
             "Environment/Cumulative Reward"
         )
         if stats_summary.num > 0:
-            LOGGER.info(
+            logger.info(
                 "{}: {}: Step: {}. "
                 "Time Elapsed: {:0.3f} s "
                 "Mean "
@@ -215,7 +215,7 @@ class Trainer(abc.ABC):
             )
             set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
         else:
-            LOGGER.info(
+            logger.info(
                 " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
                     self.run_id, self.brain_name, step, is_training
                 )
