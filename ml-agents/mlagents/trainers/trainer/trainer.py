@@ -199,7 +199,7 @@ class Trainer(abc.ABC):
         )
         if stats_summary.num > 0:
             LOGGER.info(
-                " {}: {}: Step: {}. "
+                "{}: {}: Step: {}. "
                 "Time Elapsed: {:0.3f} s "
                 "Mean "
                 "Reward: {:0.3f}"

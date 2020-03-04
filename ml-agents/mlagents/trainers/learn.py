@@ -30,6 +30,7 @@ from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
+from mlagents.logging_util import create_logger
 
 
 def _create_parser():
@@ -450,8 +451,8 @@ def run_cli(options: RunOptions) -> None:
     except Exception:
         print("\n\n\tUnity Technologies\n")
     print(get_version_string())
-    trainer_logger = logging.getLogger("mlagents.trainers")
-    env_logger = logging.getLogger("mlagents_envs")
+    trainer_logger = create_logger("mlagents.trainers")
+    env_logger = create_logger("mlagents_envs")
 
     if options.debug:
         trainer_logger.setLevel("DEBUG")
