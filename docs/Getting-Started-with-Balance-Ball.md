@@ -62,8 +62,7 @@ behavior:
 * **Max Step** — Defines how many simulation steps can occur before the Agent's
   episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
 
-Perhaps the more interesting aspect of an agents is the Agent subclass
-implementation. When you create an Agent, you must extend the base Agent class.
+When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
 * `Agent.OnEpisodeBegin()` — Called when the Agent resets, including at the beginning
