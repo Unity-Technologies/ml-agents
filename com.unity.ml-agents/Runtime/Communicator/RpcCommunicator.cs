@@ -547,6 +547,14 @@ namespace MLAgents
             }
         }
 
+        private struct CachedSideChannelMessage
+        {
+            public Guid ChannelId;
+            public byte[] Message;
+        }
+
+        private static Queue<CachedSideChannelMessage> m_CachedMessages = new Queue<CachedSideChannelMessage>();
+
         /// <summary>
         /// Separates the data received from Python into individual messages for each registered side channel.
         /// </summary>
@@ -554,6 +562,22 @@ namespace MLAgents
         /// <param name="dataReceived">The byte array of data received from Python.</param>
         public static void ProcessSideChannelData(Dictionary<Guid, SideChannel> sideChannels, byte[] dataReceived)
         {
+
+            while(m_CachedMessages.Count!=0)
+            {
+                var cachedMessage = m_CachedMessages.Dequeue();
+                if (sideChannels.ContainsKey(cachedMessage.ChannelId))
+                {
+                    sideChannels[cachedMessage.ChannelId].OnMessageReceived(cachedMessage.Message);
+                }
+                else
+                {
+                    Debug.Log(string.Format(
+                        "Unknown side channel data received. Channel Id is "
+                        + ": {0}", cachedMessage.ChannelId));
+                }
+            }
+
             if (dataReceived.Length == 0)
             {
                 return;
@@ -585,9 +609,11 @@ namespace MLAgents
                         }
                         else
                         {
-                            Debug.Log(string.Format(
-                                "Unknown side channel data received. Channel Id is "
-                                + ": {0}", channelId));
+                            m_CachedMessages.Enqueue(new CachedSideChannelMessage
+                            {
+                                ChannelId = channelId,
+                                Message = message
+                            });
                         }
                     }
                 }
