@@ -29,7 +29,7 @@ PPO_CONFIG = f"""
         lambd: 0.95
         learning_rate: 5.0e-3
         learning_rate_schedule: constant
-        max_steps: 1500
+        max_steps: 2000
         memory_size: 16
         normalize: false
         num_epoch: 3
