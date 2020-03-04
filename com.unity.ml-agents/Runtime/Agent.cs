@@ -267,9 +267,6 @@ namespace MLAgents
             Academy.Instance.AgentForceReset += _AgentReset;
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
-#pragma warning disable 0618
-            InitializeAgent();
-#pragma warning restore 0618
             Initialize();
             InitializeSensors();
         }
@@ -502,6 +499,9 @@ namespace MLAgents
         /// </remarks>
         public virtual void Initialize()
         {
+#pragma warning disable 0618
+            InitializeAgent();
+#pragma warning restore 0618
         }
 
         /// <summary>
@@ -690,6 +690,9 @@ namespace MLAgents
         /// </param>
         public virtual void OnActionReceived(float[] vectorAction)
         {
+#pragma warning disable 0618
+                AgentAction(m_Action.vectorActions);
+#pragma warning restore 0618
         }
 
         [Obsolete("AgentReset() has been deprecated, use OnEpisodeBegin() instead.")]
@@ -704,6 +707,9 @@ namespace MLAgents
         /// </summary>
         public virtual void OnEpisodeBegin()
         {
+#pragma warning disable 0618
+            AgentReset();
+#pragma warning restore 0618
         }
 
         /// <summary>
@@ -735,9 +741,6 @@ namespace MLAgents
         {
             ResetData();
             m_StepCount = 0;
-#pragma warning disable 0618
-            AgentReset();
-#pragma warning restore 0618
             OnEpisodeBegin();
         }
 
@@ -780,9 +783,6 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-#pragma warning disable 0618
-                AgentAction(m_Action.vectorActions);
-#pragma warning restore 0618
                 OnActionReceived(m_Action.vectorActions);
 
             }
