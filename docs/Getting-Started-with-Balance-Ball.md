@@ -59,7 +59,7 @@ behavior:
 * **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
-* **Max Step** — Defines how many simulation steps can occur before the Agent
+* **Max Step** — Defines how many simulation steps can occur before the Agent's
   episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
 
 Perhaps the more interesting aspect of an agents is the Agent subclass
