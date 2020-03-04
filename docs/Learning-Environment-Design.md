@@ -43,7 +43,7 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 3. Calls the  `CollectObservations(VectorSensor sensor)` function for each Agent in the scene.
 4. Uses each Agent's Policy to decide on the Agent's next action.
 5. Calls the `OnActionReceived()` function for each Agent in the scene, passing in
-   the action chosen by the Agent's Policy. (This function is not called if episode is over.)
+   the action chosen by the Agent's Policy.
 6. Calls the Agent's `OnEpisodeBegin()` function if the Agent has reached its `Max
    Step` count or has otherwise marked itself as `EndEpisode()`.
 

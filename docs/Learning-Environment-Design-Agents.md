@@ -284,10 +284,7 @@ Neither the Policy nor the training algorithm know anything about what the actio
 values themselves mean. The training algorithm simply tries different values for
 the action list and observes the affect on the accumulated rewards over time and
 many training episodes. Thus, the only place actions are defined for an Agent is
-in the `OnActionReceived()` function. You simply specify the type of vector action
-space, and, for the continuous vector action space, the number of values, and
-then apply the received values appropriately (and consistently) in
-`ActionAct()`.
+in the `OnActionReceived()` function.
 
 For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete vector actions. In the continuous case, you

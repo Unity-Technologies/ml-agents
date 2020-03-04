@@ -67,7 +67,7 @@ implementation. When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
 * `Agent.OnEpisodeBegin()` — Called when the Agent resets, including at the beginning
-  of a session. The Ball3DAgent class uses the reset function to reset the
+  of the simulation. The Ball3DAgent class uses the reset function to reset the
   agent cube and ball. The function randomizes the reset values so that the
   training generalizes to more than a specific starting position and agent cube
   attitude.
@@ -76,7 +76,7 @@ The Ball3DAgent subclass defines the following methods:
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
   `VectorSensor.AddObservation()` such that vector size adds up to 8.
-* `Agent.OnActionReceived()` — Called every simulation step. Receives the action chosen
+* `Agent.OnActionReceived()` — Called every time a new action is ready. Receives the action chosen
   by the Agent. The vector action spaces result in a
   small change in the agent cube's rotation at each step. The `OnActionReceived()` function
   assigns a reward to the Agent; in this example, an Agent receives a small
