@@ -14,12 +14,14 @@ the environment.
 share the same Behavior and a scene may have multiple Behaviors.
 * Record demonstrations of an agent within the Editor. These demonstrations can be
 valuable to train a behavior for that agent.
-* Embedding a trained behavior into the scene. Thus an Agent can switch from a
-learning behavior to an inference behavior.
+* Embedding a trained behavior into the scene via the
+[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html).
+Thus an Agent can switch from a learning behavior to an inference behavior.
 
 Note that this package does not contain the machine learning algorithms for training
 behaviors. It relies on a Python package to orchestrate the training. This package
-only enables instrumenting a Unity scene and setting it up for training.
+only enables instrumenting a Unity scene and setting it up for training, and then
+embedding the trained model back into your Unity scene.
 
 ## Preview package
 This package is available as a preview, so it is not ready for production use.
@@ -45,18 +47,14 @@ The following table describes the package folder structure:
 To install this package, follow the instructions in the
 [Package Manager documentation](https://docs.unity3d.com/Manual/upm-ui-install.html).
 
+To install the Python package to enable training behaviors, follow the instructions on our
+[GitHub repository](https://github.com/Unity-Technologies/ml-agents/blob/latest_release/docs/Installation.md).
 
 ## Requirements
 
 This version of the Unity ML-Agents package is compatible with the following versions of the Unity Editor:
 
 * 2018.4 and later (recommended)
-
-
-To use this package, you must have the following 3rd party products:
-
-* &lt;TBC&gt;
-
 
 ## Known limitations
 
