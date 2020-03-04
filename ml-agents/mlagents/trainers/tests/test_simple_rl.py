@@ -204,7 +204,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
     }
     config = generate_config(PPO_CONFIG, override_vals)
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.9)
+    _check_environment_trains(env, config, success_threshold=0.8)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -262,7 +262,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
     }
     config = generate_config(SAC_CONFIG, override_vals)
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.9)
+    _check_environment_trains(env, config, success_threshold=0.8)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
