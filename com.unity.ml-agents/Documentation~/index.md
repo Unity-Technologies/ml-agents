@@ -1,11 +1,11 @@
-# About Unity MLAgents package
+# About Unity ML-Agents (`com.unity.ml-agents`) package
 
-The MLAgents package contains the C# SDK for the
+The Unity ML-Agents package contains the C# SDK for the
 [Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
 
 The package provides the ability for any Unity scene to be converted into a learning
 environment where character behaviors can be trained using a variety of machine learning
-algorithms. Additionally, it enables any trained behavior to embedded back into the Unity
+algorithms. Additionally, it enables any trained behavior to be embedded back into the Unity
 scene. More specifically, the package provides the following core functionalities:
 * Define Agents: entities whose behavior will be learned. Agents are entities
 that generate observations (through sensors), take actions and receive rewards from
@@ -48,7 +48,7 @@ To install this package, follow the instructions in the
 
 ## Requirements
 
-This version of MLAgents is compatible with the following versions of the Unity Editor:
+This version of the Unity ML-Agents package is compatible with the following versions of the Unity Editor:
 
 * 2018.4 and later (recommended)
 
@@ -60,12 +60,35 @@ To use this package, you must have the following 3rd party products:
 
 ## Known limitations
 
-There are currently no known limitations.
+### Headless Mode
+
+If you enable Headless mode, you will not be able to collect visual observations
+from your agents.
+
+### Rendering Speed and Synchronization
+
+Currently the speed of the game physics can only be increased to 100x real-time.
+The Academy also moves in time with FixedUpdate() rather than Update(), so game
+behavior implemented in Update() may be out of sync with the agent decision
+making. See
+[Execution Order of Event Functions](https://docs.unity3d.com/Manual/ExecutionOrder.html)
+for more information.
+
+You can control the frequency of Academy stepping by calling
+`Academy.Instance.DisableAutomaticStepping()`, and then calling
+`Academy.Instance.EnvironmentStep()`
+
+### Unity Inference Engine Models
+Currently, only models created with our trainers are supported for running
+ML-Agents with a neural network behavior.
+
 
 ## Helpful links
 
-If you are new to MLAgents, or have a question after reading the documentation, you can
-checkout our [GitHUb Repository](https://github.com/Unity-Technologies/ml-agents), which
+If you are new to the Unity ML-Agents package, or have a question after reading
+the documentation, you can checkout our
+[GitHUb Repository](https://github.com/Unity-Technologies/ml-agents), which
 also includes a number of ways to
-[connect with us](https://github.com/Unity-Technologies/ml-agents#community-and-feedback).
+[connect with us](https://github.com/Unity-Technologies/ml-agents#community-and-feedback)
+including our [ML-Agents Forum](https://forum.unity.com/forums/ml-agents.453/).
 

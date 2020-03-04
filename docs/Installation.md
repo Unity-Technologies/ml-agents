@@ -36,7 +36,7 @@ environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not support the Anaconda installation path for Windows, the previous
+Although we do not provide support for Anaconda installation on Windows, the previous
 [Windows Anaconda Installation (Deprecated) guide](Installation-Windows.md)
 is still available.
 
@@ -112,11 +112,8 @@ the packages from the cloned repo rather than from PyPi. To do this, you will ne
  `mlagents` and `mlagents_envs` separately. From the repo's root directory, run:
 
 ```sh
-cd ml-agents-envs
-pip3 install -e ./
-cd ..
-cd ml-agents
-pip3 install -e ./
+pip3 install -e ./ml-agents-envs
+pip3 install -e ./ml-agents
 ```
 
 Running pip with the `-e` flag will let you make changes to the Python files directly and have
