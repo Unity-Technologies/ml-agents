@@ -151,9 +151,13 @@ class Simple1DEnvironment(BaseEnv):
                     for old, new in zip(action_mask, new_action_mask)
                 ]
             m_reward = np.concatenate((m_reward, new_reward), axis=0)
-
         return BatchedStepResult(
-            m_vector_obs, m_reward, m_done, m_done, m_agent_id, action_mask
+            m_vector_obs,
+            m_reward,
+            m_done,
+            np.zeros(m_done.shape, dtype=bool),
+            m_agent_id,
+            action_mask,
         )
 
     def step(self) -> None:
