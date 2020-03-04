@@ -174,7 +174,11 @@ def test_simple_ppo(use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):
     env = Simple1DEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+        [BRAIN_NAME],
+        use_discrete=use_discrete,
+        num_visual=num_visual,
+        num_vector=0,
+        step_size=0.2,
     )
     override_vals = {"learning_rate": 3.0e-4}
     config = generate_config(PPO_CONFIG, override_vals)
@@ -227,7 +231,11 @@ def test_simple_sac(use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_sac(num_visual, use_discrete):
     env = Simple1DEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+        [BRAIN_NAME],
+        use_discrete=use_discrete,
+        num_visual=num_visual,
+        num_vector=0,
+        step_size=0.2,
     )
     override_vals = {"batch_size": 16, "learning_rate": 3e-4}
     config = generate_config(SAC_CONFIG, override_vals)
