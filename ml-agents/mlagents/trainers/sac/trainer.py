@@ -336,7 +336,7 @@ class SACTrainer(RLTrainer):
         """
         if self.policy:
             logger.warning(
-                "Your scene contains multiple teams, but {} doesn't support adversarial games. Enable self-play to \
+                "Your environment contains multiple teams, but {} doesn't support adversarial games. Enable self-play to \
                     train adversarial games.".format(
                     self.__class__.__name__
                 )
