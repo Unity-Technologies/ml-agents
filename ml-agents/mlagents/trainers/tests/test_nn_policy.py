@@ -64,8 +64,6 @@ def create_policy_mock(dummy_config, use_rnn, use_discrete, use_visual):
     )
 
     trainer_parameters = dummy_config
-    model_path = "testmodel"
-    trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
     policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
