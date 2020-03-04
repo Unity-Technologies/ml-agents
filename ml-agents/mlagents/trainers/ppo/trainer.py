@@ -233,7 +233,8 @@ class PPOTrainer(RLTrainer):
         """
         if self.policy:
             logger.warning(
-                "add_policy has been called twice. {} is not a multi-agent trainer".format(
+                "Your scene contains multiple teams, but {} doesn't support adversarial games. Enable self-play to \
+                    train adversarial games.".format(
                     self.__class__.__name__
                 )
             )
