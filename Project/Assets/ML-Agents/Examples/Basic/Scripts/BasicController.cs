@@ -59,14 +59,14 @@ public class BasicController : MonoBehaviour
         if (m_Position == k_SmallGoalPosition)
         {
             m_Agent.AddReward(0.1f);
-            m_Agent.Done();
+            m_Agent.EndEpisode();
             ResetAgent();
         }
 
         if (m_Position == k_LargeGoalPosition)
         {
             m_Agent.AddReward(1f);
-            m_Agent.Done();
+            m_Agent.EndEpisode();
             ResetAgent();
         }
     }
