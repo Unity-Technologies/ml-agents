@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
  - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
  - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
+ - Most fields on `CameraSensorComponent` and `RenderTextureSensorComponent` were changed to private and replaced by properties with the same name.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
  - The `Agent` class is no longer abstract.
  - SensorBase was moved out of the package and into the Examples directory.
