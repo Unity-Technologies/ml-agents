@@ -59,11 +59,10 @@ behavior:
 * **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
-* **Max Step** — Defines how many simulation steps can occur before the Agent
+* **Max Step** — Defines how many simulation steps can occur before the Agent's
   episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
 
-Perhaps the more interesting aspect of an agents is the Agent subclass
-implementation. When you create an Agent, you must extend the base Agent class.
+When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
 * `Agent.OnEpisodeBegin()` — Called when the Agent resets, including at the beginning
@@ -78,13 +77,13 @@ The Ball3DAgent subclass defines the following methods:
   `VectorSensor.AddObservation()` such that vector size adds up to 8.
 * `Agent.OnActionReceived()` — Called every time a new action is ready. Receives the action chosen
   by the Agent. The vector action spaces result in a
-  small change in the agent cube's rotation at each step. The `OnActionReceived()` function
+  small change in the agent cube's rotation at each step. The `OnActionReceived()` method
   assigns a reward to the Agent; in this example, an Agent receives a small
   positive reward for each step it keeps the ball on the agent cube's head and a larger,
   negative reward for dropping the ball. An Agent's episode is also ended when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
-* `Agent.Heuristic()` - When the `Use Heuristic` checkbox is checked in the Behavior
+* `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
   the actions of the Agent. As such, the `Heuristic()` method returns an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
