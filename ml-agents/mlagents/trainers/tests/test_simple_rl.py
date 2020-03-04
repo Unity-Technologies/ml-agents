@@ -260,7 +260,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 1500}
+    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
 
