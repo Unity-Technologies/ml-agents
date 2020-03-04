@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents.Sensors
 {
@@ -8,35 +9,89 @@ namespace MLAgents.Sensors
     [AddComponentMenu("ML Agents/Camera Sensor", (int)MenuGroup.Sensors)]
     public class CameraSensorComponent : SensorComponent
     {
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("camera")]
+        Camera m_Camera;
+
         /// <summary>
         /// Camera object that provides the data to the sensor.
         /// </summary>
-        public new Camera camera;
+        public new Camera camera
+        {
+            get { return m_Camera;  }
+            set { m_Camera = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("sensorName")]
+        string m_SensorName = "CameraSensor";
 
         /// <summary>
         /// Name of the generated <see cref="CameraSensor"/> object.
         /// </summary>
-        public string sensorName = "CameraSensor";
+        public string sensorName
+        {
+            get { return m_SensorName;  }
+            internal set { m_SensorName = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("width")]
+        int m_Width = 84;
 
         /// <summary>
-        /// Width of the generated image.
+        /// Width of the generated observation.
         /// </summary>
-        public int width = 84;
+        public int width
+        {
+            get { return m_Width;  }
+            internal set { m_Width = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("height")]
+        int m_Height = 84;
 
         /// <summary>
-        /// Height of the generated image.
+        /// Height of the generated observation.
         /// </summary>
-        public int height = 84;
+        public int height
+        {
+            get { return m_Height;  }
+            internal set { m_Height = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("grayscale")]
+        public bool m_Grayscale;
 
         /// <summary>
         /// Whether to generate grayscale images or color.
         /// </summary>
-        public bool grayscale;
+        public bool grayscale
+        {
+            get { return m_Grayscale;  }
+            internal set { m_Grayscale = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("compression")]
+        SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
         /// <summary>
         /// The compression type to use for the sensor.
         /// </summary>
-        public SensorCompressionType compression = SensorCompressionType.PNG;
+        public SensorCompressionType compression
+        {
+            get { return m_Compression;  }
+            set { m_Compression = value;  }
+        }
 
         /// <summary>
         /// Creates the <see cref="CameraSensor"/>
@@ -44,7 +99,7 @@ namespace MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
-            return new CameraSensor(camera, width, height, grayscale, sensorName, compression);
+            return new CameraSensor(m_Camera, m_Width, m_Height, grayscale, m_SensorName, compression);
         }
 
         /// <summary>
@@ -53,7 +108,7 @@ namespace MLAgents.Sensors
         /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
         public override int[] GetObservationShape()
         {
-            return CameraSensor.GenerateShape(width, height, grayscale);
+            return CameraSensor.GenerateShape(m_Width, m_Height, grayscale);
         }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents.Sensors
 {
@@ -12,22 +13,58 @@ namespace MLAgents.Sensors
         /// The <see cref="RenderTexture"/> instance that the associated
         /// <see cref="RenderTextureSensor"/> wraps.
         /// </summary>
-        public RenderTexture renderTexture;
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("renderTexture")]
+        RenderTexture m_RenderTexture;
+
+        public RenderTexture renderTexture
+        {
+            get { return m_RenderTexture;  }
+            set { m_RenderTexture = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("sensorName")]
+        string m_SensorName = "RenderTextureSensor";
 
         /// <summary>
-        /// Name of the sensor.
+        /// Name of the generated <see cref="RenderTextureSensor"/>.
         /// </summary>
-        public string sensorName = "RenderTextureSensor";
+        public string sensorName
+        {
+            get { return m_SensorName;  }
+            internal set { m_SensorName = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("grayscale")]
+        public bool m_Grayscale;
 
         /// <summary>
         /// Whether the RenderTexture observation should be converted to grayscale or not.
         /// </summary>
-        public bool grayscale;
+        public bool grayscale
+        {
+            get { return m_Grayscale;  }
+            internal set { m_Grayscale = value;  }
+        }
+
+        [HideInInspector]
+        [SerializeField]
+        [FormerlySerializedAs("compression")]
+        SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
         /// <summary>
         /// Compression type for the render texture observation.
         /// </summary>
-        public SensorCompressionType compression = SensorCompressionType.PNG;
+        public SensorCompressionType compression
+        {
+            get { return m_Compression;  }
+            set { m_Compression = value;  }
+        }
 
         /// <inheritdoc/>
         public override ISensor CreateSensor()
