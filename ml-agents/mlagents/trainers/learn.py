@@ -451,15 +451,15 @@ def run_cli(options: RunOptions) -> None:
     except Exception:
         print("\n\n\tUnity Technologies\n")
     print(get_version_string())
-    trainer_logger = create_logger("mlagents.trainers", log_level=logging.INFO)
-    env_logger = create_logger("mlagents_envs", log_level=logging.INFO)
 
     if options.debug:
-        trainer_logger.setLevel("DEBUG")
-        env_logger.setLevel("DEBUG")
+        log_level = logging.DEBUG
     else:
+        log_level = logging.INFO
         # disable noisy warnings from tensorflow
         tf_utils.set_warnings_enabled(False)
+
+    trainer_logger = create_logger("mlagents.trainers", log_level)
 
     trainer_logger.debug("Configuration for this run:")
     trainer_logger.debug(json.dumps(options._asdict(), indent=4))

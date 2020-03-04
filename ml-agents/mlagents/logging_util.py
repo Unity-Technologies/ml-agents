@@ -1,7 +1,7 @@
 import logging
 
 
-def create_logger(name, log_level=logging.INFO):
+def create_logger(name, log_level):
     date_format = "%Y-%m-%d %H:%M:%S"
     log_format = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 
