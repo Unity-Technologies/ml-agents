@@ -29,7 +29,7 @@ PPO_CONFIG = f"""
         lambd: 0.95
         learning_rate: 5.0e-3
         learning_rate_schedule: constant
-        max_steps: 1500
+        max_steps: 2000
         memory_size: 16
         normalize: false
         num_epoch: 3
@@ -174,7 +174,11 @@ def test_simple_ppo(use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):
     env = Simple1DEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+        [BRAIN_NAME],
+        use_discrete=use_discrete,
+        num_visual=num_visual,
+        num_vector=0,
+        step_size=0.2,
     )
     override_vals = {"learning_rate": 3.0e-4}
     config = generate_config(PPO_CONFIG, override_vals)
@@ -200,7 +204,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
     }
     config = generate_config(PPO_CONFIG, override_vals)
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.9)
+    _check_environment_trains(env, config, success_threshold=0.5)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -227,7 +231,11 @@ def test_simple_sac(use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_sac(num_visual, use_discrete):
     env = Simple1DEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, num_visual=num_visual, num_vector=0
+        [BRAIN_NAME],
+        use_discrete=use_discrete,
+        num_visual=num_visual,
+        num_vector=0,
+        step_size=0.2,
     )
     override_vals = {"batch_size": 16, "learning_rate": 3e-4}
     config = generate_config(SAC_CONFIG, override_vals)
@@ -254,13 +262,13 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
     }
     config = generate_config(SAC_CONFIG, override_vals)
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.9)
+    _check_environment_trains(env, config, success_threshold=0.5)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {"batch_size": 32, "use_recurrent": True}
+    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
 
