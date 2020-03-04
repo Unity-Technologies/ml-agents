@@ -129,7 +129,7 @@ to the cube using reinforcement learning.
 ### Initialization and Resetting the Agent
 
 When the Agent reaches its target, its episode ends and the `OnEpisodeBegin()`
-function moves the target to a random location. In addition, if the Agent rolls
+method moves the target to a random location. In addition, if the Agent rolls
 off the platform, the reset function puts it back onto the floor.
 
 To move the target GameObject, we need a reference to its Transform (which
