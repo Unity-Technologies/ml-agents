@@ -43,7 +43,8 @@ is still available.
 ### Clone the ML-Agents Toolkit Repository
 
 Now that you have installed Unity and Python, you will need to clone the
-ML-Agents Toolkit GitHub repository to install the Unity package.
+ML-Agents Toolkit GitHub repository to install the Unity package (the Python
+packages can be installed directly from PyPi - a Python package registry).
 
 ```sh
 git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
@@ -80,7 +81,7 @@ folder in Unity and start tinkering immediately.
 
 ### Install the `mlagents` Python package
 
-Installing the `mlagents` Python package involves installing other Python package
+Installing the `mlagents` Python package involves installing other Python packages
 that `mlagents` depends on. So you may run into installation issues if your machine
 has older versions of any of those dependencies already installed. Consequently, our
 supported path for installing `mlagents` is to leverage Python Virtual Environments.
