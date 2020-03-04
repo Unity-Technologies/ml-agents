@@ -234,7 +234,7 @@ public override void CollectObservations(VectorSensor sensor)
 ```
 
 The final part of the Agent code is the `Agent.OnActionReceived()` method, which
-receives the decision from the Brain and assigns the reward.
+receives the actions from the Brain and assigns the reward.
 
 ### Actions
 
