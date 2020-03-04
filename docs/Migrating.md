@@ -24,6 +24,12 @@ The versions can be found in
 * `BrainParameters` and `SpaceType` have been removed from the public API
 * `BehaviorParameters` have been removed from the public API.
 * `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity.
+* The following methods in the `Agent` class were renamed:
+ * `InitializeAgent()` was renamed to `Initialize()`
+ * `AgentAction()` was renamed to `OnActionReceived()`
+ * `AgentReset()` was renamed to `OnEpsiodeBegin()`
+ * `Done()` was renamed to `EndEpisode()`
+ * `GiveModel()` was renamed to `SetModel()`
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -33,6 +39,12 @@ The versions can be found in
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
+* Replace the following method with their new equivalent:
+ * `InitializeAgent()` to `Initialize()`
+ * `AgentAction()` to `OnActionReceived()`
+ * `AgentReset()` to `OnEpsiodeBegin()`
+ * `Done()` to `EndEpisode()`
+ * `GiveModel()` to `SetModel()`
 
 ## Migrating from 0.13 to 0.14
 
