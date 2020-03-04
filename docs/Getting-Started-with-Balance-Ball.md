@@ -83,7 +83,7 @@ The Ball3DAgent subclass defines the following methods:
   negative reward for dropping the ball. An Agent's episode is also ended when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
-* `Agent.Heuristic()` - When the `Use Heuristic` checkbox is checked in the Behavior
+* `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
   the actions of the Agent. As such, the `Heuristic()` method returns an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
