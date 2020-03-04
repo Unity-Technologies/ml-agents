@@ -1,4 +1,4 @@
-# About Unity ML-Agents (`com.unity.ml-agents`) package
+# About ML-Agents package (`com.unity.ml-agents`)
 
 The Unity ML-Agents package contains the C# SDK for the
 [Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
@@ -10,12 +10,12 @@ scene. More specifically, the package provides the following core functionalitie
 * Define Agents: entities whose behavior will be learned. Agents are entities
 that generate observations (through sensors), take actions and receive rewards from
 the environment.
-* Define Policies: entities that specifiy a behavior. Multiple agents can share the
-same Policy and a scene may have multiple Brains.
+* Define Behaviors: entities that specifiy how an agent should act. Multiple agents can
+share the same Behavior and a scene may have multiple Behaviors.
 * Record demonstrations of an agent within the Editor. These demonstrations can be
 valuable to train a behavior for that agent.
-* Embedding a trained behavior into the scene. This an Agent can switch from a
-learning brain to an inference brain.
+* Embedding a trained behavior into the scene. Thus an Agent can switch from a
+learning behavior to an inference behavior.
 
 Note that this package does not contain the machine learning algorithms for training
 behaviors. It relies on a Python package to orchestrate the training. This package
