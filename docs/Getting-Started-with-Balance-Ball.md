@@ -60,7 +60,7 @@ behavior:
   determines how an Agent makes decisions. More on Behavior Parameters in
   the next section.
 * **Max Step** — Defines how many simulation steps can occur before the Agent
-  decides it is done. In 3D Balance Ball, an Agent restarts after 5000 steps.
+  episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
 
 Perhaps the more interesting aspect of an agents is the Agent subclass
 implementation. When you create an Agent, you must extend the base Agent class.
@@ -81,7 +81,7 @@ The Ball3DAgent subclass defines the following methods:
   small change in the agent cube's rotation at each step. The `OnActionReceived()` function
   assigns a reward to the Agent; in this example, an Agent receives a small
   positive reward for each step it keeps the ball on the agent cube's head and a larger,
-  negative reward for dropping the ball. An Agent is also marked as done when it
+  negative reward for dropping the ball. An Agent episode is also ended when it
   drops the ball so that it will reset with a new ball for the next simulation
   step.
 * `Agent.Heuristic()` - When the `Use Heuristic` checkbox is checked in the Behavior

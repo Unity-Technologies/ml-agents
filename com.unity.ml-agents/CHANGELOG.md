@@ -17,11 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `BrainParameters` and `SpaceType` have been removed from the public API
  - `BehaviorParameters` have been removed from the public API.
  - The following methods in the `Agent` class were renamed:
-  - `InitializeAgent()` was renamed to `Initialize()`
-  - `AgentAction()` was renamed to `OnActionReceived()`
-  - `AgentReset()` was renamed to `OnEpsiodeBegin()`
-  - `Done()` was renamed to `EndEpisode()`
-  - `GiveModel()` was renamed to `SetModel()`
+   - `InitializeAgent()` was renamed to `Initialize()`
+   - `AgentAction()` was renamed to `OnActionReceived()`
+   - `AgentReset()` was renamed to `OnEpsiodeBegin()`
+   - `Done()` was renamed to `EndEpisode()`
+   - `GiveModel()` was renamed to `SetModel()`
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
