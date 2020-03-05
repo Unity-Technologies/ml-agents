@@ -201,8 +201,8 @@ An `AgentGroupSpec` has the following fields :
 ### Communicating additional information with the Environment
 In addition to the means of communicating between Unity and python described above,
 we also provide methods for sharing agent-agnostic information. These
-additional methods are referred to as side-channels. ML-Agents includes two ready-made
-side channels, described below. It is also possible to create custom side-channels to 
+additional methods are referred to as side channels. ML-Agents includes two ready-made
+side channels, described below. It is also possible to create custom side channels to 
 communicate any additional data between a Unity environment and Python. Instructions for
 creating custom side channels can be found [here](Custom-SideChannels.md).
 

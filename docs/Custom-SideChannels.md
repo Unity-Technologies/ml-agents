@@ -1,6 +1,6 @@
-# Custom SideChannels
+# Custom Side Channels
 
-You can create your own `SideChannel` in C# and Python and use it to communicate custom data structures between the two. This can be useful for situations in which the information to be sent is too complex or structured for the built-in `FloatPropertiesChannel`, or too one-off to be appropriate as an agent observation.
+You can create your own side channel in C# and Python and use it to communicate custom data structures between the two. This can be useful for situations in which the information to be sent is too complex or structured for the built-in `FloatPropertiesChannel`, or too one-off to be appropriate as an agent observation.
 
 ## Overview
 
