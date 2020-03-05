@@ -3,6 +3,7 @@ from unittest.mock import Mock, MagicMock
 import unittest
 import pytest
 from queue import Empty as EmptyQueue
+import multiprocessing as mp
 
 from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
@@ -20,6 +21,8 @@ from mlagents.trainers.tests.test_simple_rl import (
     generate_config,
     DebugWriter,
 )
+
+mp.set_start_method("spawn")  # Prevent breakage in CircleCI
 
 
 def mock_env_factory(worker_id):
