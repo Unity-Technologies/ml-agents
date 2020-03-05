@@ -52,7 +52,7 @@ release._
 Python-side communication happens through `UnityEnvironment` which is located in
 [`environment.py`](../ml-agents-envs/mlagents_envs/environment.py). To load
 a Unity environment from a built binary file, put the file in the same directory
-as `envs`. For example, if the filename of your Unity environment is `3DBall.app`, in python, run:
+as `envs`. For example, if the filename of your Unity environment is `3DBall`, in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
