@@ -505,7 +505,8 @@ namespace MLAgents
                     "side channels of the same id.", channelId));
             }
 
-            for (int i = 0; i< m_CachedMessages.Count; i++)
+            var numMessages = m_CachedMessages.Count;
+            for (int i = 0; i< numMessages; i++)
             {
                 var cachedMessage = m_CachedMessages.Dequeue();
                 if (channelId == cachedMessage.ChannelId)
