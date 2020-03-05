@@ -484,11 +484,8 @@ namespace MLAgents
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
             var param = m_PolicyFactory.brainParameters;
-            var actionSize = param.vectorActionSpaceType == SpaceType.Continuous ?
-                param.vectorActionSize[0] :
-                param.vectorActionSize.Length;
 
-            return new float[actionSize];
+            return new float[param.numberOfActions];
         }
 
         /// <summary>
