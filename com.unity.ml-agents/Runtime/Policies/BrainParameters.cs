@@ -54,7 +54,7 @@ namespace MLAgents.Policies
         /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
-        public int numberOfActions
+        public int numActions
         {
             get{
                 switch(vectorActionSpaceType){

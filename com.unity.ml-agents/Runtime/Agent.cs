@@ -455,8 +455,8 @@ namespace MLAgents
             // should stay the previous action before the Done(), so that it is properly recorded.
             if (m_Action.vectorActions == null)
             {
-                m_Action.vectorActions = new float[param.numberOfActions];
-                m_Info.storedVectorActions = new float[param.numberOfActions];
+                m_Action.vectorActions = new float[param.numActions];
+                m_Info.storedVectorActions = new float[param.numActions];
             }
         }
 
@@ -485,7 +485,7 @@ namespace MLAgents
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
             var param = m_PolicyFactory.brainParameters;
 
-            return new float[param.numberOfActions];
+            return new float[param.numActions];
         }
 
         /// <summary>
