@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - SensorBase was moved out of the package and into the Examples directory.
  - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
  - `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity. (#3555)
+ - The `IFloatProperties` interface has been removed.
 
 ## [0.14.1-preview] - 2020-02-25
 
