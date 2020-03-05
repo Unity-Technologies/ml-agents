@@ -609,6 +609,8 @@ namespace MLAgents
                         }
                         else
                         {
+                            // Don't recognize this ID, but cache it in case the SideChannel that can handle
+                            // it is registered before the next call to ProcessSideChannelData.
                             m_CachedMessages.Enqueue(new CachedSideChannelMessage
                             {
                                 ChannelId = channelId,
