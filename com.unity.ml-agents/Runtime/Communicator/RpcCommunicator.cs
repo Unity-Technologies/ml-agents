@@ -504,6 +504,19 @@ namespace MLAgents
                     "A side channel with type index {0} is already registered. You cannot register multiple " +
                     "side channels of the same id.", channelId));
             }
+
+            for (int i = 0; i< m_CachedMessages.Count; i++)
+            {
+                var cachedMessage = m_CachedMessages.Dequeue();
+                if (channelId == cachedMessage.ChannelId)
+                {
+                    sideChannel.OnMessageReceived(cachedMessage.Message);
+                }
+                else
+                {
+                    m_CachedMessages.Enqueue(cachedMessage);
+                }
+            }
             m_SideChannels.Add(channelId, sideChannel);
         }
 
