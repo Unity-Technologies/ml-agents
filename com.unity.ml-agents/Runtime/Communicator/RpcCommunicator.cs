@@ -506,7 +506,7 @@ namespace MLAgents
             }
 
             var numMessages = m_CachedMessages.Count;
-            for (int i = 0; i< numMessages; i++)
+            for (int i = 0; i < numMessages; i++)
             {
                 var cachedMessage = m_CachedMessages.Dequeue();
                 if (channelId == cachedMessage.ChannelId)
