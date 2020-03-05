@@ -119,12 +119,19 @@ namespace MLAgents
             public int maxStep;
         }
 
+        /// <summary>
+        /// The team ID for this Agent.
+        /// </summary>
         public int TeamId {
             get {
                 LazyInitialize();
                 return m_PolicyFactory.TeamId;
                 }
         }
+
+        /// <summary>
+        /// The name of the behavior of the Agent.
+        /// </summary>
         public string BehaviorName  {
             get {
                 LazyInitialize();
