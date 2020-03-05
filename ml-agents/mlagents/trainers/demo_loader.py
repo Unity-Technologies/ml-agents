@@ -1,7 +1,11 @@
 import logging
 import os
-from typing import List, Tuple
+import gzip
+import struct
+import itertools
 import numpy as np
+from typing import List, Tuple, Iterator, Optional, TypeVar
+from typing_extensions import Protocol
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
@@ -18,11 +22,82 @@ from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParamet
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
-from mlagents_envs.timers import timed, hierarchical_timer
+from mlagents_envs.timers import timed
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
 
-
 logger = logging.getLogger("mlagents.trainers")
+
+T = TypeVar("T", covariant=True)
+
+
+class SizedIterable(Protocol[T]):
+    def __len__(self) -> int:
+        pass
+
+    def __iter__(self) -> Iterator[T]:
+        pass
+
+
+class AgentInfoActionPairProtoDemoGenerator(SizedIterable[AgentInfoActionPairProto]):
+    _gen: SizedIterable[AgentInfoActionPairProto]
+    nested: Optional[SizedIterable[AgentInfoActionPairProto]]
+
+    def __init__(
+        self,
+        file_path: str,
+        starting_offset: int,
+        total_expected: int,
+        nested: Optional[SizedIterable[AgentInfoActionPairProto]] = None,
+    ):
+        self.file_path = file_path
+        self.starting_offset = starting_offset
+        self.total_expected = total_expected
+        self.nested: Optional[SizedIterable[AgentInfoActionPairProto]] = nested
+
+    def __len__(self) -> int:
+        return self.total_expected + (0 if self.nested is None else len(self.nested))
+
+    def _generator(self):
+        return (
+            itertools.chain(self._local_generator(), self.nested)
+            if self.nested
+            else self._local_generator()
+        )
+
+    def _local_generator(self) -> Iterator[AgentInfoActionPairProto]:
+        count = 0
+        is_compressed = self.file_path.endswith(".gz")
+        file_size = 0
+
+        if is_compressed:
+            with open(self.file_path, "rb") as f:
+                f.seek(-4, 2)
+                file_size = struct.unpack("I", f.read(4))[0]
+        else:
+            file_size = os.path.getsize(self.file_path)
+
+        with gzip.open(self.file_path) if self.file_path.endswith(".gz") else open(
+            self.file_path, "rb"
+        ) as fp:
+            fp.seek(self.starting_offset, 0)
+            while fp.tell() < file_size:
+                size = fp.read(33)
+                next_pos, offset = _DecodeVarint32(size, 0)
+                fp.seek(-33 + offset, os.SEEK_CUR)
+                data = fp.read(next_pos)
+                agent_info_action = AgentInfoActionPairProto()
+                agent_info_action.ParseFromString(data)
+                count += 1
+                yield agent_info_action
+                if count == self.total_expected:
+                    break
+
+    def __iter__(self) -> Iterator[AgentInfoActionPairProto]:
+        self._gen = self._generator()
+        return self
+
+    def __next__(self):
+        return next(self._gen)
 
 
 @timed
@@ -34,6 +109,9 @@ def make_demo_buffer(
     # Create and populate buffer using experiences
     demo_raw_buffer = AgentBuffer()
     demo_processed_buffer = AgentBuffer()
+    # TODO: Rewrite below so this doesn't need to be stored in memory, adapt to agent processer via batched step results
+    pair_infos = list(pair_infos)
+
     for idx, current_pair_info in enumerate(pair_infos):
         if idx > len(pair_infos) - 2:
             break
@@ -100,14 +178,14 @@ def get_demo_files(path: str) -> List[str]:
     Raises errors if |path| is invalid.
     """
     if os.path.isfile(path):
-        if not path.endswith(".demo"):
+        if not (path.endswith(".demo") or path.endswith(".demo.gz")):
             raise ValueError("The path provided is not a '.demo' file.")
         return [path]
     elif os.path.isdir(path):
         paths = [
             os.path.join(path, name)
             for name in os.listdir(path)
-            if name.endswith(".demo")
+            if name.endswith(".demo") or name.endswith(".demo.gz")
         ]
         if not paths:
             raise ValueError("There are no '.demo' files in the provided directory.")
@@ -120,8 +198,8 @@ def get_demo_files(path: str) -> List[str]:
 
 @timed
 def load_demonstration(
-    file_path: str
-) -> Tuple[BrainParameters, List[AgentInfoActionPairProto], int]:
+    file_path: str,
+) -> Tuple[BrainParameters, SizedIterable[AgentInfoActionPairProto], int]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).
@@ -131,40 +209,49 @@ def load_demonstration(
     # First 32 bytes of file dedicated to meta-data.
     INITIAL_POS = 33
     file_paths = get_demo_files(file_path)
-    group_spec = None
     brain_param_proto = None
-    info_action_pairs = []
     total_expected = 0
+    info_action_pairs: Optional[SizedIterable[AgentInfoActionPairProto]] = None
     for _file_path in file_paths:
-        with open(_file_path, "rb") as fp:
-            with hierarchical_timer("read_file"):
-                data = fp.read()
-            next_pos, pos, obs_decoded = 0, 0, 0
-            while pos < len(data):
-                next_pos, pos = _DecodeVarint32(data, pos)
+        is_compressed = _file_path.endswith(".gz")
+        with gzip.open(_file_path) if is_compressed else open(_file_path, "rb") as fp:
+            next_pos, obs_decoded = 0, 0
+            expected_from_file = 0
+            for obs_decoded in range(3):
+                size = fp.read(33)
+                next_pos, offset = _DecodeVarint32(size, 0)
+                fp.seek(-33 + offset, os.SEEK_CUR)
+                data = fp.read(next_pos)
                 if obs_decoded == 0:
                     meta_data_proto = DemonstrationMetaProto()
-                    meta_data_proto.ParseFromString(data[pos : pos + next_pos])
-                    total_expected += meta_data_proto.number_steps
-                    pos = INITIAL_POS
+                    meta_data_proto.ParseFromString(data)
+                    expected_from_file = meta_data_proto.number_steps
+                    total_expected += expected_from_file
+                    fp.seek(INITIAL_POS, 0)  # Seek to magic header offset value
                 if obs_decoded == 1:
                     brain_param_proto = BrainParametersProto()
-                    brain_param_proto.ParseFromString(data[pos : pos + next_pos])
-                    pos += next_pos
-                if obs_decoded > 1:
+                    brain_param_proto.ParseFromString(data)
+                if (
+                    obs_decoded > 1
+                ):  # Read the first AgentInfoActionPairProto to get observation shape information
                     agent_info_action = AgentInfoActionPairProto()
-                    agent_info_action.ParseFromString(data[pos : pos + next_pos])
-                    if group_spec is None:
-                        group_spec = agent_group_spec_from_proto(
-                            brain_param_proto, agent_info_action.agent_info
-                        )
-                    info_action_pairs.append(agent_info_action)
-                    if len(info_action_pairs) == total_expected:
-                        break
-                    pos += next_pos
-                obs_decoded += 1
+                    agent_info_action.ParseFromString(data)
+                    group_spec = agent_group_spec_from_proto(
+                        brain_param_proto, agent_info_action.agent_info
+                    )
+                    fp.seek(
+                        -(next_pos + offset), os.SEEK_CUR
+                    )  # Rollback read and pass responsibility to AgentInfoActionPairProtoGenerator
+                    info_action_pairs = AgentInfoActionPairProtoDemoGenerator(
+                        _file_path, fp.tell(), expected_from_file, info_action_pairs
+                    )
+
     if not group_spec:
         raise RuntimeError(
             f"No BrainParameters found in demonstration file at {file_path}."
+        )
+    if not info_action_pairs:
+        raise RuntimeError(
+            f"No AgentInfoActionPair found in demonstration file at {file_path}."
         )
     return group_spec, info_action_pairs, total_expected

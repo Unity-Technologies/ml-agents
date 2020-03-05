@@ -22,6 +22,18 @@ def test_load_demo():
     assert len(demo_buffer["actions"]) == total_expected - 1
 
 
+def test_load_demo_compressed():
+    path_prefix = os.path.dirname(os.path.abspath(__file__))
+    group_spec, pair_infos, total_expected = load_demonstration(
+        path_prefix + "/test.demo.gz"
+    )
+    assert np.sum(group_spec.observation_shapes[0]) == 8
+    assert len(pair_infos) == total_expected
+
+    _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo.gz", 1)
+    assert len(demo_buffer["actions"]) == total_expected - 1
+
+
 def test_load_demo_dir():
     path_prefix = os.path.dirname(os.path.abspath(__file__))
     group_spec, pair_infos, total_expected = load_demonstration(
