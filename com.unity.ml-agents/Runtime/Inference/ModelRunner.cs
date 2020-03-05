@@ -158,7 +158,7 @@ namespace MLAgents.Inference
                 m_VisualObservationsInitialized = true;
             }
 
-            Profiler.BeginSample("LearningBrain.DecideAction");
+            Profiler.BeginSample("ModelRunner.DecideAction");
 
             Profiler.BeginSample($"MLAgents.{m_Model.name}.GenerateTensors");
             // Prepare the input tensors to be feed into the engine

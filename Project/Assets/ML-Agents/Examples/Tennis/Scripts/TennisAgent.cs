@@ -18,7 +18,7 @@ public class TennisAgent : Agent
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
     float m_InvertMult;
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects

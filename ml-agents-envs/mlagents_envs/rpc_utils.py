@@ -7,13 +7,10 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
     NONE as COMPRESSION_NONE,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-import logging
 import numpy as np
 import io
 from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
-
-logger = logging.getLogger("mlagents_envs")
 
 
 def agent_group_spec_from_proto(

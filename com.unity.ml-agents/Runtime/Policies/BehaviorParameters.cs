@@ -5,19 +5,31 @@ using UnityEngine.Serialization;
 
 namespace MLAgents.Policies
 {
+
+    /// <summary>
+    /// Defines what type of behavior the Agent will be using
+    /// - Default : The Agent will use the remote process for decision making.
+    /// if unavailable, will use inference and if no model is provided, will use
+    /// the heuristic.
+    /// - HeuristicOnly : The Agent will always use its heuristic
+    /// - InferenceOnly : The Agent will always use inference with the provided
+    /// neural network model.
+    /// </summary>
+    [Serializable]
+    public enum BehaviorType
+    {
+        Default,
+        HeuristicOnly,
+        InferenceOnly
+    }
+
+
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
     internal class BehaviorParameters : MonoBehaviour
     {
-        [Serializable]
-        enum BehaviorType
-        {
-            Default,
-            HeuristicOnly,
-            InferenceOnly
-        }
 
         [HideInInspector]
         [SerializeField]
@@ -36,7 +48,7 @@ namespace MLAgents.Policies
         //   and will always have its default value
         // This field is set in the custom editor.
         #pragma warning disable 0649
-        BehaviorType m_BehaviorType;
+        internal BehaviorType m_BehaviorType;
         #pragma warning restore 0649
         [HideInInspector]
         [SerializeField]

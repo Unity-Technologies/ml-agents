@@ -54,6 +54,20 @@ namespace MLAgents.Policies
         /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
+        public int numActions
+        {
+            get{
+                switch(vectorActionSpaceType){
+                    case SpaceType.Discrete:
+                        return vectorActionSize.Length;
+                    case SpaceType.Continuous:
+                        return vectorActionSize[0];
+                    default:
+                        return 0;
+                }
+            }
+        }
+
         /// <summary>
         /// Deep clones the BrainParameter object.
         /// </summary>

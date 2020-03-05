@@ -380,8 +380,8 @@ What this code means is that the heuristic will generate an action corresponding
 to the values of the "Horizontal" and "Vertical" input axis (which correspond to
 the keyboard arrow keys).
 
-In order for the Agent to use the Heuristic, You will need to check the `Use Heuristic`
-checkbox in the `Behavior Parameters` of the RollerAgent.
+In order for the Agent to use the Heuristic, You will need to set the `Behavior Type`
+to `Heuristic Only` in the `Behavior Parameters` of the RollerAgent.
 
 
 Press **Play** to run the scene and use the arrows keys to move the Agent around

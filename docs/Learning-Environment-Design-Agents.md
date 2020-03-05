@@ -17,10 +17,11 @@ discover the optimal decision-making policy.
 The Policy class abstracts out the decision making logic from the Agent itself so
 that you can use the same Policy in multiple Agents. How a Policy makes its
 decisions depends on the kind of Policy it is. You can change the Policy of an
-Agent by changing its `Behavior Parameters`. If you check `Use Heuristic`, the
-Agent will use its `Heuristic()` method to make decisions which can allow you to
-control the Agent manually or write your own Policy. If the Agent has a `Model`
-file, it Policy will use the neural network `Model` to take decisions.
+Agent by changing its `Behavior Parameters`. If you set `Behavior Type` to
+`Heuristic Only`, the Agent will use its `Heuristic()` method to make decisions
+which can allow you to control the Agent manually or write your own Policy. If
+the Agent has a `Model` file, it Policy will use the neural network `Model` to
+take decisions.
 
 ## Decisions
 

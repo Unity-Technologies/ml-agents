@@ -30,6 +30,7 @@ The versions can be found in
   * `AgentReset()` was renamed to `OnEpsiodeBegin()`
   * `Done()` was renamed to `EndEpisode()`
   * `GiveModel()` was renamed to `SetModel()`
+* The `IFloatProperties` interface has been removed.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -45,6 +46,7 @@ The versions can be found in
   * `AgentReset()` to `OnEpsiodeBegin()`
   * `Done()` to `EndEpisode()`
   * `GiveModel()` to `SetModel()`
+* Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
 
 ## Migrating from 0.13 to 0.14
 

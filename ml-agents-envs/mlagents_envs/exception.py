@@ -1,8 +1,3 @@
-import logging
-
-logger = logging.getLogger("mlagents_envs")
-
-
 class UnityException(Exception):
     """
     Any error related to ml-agents environment.

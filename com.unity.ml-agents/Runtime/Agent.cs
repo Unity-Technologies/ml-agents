@@ -373,6 +373,22 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Updates the type of behavior for the agent.
+        /// </summary>
+        /// <param name="behaviorType"> The new behaviorType for the Agent
+        /// </param>
+        public void SetBehaviorType(BehaviorType behaviorType)
+        {
+            if (m_PolicyFactory.m_BehaviorType == behaviorType)
+            {
+                return;
+            }
+            m_PolicyFactory.m_BehaviorType = behaviorType;
+            m_Brain?.Dispose();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+        }
+
+        /// <summary>
         /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
@@ -470,16 +486,8 @@ namespace MLAgents
             // should stay the previous action before the Done(), so that it is properly recorded.
             if (m_Action.vectorActions == null)
             {
-                if (param.vectorActionSpaceType == SpaceType.Continuous)
-                {
-                    m_Action.vectorActions = new float[param.vectorActionSize[0]];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize[0]];
-                }
-                else
-                {
-                    m_Action.vectorActions = new float[param.vectorActionSize.Length];
-                    m_Info.storedVectorActions = new float[param.vectorActionSize.Length];
-                }
+                m_Action.vectorActions = new float[param.numActions];
+                m_Info.storedVectorActions = new float[param.numActions];
             }
         }
 
@@ -515,11 +523,8 @@ namespace MLAgents
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
             var param = m_PolicyFactory.brainParameters;
-            var actionSize = param.vectorActionSpaceType == SpaceType.Continuous ?
-                param.vectorActionSize[0] :
-                param.vectorActionSize.Length;
 
-            return new float[actionSize];
+            return new float[param.numActions];
         }
 
         /// <summary>
