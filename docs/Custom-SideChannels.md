@@ -1,8 +1,12 @@
 # Custom SideChannels
 
-You can create your own `SideChannel` in C# and Python and use it to communicate data between the two.
+You can create your own `SideChannel` in C# and Python and use it to communicate custom data structures between the two. This can be useful for situations in which the information to be sent is too complex or structured for the built-in `FloatPropertiesChannel`, or too one-off to be appropriate as an agent observation.
 
-## Unity side
+## Overview
+
+In order to use a side channel, it must be implemented as both Unity and Python classes.
+
+### Unity side
 The side channel will have to implement the `SideChannel` abstract class and the following method.
 
  * `OnMessageReceived(byte[] data)` : You must implement this method to specify what the side channel will be doing
@@ -18,7 +22,7 @@ The `data` argument must be a `byte[]`.
 To register a side channel on the Unity side, call `Academy.Instance.RegisterSideChannel` with the side channel
 as only argument.
 
-## Python side
+### Python side
 The side channel will have to implement the `SideChannel` abstract class. You must implement :
 
  * `on_message_received(self, data: bytes) -> None` : You must implement this method to specify what the
@@ -42,16 +46,16 @@ To register a side channel on the Python side, pass the side channel as argument
 
 ## Example implementation
 
-Here is a simple implementation of a Side Channel that will exchange strings between C# and Python
-(encoded as ascii).
+Below is a simple implementation of a side channel that will exchange ascii encoded strings between a Unity environment and Python.
 
-One the C# side :
-Here is an implementation of a `StringLogSideChannel` that will listed to the `UnityEngine.Debug.LogError` calls in
-the game :
+### Example Unity C# code
+
+The first step is to create the `StringLogSideChannel` class within the Unity project. Here is an implementation of a `StringLogSideChannel` that will listen for messages from python and print them to the Unity debug log, as well as send error messages from Unity to python.  
 
 ```csharp
 using UnityEngine;
 using MLAgents;
+using MLAgents.SideChannels;
 using System.Text;
 using System;
 
@@ -80,8 +84,7 @@ public class StringLogSideChannel : SideChannel
 }
 ```
 
-We also need to register this side channel to the Academy and to the `Application.logMessageReceived` events,
-so we write a simple MonoBehavior for this. (Do not forget to attach it to a GameObject in the scene).
+Once we have defined our custom side channel class, we need to ensure that it is instantiated and registered. This can typically be done wherever the logic of the side channel makes sense to be associated, for example on a monobehavior object that might need to access data from the side channel. Here we show a simple MonoBehavior object which instantiates and registeres the new side channel. If you have not done it already, make sure that the monobehavior which registers the side channel is connected to a gameobject which will be live in your Unity scene.
 
 ```csharp
 using UnityEngine;
@@ -124,11 +127,11 @@ public class RegisterStringLogSideChannel : MonoBehaviour
 }
 ```
 
-And here is the script on the Python side. This script creates a new Side channel type (`StringLogChannel`) and
-launches a `UnityEnvironment` with that side channel.
+### Example Python code
+
+Now that we have created the necessary Unity C# classes, we can create their Python counterparts. 
 
 ```python
-
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.side_channel import SideChannel
 import numpy as np
@@ -154,7 +157,13 @@ class StringLogChannel(SideChannel):
         bytes_data = data.encode("ascii")
         # We call this method to queue the data we want to send
         super().queue_message_to_send(bytes_data)
+```
 
+
+We can then instantiate the new side channel,
+launch a `UnityEnvironment` with that side channel active, and send a series of messages to the Unity environment from Python using it.
+
+```
 # Create the channel
 string_log = StringLogChannel()
 

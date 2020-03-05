@@ -4,10 +4,11 @@ The `mlagents` Python package contains two components: a low level API which
 allows you to interact directly with a Unity Environment (`mlagents_envs`) and
 an entry point to train (`mlagents-learn`) which allows you to train agents in
 Unity Environments using our implementations of reinforcement learning or
-imitation learning.
+imitation learning. This document describes how to use the `mlagents_envs` API. 
+For information on using `mlagents-learn`, see [here](Training-ML-Agents.md).
 
-You can use the Python Low Level API to interact directly with your learning
-environment, and use it to develop new learning algorithms.
+The Python Low Level API can be used to interact directly with your Unity learning environment. 
+As such, it can serve as the basis for developing and evaluating new learning algorithms.
 
 ## mlagents_envs
 
@@ -51,7 +52,7 @@ release._
 Python-side communication happens through `UnityEnvironment` which is located in
 [`environment.py`](../ml-agents-envs/mlagents_envs/environment.py). To load
 a Unity environment from a built binary file, put the file in the same directory
-as `envs`. For example, if the filename of your Unity environment is 3DBall.app, in python, run:
+as `envs`. For example, if the filename of your Unity environment is `3DBall.app`, in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
@@ -197,28 +198,41 @@ An `AgentGroupSpec` has the following fields :
  `discrete_action_branches = (3,2,)`)
 
 
-### Modifying the environment from Python
-The Environment can be modified by using side channels to send data to the
-environment. When creating the environment, pass a list of side channels as
-`side_channels` argument to the constructor.
+### Communicating additional information with the Environment
+In addition to the means of communicating between Unity and python described above,
+we also provide methods for sharing agent-agnostic information. These
+additional methods are referred to as side-channels. ML-Agents includes two ready-made
+side channels, described below. It is also possible to create custom side-channels to 
+communicate any additional data between a Unity environment and Python. Instructions for
+creating custom side channels can be found [here](Custom-SideChannels.md).
 
-__Note__ : A side channel will only send/receive messages when `env.step` is
+Side channels exist as separate classes which are instantiated, and then passed as list to the `side_channels` argument of the constructor of the `UnityEnvironment` class.
+
+```python
+channel = MyChannel()
+
+env = UnityEnvironment(side_channels = [channel])
+```
+
+__Note__ : A side channel will only send/receive messages when `env.step` or `env.reset()` is
 called.
 
 #### EngineConfigurationChannel
-An `EngineConfiguration` will allow you to modify the time scale and graphics quality of the Unity engine.
+The `EngineConfiguration` side channel allows you to modify the time-scale, resolution, and graphics quality of the environment. This can be useful for adjusting the environment to perform better during training, or be more interpretable during inference. 
+
 `EngineConfigurationChannel` has two methods :
 
- * `set_configuration_parameters` with arguments
-   * width: Defines the width of the display. Default 80.
-   * height: Defines the height of the display. Default 80.
-   * quality_level: Defines the quality level of the simulation. Default 1.
-   * time_scale: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics might break. Default 20.
-   *  target_frame_rate: Instructs simulation to try to render at a specified frame rate. Default -1.
+ * `set_configuration_parameters` which takes the following arguments:
+   * `width`: Defines the width of the display. Default 80.
+   * `height`: Defines the height of the display. Default 80.
+   * `quality_level`: Defines the quality level of the simulation. Default 1.
+   * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably. Default 20.
+   *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate. Default -1.
  * `set_configuration` with argument config which is an `EngineConfig`
  NamedTuple object.
 
-For example :
+For example, the following code would adjust the time-scale of the simulation to be 2x realtime.
+
 ```python
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
@@ -234,9 +248,8 @@ i = env.reset()
 ```
 
 #### FloatPropertiesChannel
-A `FloatPropertiesChannel` will allow you to get and set float properties
-in the environment. You can call get_property and set_property on the
-side channel to read and write properties.
+The `FloatPropertiesChannel` will allow you to get and set pre-defined numerical values in the environment. This can be useful for adjusting environment-specific settings, or for reading non-agent related information from the environment. You can call `get_property` and `set_property` on the side channel to read and write properties.
+
 `FloatPropertiesChannel` has three methods:
 
  * `set_property` Sets a property in the Unity Environment.
@@ -259,6 +272,8 @@ env = UnityEnvironment(base_port = UnityEnvironment.DEFAULT_EDITOR_PORT, side_ch
 channel.set_property("parameter_1", 2.0)
 
 i = env.reset()
+
+readout_value = channel.get_property("parameter_2")
 ...
 ```
 
@@ -269,3 +284,6 @@ var sharedProperties = Academy.Instance.FloatProperties;
 float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```
 
+#### Custom side channels
+
+For information on how to make custom side channels for sending additional data types, see the documentation [here](Custom-SideChannels.md).
