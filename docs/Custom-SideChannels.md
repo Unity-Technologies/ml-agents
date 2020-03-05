@@ -163,7 +163,7 @@ class StringLogChannel(SideChannel):
 We can then instantiate the new side channel,
 launch a `UnityEnvironment` with that side channel active, and send a series of messages to the Unity environment from Python using it.
 
-```
+```python
 # Create the channel
 string_log = StringLogChannel()
 
