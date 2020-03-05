@@ -364,6 +364,24 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Updates the type of behavior for the agent.
+        /// - Default : The Agent will use the remote process for decision making.
+        /// if unavailable, will use inference and if no model is provided, will use
+        /// the heuristic.
+        /// - HeuristicOnly : The Agent will always use its heuristic
+        /// - InferenceOnly : The Agent will always use inference with the provided
+        /// neural network model.
+        /// </summary>
+        /// <param name="behaviorType"> The new behaviorType for the Agent
+        /// </param>
+        public void SetBehaviorType(BehaviorType behaviorType)
+        {
+            m_PolicyFactory.m_BehaviorType = behaviorType;
+            m_Brain?.Dispose();
+            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+        }
+
+        /// <summary>
         /// Returns the current step counter (within the current episode).
         /// </summary>
         /// <returns>
