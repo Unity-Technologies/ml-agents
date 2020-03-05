@@ -1,5 +1,4 @@
 from typing import Any, Dict, List
-import logging
 import numpy as np
 from mlagents.tf_utils import tf
 
@@ -7,8 +6,6 @@ from mlagents.trainers.components.reward_signals import RewardSignal, RewardSign
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
-
-LOGGER = logging.getLogger("mlagents.trainers")
 
 
 class GAILRewardSignal(RewardSignal):

@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import List, Tuple
 import numpy as np
@@ -20,9 +19,6 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 )
 from mlagents_envs.timers import timed, hierarchical_timer
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
-
-
-logger = logging.getLogger("mlagents.trainers")
 
 
 @timed

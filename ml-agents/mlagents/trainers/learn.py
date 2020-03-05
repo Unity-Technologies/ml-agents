@@ -30,6 +30,7 @@ from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
+from mlagents.logging_util import create_logger
 
 
 def _create_parser():
@@ -450,17 +451,15 @@ def run_cli(options: RunOptions) -> None:
     except Exception:
         print("\n\n\tUnity Technologies\n")
     print(get_version_string())
-    trainer_logger = logging.getLogger("mlagents.trainers")
-    env_logger = logging.getLogger("mlagents_envs")
 
     if options.debug:
-        trainer_logger.setLevel("DEBUG")
-        env_logger.setLevel("DEBUG")
+        log_level = logging.DEBUG
     else:
-        trainer_logger.setLevel("INFO")
-        env_logger.setLevel("INFO")
-        # disable noisy warnings from tensorflow.
+        log_level = logging.INFO
+        # disable noisy warnings from tensorflow
         tf_utils.set_warnings_enabled(False)
+
+    trainer_logger = create_logger("mlagents.trainers", log_level)
 
     trainer_logger.debug("Configuration for this run:")
     trainer_logger.debug(json.dumps(options._asdict(), indent=4))
