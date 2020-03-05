@@ -1,6 +1,10 @@
 # Custom Side Channels
 
-You can create your own side channel in C# and Python and use it to communicate custom data structures between the two. This can be useful for situations in which the information to be sent is too complex or structured for the built-in `FloatPropertiesChannel`, or too one-off to be appropriate as an agent observation.
+You can create your own side channel in C# and Python and use it to communicate
+custom data structures between the two. This can be useful for situations in
+which the data to be sent is too complex or structured for the built-in
+`FloatPropertiesChannel`, or is not related to any specific agent, and therefore
+inappropriate as an agent observation.
 
 ## Overview
 
@@ -46,11 +50,15 @@ To register a side channel on the Python side, pass the side channel as argument
 
 ## Example implementation
 
-Below is a simple implementation of a side channel that will exchange ascii encoded strings between a Unity environment and Python.
+Below is a simple implementation of a side channel that will exchange ascii encoded
+strings between a Unity environment and Python.
 
 ### Example Unity C# code
 
-The first step is to create the `StringLogSideChannel` class within the Unity project. Here is an implementation of a `StringLogSideChannel` that will listen for messages from python and print them to the Unity debug log, as well as send error messages from Unity to python.
+The first step is to create the `StringLogSideChannel` class within the Unity project.
+Here is an implementation of a `StringLogSideChannel` that will listen for messages
+from python and print them to the Unity debug log, as well as send error messages
+from Unity to python.
 
 ```csharp
 using UnityEngine;
@@ -84,7 +92,14 @@ public class StringLogSideChannel : SideChannel
 }
 ```
 
-Once we have defined our custom side channel class, we need to ensure that it is instantiated and registered. This can typically be done wherever the logic of the side channel makes sense to be associated, for example on a monobehavior object that might need to access data from the side channel. Here we show a simple MonoBehavior object which instantiates and registeres the new side channel. If you have not done it already, make sure that the monobehavior which registers the side channel is connected to a gameobject which will be live in your Unity scene.
+Once we have defined our custom side channel class, we need to ensure that it is
+instantiated and registered. This can typically be done wherever the logic of
+the side channel makes sense to be associated, for example on a MonoBehaviour
+object that might need to access data from the side channel. Here we show a
+simple MonoBehaviour object which instantiates and registeres the new side
+channel. If you have not done it already, make sure that the MonoBehaviour
+which registers the side channel is attached to a gameobject which will
+be live in your Unity scene.
 
 ```csharp
 using UnityEngine;
@@ -103,7 +118,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // When a Debug.Log message is created, we send it to the stringChannel
         Application.logMessageReceived += stringChannel.SendDebugStatementToPython;
 
-        // Just in case the Academy has not yet initialized
+        // The channel must be registered with the Academy
         Academy.Instance.RegisterSideChannel(stringChannel);
     }
 
@@ -161,7 +176,8 @@ class StringLogChannel(SideChannel):
 
 
 We can then instantiate the new side channel,
-launch a `UnityEnvironment` with that side channel active, and send a series of messages to the Unity environment from Python using it.
+launch a `UnityEnvironment` with that side channel active, and send a series of
+messages to the Unity environment from Python using it.
 
 ```python
 # Create the channel
@@ -185,6 +201,7 @@ for i in range(1000):
 env.close()
 ```
 
-Now, if you run this script and press `Play` the Unity Editor when prompted, The console in the Unity Editor will
-display a message at every Python step. Additionally, if you press the Space Bar in the Unity Engine, a message will
+Now, if you run this script and press `Play` the Unity Editor when prompted,
+the console in the Unity Editor will display a message at every Python step.
+Additionally, if you press the Space Bar in the Unity Engine, a message will
 appear in the terminal.
