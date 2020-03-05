@@ -50,7 +50,7 @@ Below is a simple implementation of a side channel that will exchange ascii enco
 
 ### Example Unity C# code
 
-The first step is to create the `StringLogSideChannel` class within the Unity project. Here is an implementation of a `StringLogSideChannel` that will listen for messages from python and print them to the Unity debug log, as well as send error messages from Unity to python.  
+The first step is to create the `StringLogSideChannel` class within the Unity project. Here is an implementation of a `StringLogSideChannel` that will listen for messages from python and print them to the Unity debug log, as well as send error messages from Unity to python.
 
 ```csharp
 using UnityEngine;
@@ -129,7 +129,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
 
 ### Example Python code
 
-Now that we have created the necessary Unity C# classes, we can create their Python counterparts. 
+Now that we have created the necessary Unity C# classes, we can create their Python counterparts.
 
 ```python
 from mlagents_envs.environment import UnityEnvironment

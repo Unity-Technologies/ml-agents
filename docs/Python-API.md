@@ -4,10 +4,10 @@ The `mlagents` Python package contains two components: a low level API which
 allows you to interact directly with a Unity Environment (`mlagents_envs`) and
 an entry point to train (`mlagents-learn`) which allows you to train agents in
 Unity Environments using our implementations of reinforcement learning or
-imitation learning. This document describes how to use the `mlagents_envs` API. 
+imitation learning. This document describes how to use the `mlagents_envs` API.
 For information on using `mlagents-learn`, see [here](Training-ML-Agents.md).
 
-The Python Low Level API can be used to interact directly with your Unity learning environment. 
+The Python Low Level API can be used to interact directly with your Unity learning environment.
 As such, it can serve as the basis for developing and evaluating new learning algorithms.
 
 ## mlagents_envs
@@ -202,7 +202,7 @@ An `AgentGroupSpec` has the following fields :
 In addition to the means of communicating between Unity and python described above,
 we also provide methods for sharing agent-agnostic information. These
 additional methods are referred to as side channels. ML-Agents includes two ready-made
-side channels, described below. It is also possible to create custom side channels to 
+side channels, described below. It is also possible to create custom side channels to
 communicate any additional data between a Unity environment and Python. Instructions for
 creating custom side channels can be found [here](Custom-SideChannels.md).
 
@@ -218,7 +218,7 @@ __Note__ : A side channel will only send/receive messages when `env.step` or `en
 called.
 
 #### EngineConfigurationChannel
-The `EngineConfiguration` side channel allows you to modify the time-scale, resolution, and graphics quality of the environment. This can be useful for adjusting the environment to perform better during training, or be more interpretable during inference. 
+The `EngineConfiguration` side channel allows you to modify the time-scale, resolution, and graphics quality of the environment. This can be useful for adjusting the environment to perform better during training, or be more interpretable during inference.
 
 `EngineConfigurationChannel` has two methods :
 
