@@ -13,9 +13,7 @@ namespace MLAgents.Sensors
         /// The <see cref="RenderTexture"/> instance that the associated
         /// <see cref="RenderTextureSensor"/> wraps.
         /// </summary>
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("renderTexture")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("renderTexture")]
         RenderTexture m_RenderTexture;
 
         public RenderTexture renderTexture
@@ -24,9 +22,7 @@ namespace MLAgents.Sensors
             set { m_RenderTexture = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("sensorName")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
         string m_SensorName = "RenderTextureSensor";
 
         /// <summary>
@@ -38,9 +34,7 @@ namespace MLAgents.Sensors
             internal set { m_SensorName = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("grayscale")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
         public bool m_Grayscale;
 
         /// <summary>
@@ -52,9 +46,7 @@ namespace MLAgents.Sensors
             internal set { m_Grayscale = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("compression")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
         SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
         /// <summary>

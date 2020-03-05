@@ -9,9 +9,7 @@ namespace MLAgents.Sensors
     [AddComponentMenu("ML Agents/Camera Sensor", (int)MenuGroup.Sensors)]
     public class CameraSensorComponent : SensorComponent
     {
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("camera")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("camera")]
         Camera m_Camera;
 
         /// <summary>
@@ -23,9 +21,7 @@ namespace MLAgents.Sensors
             set { m_Camera = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("sensorName")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
         string m_SensorName = "CameraSensor";
 
         /// <summary>
@@ -37,9 +33,7 @@ namespace MLAgents.Sensors
             internal set { m_SensorName = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("width")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("width")]
         int m_Width = 84;
 
         /// <summary>
@@ -51,9 +45,7 @@ namespace MLAgents.Sensors
             internal set { m_Width = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("height")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("height")]
         int m_Height = 84;
 
         /// <summary>
@@ -65,9 +57,7 @@ namespace MLAgents.Sensors
             internal set { m_Height = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("grayscale")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
         public bool m_Grayscale;
 
         /// <summary>
@@ -79,9 +69,7 @@ namespace MLAgents.Sensors
             internal set { m_Grayscale = value;  }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("compression")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
         SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
         /// <summary>
