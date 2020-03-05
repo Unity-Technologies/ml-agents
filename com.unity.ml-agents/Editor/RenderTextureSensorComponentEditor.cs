@@ -20,17 +20,24 @@ namespace MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_RenderTexture"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Grayscale"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_Compression"), true);
             }
-
             EditorGUI.EndDisabledGroup();
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                //
-            }
+            EditorGUILayout.PropertyField(so.FindProperty("m_Compression"), true);
 
+            var requireSensorUpdate = EditorGUI.EndChangeCheck();
             so.ApplyModifiedProperties();
+
+            if (requireSensorUpdate)
+            {
+                UpdateSensor();
+            }
+        }
+
+        void UpdateSensor()
+        {
+            var sensorComponent = serializedObject.targetObject as RenderTextureSensorComponent;
+            sensorComponent?.UpdateSensor();
         }
     }
 }

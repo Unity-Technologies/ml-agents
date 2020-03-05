@@ -9,6 +9,8 @@ namespace MLAgents.Sensors
     [AddComponentMenu("ML Agents/Render Texture Sensor", (int)MenuGroup.Sensors)]
     public class RenderTextureSensorComponent : SensorComponent
     {
+        RenderTextureSensor m_Sensor;
+
         /// <summary>
         /// The <see cref="RenderTexture"/> instance that the associated
         /// <see cref="RenderTextureSensor"/> wraps.
@@ -55,13 +57,14 @@ namespace MLAgents.Sensors
         public SensorCompressionType compression
         {
             get { return m_Compression;  }
-            set { m_Compression = value;  }
+            set { m_Compression = value; UpdateSensor(); }
         }
 
         /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
-            return new RenderTextureSensor(renderTexture, grayscale, sensorName, compression);
+            m_Sensor = new RenderTextureSensor(renderTexture, grayscale, sensorName, compression);
+            return m_Sensor;
         }
 
         /// <inheritdoc/>
@@ -71,6 +74,17 @@ namespace MLAgents.Sensors
             var height = renderTexture != null ? renderTexture.height : 0;
 
             return new[] { height, width, grayscale ? 1 : 3 };
+        }
+
+        /// <summary>
+        /// Update fields that are safe to change on the Sensor at runtime.
+        /// </summary>
+        internal void UpdateSensor()
+        {
+            if (m_Sensor != null)
+            {
+                m_Sensor.compressionType = m_Compression;
+            }
         }
     }
 }

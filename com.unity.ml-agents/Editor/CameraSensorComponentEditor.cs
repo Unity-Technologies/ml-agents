@@ -16,24 +16,33 @@ namespace MLAgents.Editor
             // Drawing the CameraSensorComponent
             EditorGUI.BeginChangeCheck();
 
+            EditorGUILayout.PropertyField(so.FindProperty("m_Camera"), true);
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             {
-                EditorGUILayout.PropertyField(so.FindProperty("m_Camera"), true);
+                // These fields affect the sensor order or observation size,
+                // So can't be changed at runtime.
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Width"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Height"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Grayscale"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_Compression"), true);
             }
-
             EditorGUI.EndDisabledGroup();
+            EditorGUILayout.PropertyField(so.FindProperty("m_Compression"), true);
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                //
-            }
-
+            var requireSensorUpdate = EditorGUI.EndChangeCheck();
             so.ApplyModifiedProperties();
+
+            if (requireSensorUpdate)
+            {
+                UpdateSensor();
+            }
         }
+
+        void UpdateSensor()
+        {
+            var sensorComponent = serializedObject.targetObject as CameraSensorComponent;
+            sensorComponent?.UpdateSensor();
+        }
+
     }
 }

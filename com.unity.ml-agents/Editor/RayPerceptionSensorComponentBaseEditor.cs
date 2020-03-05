@@ -56,8 +56,8 @@ namespace MLAgents.Editor
                 m_RequireSensorUpdate = true;
             }
 
-            UpdateSensorIfDirty();
             so.ApplyModifiedProperties();
+            UpdateSensorIfDirty();
         }
 
 

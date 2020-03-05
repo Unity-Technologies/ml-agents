@@ -12,13 +12,15 @@ namespace MLAgents.Sensors
         [HideInInspector, SerializeField, FormerlySerializedAs("camera")]
         Camera m_Camera;
 
+        CameraSensor m_Sensor;
+
         /// <summary>
         /// Camera object that provides the data to the sensor.
         /// </summary>
         public new Camera camera
         {
             get { return m_Camera;  }
-            set { m_Camera = value;  }
+            set { m_Camera = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
@@ -78,7 +80,7 @@ namespace MLAgents.Sensors
         public SensorCompressionType compression
         {
             get { return m_Compression;  }
-            set { m_Compression = value;  }
+            set { m_Compression = value; UpdateSensor(); }
         }
 
         /// <summary>
@@ -87,7 +89,8 @@ namespace MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
-            return new CameraSensor(m_Camera, m_Width, m_Height, grayscale, m_SensorName, compression);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, grayscale, m_SensorName, compression);
+            return m_Sensor;
         }
 
         /// <summary>
@@ -97,6 +100,18 @@ namespace MLAgents.Sensors
         public override int[] GetObservationShape()
         {
             return CameraSensor.GenerateShape(m_Width, m_Height, grayscale);
+        }
+
+        /// <summary>
+        /// Update fields that are safe to change on the Sensor at runtime.
+        /// </summary>
+        internal void UpdateSensor()
+        {
+            if (m_Sensor != null)
+            {
+                m_Sensor.camera = m_Camera;
+                m_Sensor.compressionType = m_Compression;
+            }
         }
     }
 }
