@@ -97,12 +97,19 @@ class DebugWriter(StatsWriter):
     Print to stdout so stats can be viewed in pytest
     """
 
+    def __init__(self):
+        self._last_reward_summary: Dict[str, float] = {}
+
+    def get_last_rewards(self):
+        return self._last_reward_summary
+
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         for val, stats_summary in values.items():
             if val == "Environment/Cumulative Reward":
                 print(step, val, stats_summary.mean)
+                self._last_reward_summary[category] = stats_summary.mean
 
     def write_text(self, category: str, text: str, step: int) -> None:
         pass
@@ -114,6 +121,7 @@ def _check_environment_trains(
     reward_processor=default_reward_processor,
     meta_curriculum=None,
     success_threshold=0.99,
+    env_manager=None,
 ):
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
@@ -123,7 +131,8 @@ def _check_environment_trains(
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)
-        env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
+        if env_manager is None:
+            env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
             summaries_dir=dir,
