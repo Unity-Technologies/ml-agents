@@ -15,7 +15,7 @@ public class BouncerAgent : Agent
     int m_NumberJumps = 20;
     int m_JumpLeft = 20;
 
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
     public override void InitializeAgent()
     {
