@@ -37,7 +37,7 @@ Bouncer:
     hidden_units: 64
 
 PushBlock:
-    max_steps: 1.5e7
+    max_steps: 2.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 1.0e-2
