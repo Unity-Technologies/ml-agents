@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The following methods in the `Agent` class were renamed:
    - `InitializeAgent()` was renamed to `Initialize()`
    - `AgentAction()` was renamed to `OnActionReceived()`
-   - `AgentReset()` was renamed to `OnEpsiodeBegin()`
+   - `AgentReset()` was renamed to `OnEpisodeBegin()`
    - `Done()` was renamed to `EndEpisode()`
    - `GiveModel()` was renamed to `SetModel()`
 
