@@ -75,7 +75,7 @@ The Ball3DAgent subclass defines the following methods:
   Parameters of the Agent are set with vector observation
   space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
   `VectorSensor.AddObservation()` such that vector size adds up to 8.
-* `Agent.OnActionReceived()` — Called every time a new action is ready. Receives the action chosen
+* `Agent.OnActionReceived()` — Called every time the Agent receives an action to take. Receives the action chosen
   by the Agent. The vector action spaces result in a
   small change in the agent cube's rotation at each step. The `OnActionReceived()` method
   assigns a reward to the Agent; in this example, an Agent receives a small
