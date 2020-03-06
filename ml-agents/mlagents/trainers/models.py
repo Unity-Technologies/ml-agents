@@ -1,4 +1,3 @@
-import logging
 from enum import Enum
 from typing import Callable, Dict, List, Tuple, NamedTuple
 
@@ -7,8 +6,6 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import CameraResolution
-
-logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 EncoderFunction = Callable[

@@ -1,4 +1,3 @@
-import logging
 import os
 import gzip
 import struct
@@ -98,7 +97,6 @@ class AgentInfoActionPairProtoDemoGenerator(SizedIterable[AgentInfoActionPairPro
 
     def __next__(self):
         return next(self._gen)
-
 
 @timed
 def make_demo_buffer(

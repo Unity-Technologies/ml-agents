@@ -16,6 +16,25 @@ namespace MLAgents.Sensors
         SensorCompressionType m_CompressionType;
 
         /// <summary>
+        /// The Camera used for rendering the sensor observations.
+        /// </summary>
+        public Camera camera
+        {
+            get { return m_Camera; }
+            set { m_Camera = value; }
+        }
+
+        /// <summary>
+        /// The compression type used by the sensor.
+        /// </summary>
+        public SensorCompressionType compressionType
+        {
+            get { return m_CompressionType;  }
+            set { m_CompressionType = value; }
+        }
+
+
+        /// <summary>
         /// Creates and returns the camera sensor.
         /// </summary>
         /// <param name="camera">Camera object to capture images from.</param>

@@ -89,7 +89,7 @@ namespace MLAgents
         /// <summary>
         /// Collection of float properties (indexed by a string).
         /// </summary>
-        public IFloatProperties FloatProperties;
+        public FloatPropertiesChannel FloatProperties;
 
 
         // Fields not provided in the Inspector.

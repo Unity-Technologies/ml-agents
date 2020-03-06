@@ -6,45 +6,10 @@ using System.Text;
 namespace MLAgents.SideChannels
 {
     /// <summary>
-    /// Interface for managing a collection of float properties keyed by a string variable.
-    /// </summary>
-    public interface IFloatProperties
-    {
-        /// <summary>
-        /// Sets one of the float properties of the environment. This data will be sent to Python.
-        /// </summary>
-        /// <param name="key"> The string identifier of the property.</param>
-        /// <param name="value"> The float value of the property.</param>
-        void SetProperty(string key, float value);
-
-        /// <summary>
-        /// Get an Environment property with a default value. If there is a value for this property,
-        /// it will be returned, otherwise, the default value will be returned.
-        /// </summary>
-        /// <param name="key"> The string identifier of the property.</param>
-        /// <param name="defaultValue"> The default value of the property.</param>
-        /// <returns></returns>
-        float GetPropertyWithDefault(string key, float defaultValue);
-
-        /// <summary>
-        /// Registers an action to be performed everytime the property is changed.
-        /// </summary>
-        /// <param name="key"> The string identifier of the property.</param>
-        /// <param name="action"> The action that ill be performed. Takes a float as input.</param>
-        void RegisterCallback(string key, Action<float> action);
-
-        /// <summary>
-        /// Returns a list of all the string identifiers of the properties currently present.
-        /// </summary>
-        /// <returns> The list of string identifiers </returns>
-        IList<string> ListProperties();
-    }
-
-    /// <summary>
     /// Side channel that is comprised of a collection of float variables, represented by
     /// <see cref="IFloatProperties"/>
     /// </summary>
-    public class FloatPropertiesChannel : SideChannel, IFloatProperties
+    public class FloatPropertiesChannel : SideChannel
     {
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();

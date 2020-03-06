@@ -8,7 +8,7 @@ public class Ball3DHardAgent : Agent
     [Header("Specific to Ball3DHard")]
     public GameObject ball;
     Rigidbody m_BallRb;
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
     public override void InitializeAgent()
     {

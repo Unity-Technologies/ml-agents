@@ -14,6 +14,16 @@ namespace MLAgents.Sensors
         SensorCompressionType m_CompressionType;
 
         /// <summary>
+        /// The compression type used by the sensor.
+        /// </summary>
+        public SensorCompressionType compressionType
+        {
+            get { return m_CompressionType;  }
+            set { m_CompressionType = value; }
+        }
+
+
+        /// <summary>
         /// Initializes the sensor.
         /// </summary>
         /// <param name="renderTexture">The <see cref="RenderTexture"/> instance to wrap.</param>
@@ -52,7 +62,7 @@ namespace MLAgents.Sensors
                 var texture = ObservationToTexture(m_RenderTexture);
                 // TODO support more types here, e.g. JPG
                 var compressed = texture.EncodeToPNG();
-                UnityEngine.Object.Destroy(texture);
+                DestroyTexture(texture);
                 return compressed;
             }
         }
@@ -64,7 +74,7 @@ namespace MLAgents.Sensors
             {
                 var texture = ObservationToTexture(m_RenderTexture);
                 var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
-                UnityEngine.Object.Destroy(texture);
+                DestroyTexture(texture);
                 return numWritten;
             }
         }
@@ -97,6 +107,20 @@ namespace MLAgents.Sensors
             texture2D.Apply();
             RenderTexture.active = prevActiveRt;
             return texture2D;
+        }
+
+        static void DestroyTexture(Texture2D texture)
+        {
+            if (Application.isEditor)
+            {
+                // Edit Mode tests complain if we use Destroy()
+                // TODO move to extension methods for UnityEngine.Object?
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(texture);
+            }
         }
     }
 }
