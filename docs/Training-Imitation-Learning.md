@@ -8,7 +8,7 @@ of training a medic NPC. Instead of indirectly training a medic with the help
 of a reward function, we can give the medic real world examples of observations
 from the game and actions from a game controller to guide the medic's behavior.
 Imitation Learning uses pairs of observations and actions from
-a demonstration to learn a policy. [Video Link](https://youtu.be/kpb8ZkMBFYs).
+a demonstration to learn a policy.
 
 Imitation learning can also be used to help reinforcement learning. Especially in
 environments with sparse (i.e., infrequent or rare) rewards, the agent may never see
