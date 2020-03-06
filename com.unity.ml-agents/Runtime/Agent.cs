@@ -697,16 +697,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
-        /// This way, even if the agent was already in the process of reseting, it will be reset again
-        /// and will not send a Done flag at the next step.
-        /// </summary>
-        void ForceReset()
-        {
-            _AgentReset();
-        }
-
-        /// <summary>
         /// An internal reset method that updates internal data structures in
         /// addition to calling <see cref="AgentReset"/>.
         /// </summary>
