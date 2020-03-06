@@ -23,6 +23,7 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
+import horovod.tensorflow as hvd
 
 
 class TrainerController(object):
@@ -94,6 +95,9 @@ class TrainerController(object):
         """
         Saves current model to checkpoint folder.
         """
+        if hvd.rank() != 0:
+            return
+
         for brain_name in self.trainers.keys():
             for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                 self.trainers[brain_name].save_model(name_behavior_id)
