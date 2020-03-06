@@ -113,6 +113,9 @@ class TrainerController(object):
         """
         Exports latest saved models to .nn format for Unity embedding.
         """
+        if hvd.rank() != 0:
+            return
+
         for brain_name in self.trainers.keys():
             for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                 self.trainers[brain_name].export_model(name_behavior_id)

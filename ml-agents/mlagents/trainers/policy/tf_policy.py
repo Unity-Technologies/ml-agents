@@ -110,7 +110,6 @@ class TFPolicy(Policy):
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
-            self.sess.run(hvd.broadcast_global_variables(0))
 
     def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
         with self.graph.as_default():
@@ -160,6 +159,7 @@ class TFPolicy(Policy):
             self._load_graph(self.model_path, reset_global_steps=reset_steps)
         else:
             self._initialize_graph()
+        self.sess.run(hvd.broadcast_global_variables(0))
 
     def get_weights(self):
         with self.graph.as_default():

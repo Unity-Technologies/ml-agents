@@ -114,17 +114,12 @@ class Trainer(abc.ABC):
         """
         Saves the model
         """
-        if hvd.rank() != 0:
-            return
         self.get_policy(name_behavior_id).save_model(self.get_step)
 
     def export_model(self, name_behavior_id: str) -> None:
         """
         Exports the model
         """
-        if hvd.rank() != 0:
-            return
-
         policy = self.get_policy(name_behavior_id)
         settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
         export_policy_model(settings, policy.graph, policy.sess)

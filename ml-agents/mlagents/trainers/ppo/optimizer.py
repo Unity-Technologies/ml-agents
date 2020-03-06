@@ -6,7 +6,6 @@ from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedu
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-import horovod.tensorflow as hvd
 
 
 class PPOOptimizer(TFOptimizer):
@@ -281,9 +280,7 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def _create_ppo_optimizer_ops(self):
-        self.tf_optimizer = self.create_optimizer_op(self.learning_rate * hvd.size())
-        if hvd is not None:
-            self.tf_optimizer = hvd.DistributedOptimizer(self.tf_optimizer)
+        self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
         self.update_batch = self.tf_optimizer.minimize(self.loss)
 
