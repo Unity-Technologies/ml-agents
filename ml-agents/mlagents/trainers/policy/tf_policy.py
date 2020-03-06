@@ -11,6 +11,7 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.models import ModelUtils
+import horovod.tensorflow as hvd
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -109,6 +110,7 @@ class TFPolicy(Policy):
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
+            self.sess.run(hvd.broadcast_global_variables(0))
 
     def _load_graph(self):
         with self.graph.as_default():
@@ -335,6 +337,9 @@ class TFPolicy(Policy):
         :param steps: The number of steps the model was trained for
         :return:
         """
+        if hvd.rank() != 0:
+            return
+
         with self.graph.as_default():
             last_checkpoint = self.model_path + "/model-" + str(steps) + ".ckpt"
             self.saver.save(self.sess, last_checkpoint)

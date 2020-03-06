@@ -2,6 +2,7 @@
 # Everywhere else is caught by the banned-modules setting for flake8
 import tensorflow as tf  # noqa I201
 from distutils.version import LooseVersion
+import horovod.tensorflow as hvd
 
 
 # LooseVersion handles things "1.2.3a" or "4.5.6-rc7" fairly sensibly.
@@ -37,6 +38,8 @@ def generate_session_config() -> tf.ConfigProto:
     """
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())
+
     # For multi-GPU training, set allow_soft_placement to True to allow
     # placing the operation into an alternative device automatically
     # to prevent from exceptions if the device doesn't suppport the operation

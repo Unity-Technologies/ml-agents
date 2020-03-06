@@ -31,6 +31,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.logging_util import create_logger
+import horovod.tensorflow as hvd
 
 
 def _create_parser():
@@ -293,6 +294,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     sampler_manager, resampling_interval = create_sampler_manager(
         options.sampler_config, run_seed
     )
+    hvd.init()
     trainer_factory = TrainerFactory(
         options.trainer_config,
         summaries_dir,

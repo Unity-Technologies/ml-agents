@@ -124,13 +124,13 @@ class UnityEnvironment(BaseEnv):
                 "If the environment name is None, "
                 "the worker-id must be 0 in order to connect with the Editor."
             )
-        if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics, args)
-        else:
-            logger.info(
-                f"Listening on port {self.port}. "
-                f"Start training by pressing the Play button in the Unity Editor."
-            )
+        # if file_name is not None:
+        #     self.executable_launcher(file_name, docker_training, no_graphics, args)
+        # else:
+        #     logger.info(
+        #         f"Listening on port {self.port}. "
+        #         f"Start training by pressing the Play button in the Unity Editor."
+        #     )
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInputProto(
