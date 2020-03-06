@@ -87,5 +87,18 @@ inspector.
        width="375" border="10" />
 </p>
 
-You can then specify the path to this file in your `trainer_config.yaml` file
-when using BC or GAIL.
+You can then specify the path to this file as the `demo_path` in your `trainer_config.yaml` file
+when using BC or GAIL. For instance, for BC:
+
+```
+    behavioral_cloning:
+        demo_path: <path_to_your_demo_file>
+        ...
+```
+And for GAIL:
+```
+    reward_signals:
+        gail:
+            demo_path: <path_to_your_demo_file>
+            ...
+```
