@@ -27,7 +27,7 @@ def dummy_config():
         learning_rate: 3.0e-4
         max_steps: 1024
         memory_size: 10
-        normalize: false
+        normalize: true
         num_update: 1
         train_interval: 1
         num_layers: 1
