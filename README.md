@@ -36,7 +36,7 @@ developer communities.
 * Self-play mechanism for training agents in adversarial scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
-* Built-in support for [Imitation Learning](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
+* Built-in support for [Imitation Learning](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Wrap learning environments as a gym
