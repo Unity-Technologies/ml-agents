@@ -137,12 +137,12 @@ namespace MLAgentsExamples
         void OverrideModel()
         {
             m_Agent.LazyInitialize();
-            var bp = m_Agent.GetComponent<BehaviorParameters>();
+            var name = m_Agent.BehaviorName;
 
-            var nnModel = GetModelForBehaviorName(bp.behaviorName);
-            Debug.Log($"Overriding behavior {bp.behaviorName} for agent with model {nnModel?.name}");
+            var nnModel = GetModelForBehaviorName(name);
+            Debug.Log($"Overriding behavior {name} for agent with model {nnModel?.name}");
             // This might give a null model; that's better because we'll fall back to the Heuristic
-            m_Agent.GiveModel($"Override_{bp.behaviorName}", nnModel);
+            m_Agent.GiveModel($"Override_{name}", nnModel);
 
         }
     }

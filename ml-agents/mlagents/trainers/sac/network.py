@@ -1,8 +1,5 @@
-import logging
 from typing import Dict, Optional
-
 from mlagents.tf_utils import tf
-
 from mlagents.trainers.models import ModelUtils, EncoderType
 
 LOG_STD_MAX = 2
@@ -10,9 +7,6 @@ LOG_STD_MIN = -20
 EPSILON = 1e-6  # Small value to avoid divide by zero
 DISCRETE_TARGET_ENTROPY_SCALE = 0.2  # Roughly equal to e-greedy 0.05
 CONTINUOUS_TARGET_ENTROPY_SCALE = 1.0  # TODO: Make these an optional hyperparam.
-
-LOGGER = logging.getLogger("mlagents.trainers")
-
 POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
 

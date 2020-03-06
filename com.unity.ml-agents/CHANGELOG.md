@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Multi-GPU training and the `--multi-gpu` option has been removed temporarily. (#3345)
  - All Sensor related code has been moved to the namespace `MLAgents.Sensors`.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
+ - `BrainParameters` and `SpaceType` have been removed from the public API
+ - `BehaviorParameters` have been removed from the public API.
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -36,7 +38,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
  - The `Agent` class is no longer abstract.
  - SensorBase was moved out of the package and into the Examples directory.
-
+ - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
+ - `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity. (#3555)
+ - The `IFloatProperties` interface has been removed.
 
 ## [0.14.1-preview] - 2020-02-25
 

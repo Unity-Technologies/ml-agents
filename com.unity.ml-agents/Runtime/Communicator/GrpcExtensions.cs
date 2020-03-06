@@ -51,9 +51,9 @@ namespace MLAgents
                 Id = ai.episodeId,
             };
 
-            if (ai.actionMasks != null)
+            if (ai.discreteActionMasks != null)
             {
-                agentInfoProto.ActionMask.AddRange(ai.actionMasks);
+                agentInfoProto.ActionMask.AddRange(ai.discreteActionMasks);
             }
 
             return agentInfoProto;
@@ -135,7 +135,9 @@ namespace MLAgents
         {
             return new UnityRLInitParameters
             {
-                seed = inputProto.Seed
+                seed = inputProto.Seed,
+                pythonLibraryVersion = inputProto.PackageVersion,
+                pythonCommunicationVersion = inputProto.CommunicationVersion,
             };
         }
 
@@ -227,9 +229,19 @@ namespace MLAgents
             }
             else
             {
+                var compressedObs = sensor.GetCompressedObservation();
+                if (compressedObs == null)
+                {
+                    throw new UnityAgentsException(
+                        $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
+                        "You must return a byte[]. If you don't want to use compressed observations, " +
+                        "return SensorCompressionType.None from GetCompressionType()."
+                        );
+                }
+
                 observationProto = new ObservationProto
                 {
-                    CompressedData = ByteString.CopyFrom(sensor.GetCompressedObservation()),
+                    CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
                 };
             }

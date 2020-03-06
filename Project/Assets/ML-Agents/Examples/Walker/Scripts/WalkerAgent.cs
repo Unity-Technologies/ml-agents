@@ -34,7 +34,7 @@ public class WalkerAgent : Agent
     Rigidbody m_ChestRb;
     Rigidbody m_SpineRb;
 
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
     public override void InitializeAgent()
     {

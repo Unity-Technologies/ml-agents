@@ -6,7 +6,7 @@ namespace MLAgents.Policies
     /// <summary>
     /// Whether the action space is discrete or continuous.
     /// </summary>
-    public enum SpaceType
+    internal enum SpaceType
     {
         /// <summary>
         /// Discrete action space: a fixed number of options are available.
@@ -24,7 +24,7 @@ namespace MLAgents.Policies
     /// decision process.
     /// </summary>
     [Serializable]
-    public class BrainParameters
+    internal class BrainParameters
     {
         /// <summary>
         /// If continuous : The length of the float vector that represents the state.
@@ -53,6 +53,20 @@ namespace MLAgents.Policies
         /// Defines if the action is discrete or continuous.
         /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
+
+        public int numActions
+        {
+            get{
+                switch(vectorActionSpaceType){
+                    case SpaceType.Discrete:
+                        return vectorActionSize.Length;
+                    case SpaceType.Continuous:
+                        return vectorActionSize[0];
+                    default:
+                        return 0;
+                }
+            }
+        }
 
         /// <summary>
         /// Deep clones the BrainParameter object.

@@ -5,19 +5,31 @@ using UnityEngine.Serialization;
 
 namespace MLAgents.Policies
 {
+
+    /// <summary>
+    /// Defines what type of behavior the Agent will be using
+    /// - Default : The Agent will use the remote process for decision making.
+    /// if unavailable, will use inference and if no model is provided, will use
+    /// the heuristic.
+    /// - HeuristicOnly : The Agent will always use its heuristic
+    /// - InferenceOnly : The Agent will always use inference with the provided
+    /// neural network model.
+    /// </summary>
+    [Serializable]
+    public enum BehaviorType
+    {
+        Default,
+        HeuristicOnly,
+        InferenceOnly
+    }
+
+
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
-    public class BehaviorParameters : MonoBehaviour
+    internal class BehaviorParameters : MonoBehaviour
     {
-        [Serializable]
-        enum BehaviorType
-        {
-            Default,
-            HeuristicOnly,
-            InferenceOnly
-        }
 
         [HideInInspector]
         [SerializeField]
@@ -36,7 +48,7 @@ namespace MLAgents.Policies
         //   and will always have its default value
         // This field is set in the custom editor.
         #pragma warning disable 0649
-        BehaviorType m_BehaviorType;
+        internal BehaviorType m_BehaviorType;
         #pragma warning restore 0649
         [HideInInspector]
         [SerializeField]
@@ -47,7 +59,9 @@ namespace MLAgents.Policies
         /// </summary>
         [HideInInspector]
         [SerializeField]
-        public int m_TeamID;
+        [FormerlySerializedAs("m_TeamID")]
+        public int TeamId;
+
         [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
         [SerializeField]
@@ -57,7 +71,7 @@ namespace MLAgents.Policies
         /// <summary>
         /// The associated <see cref="BrainParameters"/> for this behavior.
         /// </summary>
-        public BrainParameters brainParameters
+        internal BrainParameters brainParameters
         {
             get { return m_BrainParameters; }
         }
@@ -84,10 +98,10 @@ namespace MLAgents.Policies
         /// </summary>
         public string fullyQualifiedBehaviorName
         {
-            get { return m_BehaviorName + "?team=" + m_TeamID; }
+            get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
+        public IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {

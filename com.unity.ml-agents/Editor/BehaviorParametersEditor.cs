@@ -33,7 +33,7 @@ namespace MLAgents.Editor
             EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_TeamID"));
+            EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
             EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
             // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
             EditorGUI.indentLevel--;

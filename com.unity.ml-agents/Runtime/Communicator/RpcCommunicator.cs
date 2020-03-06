@@ -75,7 +75,8 @@ namespace MLAgents
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
-                Version = initParameters.version
+                PackageVersion = initParameters.unityPackageVersion,
+                CommunicationVersion = initParameters.unityCommunicationVersion
             };
 
             UnityInputProto input;
@@ -88,6 +89,34 @@ namespace MLAgents
                         RlInitializationOutput = academyParameters
                     },
                     out input);
+
+                // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
+                // API strings, so log an explicit warning if that's the case.
+                if (initializationInput != null && input == null)
+                {
+                    var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+                    var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                    if (pythonCommunicationVersion != initParameters.unityCommunicationVersion)
+                    {
+                        Debug.LogWarningFormat(
+                            "Communication protocol between python ({0}) and Unity ({1}) don't match. " +
+                            "Python library version: {2}.",
+                            pythonCommunicationVersion, initParameters.unityCommunicationVersion,
+                            pythonPackageVersion
+                            );
+                    }
+                    else
+                    {
+                        Debug.LogWarningFormat(
+                            "Unknown communication error between Python. Python communication protocol: {0}, " +
+                            "Python library version: {1}.",
+                            pythonCommunicationVersion,
+                            pythonPackageVersion
+                        );
+                    }
+
+                    throw new UnityAgentsException("ICommunicator.Initialize() failed.");
+                }
             }
             catch
             {
@@ -475,6 +504,20 @@ namespace MLAgents
                     "A side channel with type index {0} is already registered. You cannot register multiple " +
                     "side channels of the same id.", channelId));
             }
+
+            var numMessages = m_CachedMessages.Count;
+            for (int i = 0; i < numMessages; i++)
+            {
+                var cachedMessage = m_CachedMessages.Dequeue();
+                if (channelId == cachedMessage.ChannelId)
+                {
+                    sideChannel.OnMessageReceived(cachedMessage.Message);
+                }
+                else
+                {
+                    m_CachedMessages.Enqueue(cachedMessage);
+                }
+            }
             m_SideChannels.Add(channelId, sideChannel);
         }
 
@@ -518,6 +561,14 @@ namespace MLAgents
             }
         }
 
+        private struct CachedSideChannelMessage
+        {
+            public Guid ChannelId;
+            public byte[] Message;
+        }
+
+        private static Queue<CachedSideChannelMessage> m_CachedMessages = new Queue<CachedSideChannelMessage>();
+
         /// <summary>
         /// Separates the data received from Python into individual messages for each registered side channel.
         /// </summary>
@@ -525,6 +576,22 @@ namespace MLAgents
         /// <param name="dataReceived">The byte array of data received from Python.</param>
         public static void ProcessSideChannelData(Dictionary<Guid, SideChannel> sideChannels, byte[] dataReceived)
         {
+
+            while(m_CachedMessages.Count!=0)
+            {
+                var cachedMessage = m_CachedMessages.Dequeue();
+                if (sideChannels.ContainsKey(cachedMessage.ChannelId))
+                {
+                    sideChannels[cachedMessage.ChannelId].OnMessageReceived(cachedMessage.Message);
+                }
+                else
+                {
+                    Debug.Log(string.Format(
+                        "Unknown side channel data received. Channel Id is "
+                        + ": {0}", cachedMessage.ChannelId));
+                }
+            }
+
             if (dataReceived.Length == 0)
             {
                 return;
@@ -556,9 +623,13 @@ namespace MLAgents
                         }
                         else
                         {
-                            Debug.Log(string.Format(
-                                "Unknown side channel data received. Channel Id is "
-                                + ": {0}", channelId));
+                            // Don't recognize this ID, but cache it in case the SideChannel that can handle
+                            // it is registered before the next call to ProcessSideChannelData.
+                            m_CachedMessages.Enqueue(new CachedSideChannelMessage
+                            {
+                                ChannelId = channelId,
+                                Message = message
+                            });
                         }
                     }
                 }

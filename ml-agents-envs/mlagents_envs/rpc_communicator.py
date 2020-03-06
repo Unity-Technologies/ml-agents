@@ -1,4 +1,3 @@
-import logging
 import grpc
 from typing import Optional
 
@@ -15,8 +14,6 @@ from mlagents_envs.communicator_objects.unity_message_pb2 import UnityMessagePro
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from mlagents_envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from .exception import UnityTimeOutException, UnityWorkerInUseException
-
-logger = logging.getLogger("mlagents_envs")
 
 
 class UnityToExternalServicerImplementation(UnityToExternalProtoServicer):

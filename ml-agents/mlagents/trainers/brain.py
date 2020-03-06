@@ -1,10 +1,6 @@
-import logging
-
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from typing import List, NamedTuple
-
-logger = logging.getLogger("mlagents.trainers")
 
 
 class CameraResolution(NamedTuple):

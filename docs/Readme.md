@@ -79,4 +79,4 @@ We've decided to keep them up just in case they are helpful to you.
 * [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 * [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 * [Using Docker](Using-Docker.md)
-* [Installation-Windows](Installation-Windows.md)
+* [Windows Anaconda Installation](Installation-Anaconda-Windows.md)

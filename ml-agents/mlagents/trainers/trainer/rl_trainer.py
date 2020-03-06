@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-import logging
 from typing import Dict
 from collections import defaultdict
 
@@ -8,8 +7,6 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
-
-LOGGER = logging.getLogger("mlagents.trainers")
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 

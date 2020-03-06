@@ -1,6 +1,4 @@
-import logging
 from typing import Optional, Any, Dict
-
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
@@ -8,9 +6,6 @@ from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedu
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-
-
-logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOOptimizer(TFOptimizer):
@@ -127,7 +122,9 @@ class PPOOptimizer(TFOptimizer):
             self.stream_names, hidden_value
         )
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, 1], dtype=tf.float32, name="old_probabilities"
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
         )
 
         self.old_log_probs = tf.reduce_sum(

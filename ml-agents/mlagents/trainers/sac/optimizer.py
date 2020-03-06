@@ -13,7 +13,7 @@ from mlagents_envs.timers import timed
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
-LOGGER = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
@@ -477,15 +477,15 @@ class SACOptimizer(TFOptimizer):
                 self.target_network.value_vars, self.policy_network.value_vars
             )
         ]
-        LOGGER.debug("value_vars")
+        logger.debug("value_vars")
         self.print_all_vars(self.policy_network.value_vars)
-        LOGGER.debug("targvalue_vars")
+        logger.debug("targvalue_vars")
         self.print_all_vars(self.target_network.value_vars)
-        LOGGER.debug("critic_vars")
+        logger.debug("critic_vars")
         self.print_all_vars(self.policy_network.critic_vars)
-        LOGGER.debug("q_vars")
+        logger.debug("q_vars")
         self.print_all_vars(self.policy_network.q_vars)
-        LOGGER.debug("policy_vars")
+        logger.debug("policy_vars")
         policy_vars = self.policy.get_trainable_variables()
         self.print_all_vars(policy_vars)
 
@@ -513,7 +513,7 @@ class SACOptimizer(TFOptimizer):
 
     def print_all_vars(self, variables):
         for _var in variables:
-            LOGGER.debug(_var)
+            logger.debug(_var)
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

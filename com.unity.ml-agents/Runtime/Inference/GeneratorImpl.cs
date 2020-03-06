@@ -306,7 +306,7 @@ namespace MLAgents.Inference
             foreach (var infoSensorPair in infos)
             {
                 var agentInfo = infoSensorPair.agentInfo;
-                var maskList = agentInfo.actionMasks;
+                var maskList = agentInfo.discreteActionMasks;
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
