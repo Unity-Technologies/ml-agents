@@ -42,7 +42,7 @@ In most scenarios, you can combine these two features.
   past the examples shown in the demonstrations, BC tends to work best when there exists demonstrations
   for nearly all of the states that the agent can experience, or in conjunction with GAIL and/or an extrinsic reward.
 
-### How to Choose
+### What to Use
 
 If you want to help your agents learn (especially with environments that have sparse rewards)
 using pre-recorded demonstrations, you can generally enable both GAIL and Behavioral Cloning
