@@ -110,7 +110,7 @@ class SACTrainer(RLTrainer):
             and self.trainer_parameters["use_recurrent"]
         ):
             raise UnityTrainerException(
-                "batch_size must be greater than or equal to sequence_length."
+                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
             )
 
     def save_model(self, name_behavior_id: str) -> None:

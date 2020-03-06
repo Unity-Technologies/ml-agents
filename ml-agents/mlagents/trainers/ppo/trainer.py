@@ -81,7 +81,7 @@ class PPOTrainer(RLTrainer):
             and self.trainer_parameters["use_recurrent"]
         ):
             raise UnityTrainerException(
-                "batch_size must be greater than or equal to sequence_length."
+                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
             )
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
