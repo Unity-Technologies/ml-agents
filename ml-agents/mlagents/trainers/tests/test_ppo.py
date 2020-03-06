@@ -34,7 +34,7 @@ def dummy_config():
         num_epoch: 5
         num_layers: 2
         time_horizon: 64
-        sequence_length: 64
+        sequence_length: 16
         summary_freq: 1000
         use_recurrent: false
         normalize: true
@@ -119,7 +119,7 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
     optimizer.update(
         update_buffer,
-        num_sequences=update_buffer.num_experiences // dummy_config["sequence_length"],
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
     )
 
 
