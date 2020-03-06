@@ -37,8 +37,8 @@ In most scenarios, you should combine these two features
   number of demonstrations.
 * Behavioral Cloning (BC) trains the Agent's neural network to exactly mimic the actions
   shown in a set of demonstrations.
-  [The BC feature](Training-PPO.md#optional-behavioral-cloning-using-demonstrations)
-  can be enabled on the PPO or SAC trainer. BC tends to work best when
+  The BC featurecan be enabled on the [PPO](Training-PPO.md#optional-behavioral-cloning-using-demonstrations)
+  or [SAC](Training-SAC.md#optional-behavioral-cloning-using-demonstrations) trainer. BC tends to work best when
   there are a lot of demonstrations, or in conjunction with GAIL and/or an extrinsic reward.
 
 ### How to Choose
