@@ -24,7 +24,7 @@ The versions can be found in
 * `BrainParameters` and `SpaceType` have been removed from the public API
 * `BehaviorParameters` have been removed from the public API.
 * `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity.
-* The following methods in the `Agent` class were renamed:
+* The following methods in the `Agent` class have been deprecated. They will be removed in a later release:
   * `InitializeAgent()` was renamed to `Initialize()`
   * `AgentAction()` was renamed to `OnActionReceived()`
   * `AgentReset()` was renamed to `OnEpsiodeBegin()`
@@ -40,7 +40,7 @@ The versions can be found in
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
-* Replace the following method with their new equivalent:
+* We strongly recommend replacing the following method with their new equivalent as they will be removed in a later release:
   * `InitializeAgent()` to `Initialize()`
   * `AgentAction()` to `OnActionReceived()`
   * `AgentReset()` to `OnEpsiodeBegin()`

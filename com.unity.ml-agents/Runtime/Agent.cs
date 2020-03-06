@@ -696,7 +696,7 @@ namespace MLAgents
         public virtual void OnActionReceived(float[] vectorAction)
         {
 #pragma warning disable 0618
-                AgentAction(m_Action.vectorActions);
+            AgentAction(m_Action.vectorActions);
 #pragma warning restore 0618
         }
 

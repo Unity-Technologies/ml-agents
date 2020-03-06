@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
  - `BrainParameters` and `SpaceType` have been removed from the public API
  - `BehaviorParameters` have been removed from the public API.
- - The following methods in the `Agent` class were renamed:
+ - The following methods in the `Agent` class have been deprecated and will be removed in a later release:
    - `InitializeAgent()` was renamed to `Initialize()`
    - `AgentAction()` was renamed to `OnActionReceived()`
    - `AgentReset()` was renamed to `OnEpisodeBegin()`
