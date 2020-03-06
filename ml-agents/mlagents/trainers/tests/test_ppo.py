@@ -234,12 +234,6 @@ def test_trainer_update_policy(dummy_config, use_discrete):
 
     trainer.update_buffer = buffer
     trainer._update_policy()
-    # Make batch length a larger multiple of sequence length
-    trainer.trainer_parameters["batch_size"] = 128
-    trainer._update_policy()
-    # Make batch length a larger non-multiple of sequence length
-    trainer.trainer_parameters["batch_size"] = 100
-    trainer._update_policy()
 
 
 def test_process_trajectory(dummy_config):
