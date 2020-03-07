@@ -618,41 +618,46 @@ namespace MLAgents.Tests
             }
         }
 
-        [Test]
-        public void TestAgentDontCallBaseOnEnable()
+        static void _InnerAgentTestOnEnableOverride(bool callBase = false)
         {
             var go = new GameObject();
             var agent = go.AddComponent<OnEnableAgent>();
+            agent.callBase = callBase;
             var onEnable = typeof(OnEnableAgent).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
             var sendInfo = typeof(Agent).GetMethod("SendInfoToBrain", BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.NotNull(onEnable);
             onEnable.Invoke(agent, null);
             Assert.NotNull(sendInfo);
-            Assert.Throws<UnityAgentsException>(() =>
+            if (agent.callBase)
             {
-                try
+                Assert.DoesNotThrow(() => sendInfo.Invoke(agent, null));
+            }
+            else
+            {
+                Assert.Throws<UnityAgentsException>(() =>
                 {
-                    sendInfo.Invoke(agent, null);
-                }
-                catch (TargetInvocationException e)
-                {
-                    throw e.GetBaseException();
-                }
-            });
+                    try
+                    {
+                        sendInfo.Invoke(agent, null);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw e.GetBaseException();
+                    }
+                });
+            }
         }
 
         [Test]
         public void TestAgentCallBaseOnEnable()
         {
-            var go = new GameObject();
-            var agent = go.AddComponent<OnEnableAgent>();
-            agent.callBase = true;
-            var onEnable = typeof(OnEnableAgent).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
-            var sendInfo = typeof(Agent).GetMethod("SendInfoToBrain", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(onEnable);
-            onEnable.Invoke(agent, null);
-            Assert.NotNull(sendInfo);
-            Assert.DoesNotThrow(() => sendInfo.Invoke(agent, null));
+            _InnerAgentTestOnEnableOverride(true);
+        }
+
+        [Test]
+        public void TestAgentDontCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride();
         }
     }
 }
