@@ -142,6 +142,14 @@ namespace MLAgents.Sensors
         RayPerceptionSensor m_RaySensor;
 
         /// <summary>
+        /// Get the RayPerceptionSensor that was created.
+        /// </summary>
+        public RayPerceptionSensor raySensor
+        {
+            get => m_RaySensor;
+        }
+
+        /// <summary>
         /// Returns the <see cref="RayPerceptionCastType"/> for the associated raycast sensor.
         /// </summary>
         /// <returns></returns>
@@ -223,7 +231,11 @@ namespace MLAgents.Sensors
             return new[] { obsSize * stacks };
         }
 
-        RayPerceptionInput GetRayPerceptionInput()
+        /// <summary>
+        /// Get the RayPerceptionInput that is used by the <see cref="RayPerceptionSensor"/>.
+        /// </summary>
+        /// <returns></returns>
+        public RayPerceptionInput GetRayPerceptionInput()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
 
