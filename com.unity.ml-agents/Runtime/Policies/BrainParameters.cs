@@ -56,8 +56,10 @@ namespace MLAgents.Policies
 
         public int numActions
         {
-            get{
-                switch(vectorActionSpaceType){
+            get
+            {
+                switch (vectorActionSpaceType)
+                {
                     case SpaceType.Discrete:
                         return vectorActionSize.Length;
                     case SpaceType.Continuous:

@@ -43,6 +43,5 @@ namespace MLAgents.Editor
             var sensorComponent = serializedObject.targetObject as CameraSensorComponent;
             sensorComponent?.UpdateSensor();
         }
-
     }
 }
