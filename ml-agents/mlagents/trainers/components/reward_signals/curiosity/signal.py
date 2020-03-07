@@ -42,7 +42,7 @@ class CuriosityRewardSignal(RewardSignal):
         }
         self.has_updated = False
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.batch_size_ph: len(mini_batch["actions"]),
             self.policy.sequence_length_ph: self.policy.sequence_length,

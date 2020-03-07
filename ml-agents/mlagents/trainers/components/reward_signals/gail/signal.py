@@ -62,7 +62,7 @@ class GAILRewardSignal(RewardSignal):
             "Policy/GAIL Expert Estimate": "gail_expert_estimate",
         }
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.batch_size_ph: len(mini_batch["actions"]),
             self.policy.sequence_length_ph: self.policy.sequence_length,
@@ -110,16 +110,9 @@ class GAILRewardSignal(RewardSignal):
         :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
         :return: Feed_dict for update process.
         """
-        max_num_experiences = min(
-            len(mini_batch["actions"]), self.demonstration_buffer.num_experiences
-        )
-        # If num_sequences is less, we need to shorten the input batch.
-        for key, element in mini_batch.items():
-            mini_batch[key] = element[:max_num_experiences]
-
-        # Get batch from demo buffer
+        # Get batch from demo buffer. Even if demo buffer is smaller, we sample with replacement
         mini_batch_demo = self.demonstration_buffer.sample_mini_batch(
-            len(mini_batch["actions"]), 1
+            mini_batch.num_experiences, 1
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {
