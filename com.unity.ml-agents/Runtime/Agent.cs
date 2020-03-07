@@ -215,7 +215,10 @@ namespace MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        void OnEnable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes enabled and active.
+        /// </summary>
+        protected virtual void OnEnable()
         {
             LazyInitialize();
         }
@@ -299,7 +302,10 @@ namespace MLAgents
             Disabled,
         }
 
-        void OnDisable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes disabled and inactive.
+        /// </summary>
+        protected virtual void OnDisable()
         {
             DemonstrationWriters.Clear();
 
@@ -570,6 +576,13 @@ namespace MLAgents
         /// </summary>
         void SendInfoToBrain()
         {
+            if (!m_Initialized)
+            {
+                throw new UnityAgentsException("Call to SendInfoToBrain when Agent hasn't been initialized." +
+                    "Please ensure that you are calling 'base.OnEnable()' if you have overridden OnEnable.");
+
+            }
+
             if (m_Brain == null)
             {
                 return;
