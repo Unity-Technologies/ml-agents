@@ -5,7 +5,6 @@ using MLAgents.Sensors;
 
 namespace MLAgents.Tests
 {
-
     [TestFixture]
     public class RenderTextureSensorComponentTest
     {
