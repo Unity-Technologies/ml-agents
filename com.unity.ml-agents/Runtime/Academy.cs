@@ -181,7 +181,7 @@ namespace MLAgents
         Academy()
         {
             Application.quitting += Dispose;
-
+            envStatMan = new EnvStatMan();
             LazyInitialize();
         }
 

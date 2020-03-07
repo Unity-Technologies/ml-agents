@@ -35,7 +35,7 @@ public class FoodCollectorAgent : Agent
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<FoodCollectorArea>();
         m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
-
+        contribute = true;
         SetResetParameters();
     }
 
@@ -256,6 +256,7 @@ public class FoodCollectorAgent : Agent
             if (contribute)
             {
                 m_FoodCollecterSettings.totalScore += 1;
+                m_FoodCollecterSettings.foodEaten += 1;
             }
         }
         if (collision.gameObject.CompareTag("badFood"))
@@ -267,6 +268,7 @@ public class FoodCollectorAgent : Agent
             if (contribute)
             {
                 m_FoodCollecterSettings.totalScore -= 1;
+                m_FoodCollecterSettings.poisonEaten += 1;
             }
         }
     }

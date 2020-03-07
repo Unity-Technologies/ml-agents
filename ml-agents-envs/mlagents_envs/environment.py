@@ -2,6 +2,8 @@ import atexit
 import glob
 import uuid
 import logging
+import lgger as lgg
+
 import numpy as np
 import os
 import subprocess
@@ -131,6 +133,8 @@ class UnityEnvironment(BaseEnv):
                 f"Listening on port {self.port}. "
                 f"Start training by pressing the Play button in the Unity Editor."
             )
+            msg = f"Listening on port {self.port}. Start training by pressing the Play button in the Unity Editor."
+            lgg.info(msg,lgg.cIR)
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInputProto(
@@ -318,6 +322,10 @@ class UnityEnvironment(BaseEnv):
                     self._env_specs[brain_name]
                 )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
+        # This is where we need to read EnvironmentStatisticsProto
+        self.envStat = output.environment_statistics
+        msg = self.envStat
+        lgg.info(msg,lgg.cIY)    
 
     def reset(self) -> None:
         if self._loaded:

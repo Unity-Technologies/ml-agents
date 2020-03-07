@@ -79,6 +79,8 @@ namespace MLAgents
                 CommunicationVersion = initParameters.unityCommunicationVersion
             };
 
+            m_CurrentUnityRlOutput.EnvironmentStatistics = new EnvironmentStatisticsProto();
+
             UnityInputProto input;
             UnityInputProto initializationInput;
             try
