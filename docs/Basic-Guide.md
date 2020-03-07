@@ -13,7 +13,7 @@ the basic concepts of Unity.
 In order to use the ML-Agents toolkit within Unity, you first need to change a few
 Unity settings.
 
-1. Launch Unity
+1. Launch Unity Hub
 2. On the Projects dialog, choose the **Open** option at the top of the window.
 3. Using the file dialog that opens, locate the `Project` folder
    within the ML-Agents toolkit project and click **Open**.
