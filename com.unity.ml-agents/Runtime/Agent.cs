@@ -122,21 +122,25 @@ namespace MLAgents
         /// <summary>
         /// The team ID for this Agent.
         /// </summary>
-        public int TeamId {
-            get {
+        public int TeamId
+        {
+            get
+            {
                 LazyInitialize();
                 return m_PolicyFactory.TeamId;
-                }
+            }
         }
 
         /// <summary>
         /// The name of the behavior of the Agent.
         /// </summary>
-        public string BehaviorName  {
-            get {
+        public string BehaviorName
+        {
+            get
+            {
                 LazyInitialize();
                 return m_PolicyFactory.behaviorName;
-                }
+            }
         }
 
         [SerializeField][HideInInspector]
@@ -328,7 +332,7 @@ namespace MLAgents
             m_Brain?.RequestDecision(m_Info, sensors);
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -465,7 +469,6 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
-
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
@@ -599,7 +602,7 @@ namespace MLAgents
             m_Brain.RequestDecision(m_Info, sensors);
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -612,7 +615,6 @@ namespace MLAgents
                 sensor.Update();
             }
         }
-
 
         /// <summary>
         /// Collects the vector observations of the agent.
@@ -759,7 +761,8 @@ namespace MLAgents
         void DecideAction()
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
-            if (m_Action.vectorActions == null){
+            if (m_Action.vectorActions == null)
+            {
                 ResetData();
             }
         }
