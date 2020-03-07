@@ -323,6 +323,11 @@ namespace MLAgents
             {
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
+            EnvironmentStatisticsProto evo = message.RlOutput.EnvironmentStatistics;
+            var aca = Academy.Instance;
+            aca.envStatMan.FillFloatMapField(evo.FloatStat);
+            aca.envStatMan.FillStringMapField(evo.StringStat);
+            aca.envStatMan.Reset();
 
             byte[] messageAggregated = GetSideChannelMessage(m_SideChannels);
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);

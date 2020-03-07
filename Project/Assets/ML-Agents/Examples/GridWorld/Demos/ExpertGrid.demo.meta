@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 3938e0ee1f99e473db8e45d334dfa329
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/GridWorld/Demos/ExpertGrid.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/GridWorld/Demos/ExpertGrid.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (MLAgents.Demonstrations.Demonstration)'
   assetBundleName: 
   assetBundleVariant: 

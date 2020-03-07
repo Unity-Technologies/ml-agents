@@ -86,6 +86,8 @@ namespace MLAgents
         /// </summary>
         public static Academy Instance { get { return s_Lazy.Value; } }
 
+        public EnvStatMan envStatMan = new EnvStatMan();
+
         /// <summary>
         /// Collection of float properties (indexed by a string).
         /// </summary>
@@ -317,6 +319,8 @@ namespace MLAgents
 
             var floatProperties = new FloatPropertiesChannel();
             FloatProperties = floatProperties;
+
+            envStatMan.Reset();
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();

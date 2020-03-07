@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option csharp_namespace = "MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+message EnvironmentStatisticsProto {
+    map<string, float> float_stat = 1; 
+    map<string, string> string_stat = 2; 
+}
