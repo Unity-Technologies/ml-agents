@@ -5,6 +5,7 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class CuriosityRewardSignal(RewardSignal):
@@ -80,7 +81,7 @@ class CuriosityRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare for update and get feed_dict.
