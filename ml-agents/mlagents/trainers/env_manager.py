@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import logging
-import lgger as lgg
 from typing import List, Dict, NamedTuple, Iterable
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
 from mlagents.trainers.brain import BrainParameters

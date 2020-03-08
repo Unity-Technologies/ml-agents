@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import logging
+import lgger as lgg
 from typing import Dict, Optional, Set
 from collections import defaultdict
 
@@ -282,6 +283,7 @@ class TrainerController(object):
                     self.trainers[brain_name].stats_reporter.set_stat(
                         "Environment/Lesson", curr.lesson_num
                     )
+        lgg.info(env.__dict__,lgg.cIG)
 
         # Advance trainers. This can be done in a separate loop in the future.
         with hierarchical_timer("trainer_advance"):
