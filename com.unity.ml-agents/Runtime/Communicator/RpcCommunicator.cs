@@ -105,7 +105,7 @@ namespace MLAgents
                             "Python library version: {2}.",
                             pythonCommunicationVersion, initParameters.unityCommunicationVersion,
                             pythonPackageVersion
-                            );
+                        );
                     }
                     else
                     {
@@ -583,8 +583,7 @@ namespace MLAgents
         /// <param name="dataReceived">The byte array of data received from Python.</param>
         public static void ProcessSideChannelData(Dictionary<Guid, SideChannel> sideChannels, byte[] dataReceived)
         {
-
-            while(m_CachedMessages.Count!=0)
+            while (m_CachedMessages.Count != 0)
             {
                 var cachedMessage = m_CachedMessages.Dequeue();
                 if (sideChannels.ContainsKey(cachedMessage.ChannelId))

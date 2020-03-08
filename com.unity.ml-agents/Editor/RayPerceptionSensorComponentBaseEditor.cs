@@ -60,15 +60,14 @@ namespace MLAgents.Editor
             UpdateSensorIfDirty();
         }
 
-
         void UpdateSensorIfDirty()
         {
-                if (m_RequireSensorUpdate)
-                {
-                    var sensorComponent = serializedObject.targetObject as RayPerceptionSensorComponentBase;
-                    sensorComponent?.UpdateSensor();
-                    m_RequireSensorUpdate = false;
-                }
+            if (m_RequireSensorUpdate)
+            {
+                var sensorComponent = serializedObject.targetObject as RayPerceptionSensorComponentBase;
+                sensorComponent?.UpdateSensor();
+                m_RequireSensorUpdate = false;
+            }
         }
     }
 

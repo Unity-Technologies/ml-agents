@@ -55,7 +55,7 @@ namespace MLAgents.Sensors
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
         [Range(0, 180)]
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. " +
-                 "Greater than 90 degrees will go backwards.")]
+            "Greater than 90 degrees will go backwards.")]
         float m_MaxRayDegrees = 70;
 
         /// <summary>
@@ -142,6 +142,14 @@ namespace MLAgents.Sensors
         RayPerceptionSensor m_RaySensor;
 
         /// <summary>
+        /// Get the RayPerceptionSensor that was created.
+        /// </summary>
+        public RayPerceptionSensor raySensor
+        {
+            get => m_RaySensor;
+        }
+
+        /// <summary>
         /// Returns the <see cref="RayPerceptionCastType"/> for the associated raycast sensor.
         /// </summary>
         /// <returns></returns>
@@ -223,7 +231,11 @@ namespace MLAgents.Sensors
             return new[] { obsSize * stacks };
         }
 
-        RayPerceptionInput GetRayPerceptionInput()
+        /// <summary>
+        /// Get the RayPerceptionInput that is used by the <see cref="RayPerceptionSensor"/>.
+        /// </summary>
+        /// <returns></returns>
+        public RayPerceptionInput GetRayPerceptionInput()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
 
@@ -279,7 +291,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha=1.0f)
+        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha = 1.0f)
         {
             var startPositionWorld = rayInfo.worldStart;
             var endPositionWorld = rayInfo.worldEnd;

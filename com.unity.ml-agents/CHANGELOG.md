@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
- - Update Barracuda to 0.6.0-preview
+ - Update Barracuda to 0.6.1-preview
  * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class, and the method was renamed to `Perceive()`.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
  - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
  - `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity. (#3555)
  - The `IFloatProperties` interface has been removed.
+ - Fix #3579.
 
 ## [0.14.1-preview] - 2020-02-25
 
