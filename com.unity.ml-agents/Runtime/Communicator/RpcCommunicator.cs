@@ -327,7 +327,7 @@ namespace MLAgents
             }
             EnvironmentStatisticsProto evo = message.RlOutput.EnvironmentStatistics;
             var aca = Academy.Instance;
-            aca.envStatMan.FillFloatMapField(evo.FloatStat);
+            aca.envStatMan.FillDoubleMapField(evo.DoubleStat);
             aca.envStatMan.FillStringMapField(evo.StringStat);
             aca.envStatMan.Reset();
 

@@ -25,19 +25,19 @@ namespace MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cj9tbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2Vudmlyb25t",
-            "ZW50X3N0YXRpc3RpY3MucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIq0C",
-            "ChpFbnZpcm9ubWVudFN0YXRpc3RpY3NQcm90bxJTCgpmbG9hdF9zdGF0GAEg",
-            "AygLMj8uY29tbXVuaWNhdG9yX29iamVjdHMuRW52aXJvbm1lbnRTdGF0aXN0",
-            "aWNzUHJvdG8uRmxvYXRTdGF0RW50cnkSVQoLc3RyaW5nX3N0YXQYAiADKAsy",
-            "QC5jb21tdW5pY2F0b3Jfb2JqZWN0cy5FbnZpcm9ubWVudFN0YXRpc3RpY3NQ",
-            "cm90by5TdHJpbmdTdGF0RW50cnkaMAoORmxvYXRTdGF0RW50cnkSCwoDa2V5",
-            "GAEgASgJEg0KBXZhbHVlGAIgASgCOgI4ARoxCg9TdHJpbmdTdGF0RW50cnkS",
-            "CwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIfqgIcTUxBZ2VudHMu",
-            "Q29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "ZW50X3N0YXRpc3RpY3MucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzIrAC",
+            "ChpFbnZpcm9ubWVudFN0YXRpc3RpY3NQcm90bxJVCgtkb3VibGVfc3RhdBgB",
+            "IAMoCzJALmNvbW11bmljYXRvcl9vYmplY3RzLkVudmlyb25tZW50U3RhdGlz",
+            "dGljc1Byb3RvLkRvdWJsZVN0YXRFbnRyeRJVCgtzdHJpbmdfc3RhdBgCIAMo",
+            "CzJALmNvbW11bmljYXRvcl9vYmplY3RzLkVudmlyb25tZW50U3RhdGlzdGlj",
+            "c1Byb3RvLlN0cmluZ1N0YXRFbnRyeRoxCg9Eb3VibGVTdGF0RW50cnkSCwoD",
+            "a2V5GAEgASgJEg0KBXZhbHVlGAIgASgBOgI4ARoxCg9TdHJpbmdTdGF0RW50",
+            "cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIfqgIcTUxBZ2Vu",
+            "dHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentStatisticsProto), global::MLAgents.CommunicatorObjects.EnvironmentStatisticsProto.Parser, new[]{ "FloatStat", "StringStat" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
+            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.EnvironmentStatisticsProto), global::MLAgents.CommunicatorObjects.EnvironmentStatisticsProto.Parser, new[]{ "DoubleStat", "StringStat" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, })
           }));
     }
     #endregion
@@ -69,7 +69,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public EnvironmentStatisticsProto(EnvironmentStatisticsProto other) : this() {
-      floatStat_ = other.floatStat_.Clone();
+      doubleStat_ = other.doubleStat_.Clone();
       stringStat_ = other.stringStat_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -79,14 +79,14 @@ namespace MLAgents.CommunicatorObjects {
       return new EnvironmentStatisticsProto(this);
     }
 
-    /// <summary>Field number for the "float_stat" field.</summary>
-    public const int FloatStatFieldNumber = 1;
-    private static readonly pbc::MapField<string, float>.Codec _map_floatStat_codec
-        = new pbc::MapField<string, float>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForFloat(21), 10);
-    private readonly pbc::MapField<string, float> floatStat_ = new pbc::MapField<string, float>();
+    /// <summary>Field number for the "double_stat" field.</summary>
+    public const int DoubleStatFieldNumber = 1;
+    private static readonly pbc::MapField<string, double>.Codec _map_doubleStat_codec
+        = new pbc::MapField<string, double>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForDouble(17), 10);
+    private readonly pbc::MapField<string, double> doubleStat_ = new pbc::MapField<string, double>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::MapField<string, float> FloatStat {
-      get { return floatStat_; }
+    public pbc::MapField<string, double> DoubleStat {
+      get { return doubleStat_; }
     }
 
     /// <summary>Field number for the "string_stat" field.</summary>
@@ -112,7 +112,7 @@ namespace MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!FloatStat.Equals(other.FloatStat)) return false;
+      if (!DoubleStat.Equals(other.DoubleStat)) return false;
       if (!StringStat.Equals(other.StringStat)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -120,7 +120,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= FloatStat.GetHashCode();
+      hash ^= DoubleStat.GetHashCode();
       hash ^= StringStat.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -135,7 +135,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      floatStat_.WriteTo(output, _map_floatStat_codec);
+      doubleStat_.WriteTo(output, _map_doubleStat_codec);
       stringStat_.WriteTo(output, _map_stringStat_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -145,7 +145,7 @@ namespace MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += floatStat_.CalculateSize(_map_floatStat_codec);
+      size += doubleStat_.CalculateSize(_map_doubleStat_codec);
       size += stringStat_.CalculateSize(_map_stringStat_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -158,7 +158,7 @@ namespace MLAgents.CommunicatorObjects {
       if (other == null) {
         return;
       }
-      floatStat_.Add(other.floatStat_);
+      doubleStat_.Add(other.doubleStat_);
       stringStat_.Add(other.stringStat_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -172,7 +172,7 @@ namespace MLAgents.CommunicatorObjects {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            floatStat_.AddEntriesFrom(input, _map_floatStat_codec);
+            doubleStat_.AddEntriesFrom(input, _map_doubleStat_codec);
             break;
           }
           case 18: {

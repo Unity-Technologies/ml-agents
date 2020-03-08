@@ -65,6 +65,11 @@ class AgentProcessor:
         if take_action_outputs:
             for _entropy in take_action_outputs["entropy"]:
                 self.stats_reporter.add_stat("Policy/Entropy", _entropy)
+            double_stat = batched_step_result.double_stat
+            for key in double_stat:
+                if key.startswith("tb:"):
+                   self.stats_reporter.add_stat(key[3:],double_stat[key])
+                   
 
         terminated_agents: Set[str] = set()
         # Make unique agent_ids that are global across workers

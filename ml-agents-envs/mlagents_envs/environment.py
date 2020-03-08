@@ -2,7 +2,6 @@ import atexit
 import glob
 import uuid
 import logging
-import lgger as lgg
 
 import numpy as np
 import os
@@ -133,8 +132,6 @@ class UnityEnvironment(BaseEnv):
                 f"Listening on port {self.port}. "
                 f"Start training by pressing the Play button in the Unity Editor."
             )
-            msg = f"Listening on port {self.port}. Start training by pressing the Play button in the Unity Editor."
-            lgg.info(msg,lgg.cIR)
         self._loaded = True
 
         rl_init_parameters_in = UnityRLInitializationInputProto(
@@ -311,21 +308,20 @@ class UnityEnvironment(BaseEnv):
         """
         Collects experience information from all external brains in environment at current step.
         """
+
+        envStat = output.environment_statistics
         for brain_name in self._env_specs.keys():
             if brain_name in output.agentInfos:
                 agent_info_list = output.agentInfos[brain_name].value
                 self._env_state[brain_name] = batched_step_result_from_proto(
-                    agent_info_list, self._env_specs[brain_name]
+                    agent_info_list, envStat, self._env_specs[brain_name]
                 )
             else:
                 self._env_state[brain_name] = BatchedStepResult.empty(
                     self._env_specs[brain_name]
                 )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
-        # This is where we need to read EnvironmentStatisticsProto
-        self.envStat = output.environment_statistics
-        msg = self.envStat
-        lgg.info(msg,lgg.cIY)    
+
 
     def reset(self) -> None:
         if self._loaded:

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Google.Protobuf.Collections;
@@ -27,7 +27,7 @@ namespace MLAgents
         {
             stringStat[key] = vals;
         }
-        public void FillFloatMapField(MapField<string,float> mapfield)
+        public void FillDoubleMapField(MapField<string,double> mapfield)
         {
             foreach( var k in floatStat.Keys)
             {

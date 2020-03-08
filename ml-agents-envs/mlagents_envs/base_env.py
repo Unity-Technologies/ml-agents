@@ -21,6 +21,7 @@ from abc import ABC, abstractmethod
 from typing import List, NamedTuple, Tuple, Optional, Union, Dict
 import numpy as np
 from enum import Enum
+import traceback
 
 AgentId = int
 AgentGroup = str
@@ -83,7 +84,7 @@ class BatchedStepResult:
      this simulation step.
     """
 
-    def __init__(self, obs, reward, done, max_step, agent_id, action_mask):
+    def __init__(self, obs, reward, done, max_step, agent_id, action_mask,double_stat,string_stat):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
         self.done: np.ndarray = done
@@ -91,6 +92,8 @@ class BatchedStepResult:
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
+        self.double_stat:Dict[string,float] = double_stat
+        self.string_stat:Dict[string,str] = string_stat
 
     @property
     def agent_id_to_index(self) -> Dict[AgentId, int]:

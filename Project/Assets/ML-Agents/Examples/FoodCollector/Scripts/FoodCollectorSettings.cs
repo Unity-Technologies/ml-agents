@@ -51,7 +51,8 @@ public class FoodCollectorSettings : MonoBehaviour
 
     public void FixedUpdate()
     {
-        Debug.Log($"FoodCollectorSettings - FixedUpdate totalScore:{totalScore}");
+        var ts = Time.time.ToString("f2");
+        Debug.Log($"FoodCollectorSettings - FixedUpdate time:{ts} totalScore:{totalScore} Food:{foodEaten} poison:{poisonEaten}");
         Academy.Instance.envStatMan.AddFloatStat("FoodCollector/TotalScore", totalScore);
         Academy.Instance.envStatMan.AddFloatStat("FoodCollector/FoodEaten", foodEaten);
         Academy.Instance.envStatMan.AddFloatStat("FoodCollector/PoisonEaten", poisonEaten);

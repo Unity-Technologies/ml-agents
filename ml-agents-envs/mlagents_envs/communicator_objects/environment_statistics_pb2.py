@@ -19,29 +19,29 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/environment_statistics.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n?mlagents_envs/communicator_objects/environment_statistics.proto\x12\x14\x63ommunicator_objects\"\xad\x02\n\x1a\x45nvironmentStatisticsProto\x12S\n\nfloat_stat\x18\x01 \x03(\x0b\x32?.communicator_objects.EnvironmentStatisticsProto.FloatStatEntry\x12U\n\x0bstring_stat\x18\x02 \x03(\x0b\x32@.communicator_objects.EnvironmentStatisticsProto.StringStatEntry\x1a\x30\n\x0e\x46loatStatEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\x1a\x31\n\x0fStringStatEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n?mlagents_envs/communicator_objects/environment_statistics.proto\x12\x14\x63ommunicator_objects\"\xb0\x02\n\x1a\x45nvironmentStatisticsProto\x12U\n\x0b\x64ouble_stat\x18\x01 \x03(\x0b\x32@.communicator_objects.EnvironmentStatisticsProto.DoubleStatEntry\x12U\n\x0bstring_stat\x18\x02 \x03(\x0b\x32@.communicator_objects.EnvironmentStatisticsProto.StringStatEntry\x1a\x31\n\x0f\x44oubleStatEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x31\n\x0fStringStatEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
 
 
-_ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY = _descriptor.Descriptor(
-  name='FloatStatEntry',
-  full_name='communicator_objects.EnvironmentStatisticsProto.FloatStatEntry',
+_ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY = _descriptor.Descriptor(
+  name='DoubleStatEntry',
+  full_name='communicator_objects.EnvironmentStatisticsProto.DoubleStatEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='communicator_objects.EnvironmentStatisticsProto.FloatStatEntry.key', index=0,
+      name='key', full_name='communicator_objects.EnvironmentStatisticsProto.DoubleStatEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='communicator_objects.EnvironmentStatisticsProto.FloatStatEntry.value', index=1,
-      number=2, type=2, cpp_type=6, label=1,
+      name='value', full_name='communicator_objects.EnvironmentStatisticsProto.DoubleStatEntry.value', index=1,
+      number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -58,8 +58,8 @@ _ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=292,
-  serialized_end=340,
+  serialized_start=294,
+  serialized_end=343,
 )
 
 _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY = _descriptor.Descriptor(
@@ -95,8 +95,8 @@ _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=342,
-  serialized_end=391,
+  serialized_start=345,
+  serialized_end=394,
 )
 
 _ENVIRONMENTSTATISTICSPROTO = _descriptor.Descriptor(
@@ -107,7 +107,7 @@ _ENVIRONMENTSTATISTICSPROTO = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='float_stat', full_name='communicator_objects.EnvironmentStatisticsProto.float_stat', index=0,
+      name='double_stat', full_name='communicator_objects.EnvironmentStatisticsProto.double_stat', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -123,7 +123,7 @@ _ENVIRONMENTSTATISTICSPROTO = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY, _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY, ],
+  nested_types=[_ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY, _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY, ],
   enum_types=[
   ],
   options=None,
@@ -133,22 +133,22 @@ _ENVIRONMENTSTATISTICSPROTO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=90,
-  serialized_end=391,
+  serialized_end=394,
 )
 
-_ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY.containing_type = _ENVIRONMENTSTATISTICSPROTO
+_ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY.containing_type = _ENVIRONMENTSTATISTICSPROTO
 _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY.containing_type = _ENVIRONMENTSTATISTICSPROTO
-_ENVIRONMENTSTATISTICSPROTO.fields_by_name['float_stat'].message_type = _ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY
+_ENVIRONMENTSTATISTICSPROTO.fields_by_name['double_stat'].message_type = _ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY
 _ENVIRONMENTSTATISTICSPROTO.fields_by_name['string_stat'].message_type = _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY
 DESCRIPTOR.message_types_by_name['EnvironmentStatisticsProto'] = _ENVIRONMENTSTATISTICSPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 EnvironmentStatisticsProto = _reflection.GeneratedProtocolMessageType('EnvironmentStatisticsProto', (_message.Message,), dict(
 
-  FloatStatEntry = _reflection.GeneratedProtocolMessageType('FloatStatEntry', (_message.Message,), dict(
-    DESCRIPTOR = _ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY,
+  DoubleStatEntry = _reflection.GeneratedProtocolMessageType('DoubleStatEntry', (_message.Message,), dict(
+    DESCRIPTOR = _ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY,
     __module__ = 'mlagents_envs.communicator_objects.environment_statistics_pb2'
-    # @@protoc_insertion_point(class_scope:communicator_objects.EnvironmentStatisticsProto.FloatStatEntry)
+    # @@protoc_insertion_point(class_scope:communicator_objects.EnvironmentStatisticsProto.DoubleStatEntry)
     ))
   ,
 
@@ -163,14 +163,14 @@ EnvironmentStatisticsProto = _reflection.GeneratedProtocolMessageType('Environme
   # @@protoc_insertion_point(class_scope:communicator_objects.EnvironmentStatisticsProto)
   ))
 _sym_db.RegisterMessage(EnvironmentStatisticsProto)
-_sym_db.RegisterMessage(EnvironmentStatisticsProto.FloatStatEntry)
+_sym_db.RegisterMessage(EnvironmentStatisticsProto.DoubleStatEntry)
 _sym_db.RegisterMessage(EnvironmentStatisticsProto.StringStatEntry)
 
 
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
-_ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY.has_options = True
-_ENVIRONMENTSTATISTICSPROTO_FLOATSTATENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
+_ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY.has_options = True
+_ENVIRONMENTSTATISTICSPROTO_DOUBLESTATENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
 _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY.has_options = True
 _ENVIRONMENTSTATISTICSPROTO_STRINGSTATENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
 # @@protoc_insertion_point(module_scope)

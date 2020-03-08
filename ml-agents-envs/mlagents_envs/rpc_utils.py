@@ -1,6 +1,7 @@
 from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
+from mlagents_envs.communicator_objects.environment_statistics_pb2 import EnvironmentStatisticsProto
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.observation_pb2 import (
     ObservationProto,
@@ -153,6 +154,7 @@ def batched_step_result_from_proto(
     agent_info_list: Collection[
         AgentInfoProto
     ],  # pylint: disable=unsubscriptable-object
+    envStat: EnvironmentStatisticsProto,
     group_spec: AgentGroupSpec,
 ) -> BatchedStepResult:
     obs_list: List[np.ndarray] = []
@@ -196,7 +198,10 @@ def batched_step_result_from_proto(
             action_mask = (1 - mask_matrix).astype(np.bool)
             indices = _generate_split_indices(group_spec.discrete_action_branches)
             action_mask = np.split(action_mask, indices, axis=1)
-    return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
+            # convert protobuf maps to dicts
+            double_stat = dict((key,envStat.double_stat[key]) for key in envStat.double_stat)
+            string_stat = dict((key,envStat.string_stat[key]) for key in envStat.string_stat)
+    return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask,double_stat,string_stat)
 
 
 def _generate_split_indices(dims):
