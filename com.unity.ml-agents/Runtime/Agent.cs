@@ -119,32 +119,6 @@ namespace MLAgents
             public int maxStep;
         }
 
-        /// <summary>
-        /// The team ID for this Agent.
-        /// </summary>
-        public int TeamId
-        {
-            // TODO should we remove this and BehaviorName properties,
-            // and add properties in BehaviorParameters instead?
-            get
-            {
-                LazyInitialize();
-                return m_PolicyFactory.TeamId;
-            }
-        }
-
-        /// <summary>
-        /// The name of the behavior of the Agent.
-        /// </summary>
-        public string BehaviorName
-        {
-            get
-            {
-                LazyInitialize();
-                return m_PolicyFactory.behaviorName;
-            }
-        }
-
         [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
         [SerializeField][HideInInspector]
@@ -364,7 +338,7 @@ namespace MLAgents
         /// Updates the Model for the agent. Any model currently assigned to the
         /// agent will be replaced with the provided one. If the arguments are
         /// identical to the current parameters of the agent, the model will
-        /// remain unchanged, unless the force parameter is true.
+        /// remain unchanged.
         /// </summary>
         /// <param name="behaviorName"> The identifier of the behavior. This
         /// will categorize the agent when training.
@@ -372,43 +346,44 @@ namespace MLAgents
         /// <param name="model"> The model to use for inference.</param>
         /// <param name = "inferenceDevice"> Define on what device the model
         /// will be run.</param>
-        /// <param name="force">Whether to update the Agent even if all the parameters are the same.</param>
         public void GiveModel(
             string behaviorName,
             NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU,
-            bool force = false)
+            InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
             if (behaviorName == m_PolicyFactory.behaviorName &&
                 model == m_PolicyFactory.model &&
                 inferenceDevice == m_PolicyFactory.inferenceDevice)
             {
-                if (!force)
-                {
-                    // If everything is the same, don't make any changes.
-                    return;
-                }
+                // If everything is the same, don't make any changes.
+                return;
             }
 
-            m_PolicyFactory.SetModel(behaviorName, model, inferenceDevice);
-            m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_PolicyFactory.model = model;
+            m_PolicyFactory.inferenceDevice = inferenceDevice;
+            m_PolicyFactory.behaviorName = behaviorName;
+            ReloadPolicy();
         }
 
         /// <summary>
         /// Updates the type of behavior for the agent.
         /// </summary>
         /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
-        /// <param name="force">Whether to update the Agent even if all the parameters are the same.</param>
-        public void SetBehaviorType(BehaviorType behaviorType, bool force = false)
+        public void SetBehaviorType(BehaviorType behaviorType)
         {
-            if (m_PolicyFactory.behaviorType == behaviorType && !force)
+            if (m_PolicyFactory.behaviorType == behaviorType)
             {
                 return;
             }
             m_PolicyFactory.behaviorType = behaviorType;
+            ReloadPolicy();
+        }
+
+        internal void ReloadPolicy()
+        {
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+
         }
 
         /// <summary>

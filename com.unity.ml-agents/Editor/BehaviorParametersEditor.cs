@@ -23,8 +23,7 @@ namespace MLAgents.Editor
         {
             var so = serializedObject;
             so.Update();
-            bool needModelUpdate; // Whether the name, model, or inference device changed.
-            bool behaviorTypeChanged;
+            bool needPolicyUpdate; // Whether the name, model, inference device, or BehaviorType changed.
 
             // Drawing the Behavior Parameters
             EditorGUI.indentLevel++;
@@ -34,7 +33,7 @@ namespace MLAgents.Editor
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorName"));
             }
-            needModelUpdate = EditorGUI.EndChangeCheck();
+            needPolicyUpdate = EditorGUI.EndChangeCheck();
 
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             {
@@ -49,13 +48,13 @@ namespace MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
                 EditorGUI.indentLevel--;
             }
-            needModelUpdate = needModelUpdate || EditorGUI.EndChangeCheck();
+            needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
             EditorGUI.BeginChangeCheck();
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
             }
-            behaviorTypeChanged = EditorGUI.EndChangeCheck();
+            needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
             EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
@@ -69,9 +68,9 @@ namespace MLAgents.Editor
             DisplayFailedModelChecks();
             so.ApplyModifiedProperties();
 
-            if (needModelUpdate || behaviorTypeChanged)
+            if (needPolicyUpdate)
             {
-                UpdateAgentFromBehaviorParameters(needModelUpdate, behaviorTypeChanged);
+                UpdateAgentPolicy();
             }
         }
 
@@ -118,7 +117,7 @@ namespace MLAgents.Editor
             }
         }
 
-        void UpdateAgentFromBehaviorParameters(bool needModelUpdate, bool behaviorTypeChanged)
+        void UpdateAgentPolicy()
         {
             if (Application.isPlaying)
             {
@@ -129,20 +128,8 @@ namespace MLAgents.Editor
                     return;
                 }
 
-                if (needModelUpdate)
-                {
-                    agent.GiveModel(
-                        behaviorParameters.behaviorName,
-                        behaviorParameters.model,
-                        behaviorParameters.inferenceDevice,
-                        true
-                    );
-                }
+                agent.ReloadPolicy();
 
-                if (behaviorTypeChanged)
-                {
-                    agent.SetBehaviorType(behaviorParameters.behaviorType, true);
-                }
             }
         }
     }

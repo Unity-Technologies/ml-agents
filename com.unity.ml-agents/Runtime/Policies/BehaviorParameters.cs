@@ -60,6 +60,7 @@ namespace MLAgents.Policies
         public NNModel model
         {
             get { return m_Model; }
+            internal set { m_Model = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -73,6 +74,7 @@ namespace MLAgents.Policies
         public InferenceDevice inferenceDevice
         {
             get { return m_InferenceDevice; }
+            internal set { m_InferenceDevice = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -101,6 +103,7 @@ namespace MLAgents.Policies
         public string behaviorName
         {
             get { return m_BehaviorName; }
+            internal set { m_BehaviorName = value; }
         }
 
         /// <summary>
@@ -157,22 +160,6 @@ namespace MLAgents.Policies
                 default:
                     return new HeuristicPolicy(heuristic);
             }
-        }
-
-        /// <summary>
-        /// Updates the model and related details for this behavior.
-        /// </summary>
-        /// <param name="newBehaviorName">New name for the behavior.</param>
-        /// <param name="model">New neural network model for this behavior.</param>
-        /// <param name="inferenceDevice">New inference device for this behavior.</param>
-        internal void SetModel(
-            string newBehaviorName,
-            NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
-        {
-            m_Model = model;
-            m_InferenceDevice = inferenceDevice;
-            m_BehaviorName = newBehaviorName;
         }
     }
 }
