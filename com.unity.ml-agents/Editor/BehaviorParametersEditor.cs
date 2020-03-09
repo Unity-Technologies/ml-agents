@@ -2,6 +2,7 @@ using MLAgents.Sensors;
 using UnityEditor;
 using Barracuda;
 using MLAgents.Policies;
+using UnityEngine;
 
 namespace MLAgents.Editor
 {
@@ -24,25 +25,48 @@ namespace MLAgents.Editor
             so.Update();
 
             // Drawing the Behavior Parameters
-            EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorName"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
+            bool needModelUpdate = EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
+            }
+            EditorGUI.EndDisabledGroup();
+            var brainParamsChanged = EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(so.FindProperty("m_Model"), true);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
             EditorGUI.indentLevel--;
+            needModelUpdate = needModelUpdate || EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
+            var behaviorTypeChanged = EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
-            // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
-            EditorGUI.indentLevel--;
-            if (EditorGUI.EndChangeCheck())
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
             {
-                m_RequireReload = true;
+                EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
             }
+            EditorGUI.EndDisabledGroup();
+            var othersChanged = EditorGUI.EndChangeCheck();
+
+            EditorGUI.indentLevel--;
+            m_RequireReload = needModelUpdate || brainParamsChanged || behaviorTypeChanged || othersChanged;
             DisplayFailedModelChecks();
             so.ApplyModifiedProperties();
+
+            if (needModelUpdate || behaviorTypeChanged)
+            {
+                UpdateAgent(needModelUpdate, behaviorTypeChanged);
+            }
         }
 
         /// <summary>
@@ -84,6 +108,34 @@ namespace MLAgents.Editor
                     {
                         EditorGUILayout.HelpBox(check, MessageType.Warning);
                     }
+                }
+            }
+        }
+
+        void UpdateAgent(bool needModelUpdate, bool behaviorTypeChanged)
+        {
+            if (Application.isPlaying)
+            {
+                var behaviorParameters = (BehaviorParameters)target;
+                var agent = behaviorParameters.GetComponent<Agent>();
+                if (agent == null)
+                {
+                    return;
+                }
+
+                if (needModelUpdate)
+                {
+                    agent.GiveModel(
+                        behaviorParameters.behaviorName,
+                        behaviorParameters.model,
+                        behaviorParameters.inferenceDevice,
+                        true
+                        );
+                }
+
+                if (behaviorTypeChanged)
+                {
+                    agent.SetBehaviorType(behaviorParameters.behaviorType, true);
                 }
             }
         }

@@ -124,6 +124,8 @@ namespace MLAgents
         /// </summary>
         public int TeamId
         {
+            // TODO should we remove this and BehaviorName properties,
+            // and add properties in BehaviorParameters instead?
             get
             {
                 LazyInitialize();
@@ -362,7 +364,7 @@ namespace MLAgents
         /// Updates the Model for the agent. Any model currently assigned to the
         /// agent will be replaced with the provided one. If the arguments are
         /// identical to the current parameters of the agent, the model will
-        /// remain unchanged.
+        /// remain unchanged, unless the force parameter is true.
         /// </summary>
         /// <param name="behaviorName"> The identifier of the behavior. This
         /// will categorize the agent when training.
@@ -370,12 +372,25 @@ namespace MLAgents
         /// <param name="model"> The model to use for inference.</param>
         /// <param name = "inferenceDevice"> Define on what device the model
         /// will be run.</param>
+        /// <param name="force">Whether to update the Agent even if all the parameters are the same.</param>
         public void GiveModel(
             string behaviorName,
             NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+            InferenceDevice inferenceDevice = InferenceDevice.CPU,
+            bool force = false)
         {
-            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
+            if (behaviorName == m_PolicyFactory.behaviorName &&
+                model == m_PolicyFactory.model &&
+                inferenceDevice == m_PolicyFactory.inferenceDevice)
+            {
+                if (!force)
+                {
+                    // If everything is the same, don't make any changes.
+                    return;
+                }
+            }
+
+            m_PolicyFactory.SetModel(behaviorName, model, inferenceDevice);
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
@@ -383,15 +398,15 @@ namespace MLAgents
         /// <summary>
         /// Updates the type of behavior for the agent.
         /// </summary>
-        /// <param name="behaviorType"> The new behaviorType for the Agent
-        /// </param>
-        public void SetBehaviorType(BehaviorType behaviorType)
+        /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
+        /// <param name="force">Whether to update the Agent even if all the parameters are the same.</param>
+        public void SetBehaviorType(BehaviorType behaviorType, bool force = false)
         {
-            if (m_PolicyFactory.m_BehaviorType == behaviorType)
+            if (m_PolicyFactory.behaviorType == behaviorType && !force)
             {
                 return;
             }
-            m_PolicyFactory.m_BehaviorType = behaviorType;
+            m_PolicyFactory.behaviorType = behaviorType;
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
         }
