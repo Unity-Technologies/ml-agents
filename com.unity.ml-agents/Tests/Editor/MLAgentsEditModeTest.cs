@@ -51,7 +51,7 @@ namespace MLAgents.Tests
         public TestSensor sensor1;
         public TestSensor sensor2;
 
-        public override void InitializeAgent()
+        public override void Initialize()
         {
             initializeAgentCalls += 1;
 
@@ -71,14 +71,14 @@ namespace MLAgents.Tests
             sensor.AddObservation(0f);
         }
 
-        public override void AgentAction(float[] vectorAction)
+        public override void OnActionReceived(float[] vectorAction)
         {
             agentActionCalls += 1;
             agentActionCallsSinceLastReset += 1;
             AddReward(0.1f);
         }
 
-        public override void AgentReset()
+        public override void OnEpisodeBegin()
         {
             agentResetCalls += 1;
             collectObservationsCallsSinceLastReset = 0;
@@ -442,13 +442,13 @@ namespace MLAgents.Tests
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
                 {
-                    agent1.Done();
+                    agent1.EndEpisode();
                     numberAgent1Reset += 1;
                 }
                 // Resetting agent 2 regularly
                 if (i % 13 == 3)
                 {
-                    agent2.Done();
+                    agent2.EndEpisode();
                     numberAgent2Reset += 1;
                     agent2StepSinceReset = 0;
                 }

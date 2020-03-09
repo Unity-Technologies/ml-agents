@@ -10,7 +10,7 @@ public class Ball3DHardAgent : Agent
     Rigidbody m_BallRb;
     FloatPropertiesChannel m_ResetParams;
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.FloatProperties;
@@ -24,7 +24,7 @@ public class Ball3DHardAgent : Agent
         sensor.AddObservation((ball.transform.position - gameObject.transform.position));
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -45,7 +45,7 @@ public class Ball3DHardAgent : Agent
             Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
         {
             SetReward(-1f);
-            Done();
+            EndEpisode();
         }
         else
         {
@@ -53,7 +53,7 @@ public class Ball3DHardAgent : Agent
         }
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));

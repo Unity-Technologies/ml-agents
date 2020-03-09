@@ -270,7 +270,7 @@ setting the State Size.
 
 An action is an instruction from the Policy that the agent carries out. The
 action is passed to the Agent as a parameter when the Academy invokes the
-agent's `AgentAction()` function. When you specify that the vector action space
+agent's `OnActionReceived()` function. When you specify that the vector action space
 is **Continuous**, the action parameter passed to the Agent is an array of
 control signals with length equal to the `Vector Action Space Size` property.
 When you specify a **Discrete** vector action space type, the action parameter
@@ -285,10 +285,7 @@ Neither the Policy nor the training algorithm know anything about what the actio
 values themselves mean. The training algorithm simply tries different values for
 the action list and observes the affect on the accumulated rewards over time and
 many training episodes. Thus, the only place actions are defined for an Agent is
-in the `AgentAction()` function. You simply specify the type of vector action
-space, and, for the continuous vector action space, the number of values, and
-then apply the received values appropriately (and consistently) in
-`ActionAct()`.
+in the `OnActionReceived()` function.
 
 For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete vector actions. In the continuous case, you
@@ -313,7 +310,7 @@ up to use either the continuous or the discrete vector action spaces.
 ### Continuous Action Space
 
 When an Agent uses a Policy set to the **Continuous** vector action space, the
-action parameter passed to the Agent's `AgentAction()` function is an array with
+action parameter passed to the Agent's `OnActionReceived()` function is an array with
 length equal to the `Vector Action Space Size` property value.
 The individual values in the array have whatever meanings that you ascribe to
 them. If you assign an element in the array as the speed of an Agent, for
@@ -328,7 +325,7 @@ continuous action space with four control values.
 These control values are applied as torques to the bodies making up the arm:
 
 ```csharp
-public override void AgentAction(float[] act)
+public override void OnActionReceived(float[] act)
 {
     float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
     float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
@@ -348,7 +345,7 @@ As shown above, you can scale the control values as needed after clamping them.
 ### Discrete Action Space
 
 When an Agent uses a  **Discrete** vector action space, the
-action parameter passed to the Agent's `AgentAction()` function is an array
+action parameter passed to the Agent's `OnActionReceived()` function is an array
 containing indices. With the discrete vector action space, `Branches` is an
 array of integers, each value corresponds to the number of possibilities for
 each branch.
@@ -358,7 +355,7 @@ define two branches (one for motion and one for jumping) because we want our
 agent be able to move __and__ jump concurrently. We define the first branch to
 have 5 possible actions (don't move, go left, go right, go backward, go forward)
 and the second one to have 2 possible actions (don't jump, jump). The
-AgentAction method would look something like:
+`OnActionReceived()` method would look something like:
 
 ```csharp
 // Get the action index for movement
@@ -441,7 +438,7 @@ to display the cumulative reward received by an Agent. You can even use the
 Agent's Heuristic to control the Agent while watching how it accumulates rewards.
 
 Allocate rewards to an Agent by calling the `AddReward()` method in the
-`AgentAction()` function. The reward assigned between each decision
+`OnActionReceived()` function. The reward assigned between each decision
 should be in the range [-1,1]. Values outside this range can lead to
 unstable training. The `reward` value is reset to zero when the agent receives a
 new decision. If there are multiple calls to `AddReward()` for a single agent
@@ -451,7 +448,7 @@ previous rewards given to an agent since the previous decision.
 
 ### Examples
 
-You can examine the `AgentAction()` functions defined in the [example
+You can examine the `OnActionReceived()` functions defined in the [example
 environments](Learning-Environment-Examples.md) to see how those projects
 allocate rewards.
 
@@ -465,12 +462,12 @@ Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position,
 if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
 {
     AddReward(1.0f);
-    Done();
+    EndEpisode();
 }
 if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
 {
     AddReward(-1f);
-    Done();
+    EndEpisode();
 }
 ```
 
@@ -492,7 +489,7 @@ if (gameObject.transform.position.y < 0.0f ||
     Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
     Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 {
-    Done();
+    EndEpisode();
     AddReward(-1f);
 }
 ```
@@ -507,25 +504,24 @@ balances the ball. The agent can maximize its rewards by keeping the ball on the
 platform:
 
 ```csharp
-if (IsDone() == false)
-{
-    SetReward(0.1f);
-}
 
-// When ball falls mark Agent as done and give a negative penalty
+SetReward(0.1f);
+
+// When ball falls mark Agent as finished and give a negative penalty
 if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
     Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
     Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
 {
-    Done();
     SetReward(-1f);
+    EndEpisode();
+
 }
 ```
 
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
-Note that all of these environments make use of the `Done()` method, which manually
+Note that all of these environments make use of the `EndEpisode()` method, which manually
 terminates an episode when a termination condition is reached. This can be
 called independently of the `Max Step` property.
 

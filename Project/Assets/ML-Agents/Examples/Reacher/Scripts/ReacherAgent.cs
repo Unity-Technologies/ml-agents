@@ -24,7 +24,7 @@ public class ReacherAgent : Agent
     /// Collect the rigidbodies of the reacher in order to resue them for
     /// observations and actions.
     /// </summary>
-    public override void InitializeAgent()
+    public override void Initialize()
     {
         m_RbA = pendulumA.GetComponent<Rigidbody>();
         m_RbB = pendulumB.GetComponent<Rigidbody>();
@@ -57,7 +57,7 @@ public class ReacherAgent : Agent
     /// <summary>
     /// The agent's four actions correspond to torques on each of the two joints.
     /// </summary>
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         m_GoalDegree += m_GoalSpeed;
         UpdateGoalPosition();
@@ -86,7 +86,7 @@ public class ReacherAgent : Agent
     /// <summary>
     /// Resets the position and velocity of the agent and the goal.
     /// </summary>
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         pendulumA.transform.position = new Vector3(0f, -4f, 0f) + transform.position;
         pendulumA.transform.rotation = Quaternion.Euler(180f, 0f, 0f);
