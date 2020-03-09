@@ -40,7 +40,7 @@ The versions can be found in
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
 * Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
-* We strongly recommend replacing the following method with their new equivalent as they will be removed in a later release:
+* We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
   * `InitializeAgent()` to `Initialize()`
   * `AgentAction()` to `OnActionReceived()`
   * `AgentReset()` to `OnEpsiodeBegin()`
