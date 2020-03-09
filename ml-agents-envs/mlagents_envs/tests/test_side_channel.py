@@ -1,6 +1,9 @@
-import struct
 import uuid
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel import (
+    SideChannel,
+    IncomingMessage,
+    OutgoingMessage,
+)
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents_envs.side_channel.raw_bytes_channel import RawBytesChannel
 from mlagents_envs.environment import UnityEnvironment
@@ -11,14 +14,14 @@ class IntChannel(SideChannel):
         self.list_int = []
         super().__init__(uuid.UUID("a85ba5c0-4f87-11ea-a517-784f4387d1f7"))
 
-    def on_message_received(self, data):
-        val = struct.unpack_from("<i", data, 0)[0]
+    def on_message_received(self, msg: IncomingMessage) -> None:
+        val = msg.read_int32()
         self.list_int += [val]
 
     def send_int(self, value):
-        data = bytearray()
-        data += struct.pack("<i", value)
-        super().queue_message_to_send(data)
+        msg = OutgoingMessage()
+        msg.write_int32(value)
+        super().queue_message_to_send(msg)
 
 
 def test_int_channel():
