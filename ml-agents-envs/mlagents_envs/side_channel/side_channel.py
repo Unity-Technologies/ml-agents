@@ -56,6 +56,11 @@ class OutgoingMessage:
     def write_float32(self, f: float) -> None:
         self.buffer += struct.pack("<f", f)
 
+    def write_float32_list(self, float_list: List[float]) -> None:
+        self.write_int32(len(float_list))
+        for f in float_list:
+            self.write_float32(f)
+
     def write_string(self, s: str) -> None:
         encoded_key = s.encode("ascii")
         self.write_int32(len(encoded_key))
@@ -83,6 +88,13 @@ class IncomingMessage:
         val = struct.unpack_from("<f", self.buffer, self.offset)[0]
         self.offset += 4
         return val
+
+    def read_float32_list(self) -> List[float]:
+        list_len = self.read_int32()
+        output = []
+        for _ in range(list_len):
+            output.append(self.read_float32())
+        return output
 
     def read_string(self) -> str:
         encoded_str_len = self.read_int32()

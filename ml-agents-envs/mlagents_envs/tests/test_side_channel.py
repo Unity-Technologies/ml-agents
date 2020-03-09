@@ -85,3 +85,45 @@ def test_raw_bytes():
 
     messages = receiver.get_and_clear_received_messages()
     assert len(messages) == 0
+
+
+def test_message_int32():
+    val = 1337
+    msg_out = OutgoingMessage()
+    msg_out.write_int32(val)
+
+    msg_in = IncomingMessage(msg_out.buffer)
+    read_val = msg_in.read_int32()
+    assert val == read_val
+
+
+def test_message_float32():
+    val = 42.0
+    msg_out = OutgoingMessage()
+    msg_out.write_float32(val)
+
+    msg_in = IncomingMessage(msg_out.buffer)
+    read_val = msg_in.read_float32()
+    # These won't be exactly equal in general, since python floats are 64-bit.
+    assert val == read_val
+
+
+def test_message_string():
+    val = "mlagents!"
+    msg_out = OutgoingMessage()
+    msg_out.write_string(val)
+
+    msg_in = IncomingMessage(msg_out.buffer)
+    read_val = msg_in.read_string()
+    assert val == read_val
+
+
+def test_message_float_list():
+    val = [1.0, 3.0, 9.0]
+    msg_out = OutgoingMessage()
+    msg_out.write_float32_list(val)
+
+    msg_in = IncomingMessage(msg_out.buffer)
+    read_val = msg_in.read_float32_list()
+    # These won't be exactly equal in general, since python floats are 64-bit.
+    assert val == read_val
