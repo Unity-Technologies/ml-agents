@@ -169,8 +169,14 @@ class PPOOptimizer(TFOptimizer):
             dtype=tf.float32,
             name="old_probabilities",
         )
+
+        # Break old log probs into separate branches
+        old_log_prob_branches = ModelUtils.break_into_branches(
+            self.all_old_log_probs, self.policy.act_size
+        )
+
         _, _, old_normalized_logits = ModelUtils.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.policy.action_masks, self.policy.act_size
+            old_log_prob_branches, self.policy.action_masks, self.policy.act_size
         )
 
         action_idx = [0] + list(np.cumsum(self.policy.act_size))
