@@ -50,6 +50,9 @@ class OutgoingMessage:
     def __init__(self):
         self.buffer = bytearray()
 
+    def write_bool(self, b: bool) -> None:
+        self.buffer += struct.pack("<?", b)
+
     def write_int32(self, i: int) -> None:
         self.buffer += struct.pack("<i", i)
 
@@ -78,6 +81,11 @@ class IncomingMessage:
     def __init__(self, buffer: bytes, offset: int = 0):
         self.buffer = buffer
         self.offset = offset
+
+    def read_bool(self) -> bool:
+        val = struct.unpack_from("<?", self.buffer, self.offset)[0]
+        self.offset += 1
+        return val
 
     def read_int32(self) -> int:
         val = struct.unpack_from("<i", self.buffer, self.offset)[0]

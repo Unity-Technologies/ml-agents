@@ -21,7 +21,8 @@ namespace MLAgents.SideChannels
         /// of each type. Ensure the Unity side channels will be linked to their Python equivalent.
         /// </summary>
         /// <returns> The integer identifier of the SideChannel.</returns>
-        public Guid ChannelId{
+        public Guid ChannelId
+        {
             get;
             protected set;
         }
@@ -56,6 +57,11 @@ namespace MLAgents.SideChannels
             m_Reader = new BinaryReader(m_Stream);
         }
 
+        public bool ReadBoolean()
+        {
+            return m_Reader.ReadBoolean();
+        }
+
         public int ReadInt32()
         {
             return m_Reader.ReadInt32();
@@ -73,7 +79,7 @@ namespace MLAgents.SideChannels
             return str;
         }
 
-        public IList<float> ReadFloatArray()
+        public IList<float> ReadFloatList()
         {
             var len = ReadInt32();
             var output = new float[len];
@@ -114,6 +120,11 @@ namespace MLAgents.SideChannels
             m_Stream?.Dispose();
         }
 
+        public void WriteBoolean(bool b)
+        {
+            m_Writer.Write(b);
+        }
+
         public void WriteInt32(int i)
         {
             m_Writer.Write(i);
@@ -142,7 +153,12 @@ namespace MLAgents.SideChannels
 
         public void SetRawBytes(byte[] data)
         {
+            // Reset first.
             m_Stream.Seek(0, SeekOrigin.Begin);
+            m_Stream.SetLength(0);
+
+            // Then append the data
+            m_Stream.Capacity = (m_Stream.Capacity < data.Length) ? data.Length : m_Stream.Capacity;
             m_Stream.Write(data, 0, data.Length);
         }
 

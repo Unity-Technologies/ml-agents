@@ -87,6 +87,19 @@ def test_raw_bytes():
     assert len(messages) == 0
 
 
+def test_message_bool():
+    vals = [True, False]
+    msg_out = OutgoingMessage()
+    for v in vals:
+        msg_out.write_bool(v)
+
+    msg_in = IncomingMessage(msg_out.buffer)
+    read_vals = []
+    for _ in range(len(vals)):
+        read_vals.append(msg_in.read_bool())
+    assert vals == read_vals
+
+
 def test_message_int32():
     val = 1337
     msg_out = OutgoingMessage()

@@ -13,7 +13,8 @@ namespace MLAgents.Tests
         {
             public List<int> messagesReceived = new List<int>();
 
-            public TestSideChannel() {
+            public TestSideChannel()
+            {
                 ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
@@ -107,6 +108,58 @@ namespace MLAgents.Tests
             fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
             RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
             Assert.AreEqual(wasCalled, 1);
+
+            var keysA = propA.ListProperties();
+            Assert.AreEqual(2, keysA.Count);
+            Assert.IsTrue(keysA.Contains(k1));
+            Assert.IsTrue(keysA.Contains(k2));
+
+            var keysB = propA.ListProperties();
+            Assert.AreEqual(2, keysB.Count);
+            Assert.IsTrue(keysB.Contains(k1));
+            Assert.IsTrue(keysB.Contains(k2));
+        }
+
+        [Test]
+        public void TestOutgoingMessageRawBytes()
+        {
+            var msg = new OutgoingMessage();
+            msg.WriteInt32(42);
+            msg.WriteFloat32(1.0f);
+
+            var data = new byte[] { 1, 2, 3, 4 };
+            msg.SetRawBytes(data);
+
+            var result = msg.ToByteArray();
+            Assert.AreEqual(data, result);
+        }
+
+        [Test]
+        public void TestMessageReadWrites()
+        {
+            var boolVal = true;
+            var intVal = 1337;
+            var floatVal = 4.2f;
+            var floatListVal = new float[] { 1001, 1002 };
+            var stringVal = "mlagents!";
+
+            IncomingMessage incomingMsg;
+            using (var outgoingMsg = new OutgoingMessage())
+            {
+                outgoingMsg.WriteBoolean(boolVal);
+                outgoingMsg.WriteInt32(intVal);
+                outgoingMsg.WriteFloat32(floatVal);
+                outgoingMsg.WriteFloatList(floatListVal);
+                outgoingMsg.WriteString(stringVal);
+
+                incomingMsg = new IncomingMessage(outgoingMsg.ToByteArray());
+            }
+
+            Assert.AreEqual(boolVal, incomingMsg.ReadBoolean());
+            Assert.AreEqual(intVal, incomingMsg.ReadInt32());
+            Assert.AreEqual(floatVal, incomingMsg.ReadFloat32());
+            Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
+            Assert.AreEqual(stringVal, incomingMsg.ReadString());
         }
     }
 }

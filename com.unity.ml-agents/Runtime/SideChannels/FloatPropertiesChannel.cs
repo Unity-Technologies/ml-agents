@@ -38,10 +38,10 @@ namespace MLAgents.SideChannels
             var value = msg.ReadFloat32();
 
             m_FloatProperties[key] = value;
-            if (m_RegisteredActions.ContainsKey(key))
-            {
-                m_RegisteredActions[key].Invoke(value);
-            }
+
+            Action<float> action;
+            m_RegisteredActions.TryGetValue(key, out action);
+            action?.Invoke(value);
         }
 
         /// <inheritdoc/>
@@ -55,23 +55,17 @@ namespace MLAgents.SideChannels
                 QueueMessageToSend(msgOut);
             }
 
-            if (m_RegisteredActions.ContainsKey(key))
-            {
-                m_RegisteredActions[key].Invoke(value);
-            }
+            Action<float> action;
+            m_RegisteredActions.TryGetValue(key, out action);
+            action?.Invoke(value);
         }
 
         /// <inheritdoc/>
         public float GetPropertyWithDefault(string key, float defaultValue)
         {
-            if (m_FloatProperties.ContainsKey(key))
-            {
-                return m_FloatProperties[key];
-            }
-            else
-            {
-                return defaultValue;
-            }
+            float valueOut;
+            bool hasKey = m_FloatProperties.TryGetValue(key, out valueOut);
+            return hasKey ? valueOut : defaultValue;
         }
 
         /// <inheritdoc/>
