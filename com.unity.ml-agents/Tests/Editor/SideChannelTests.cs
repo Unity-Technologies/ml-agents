@@ -149,8 +149,8 @@ namespace MLAgents.Tests
                 outgoingMsg.WriteBoolean(boolVal);
                 outgoingMsg.WriteInt32(intVal);
                 outgoingMsg.WriteFloat32(floatVal);
-                outgoingMsg.WriteFloatList(floatListVal);
                 outgoingMsg.WriteString(stringVal);
+                outgoingMsg.WriteFloatList(floatListVal);
 
                 incomingMsg = new IncomingMessage(outgoingMsg.ToByteArray());
             }
@@ -158,8 +158,8 @@ namespace MLAgents.Tests
             Assert.AreEqual(boolVal, incomingMsg.ReadBoolean());
             Assert.AreEqual(intVal, incomingMsg.ReadInt32());
             Assert.AreEqual(floatVal, incomingMsg.ReadFloat32());
-            Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
             Assert.AreEqual(stringVal, incomingMsg.ReadString());
+            Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
         }
     }
 }

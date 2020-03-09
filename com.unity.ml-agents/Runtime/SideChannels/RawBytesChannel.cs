@@ -24,7 +24,7 @@ namespace MLAgents.SideChannels
         /// <inheritdoc/>
         public override void OnMessageReceived(IncomingMessage msg)
         {
-            m_MessagesReceived.Add(msg.ReadRawBytes());
+            m_MessagesReceived.Add(msg.GetRawBytes());
         }
 
         /// <summary>

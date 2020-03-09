@@ -44,12 +44,19 @@ namespace MLAgents.SideChannels
         }
     }
 
+    /// <summary>
+    /// Utility class for reading the data sent to the SideChannel.
+    /// </summary>
     public class IncomingMessage : IDisposable
     {
         byte[] m_Data;
         Stream m_Stream;
         BinaryReader m_Reader;
 
+        /// <summary>
+        /// Construct an IncomingMessage from the byte array.
+        /// </summary>
+        /// <param name="data"></param>
         public IncomingMessage(byte[] data)
         {
             m_Data = data;
@@ -57,21 +64,37 @@ namespace MLAgents.SideChannels
             m_Reader = new BinaryReader(m_Stream);
         }
 
+        /// <summary>
+        /// Read a boolan value from the message.
+        /// </summary>
+        /// <returns></returns>
         public bool ReadBoolean()
         {
             return m_Reader.ReadBoolean();
         }
 
+        /// <summary>
+        /// Read an integer value from the message.
+        /// </summary>
+        /// <returns></returns>
         public int ReadInt32()
         {
             return m_Reader.ReadInt32();
         }
 
+        /// <summary>
+        /// Read a float value from the message.
+        /// </summary>
+        /// <returns></returns>
         public float ReadFloat32()
         {
             return m_Reader.ReadSingle();
         }
 
+        /// <summary>
+        /// Read a string value from the message.
+        /// </summary>
+        /// <returns></returns>
         public string ReadString()
         {
             var strLength = ReadInt32();
@@ -79,6 +102,10 @@ namespace MLAgents.SideChannels
             return str;
         }
 
+        /// <summary>
+        /// Reads a list of floats from the message. The length of the list is stored in the message.
+        /// </summary>
+        /// <returns></returns>
         public IList<float> ReadFloatList()
         {
             var len = ReadInt32();
@@ -91,11 +118,19 @@ namespace MLAgents.SideChannels
             return output;
         }
 
-        public byte[] ReadRawBytes()
+        /// <summary>
+        /// Gets the original data of the message. Note that this will return all of the data,
+        /// even if part of it has already been read.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetRawBytes()
         {
             return m_Data;
         }
 
+        /// <summary>
+        /// Clean up the internal storage.
+        /// </summary>
         public void Dispose()
         {
             m_Reader?.Dispose();
@@ -103,38 +138,63 @@ namespace MLAgents.SideChannels
         }
     }
 
+    /// <summary>
+    /// Utility class for forming the data that is sent to the SideChannel.
+    /// </summary>
     public class OutgoingMessage : IDisposable
     {
         BinaryWriter m_Writer;
         MemoryStream m_Stream;
 
+        /// <summary>
+        /// Create a new empty OutgoingMessage.
+        /// </summary>
         public OutgoingMessage()
         {
             m_Stream = new MemoryStream();
             m_Writer = new BinaryWriter(m_Stream);
         }
 
+        /// <summary>
+        /// Clean up the internal storage.
+        /// </summary>
         public void Dispose()
         {
             m_Writer?.Dispose();
             m_Stream?.Dispose();
         }
 
+        /// <summary>
+        /// Write a boolean value to the message.
+        /// </summary>
+        /// <param name="b"></param>
         public void WriteBoolean(bool b)
         {
             m_Writer.Write(b);
         }
 
+        /// <summary>
+        /// Write an interger value to the message.
+        /// </summary>
+        /// <param name="i"></param>
         public void WriteInt32(int i)
         {
             m_Writer.Write(i);
         }
 
+        /// <summary>
+        /// Write a float values to the message.
+        /// </summary>
+        /// <param name="f"></param>
         public void WriteFloat32(float f)
         {
             m_Writer.Write(f);
         }
 
+        /// <summary>
+        /// Write a string value to the message.
+        /// </summary>
+        /// <param name="s"></param>
         public void WriteString(string s)
         {
             var stringEncoded = Encoding.ASCII.GetBytes(s);
@@ -142,6 +202,10 @@ namespace MLAgents.SideChannels
             m_Writer.Write(stringEncoded);
         }
 
+        /// <summary>
+        /// Write a list or array of floats to the message.
+        /// </summary>
+        /// <param name="floatList"></param>
         public void WriteFloatList(IList<float> floatList)
         {
             WriteInt32(floatList.Count);
@@ -151,6 +215,10 @@ namespace MLAgents.SideChannels
             }
         }
 
+        /// <summary>
+        /// Overwrite the message with a specific byte array.
+        /// </summary>
+        /// <param name="data"></param>
         public void SetRawBytes(byte[] data)
         {
             // Reset first.
@@ -162,6 +230,10 @@ namespace MLAgents.SideChannels
             m_Stream.Write(data, 0, data.Length);
         }
 
+        /// <summary>
+        /// Read the byte array of the message.
+        /// </summary>
+        /// <returns></returns>
         internal byte[] ToByteArray()
         {
             return m_Stream.ToArray();
