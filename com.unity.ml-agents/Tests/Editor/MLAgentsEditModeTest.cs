@@ -267,17 +267,10 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
 
-            var numberReset = 0;
             for (var i = 0; i < 10; i++)
             {
-                Assert.AreEqual(numberReset, aca.EpisodeCount);
                 Assert.AreEqual(i, aca.StepCount);
 
-                // The reset happens at the beginning of the first step
-                if (i == 0)
-                {
-                    numberReset += 1;
-                }
                 Academy.Instance.EnvironmentStep();
             }
         }
@@ -313,7 +306,8 @@ namespace MLAgents.Tests
 
             agent1.LazyInitialize();
 
-            var numberAgent1Reset = 0;
+            var numberAgent1Reset = 1; // agent1 resets when initialized
+            var numberAgent2Reset = 0;
             var numberAgent2Initialization = 0;
             var requestDecision = 0;
             var requestAction = 0;
@@ -321,23 +315,19 @@ namespace MLAgents.Tests
             {
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 // Agent2 is never reset since initialized after academy
-                Assert.AreEqual(0, agent2.agentResetCalls);
+                Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
                 Assert.AreEqual(requestAction, agent2.agentActionCalls);
                 Assert.AreEqual((i + 1) / 2, agent1.collectObservationsCalls);
                 Assert.AreEqual(requestDecision, agent2.collectObservationsCalls);
-                // Agent 1 resets at the first step
-                if (i == 0)
-                {
-                    numberAgent1Reset += 1;
-                }
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
                     agent2.LazyInitialize();
                     numberAgent2Initialization += 1;
+                    numberAgent2Reset += 1;
                 }
 
                 // We are testing request decision and request actions when called
@@ -382,13 +372,7 @@ namespace MLAgents.Tests
             for (var i = 0; i < 50; i++)
             {
                 Assert.AreEqual(stepsSinceReset, aca.StepCount);
-                Assert.AreEqual(numberReset, aca.EpisodeCount);
                 Assert.AreEqual(i, aca.TotalStepCount);
-                // Academy resets at the first step
-                if (i == 0)
-                {
-                    numberReset += 1;
-                }
 
                 stepsSinceReset += 1;
                 aca.EnvironmentStep();
@@ -413,14 +397,12 @@ namespace MLAgents.Tests
             agent2.LazyInitialize();
 
             var numberAgent1Reset = 0;
-            var numberAgent2Reset = 0;
-            var numberAcaReset = 0;
+            var numberAgent2Reset = 1; // Agent2's Episode started
             var acaStepsSinceReset = 0;
             var agent2StepSinceReset = 0;
-            for (var i = 0; i < 5000; i++)
+            for (var i = 0; i < 500; i++)
             {
                 Assert.AreEqual(acaStepsSinceReset, aca.StepCount);
-                Assert.AreEqual(numberAcaReset, aca.EpisodeCount);
 
                 Assert.AreEqual(i, aca.TotalStepCount);
 
@@ -428,16 +410,11 @@ namespace MLAgents.Tests
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
 
-                // Agent 2  and academy reset at the first step
-                if (i == 0)
-                {
-                    numberAcaReset += 1;
-                    numberAgent2Reset += 1;
-                }
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
                     agent1.LazyInitialize();
+                    numberAgent1Reset += 1;
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)

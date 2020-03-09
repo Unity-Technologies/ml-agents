@@ -430,7 +430,6 @@ namespace MLAgents
         /// </summary>
         void ForcedFullReset()
         {
-            Debug.Log("Forced Full reset");
             EnvironmentReset();
             AgentForceReset?.Invoke();
         }
