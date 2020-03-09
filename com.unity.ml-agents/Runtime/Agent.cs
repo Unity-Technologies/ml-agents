@@ -119,17 +119,28 @@ namespace MLAgents
             public int maxStep;
         }
 
-        public int TeamId {
-            get {
+        /// <summary>
+        /// The team ID for this Agent.
+        /// </summary>
+        public int TeamId
+        {
+            get
+            {
                 LazyInitialize();
                 return m_PolicyFactory.TeamId;
-                }
+            }
         }
-        public string BehaviorName  {
-            get {
+
+        /// <summary>
+        /// The name of the behavior of the Agent.
+        /// </summary>
+        public string BehaviorName
+        {
+            get
+            {
                 LazyInitialize();
                 return m_PolicyFactory.behaviorName;
-                }
+            }
         }
 
         [SerializeField][HideInInspector]
@@ -208,7 +219,10 @@ namespace MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        void OnEnable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes enabled and active.
+        /// </summary>
+        protected virtual void OnEnable()
         {
             LazyInitialize();
         }
@@ -292,7 +306,10 @@ namespace MLAgents
             Disabled,
         }
 
-        void OnDisable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes disabled and inactive.
+        /// </summary>
+        protected virtual void OnDisable()
         {
             DemonstrationWriters.Clear();
 
@@ -321,7 +338,7 @@ namespace MLAgents
             m_Brain?.RequestDecision(m_Info, sensors);
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -473,7 +490,6 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
-
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
@@ -586,6 +602,13 @@ namespace MLAgents
         /// </summary>
         void SendInfoToBrain()
         {
+            if (!m_Initialized)
+            {
+                throw new UnityAgentsException("Call to SendInfoToBrain when Agent hasn't been initialized." +
+                    "Please ensure that you are calling 'base.OnEnable()' if you have overridden OnEnable.");
+
+            }
+
             if (m_Brain == null)
             {
                 return;
@@ -615,7 +638,7 @@ namespace MLAgents
             m_Brain.RequestDecision(m_Info, sensors);
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -628,7 +651,6 @@ namespace MLAgents
                 sensor.Update();
             }
         }
-
 
         /// <summary>
         /// Collects the vector observations of the agent.
@@ -729,16 +751,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
-        /// This way, even if the agent was already in the process of reseting, it will be reset again
-        /// and will not send a Done flag at the next step.
-        /// </summary>
-        void ForceReset()
-        {
-            _AgentReset();
-        }
-
-        /// <summary>
         /// An internal reset method that updates internal data structures in
         /// addition to calling <see cref="AgentReset"/>.
         /// </summary>
@@ -802,7 +814,8 @@ namespace MLAgents
         void DecideAction()
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
-            if (m_Action.vectorActions == null){
+            if (m_Action.vectorActions == null)
+            {
                 ResetData();
             }
         }

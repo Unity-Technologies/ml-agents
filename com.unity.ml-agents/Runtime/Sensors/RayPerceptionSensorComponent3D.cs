@@ -9,9 +9,7 @@ namespace MLAgents.Sensors
     [AddComponentMenu("ML Agents/Ray Perception Sensor 3D", (int)MenuGroup.Sensors)]
     public class RayPerceptionSensorComponent3D : RayPerceptionSensorComponentBase
     {
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("startVerticalOffset")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("startVerticalOffset")]
         [Range(-10f, 10f)]
         [Tooltip("Ray start is offset up or down by this amount.")]
         float m_StartVerticalOffset;
@@ -25,9 +23,7 @@ namespace MLAgents.Sensors
             set { m_StartVerticalOffset = value; UpdateSensor(); }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("endVerticalOffset")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("endVerticalOffset")]
         [Range(-10f, 10f)]
         [Tooltip("Ray end is offset up or down by this amount.")]
         float m_EndVerticalOffset;

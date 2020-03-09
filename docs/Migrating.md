@@ -38,7 +38,6 @@ The versions can be found in
 * Replace your calls to `SetActionMask` on your Agent to `DiscreteActionMasker.SetActionMask` in `CollectDiscreteActionMasks`.
 * If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output,
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
-* Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
 * We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
   * `InitializeAgent()` to `Initialize()`

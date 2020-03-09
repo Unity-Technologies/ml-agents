@@ -5,21 +5,28 @@ using UnityEngine.Serialization;
 
 namespace MLAgents.Policies
 {
-
     /// <summary>
     /// Defines what type of behavior the Agent will be using
-    /// - Default : The Agent will use the remote process for decision making.
-    /// if unavailable, will use inference and if no model is provided, will use
-    /// the heuristic.
-    /// - HeuristicOnly : The Agent will always use its heuristic
-    /// - InferenceOnly : The Agent will always use inference with the provided
-    /// neural network model.
     /// </summary>
     [Serializable]
     public enum BehaviorType
     {
+        /// <summary>
+        /// The Agent will use the remote process for decision making.
+        /// if unavailable, will use inference and if no model is provided, will use
+        /// the heuristic.
+        /// </summary>
         Default,
+
+        /// <summary>
+        /// The Agent will always use its heuristic
+        /// </summary>
         HeuristicOnly,
+
+        /// <summary>
+        /// The Agent will always use inference with the provided
+        /// neural network model.
+        /// </summary>
         InferenceOnly
     }
 
@@ -30,7 +37,6 @@ namespace MLAgents.Policies
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
     internal class BehaviorParameters : MonoBehaviour
     {
-
         [HideInInspector]
         [SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
@@ -57,9 +63,7 @@ namespace MLAgents.Policies
         /// <summary>
         /// The team ID for this behavior.
         /// </summary>
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("m_TeamID")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("m_TeamID")]
         public int TeamId;
 
         [FormerlySerializedAs("m_useChildSensors")]
