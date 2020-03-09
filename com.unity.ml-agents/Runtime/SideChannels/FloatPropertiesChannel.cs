@@ -32,13 +32,15 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public override void OnMessageReceived(byte[] data)
+        public override void OnMessageReceived(IncomingMessage msg)
         {
-            var kv = DeserializeMessage(data);
-            m_FloatProperties[kv.Key] = kv.Value;
-            if (m_RegisteredActions.ContainsKey(kv.Key))
+            var key = msg.ReadString();
+            var value = msg.ReadFloat32();
+
+            m_FloatProperties[key] = value;
+            if (m_RegisteredActions.ContainsKey(key))
             {
-                m_RegisteredActions[kv.Key].Invoke(kv.Value);
+                m_RegisteredActions[key].Invoke(value);
             }
         }
 
@@ -46,7 +48,13 @@ namespace MLAgents.SideChannels
         public void SetProperty(string key, float value)
         {
             m_FloatProperties[key] = value;
-            QueueMessageToSend(SerializeMessage(key, value));
+            using (var msgOut = new OutgoingMessage())
+            {
+                msgOut.WriteString(key);
+                msgOut.WriteFloat32(value);
+                QueueMessageToSend(msgOut);
+            }
+
             if (m_RegisteredActions.ContainsKey(key))
             {
                 m_RegisteredActions[key].Invoke(value);
@@ -76,35 +84,6 @@ namespace MLAgents.SideChannels
         public IList<string> ListProperties()
         {
             return new List<string>(m_FloatProperties.Keys);
-        }
-
-        static KeyValuePair<string, float> DeserializeMessage(byte[] data)
-        {
-            using (var memStream = new MemoryStream(data))
-            {
-                using (var binaryReader = new BinaryReader(memStream))
-                {
-                    var keyLength = binaryReader.ReadInt32();
-                    var key = Encoding.ASCII.GetString(binaryReader.ReadBytes(keyLength));
-                    var value = binaryReader.ReadSingle();
-                    return new KeyValuePair<string, float>(key, value);
-                }
-            }
-        }
-
-        static byte[] SerializeMessage(string key, float value)
-        {
-            using (var memStream = new MemoryStream())
-            {
-                using (var binaryWriter = new BinaryWriter(memStream))
-                {
-                    var stringEncoded = Encoding.ASCII.GetBytes(key);
-                    binaryWriter.Write(stringEncoded.Length);
-                    binaryWriter.Write(stringEncoded);
-                    binaryWriter.Write(value);
-                    return memStream.ToArray();
-                }
-            }
         }
     }
 }

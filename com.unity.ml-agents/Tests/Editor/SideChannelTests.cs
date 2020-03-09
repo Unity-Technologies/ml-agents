@@ -17,14 +17,18 @@ namespace MLAgents.Tests
                 ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
-            public override void OnMessageReceived(byte[] data)
+            public override void OnMessageReceived(IncomingMessage msg)
             {
-                messagesReceived.Add(BitConverter.ToInt32(data, 0));
+                messagesReceived.Add(msg.ReadInt32());
             }
 
-            public void SendInt(int data)
+            public void SendInt(int value)
             {
-                QueueMessageToSend(BitConverter.GetBytes(data));
+                using (var msg = new OutgoingMessage())
+                {
+                    msg.WriteInt32(value);
+                    QueueMessageToSend(msg);
+                }
             }
         }
 

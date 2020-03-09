@@ -22,9 +22,9 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public override void OnMessageReceived(byte[] data)
+        public override void OnMessageReceived(IncomingMessage msg)
         {
-            m_MessagesReceived.Add(data);
+            m_MessagesReceived.Add(msg.ReadRawBytes());
         }
 
         /// <summary>
@@ -34,7 +34,11 @@ namespace MLAgents.SideChannels
         /// <param name="data"> The byte array of data to send to Python.</param>
         public void SendRawBytes(byte[] data)
         {
-            QueueMessageToSend(data);
+            using (var msg = new OutgoingMessage())
+            {
+                msg.SetRawBytes(data);
+                QueueMessageToSend(msg);
+            }
         }
 
         /// <summary>

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System;
+using System.IO;
+using System.Text;
 
 namespace MLAgents.SideChannels
 {
@@ -28,16 +30,125 @@ namespace MLAgents.SideChannels
         /// Is called by the communicator every time a message is received from Python by the SideChannel.
         /// Can be called multiple times per simulation step if multiple messages were sent.
         /// </summary>
-        /// <param name="data"> the payload of the message.</param>
-        public abstract void OnMessageReceived(byte[] data);
+        /// <param name="msg">The incoming message.</param>
+        public abstract void OnMessageReceived(IncomingMessage msg);
 
         /// <summary>
         /// Queues a message to be sent to Python during the next simulation step.
         /// </summary>
         /// <param name="data"> The byte array of data to be sent to Python.</param>
-        protected void QueueMessageToSend(byte[] data)
+        protected void QueueMessageToSend(OutgoingMessage msg)
         {
-            MessageQueue.Add(data);
+            MessageQueue.Add(msg.ToByteArray());
+        }
+    }
+
+    public class IncomingMessage : IDisposable
+    {
+        byte[] m_Data;
+        Stream m_Stream;
+        BinaryReader m_Reader;
+
+        public IncomingMessage(byte[] data)
+        {
+            m_Data = data;
+            m_Stream = new MemoryStream(data);
+            m_Reader = new BinaryReader(m_Stream);
+        }
+
+        public int ReadInt32()
+        {
+            return m_Reader.ReadInt32();
+        }
+
+        public float ReadFloat32()
+        {
+            return m_Reader.ReadSingle();
+        }
+
+        public string ReadString()
+        {
+            var strLength = ReadInt32();
+            var str = Encoding.ASCII.GetString(m_Reader.ReadBytes(strLength));
+            return str;
+        }
+
+        public IList<float> ReadFloatArray()
+        {
+            var len = ReadInt32();
+            var output = new float[len];
+            for (var i = 0; i < len; i++)
+            {
+                output[i] = ReadFloat32();
+            }
+
+            return output;
+        }
+
+        public byte[] ReadRawBytes()
+        {
+            return m_Data;
+        }
+
+        public void Dispose()
+        {
+            m_Reader?.Dispose();
+            m_Stream?.Dispose();
+        }
+    }
+
+    public class OutgoingMessage : IDisposable
+    {
+        BinaryWriter m_Writer;
+        MemoryStream m_Stream;
+
+        public OutgoingMessage()
+        {
+            m_Stream = new MemoryStream();
+            m_Writer = new BinaryWriter(m_Stream);
+        }
+
+        public void Dispose()
+        {
+            m_Writer?.Dispose();
+            m_Stream?.Dispose();
+        }
+
+        public void WriteInt32(int i)
+        {
+            m_Writer.Write(i);
+        }
+
+        public void WriteFloat32(float f)
+        {
+            m_Writer.Write(f);
+        }
+
+        public void WriteString(string s)
+        {
+            var stringEncoded = Encoding.ASCII.GetBytes(s);
+            m_Writer.Write(stringEncoded.Length);
+            m_Writer.Write(stringEncoded);
+        }
+
+        public void WriteFloatList(IList<float> floatList)
+        {
+            WriteInt32(floatList.Count);
+            foreach (var f in floatList)
+            {
+                WriteFloat32(f);
+            }
+        }
+
+        public void SetRawBytes(byte[] data)
+        {
+            m_Stream.Seek(0, SeekOrigin.Begin);
+            m_Stream.Write(data, 0, data.Length);
+        }
+
+        internal byte[] ToByteArray()
+        {
+            return m_Stream.ToArray();
         }
     }
 }

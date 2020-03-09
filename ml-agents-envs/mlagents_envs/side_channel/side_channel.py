@@ -17,7 +17,7 @@ class SideChannel(ABC):
     to the Env object at construction.
     """
 
-    def __init__(self, channel_id):
+    def __init__(self, channel_id: uuid.UUID):
         self._channel_id: uuid.UUID = channel_id
         self.message_queue: List[bytearray] = []
 
