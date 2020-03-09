@@ -24,7 +24,7 @@ The versions can be found in
 * `BrainParameters` and `SpaceType` have been removed from the public API
 * `BehaviorParameters` have been removed from the public API.
 * `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity.
-* The following methods in the `Agent` class have been deprecated. They will be removed in a later release:
+* The following methods in the `Agent` class have been renamed. The original method names will be removed in a later release:
   * `InitializeAgent()` was renamed to `Initialize()`
   * `AgentAction()` was renamed to `OnActionReceived()`
   * `AgentReset()` was renamed to `OnEpsiodeBegin()`
