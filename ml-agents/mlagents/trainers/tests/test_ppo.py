@@ -14,6 +14,10 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+    curiosity_dummy_config,
+    gail_dummy_config,
+)
 
 
 @pytest.fixture
@@ -119,6 +123,68 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // dummy_config["sequence_length"],
+    )
+
+
+@pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
+@pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
+@pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
+# We need to test this separately from test_reward_signals.py to ensure no interactions
+def test_ppo_optimizer_update_curiosity(
+    curiosity_dummy_config, dummy_config, rnn, visual, discrete  # noqa: F811
+):
+    # Test evaluate
+    tf.reset_default_graph()
+    dummy_config["reward_signals"].update(curiosity_dummy_config)
+    optimizer = _create_ppo_optimizer_ops_mock(
+        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
+    )
+    # Test update
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
+    # Mock out reward signal eval
+    update_buffer["advantages"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    update_buffer["curiosity_returns"] = update_buffer["environment_rewards"]
+    update_buffer["curiosity_value_estimates"] = update_buffer["environment_rewards"]
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
+    )
+
+
+# We need to test this separately from test_reward_signals.py to ensure no interactions
+def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
+    # Test evaluate
+    tf.reset_default_graph()
+    dummy_config["reward_signals"].update(gail_dummy_config)
+    optimizer = _create_ppo_optimizer_ops_mock(
+        dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+    )
+    # Test update
+    update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
+    # Mock out reward signal eval
+    update_buffer["advantages"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
+    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
+    )
+
+    # Check if buffer size is too big
+    update_buffer = mb.simulate_rollout(3000, optimizer.policy.brain)
+    # Mock out reward signal eval
+    update_buffer["advantages"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_returns"] = update_buffer["environment_rewards"]
+    update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
+    update_buffer["gail_returns"] = update_buffer["environment_rewards"]
+    update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
     )
 
 
