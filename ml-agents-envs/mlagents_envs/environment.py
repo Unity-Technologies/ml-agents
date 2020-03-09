@@ -162,7 +162,6 @@ class UnityEnvironment(BaseEnv):
         self._env_state: Dict[str, BatchedStepResult] = {}
         self._env_specs: Dict[str, AgentGroupSpec] = {}
         self._env_actions: Dict[str, np.ndarray] = {}
-        self._is_first_message = True
         self._update_group_specs(aca_output)
 
     @staticmethod
@@ -327,15 +326,12 @@ class UnityEnvironment(BaseEnv):
             self._update_group_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
-            self._is_first_message = False
             self._env_actions.clear()
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
     @timed
     def step(self) -> None:
-        if self._is_first_message:
-            return self.reset()
         if not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
         # fill the blanks for missing actions

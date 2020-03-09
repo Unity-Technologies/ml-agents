@@ -124,9 +124,6 @@ namespace MLAgents
         bool m_Initialized;
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
-        // Flag used to keep track of the first time the Academy is reset.
-        bool m_FirstAcademyReset;
-
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
@@ -437,7 +434,6 @@ namespace MLAgents
         {
             EnvironmentReset();
             AgentForceReset?.Invoke();
-            m_FirstAcademyReset = true;
         }
 
         /// <summary>
@@ -446,11 +442,6 @@ namespace MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_FirstAcademyReset)
-            {
-                ForcedFullReset();
-            }
-
             AgentSetStatus?.Invoke(m_StepCount);
 
             m_StepCount += 1;

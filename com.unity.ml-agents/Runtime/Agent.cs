@@ -283,6 +283,7 @@ namespace MLAgents
             ResetData();
             Initialize();
             InitializeSensors();
+            OnEpisodeBegin();
         }
 
         /// <summary>
