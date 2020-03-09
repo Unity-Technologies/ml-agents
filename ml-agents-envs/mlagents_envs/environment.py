@@ -335,7 +335,7 @@ class UnityEnvironment(BaseEnv):
         if not self._loaded:
             raise UnityEnvironmentException("No Unity environment is loaded.")
         # fill the blanks for missing actions
-        for group_name in self._env_specs:
+        for group_name in self._env_state:
             if group_name not in self._env_actions:
                 n_agents = 0
                 if group_name in self._env_state:
