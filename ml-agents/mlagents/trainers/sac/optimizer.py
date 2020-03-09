@@ -537,7 +537,7 @@ class SACOptimizer(TFOptimizer):
         return update_stats
 
     def update_reward_signals(
-        self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
+        self, reward_signal_minibatches: Mapping[str, Dict], num_sequences: int
     ) -> Dict[str, float]:
         """
         Only update the reward signals.
@@ -567,7 +567,7 @@ class SACOptimizer(TFOptimizer):
         feed_dict: Dict[tf.Tensor, Any],
         update_dict: Dict[str, tf.Tensor],
         stats_needed: Dict[str, str],
-        reward_signal_minibatches: Mapping[str, AgentBuffer],
+        reward_signal_minibatches: Mapping[str, Dict],
         num_sequences: int,
     ) -> None:
         """
