@@ -130,7 +130,7 @@ namespace MLAgents.Editor
                         behaviorParameters.model,
                         behaviorParameters.inferenceDevice,
                         true
-                        );
+                    );
                 }
 
                 if (behaviorTypeChanged)
