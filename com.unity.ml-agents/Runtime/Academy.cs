@@ -334,6 +334,10 @@ namespace MLAgents
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
                 //environment must use Inference.
+
+                Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                Communicator.ResetCommandReceived += OnResetCommand;
+
                 try
                 {
                     var unityRlInitParameters = Communicator.Initialize(
@@ -352,12 +356,6 @@ namespace MLAgents
                         "Will perform inference instead."
                     );
                     Communicator = null;
-                }
-
-                if (Communicator != null)
-                {
-                    Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                    Communicator.ResetCommandReceived += OnResetCommand;
                 }
             }
 
@@ -432,6 +430,7 @@ namespace MLAgents
         /// </summary>
         void ForcedFullReset()
         {
+            Debug.Log("Forced Full reset");
             EnvironmentReset();
             AgentForceReset?.Invoke();
         }
