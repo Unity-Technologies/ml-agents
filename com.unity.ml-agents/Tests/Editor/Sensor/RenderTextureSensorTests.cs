@@ -5,9 +5,8 @@ using MLAgents.Sensors;
 
 namespace MLAgents.Tests
 {
-
     [TestFixture]
-    public class RenderTextureSensorTest
+    public class RenderTextureSensorTests
     {
         [Test]
         public void TestRenderTextureSensor()
@@ -24,7 +23,7 @@ namespace MLAgents.Tests
                     var writeAdapter = new WriteAdapter();
                     var obs = sensor.GetObservationProto(writeAdapter);
 
-                    Assert.AreEqual((int) compression, (int) obs.CompressionType);
+                    Assert.AreEqual((int)compression, (int)obs.CompressionType);
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, obs.Shape);
                 }

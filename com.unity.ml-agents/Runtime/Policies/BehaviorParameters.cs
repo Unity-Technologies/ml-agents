@@ -5,7 +5,6 @@ using UnityEngine.Serialization;
 
 namespace MLAgents.Policies
 {
-
     /// <summary>
     /// Defines what type of behavior the Agent will be using
     /// </summary>
@@ -38,7 +37,6 @@ namespace MLAgents.Policies
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
     internal class BehaviorParameters : MonoBehaviour
     {
-
         [HideInInspector]
         [SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();

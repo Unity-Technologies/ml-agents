@@ -1,3 +1,4 @@
+using System.CodeDom;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -600,6 +601,63 @@ namespace MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.heuristicCalls);
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
+        }
+    }
+
+    [TestFixture]
+    public class TestOnEnableOverride
+    {
+        public class OnEnableAgent : Agent
+        {
+            public bool callBase;
+
+            protected override void OnEnable()
+            {
+                if (callBase)
+                    base.OnEnable();
+            }
+        }
+
+        static void _InnerAgentTestOnEnableOverride(bool callBase = false)
+        {
+            var go = new GameObject();
+            var agent = go.AddComponent<OnEnableAgent>();
+            agent.callBase = callBase;
+            var onEnable = typeof(OnEnableAgent).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sendInfo = typeof(Agent).GetMethod("SendInfoToBrain", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(onEnable);
+            onEnable.Invoke(agent, null);
+            Assert.NotNull(sendInfo);
+            if (agent.callBase)
+            {
+                Assert.DoesNotThrow(() => sendInfo.Invoke(agent, null));
+            }
+            else
+            {
+                Assert.Throws<UnityAgentsException>(() =>
+                {
+                    try
+                    {
+                        sendInfo.Invoke(agent, null);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw e.GetBaseException();
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void TestAgentCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride(true);
+        }
+
+        [Test]
+        public void TestAgentDontCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride();
         }
     }
 }
