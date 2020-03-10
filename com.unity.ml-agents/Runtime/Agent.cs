@@ -259,6 +259,10 @@ namespace MLAgents
             ResetData();
             Initialize();
             InitializeSensors();
+            if (Academy.Instance.FirstAcademyReset)
+            {
+                OnEpisodeBegin();
+            }
         }
 
         /// <summary>

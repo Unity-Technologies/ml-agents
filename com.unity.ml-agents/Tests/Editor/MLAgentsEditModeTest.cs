@@ -314,6 +314,7 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
 
             var numberAgent1Reset = 0;
+            var numberAgent2Reset = 0;
             var numberAgent2Initialization = 0;
             var requestDecision = 0;
             var requestAction = 0;
@@ -321,7 +322,7 @@ namespace MLAgents.Tests
             {
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
                 // Agent2 is never reset since initialized after academy
-                Assert.AreEqual(0, agent2.agentResetCalls);
+                Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
@@ -338,6 +339,7 @@ namespace MLAgents.Tests
                 {
                     agent2.LazyInitialize();
                     numberAgent2Initialization += 1;
+                    numberAgent2Reset += 1;
                 }
 
                 // We are testing request decision and request actions when called
@@ -438,6 +440,7 @@ namespace MLAgents.Tests
                 if (i == 2)
                 {
                     agent1.LazyInitialize();
+                    numberAgent1Reset += 1;
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
