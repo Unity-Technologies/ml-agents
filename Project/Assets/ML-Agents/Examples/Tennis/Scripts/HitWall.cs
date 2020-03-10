@@ -30,8 +30,8 @@ public class HitWall : MonoBehaviour
 
     void Reset()
     {
-        m_AgentA.Done();
-        m_AgentB.Done();
+        m_AgentA.EndEpisode();
+        m_AgentB.EndEpisode();
         m_Area.MatchReset();
         lastFloorHit = FloorHit.Service;
         net = false;

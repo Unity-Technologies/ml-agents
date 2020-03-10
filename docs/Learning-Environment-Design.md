@@ -28,8 +28,7 @@ Step-by-step procedures for running the training process are provided in the
 
 Training and simulation proceed in steps orchestrated by the ML-Agents Academy
 class. The Academy works with Agent objects in the scene to step
-through the simulation. When all Agents in the scene are _done_,
-one training episode is finished.
+through the simulation.
 
 During training, the external Python training process communicates with the
 Academy to run a series of episodes while it collects data and optimizes its
@@ -40,19 +39,17 @@ use.
 The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy's `OnEnvironmentReset` delegate.
-2. Calls the `AgentReset()` function for each Agent in the scene.
+2. Calls the `OnEpisodeBegin()` function for each Agent in the scene.
 3. Calls the  `CollectObservations(VectorSensor sensor)` function for each Agent in the scene.
 4. Uses each Agent's Policy to decide on the Agent's next action.
-5. Calls the `AgentAction()` function for each Agent in the scene, passing in
-   the action chosen by the Agent's Policy. (This function is not called if the
-   Agent is done.)
-6. Calls the Agent's `AgentReset()` function if the Agent has reached its `Max
-   Step` count or has otherwise marked itself as `done`.
+5. Calls the `OnActionReceived()` function for each Agent in the scene, passing in
+   the action chosen by the Agent's Policy.
+6. Calls the Agent's `OnEpisodeBegin()` function if the Agent has reached its `Max
+   Step` count or has otherwise marked itself as `EndEpisode()`.
 
 To create a training environment, extend the Agent class to
-implement the above methods. The `Agent.CollectObservations(VectorSensor sensor)` and
-`Agent.AgentAction()` functions are required; the other methods are optional —
-whether you need to implement them or not depends on your specific scenario.
+implement the above methods whether you need to implement them or not depends on
+your specific scenario.
 
 **Note:** The API used by the Python training process to communicate with
 and control the Academy during training can be used for other purposes as well.
@@ -107,21 +104,21 @@ in a football game or a car object in a vehicle simulation. Every Agent must
 have appropriate `Behavior Parameters`.
 
 To create an Agent, extend the Agent class and implement the essential
-`CollectObservations(VectorSensor sensor)` and `AgentAction()` methods:
+`CollectObservations(VectorSensor sensor)` and `OnActionReceived()` methods:
 
 * `CollectObservations(VectorSensor sensor)` — Collects the Agent's observation of its environment.
-* `AgentAction()` — Carries out the action chosen by the Agent's Policy and
+* `OnActionReceived()` — Carries out the action chosen by the Agent's Policy and
   assigns a reward to the current state.
 
 Your implementations of these functions determine how the Behavior Parameters
 assigned to this Agent must be set.
 
 You must also determine how an Agent finishes its task or times out. You can
-manually set an Agent to done in your `AgentAction()` function when the Agent
-has finished (or irrevocably failed) its task by calling the `Done()` function.
+manually terminate an Agent episode in your `OnActionReceived()` function when the Agent
+has finished (or irrevocably failed) its task by calling the `EndEpisode()` function.
 You can also set the Agent's `Max Steps` property to a positive value and the
-Agent will consider itself done after it has taken that many steps. You can
-use the `Agent.AgentReset()` function to prepare the Agent to start again.
+Agent will consider the episode over after it has taken that many steps. You can
+use the `Agent.OnEpisodeBegin()` function to prepare the Agent to start again.
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information
 about programming your own Agents.
@@ -146,4 +143,4 @@ include:
 * The Academy must reset the scene to a valid starting point for each episode of
   training.
 * A training episode must have a definite end — either using `Max Steps` or by
-  each Agent setting itself to `done`.
+  each Agent ending its episode manually with `EndEpisode()`.

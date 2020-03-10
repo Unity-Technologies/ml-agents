@@ -30,9 +30,8 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     Vector3 m_Transform;
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
-        base.InitializeAgent();
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
@@ -106,7 +105,7 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         // Existential penalty for strikers.
         AddReward(-1f / 3000f);
@@ -159,7 +158,7 @@ public class AgentSoccer : Agent
         }
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         if (team == Team.Purple)
         {

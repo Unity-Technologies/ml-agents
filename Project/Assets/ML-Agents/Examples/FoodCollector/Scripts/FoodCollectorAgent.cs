@@ -29,9 +29,8 @@ public class FoodCollectorAgent : Agent
     public bool useVectorObs;
 
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
-        base.InitializeAgent();
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<FoodCollectorArea>();
         m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
@@ -202,7 +201,7 @@ public class FoodCollectorAgent : Agent
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         MoveAgent(vectorAction);
     }
@@ -230,7 +229,7 @@ public class FoodCollectorAgent : Agent
         return action;
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         Unfreeze();
         Unpoison();
