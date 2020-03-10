@@ -32,7 +32,10 @@ namespace MLAgents.Sensors
         public string sensorName
         {
             get { return m_SensorName;  }
-            internal set { m_SensorName = value;  }
+            set
+            {
+                AccessUtilities.SetPropertyIfAllowed("CameraSensorComponent", "sensorName", ref m_SensorName, value);
+            }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("width")]
@@ -44,7 +47,7 @@ namespace MLAgents.Sensors
         public int width
         {
             get { return m_Width;  }
-            internal set { m_Width = value;  }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_Width, value); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("height")]
@@ -56,7 +59,7 @@ namespace MLAgents.Sensors
         public int height
         {
             get { return m_Height;  }
-            internal set { m_Height = value;  }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_Height, value); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
@@ -68,7 +71,7 @@ namespace MLAgents.Sensors
         public bool grayscale
         {
             get { return m_Grayscale;  }
-            internal set { m_Grayscale = value;  }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_Grayscale, value);  }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
