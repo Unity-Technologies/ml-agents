@@ -24,6 +24,7 @@ jobs:
     # Run additional numpy checks on unit tests
     environment:
       TEST_ENFORCE_NUMPY_FLOAT32: 1
+      TEST_ENFORCE_ONNX_CONVERSION: 1 #<< parameters.enforce_onnx_conversion >>
 
     steps:
       - checkout
