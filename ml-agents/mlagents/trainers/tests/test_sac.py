@@ -221,6 +221,10 @@ def test_process_trajectory(dummy_config):
         for agent in reward.values():
             assert agent == 0
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
+    # Assert we're not just using the default values
+    assert (
+        trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").mean > 0
+    )
 
 
 if __name__ == "__main__":

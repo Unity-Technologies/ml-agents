@@ -190,8 +190,6 @@ class SACTrainer(RLTrainer):
         )
 
         if trajectory.done_reached:
-            for key, val in self.collected_rewards.items():
-                print(key, val[agent_id])
             self._update_end_episode_stats(agent_id, self.optimizer)
 
     def _is_ready_update(self) -> bool:
