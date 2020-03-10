@@ -38,7 +38,7 @@ namespace MLAgents.Tests
 
         internal IPolicy GetPolicy()
         {
-            return (IPolicy) typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+            return (IPolicy)typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
         }
 
         public int initializeAgentCalls;

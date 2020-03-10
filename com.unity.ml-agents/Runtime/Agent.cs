@@ -119,30 +119,6 @@ namespace MLAgents
             public int maxStep;
         }
 
-        /// <summary>
-        /// The team ID for this Agent.
-        /// </summary>
-        public int TeamId
-        {
-            get
-            {
-                LazyInitialize();
-                return m_PolicyFactory.TeamId;
-            }
-        }
-
-        /// <summary>
-        /// The name of the behavior of the Agent.
-        /// </summary>
-        public string BehaviorName
-        {
-            get
-            {
-                LazyInitialize();
-                return m_PolicyFactory.behaviorName;
-            }
-        }
-
         [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
         [SerializeField][HideInInspector]
@@ -384,25 +360,39 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
-            m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            if (behaviorName == m_PolicyFactory.behaviorName &&
+                model == m_PolicyFactory.model &&
+                inferenceDevice == m_PolicyFactory.inferenceDevice)
+            {
+                // If everything is the same, don't make any changes.
+                return;
+            }
+
+            m_PolicyFactory.model = model;
+            m_PolicyFactory.inferenceDevice = inferenceDevice;
+            m_PolicyFactory.behaviorName = behaviorName;
+            ReloadPolicy();
         }
 
         /// <summary>
         /// Updates the type of behavior for the agent.
         /// </summary>
-        /// <param name="behaviorType"> The new behaviorType for the Agent
-        /// </param>
+        /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
         public void SetBehaviorType(BehaviorType behaviorType)
         {
-            if (m_PolicyFactory.m_BehaviorType == behaviorType)
+            if (m_PolicyFactory.behaviorType == behaviorType)
             {
                 return;
             }
-            m_PolicyFactory.m_BehaviorType = behaviorType;
+            m_PolicyFactory.behaviorType = behaviorType;
+            ReloadPolicy();
+        }
+
+        internal void ReloadPolicy()
+        {
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+
         }
 
         /// <summary>
@@ -606,7 +596,6 @@ namespace MLAgents
             {
                 throw new UnityAgentsException("Call to SendInfoToBrain when Agent hasn't been initialized." +
                     "Please ensure that you are calling 'base.OnEnable()' if you have overridden OnEnable.");
-
             }
 
             if (m_Brain == null)
