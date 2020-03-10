@@ -18,9 +18,8 @@ public class HallwayAgent : Agent
     HallwaySettings m_HallwaySettings;
     int m_Selection;
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
-        base.InitializeAgent();
         m_HallwaySettings = FindObjectOfType<HallwaySettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
@@ -67,7 +66,7 @@ public class HallwayAgent : Agent
         m_AgentRb.AddForce(dirToGo * m_HallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         AddReward(-1f / maxStep);
         MoveAgent(vectorAction);
@@ -88,7 +87,7 @@ public class HallwayAgent : Agent
                 SetReward(-0.1f);
                 StartCoroutine(GoalScoredSwapGroundMaterial(m_HallwaySettings.failMaterial, 0.5f));
             }
-            Done();
+            EndEpisode();
         }
     }
 
@@ -113,7 +112,7 @@ public class HallwayAgent : Agent
         return new float[] { 0 };
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         var agentOffset = -15f;
         var blockOffset = 0f;
