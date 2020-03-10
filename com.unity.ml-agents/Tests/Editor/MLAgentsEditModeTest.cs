@@ -43,10 +43,10 @@ namespace MLAgents.Tests
 
         public int initializeAgentCalls;
         public int collectObservationsCalls;
-        public int collectObservationsCallsSinceLastReset;
+        public int collectObservationsCallsForEpisode;
         public int agentActionCalls;
-        public int agentActionCallsSinceLastReset;
-        public int agentResetCalls;
+        public int agentActionCallsForEpisode;
+        public int agentEpisodeBeginCalls;
         public int heuristicCalls;
         public TestSensor sensor1;
         public TestSensor sensor2;
@@ -67,22 +67,22 @@ namespace MLAgents.Tests
         public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
-            collectObservationsCallsSinceLastReset += 1;
+            collectObservationsCallsForEpisode += 1;
             sensor.AddObservation(0f);
         }
 
         public override void OnActionReceived(float[] vectorAction)
         {
             agentActionCalls += 1;
-            agentActionCallsSinceLastReset += 1;
+            agentActionCallsForEpisode += 1;
             AddReward(0.1f);
         }
 
         public override void OnEpisodeBegin()
         {
-            agentResetCalls += 1;
-            collectObservationsCallsSinceLastReset = 0;
-            agentActionCallsSinceLastReset = 0;
+            agentEpisodeBeginCalls += 1;
+            collectObservationsCallsForEpisode = 0;
+            agentActionCallsForEpisode = 0;
         }
 
         public override float[] Heuristic()
@@ -224,8 +224,8 @@ namespace MLAgents.Tests
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
-            Assert.AreEqual(0, agent1.agentResetCalls);
-            Assert.AreEqual(0, agent2.agentResetCalls);
+            Assert.AreEqual(0, agent1.agentEpisodeBeginCalls);
+            Assert.AreEqual(0, agent2.agentEpisodeBeginCalls);
             Assert.AreEqual(0, agent1.initializeAgentCalls);
             Assert.AreEqual(0, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
@@ -235,10 +235,9 @@ namespace MLAgents.Tests
             agent2.LazyInitialize();
             agent1.LazyInitialize();
 
-            // agent1 was not enabled when the academy started
-            // The agents have been initialized
-            Assert.AreEqual(0, agent1.agentResetCalls);
-            Assert.AreEqual(0, agent2.agentResetCalls);
+            // The agents have been initialized and started their episode
+            Assert.AreEqual(1, agent1.agentEpisodeBeginCalls);
+            Assert.AreEqual(1, agent2.agentEpisodeBeginCalls);
             Assert.AreEqual(1, agent1.initializeAgentCalls);
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
@@ -306,16 +305,15 @@ namespace MLAgents.Tests
 
             agent1.LazyInitialize();
 
-            var numberAgent1Reset = 1; // agent1 resets when initialized
-            var numberAgent2Reset = 0;
+            var numberAgent1Episodes = 1; // agent1 Starts the Episode when initialized
+            var numberAgent2Episodes = 0;
             var numberAgent2Initialization = 0;
             var requestDecision = 0;
             var requestAction = 0;
             for (var i = 0; i < 50; i++)
             {
-                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                // Agent2 is never reset since initialized after academy
-                Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
+                Assert.AreEqual(numberAgent1Episodes, agent1.agentEpisodeBeginCalls);
+                Assert.AreEqual(numberAgent2Episodes, agent2.agentEpisodeBeginCalls);
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
@@ -327,7 +325,7 @@ namespace MLAgents.Tests
                 {
                     agent2.LazyInitialize();
                     numberAgent2Initialization += 1;
-                    numberAgent2Reset += 1;
+                    numberAgent2Episodes += 1;
                 }
 
                 // We are testing request decision and request actions when called
@@ -367,7 +365,6 @@ namespace MLAgents.Tests
         {
             var aca = Academy.Instance;
 
-            var numberReset = 0;
             var stepsSinceReset = 0;
             for (var i = 0; i < 50; i++)
             {
@@ -396,38 +393,38 @@ namespace MLAgents.Tests
 
             agent2.LazyInitialize();
 
-            var numberAgent1Reset = 0;
-            var numberAgent2Reset = 1; // Agent2's Episode started
+            var numberAgent1Episodes = 0;
+            var numberAgent2Episodes = 1; // Agent2's Episode started
             var acaStepsSinceReset = 0;
-            var agent2StepSinceReset = 0;
+            var agent2StepsForEpisode = 0;
             for (var i = 0; i < 500; i++)
             {
                 Assert.AreEqual(acaStepsSinceReset, aca.StepCount);
 
                 Assert.AreEqual(i, aca.TotalStepCount);
 
-                Assert.AreEqual(agent2StepSinceReset, agent2.StepCount);
-                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
+                Assert.AreEqual(agent2StepsForEpisode, agent2.StepCount);
+                Assert.AreEqual(numberAgent1Episodes, agent1.agentEpisodeBeginCalls);
+                Assert.AreEqual(numberAgent2Episodes, agent2.agentEpisodeBeginCalls);
 
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
                     agent1.LazyInitialize();
-                    numberAgent1Reset += 1;
+                    numberAgent1Episodes += 1;
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
                 {
                     agent1.EndEpisode();
-                    numberAgent1Reset += 1;
+                    numberAgent1Episodes += 1;
                 }
-                // Resetting agent 2 regularly
+                // Ending the episode of agent 2 regularly
                 if (i % 13 == 3)
                 {
                     agent2.EndEpisode();
-                    numberAgent2Reset += 1;
-                    agent2StepSinceReset = 0;
+                    numberAgent2Episodes += 1;
+                    agent2StepsForEpisode = 0;
                 }
                 // Request a decision for agent 2 regularly
                 if (i % 3 == 2)
@@ -441,7 +438,7 @@ namespace MLAgents.Tests
                 }
 
                 acaStepsSinceReset += 1;
-                agent2StepSinceReset += 1;
+                agent2StepsForEpisode += 1;
                 aca.EnvironmentStep();
             }
         }
@@ -481,17 +478,17 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
-            var expectedAgent1ActionSinceReset = 0;
+            var expectedAgent1ActionForEpisode = 0;
 
             for (var i = 0; i < 50; i++)
             {
-                expectedAgent1ActionSinceReset += 1;
-                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0)
+                expectedAgent1ActionForEpisode += 1;
+                if (expectedAgent1ActionForEpisode == agent1.maxStep || i == 0)
                 {
-                    expectedAgent1ActionSinceReset = 0;
+                    expectedAgent1ActionForEpisode = 0;
                 }
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionSinceReset * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionForEpisode * 10.1f - agent1.GetCumulativeReward()), 0.05f);
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
@@ -516,41 +513,41 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
 
             var expectedAgentStepCount = 0;
-            var expectedResets = 0;
+            var expectedNumEpisodes = 0;
             var expectedAgentAction = 0;
-            var expectedAgentActionSinceReset = 0;
+            var expectedAgentActionForEpisode = 0;
             var expectedCollectObsCalls = 0;
-            var expectedCollectObsCallsSinceReset = 0;
+            var expectedCollectObsCallsForEpisode = 0;
 
             for (var i = 0; i < 15; i++)
             {
                 // Agent should observe and act on each Academy step
                 expectedAgentAction += 1;
-                expectedAgentActionSinceReset += 1;
+                expectedAgentActionForEpisode += 1;
                 expectedCollectObsCalls += 1;
-                expectedCollectObsCallsSinceReset += 1;
+                expectedCollectObsCallsForEpisode += 1;
                 expectedAgentStepCount += 1;
 
                 // If the next step will put the agent at maxSteps, we expect it to reset
                 if (agent1.StepCount == maxStep - 1 || (i == 0))
                 {
-                    expectedResets += 1;
+                    expectedNumEpisodes += 1;
                 }
 
                 if (agent1.StepCount == maxStep - 1)
                 {
-                    expectedAgentActionSinceReset = 0;
-                    expectedCollectObsCallsSinceReset = 0;
+                    expectedAgentActionForEpisode = 0;
+                    expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
                 }
                 aca.EnvironmentStep();
 
                 Assert.AreEqual(expectedAgentStepCount, agent1.StepCount);
-                Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedNumEpisodes, agent1.agentEpisodeBeginCalls);
                 Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
-                Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
+                Assert.AreEqual(expectedAgentActionForEpisode, agent1.agentActionCallsForEpisode);
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
-                Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
+                Assert.AreEqual(expectedCollectObsCallsForEpisode, agent1.collectObservationsCallsForEpisode);
             }
         }
 
