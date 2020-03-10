@@ -20,7 +20,7 @@ namespace MLAgents.Editor
             // Don't allow certain fields to be modified during play mode.
             // * SensorName affects the ordering of the Agent's observations
             // * The number of tags and rays affects the size of the observations.
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_DetectableTags"), true);
@@ -35,7 +35,7 @@ namespace MLAgents.Editor
 
             // Because the number of observation stacks affects the observation shape,
             // it is not editable during play mode.
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
             }

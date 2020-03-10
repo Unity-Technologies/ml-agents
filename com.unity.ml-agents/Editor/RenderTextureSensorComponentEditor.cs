@@ -15,7 +15,7 @@ namespace MLAgents.Editor
             // Drawing the RenderTextureComponent
             EditorGUI.BeginChangeCheck();
 
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_RenderTexture"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);

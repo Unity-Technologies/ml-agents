@@ -33,7 +33,7 @@ namespace MLAgents.Sensors
         public string sensorName
         {
             get { return m_SensorName;  }
-            internal set { m_SensorName = value;  }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_SensorName, value); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
@@ -45,7 +45,7 @@ namespace MLAgents.Sensors
         public bool grayscale
         {
             get { return m_Grayscale;  }
-            internal set { m_Grayscale = value;  }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_Grayscale, value);  }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]

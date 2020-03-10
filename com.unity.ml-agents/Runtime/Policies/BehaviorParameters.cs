@@ -103,7 +103,7 @@ namespace MLAgents.Policies
         public string behaviorName
         {
             get { return m_BehaviorName; }
-            internal set { m_BehaviorName = value; }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_BehaviorName, value); }
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace MLAgents.Policies
         public bool useChildSensors
         {
             get { return m_UseChildSensors; }
-            internal set { m_UseChildSensors = value; } // TODO make public, don't allow changes at runtime
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_UseChildSensors, value); }
         }
 
         /// <summary>

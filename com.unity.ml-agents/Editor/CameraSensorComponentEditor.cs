@@ -17,7 +17,7 @@ namespace MLAgents.Editor
             EditorGUI.BeginChangeCheck();
 
             EditorGUILayout.PropertyField(so.FindProperty("m_Camera"), true);
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
             {
                 // These fields affect the sensor order or observation size,
                 // So can't be changed at runtime.

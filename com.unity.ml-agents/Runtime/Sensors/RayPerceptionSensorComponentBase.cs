@@ -18,9 +18,9 @@ namespace MLAgents.Sensors
         /// </summary>
         public string sensorName
         {
-            get => m_SensorName;
+            get { return m_SensorName; }
             // Restrict the access on the name, since changing it a runtime doesn't re-sort the Agent sensors.
-            internal set => m_SensorName = value;
+            set {AccessUtilities.SetPropertyIfAllowed(ref m_SensorName, value);}
         }
 
         [SerializeField, FormerlySerializedAs("detectableTags")]
@@ -32,9 +32,9 @@ namespace MLAgents.Sensors
         /// </summary>
         public List<string> detectableTags
         {
-            get => m_DetectableTags;
+            get { return m_DetectableTags; }
             // Note: can't change at runtime
-            internal set => m_DetectableTags = value;
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_DetectableTags, value);}
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
@@ -47,9 +47,9 @@ namespace MLAgents.Sensors
         /// </summary>
         public int raysPerDirection
         {
-            get => m_RaysPerDirection;
+            get { return m_RaysPerDirection; }
             // Note: can't change at runtime
-            internal set => m_RaysPerDirection = value;
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_RaysPerDirection, value);}
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
@@ -119,8 +119,8 @@ namespace MLAgents.Sensors
         /// </summary>
         internal int observationStacks
         {
-            get => m_ObservationStacks;
-            set => m_ObservationStacks = value; // Note: can't change at runtime
+            get { return m_ObservationStacks; }
+            set { AccessUtilities.SetPropertyIfAllowed(ref m_ObservationStacks, value); }
         }
 
         /// <summary>
