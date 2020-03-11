@@ -1,3 +1,4 @@
+using System.CodeDom;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -37,7 +38,7 @@ namespace MLAgents.Tests
 
         internal IPolicy GetPolicy()
         {
-            return (IPolicy) typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+            return (IPolicy)typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
         }
 
         public int initializeAgentCalls;
@@ -50,7 +51,7 @@ namespace MLAgents.Tests
         public TestSensor sensor1;
         public TestSensor sensor2;
 
-        public override void InitializeAgent()
+        public override void Initialize()
         {
             initializeAgentCalls += 1;
 
@@ -70,14 +71,14 @@ namespace MLAgents.Tests
             sensor.AddObservation(0f);
         }
 
-        public override void AgentAction(float[] vectorAction)
+        public override void OnActionReceived(float[] vectorAction)
         {
             agentActionCalls += 1;
             agentActionCallsSinceLastReset += 1;
             AddReward(0.1f);
         }
 
-        public override void AgentReset()
+        public override void OnEpisodeBegin()
         {
             agentResetCalls += 1;
             collectObservationsCallsSinceLastReset = 0;
@@ -118,7 +119,7 @@ namespace MLAgents.Tests
         public byte[] GetCompressedObservation()
         {
             numCompressedCalls++;
-            return null;
+            return new byte[] { 0 };
         }
 
         public SensorCompressionType GetCompressionType()
@@ -441,13 +442,13 @@ namespace MLAgents.Tests
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
                 {
-                    agent1.Done();
+                    agent1.EndEpisode();
                     numberAgent1Reset += 1;
                 }
                 // Resetting agent 2 regularly
                 if (i % 13 == 3)
                 {
-                    agent2.Done();
+                    agent2.EndEpisode();
                     numberAgent2Reset += 1;
                     agent2StepSinceReset = 0;
                 }
@@ -600,6 +601,63 @@ namespace MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.heuristicCalls);
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
+        }
+    }
+
+    [TestFixture]
+    public class TestOnEnableOverride
+    {
+        public class OnEnableAgent : Agent
+        {
+            public bool callBase;
+
+            protected override void OnEnable()
+            {
+                if (callBase)
+                    base.OnEnable();
+            }
+        }
+
+        static void _InnerAgentTestOnEnableOverride(bool callBase = false)
+        {
+            var go = new GameObject();
+            var agent = go.AddComponent<OnEnableAgent>();
+            agent.callBase = callBase;
+            var onEnable = typeof(OnEnableAgent).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sendInfo = typeof(Agent).GetMethod("SendInfoToBrain", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(onEnable);
+            onEnable.Invoke(agent, null);
+            Assert.NotNull(sendInfo);
+            if (agent.callBase)
+            {
+                Assert.DoesNotThrow(() => sendInfo.Invoke(agent, null));
+            }
+            else
+            {
+                Assert.Throws<UnityAgentsException>(() =>
+                {
+                    try
+                    {
+                        sendInfo.Invoke(agent, null);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw e.GetBaseException();
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void TestAgentCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride(true);
+        }
+
+        [Test]
+        public void TestAgentDontCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride();
         }
     }
 }

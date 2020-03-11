@@ -34,7 +34,7 @@ namespace MLAgentsExamples
 
                 if (agentDoneOnGroundContact)
                 {
-                    agent.Done();
+                    agent.EndEpisode();
                 }
             }
         }

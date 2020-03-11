@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
  - `BrainParameters` and `SpaceType` have been removed from the public API
  - `BehaviorParameters` have been removed from the public API.
+ - The following methods in the `Agent` class have been deprecated and will be removed in a later release:
+   - `InitializeAgent()` was renamed to `Initialize()`
+   - `AgentAction()` was renamed to `OnActionReceived()`
+   - `AgentReset()` was renamed to `OnEpisodeBegin()`
+   - `Done()` was renamed to `EndEpisode()`
+   - `GiveModel()` was renamed to `SetModel()`
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -25,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Academy.RegisterSideChannel and UnregisterSideChannel methods were added. (#3391)
  - A tutorial on adding custom SideChannels was added (#3391)
  - The stepping logic for the Agent and the Academy has been simplified (#3448)
- - Update Barracuda to 0.6.0-preview
+ - Update Barracuda to 0.6.1-preview
  * The interface for `RayPerceptionSensor.PerceiveStatic()` was changed to take an input class and write to an output class, and the method was renamed to `Perceive()`.
  - The checkpoint file suffix was changed from `.cptk` to `.ckpt` (#3470)
  - The command-line argument used to determine the port that an environment will listen on was changed from `--port` to `--mlagents-port`.
@@ -35,11 +41,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The method `GetStepCount()` on the Agent class has been replaced with the property getter `StepCount`
  - `RayPerceptionSensorComponent` and related classes now display the debug gizmos whenever the Agent is selected (not just Play mode).
  - Most fields on `RayPerceptionSensorComponent` can now be changed while the editor is in Play mode. The exceptions to this are fields that affect the number of observations.
+ - Most fields on `CameraSensorComponent` and `RenderTextureSensorComponent` were changed to private and replaced by properties with the same name.
  - Unused static methods from the `Utilities` class (ShiftLeft, ReplaceRange, AddRangeNoAlloc, and GetSensorFloatObservationSize) were removed.
  - The `Agent` class is no longer abstract.
  - SensorBase was moved out of the package and into the Examples directory.
  - `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
-
+ - `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity. (#3555)
+ - The `IFloatProperties` interface has been removed.
+ - Fix #3579.
+ - Improved inference performance for models with multiple action branches. (#3598)
+ - Fixed an issue when using GAIL with less than `batch_size` number of demonstrations. (#3591)
+ - The interfaces to the `SideChannel` classes (on C# and python) have changed to use new  `IncomingMessage` and `OutgoingMessage` classes. These should make reading and writing data to the channel easier. (#3596)
 
 ## [0.14.1-preview] - 2020-02-25
 

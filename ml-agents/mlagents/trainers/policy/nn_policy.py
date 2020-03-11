@@ -1,8 +1,5 @@
-import logging
 from typing import Any, Dict, Optional, List
-
 from mlagents.tf_utils import tf
-
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.brain import BrainParameters
@@ -13,8 +10,6 @@ from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-
-logger = logging.getLogger("mlagents.trainers")
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 

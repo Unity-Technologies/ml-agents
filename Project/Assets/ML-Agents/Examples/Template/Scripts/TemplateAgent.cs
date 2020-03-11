@@ -8,11 +8,11 @@ public class TemplateAgent : Agent
     {
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
     }
 }

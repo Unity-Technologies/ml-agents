@@ -23,6 +23,17 @@ The versions can be found in
 * `AgentInfo.actionMasks` has been renamed to `AgentInfo.discreteActionMasks`.
 * `BrainParameters` and `SpaceType` have been removed from the public API
 * `BehaviorParameters` have been removed from the public API.
+* `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity.
+* The following methods in the `Agent` class have been renamed. The original method names will be removed in a later release:
+  * `InitializeAgent()` was renamed to `Initialize()`
+  * `AgentAction()` was renamed to `OnActionReceived()`
+  * `AgentReset()` was renamed to `OnEpsiodeBegin()`
+  * `Done()` was renamed to `EndEpisode()`
+  * `GiveModel()` was renamed to `SetModel()`
+* The `IFloatProperties` interface has been removed.
+* The interface for SideChannels was changed:
+  * In C#, `OnMessageReceived` now takes a `IncomingMessage` argument, and `QueueMessageToSend` takes an `OutgoingMessage` argument.
+  * In python, `on_message_received` now takes a `IncomingMessage` argument, and `queue_message_to_send` takes an `OutgoingMessage` argument.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -30,8 +41,15 @@ The versions can be found in
 * Replace your calls to `SetActionMask` on your Agent to `DiscreteActionMasker.SetActionMask` in `CollectDiscreteActionMasks`.
 * If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output,
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
-* Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
+* We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
+  * `InitializeAgent()` to `Initialize()`
+  * `AgentAction()` to `OnActionReceived()`
+  * `AgentReset()` to `OnEpsiodeBegin()`
+  * `Done()` to `EndEpisode()`
+  * `GiveModel()` to `SetModel()`
+* Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
+* If you implemented custom `SideChannels`, update the signatures of your methods, and add your data to the `OutgoingMessage` or read it from the `IncomingMessage`.
 
 ## Migrating from 0.13 to 0.14
 

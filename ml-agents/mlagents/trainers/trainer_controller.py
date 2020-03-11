@@ -90,6 +90,7 @@ class TrainerController(object):
                 brain_names_to_measure_vals[brain_name] = measure_val
         return brain_names_to_measure_vals
 
+    @timed
     def _save_model(self):
         """
         Saves current model to checkpoint folder.
@@ -136,6 +137,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
+    @timed
     def _reset_env(self, env: EnvManager) -> None:
         """Resets the environment.
 
@@ -199,6 +201,7 @@ class TrainerController(object):
         for behavior_id in behavior_ids:
             self._create_trainer_and_manager(env_manager, behavior_id)
 
+    @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
         tf.reset_default_graph()

@@ -1,7 +1,6 @@
-from mlagents_envs.side_channel.side_channel import SideChannel
-import struct
+from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 import uuid
-from typing import Dict, Tuple, Optional, List
+from typing import Dict, Optional, List
 
 
 class FloatPropertiesChannel(SideChannel):
@@ -17,15 +16,14 @@ class FloatPropertiesChannel(SideChannel):
             channel_id = uuid.UUID(("60ccf7d0-4f7e-11ea-b238-784f4387d1f7"))
         super().__init__(channel_id)
 
-    def on_message_received(self, data: bytes) -> None:
+    def on_message_received(self, msg: IncomingMessage) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that
         SideChannel.
-        Note that Python should never receive an engine configuration from
-        Unity
         """
-        k, v = self.deserialize_float_prop(data)
+        k = msg.read_string()
+        v = msg.read_float32()
         self._float_properties[k] = v
 
     def set_property(self, key: str, value: float) -> None:
@@ -35,7 +33,10 @@ class FloatPropertiesChannel(SideChannel):
         :param value: The float value of the property.
         """
         self._float_properties[key] = value
-        super().queue_message_to_send(self.serialize_float_prop(key, value))
+        msg = OutgoingMessage()
+        msg.write_string(key)
+        msg.write_float32(value)
+        super().queue_message_to_send(msg)
 
     def get_property(self, key: str) -> Optional[float]:
         """
@@ -59,22 +60,3 @@ class FloatPropertiesChannel(SideChannel):
         :return:
         """
         return dict(self._float_properties)
-
-    @staticmethod
-    def serialize_float_prop(key: str, value: float) -> bytearray:
-        result = bytearray()
-        encoded_key = key.encode("ascii")
-        result += struct.pack("<i", len(encoded_key))
-        result += encoded_key
-        result += struct.pack("<f", value)
-        return result
-
-    @staticmethod
-    def deserialize_float_prop(data: bytes) -> Tuple[str, float]:
-        offset = 0
-        encoded_key_len = struct.unpack_from("<i", data, offset)[0]
-        offset = offset + 4
-        key = data[offset : offset + encoded_key_len].decode("ascii")
-        offset = offset + encoded_key_len
-        value = struct.unpack_from("<f", data, offset)[0]
-        return key, value

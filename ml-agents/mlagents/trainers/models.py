@@ -1,4 +1,3 @@
-import logging
 from enum import Enum
 from typing import Callable, Dict, List, Tuple, NamedTuple
 
@@ -7,8 +6,6 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import CameraResolution
-
-logger = logging.getLogger("mlagents.trainers")
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 EncoderFunction = Callable[
@@ -459,25 +456,39 @@ class ModelUtils:
         )
 
     @staticmethod
-    def create_discrete_action_masking_layer(all_logits, action_masks, action_size):
+    def break_into_branches(
+        concatenated_logits: tf.Tensor, action_size: List[int]
+    ) -> List[tf.Tensor]:
+        """
+        Takes a concatenated set of logits that represent multiple discrete action branches
+        and breaks it up into one Tensor per branch.
+        :param concatenated_logits: Tensor that represents the concatenated action branches
+        :param action_size: List of ints containing the number of possible actions for each branch.
+        :return: A List of Tensors containing one tensor per branch.
+        """
+        action_idx = [0] + list(np.cumsum(action_size))
+        branched_logits = [
+            concatenated_logits[:, action_idx[i] : action_idx[i + 1]]
+            for i in range(len(action_size))
+        ]
+        return branched_logits
+
+    @staticmethod
+    def create_discrete_action_masking_layer(
+        branches_logits: List[tf.Tensor],
+        action_masks: tf.Tensor,
+        action_size: List[int],
+    ) -> Tuple[tf.Tensor, tf.Tensor, tf.Tensor]:
         """
         Creates a masking layer for the discrete actions
-        :param all_logits: The concatenated unnormalized action probabilities for all branches
+        :param branches_logits: A List of the unnormalized action probabilities for each branch
         :param action_masks: The mask for the logits. Must be of dimension [None x total_number_of_action]
         :param action_size: A list containing the number of possible actions for each branch
         :return: The action output dimension [batch_size, num_branches], the concatenated
             normalized probs (after softmax)
         and the concatenated normalized log probs
         """
-        action_idx = [0] + list(np.cumsum(action_size))
-        branches_logits = [
-            all_logits[:, action_idx[i] : action_idx[i + 1]]
-            for i in range(len(action_size))
-        ]
-        branch_masks = [
-            action_masks[:, action_idx[i] : action_idx[i + 1]]
-            for i in range(len(action_size))
-        ]
+        branch_masks = ModelUtils.break_into_branches(action_masks, action_size)
         raw_probs = [
             tf.multiply(tf.nn.softmax(branches_logits[k]) + EPSILON, branch_masks[k])
             for k in range(len(action_size))
