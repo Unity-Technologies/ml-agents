@@ -259,6 +259,15 @@ namespace MLAgents
             ResetData();
             Initialize();
             InitializeSensors();
+
+            // The first time the Academy resets, all Agents in the scene will be
+            // forced to reset through the <see cref="AgentForceReset"/> event.
+            // To avoid the Agent resetting twice, the Agents will not begin their
+            // episode when initializing until after the Academy had its first reset.
+            if (Academy.Instance.TotalStepCount != 0)
+            {
+                OnEpisodeBegin();
+            }
         }
 
         /// <summary>
