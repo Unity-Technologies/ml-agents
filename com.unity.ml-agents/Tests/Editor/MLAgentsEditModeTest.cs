@@ -321,7 +321,6 @@ namespace MLAgents.Tests
             for (var i = 0; i < 50; i++)
             {
                 Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                // Agent2 is never reset since initialized after academy
                 Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
