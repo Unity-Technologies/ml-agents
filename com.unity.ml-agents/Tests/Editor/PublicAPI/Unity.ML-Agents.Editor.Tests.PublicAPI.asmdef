@@ -17,8 +17,7 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "System.IO.Abstractions.dll",
-        "System.IO.Abstractions.TestingHelpers.dll",
-        "Google.Protobuf.dll"
+        "System.IO.Abstractions.TestingHelpers.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
