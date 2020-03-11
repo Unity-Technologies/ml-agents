@@ -5,6 +5,3 @@ grpcio>=1.23.0
 numpy>=1.17.2
 tensorflow>=1.15.2
 h5py>=2.10.0
-
-# Tests install onnx and tf2onnx, since it's not supported on tensorflow>=2.0.0
-tf2onnx>=1.5.5
