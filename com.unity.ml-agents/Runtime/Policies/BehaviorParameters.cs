@@ -54,13 +54,13 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The neural network model used when in inference mode.
-        /// This cannot be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
         public NNModel model
         {
             get { return m_Model; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_Model, value); }
+            set { m_Model = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -68,13 +68,13 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// How inference is performed for this Agent's model.
-        /// This cannot be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
         public InferenceDevice inferenceDevice
         {
             get { return m_InferenceDevice; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_InferenceDevice, value); }
+            set { m_InferenceDevice = value; UpdateAgentPolicy();}
         }
 
         [HideInInspector, SerializeField]
@@ -82,13 +82,13 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The BehaviorType for the Agent.
-        /// This cannot be set at runtime; use <see cref="Agent.SetBehaviorType(BehaviorType)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetBehaviorType(BehaviorType)"/>
         /// to set it instead.
         /// </summary>
         public BehaviorType behaviorType
         {
             get { return m_BehaviorType; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_BehaviorType, value);  }
+            set { m_BehaviorType = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -97,13 +97,13 @@ namespace MLAgents.Policies
         /// <summary>
         /// The name of this behavior, which is used as a base name. See
         /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
-        /// This cannot be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
         public string behaviorName
         {
             get { return m_BehaviorName; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_BehaviorName, value); }
+            set { m_BehaviorName = value; UpdateAgentPolicy(); }
         }
 
         /// <summary>
@@ -121,11 +121,12 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
+        /// Note that changing this after the Agent has been initialized will not have any effect.
         /// </summary>
         public bool useChildSensors
         {
             get { return m_UseChildSensors; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_UseChildSensors, value); }
+            set { m_UseChildSensors = value; }
         }
 
         /// <summary>
@@ -161,5 +162,16 @@ namespace MLAgents.Policies
                     return new HeuristicPolicy(heuristic);
             }
         }
+
+        internal void UpdateAgentPolicy()
+        {
+            var agent = GetComponent<Agent>();
+            if (agent == null)
+            {
+                return;
+            }
+            agent.ReloadPolicy();
+        }
+
     }
 }

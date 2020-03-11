@@ -390,6 +390,12 @@ namespace MLAgents
 
         internal void ReloadPolicy()
         {
+            if (!m_Initialized)
+            {
+                // If we haven't initialized yet, no need to make any changes now; they'll
+                // happen in LazyInitialize later.
+                return;
+            }
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
 

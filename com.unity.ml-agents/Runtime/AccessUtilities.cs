@@ -17,28 +17,5 @@ namespace MLAgents
         {
             return !Application.isPlaying;
         }
-
-        internal static void LogUnableToUpdate()
-        {
-            Debug.Log("Unable to update property at this time.");
-        }
-
-        /// <summary>
-        /// Update the target to the value if modifications are allowed. If not, a warning is logged.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
-        public static void SetPropertyIfAllowed<T>(ref T target, T value)
-        {
-            if (CanUpdateModelProperties())
-            {
-                target = value;
-            }
-            else
-            {
-                LogUnableToUpdate();
-            }
-        }
     }
 }

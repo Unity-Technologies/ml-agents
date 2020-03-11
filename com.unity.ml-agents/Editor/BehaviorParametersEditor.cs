@@ -119,18 +119,8 @@ namespace MLAgents.Editor
 
         void UpdateAgentPolicy()
         {
-            if (Application.isPlaying)
-            {
-                var behaviorParameters = (BehaviorParameters)target;
-                var agent = behaviorParameters.GetComponent<Agent>();
-                if (agent == null)
-                {
-                    return;
-                }
-
-                agent.ReloadPolicy();
-
-            }
+            var behaviorParameters = (BehaviorParameters)target;
+            behaviorParameters.UpdateAgentPolicy();
         }
     }
 }

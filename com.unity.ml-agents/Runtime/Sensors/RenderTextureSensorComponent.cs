@@ -29,11 +29,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Name of the generated <see cref="RenderTextureSensor"/>.
+        /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string sensorName
         {
             get { return m_SensorName;  }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_SensorName, value); }
+            set { m_SensorName = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
@@ -41,11 +42,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Whether the RenderTexture observation should be converted to grayscale or not.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool grayscale
         {
             get { return m_Grayscale;  }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_Grayscale, value);  }
+            set { m_Grayscale = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]

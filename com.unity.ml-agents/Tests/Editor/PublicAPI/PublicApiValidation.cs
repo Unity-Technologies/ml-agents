@@ -90,6 +90,7 @@ namespace MLAgentsExamples
             behaviorParams.behaviorType = BehaviorType.HeuristicOnly;
 
             var agent = gameObject.AddComponent<Agent>();
+            agent.SetBehaviorType(BehaviorType.HeuristicOnly);
 
             // TODO -  not internal yet
             // var decisionRequester = gameObject.AddComponent<DecisionRequester>();

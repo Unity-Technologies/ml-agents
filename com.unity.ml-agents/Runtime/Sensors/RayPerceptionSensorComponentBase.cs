@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
 using UnityEngine.Serialization;
 
 namespace MLAgents.Sensors
@@ -15,12 +16,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// The name of the Sensor that this component wraps.
+        /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string sensorName
         {
             get { return m_SensorName; }
-            // Restrict the access on the name, since changing it a runtime doesn't re-sort the Agent sensors.
-            set {AccessUtilities.SetPropertyIfAllowed(ref m_SensorName, value);}
+            set { m_SensorName = value; UpdateSensor(); }
         }
 
         [SerializeField, FormerlySerializedAs("detectableTags")]
@@ -29,12 +30,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// List of tags in the scene to compare against.
+        /// Note that this should not be changed at runtime.
         /// </summary>
         public List<string> detectableTags
         {
             get { return m_DetectableTags; }
-            // Note: can't change at runtime
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_DetectableTags, value);}
+            set { m_DetectableTags = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
@@ -44,12 +45,13 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Number of rays to the left and right of center.
+        /// Note that this should not be changed at runtime.
         /// </summary>
         public int raysPerDirection
         {
             get { return m_RaysPerDirection; }
             // Note: can't change at runtime
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_RaysPerDirection, value);}
+            set { m_RaysPerDirection = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
@@ -106,7 +108,7 @@ namespace MLAgents.Sensors
         public LayerMask rayLayerMask
         {
             get => m_RayLayerMask;
-            set { m_RayLayerMask = value; UpdateSensor();}
+            set { m_RayLayerMask = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
@@ -116,11 +118,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public int observationStacks
         {
             get { return m_ObservationStacks; }
-            set { AccessUtilities.SetPropertyIfAllowed(ref m_ObservationStacks, value); }
+            set { m_ObservationStacks = value; }
         }
 
         /// <summary>
