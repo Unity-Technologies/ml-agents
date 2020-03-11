@@ -34,7 +34,7 @@ namespace MLAgents.Sensors
         public List<string> detectableTags
         {
             get { return m_DetectableTags; }
-            set { m_DetectableTags = value; UpdateSensor(); }
+            set { m_DetectableTags = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
@@ -50,7 +50,7 @@ namespace MLAgents.Sensors
         {
             get { return m_RaysPerDirection; }
             // Note: can't change at runtime
-            set { m_RaysPerDirection = value; UpdateSensor(); }
+            set { m_RaysPerDirection = value;}
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]

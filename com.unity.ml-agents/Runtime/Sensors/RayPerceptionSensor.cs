@@ -269,6 +269,8 @@ namespace MLAgents.Sensors
 
         internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
         {
+            // Note that change the number of rays or tags doesn't directly call this,
+            // but changing them and then changing another field will.
             if (m_RayPerceptionInput.OutputSize() != rayInput.OutputSize())
             {
                 Debug.Log(
