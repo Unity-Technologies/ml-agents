@@ -119,19 +119,6 @@ namespace MLAgents
             public int maxStep;
         }
 
-        public int TeamId {
-            get {
-                LazyInitialize();
-                return m_PolicyFactory.TeamId;
-                }
-        }
-        public string BehaviorName  {
-            get {
-                LazyInitialize();
-                return m_PolicyFactory.behaviorName;
-                }
-        }
-
         [SerializeField][HideInInspector]
         internal AgentParameters agentParameters;
         [SerializeField][HideInInspector]
@@ -208,7 +195,10 @@ namespace MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        void OnEnable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes enabled and active.
+        /// </summary>
+        protected virtual void OnEnable()
         {
             LazyInitialize();
         }
@@ -267,7 +257,7 @@ namespace MLAgents
             Academy.Instance.AgentForceReset += _AgentReset;
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
-            InitializeAgent();
+            Initialize();
             InitializeSensors();
         }
 
@@ -292,7 +282,10 @@ namespace MLAgents
             Disabled,
         }
 
-        void OnDisable()
+        /// <summary>
+        /// Called when the attached <see cref="GameObject"/> becomes disabled and inactive.
+        /// </summary>
+        protected virtual void OnDisable()
         {
             DemonstrationWriters.Clear();
 
@@ -321,7 +314,7 @@ namespace MLAgents
             m_Brain?.RequestDecision(m_Info, sensors);
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -341,6 +334,15 @@ namespace MLAgents
             m_RequestDecision = false;
         }
 
+        [Obsolete("GiveModel() has been deprecated, use SetModel() instead.")]
+        public void GiveModel(
+            string behaviorName,
+            NNModel model,
+            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+        {
+            SetModel(behaviorName, model, inferenceDevice);
+        }
+
         /// <summary>
         /// Updates the Model for the agent. Any model currently assigned to the
         /// agent will be replaced with the provided one. If the arguments are
@@ -353,30 +355,44 @@ namespace MLAgents
         /// <param name="model"> The model to use for inference.</param>
         /// <param name = "inferenceDevice"> Define on what device the model
         /// will be run.</param>
-        public void GiveModel(
+        public void SetModel(
             string behaviorName,
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            m_PolicyFactory.GiveModel(behaviorName, model, inferenceDevice);
-            m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            if (behaviorName == m_PolicyFactory.behaviorName &&
+                model == m_PolicyFactory.model &&
+                inferenceDevice == m_PolicyFactory.inferenceDevice)
+            {
+                // If everything is the same, don't make any changes.
+                return;
+            }
+
+            m_PolicyFactory.model = model;
+            m_PolicyFactory.inferenceDevice = inferenceDevice;
+            m_PolicyFactory.behaviorName = behaviorName;
+            ReloadPolicy();
         }
 
         /// <summary>
         /// Updates the type of behavior for the agent.
         /// </summary>
-        /// <param name="behaviorType"> The new behaviorType for the Agent
-        /// </param>
+        /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
         public void SetBehaviorType(BehaviorType behaviorType)
         {
-            if (m_PolicyFactory.m_BehaviorType == behaviorType)
+            if (m_PolicyFactory.behaviorType == behaviorType)
             {
                 return;
             }
-            m_PolicyFactory.m_BehaviorType = behaviorType;
+            m_PolicyFactory.behaviorType = behaviorType;
+            ReloadPolicy();
+        }
+
+        internal void ReloadPolicy()
+        {
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+
         }
 
         /// <summary>
@@ -432,10 +448,16 @@ namespace MLAgents
             TimerStack.Instance.SetGauge(gaugeName, GetCumulativeReward());
         }
 
+        [Obsolete("Done() has been deprecated, use EndEpisode() instead.")]
+        public void Done()
+        {
+            EndEpisode();
+        }
+
         /// <summary>
         /// Sets the done flag to true.
         /// </summary>
-        public void Done()
+        public void EndEpisode()
         {
             NotifyAgentDone(DoneReason.DoneCalled);
             _AgentReset();
@@ -458,7 +480,6 @@ namespace MLAgents
             m_RequestAction = true;
         }
 
-
         /// Helper function that resets all the data structures associated with
         /// the agent. Typically used when the agent is being initialized or reset
         /// at the end of an episode.
@@ -476,6 +497,11 @@ namespace MLAgents
             }
         }
 
+        [Obsolete("InitializeAgent() has been deprecated, use Initialize() instead.")]
+        public virtual void InitializeAgent()
+        {
+        }
+
         /// <summary>
         /// Initializes the agent, called once when the agent is enabled. Can be
         /// left empty if there is no special, unique set-up behavior for the
@@ -485,8 +511,11 @@ namespace MLAgents
         /// One sample use is to store local references to other objects in the
         /// scene which would facilitate computing this agents observation.
         /// </remarks>
-        public virtual void InitializeAgent()
+        public virtual void Initialize()
         {
+#pragma warning disable 0618
+            InitializeAgent();
+#pragma warning restore 0618
         }
 
         /// <summary>
@@ -563,6 +592,12 @@ namespace MLAgents
         /// </summary>
         void SendInfoToBrain()
         {
+            if (!m_Initialized)
+            {
+                throw new UnityAgentsException("Call to SendInfoToBrain when Agent hasn't been initialized." +
+                    "Please ensure that you are calling 'base.OnEnable()' if you have overridden OnEnable.");
+            }
+
             if (m_Brain == null)
             {
                 return;
@@ -592,7 +627,7 @@ namespace MLAgents
             m_Brain.RequestDecision(m_Info, sensors);
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
-            foreach(var demoWriter in DemonstrationWriters)
+            foreach (var demoWriter in DemonstrationWriters)
             {
                 demoWriter.Record(m_Info, sensors);
             }
@@ -605,7 +640,6 @@ namespace MLAgents
                 sensor.Update();
             }
         }
-
 
         /// <summary>
         /// Collects the vector observations of the agent.
@@ -657,6 +691,11 @@ namespace MLAgents
         {
         }
 
+        [Obsolete("AgentAction() has been deprecated, use OnActionReceived() instead.")]
+        public virtual void AgentAction(float[] vectorAction)
+        {
+        }
+
         /// <summary>
         /// Specifies the agent behavior at every step based on the provided
         /// action.
@@ -665,7 +704,15 @@ namespace MLAgents
         /// Vector action. Note that for discrete actions, the provided array
         /// will be of length 1.
         /// </param>
-        public virtual void AgentAction(float[] vectorAction)
+        public virtual void OnActionReceived(float[] vectorAction)
+        {
+#pragma warning disable 0618
+            AgentAction(m_Action.vectorActions);
+#pragma warning restore 0618
+        }
+
+        [Obsolete("AgentReset() has been deprecated, use OnEpisodeBegin() instead.")]
+        public virtual void AgentReset()
         {
         }
 
@@ -674,8 +721,11 @@ namespace MLAgents
         /// the agent or Academy being done (i.e. completion of local or global
         /// episode).
         /// </summary>
-        public virtual void AgentReset()
+        public virtual void OnEpisodeBegin()
         {
+#pragma warning disable 0618
+            AgentReset();
+#pragma warning restore 0618
         }
 
         /// <summary>
@@ -690,16 +740,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// This method will forcefully reset the agent and will also reset the hasAlreadyReset flag.
-        /// This way, even if the agent was already in the process of reseting, it will be reset again
-        /// and will not send a Done flag at the next step.
-        /// </summary>
-        void ForceReset()
-        {
-            _AgentReset();
-        }
-
-        /// <summary>
         /// An internal reset method that updates internal data structures in
         /// addition to calling <see cref="AgentReset"/>.
         /// </summary>
@@ -707,7 +747,7 @@ namespace MLAgents
         {
             ResetData();
             m_StepCount = 0;
-            AgentReset();
+            OnEpisodeBegin();
         }
 
         /// <summary>
@@ -749,7 +789,8 @@ namespace MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                AgentAction(m_Action.vectorActions);
+                OnActionReceived(m_Action.vectorActions);
+
             }
 
             if ((m_StepCount >= maxStep) && (maxStep > 0))
@@ -762,7 +803,8 @@ namespace MLAgents
         void DecideAction()
         {
             m_Action.vectorActions = m_Brain?.DecideAction();
-            if (m_Action.vectorActions == null){
+            if (m_Action.vectorActions == null)
+            {
                 ResetData();
             }
         }

@@ -25,7 +25,8 @@ namespace MLAgents.SideChannels
             {
                 ChannelId = new Guid(k_FloatPropertiesDefaultId);
             }
-            else{
+            else
+            {
                 ChannelId = channelId;
             }
         }

@@ -27,6 +27,7 @@
   * [Using the Monitor](Feature-Monitor.md)
   * [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
   * [Using an Executable Environment](Learning-Environment-Executable.md)
+  * [Creating Custom Side Channels](Custom-SideChannels.md)
 
 ## Training
 

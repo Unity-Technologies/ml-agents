@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 import numpy as np
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class ExtrinsicRewardSignal(RewardSignal):
@@ -16,6 +17,6 @@ class ExtrinsicRewardSignal(RewardSignal):
         param_keys = ["strength", "gamma"]
         super().check_config(config_dict, param_keys)
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         env_rews = np.array(mini_batch["environment_rewards"], dtype=np.float32)
         return RewardSignalResult(self.strength * env_rews, env_rews)

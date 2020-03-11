@@ -10,9 +10,7 @@ namespace MLAgents.Sensors
     /// </summary>
     public abstract class RayPerceptionSensorComponentBase : SensorComponent
     {
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("sensorName")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
         string m_SensorName = "RayPerceptionSensor";
 
         /// <summary>
@@ -25,8 +23,7 @@ namespace MLAgents.Sensors
             internal set => m_SensorName = value;
         }
 
-        [SerializeField]
-        [FormerlySerializedAs("detectableTags")]
+        [SerializeField, FormerlySerializedAs("detectableTags")]
         [Tooltip("List of tags in the scene to compare against.")]
         List<string> m_DetectableTags;
 
@@ -40,9 +37,7 @@ namespace MLAgents.Sensors
             internal set => m_DetectableTags = value;
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("raysPerDirection")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
         [Range(0, 50)]
         [Tooltip("Number of rays to the left and right of center.")]
         int m_RaysPerDirection = 3;
@@ -57,12 +52,10 @@ namespace MLAgents.Sensors
             internal set => m_RaysPerDirection = value;
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("maxRayDegrees")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
         [Range(0, 180)]
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. " +
-                 "Greater than 90 degrees will go backwards.")]
+            "Greater than 90 degrees will go backwards.")]
         float m_MaxRayDegrees = 70;
 
         /// <summary>
@@ -75,9 +68,7 @@ namespace MLAgents.Sensors
             set { m_MaxRayDegrees = value; UpdateSensor(); }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("sphereCastRadius")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("sphereCastRadius")]
         [Range(0f, 10f)]
         [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
         float m_SphereCastRadius = 0.5f;
@@ -91,9 +82,7 @@ namespace MLAgents.Sensors
             set { m_SphereCastRadius = value; UpdateSensor(); }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("rayLength")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("rayLength")]
         [Range(1, 1000)]
         [Tooltip("Length of the rays to cast.")]
         float m_RayLength = 20f;
@@ -107,9 +96,7 @@ namespace MLAgents.Sensors
             set { m_RayLength = value; UpdateSensor(); }
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("rayLayerMask")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
         LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
 
@@ -122,9 +109,7 @@ namespace MLAgents.Sensors
             set { m_RayLayerMask = value; UpdateSensor();}
         }
 
-        [HideInInspector]
-        [SerializeField]
-        [FormerlySerializedAs("observationStacks")]
+        [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
         [Range(1, 50)]
         [Tooltip("Whether to stack previous observations. Using 1 means no previous observations.")]
         int m_ObservationStacks = 1;
@@ -155,6 +140,14 @@ namespace MLAgents.Sensors
 
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
+
+        /// <summary>
+        /// Get the RayPerceptionSensor that was created.
+        /// </summary>
+        public RayPerceptionSensor raySensor
+        {
+            get => m_RaySensor;
+        }
 
         /// <summary>
         /// Returns the <see cref="RayPerceptionCastType"/> for the associated raycast sensor.
@@ -238,7 +231,11 @@ namespace MLAgents.Sensors
             return new[] { obsSize * stacks };
         }
 
-        RayPerceptionInput GetRayPerceptionInput()
+        /// <summary>
+        /// Get the RayPerceptionInput that is used by the <see cref="RayPerceptionSensor"/>.
+        /// </summary>
+        /// <returns></returns>
+        public RayPerceptionInput GetRayPerceptionInput()
         {
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
 
@@ -294,7 +291,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha=1.0f)
+        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha = 1.0f)
         {
             var startPositionWorld = rayInfo.worldStart;
             var endPositionWorld = rayInfo.worldEnd;
