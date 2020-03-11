@@ -20,7 +20,7 @@ namespace MLAgents.Sensors
         public string sensorName
         {
             get { return m_SensorName; }
-            set { m_SensorName = value; UpdateSensor(); }
+            set { m_SensorName = value; }
         }
 
         [SerializeField, FormerlySerializedAs("detectableTags")]
