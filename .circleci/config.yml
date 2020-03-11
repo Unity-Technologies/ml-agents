@@ -19,7 +19,7 @@ jobs:
         type: string
         description: Constraints file that is passed to "pip install". We constraint older versions of libraries for older python runtime, in order to help ensure compatibility.
       enforce_onnx_conversion:
-        type: int
+        type: integer
         default: 0
         description: Whether to raise an exception if ONNX models couldn't be saved.
     executor: << parameters.executor >>
