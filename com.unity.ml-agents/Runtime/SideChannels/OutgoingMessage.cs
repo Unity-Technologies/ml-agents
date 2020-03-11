@@ -88,11 +88,12 @@ namespace MLAgents.SideChannels
         /// <param name="data"></param>
         public void SetRawBytes(byte[] data)
         {
-            // Reset first.
+            // Reset first. Set the length to zero so that if there's more data than we're going to
+            // write, we don't have any of the original data.
             m_Stream.Seek(0, SeekOrigin.Begin);
             m_Stream.SetLength(0);
 
-            // Then append the data
+            // Then append the data. Increase the capacity if needed (but don't shrink it).
             m_Stream.Capacity = (m_Stream.Capacity < data.Length) ? data.Length : m_Stream.Capacity;
             m_Stream.Write(data, 0, data.Length);
         }

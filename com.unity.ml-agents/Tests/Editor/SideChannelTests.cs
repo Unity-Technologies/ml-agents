@@ -123,6 +123,8 @@ namespace MLAgents.Tests
         [Test]
         public void TestOutgoingMessageRawBytes()
         {
+            // Make sure that SetRawBytes resets the buffer correctly.
+            // Write 8 bytes (an int and float) then call SetRawBytes with 4 bytes
             var msg = new OutgoingMessage();
             msg.WriteInt32(42);
             msg.WriteFloat32(1.0f);
