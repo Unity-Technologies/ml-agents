@@ -1,8 +1,4 @@
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    OutgoingMessage,
-    IncomingMessage,
-)
+from mlagents_envs.side_channel import SideChannel, OutgoingMessage, IncomingMessage
 from mlagents_envs.exception import UnityCommunicationException
 import uuid
 from typing import NamedTuple

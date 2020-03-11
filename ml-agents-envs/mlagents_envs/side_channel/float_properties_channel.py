@@ -1,8 +1,4 @@
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
+from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 import uuid
 from typing import Dict, Optional, List
 
