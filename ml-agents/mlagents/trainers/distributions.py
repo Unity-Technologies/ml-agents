@@ -214,12 +214,11 @@ class MultiCategoricalDistribution(DiscreteOutputDistribution):
                     kernel_initializer=ModelUtils.scaled_init(0.01),
                 )
             )
-        unmasked_log_probs = tf.concat(policy_branches, axis=1)
-        return unmasked_log_probs
+        return policy_branches
 
     def _get_masked_actions_probs(
         self,
-        unmasked_log_probs: tf.Tensor,
+        unmasked_log_probs: List[tf.Tensor],
         act_size: List[int],
         action_masks: tf.Tensor,
     ) -> Tuple[tf.Tensor, tf.Tensor, np.ndarray]:
