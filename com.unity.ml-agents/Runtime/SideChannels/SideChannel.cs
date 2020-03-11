@@ -19,7 +19,8 @@ namespace MLAgents.SideChannels
         /// of each type. Ensure the Unity side channels will be linked to their Python equivalent.
         /// </summary>
         /// <returns> The integer identifier of the SideChannel.</returns>
-        public Guid ChannelId{
+        public Guid ChannelId
+        {
             get;
             protected set;
         }

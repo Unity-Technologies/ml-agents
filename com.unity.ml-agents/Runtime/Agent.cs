@@ -606,7 +606,6 @@ namespace MLAgents
             {
                 throw new UnityAgentsException("Call to SendInfoToBrain when Agent hasn't been initialized." +
                     "Please ensure that you are calling 'base.OnEnable()' if you have overridden OnEnable.");
-
             }
 
             if (m_Brain == null)
@@ -801,7 +800,6 @@ namespace MLAgents
             {
                 m_RequestAction = false;
                 OnActionReceived(m_Action.vectorActions);
-
             }
 
             if ((m_StepCount >= maxStep) && (maxStep > 0))

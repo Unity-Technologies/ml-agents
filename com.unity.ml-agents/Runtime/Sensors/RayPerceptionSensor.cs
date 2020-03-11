@@ -106,7 +106,7 @@ namespace MLAgents.Sensors
             var startPositionWorld = transform.TransformPoint(startPositionLocal);
             var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
-            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
+            return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
         }
 
         /// <summary>

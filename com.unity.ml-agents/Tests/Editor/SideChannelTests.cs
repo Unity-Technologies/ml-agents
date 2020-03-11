@@ -13,7 +13,8 @@ namespace MLAgents.Tests
         {
             public List<int> messagesReceived = new List<int>();
 
-            public TestSideChannel() {
+            public TestSideChannel()
+            {
                 ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
