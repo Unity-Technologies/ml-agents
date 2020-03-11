@@ -117,7 +117,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Whether to stack previous observations. Using 1 means no previous observations.
         /// </summary>
-        internal int observationStacks
+        public int observationStacks
         {
             get { return m_ObservationStacks; }
             set { AccessUtilities.SetPropertyIfAllowed(ref m_ObservationStacks, value); }

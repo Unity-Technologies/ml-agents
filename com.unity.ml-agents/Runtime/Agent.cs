@@ -95,7 +95,7 @@ namespace MLAgents
     /// value takes precedence (since the agent max step will never be reached).
     ///
     /// Lastly, note that at any step the policy to the agent is allowed to
-    /// change model with <see cref="GiveModel"/>.
+    /// change model with <see cref="SetModel"/>.
     ///
     /// Implementation-wise, it is required that this class is extended and the
     /// virtual methods overridden. For sample implementations of agent behavior,
