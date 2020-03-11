@@ -1,9 +1,5 @@
 import uuid
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
+from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents_envs.side_channel.raw_bytes_channel import RawBytesChannel
 from mlagents_envs.environment import UnityEnvironment
