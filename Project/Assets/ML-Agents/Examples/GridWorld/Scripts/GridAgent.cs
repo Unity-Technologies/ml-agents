@@ -28,10 +28,6 @@ public class GridAgent : Agent
     const int k_Left = 3;
     const int k_Right = 4;
 
-    public override void InitializeAgent()
-    {
-    }
-
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
         // Mask the necessary actions if selected by the user.
@@ -65,7 +61,7 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         AddReward(-0.01f);
         var action = Mathf.FloorToInt(vectorAction[0]);
@@ -101,12 +97,12 @@ public class GridAgent : Agent
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {
                 SetReward(1f);
-                Done();
+                EndEpisode();
             }
             else if (hit.Where(col => col.gameObject.CompareTag("pit")).ToArray().Length == 1)
             {
                 SetReward(-1f);
-                Done();
+                EndEpisode();
             }
         }
     }
@@ -133,7 +129,7 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         area.AreaReset();
     }

@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - All SideChannel related code has been moved to the namespace `MLAgents.SideChannels`.
  - `BrainParameters` and `SpaceType` have been removed from the public API
  - `BehaviorParameters` have been removed from the public API.
+ - The following methods in the `Agent` class have been deprecated and will be removed in a later release:
+   - `InitializeAgent()` was renamed to `Initialize()`
+   - `AgentAction()` was renamed to `OnActionReceived()`
+   - `AgentReset()` was renamed to `OnEpisodeBegin()`
+   - `Done()` was renamed to `EndEpisode()`
+   - `GiveModel()` was renamed to `SetModel()`
 
 ### Minor Changes
  - Monitor.cs was moved to Examples. (#3372)
@@ -44,6 +50,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The `IFloatProperties` interface has been removed.
  - Fix #3579.
  - Improved inference performance for models with multiple action branches. (#3598)
+ - Fixed an issue when using GAIL with less than `batch_size` number of demonstrations. (#3591)
 
 ## [0.14.1-preview] - 2020-02-25
 
