@@ -13,15 +13,16 @@ In order to use a side channel, it must be implemented as both Unity and Python 
 ### Unity side
 The side channel will have to implement the `SideChannel` abstract class and the following method.
 
- * `OnMessageReceived(byte[] data)` : You must implement this method to specify what the side channel will be doing
- with the data received from Python. The data is a `byte[]` argument.
+ * `OnMessageReceived(IncomingMessage msg)` : You must implement this method and read the data from IncomingMessage.
+  The data must be read in the order that it was written.
 
 The side channel must also assign a `ChannelId` property in the constructor. The `ChannelId` is a Guid
 (or UUID in Python) used to uniquely identify a side channel. This Guid must be the same on C# and Python.
 There can only be one side channel of a certain id during communication.
 
-To send a byte array from C# to Python, call the `base.QueueMessageToSend(data)` method inside the side channel.
-The `data` argument must be a `byte[]`.
+To send data from C# to Python, create an `OutgoingMessage` instance, add data to it, call the
+`base.QueueMessageToSend(msg)` method inside the side channel, and call the
+`OutgoingMessage.Dispose()` method.
 
 To register a side channel on the Unity side, call `Academy.Instance.RegisterSideChannel` with the side channel
 as only argument.
@@ -29,8 +30,8 @@ as only argument.
 ### Python side
 The side channel will have to implement the `SideChannel` abstract class. You must implement :
 
- * `on_message_received(self, data: bytes) -> None` : You must implement this method to specify what the
- side channel will be doing with the data received from Unity. The data is a `byte[]` argument.
+ * `on_message_received(self, msg: "IncomingMessage") -> None` : You must implement this method and read the data
+  from IncomingMessage. The data must be read in the order that it was written.
 
 The side channel must also assign a `channel_id` property in the constructor. The `channel_id` is a UUID
 (referred in C# as Guid) used to uniquely identify a side channel. This number must be the same on C# and
@@ -42,8 +43,8 @@ To assign the `channel_id` call the abstract class constructor with the appropri
 super().__init__(my_channel_id)
 ```
 
-To send a byte array from Python to C#, call the `super().queue_message_to_send(bytes_data)` method inside the
-side channel. The `bytes_data` argument must be a `bytes` object.
+To send a byte array from Python to C#, create an `OutgoingMessage` instance, add data to it, and call the
+ `super().queue_message_to_send(msg)` method inside the side channel.
 
 To register a side channel on the Python side, pass the side channel as argument when creating the
 `UnityEnvironment` object. One of the arguments of the constructor (`side_channels`) is a list of side channels.
@@ -74,9 +75,9 @@ public class StringLogSideChannel : SideChannel
         ChannelId = new Guid("621f0a70-4f87-11ea-a6bf-784f4387d1f7");
     }
 
-    public override void OnMessageReceived(byte[] data)
+    public override void OnMessageReceived(IncomingMessage msg)
     {
-        var receivedString = Encoding.ASCII.GetString(data);
+        var receivedString = msg.ReadString();
         Debug.Log("From Python : " + receivedString);
     }
 
@@ -85,8 +86,11 @@ public class StringLogSideChannel : SideChannel
         if (type == LogType.Error)
         {
             var stringToSend = type.ToString() + ": " + logString + "\n" + stackTrace;
-            var encodedString = Encoding.ASCII.GetBytes(stringToSend);
-            base.QueueMessageToSend(encodedString);
+            using (var msgOut = new OutgoingMessage())
+            {
+                msgOut.WriteString(stringToSend);
+                QueueMessageToSend(msgOut);
+            }
         }
     }
 }
@@ -148,7 +152,11 @@ Now that we have created the necessary Unity C# classes, we can create their Pyt
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel import (
+    SideChannel,
+    IncomingMessage,
+    OutgoingMessage,
+)
 import numpy as np
 import uuid
 
@@ -159,19 +167,20 @@ class StringLogChannel(SideChannel):
     def __init__(self) -> None:
         super().__init__(uuid.UUID("621f0a70-4f87-11ea-a6bf-784f4387d1f7"))
 
-    def on_message_received(self, data: bytes) -> None:
+    def on_message_received(self, msg: IncomingMessage) -> None:
         """
-        Note :We must implement this method of the SideChannel interface to
+        Note: We must implement this method of the SideChannel interface to
         receive messages from Unity
         """
-        # We simply print the data received interpreted as ascii
-        print(data.decode("ascii"))
+        # We simply read a string from the message and print it.
+        print(msg.read_string())
 
     def send_string(self, data: str) -> None:
-        # Convert the string to ascii
-        bytes_data = data.encode("ascii")
+        # Add the string to an OutgoingMessage
+        msg = OutgoingMessage()
+        msg.write_string(data)
         # We call this method to queue the data we want to send
-        super().queue_message_to_send(bytes_data)
+        super().queue_message_to_send(msg)
 ```
 
 
