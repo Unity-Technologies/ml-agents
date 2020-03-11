@@ -337,7 +337,10 @@ namespace MLAgents.Tests
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
+                    // Since Agent2 is initialized after the Academy has stepped, its OnEpisodeBegin should be called now.
+                    Assert.AreEqual(0, agent2.agentResetCalls);
                     agent2.LazyInitialize();
+                    Assert.AreEqual(1, agent2.agentResetCalls);
                     numberAgent2Initialization += 1;
                     numberAgent2Reset += 1;
                 }
