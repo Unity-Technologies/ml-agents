@@ -35,7 +35,7 @@ namespace MLAgents.Editor
             }
             needPolicyUpdate = EditorGUI.EndChangeCheck();
 
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
             }
@@ -57,7 +57,7 @@ namespace MLAgents.Editor
             needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
             EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
             }
@@ -119,18 +119,8 @@ namespace MLAgents.Editor
 
         void UpdateAgentPolicy()
         {
-            if (Application.isPlaying)
-            {
-                var behaviorParameters = (BehaviorParameters)target;
-                var agent = behaviorParameters.GetComponent<Agent>();
-                if (agent == null)
-                {
-                    return;
-                }
-
-                agent.ReloadPolicy();
-
-            }
+            var behaviorParameters = (BehaviorParameters)target;
+            behaviorParameters.UpdateAgentPolicy();
         }
     }
 }
