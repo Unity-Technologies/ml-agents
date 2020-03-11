@@ -156,7 +156,7 @@ class SACTrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
-        for name, reward_signal in self.policy.reward_signals.items():
+        for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
@@ -223,9 +223,6 @@ class SACTrainer(RLTrainer):
             reparameterize=True,
             create_tf_graph=False,
         )
-        for _reward_signal in policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
-
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
