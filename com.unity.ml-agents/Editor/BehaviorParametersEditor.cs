@@ -35,7 +35,7 @@ namespace MLAgents.Editor
             }
             needPolicyUpdate = EditorGUI.EndChangeCheck();
 
-            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
             }
@@ -57,7 +57,7 @@ namespace MLAgents.Editor
             needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
 
             EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
-            EditorGUI.BeginDisabledGroup(!AccessUtilities.CanUpdateModelProperties());
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
             }

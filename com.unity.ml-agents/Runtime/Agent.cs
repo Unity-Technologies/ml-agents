@@ -374,20 +374,6 @@ namespace MLAgents
             ReloadPolicy();
         }
 
-        /// <summary>
-        /// Updates the type of behavior for the agent.
-        /// </summary>
-        /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
-        public void SetBehaviorType(BehaviorType behaviorType)
-        {
-            if (m_PolicyFactory.behaviorType == behaviorType)
-            {
-                return;
-            }
-            m_PolicyFactory.behaviorType = behaviorType;
-            ReloadPolicy();
-        }
-
         internal void ReloadPolicy()
         {
             if (!m_Initialized)
@@ -398,7 +384,6 @@ namespace MLAgents
             }
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
-
         }
 
         /// <summary>
@@ -796,7 +781,6 @@ namespace MLAgents
             {
                 m_RequestAction = false;
                 OnActionReceived(m_Action.vectorActions);
-
             }
 
             if ((m_StepCount >= maxStep) && (maxStep > 0))

@@ -72,6 +72,17 @@ namespace MLAgentsExamples
             sensorComponent.CreateSensor();
         }
 
+        class PublicApiAgent : Agent
+        {
+            public int numHeuristicCalls;
+
+            public override float[] Heuristic()
+            {
+                numHeuristicCalls++;
+                return base.Heuristic();
+            }
+        }
+
 
         [Test]
         public void CheckSetupAgent()
@@ -87,10 +98,10 @@ namespace MLAgentsExamples
             behaviorParams.behaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.useChildSensors = true;
-            behaviorParams.behaviorType = BehaviorType.HeuristicOnly;
 
-            var agent = gameObject.AddComponent<Agent>();
-            agent.SetBehaviorType(BehaviorType.HeuristicOnly);
+            var agent = gameObject.AddComponent<PublicApiAgent>();
+            // Make sure we can set the behavior type correctly after the agent is added
+            behaviorParams.behaviorType = BehaviorType.InferenceOnly;
 
             // TODO -  not internal yet
             // var decisionRequester = gameObject.AddComponent<DecisionRequester>();
@@ -105,6 +116,9 @@ namespace MLAgentsExamples
             Assert.IsNull(sensorComponent.raySensor);
 
             agent.LazyInitialize();
+            // Make sure we can set the behavior type correctly after the agent is initialized
+            // (this creates a new policy).
+            behaviorParams.behaviorType = BehaviorType.HeuristicOnly;
 
             // Initialization should set up the sensors
             Assert.IsNotNull(sensorComponent.raySensor);
@@ -123,7 +137,8 @@ namespace MLAgentsExamples
 
             var actions = agent.GetAction();
             // default Heuristic implementation should return zero actions.
-            Assert.AreEqual(new [] {0.0f, 0.0f}, actions);
+            Assert.AreEqual(new[] {0.0f, 0.0f}, actions);
+            Assert.AreEqual(1, agent.numHeuristicCalls);
         }
     }
 }

@@ -106,7 +106,7 @@ namespace MLAgents.Sensors
             var startPositionWorld = transform.TransformPoint(startPositionLocal);
             var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
-            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
+            return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
         }
 
         /// <summary>
@@ -265,7 +265,6 @@ namespace MLAgents.Sensors
         {
             m_Shape = new[] { numObservations };
             m_Observations = new float[numObservations];
-
         }
 
         internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
@@ -275,7 +274,7 @@ namespace MLAgents.Sensors
                 Debug.Log(
                     "Changing the number of tags or rays at runtime is not " +
                     "supported and may cause errors in training or inference."
-                    );
+                );
                 // Changing the shape will probably break things downstream, but we can at least
                 // keep this consistent.
                 SetNumObservations(rayInput.OutputSize());

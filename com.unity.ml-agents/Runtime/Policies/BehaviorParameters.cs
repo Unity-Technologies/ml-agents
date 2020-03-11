@@ -82,8 +82,6 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The BehaviorType for the Agent.
-        /// This should not be set at runtime; use <see cref="Agent.SetBehaviorType(BehaviorType)"/>
-        /// to set it instead.
         /// </summary>
         public BehaviorType behaviorType
         {
@@ -172,6 +170,5 @@ namespace MLAgents.Policies
             }
             agent.ReloadPolicy();
         }
-
     }
 }
