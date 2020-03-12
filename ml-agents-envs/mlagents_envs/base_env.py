@@ -110,13 +110,7 @@ class BatchedStepResult:
         return agent_id in self.agent_id_to_index
 
     def get_index(self, agent_id: AgentId) -> int:
-        if not self.contains_agent(agent_id):
-            raise IndexError(
-                "get_index failed. agent_id {} is not present in the BatchedStepResult".format(
-                    agent_id
-                )
-            )
-        return self._agent_id_to_index[agent_id]  # type: ignore
+        return self.agent_id_to_index.get(agent_id, -1)  # type: ignore
 
     def get_agent_step_result(self, agent_id: AgentId) -> StepResult:
         """
