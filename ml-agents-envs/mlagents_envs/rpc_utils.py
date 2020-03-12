@@ -214,8 +214,9 @@ def proto_from_batched_step_result(
         max_step_reached = batched_step_result.max_step[agent_id_index]
         agent_mask = None
         if batched_step_result.action_mask is not None:
-            mask = batched_step_result.action_mask[0]
-            agent_mask = mask[agent_id_index]
+            agent_mask = []
+            for _branch in batched_step_result.action_mask:
+                agent_mask.append(_branch[agent_id_index, :])
         observations: List[ObservationProto] = []
         for all_observations_of_type in batched_step_result.obs:
             observation = all_observations_of_type[agent_id_index]

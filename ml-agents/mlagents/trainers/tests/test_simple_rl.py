@@ -363,7 +363,7 @@ def test_gail(use_discrete, trainer_config):
             "gail": {
                 "strength": 1.0,
                 "gamma": 0.99,
-                "encoding_size": 128,
+                "encoding_size": 32,
                 "demo_path": demo_path,
             }
         },
