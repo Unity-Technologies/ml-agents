@@ -369,4 +369,4 @@ def test_gail(use_discrete, trainer_config):
         },
     }
     config = generate_config(trainer_config, override_vals)
-    _check_environment_trains(env, config)
+    _check_environment_trains(env, config, success_threshold=0.9)
