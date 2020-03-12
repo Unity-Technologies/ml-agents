@@ -9,7 +9,6 @@ from mlagents import tf_utils
 
 from collections import deque
 
-from mlagents_envs.timers import set_gauge
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
@@ -197,33 +196,7 @@ class Trainer(abc.ABC):
         """
         Saves training statistics to Tensorboard.
         """
-        is_training = "Training." if self.should_still_train else "Not Training."
-        stats_summary = self.stats_reporter.get_stats_summaries(
-            "Environment/Cumulative Reward"
-        )
-        if stats_summary.num > 0:
-            logger.info(
-                "{}: {}: Step: {}. "
-                "Time Elapsed: {:0.3f} s "
-                "Mean "
-                "Reward: {:0.3f}"
-                ". Std of Reward: {:0.3f}. {}".format(
-                    self.run_id,
-                    self.brain_name,
-                    step,
-                    time.time() - self.training_start_time,
-                    stats_summary.mean,
-                    stats_summary.std,
-                    is_training,
-                )
-            )
-            set_gauge(f"{self.brain_name}.mean_reward", stats_summary.mean)
-        else:
-            logger.info(
-                " {}: {}: Step: {}. No episode was completed since last summary. {}".format(
-                    self.run_id, self.brain_name, step, is_training
-                )
-            )
+        self.stats_reporter.add_stat("Is Training", float(self.should_still_train))
         self.progress_bar.update(step)
         self.stats_reporter.write_stats(int(step))
 
