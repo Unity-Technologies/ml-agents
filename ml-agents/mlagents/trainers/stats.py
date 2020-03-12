@@ -256,7 +256,7 @@ class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
 
-    def __init__(self, category):
+    def __init__(self, category: str):
         """
         Generic StatsReporter. A category is the broadest type of storage (would
         correspond the run name and trainer name, e.g. 3DBalltest_3DBall. A key is the
