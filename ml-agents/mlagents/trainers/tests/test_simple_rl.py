@@ -180,25 +180,6 @@ def _check_environment_trains(
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_record(use_discrete):
-    env = Record1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, n_demos=30)
-    config = generate_config(PPO_CONFIG)
-    _check_environment_trains(env, config)
-    agent_info_protos = env.demonstration_protos[BRAIN_NAME]
-    meta_data_proto = DemonstrationMetaProto()
-    brain_param_proto = BrainParametersProto(
-        vector_action_size=[1],
-        vector_action_descriptions=[""],
-        vector_action_space_type=discrete if use_discrete else continuous,
-        brain_name=BRAIN_NAME,
-        is_training=True,
-    )
-    action_type = "Discrete" if use_discrete else "Continuous"
-    demo_path = "demos/1DTest" + action_type + ".demo"
-    write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ppo(use_discrete):
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = generate_config(PPO_CONFIG)
@@ -349,3 +330,43 @@ def test_simple_ghost_fails(use_discrete):
     assert any(reward > success_threshold for reward in processed_rewards) and any(
         reward < success_threshold for reward in processed_rewards
     )
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_record(use_discrete):
+    env = Record1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, n_demos=100)
+    config = generate_config(PPO_CONFIG)
+    _check_environment_trains(env, config)
+    agent_info_protos = env.demonstration_protos[BRAIN_NAME]
+    meta_data_proto = DemonstrationMetaProto()
+    brain_param_proto = BrainParametersProto(
+        vector_action_size=[1],
+        vector_action_descriptions=[""],
+        vector_action_space_type=discrete if use_discrete else continuous,
+        brain_name=BRAIN_NAME,
+        is_training=True,
+    )
+    action_type = "Discrete" if use_discrete else "Continuous"
+    demo_path = "demos/1DTest" + action_type + ".demo"
+    write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
+def test_gail(use_discrete, trainer_config):
+    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    action_type = "Discrete" if use_discrete else "Continuous"
+    demo_path = "demos/1DTest" + action_type + ".demo"
+    override_vals = {
+        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
+        "reward_signals": {
+            "gail": {
+                "strength": 1.0,
+                "gamma": 0.99,
+                "encoding_size": 128,
+                "demo_path": demo_path,
+            }
+        },
+    }
+    config = generate_config(trainer_config, override_vals)
+    _check_environment_trains(env, config)

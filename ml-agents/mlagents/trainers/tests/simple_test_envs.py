@@ -9,7 +9,9 @@ from mlagents_envs.base_env import (
     ActionType,
 )
 from mlagents_envs.rpc_utils import proto_from_batched_step_result_and_action
-from mlagents_envs.agent_info_action_pair_pb2 import AgentInfoActionPairProto
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
