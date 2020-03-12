@@ -2,6 +2,7 @@ from unittest import mock
 import os
 import pytest
 import tempfile
+import unittest
 import csv
 
 from mlagents.trainers.stats import (
@@ -10,6 +11,7 @@ from mlagents.trainers.stats import (
     CSVWriter,
     StatsSummary,
     GaugeWriter,
+    ConsoleWriter,
 )
 
 
@@ -138,3 +140,33 @@ def test_gauge_stat_writer_sanitize():
         GaugeWriter.sanitize_string("Very/Very/Very Nested Stat")
         == "Very.Very.VeryNestedStat"
     )
+
+
+class ConsoleWriterTest(unittest.TestCase):
+    def test_console_writer(self):
+        # Test write_stats
+        with self.assertLogs("mlagents.trainers", level="INFO") as cm:
+            category = "category1"
+            console_writer = ConsoleWriter()
+            statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+            console_writer.write_stats(
+                category,
+                {
+                    "Environment/Cumulative Reward": statssummary1,
+                    "Is Training": statssummary1,
+                },
+                10,
+            )
+            statssummary2 = StatsSummary(mean=0.0, std=0.0, num=1)
+            console_writer.write_stats(
+                category,
+                {
+                    "Environment/Cumulative Reward": statssummary1,
+                    "Is Training": statssummary2,
+                },
+                10,
+            )
+        self.assertIn(
+            "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
+        )
+        self.assertIn("Not Training.", cm.output[1])
