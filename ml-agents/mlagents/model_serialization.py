@@ -95,8 +95,9 @@ def export_policy_model(
 
     else:
         if _enforce_onnx_conversion():
+            # Either we're on an old version of tensorflow, or the import failed.
             raise RuntimeError(
-                "ONNX conversion enforced, but couldn't import dependencies."
+                "ONNX conversion enforced, but ONNX_EXPORT_ENABLED was false."
             )
 
 
