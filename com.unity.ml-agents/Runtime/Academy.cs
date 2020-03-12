@@ -58,7 +58,7 @@ namespace MLAgents
         /// on each side, although we may allow some flexibility in the future.
         /// This should be incremented whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.16.0.dev0";
+        const string k_ApiVersion = "0.15.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
