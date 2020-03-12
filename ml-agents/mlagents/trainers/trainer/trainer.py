@@ -54,7 +54,7 @@ class Trainer(abc.ABC):
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
         self.stats_reporter.add_property(
-            StatsPropertyType.hyperparameters, self.trainer_parameters
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
         )
 
     def _check_param_keys(self):

@@ -25,7 +25,7 @@ class StatsSummary(NamedTuple):
 
 
 class StatsPropertyType(Enum):
-    hyperparameters = "hyperparameters"
+    HYPERPARAMETERS = "hyperparameters"
 
 
 class StatsWriter(abc.ABC):
@@ -112,7 +112,7 @@ class ConsoleWriter(StatsWriter):
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
     ) -> None:
-        if property_type == StatsPropertyType.hyperparameters:
+        if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
                 """Hyperparameters for behavior name {0}: \n{1}""".format(
                     category, self._dict_to_str(value, 0)
@@ -173,7 +173,7 @@ class TensorboardWriter(StatsWriter):
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
     ) -> None:
-        if property_type == StatsPropertyType.hyperparameters:
+        if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
             text = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
