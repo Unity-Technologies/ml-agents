@@ -3,7 +3,7 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit (Beta)
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
 ([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
@@ -29,14 +29,14 @@ developer communities.
 * Unity environment control from Python
 * 15+ sample Unity environments
 * Two deep reinforcement learning algorithms,
-[Proximal Policy Optimization](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Training-PPO.md)
- (PPO) and [Soft Actor-Critic](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Training-SAC.md)
+[Proximal Policy Optimization](docs/Training-PPO.md)
+ (PPO) and [Soft Actor-Critic](docs/Training-SAC.md)
  (SAC)
 * Support for multiple environment configurations and training scenarios
 * Self-play mechanism for training agents in adversarial scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
-* Built-in support for [Imitation Learning](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
+* Built-in support for [Imitation Learning](docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Wrap learning environments as a gym
@@ -45,7 +45,7 @@ developer communities.
 
 ## Releases & Documentation
 **Our latest, stable release is 0.15.0. Click
-[here](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Readme.md) to
+[here](docs/Readme.md) to
 get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `master` branch which is under active
@@ -61,7 +61,6 @@ details of the changes between versions.
 
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **0.15.0** | March 18, 2020 | **[source](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0)** |  **[docs](https://github.com/Unity-Technologies/ml-agents/tree0.15.0/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/0.15.0.zip)** |
 | **0.14.1** | February 26, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.1.zip) |
 | **0.14.0**  | February 13, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
 | **0.13.1**  | January 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
