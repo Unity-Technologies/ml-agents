@@ -7,7 +7,7 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.14 to latest
+## Migrating from 0.14 to 0.15
 
 ### Important changes
 * The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
