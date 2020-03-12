@@ -208,15 +208,17 @@ def proto_from_batched_step_result(
 ) -> List[AgentInfoProto]:
     agent_info_protos: List[AgentInfoProto] = []
     for agent_id in batched_step_result.agent_id:
-        agent_id_index = batched_step_result.get_index(agent_id)
+        agent_id_index = batched_step_result.agent_id_to_index[agent_id]
         reward = batched_step_result.reward[agent_id_index]
         done = batched_step_result.done[agent_id_index]
         max_step_reached = batched_step_result.max_step[agent_id_index]
         agent_mask = None
         if batched_step_result.action_mask is not None:
-            agent_mask = []
+            agent_mask = []  # type: ignore
             for _branch in batched_step_result.action_mask:
-                agent_mask.append(_branch[agent_id_index, :])
+                agent_mask = np.concatenate(
+                    (agent_mask, _branch[agent_id_index, :]), axis=0
+                )
         observations: List[ObservationProto] = []
         for all_observations_of_type in batched_step_result.obs:
             observation = all_observations_of_type[agent_id_index]
