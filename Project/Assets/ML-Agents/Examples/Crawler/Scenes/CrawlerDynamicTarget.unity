@@ -710,7 +710,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1392866532}
   - component: {fileID: 1392866531}
-  - component: {fileID: 1392866530}
   - component: {fileID: 1392866529}
   - component: {fileID: 1392866528}
   - component: {fileID: 1392866533}
@@ -730,14 +729,6 @@ AudioListener:
   m_GameObject: {fileID: 1392866527}
   m_Enabled: 1
 --- !u!124 &1392866529
-Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1392866527}
-  m_Enabled: 1
---- !u!92 &1392866530
 Behaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1329,7 +1320,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityMultiplier: 1
-  monitorVerticalOffset: 1
   fixedDeltaTime: 0.01333
   maximumDeltaTime: 0.15
   solverIterations: 12
