@@ -18,12 +18,17 @@ jobs:
       pip_constraints:
         type: string
         description: Constraints file that is passed to "pip install". We constraint older versions of libraries for older python runtime, in order to help ensure compatibility.
+      enforce_onnx_conversion:
+        type: integer
+        default: 0
+        description: Whether to raise an exception if ONNX models couldn't be saved.
     executor: << parameters.executor >>
     working_directory: ~/repo
 
     # Run additional numpy checks on unit tests
     environment:
       TEST_ENFORCE_NUMPY_FLOAT32: 1
+      TEST_ENFORCE_ONNX_CONVERSION: << parameters.enforce_onnx_conversion >>
 
     steps:
       - checkout
@@ -217,6 +222,8 @@ workflows:
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_tf1_version.txt
+          # Make sure ONNX conversion passes here (recent version of tensorflow 1.x)
+          enforce_onnx_conversion: 1
       - build_python:
           name: python_3.7.3+tf2
           executor: python373

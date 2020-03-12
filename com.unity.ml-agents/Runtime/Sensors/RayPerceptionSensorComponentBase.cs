@@ -15,12 +15,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// The name of the Sensor that this component wraps.
+        /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string sensorName
         {
-            get => m_SensorName;
-            // Restrict the access on the name, since changing it a runtime doesn't re-sort the Agent sensors.
-            internal set => m_SensorName = value;
+            get { return m_SensorName; }
+            set { m_SensorName = value; }
         }
 
         [SerializeField, FormerlySerializedAs("detectableTags")]
@@ -29,12 +29,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// List of tags in the scene to compare against.
+        /// Note that this should not be changed at runtime.
         /// </summary>
         public List<string> detectableTags
         {
-            get => m_DetectableTags;
-            // Note: can't change at runtime
-            internal set => m_DetectableTags = value;
+            get { return m_DetectableTags; }
+            set { m_DetectableTags = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
@@ -44,12 +44,13 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Number of rays to the left and right of center.
+        /// Note that this should not be changed at runtime.
         /// </summary>
         public int raysPerDirection
         {
-            get => m_RaysPerDirection;
+            get { return m_RaysPerDirection; }
             // Note: can't change at runtime
-            internal set => m_RaysPerDirection = value;
+            set { m_RaysPerDirection = value;}
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
@@ -106,7 +107,7 @@ namespace MLAgents.Sensors
         public LayerMask rayLayerMask
         {
             get => m_RayLayerMask;
-            set { m_RayLayerMask = value; UpdateSensor();}
+            set { m_RayLayerMask = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
@@ -116,11 +117,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        internal int observationStacks
+        public int observationStacks
         {
-            get => m_ObservationStacks;
-            set => m_ObservationStacks = value; // Note: can't change at runtime
+            get { return m_ObservationStacks; }
+            set { m_ObservationStacks = value; }
         }
 
         /// <summary>
