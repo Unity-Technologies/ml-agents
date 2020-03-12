@@ -109,6 +109,15 @@ class BatchedStepResult:
     def contains_agent(self, agent_id: AgentId) -> bool:
         return agent_id in self.agent_id_to_index
 
+    def get_index(self, agent_id: AgentId) -> int:
+        if not self.contains_agent(agent_id):
+            raise IndexError(
+                "get_index failed. agent_id {} is not present in the BatchedStepResult".format(
+                    agent_id
+                )
+            )
+        return self._agent_id_to_index[agent_id]  # type: ignore
+
     def get_agent_step_result(self, agent_id: AgentId) -> StepResult:
         """
         returns the step result for a specific agent.
@@ -118,7 +127,9 @@ class BatchedStepResult:
         """
         if not self.contains_agent(agent_id):
             raise IndexError(
-                "agent_id {} is not present in the BatchedStepResult".format(agent_id)
+                "get_agent_step_result failed. agent_id {} is not present in the BatchedStepResult".format(
+                    agent_id
+                )
             )
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []

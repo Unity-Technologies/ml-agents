@@ -8,7 +8,8 @@ from mlagents_envs.base_env import (
     BatchedStepResult,
     ActionType,
 )
-from mlagents_envs.rpc_utils import proto_from_batched_step_result
+from mlagents_envs.rpc_utils import proto_from_batched_step_result_and_action
+from mlagents_envs.agent_info_action_pair_pb2 import AgentInfoActionPairProto
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -274,3 +275,29 @@ class Memory1DEnvironment(Simple1DEnvironment):
             m_agent_id,
             action_mask,
         )
+
+
+class Record1DEnvironment(Simple1DEnvironment):
+    def __init__(
+        self, brain_names, use_discrete, step_size=0.2, num_vector=1, n_demos=30
+    ):
+        super().__init__(
+            brain_names, use_discrete, step_size=0.2, num_vector=num_vector
+        )
+        self.demonstration_protos: Dict[str, List[AgentInfoActionPairProto]] = {}
+        self.n_demos = n_demos
+        for name in self.names:
+            self.demonstration_protos[name] = []
+
+    def step(self) -> None:
+        super().step()
+        # proto_from_batched_step_result(self.step_result[name])
+        for name in self.names:
+            self.demonstration_protos[
+                name
+            ] += proto_from_batched_step_result_and_action(
+                self.step_result[name], self.action[name]
+            )
+            self.demonstration_protos[name] = self.demonstration_protos[name][
+                -self.n_demos :
+            ]

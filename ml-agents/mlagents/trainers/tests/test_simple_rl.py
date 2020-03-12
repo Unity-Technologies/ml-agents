@@ -8,13 +8,20 @@ from typing import Dict, Any
 from mlagents.trainers.tests.simple_test_envs import (
     Simple1DEnvironment,
     Memory1DEnvironment,
+    Record1DEnvironment,
 )
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
+from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
+    DemonstrationMetaProto,
+)
+from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
+from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
 
 BRAIN_NAME = "1D"
 
@@ -173,13 +180,31 @@ def _check_environment_trains(
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_record(use_discrete):
+    env = Record1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, n_demos=30)
+    config = generate_config(PPO_CONFIG)
+    _check_environment_trains(env, config)
+    agent_info_protos = env.demonstration_protos[BRAIN_NAME]
+    meta_data_proto = DemonstrationMetaProto()
+    brain_param_proto = BrainParametersProto(
+        vector_action_size=[1],
+        vector_action_descriptions=[""],
+        vector_action_space_type=discrete if use_discrete else continuous,
+        brain_name=BRAIN_NAME,
+        is_training=True,
+    )
+    action_type = "Discrete" if use_discrete else "Continuous"
+    demo_path = "demos/1DTest" + action_type + ".demo"
+    write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ppo(use_discrete):
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = generate_config(PPO_CONFIG)
     _check_environment_trains(env, config)
 
 
-<<<<<<< Updated upstream
 @pytest.mark.parametrize("use_discrete", [True, False])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):

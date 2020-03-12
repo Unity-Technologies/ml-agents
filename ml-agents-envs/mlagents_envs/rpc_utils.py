@@ -2,9 +2,13 @@ from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
+from mlagents_envs.communicator_objects.agent_action_pb2 import AgentActionProto
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
 from mlagents_envs.communicator_objects.observation_pb2 import (
     ObservationProto,
-    NONE as COMPRESSION_NONE,
+    NONE as COMPRESSION_TYPE_NONE,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
@@ -74,7 +78,7 @@ def observation_to_np_array(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
     gray_scale = obs.shape[2] == 1
-    if obs.compression_type == COMPRESSION_NONE:
+    if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
         return img
@@ -199,24 +203,66 @@ def batched_step_result_from_proto(
     return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
 
 
-@timed
 def proto_from_batched_step_result(
     batched_step_result: BatchedStepResult
-) -> AgentInfoProto:
-    reward = batched_step_result.reward
-    done = batched_step_result.done
-    max_step_reached = batched_step_result.max_step
-    agent_id = batched_step_result.agent_id
-    action_mask = batched_step_result.action_mask
-    observations = batched_step_result.obs
-    return AgentInfoProto(
-        reward=reward,
-        done=done,
-        id=agent_id,
-        max_step_reached=max_step_reached,
-        action_mask=action_mask,
-        observations=observations,
-    )
+) -> List[AgentInfoProto]:
+    agent_info_protos: List[AgentInfoProto] = []
+    for agent_id in batched_step_result.agent_id:
+        agent_id_index = batched_step_result.get_index(agent_id)
+        reward = batched_step_result.reward[agent_id_index]
+        done = batched_step_result.done[agent_id_index]
+        max_step_reached = batched_step_result.max_step[agent_id_index]
+        agent_mask = None
+        if batched_step_result.action_mask is not None:
+            mask = batched_step_result.action_mask[0]
+            agent_mask = mask[agent_id_index]
+        observations: List[ObservationProto] = []
+        for all_observations_of_type in batched_step_result.obs:
+            observation = all_observations_of_type[agent_id_index]
+            if len(observation.shape) == 3:
+                observations.append(
+                    ObservationProto(
+                        compressed_data=observation,
+                        shape=observation.shape,
+                        compression_type=COMPRESSION_TYPE_NONE,
+                    )
+                )
+            else:
+                observations.append(
+                    ObservationProto(
+                        float_data=ObservationProto.FloatData(data=observation),
+                        shape=[len(observation)],
+                        compression_type=COMPRESSION_TYPE_NONE,
+                    )
+                )
+
+        agent_info_proto = AgentInfoProto(
+            reward=reward,
+            done=done,
+            id=agent_id,
+            max_step_reached=max_step_reached,
+            action_mask=agent_mask,
+            observations=observations,
+        )
+        agent_info_protos.append(agent_info_proto)
+    return agent_info_protos
+
+
+# The arguments here are the BatchedStepResult and actions for a single agent name
+def proto_from_batched_step_result_and_action(
+    batched_step_result: BatchedStepResult, actions: np.ndarray
+) -> List[AgentInfoActionPairProto]:
+    agent_info_protos = proto_from_batched_step_result(batched_step_result)
+    agent_action_protos = [
+        AgentActionProto(vector_actions=action) for action in actions
+    ]
+    agent_info_action_pair_protos = [
+        AgentInfoActionPairProto(agent_info=agent_info_proto, action_info=action_proto)
+        for agent_info_proto, action_proto in zip(
+            agent_info_protos, agent_action_protos
+        )
+    ]
+    return agent_info_action_pair_protos
 
 
 def _generate_split_indices(dims):
