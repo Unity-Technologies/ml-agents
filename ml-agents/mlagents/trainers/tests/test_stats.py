@@ -12,6 +12,7 @@ from mlagents.trainers.stats import (
     StatsSummary,
     GaugeWriter,
     ConsoleWriter,
+    StatsPropertyType,
 )
 
 
@@ -95,7 +96,9 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
         mock_filewriter.return_value.flush.assert_called_once()
 
         # Test hyperparameter writing - no good way to parse the TB string though.
-        tb_writer.add_property("category1", "hyperparameters", {"example": 1.0})
+        tb_writer.add_property(
+            "category1", StatsPropertyType.hyperparameters, {"example": 1.0}
+        )
         assert mock_filewriter.return_value.add_summary.call_count > 1
 
 
@@ -173,7 +176,7 @@ class ConsoleWriterTest(unittest.TestCase):
             )
             # Test hyperparameter writing - no good way to parse the TB string though.
             console_writer.add_property(
-                "category1", "hyperparameters", {"example": 1.0}
+                "category1", StatsPropertyType.hyperparameters, {"example": 1.0}
             )
 
         self.assertIn(

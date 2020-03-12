@@ -8,7 +8,7 @@ from collections import deque
 
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.stats import StatsReporter, StatsPropertyType
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
@@ -53,7 +53,9 @@ class Trainer(abc.ABC):
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
-        self.stats_reporter.add_property("hyperparameters", self.trainer_parameters)
+        self.stats_reporter.add_property(
+            StatsPropertyType.hyperparameters, self.trainer_parameters
+        )
 
     def _check_param_keys(self):
         for k in self.param_keys:

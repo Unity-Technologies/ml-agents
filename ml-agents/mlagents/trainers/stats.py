@@ -1,4 +1,5 @@
 from collections import defaultdict
+from enum import Enum
 from typing import List, Dict, NamedTuple, Any
 import numpy as np
 import abc
@@ -23,6 +24,10 @@ class StatsSummary(NamedTuple):
         return StatsSummary(0.0, 0.0, 0)
 
 
+class StatsPropertyType(Enum):
+    hyperparameters = "hyperparameters"
+
+
 class StatsWriter(abc.ABC):
     """
     A StatsWriter abstract class. A StatsWriter takes in a category, key, scalar value, and step
@@ -35,14 +40,16 @@ class StatsWriter(abc.ABC):
     ) -> None:
         pass
 
-    def add_property(self, category: str, key: str, value: Any) -> None:
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
         """
         Add a generic property to the StatsWriter. This could be e.g. a Dict of hyperparameters,
         a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
         with all types of properties. For instance, a TB writer doesn't need a max step, nor should
         we write hyperparameters to the CSV.
         :param category: The category that the property belongs to.
-        :param key: The type of property.
+        :param type: The type of property.
         :param value: The property itself.
         """
         pass
@@ -102,8 +109,10 @@ class ConsoleWriter(StatsWriter):
                 )
             )
 
-    def add_property(self, category: str, key: str, value: Any) -> None:
-        if key == "hyperparameters":
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
+        if property_type == StatsPropertyType.hyperparameters:
             logger.info(
                 """Hyperparameters for behavior name {0}: \n{1}""".format(
                     category, self._dict_to_str(value, 0)
@@ -113,7 +122,7 @@ class ConsoleWriter(StatsWriter):
     def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """
         Takes a parameter dictionary and converts it to a human-readable string.
-        Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
+        Recurses if there are multiple levels of dict. Used to print out hyperparameters.
         param: param_dict: A Dictionary of key, value parameters.
         return: A string version of this dictionary.
         """
@@ -161,8 +170,10 @@ class TensorboardWriter(StatsWriter):
             os.makedirs(filewriter_dir, exist_ok=True)
             self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
 
-    def add_property(self, category: str, key: str, value: Any) -> None:
-        if key == "hyperparameters":
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
+        if property_type == StatsPropertyType.hyperparameters:
             assert isinstance(value, dict)
             text = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
@@ -258,7 +269,7 @@ class StatsReporter:
     def add_writer(writer: StatsWriter) -> None:
         StatsReporter.writers.append(writer)
 
-    def add_property(self, key: str, value: Any) -> None:
+    def add_property(self, property_type: StatsPropertyType, value: Any) -> None:
         """
         Add a generic property to the StatsReporter. This could be e.g. a Dict of hyperparameters,
         a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
@@ -268,7 +279,7 @@ class StatsReporter:
         :param value: The property itself.
         """
         for writer in StatsReporter.writers:
-            writer.add_property(self.category, key, value)
+            writer.add_property(self.category, property_type, value)
 
     def add_stat(self, key: str, value: float) -> None:
         """
