@@ -106,7 +106,8 @@ namespace MLAgents.Editor
             if (brainParameters != null)
             {
                 var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensorComponents);
+                    barracudaModel, brainParameters, sensorComponents, behaviorParameters.behaviorType
+                );
                 foreach (var check in failedChecks)
                 {
                     if (check != null)
