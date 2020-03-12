@@ -102,6 +102,8 @@ namespace MLAgentsExamples
             var agent = gameObject.AddComponent<PublicApiAgent>();
             // Make sure we can set the behavior type correctly after the agent is added
             behaviorParams.behaviorType = BehaviorType.InferenceOnly;
+            // Can't actually create an Agent with InferenceOnly and no model, so change back
+            behaviorParams.behaviorType = BehaviorType.Default;
 
             // TODO -  not internal yet
             // var decisionRequester = gameObject.AddComponent<DecisionRequester>();
