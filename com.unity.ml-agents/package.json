@@ -1,7 +1,7 @@
 {
 	"name": "com.unity.ml-agents",
 	"displayName":"ML Agents",
-	"version": "0.14.1-preview",
+	"version": "0.16.0-preview",
 	"unity": "2018.4",
 	"description": "Add interactivity to your game with Machine Learning Agents trained using Deep Reinforcement Learning.",
 	"dependencies": {
