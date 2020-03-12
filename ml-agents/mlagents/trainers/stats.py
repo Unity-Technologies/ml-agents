@@ -133,45 +133,6 @@ class ConsoleWriter(StatsWriter):
             )
 
 
-class ConsoleWriter(StatsWriter):
-    def __init__(self):
-        self.training_start_time = time.time()
-
-    def write_stats(
-        self, category: str, values: Dict[str, StatsSummary], step: int
-    ) -> None:
-        is_training = "Not Training."
-        if "Is Training" in values:
-            stats_summary = stats_summary = values["Is Training"]
-            if stats_summary.mean > 0.0:
-                is_training = "Training."
-        if "Environment/Cumulative Reward" in values:
-            stats_summary = values["Environment/Cumulative Reward"]
-            logger.info(
-                "{}: Step: {}. "
-                "Time Elapsed: {:0.3f} s "
-                "Mean "
-                "Reward: {:0.3f}"
-                ". Std of Reward: {:0.3f}. {}".format(
-                    category,
-                    step,
-                    time.time() - self.training_start_time,
-                    stats_summary.mean,
-                    stats_summary.std,
-                    is_training,
-                )
-            )
-        else:
-            logger.info(
-                "{}: Step: {}. No episode was completed since last summary. {}".format(
-                    category, step, is_training
-                )
-            )
-
-    def write_text(self, category: str, text: str, step: int) -> None:
-        pass
-
-
 class TensorboardWriter(StatsWriter):
     def __init__(self, base_dir: str):
         """
