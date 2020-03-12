@@ -179,163 +179,164 @@ def _check_environment_trains(
             assert all(reward > success_threshold for reward in processed_rewards)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ppo(use_discrete):
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = generate_config(PPO_CONFIG)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-@pytest.mark.parametrize("num_visual", [1, 2])
-def test_visual_ppo(num_visual, use_discrete):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME],
-        use_discrete=use_discrete,
-        num_visual=num_visual,
-        num_vector=0,
-        step_size=0.2,
-    )
-    override_vals = {"learning_rate": 3.0e-4}
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
-def test_visual_advanced_ppo(vis_encode_type, num_visual):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME],
-        use_discrete=True,
-        num_visual=num_visual,
-        num_vector=0,
-        step_size=0.5,
-        vis_obs_size=(36, 36, 3),
-    )
-    override_vals = {
-        "learning_rate": 3.0e-4,
-        "vis_encode_type": vis_encode_type,
-        "max_steps": 500,
-        "summary_freq": 100,
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.5)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_recurrent_ppo(use_discrete):
-    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {
-        "max_steps": 3000,
-        "batch_size": 64,
-        "buffer_size": 128,
-        "use_recurrent": True,
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_sac(use_discrete):
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = generate_config(SAC_CONFIG)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-@pytest.mark.parametrize("num_visual", [1, 2])
-def test_visual_sac(num_visual, use_discrete):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME],
-        use_discrete=use_discrete,
-        num_visual=num_visual,
-        num_vector=0,
-        step_size=0.2,
-    )
-    override_vals = {"batch_size": 16, "learning_rate": 3e-4}
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
-def test_visual_advanced_sac(vis_encode_type, num_visual):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME],
-        use_discrete=True,
-        num_visual=num_visual,
-        num_vector=0,
-        step_size=0.5,
-        vis_obs_size=(36, 36, 3),
-    )
-    override_vals = {
-        "batch_size": 16,
-        "learning_rate": 3.0e-4,
-        "vis_encode_type": vis_encode_type,
-        "buffer_init_steps": 0,
-        "max_steps": 100,
-    }
-    config = generate_config(SAC_CONFIG, override_vals)
-    # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.5)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_recurrent_sac(use_discrete):
-    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ghost(use_discrete):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
-    )
-    override_vals = {
-        "max_steps": 2500,
-        "self_play": {
-            "play_against_current_self_ratio": 1.0,
-            "save_steps": 2000,
-            "swap_steps": 2000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
-
-
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_ghost_fails(use_discrete):
-    env = Simple1DEnvironment(
-        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
-    )
-    # This config should fail because the ghosted policy is never swapped with a competent policy.
-    # Swap occurs after max step is reached.
-    override_vals = {
-        "max_steps": 2500,
-        "self_play": {
-            "play_against_current_self_ratio": 1.0,
-            "save_steps": 2000,
-            "swap_steps": 4000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=None)
-    processed_rewards = [
-        default_reward_processor(rewards) for rewards in env.final_rewards.values()
-    ]
-    success_threshold = 0.99
-    assert any(reward > success_threshold for reward in processed_rewards) and any(
-        reward < success_threshold for reward in processed_rewards
-    )
-
-
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ppo(use_discrete):
+#    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    config = generate_config(PPO_CONFIG)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# def test_visual_ppo(num_visual, use_discrete):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME],
+#        use_discrete=use_discrete,
+#        num_visual=num_visual,
+#        num_vector=0,
+#        step_size=0.2,
+#    )
+#    override_vals = {"learning_rate": 3.0e-4}
+#    config = generate_config(PPO_CONFIG, override_vals)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+# def test_visual_advanced_ppo(vis_encode_type, num_visual):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME],
+#        use_discrete=True,
+#        num_visual=num_visual,
+#        num_vector=0,
+#        step_size=0.5,
+#        vis_obs_size=(36, 36, 3),
+#    )
+#    override_vals = {
+#        "learning_rate": 3.0e-4,
+#        "vis_encode_type": vis_encode_type,
+#        "max_steps": 500,
+#        "summary_freq": 100,
+#    }
+#    config = generate_config(PPO_CONFIG, override_vals)
+#    # The number of steps is pretty small for these encoders
+#    _check_environment_trains(env, config, success_threshold=0.5)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_recurrent_ppo(use_discrete):
+#    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    override_vals = {
+#        "max_steps": 3000,
+#        "batch_size": 64,
+#        "buffer_size": 128,
+#        "use_recurrent": True,
+#    }
+#    config = generate_config(PPO_CONFIG, override_vals)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_sac(use_discrete):
+#    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    config = generate_config(SAC_CONFIG)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# def test_visual_sac(num_visual, use_discrete):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME],
+#        use_discrete=use_discrete,
+#        num_visual=num_visual,
+#        num_vector=0,
+#        step_size=0.2,
+#    )
+#    override_vals = {"batch_size": 16, "learning_rate": 3e-4}
+#    config = generate_config(SAC_CONFIG, override_vals)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+# def test_visual_advanced_sac(vis_encode_type, num_visual):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME],
+#        use_discrete=True,
+#        num_visual=num_visual,
+#        num_vector=0,
+#        step_size=0.5,
+#        vis_obs_size=(36, 36, 3),
+#    )
+#    override_vals = {
+#        "batch_size": 16,
+#        "learning_rate": 3.0e-4,
+#        "vis_encode_type": vis_encode_type,
+#        "buffer_init_steps": 0,
+#        "max_steps": 100,
+#    }
+#    config = generate_config(SAC_CONFIG, override_vals)
+#    # The number of steps is pretty small for these encoders
+#    _check_environment_trains(env, config, success_threshold=0.5)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_recurrent_sac(use_discrete):
+#    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
+#    config = generate_config(SAC_CONFIG, override_vals)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ghost(use_discrete):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
+#    )
+#    override_vals = {
+#        "max_steps": 2500,
+#        "self_play": {
+#            "play_against_current_self_ratio": 1.0,
+#            "save_steps": 2000,
+#            "swap_steps": 2000,
+#        },
+#    }
+#    config = generate_config(PPO_CONFIG, override_vals)
+#    _check_environment_trains(env, config)
+#
+#
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ghost_fails(use_discrete):
+#    env = Simple1DEnvironment(
+#        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
+#    )
+#    # This config should fail because the ghosted policy is never swapped with a competent policy.
+#    # Swap occurs after max step is reached.
+#    override_vals = {
+#        "max_steps": 2500,
+#        "self_play": {
+#            "play_against_current_self_ratio": 1.0,
+#            "save_steps": 2000,
+#            "swap_steps": 4000,
+#        },
+#    }
+#    config = generate_config(PPO_CONFIG, override_vals)
+#    _check_environment_trains(env, config, success_threshold=None)
+#    processed_rewards = [
+#        default_reward_processor(rewards) for rewards in env.final_rewards.values()
+#    ]
+#    success_threshold = 0.99
+#    assert any(reward > success_threshold for reward in processed_rewards) and any(
+#        reward < success_threshold for reward in processed_rewards
+#    )
+#
+#
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_record(use_discrete):
     env = Record1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, n_demos=100)
-    config = generate_config(PPO_CONFIG)
+    override_vals = {"max_steps": 5000}
+    config = generate_config(PPO_CONFIG, override_vals)
     _check_environment_trains(env, config)
     agent_info_protos = env.demonstration_protos[BRAIN_NAME]
     meta_data_proto = DemonstrationMetaProto()
@@ -351,22 +352,67 @@ def test_simple_record(use_discrete):
     write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos)
 
 
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
+# def test_gail(use_discrete, trainer_config):
+#    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    action_type = "Discrete" if use_discrete else "Continuous"
+#    demo_path = "demos/1DTest" + action_type + ".demo"
+#    override_vals = {
+#       "max_steps": 500,
+#        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
+#        "reward_signals": {
+#            "gail": {
+#                "strength": 1.0,
+#                "gamma": 0.99,
+#                "encoding_size": 32,
+#                "demo_path": demo_path,
+#            }
+#        },
+#    }
+#    config = generate_config(trainer_config, override_vals)
+#    _check_environment_trains(env, config, success_threshold=0.9)
+
+
 @pytest.mark.parametrize("use_discrete", [True, False])
-@pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
-def test_gail(use_discrete, trainer_config):
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+def test_recurrent_gail_ppo(use_discrete):
+    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     action_type = "Discrete" if use_discrete else "Continuous"
     demo_path = "demos/1DTest" + action_type + ".demo"
     override_vals = {
+        "max_steps": 1000,
+        "batch_size": 64,
+        "buffer_size": 128,
+        "use_recurrent": True,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
         "reward_signals": {
             "gail": {
                 "strength": 1.0,
                 "gamma": 0.99,
-                "encoding_size": 128,
+                "encoding_size": 32,
                 "demo_path": demo_path,
             }
         },
     }
-    config = generate_config(trainer_config, override_vals)
+    config = generate_config(PPO_CONFIG, override_vals)
     _check_environment_trains(env, config, success_threshold=0.9)
+
+
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_recurrent_sac_gail(use_discrete):
+#    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+#    action_type = "Discrete" if use_discrete else "Continuous"
+#    demo_path = "demos/1DTest" + action_type + ".demo"
+#    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 1000,
+#        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
+#        "reward_signals": {
+#            "gail": {
+#                "strength": 1.0,
+#                "gamma": 0.99,
+#                "encoding_size": 128,
+#                "demo_path": demo_path,
+#            }
+#        },
+#    }
+#    config = generate_config(SAC_CONFIG, override_vals)
+#    _check_environment_trains(env, config, success_threshold=0.9)
