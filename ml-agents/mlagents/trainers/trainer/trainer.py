@@ -18,7 +18,6 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.timers import hierarchical_timer
-from mlagents.trainers.progress_bar import ProgressBar
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -48,6 +47,9 @@ class Trainer(abc.ABC):
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
         self.stats_reporter = StatsReporter(self.summary_path)
+        self.stats_reporter.set_property(
+            "max_steps", int(float(self.trainer_parameters["max_steps"]))
+        )
         self.cumulative_returns_since_policy_update: List[float] = []
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
@@ -57,9 +59,6 @@ class Trainer(abc.ABC):
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
-        self.progress_bar = ProgressBar(
-            self.brain_name, "Steps", count=self.get_step, total=self.get_max_steps
-        )
 
     def _check_param_keys(self):
         for k in self.param_keys:
@@ -197,7 +196,6 @@ class Trainer(abc.ABC):
         Saves training statistics to Tensorboard.
         """
         self.stats_reporter.add_stat("Is Training", float(self.should_still_train))
-        self.progress_bar.update(step)
         self.stats_reporter.write_stats(int(step))
 
     @abc.abstractmethod

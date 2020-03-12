@@ -22,6 +22,7 @@ from mlagents.trainers.stats import (
     StatsReporter,
     GaugeWriter,
     ConsoleWriter,
+    ProgressBarWriter,
 )
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
@@ -272,10 +273,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tb_writer = TensorboardWriter(summaries_dir)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
+        progress_bar_writer = ProgressBarWriter()
         StatsReporter.add_writer(tb_writer)
         StatsReporter.add_writer(csv_writer)
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)
+        StatsReporter.add_writer(progress_bar_writer)
 
         if options.env_path is None:
             port = UnityEnvironment.DEFAULT_EDITOR_PORT
