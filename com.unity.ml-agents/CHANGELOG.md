@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+
+### Minor Changes
+
+
+## [0.15.0-preview] - 2020-03-18
+### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
  - Added `Agent.CollectDiscreteActionMasks` virtual method with a `DiscreteActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
