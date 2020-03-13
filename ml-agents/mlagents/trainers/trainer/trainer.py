@@ -17,7 +17,6 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.timers import hierarchical_timer
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -231,60 +230,32 @@ class Trainer(abc.ABC):
     @abc.abstractmethod
     def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
         """
-        Adds policy to trainer
+        Adds policy to trainer.
         """
         pass
 
     @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
-        Gets policy from trainer
+        Gets policy from trainer.
         """
         pass
 
     @abc.abstractmethod
-    def _is_ready_update(self):
-        """
-        Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to wether or not update_model() can be run
-        """
-        return False
-
-    @abc.abstractmethod
-    def _update_policy(self):
-        """
-        Uses demonstration_buffer to update model.
-        """
-        pass
-
     def advance(self) -> None:
         """
-        Steps the trainer, taking in trajectories and updates if ready.
+        Advances the trainer. Typically, this means grabbing trajectories
+        from all subscribed trajectory queues (self.trajectory_queues), and updating
+        a policy using the steps in them, and if needed pushing a new policy onto the right
+        policy queues (self.policy_queues).
         """
-        with hierarchical_timer("process_trajectory"):
-            for traj_queue in self.trajectory_queues:
-                # We grab at most the maximum length of the queue.
-                # This ensures that even if the queue is being filled faster than it is
-                # being emptied, the trajectories in the queue are on-policy.
-                for _ in range(traj_queue.maxlen):
-                    try:
-                        t = traj_queue.get_nowait()
-                        self._process_trajectory(t)
-                    except AgentManagerQueue.Empty:
-                        break
-        if self.should_still_train:
-            if self._is_ready_update():
-                with hierarchical_timer("_update_policy"):
-                    self._update_policy()
-                    for q in self.policy_queues:
-                        # Get policies that correspond to the policy queue in question
-                        q.put(self.get_policy(q.behavior_id))
+        pass
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
         Adds a policy queue to the list of queues to publish to when this Trainer
         makes a policy update
-        :param queue: Policy queue to publish to.
+        :param policy_queue: Policy queue to publish to.
         """
         self.policy_queues.append(policy_queue)
 
@@ -293,6 +264,6 @@ class Trainer(abc.ABC):
     ) -> None:
         """
         Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
-        :param queue: Trajectory queue to publish to.
+        :param trajectory_queue: Trajectory queue to read from.
         """
         self.trajectory_queues.append(trajectory_queue)

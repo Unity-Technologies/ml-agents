@@ -220,7 +220,7 @@ class PPOTrainer(RLTrainer):
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self.stats_reporter.add_stat(stat, val)
-        self.clear_update_buffer()
+        self._clear_update_buffer()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """

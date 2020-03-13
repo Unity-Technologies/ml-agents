@@ -74,12 +74,12 @@ def test_rl_trainer():
 def test_clear_update_buffer():
     trainer = create_rl_trainer()
     trainer.update_buffer = construct_fake_buffer(0)
-    trainer.clear_update_buffer()
+    trainer._clear_update_buffer()
     for _, arr in trainer.update_buffer.items():
         assert len(arr) == 0
 
 
-@mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer.clear_update_buffer")
+@mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer._clear_update_buffer")
 def test_advance(mocked_clear_update_buffer):
     trainer = create_rl_trainer()
     trajectory_queue = AgentManagerQueue("testbrain")
