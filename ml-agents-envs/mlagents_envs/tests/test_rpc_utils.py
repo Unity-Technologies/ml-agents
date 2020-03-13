@@ -10,7 +10,11 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
     PNG,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
-from mlagents_envs.base_env import AgentGroupSpec, ActionType
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
+from mlagents_envs.communicator_objects.agent_action_pb2 import AgentActionProto
+from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.rpc_utils import (
     agent_group_spec_from_proto,
@@ -73,6 +77,65 @@ def generate_uncompressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     obs_proto.compression_type = NONE
     obs_proto.shape.extend(in_array.shape)
     return obs_proto
+
+
+def proto_from_batched_step_result(
+    batched_step_result: BatchedStepResult
+) -> List[AgentInfoProto]:
+    agent_info_protos: List[AgentInfoProto] = []
+    for agent_id in batched_step_result.agent_id:
+        agent_id_index = batched_step_result.agent_id_to_index[agent_id]
+        reward = batched_step_result.reward[agent_id_index]
+        done = batched_step_result.done[agent_id_index]
+        max_step_reached = batched_step_result.max_step[agent_id_index]
+        agent_mask = None
+        if batched_step_result.action_mask is not None:
+            agent_mask = []  # type: ignore
+            for _branch in batched_step_result.action_mask:
+                agent_mask = np.concatenate(
+                    (agent_mask, _branch[agent_id_index, :]), axis=0
+                )
+        observations: List[ObservationProto] = []
+        for all_observations_of_type in batched_step_result.obs:
+            observation = all_observations_of_type[agent_id_index]
+            if len(observation.shape) == 3:
+                observations.append(generate_uncompressed_proto_obs(observation))
+            else:
+                observations.append(
+                    ObservationProto(
+                        float_data=ObservationProto.FloatData(data=observation),
+                        shape=[len(observation)],
+                        compression_type=NONE,
+                    )
+                )
+
+        agent_info_proto = AgentInfoProto(
+            reward=reward,
+            done=done,
+            id=agent_id,
+            max_step_reached=max_step_reached,
+            action_mask=agent_mask,
+            observations=observations,
+        )
+        agent_info_protos.append(agent_info_proto)
+    return agent_info_protos
+
+
+# The arguments here are the BatchedStepResult and actions for a single agent name
+def proto_from_batched_step_result_and_action(
+    batched_step_result: BatchedStepResult, actions: np.ndarray
+) -> List[AgentInfoActionPairProto]:
+    agent_info_protos = proto_from_batched_step_result(batched_step_result)
+    agent_action_protos = [
+        AgentActionProto(vector_actions=action) for action in actions
+    ]
+    agent_info_action_pair_protos = [
+        AgentInfoActionPairProto(agent_info=agent_info_proto, action_info=action_proto)
+        for agent_info_proto, action_proto in zip(
+            agent_info_protos, agent_action_protos
+        )
+    ]
+    return agent_info_action_pair_protos
 
 
 def test_process_pixels():

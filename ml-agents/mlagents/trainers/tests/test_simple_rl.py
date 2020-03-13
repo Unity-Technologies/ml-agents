@@ -334,8 +334,14 @@ def test_simple_ghost_fails(use_discrete):
 
 @pytest.fixture(scope="session")
 def simple_record(tmpdir_factory):
-    def record_demo(use_discrete):
-        env = Record1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, n_demos=100)
+    def record_demo(use_discrete, num_visual=0, num_vector=1):
+        env = Record1DEnvironment(
+            [BRAIN_NAME],
+            use_discrete=use_discrete,
+            num_visual=num_visual,
+            num_vector=num_vector,
+            n_demos=100,
+        )
         config = generate_config(PPO_CONFIG)
         _check_environment_trains(env, config)
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
@@ -362,6 +368,29 @@ def test_gail(simple_record, use_discrete, trainer_config):
     demo_path = simple_record(use_discrete)
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {
+        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
+        "reward_signals": {
+            "gail": {
+                "strength": 1.0,
+                "gamma": 0.99,
+                "encoding_size": 32,
+                "demo_path": demo_path,
+            }
+        },
+    }
+    config = generate_config(trainer_config, override_vals)
+    _check_environment_trains(env, config, success_threshold=0.9)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
+def test_gail_visual(simple_record, use_discrete, trainer_config):
+    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
+    env = Simple1DEnvironment(
+        [BRAIN_NAME], num_visual=1, num_vector=0, use_discrete=use_discrete
+    )
+    override_vals = {
+        "learning_rate": 3.0e-4,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
         "reward_signals": {
             "gail": {
