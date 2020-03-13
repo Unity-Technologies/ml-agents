@@ -1,7 +1,6 @@
 # # Unity ML-Agents Toolkit
 import logging
 from typing import Dict, List, Deque, Any
-import time
 import abc
 
 from collections import deque
@@ -42,19 +41,24 @@ class Trainer(abc.ABC):
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
-        self.stats_reporter = StatsReporter(self.summary_path)
-        self.cumulative_returns_since_policy_update: List[float] = []
+        self._stats_reporter = StatsReporter(self.summary_path)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
-        self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
-        self.stats_reporter.add_property(
+        self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
         )
+
+    @property
+    def stats_reporter(self):
+        """
+        Returns the stats reporter associated with this Trainer.
+        """
+        return self._stats_reporter
 
     def _check_param_keys(self):
         for k in self.param_keys:
@@ -106,23 +110,6 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
-        """
-        Increment the step count of the trainer
-        :param n_steps: number of steps to increment the step count by
-        """
-        self.step += n_steps
-        self.next_summary_step = self._get_next_summary_step()
-        p = self.get_policy(name_behavior_id)
-        if p:
-            p.increment_step(n_steps)
-
-    def _get_next_summary_step(self) -> int:
-        """
-        Get the next step count that should result in a summary write.
-        """
-        return self.step + (self.summary_freq - self.step % self.summary_freq)
-
     def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model
@@ -136,31 +123,6 @@ class Trainer(abc.ABC):
         policy = self.get_policy(name_behavior_id)
         settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
         export_policy_model(settings, policy.graph, policy.sess)
-
-    def _write_summary(self, step: int) -> None:
-        """
-        Saves training statistics to Tensorboard.
-        """
-        self.stats_reporter.add_stat("Is Training", float(self.should_still_train))
-        self.stats_reporter.write_stats(int(step))
-
-    @abc.abstractmethod
-    def _process_trajectory(self, trajectory: Trajectory) -> None:
-        """
-        Takes a trajectory and processes it, putting it into the update buffer.
-        :param trajectory: The Trajectory tuple containing the steps to be processed.
-        """
-        self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
-
-    def _maybe_write_summary(self, step_after_process: int) -> None:
-        """
-        If processing the trajectory will make the step exceed the next summary write,
-        write the summary. This logic ensures summaries are written on the update step and not in between.
-        :param step_after_process: the step count after processing the next trajectory.
-        """
-        if step_after_process >= self.next_summary_step and self.get_step != 0:
-            self._write_summary(self.next_summary_step)
 
     @abc.abstractmethod
     def end_episode(self):
