@@ -4,14 +4,11 @@ from typing import Dict, List, Deque, Any
 import time
 import abc
 
-from mlagents.tf_utils import tf
-from mlagents import tf_utils
-
 from collections import deque
 
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.stats import StatsReporter, StatsPropertyType
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
@@ -56,6 +53,9 @@ class Trainer(abc.ABC):
         self.training_start_time = time.time()
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
+        self.stats_reporter.add_property(
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
+        )
 
     def _check_param_keys(self):
         for k in self.param_keys:
@@ -64,56 +64,6 @@ class Trainer(abc.ABC):
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
                 )
-
-    def write_tensorboard_text(self, key: str, input_dict: Dict[str, Any]) -> None:
-        """
-        Saves text to Tensorboard.
-        Note: Only works on tensorflow r1.2 or above.
-        :param key: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            with tf.Session(config=tf_utils.generate_session_config()) as sess:
-                s_op = tf.summary.text(
-                    key,
-                    tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
-                    ),
-                )
-                s = sess.run(s_op)
-                self.stats_reporter.write_text(s, self.get_step)
-        except Exception:
-            logger.info("Could not write text summary for Tensorboard.")
-            pass
-
-    def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
-        """
-        Takes a parameter dictionary and converts it to a human-readable string.
-        Recurses if there are multiple levels of dict. Used to print out hyperaparameters.
-        param: param_dict: A Dictionary of key, value parameters.
-        return: A string version of this dictionary.
-        """
-        if not isinstance(param_dict, dict):
-            return str(param_dict)
-        else:
-            append_newline = "\n" if num_tabs > 0 else ""
-            return append_newline + "\n".join(
-                [
-                    "\t"
-                    + "  " * num_tabs
-                    + "{0}:\t{1}".format(
-                        x, self._dict_to_str(param_dict[x], num_tabs + 1)
-                    )
-                    for x in param_dict
-                ]
-            )
-
-    def __str__(self) -> str:
-        return """Hyperparameters for the {0} of brain {1}: \n{2}""".format(
-            self.__class__.__name__,
-            self.brain_name,
-            self._dict_to_str(self.trainer_parameters, 0),
-        )
 
     @property
     def parameters(self) -> Dict[str, Any]:

@@ -12,6 +12,7 @@ from mlagents.trainers.stats import (
     StatsSummary,
     GaugeWriter,
     ConsoleWriter,
+    StatsPropertyType,
 )
 
 
@@ -52,7 +53,7 @@ def test_stat_reporter_add_summary_write():
     )
 
 
-def test_stat_reporter_text():
+def test_stat_reporter_property():
     # Test add_writer
     mock_writer = mock.Mock()
     StatsReporter.writers.clear()
@@ -61,10 +62,11 @@ def test_stat_reporter_text():
 
     statsreporter1 = StatsReporter("category1")
 
-    # Test write_text
-    step = 10
-    statsreporter1.write_text("this is a text", step)
-    mock_writer.write_text.assert_called_once_with("category1", "this is a text", step)
+    # Test add_property
+    statsreporter1.add_property("key", "this is a text")
+    mock_writer.add_property.assert_called_once_with(
+        "category1", "key", "this is a text"
+    )
 
 
 @mock.patch("mlagents.tf_utils.tf.Summary")
@@ -92,6 +94,12 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
             mock_summary.return_value, 10
         )
         mock_filewriter.return_value.flush.assert_called_once()
+
+        # Test hyperparameter writing - no good way to parse the TB string though.
+        tb_writer.add_property(
+            "category1", StatsPropertyType.HYPERPARAMETERS, {"example": 1.0}
+        )
+        assert mock_filewriter.return_value.add_summary.call_count > 1
 
 
 def test_csv_writer():
@@ -166,7 +174,15 @@ class ConsoleWriterTest(unittest.TestCase):
                 },
                 10,
             )
+            # Test hyperparameter writing - no good way to parse the TB string though.
+            console_writer.add_property(
+                "category1", StatsPropertyType.HYPERPARAMETERS, {"example": 1.0}
+            )
+
         self.assertIn(
             "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
         )
         self.assertIn("Not Training.", cm.output[1])
+
+        self.assertIn("Hyperparameters for behavior name", cm.output[2])
+        self.assertIn("example:\t1.0", cm.output[2])

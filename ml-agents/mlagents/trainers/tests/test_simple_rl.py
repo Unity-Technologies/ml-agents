@@ -111,9 +111,6 @@ class DebugWriter(StatsWriter):
                 print(step, val, stats_summary.mean)
                 self._last_reward_summary[category] = stats_summary.mean
 
-    def write_text(self, category: str, text: str, step: int) -> None:
-        pass
-
 
 def _check_environment_trains(
     env,

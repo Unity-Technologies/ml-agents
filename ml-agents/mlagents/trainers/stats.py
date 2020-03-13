@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import List, Dict, NamedTuple
+from enum import Enum
+from typing import List, Dict, NamedTuple, Any
 import numpy as np
 import abc
 import csv
@@ -7,7 +8,7 @@ import os
 import time
 import logging
 
-from mlagents.tf_utils import tf
+from mlagents.tf_utils import tf, generate_session_config
 from mlagents_envs.timers import set_gauge
 
 logger = logging.getLogger("mlagents.trainers")
@@ -23,6 +24,10 @@ class StatsSummary(NamedTuple):
         return StatsSummary(0.0, 0.0, 0)
 
 
+class StatsPropertyType(Enum):
+    HYPERPARAMETERS = "hyperparameters"
+
+
 class StatsWriter(abc.ABC):
     """
     A StatsWriter abstract class. A StatsWriter takes in a category, key, scalar value, and step
@@ -35,8 +40,18 @@ class StatsWriter(abc.ABC):
     ) -> None:
         pass
 
-    @abc.abstractmethod
-    def write_text(self, category: str, text: str, step: int) -> None:
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
+        """
+        Add a generic property to the StatsWriter. This could be e.g. a Dict of hyperparameters,
+        a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
+        with all types of properties. For instance, a TB writer doesn't need a max step, nor should
+        we write hyperparameters to the CSV.
+        :param category: The category that the property belongs to.
+        :param type: The type of property.
+        :param value: The property itself.
+        """
         pass
 
 
@@ -57,9 +72,6 @@ class GaugeWriter(StatsWriter):
     ) -> None:
         for val, stats_summary in values.items():
             set_gauge(f"{category}.{val}.mean", float(stats_summary.mean))
-
-    def write_text(self, category: str, text: str, step: int) -> None:
-        pass
 
 
 class ConsoleWriter(StatsWriter):
@@ -97,8 +109,37 @@ class ConsoleWriter(StatsWriter):
                 )
             )
 
-    def write_text(self, category: str, text: str, step: int) -> None:
-        pass
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
+        if property_type == StatsPropertyType.HYPERPARAMETERS:
+            logger.info(
+                """Hyperparameters for behavior name {0}: \n{1}""".format(
+                    category, self._dict_to_str(value, 0)
+                )
+            )
+
+    def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
+        """
+        Takes a parameter dictionary and converts it to a human-readable string.
+        Recurses if there are multiple levels of dict. Used to print out hyperparameters.
+        param: param_dict: A Dictionary of key, value parameters.
+        return: A string version of this dictionary.
+        """
+        if not isinstance(param_dict, dict):
+            return str(param_dict)
+        else:
+            append_newline = "\n" if num_tabs > 0 else ""
+            return append_newline + "\n".join(
+                [
+                    "\t"
+                    + "  " * num_tabs
+                    + "{0}:\t{1}".format(
+                        x, self._dict_to_str(param_dict[x], num_tabs + 1)
+                    )
+                    for x in param_dict
+                ]
+            )
 
 
 class TensorboardWriter(StatsWriter):
@@ -129,9 +170,34 @@ class TensorboardWriter(StatsWriter):
             os.makedirs(filewriter_dir, exist_ok=True)
             self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
 
-    def write_text(self, category: str, text: str, step: int) -> None:
-        self._maybe_create_summary_writer(category)
-        self.summary_writers[category].add_summary(text, step)
+    def add_property(
+        self, category: str, property_type: StatsPropertyType, value: Any
+    ) -> None:
+        if property_type == StatsPropertyType.HYPERPARAMETERS:
+            assert isinstance(value, dict)
+            text = self._dict_to_tensorboard("Hyperparameters", value)
+            self._maybe_create_summary_writer(category)
+            self.summary_writers[category].add_summary(text, 0)
+
+    def _dict_to_tensorboard(self, name: str, input_dict: Dict[str, Any]) -> str:
+        """
+        Convert a dict to a Tensorboard-encoded string.
+        :param name: The name of the text.
+        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
+        """
+        try:
+            with tf.Session(config=generate_session_config()) as sess:
+                s_op = tf.summary.text(
+                    name,
+                    tf.convert_to_tensor(
+                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                    ),
+                )
+                s = sess.run(s_op)
+                return s
+        except Exception:
+            logger.warning("Could not write text summary for Tensorboard.")
+            return ""
 
 
 class CSVWriter(StatsWriter):
@@ -185,15 +251,12 @@ class CSVWriter(StatsWriter):
         file_dir = os.path.join(self.base_dir, category + ".csv")
         return file_dir
 
-    def write_text(self, category: str, text: str, step: int) -> None:
-        pass
-
 
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
 
-    def __init__(self, category):
+    def __init__(self, category: str):
         """
         Generic StatsReporter. A category is the broadest type of storage (would
         correspond the run name and trainer name, e.g. 3DBalltest_3DBall. A key is the
@@ -205,6 +268,18 @@ class StatsReporter:
     @staticmethod
     def add_writer(writer: StatsWriter) -> None:
         StatsReporter.writers.append(writer)
+
+    def add_property(self, property_type: StatsPropertyType, value: Any) -> None:
+        """
+        Add a generic property to the StatsReporter. This could be e.g. a Dict of hyperparameters,
+        a max step count, a trainer type, etc. Note that not all StatsWriters need to be compatible
+        with all types of properties. For instance, a TB writer doesn't need a max step, nor should
+        we write hyperparameters to the CSV.
+        :param key: The type of property.
+        :param value: The property itself.
+        """
+        for writer in StatsReporter.writers:
+            writer.add_property(self.category, property_type, value)
 
     def add_stat(self, key: str, value: float) -> None:
         """
@@ -238,15 +313,6 @@ class StatsReporter:
         for writer in StatsReporter.writers:
             writer.write_stats(self.category, values, step)
         del StatsReporter.stats_dict[self.category]
-
-    def write_text(self, text: str, step: int) -> None:
-        """
-        Write out some text.
-        :param text: The text to write out.
-        :param step: Training step which to write these stats as.
-        """
-        for writer in StatsReporter.writers:
-            writer.write_text(self.category, text, step)
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
