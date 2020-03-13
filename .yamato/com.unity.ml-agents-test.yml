@@ -1,7 +1,11 @@
 test_editors:
   - version: 2018.4
+    # 2018.4 doesn't support code-coverage
+    coverageOptions:
   - version: 2019.3
+    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
   - version: 2020.1
+    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
 test_platforms:
   - name: win
     type: Unity::VM
@@ -27,7 +31,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
+    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
   artifacts:
     logs:
       paths:
