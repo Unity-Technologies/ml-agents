@@ -30,7 +30,7 @@ from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
-from mlagents_envs.timers import hierarchical_timer
+from mlagents_envs.timers import hierarchical_timer, get_timer_tree
 from mlagents.logging_util import create_logger
 
 
@@ -329,6 +329,18 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
+        write_timing_tree(summaries_dir, options.run_id)
+
+
+def write_timing_tree(summaries_dir: str, run_id: str) -> None:
+    timing_path = f"{summaries_dir}/{run_id}_timers.json"
+    try:
+        with open(timing_path, "w") as f:
+            json.dump(get_timer_tree(), f, indent=4)
+    except FileNotFoundError:
+        logging.warning(
+            f"Unable to save to {timing_path}. Make sure the directory exists"
+        )
 
 
 def create_sampler_manager(sampler_config, run_seed=None):
