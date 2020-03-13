@@ -11,6 +11,7 @@ from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.stats import StatsPropertyType
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
@@ -37,6 +38,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             "environment": defaultdict(lambda: 0)
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
+        self._stats_reporter.add_property(
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
+        )
 
     def end_episode(self) -> None:
         """

@@ -26,6 +26,8 @@ class StatsSummary(NamedTuple):
 
 class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
+    SELF_PLAY = "selfplay"
+    SELF_PLAY_TEAM = "selfplayteam"
 
 
 class StatsWriter(abc.ABC):
@@ -77,6 +79,9 @@ class GaugeWriter(StatsWriter):
 class ConsoleWriter(StatsWriter):
     def __init__(self):
         self.training_start_time = time.time()
+        # If self-play, we want to print ELO instead of reward
+        self.self_play = False
+        self.self_play_team = -1
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -86,6 +91,7 @@ class ConsoleWriter(StatsWriter):
             stats_summary = stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
                 is_training = "Training."
+
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
             logger.info(
@@ -102,6 +108,21 @@ class ConsoleWriter(StatsWriter):
                     is_training,
                 )
             )
+            if self.self_play and "Self-play/ELO" in values:
+                elo_stats = values["Self-play/ELO"]
+                mean_opponent_elo = values["Self-play/Mean Opponent ELO"]
+                std_opponent_elo = values["Self-play/Std Opponent ELO"]
+                logger.info(
+                    "{} Team {}: ELO: {:0.3f}. "
+                    "Mean Opponent ELO: {:0.3f}. "
+                    "Std Opponent ELO: {:0.3f}. ".format(
+                        category,
+                        self.self_play_team,
+                        elo_stats.mean,
+                        mean_opponent_elo.mean,
+                        std_opponent_elo.mean,
+                    )
+                )
         else:
             logger.info(
                 "{}: Step: {}. No episode was completed since last summary. {}".format(
@@ -118,6 +139,12 @@ class ConsoleWriter(StatsWriter):
                     category, self._dict_to_str(value, 0)
                 )
             )
+        elif property_type == StatsPropertyType.SELF_PLAY:
+            assert isinstance(value, bool)
+            self.self_play = value
+        elif property_type == StatsPropertyType.SELF_PLAY_TEAM:
+            assert isinstance(value, int)
+            self.self_play_team = value
 
     def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """

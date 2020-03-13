@@ -13,6 +13,8 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
+from mlagents.trainers.stats import StatsPropertyType
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -43,7 +45,9 @@ class GhostTrainer(Trainer):
         self.learning_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
         # assign ghost's stats collection to wrapped trainer's
-        self.stats_reporter = self.trainer.stats_reporter
+        self._stats_reporter = self.trainer.stats_reporter
+        # Set the logging to print ELO in the console
+        self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY, True)
 
         self_play_parameters = trainer_parameters["self_play"]
         self.window = self_play_parameters.get("window", 10)
@@ -87,23 +91,6 @@ class GhostTrainer(Trainer):
          """
         return self.trainer.reward_buffer
 
-    def _write_summary(self, step: int) -> None:
-        """
-        Saves training statistics to Tensorboard.
-        """
-        opponents = np.array(self.policy_elos, dtype=np.float32)
-        logger.info(
-            " Learning brain {} ELO: {:0.3f}\n"
-            "Mean Opponent ELO: {:0.3f}"
-            " Std Opponent ELO: {:0.3f}".format(
-                self.learning_behavior_name,
-                self.current_elo,
-                opponents.mean(),
-                opponents.std(),
-            )
-        )
-        self.stats_reporter.add_stat("ELO", self.current_elo)
-
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         if trajectory.done_reached and not trajectory.max_step_reached:
             # Assumption is that final reward is 1/.5/0 for win/draw/loss
@@ -119,12 +106,12 @@ class GhostTrainer(Trainer):
             )
             self.current_elo += change
             self.policy_elos[self.current_opponent] -= change
-
-    def _is_ready_update(self) -> bool:
-        return False
-
-    def _update_policy(self) -> None:
-        pass
+            opponents = np.array(self.policy_elos, dtype=np.float32)
+            self._stats_reporter.add_stat("Self-play/ELO", self.current_elo)
+            self._stats_reporter.add_stat(
+                "Self-play/Mean Opponent ELO", opponents.mean()
+            )
+            self._stats_reporter.add_stat("Self-play/Std Opponent ELO", opponents.std())
 
     def advance(self) -> None:
         """
@@ -146,8 +133,8 @@ class GhostTrainer(Trainer):
                 pass
 
         self.next_summary_step = self.trainer.next_summary_step
+
         self.trainer.advance()
-        self._maybe_write_summary(self.get_step)
 
         for internal_q in self.internal_policy_queues:
             # Get policies that correspond to the policy queue in question
@@ -203,6 +190,11 @@ class GhostTrainer(Trainer):
             self.trainer.add_policy(name_behavior_id, policy)
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
             self.learning_behavior_name = name_behavior_id
+            behavior_id_parsed = BehaviorIdentifiers.from_name_behavior_id(
+                self.learning_behavior_name
+            )
+            team_id = behavior_id_parsed.behavior_ids["team"]
+            self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY_TEAM, team_id)
         else:
             # for saving/swapping snapshots
             policy.init_load_weights()

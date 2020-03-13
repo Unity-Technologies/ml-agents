@@ -7,7 +7,7 @@ from collections import deque
 
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.stats import StatsReporter, StatsPropertyType
+from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
@@ -49,9 +49,6 @@ class Trainer(abc.ABC):
         self.step: int = 0
         self.summary_freq = self.trainer_parameters["summary_freq"]
         self.next_summary_step = self.summary_freq
-        self._stats_reporter.add_property(
-            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
-        )
 
     @property
     def stats_reporter(self):
