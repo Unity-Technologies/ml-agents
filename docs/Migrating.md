@@ -7,7 +7,14 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.14 to latest
+## Migrating from 0.15 to latest
+
+### Important changes
+
+### Steps to Migrate
+
+
+## Migrating from 0.14 to 0.15
 
 ### Important changes
 * The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
@@ -31,6 +38,9 @@ The versions can be found in
   * `Done()` was renamed to `EndEpisode()`
   * `GiveModel()` was renamed to `SetModel()`
 * The `IFloatProperties` interface has been removed.
+* The interface for SideChannels was changed:
+  * In C#, `OnMessageReceived` now takes a `IncomingMessage` argument, and `QueueMessageToSend` takes an `OutgoingMessage` argument.
+  * In python, `on_message_received` now takes a `IncomingMessage` argument, and `queue_message_to_send` takes an `OutgoingMessage` argument.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -46,6 +56,7 @@ The versions can be found in
   * `Done()` to `EndEpisode()`
   * `GiveModel()` to `SetModel()`
 * Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
+* If you implemented custom `SideChannels`, update the signatures of your methods, and add your data to the `OutgoingMessage` or read it from the `IncomingMessage`.
 
 ## Migrating from 0.13 to 0.14
 

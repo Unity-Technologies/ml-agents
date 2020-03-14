@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+
+### Minor Changes
+ - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
+
+## [0.15.0-preview] - 2020-03-18
+### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
  - Added `Agent.CollectDiscreteActionMasks` virtual method with a `DiscreteActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.
@@ -49,7 +55,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity. (#3555)
  - The `IFloatProperties` interface has been removed.
  - Fix #3579.
+ - Improved inference performance for models with multiple action branches. (#3598)
  - Fixed an issue when using GAIL with less than `batch_size` number of demonstrations. (#3591)
+ - The interfaces to the `SideChannel` classes (on C# and python) have changed to use new  `IncomingMessage` and `OutgoingMessage` classes. These should make reading and writing data to the channel easier. (#3596)
+ - Updated the ExpertPyramid.demo example demonstration file (#3613)
+ - Updated project version for example environments to 2018.4.18f1. (#3618)
+ - Changed the Product Name in the example environments to remove spaces, so that the default build executable file doesn't contain spaces. (#3612)
 
 ## [0.14.1-preview] - 2020-02-25
 

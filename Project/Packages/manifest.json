@@ -3,10 +3,15 @@
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ads": "2.0.8",
+<<<<<<< HEAD
     "com.unity.analytics": "3.3.5",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.1.4",
+=======
+    "com.unity.analytics": "3.2.3",
+    "com.unity.collab-proxy": "1.2.15",
+>>>>>>> upstream/master
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.multiplayer-hlapi": "1.0.4",
     "com.unity.package-validation-suite": "0.7.15-preview",

@@ -4,7 +4,6 @@
 
 import os
 import sys
-import json
 import logging
 from typing import Dict, Optional, Set
 from collections import defaultdict
@@ -18,7 +17,7 @@ from mlagents_envs.exception import (
     UnityCommunicationException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents_envs.timers import hierarchical_timer, get_timer_tree, timed
+from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -90,6 +89,7 @@ class TrainerController(object):
                 brain_names_to_measure_vals[brain_name] = measure_val
         return brain_names_to_measure_vals
 
+    @timed
     def _save_model(self):
         """
         Saves current model to checkpoint folder.
@@ -104,16 +104,6 @@ class TrainerController(object):
             "Learning was interrupted. Please wait while the graph is generated."
         )
         self._save_model()
-
-    def _write_timing_tree(self) -> None:
-        timing_path = f"{self.summaries_dir}/{self.run_id}_timers.json"
-        try:
-            with open(timing_path, "w") as f:
-                json.dump(get_timer_tree(), f, indent=4)
-        except FileNotFoundError:
-            self.logger.warning(
-                f"Unable to save to {timing_path}. Make sure the directory exists"
-            )
 
     def _export_graph(self):
         """
@@ -136,6 +126,7 @@ class TrainerController(object):
                 "permissions are set correctly.".format(model_path)
             )
 
+    @timed
     def _reset_env(self, env: EnvManager) -> None:
         """Resets the environment.
 
@@ -173,9 +164,6 @@ class TrainerController(object):
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
-            self.logger.info(trainer)
-            if self.train_model:
-                trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
         trainer.add_policy(name_behavior_id, policy)
@@ -199,6 +187,7 @@ class TrainerController(object):
         for behavior_id in behavior_ids:
             self._create_trainer_and_manager(env_manager, behavior_id)
 
+    @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_model_path(self.model_path)
         tf.reset_default_graph()
@@ -228,7 +217,6 @@ class TrainerController(object):
             pass
         if self.train_model:
             self._export_graph()
-        self._write_timing_tree()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]

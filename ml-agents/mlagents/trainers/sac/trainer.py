@@ -17,6 +17,7 @@ from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.exception import UnityTrainerException
 
 
 logger = logging.getLogger("mlagents.trainers")
@@ -99,6 +100,19 @@ class SACTrainer(RLTrainer):
             else False
         )
 
+    def _check_param_keys(self):
+        super()._check_param_keys()
+        # Check that batch size is greater than sequence length. Else, throw
+        # an exception.
+        if (
+            self.trainer_parameters["sequence_length"]
+            > self.trainer_parameters["batch_size"]
+            and self.trainer_parameters["use_recurrent"]
+        ):
+            raise UnityTrainerException(
+                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
+            )
+
     def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model. Overrides the default save_model since we want to save
@@ -156,7 +170,7 @@ class SACTrainer(RLTrainer):
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
-        for name, reward_signal in self.policy.reward_signals.items():
+        for name, reward_signal in self.optimizer.reward_signals.items():
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
@@ -223,9 +237,6 @@ class SACTrainer(RLTrainer):
             reparameterize=True,
             create_tf_graph=False,
         )
-        for _reward_signal in policy.reward_signals.keys():
-            self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
-
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
