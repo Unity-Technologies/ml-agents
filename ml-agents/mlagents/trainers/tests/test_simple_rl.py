@@ -342,8 +342,9 @@ def simple_record(tmpdir_factory):
             num_vector=num_vector,
             n_demos=100,
         )
-        config = generate_config(PPO_CONFIG)
-        _check_environment_trains(env, config)
+        # If we want to use true demos, we can solve the env in the usual way
+        # Otherwise, we can just call solve to execute the optimal policy
+        env.solve()
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
         brain_param_proto = BrainParametersProto(

@@ -232,7 +232,7 @@ class Simple1DEnvironment(BaseEnv):
 
 class Memory1DEnvironment(Simple1DEnvironment):
     def __init__(self, brain_names, use_discrete, step_size=0.2):
-        super().__init__(brain_names, use_discrete, step_size=0.2)
+        super().__init__(brain_names, use_discrete, step_size=step_size)
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
         self.num_show_steps = 2
@@ -292,7 +292,7 @@ class Record1DEnvironment(Simple1DEnvironment):
         super().__init__(
             brain_names,
             use_discrete,
-            step_size=0.2,
+            step_size=step_size,
             num_visual=num_visual,
             num_vector=num_vector,
         )
@@ -303,7 +303,6 @@ class Record1DEnvironment(Simple1DEnvironment):
 
     def step(self) -> None:
         super().step()
-        # proto_from_batched_step_result(self.step_result[name])
         for name in self.names:
             self.demonstration_protos[
                 name
@@ -313,3 +312,13 @@ class Record1DEnvironment(Simple1DEnvironment):
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :
             ]
+
+    def solve(self) -> None:
+        self.reset()
+        for _ in range(self.n_demos):
+            for name in self.names:
+                if self.discrete:
+                    self.action[name] = [[self.goal[name]]]
+                else:
+                    self.action[name] = [[float(self.goal[name])]]
+            self.step()
