@@ -340,7 +340,7 @@ def simple_record(tmpdir_factory):
             use_discrete=use_discrete,
             num_visual=num_visual,
             num_vector=num_vector,
-            n_demos=50,
+            n_demos=100,
         )
         # If we want to use true demos, we can solve the env in the usual way
         # Otherwise, we can just call solve to execute the optimal policy
@@ -396,7 +396,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         step_size=0.2,
     )
     override_vals = {
-        "max_steps": 500,
+        "max_steps": 1000,
         "learning_rate": 3.0e-4,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1500},
         "reward_signals": {
