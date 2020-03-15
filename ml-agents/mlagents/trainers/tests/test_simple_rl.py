@@ -396,9 +396,9 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         step_size=0.2,
     )
     override_vals = {
-        "max_steps": 1000,
+        "max_steps": 500,
         "learning_rate": 3.0e-4,
-        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1500},
+        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
         "reward_signals": {
             "extrinsic": {"strength": 1.0, "gamma": 0.99},
             "gail": {
