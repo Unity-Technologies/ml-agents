@@ -340,7 +340,7 @@ def simple_record(tmpdir_factory):
             use_discrete=use_discrete,
             num_visual=num_visual,
             num_vector=num_vector,
-            n_demos=100,
+            n_demos=200,
         )
         # If we want to use true demos, we can solve the env in the usual way
         # Otherwise, we can just call solve to execute the optimal policy
