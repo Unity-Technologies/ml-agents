@@ -367,7 +367,7 @@ def simple_record(tmpdir_factory):
 @pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
 def test_gail(simple_record, use_discrete, trainer_config):
     demo_path = simple_record(use_discrete)
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
     override_vals = {
         "max_steps": 500,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
@@ -389,7 +389,11 @@ def test_gail(simple_record, use_discrete, trainer_config):
 def test_gail_visual_ppo(simple_record, use_discrete):
     demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
     env = Simple1DEnvironment(
-        [BRAIN_NAME], num_visual=1, num_vector=0, use_discrete=use_discrete
+        [BRAIN_NAME],
+        num_visual=1,
+        num_vector=0,
+        use_discrete=use_discrete,
+        step_size=0.2,
     )
     override_vals = {
         "max_steps": 500,
@@ -413,7 +417,11 @@ def test_gail_visual_ppo(simple_record, use_discrete):
 def test_gail_visual_sac(simple_record, use_discrete):
     demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
     env = Simple1DEnvironment(
-        [BRAIN_NAME], num_visual=1, num_vector=0, use_discrete=use_discrete
+        [BRAIN_NAME],
+        num_visual=1,
+        num_vector=0,
+        use_discrete=use_discrete,
+        step_size=0.2,
     )
     override_vals = {
         "max_steps": 500,
