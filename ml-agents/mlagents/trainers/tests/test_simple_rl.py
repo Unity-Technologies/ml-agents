@@ -369,14 +369,16 @@ def test_gail(simple_record, use_discrete, trainer_config):
     demo_path = simple_record(use_discrete)
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {
+        "max_steps": 500,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
         "reward_signals": {
+            "extrinsic": {"strength": 1.0, "gamma": 0.99},
             "gail": {
-                "strength": 1.0,
+                "strength": 0.1,
                 "gamma": 0.99,
                 "encoding_size": 32,
                 "demo_path": demo_path,
-            }
+            },
         },
     }
     config = generate_config(trainer_config, override_vals)
@@ -384,23 +386,49 @@ def test_gail(simple_record, use_discrete, trainer_config):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-@pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
-def test_gail_visual(simple_record, use_discrete, trainer_config):
+def test_gail_visual_ppo(simple_record, use_discrete):
     demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
     env = Simple1DEnvironment(
         [BRAIN_NAME], num_visual=1, num_vector=0, use_discrete=use_discrete
     )
     override_vals = {
+        "max_steps": 500,
         "learning_rate": 3.0e-4,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
         "reward_signals": {
+            "extrinsic": {"strength": 1.0, "gamma": 0.99},
             "gail": {
-                "strength": 1.0,
+                "strength": 0.1,
                 "gamma": 0.99,
                 "encoding_size": 32,
                 "demo_path": demo_path,
-            }
+            },
         },
     }
-    config = generate_config(trainer_config, override_vals)
+    config = generate_config(PPO_CONFIG, override_vals)
+    _check_environment_trains(env, config, success_threshold=0.9)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_gail_visual_sac(simple_record, use_discrete):
+    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
+    env = Simple1DEnvironment(
+        [BRAIN_NAME], num_visual=1, num_vector=0, use_discrete=use_discrete
+    )
+    override_vals = {
+        "max_steps": 500,
+        "batch_size": 16,
+        "learning_rate": 3.0e-4,
+        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 2000},
+        "reward_signals": {
+            "extrinsic": {"strength": 1.0, "gamma": 0.99},
+            "gail": {
+                "strength": 0.1,
+                "gamma": 0.99,
+                "encoding_size": 32,
+                "demo_path": demo_path,
+            },
+        },
+    }
+    config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config, success_threshold=0.9)
