@@ -6,17 +6,21 @@ SUMMARY_XML_FILENAME = "Summary.xml"
 
 
 def check_coverage(root_dir, min_percentage):
+    # Walk the root directory looking for the summary file that
+    # is output by ther code coverage checks. It's possible that
+    # we'll need to refine this later in case there are multiple
+    # such files.
     summary_xml = None
     for dirpath, _, filenames in os.walk(root_dir):
         if SUMMARY_XML_FILENAME in filenames:
             summary_xml = os.path.join(dirpath, SUMMARY_XML_FILENAME)
             break
     if not summary_xml:
-        print("Couldn't find Summary.xml in root directory")
-        sys.exit(0)
+        print("Couldn't find {} in root directory".format(SUMMARY_XML_FILENAME))
+        sys.exit(1)
 
     with open(summary_xml) as f:
-        # Look for a line of the form
+        # Rather than try to parse the XML, just look for a line of the form
         # <Linecoverage>73.9</Linecoverage>
         lines = f.readlines()
         for l in lines:
@@ -38,8 +42,9 @@ def check_coverage(root_dir, min_percentage):
                     )
                     sys.exit(0)
 
-    # Couldn't parse the file
+    # Couldn't find the results in the file.
     print("Couldn't find Linecoverage in summary file")
+    sys.exit(1)
 
 
 def main():
