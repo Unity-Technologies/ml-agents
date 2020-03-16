@@ -14,7 +14,7 @@
     "com.unity.package-validation-suite": "0.7.15-preview",
     "com.unity.purchasing": "2.0.6",
     "com.unity.test-framework": "1.1.11",
-    "com.unity.testtools.codecoverage": "0.2.2-preview",
+    "com.unity.testtools.codecoverage": "file:../../../com.unity.testtools.codecoverage",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.12",
     "com.unity.ugui": "1.0.0",

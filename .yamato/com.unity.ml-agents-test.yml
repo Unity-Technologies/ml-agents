@@ -2,10 +2,13 @@ test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
     coverageOptions:
+    minCoveragePct: 0
   - version: 2019.3
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
+    minCoveragePct: 70
   - version: 2020.1
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
+    minCoveragePct: 70
 test_platforms:
   - name: win
     type: Unity::VM
@@ -32,6 +35,7 @@ test_{{ platform.name }}_{{ editor.version }}:
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
+    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
   artifacts:
     logs:
       paths:
@@ -42,6 +46,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     changes:
       only:
         - "com.unity.ml-agents/**"
+        - "ml-agents/tests/yamato/**
         - ".yamato/com.unity.ml-agents-test.yml"
 
   {% endfor %}
