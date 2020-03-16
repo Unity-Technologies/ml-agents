@@ -79,7 +79,7 @@ class GaugeWriter(StatsWriter):
 class ConsoleWriter(StatsWriter):
     def __init__(self):
         self.training_start_time = time.time()
-        # If self-play, we want to print ELO instead of reward
+        # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
 
